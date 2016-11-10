@@ -5,9 +5,9 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('dentalJobs:server');
+var debug = require('debug')('EyeLink-parStream:server');
 var http = require('http');
-
+console.log("here");
 /**
  * Get port from environment and store in Express.
  */

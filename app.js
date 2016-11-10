@@ -7,19 +7,16 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var multer  = require('multer');
+var pug = require('pug');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
-var member = require('./routes/member');
-var personal = require('./routes/personal');
-var office = require('./routes/office');
 
 var app = express();
 
 //app.engine('html', require('ejs').renderFile)
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 app.use(cors());
 // uncomment after placing your favicon in /public
@@ -37,10 +34,7 @@ app.use(session({
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/users', users);
-app.use('/member', member);
-app.use('/personal', personal);
-app.use('/office', office);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
