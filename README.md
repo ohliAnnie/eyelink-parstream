@@ -1,1 +1,1 @@
-# ParStream 기반의 NIX 적용 
+# ParStream 기반의 통합 관제 개발 
