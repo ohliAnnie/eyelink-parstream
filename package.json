@@ -1,0 +1,27 @@
+{
+  "name": "eyelink-parstream",
+  "version": "1.0.0",
+  "description": "EyeLink for ParStream Project",
+  "main": "bin/run.js",
+  "app.js": {
+    "eyelink-parstream": "bin"
+  },
+  "dependencies": {
+    "csv-parse": "^1.0.0",
+    "left-pad": "^1.1.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tovenbae/eyelink-parstream.git"
+  },
+  "author": "Sunghan Bae",
+  "license": "Free",
+  "bugs": {
+    "url": "https://github.com/tovenbae/eyelink-parstream/issues"
+  },
+  "homepage": "https://github.com/tovenbae/eyelink-parstream#readme"
+}
