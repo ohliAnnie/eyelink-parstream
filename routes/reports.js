@@ -14,23 +14,23 @@ router.get('/', function(req, res, next) {
 router.get('/reports/piechart', function(req, res, next) {
 
   // For Test Data
-    var data = [
-       {
-          "vender": "bada",
-          "volume": 20
-        },
-       {
-          "vender": "BlackBerry",
-          "volume": 30
-       },
-       {
-          "vender": "WebOS",
-          "volume": 35
-       },
-       {
-          "vender": "iOS",
-          "volume": 190
-       },
+  var data = [
+     {
+        "vender": "bada",
+        "volume": 20
+      },
+     {
+        "vender": "BlackBerry",
+        "volume": 30
+     },
+     {
+        "vender": "WebOS",
+        "volume": 35
+     },
+     {
+        "vender": "iOS",
+        "volume": 190
+     },
   ];
 
   	res.send(data);
