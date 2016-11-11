@@ -10,8 +10,30 @@ router.get('/', function(req, res, next) {
   	res.render('./reports/main', { title: 'EyeLink for ParStream' });
 });
 
-router.get('/homeB', function(req, res, next) {
-  	res.render('homeB', { title: '치위생사' });
+// send pie-chart data
+router.get('/reports/piechart', function(req, res, next) {
+
+  // For Test Data
+    var data = [
+       {
+          "vender": "bada",
+          "volume": 20
+        },
+       {
+          "vender": "BlackBerry",
+          "volume": 30
+       },
+       {
+          "vender": "WebOS",
+          "volume": 35
+       },
+       {
+          "vender": "iOS",
+          "volume": 190
+       },
+  ];
+
+  	res.send(data);
 });
 
 router.get('/homeC', function(req, res, next) {
