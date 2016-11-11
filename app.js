@@ -10,6 +10,7 @@ var multer  = require('multer');
 var pug = require('pug');
 
 var routes = require('./routes/index');
+var dashboard = require('./routes/dashboard');
 var reports = require('./routes/reports');
 
 var app = express();
@@ -34,7 +35,8 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', reports);
+app.use('/', dashboard);
+app.use('/reports', reports);
 
 
 // catch 404 and forward to error handler
