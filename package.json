@@ -18,7 +18,8 @@
     "serve-favicon": "~2.2.0",
     "multer": "0.1.*",
     "cors": "2.8.1",
-    "express-session": "1.14.2"
+    "express-session": "1.14.2",
+    "parstream": ">=0.0.1"
   },
   "devDependencies": {},
   "repository": {
