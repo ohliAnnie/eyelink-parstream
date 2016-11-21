@@ -1,42 +1,7 @@
 extends ../layout-reports
 
 block style
-	style.
-		svg#d3Pie {
-			width: 550px;
-			height: 370px;
-		}
-		svg#d3Pie.arc text {
-			font: 10px sans-serif;
-			text-anchor: middle;
-		}
-		svg#d3Pie.arc path {
-			stroke: #fff;
-		}
-		svg#myGraph1 {
-			width: 550px;
-			height: 370px;
-		}
-		svg#groupBar {
-			width: 550px;
-			height: 370px;
-			font: 10px sans-serif;
-		}
-		svg#groupBar.axis path, svg#groupBar.axis line {
-			fill: none;
-			stroke: #000;
-			shape-rendering: crispEdges;
-		}
-		svg#groupBar.bar {
-			fill: steelblue;
-		}
-		svg#groupBar.x.axis path {
-			display: none;
-		}
-
 block scripts
-	script(src='/scripts/d3_pie.js')
-
 block content
 	main.layout-contents.padding
 		div.layout-contents-inner
@@ -84,14 +49,18 @@ block content
 				ul.list-reports
 					li
 						div.chart
-							svg#d3Pie
+							#monthly-move-chart
+								script(src='/scripts/main.js')
 					li
 						div.chart
-							svg#myGraph1
-							//- script(src='../assets/scripts/libs/sampleOS1.js')
+							#monthly-volume-chart
+								script(src='/scripts/main.js')
 					li
 						div.chart
-							svg#groupBar
-							//- script(src='../assets/scripts/libs/groupBar.js')
+							#monthly-move-chart
+								script(src='/scripts/main.js')
 					li
-						div.chart chart
+						div.chart 
+				div
+					table.table.table-hover.dc-data-table
+						script(src='/scripts/main.js')

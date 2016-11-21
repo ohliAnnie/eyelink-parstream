@@ -4,7 +4,6 @@
 d3.json("/reports/piechart", function(err, data){
 
   // console.log(data);
-
   if (err) throw error;
 
   var width = 550,
@@ -13,7 +12,7 @@ d3.json("/reports/piechart", function(err, data){
 
   // var color = d3.scale.category10();  // v3용  D3.js가 준비한 표준 10색을 지정
   var color = d3.scaleOrdinal(d3.schemeCategory10);  // v4용
-
+  //var color = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"];
   // var arc = d3.svg.arc()
   //   .outerRadius(radius - 10)
   //   .innerRadius(0);
@@ -59,7 +58,7 @@ d3.json("/reports/piechart", function(err, data){
 
   ele.append("path")
       .attr("d", arc)
-      .style("fill", function(d) { return color(d.data.vendor); });
+      .style("fill", function(d, i) { return color(i);});
 
   ele.append("text")
       .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
