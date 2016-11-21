@@ -36,7 +36,7 @@ app.use(session({
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/dashboard', dashboard);
-app.use('/', reports);
+app.use('/reports', reports);
 app.use('/routes', routes);
 
 // catch 404 and forward to error handler

@@ -10,7 +10,7 @@ router.get('/', function(req, res, next) {
 });
 
 // send pie-chart data
-router.get('/reports/piechart', function(req, res, next) {
+router.get('/piechart', function(req, res, next) {
 
   // For Test Data
   var data = [
@@ -36,7 +36,7 @@ router.get('/reports/piechart', function(req, res, next) {
 });
 
 // send pie-chart data
-router.get('/reports/NYX', function(req, res, next) {
+router.get('/NYX', function(req, res, next) {
 
   // For Test Data
   var data = [
@@ -68,7 +68,7 @@ router.get('/reports/NYX', function(req, res, next) {
   res.send(data);
 });
 
-router.get('/reports/NYX2', function(req, res, next){
+router.get('/NYX2', function(req, res, next){
   var data =
   [{"index":1,"VOLTAGE":109.286,"AMPERE":183.354,"POWER_FACTOR":53.8557,"ACTIVE_POWER":19.619},
   {"index":2,"VOLTAGE":125.217,"AMPERE":190.821,"POWER_FACTOR":6.12307,"ACTIVE_POWER":118.374},
