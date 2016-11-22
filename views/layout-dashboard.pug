@@ -6,14 +6,14 @@ html
 		link(rel='stylesheet', href='/stylesheets/style.css')
 		link(rel='stylesheet', href='/assets/styles/eyelink.css')
 		link(rel='stylesheet', href='/assets/styles/graph.css')
-		script(src="/assets/scripts/libs/bootstrap.min.js")
-		script(src="/assets/scripts/libs/bootstrap-select.min.js")
-		script(src="/assets/scripts/libs/moment.min.js")
-		script(src="/assets/scripts/libs/daterangepicker.custom.js")
 		script(src="/assets/scripts/libs/jquery-2.2.3.min.js")
 		script(src="/assets/scripts/libs/jquery-confirm.custom.js")
 		script(src="/assets/scripts/libs/jquery.magnific-popup.min.js")
 		script(src="/assets/scripts/libs/jquery.knob.min.js")
+		script(src="/assets/scripts/libs/bootstrap.min.js")
+		script(src="/assets/scripts/libs/bootstrap-select.min.js")
+		script(src="/assets/scripts/libs/moment.min.js")
+		script(src="/assets/scripts/libs/daterangepicker.custom.js")
 		script(src="/assets/scripts/libs/tooltipster.bundle.min.js")
 		script(src="/assets/scripts/libs/jquery-clockpicker.min.js")
 		script(src="/assets/scripts/libs/odometer.min.js")
@@ -42,59 +42,59 @@ html
 				li
 					button.logout(type="button") LOGOUT
 		nav.layout-sidemenu
-			a.btn-nyx-logo(href='./intro.html') NYX
+			a.btn-nyx-logo(href='/intro/') NYX
 			ul.list-menus
 				li(data-state='is-selected')
 					a.menu.dashboard.has-submenus(href='/dashboard/') Dashboard
 					ul.list-sub-menus
 						li
-							a(href='./dashboard.html') Dashboard
+							a(href='/dashboard/') Dashboard
 						li
-							a(href='./realtime_event.html') Realtime Event
-				li
-					a.menu.zoning.has-submenus(href='#') Zoning
-					ul.list-sub-menus
-						li
-							a(href='./zones.html') Zones
-						li
-							a(href='./zone_registration_01.html') Zone Registration
-				li
-					a.menu.node.has-submenus(href='#') Node
-					ul.list-sub-menus
-						li
-							a(href='./nodes.html') Nodes
-						li
-							a(href='./node_registration_01_als.html') Node Registration
+							a(href='/realtime_event/') Realtime Event
+				//- li
+				//- 	a.menu.zoning.has-submenus(href='#') Zoning
+				//- 	ul.list-sub-menus
+				//- 		li
+				//- 			a(href='./zones/') Zones
+				//- 		li
+				//- 			a(href='./zone_registration_01.html') Zone Registration
+				//- li
+				//- 	a.menu.node.has-submenus(href='#') Node
+				//- 	ul.list-sub-menus
+				//- 		li
+				//- 			a(href='./nodes.html') Nodes
+				//- 		li
+				//- 			a(href='./node_registration_01_als.html') Node Registration
 				li
 					a.menu.analysis.has-submenus(href='/reports/') Analysis
 					ul.list-sub-menus
+						//- li
+						//- 	a(href='/analysis_alarms') Alarms
 						li
-							a(href='./analysis_alarms.html') Alarms
-						li
-							a(href='./analysis_reports.html') Report
-						li
-							a(href='./analysis_asset.html') Asset Management
-				li
-					a.menu.user(href='./users.html') Users
-					ul.list-sub-menus
-					li
-						a(href='./users.html') Users
-				li
-					a.menu.preferences(href='./preferences.html') Preferences
-					ul.list-sub-menus
-						li
-							a(href='./preferences.html') Preferences
+							a(href='/reports/') Report
+						//- li
+						//- 	a(href='./analysis_asset.html') Asset Management
+				//- li
+				//- 	a.menu.user(href='./users.html') Users
+				//- 	ul.list-sub-menus
+				//- 	li
+				//- 		a(href='./users.html') Users
+				//- li
+				//- 	a.menu.preferences(href='./preferences.html') Preferences
+				//- 	ul.list-sub-menus
+				//- 		li
+				//- 			a(href='./preferences.html') Preferences
 		block content
-	footer
-		nav.footer-nav
-			div.row
-				ul.second-nav
-					li
-						a(href="/intl/corp") 설명
-					li
-						a(href="/intl/legal") 법적고지
-					li
-						a(href="/intl/contact") 연락처
-			div.row.bottom-section
-				div.copyright 저작권 2016 M2U Technology.
-					span.all-rihts 모든 권리 보유.
+	//- footer
+	//- 	nav.footer-nav
+	//- 		div.row
+	//- 			ul.second-nav
+	//- 				li
+	//- 					a(href="/intl/corp") 설명
+	//- 				li
+	//- 					a(href="/intl/legal") 법적고지
+	//- 				li
+	//- 					a(href="/intl/contact") 연락처
+	//- 		div.row.bottom-section
+	//- 			div.copyright 저작권 2016 M2U Technology.
+	//- 				span.all-rihts 모든 권리 보유.

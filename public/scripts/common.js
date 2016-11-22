@@ -8,9 +8,6 @@ if (!window.console) {
 	window.console.dir = function(){};
 }
 
-
-
-
 /* Common Menus */
 var CommonMenus = (function ($) {
 	var scope,
@@ -55,7 +52,7 @@ var CommonMenus = (function ($) {
 		// side menu
 		$menus.on('click', function(e) {
 			$('.list-menus > li').attr('data-state', '');
-			
+
 			var $target = $(this).closest('li');
 			$target.attr('data-state', 'is-selected');
 		});
@@ -135,7 +132,7 @@ var NodeOperationControl = (function ($) {
 			}
 		});
 
-		// Dimming Level Only 
+		// Dimming Level Only
 		if( _currentType == _controlType.Level ) {
 			$segmentedControl.on('click', function(e) {
 				var value = $(this).val();
