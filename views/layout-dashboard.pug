@@ -27,8 +27,8 @@ html
 		aside.layout-header-utils
 			button.btn-menus(type="button") 메뉴 on/off
 			p.location
-				a(href="#") Analysis
-				a(href="#") Reports &nbsp;
+				a(href="#") Dashboard
+				a(href="#") Dashboard &nbsp;
 			ul.list-utils
 				li
 					a.user(href="#", class="user") username.kim
@@ -44,8 +44,8 @@ html
 		nav.layout-sidemenu
 			a.btn-nyx-logo(href='./intro.html') NYX
 			ul.list-menus
-				li
-					a.menu.dashboard.has-submenus(href='#') Dashboard
+				li(data-state='is-selected')
+					a.menu.dashboard.has-submenus(href='/dashboard/') Dashboard
 					ul.list-sub-menus
 						li
 							a(href='./dashboard.html') Dashboard
@@ -65,8 +65,8 @@ html
 							a(href='./nodes.html') Nodes
 						li
 							a(href='./node_registration_01_als.html') Node Registration
-				li(data-state='is-selected')
-					a.menu.analysis.has-submenus(href='#') Analysis
+				li
+					a.menu.analysis.has-submenus(href='/reports/') Analysis
 					ul.list-sub-menus
 						li
 							a(href='./analysis_alarms.html') Alarms

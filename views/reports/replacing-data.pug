@@ -1,0 +1,23 @@
+doctype html
+html(lang='en')
+  head
+    title dc.js - Replacing Data Example
+    meta(charset='UTF-8')
+    link(rel='stylesheet', type='text/css', href='/assets/annie/css/bootstrap.min.css')    
+  body
+    link(rel='stylesheet', type='text/css', href='/assets/annie/css/dc.css')
+    .container
+      script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+      script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+      script(type='text/javascript', src='/assets/annie/js/dc.js')      
+      #chart-ring-year
+        script(src='/scripts/replacing-data.js')
+      #chart-row-spenders
+        script(src='/scripts/replacing-data.js')
+      p
+        | This page will replace the crossfilter data in 5 seconds. If you modify the filters before then, the filters will be restored.
+      p
+      p
+        | It&apos;s based on 
+        a(href='http://stackoverflow.com/questions/32770830/updating-dc-js-data-and-reapplying-original-filters') a question and answer on Stack Overflow
+        | ; question by geotheory, answer by Ethan Jewett.

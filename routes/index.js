@@ -5,7 +5,7 @@ var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', 
 
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/home', function(req, res, next) {
   	res.render('index', { title: 'EyeLink for ParStream' });
 });
 

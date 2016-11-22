@@ -1,41 +1,11 @@
 extends ../layout-reports
 
-block style
-	style.
-		svg#d3Pie {
-			width: 550px;
-			height: 370px;
-		}
-		svg#d3Pie.arc text {
-			font: 10px sans-serif;
-			text-anchor: middle;
-		}
-		svg#d3Pie.arc path {
-			stroke: #fff;
-		}
-		svg#myGraph1 {
-			width: 550px;
-			height: 370px;
-		}
-		svg#groupBar {
-			width: 550px;
-			height: 370px;
-			font: 10px sans-serif;
-		}
-		svg#groupBar.axis path, svg#groupBar.axis line {
-			fill: none;
-			stroke: #000;
-			shape-rendering: crispEdges;
-		}
-		svg#groupBar.bar {
-			fill: steelblue;
-		}
-		svg#groupBar.x.axis path {
-			display: none;
-		}
-
+//- block style
+//- 	link(rel='stylesheet', type='text/css', href='/assets/annie/css/dc.css')
 block scripts
-	script(src='/scripts/d3_pie.js')
+	//- script(src='/scripts/d3_pie.js')
+	//- script(src='/scripts/d3_bar.js')
+	//- script(src='/scripts/d3_donut.js')
 
 block content
 	main.layout-contents.padding
@@ -62,7 +32,8 @@ block content
 									option(value='') ALL
 							button.btn-submit.search(type='submit') SEARCH
 				script.
-					$(document).ready(function() {
+					$(document)
+					.ready(function() {
 						var start = moment().subtract(29, 'days');
 						var end = moment();
 						$('input[name="daterange"]')
@@ -84,14 +55,35 @@ block content
 				ul.list-reports
 					li
 						div.chart
-							svg#d3Pie
+							#chart-ring-year
+								script(src='/scripts/replacing-data.js')
+							//- svg#d3Pie
 					li
 						div.chart
-							svg#myGraph1
+							#chart-row-spenders
+								script(src='/scripts/replacing-data.js')
+							//- svg#barChart
 							//- script(src='../assets/scripts/libs/sampleOS1.js')
 					li
 						div.chart
-							svg#groupBar
-							//- script(src='../assets/scripts/libs/groupBar.js')
+							#donut
+								script(src='/scripts/pie-external-labels.js')
+							//- svg#donut
 					li
-						div.chart chart
+						div.chart
+							#chart-ring-event
+								script(src='/scripts/replacing-data2.js')
+							#chart-row-power
+								script(src='/scripts/replacing-data2.js')
+					li
+						div.chart
+							#test1
+								script(src='/scripts/multi-focus.js')
+							#test2
+								script(src='/scripts/multi-focus.js')
+					li
+						div.chart
+							#test3
+								script(src='/scripts/multi-focus.js')
+							#test4
+								script(src='/scripts/multi-focus.js')
