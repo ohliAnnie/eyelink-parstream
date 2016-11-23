@@ -1,5 +1,9 @@
 extends ../layout-reports
 
+<<<<<<< HEAD
+block style
+block scripts
+=======
 //- block style
 //- 	link(rel='stylesheet', type='text/css', href='/assets/annie/css/dc.css')
 block scripts
@@ -7,6 +11,7 @@ block scripts
 	//- script(src='/scripts/d3_bar.js')
 	//- script(src='/scripts/d3_donut.js')
 
+>>>>>>> 3681026fc0475c433d2b80b8ca55f009cd18a9f0
 block content
 	main.layout-contents.padding
 		div.layout-contents-inner
@@ -55,35 +60,18 @@ block content
 				ul.list-reports
 					li
 						div.chart
-							#chart-ring-year
-								script(src='/scripts/replacing-data.js')
-							//- svg#d3Pie
+							#monthly-move-chart
+								script(src='/scripts/main.js')
 					li
 						div.chart
-							#chart-row-spenders
-								script(src='/scripts/replacing-data.js')
-							//- svg#barChart
-							//- script(src='../assets/scripts/libs/sampleOS1.js')
+							#monthly-volume-chart
+								script(src='/scripts/main.js')
 					li
 						div.chart
-							#donut
-								script(src='/scripts/pie-external-labels.js')
-							//- svg#donut
+							#monthly-move-chart
+								script(src='/scripts/main.js')
 					li
-						div.chart
-							#chart-ring-event
-								script(src='/scripts/replacing-data2.js')
-							#chart-row-power
-								script(src='/scripts/replacing-data2.js')
-					li
-						div.chart
-							#test1
-								script(src='/scripts/multi-focus.js')
-							#test2
-								script(src='/scripts/multi-focus.js')
-					li
-						div.chart
-							#test3
-								script(src='/scripts/multi-focus.js')
-							#test4
-								script(src='/scripts/multi-focus.js')
+						div.chart 
+				div
+					table.table.table-hover.dc-data-table
+						script(src='/scripts/main.js')
