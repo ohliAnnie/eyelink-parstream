@@ -19,14 +19,17 @@
     "multer": "0.1.*",
     "cors": "2.8.1",
     "express-session": "1.14.2",
-    "parstream": ">=0.0.1"
+    "parstream": ">=0.0.1",
+    "supertest": "~2.0.1",
+    "should": "~11.1.1",
+    "chai": "~3.5.0"
   },
   "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tovenbae/eyelink-parstream.git"
   },
-  "author": "Sunghan Bae",
+  "author": "M2U Technology",
   "license": "Free",
   "bugs": {
     "url": "https://github.com/tovenbae/eyelink-parstream/issues"

@@ -1,5 +1,9 @@
+var CONSTS = require('./consts');
 var express = require('express');
 var router = express.Router();
+var DashboardProvider = require('./dao/parstream/db-dashboard').DashboardProvider;
+
+var dashboardProvider = new DashboardProvider();
 
 var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', event: ''};
 
@@ -10,29 +14,17 @@ router.get('/', function(req, res, next) {
 });
 
 // send pie-chart data
-router.get('/dashboard/piechart', function(req, res, next) {
+router.get('/restapi/get_successcount', function(req, res, next) {
+  var in_data = ["user_id"];
+  dashboardProvider.selectSingleQueryByID("selectSuccessCount", in_data, function(err, out_data) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    console.log(rtnCode);
+    res.json({rtnCode: rtnCode, rtnData: out_data});
+  });
 
-  // For Test Data
-  var data = [
-     {
-        "vender": "bada",
-        "volume": 20
-      },
-     {
-        "vender": "BlackBerry",
-        "volume": 30
-     },
-     {
-        "vender": "WebOS",
-        "volume": 35
-     },
-     {
-        "vender": "iOS",
-        "volume": 190
-     },
-  ];
-
-  	res.send(data);
 });
 
 module.exports = router;
