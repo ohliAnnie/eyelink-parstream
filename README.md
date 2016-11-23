@@ -7,6 +7,4 @@ npm install
 npm start
 
 # 접속
-http://localhost:3000
-
-# test
+http://localhost:5223

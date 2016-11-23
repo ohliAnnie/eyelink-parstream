@@ -36,36 +36,39 @@ d3.json("/reports/NYX3", function(err, data){
         return d3.time.year(d.dd).getFullYear();
     });
 
-    var yearVOLTAGE = yearDim.group().reduce(
+    var yearData = yearDim.group().reduce(
         function (p, v) {
             ++p.days;          
-            p.name = 'VOLTAGE';        
-            p.total += v.VOLTAGE;
-            p.avg = p.days ? Math.round(p.total / p.days)  : 0;
-            p.gap = p.avg - v.check;
-            p.per = p.avg ? (p.gap/p.avg)*100 : 0;
-            p.abs = Math.abs(p.avg - v.check);
-            p.absPer = p.avg ? (p.gap/p.avg) * 100 : 0;
-            console.log(v);
+            p.name = v.date;                    
+            p.voltageT += v.VOLTAGE;
+            p.ampareT += v.AMPERE;
+            p.activePT += v.ACTIVE_POWER;
+            p.amAPT += v.AMOUNT_OF_ACTIVE_POWER;
+            p.voltageA = p.voltageT/p.days;
+            p.ampareA = p.ampareT/p.days;
+            p.activePA += p.activePT/p.days;
+            p.amAPA = p.amAPT/p.days;
             console.log(p);
             return p;
         },
         function (p, v) {
             --p.days;          
-            p.name = 'VOLTAGE';        
-            p.total += v.VOLTAGE;
-            p.avg = p.days ? Math.round(p.total / p.days)  : 0;
-            p.gap = p.avg - v.check;
-            p.per = p.avg ? (p.gap/p.avg)*100 : 0;
-            p.abs += Math.abs(p.avg - v.check);
-            p.absPer = p.avg ? (p.gap/p.avg) * 100 : 0;
+            p.name = v.date;                    
+            p.voltageT += v.VOLTAGE;
+            p.ampareT += v.AMPERE;
+            p.activePT += v.ACTIVE_POWER;
+            p.amAPT += v.AMOUNT_OF_ACTIVE_POWER * 100;
+            p.voltageA = p.voltageT/p.days;
+            p.ampareA = p.ampareT/p.days;
+            p.activePA += p.activePT/p.days;
+            p.amAPA = p.amAPT/p.days * 100;
             console.log(v);
             console.log(p);
             return p;
         },
         function () {
             console.log('check');
-            return { days:0, name : '', total: 0, avg: 0, gap:0, per:0, abs:0, absPer:0 };
+            return { days:0, name : '', voltageT: 0, activePT:0, ampareT: 0, AmAPT:0, voltageA:0, ampareA:0, activePA:0, amAPA:0 };
         }
         );
     var dateDimension = nyx.dimension(function (d) {
@@ -116,7 +119,7 @@ d3.json("/reports/NYX3", function(err, data){
     var gainOrLoss = nyx.dimension(function (d) {
 //       console.log(d);
 //      console.log(d.VOLTAGE < d.check ? 'Loss' : 'Gain');
-        return d.VOLTAGE <= d.check ? 'Loss' : 'Gain';
+        return d.POWER_FACTOR <= 0.85 ? 'Loss' : 'Gain';
     });
 
     var gainOrLossGroup = gainOrLoss.group();
@@ -168,7 +171,7 @@ d3.json("/reports/NYX3", function(err, data){
         .dimension(yearDim)
         //The bubble chart expects the groups are reduced to multiple values which are used
         //to generate x, y, and radius for each key (bubble) in the group
-        .group(yearVOLTAGE)
+        .group(yearData)
         // (_optional_) define color function or array for bubbles: [ColorBrewer](http://colorbrewer2.org/)
         .colors(colorbrewer.RdYlGn[9])
         //(optional) define color domain to match your data domain if you want to bind data or color
