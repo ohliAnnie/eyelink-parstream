@@ -6,8 +6,7 @@ var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', 
 
 /* GET reports page. */
 router.get('/', function(req, res, next) {
-  console.log('haha');
-  	res.render('./reports/main', { title: 'EyeLink for ParStream' });
+  res.render('./reports/main', { title: 'EyeLink for ParStream' });
 });
 
 
@@ -22,25 +21,103 @@ router.get('/piechart', function(req, res, next) {
 
   // For Test Data
   var data = [
-     {
-        "vender": "bada",
-        "volume": 20
-      },
-     {
-        "vender": "BlackBerry",
-        "volume": 30
-     },
-     {
-        "vender": "WebOS",
-        "volume": 35
-     },
-     {
-        "vender": "iOS",
-        "volume": 190
-     },
+    {
+      "vender": "bada",
+      "volume": 20
+    },
+    {
+      "vender": "BlackBerry",
+      "volume": 30
+    },
+    {
+      "vender": "WebOS",
+      "volume": 35
+    },
+    {
+      "vender": "iOS",
+      "volume": 190
+    },
   ];
 
-  	res.send(data);
+  res.send(data);
+});
+
+// send pie-chart data
+router.get('/NYX', function(req, res, next) {
+
+  // For Test Data
+  var data = [
+  {"NODE_ID":1,"EVENT_TYPE":1,"POWER_FACTOR":6.12307},
+  {"NODE_ID":1,"EVENT_TYPE":2,"POWER_FACTOR":43.0052},
+  {"NODE_ID":1,"EVENT_TYPE":3,"POWER_FACTOR":8.40633},
+  {"NODE_ID":1,"EVENT_TYPE":1,"POWER_FACTOR":97.2558},
+  {"NODE_ID":1,"EVENT_TYPE":2,"POWER_FACTOR":29.823},
+  {"NODE_ID":1,"EVENT_TYPE":3,"POWER_FACTOR":46.5979},
+  {"NODE_ID":2,"EVENT_TYPE":1,"POWER_FACTOR":71.2565},
+  {"NODE_ID":2,"EVENT_TYPE":2,"POWER_FACTOR":33.2163},
+  {"NODE_ID":2,"EVENT_TYPE":3,"POWER_FACTOR":63.0464},
+  {"NODE_ID":2,"EVENT_TYPE":1,"POWER_FACTOR":72.1372},
+  {"NODE_ID":2,"EVENT_TYPE":2,"POWER_FACTOR":56.0514},
+  {"NODE_ID":2,"EVENT_TYPE":3,"POWER_FACTOR":80.7091},
+  {"NODE_ID":3,"EVENT_TYPE":1,"POWER_FACTOR":46.5766},
+  {"NODE_ID":3,"EVENT_TYPE":2,"POWER_FACTOR":12.6047},
+  {"NODE_ID":3,"EVENT_TYPE":3,"POWER_FACTOR":66.9663},
+  {"NODE_ID":3,"EVENT_TYPE":1,"POWER_FACTOR":32.205},
+  {"NODE_ID":3,"EVENT_TYPE":2,"POWER_FACTOR":77.9124},
+  {"NODE_ID":3,"EVENT_TYPE":3,"POWER_FACTOR":52.4091},
+  {"NODE_ID":4,"EVENT_TYPE":1,"POWER_FACTOR":38.9572},
+  {"NODE_ID":4,"EVENT_TYPE":2,"POWER_FACTOR":72.9062},
+  {"NODE_ID":4,"EVENT_TYPE":3,"POWER_FACTOR":6.16971},
+  {"NODE_ID":4,"EVENT_TYPE":1,"POWER_FACTOR":17.2216},
+  {"NODE_ID":4,"EVENT_TYPE":2,"POWER_FACTOR":84.3023},
+  {"NODE_ID":4,"EVENT_TYPE":3,"POWER_FACTOR":22.4692}];
+
+  res.send(data);
+});
+
+router.get('/NYX2', function(req, res, next){
+  var data =
+  [{"index":1,"VOLTAGE":109.286,"AMPERE":183.354,"POWER_FACTOR":53.8557,"ACTIVE_POWER":19.619},
+  {"index":2,"VOLTAGE":125.217,"AMPERE":190.821,"POWER_FACTOR":6.12307,"ACTIVE_POWER":118.374},
+  {"index":3,"VOLTAGE":11.8469,"AMPERE":79.9082,"POWER_FACTOR":43.0052,"ACTIVE_POWER":146.784},
+  {"index":4,"VOLTAGE":171.221,"AMPERE":47.9456,"POWER_FACTOR":8.40633,"ACTIVE_POWER":90.540},
+  {"index":5,"VOLTAGE":35.7422,"AMPERE":160.418,"POWER_FACTOR":97.2558,"ACTIVE_POWER":83.994},
+  {"index":6,"VOLTAGE":191.108,"AMPERE":68.7257,"POWER_FACTOR":29.823,"ACTIVE_POWER":84.153},
+  {"index":7,"VOLTAGE":230.748,"AMPERE":107.903,"POWER_FACTOR":46.5979,"ACTIVE_POWER":90.837},
+  {"index":8,"VOLTAGE":15.9834,"AMPERE":169.851,"POWER_FACTOR":71.2565,"ACTIVE_POWER":137.153},
+  {"index":9,"VOLTAGE":208.343,"AMPERE":149.462,"POWER_FACTOR":33.2163,"ACTIVE_POWER":18.279},
+  {"index":10,"VOLTAGE":179.557,"AMPERE":15.1937,"POWER_FACTOR":63.0464,"ACTIVE_POWER":85.147},
+  {"index":11,"VOLTAGE":121.227,"AMPERE":75.5837,"POWER_FACTOR":72.1372,"ACTIVE_POWER":45.771},
+  {"index":12,"VOLTAGE":206.916,"AMPERE":143.101,"POWER_FACTOR":56.0514,"ACTIVE_POWER":139.893},
+  {"index":13,"VOLTAGE":58.1583,"AMPERE":127.234,"POWER_FACTOR":80.7091,"ACTIVE_POWER":107.216},
+  {"index":14,"VOLTAGE":141.902,"AMPERE":160.637,"POWER_FACTOR":46.5766,"ACTIVE_POWER":114.094},
+  {"index":15,"VOLTAGE":205.898,"AMPERE":122.301,"POWER_FACTOR":12.6047,"ACTIVE_POWER":43.772},
+  {"index":16,"VOLTAGE":212.044,"AMPERE":2.17606,"POWER_FACTOR":66.9663,"ACTIVE_POWER":110.994},
+  {"index":17,"VOLTAGE":7.4619,"AMPERE":81.4716,"POWER_FACTOR":32.205,"ACTIVE_POWER":145.803},
+  {"index":18,"VOLTAGE":203.048,"AMPERE":140.484,"POWER_FACTOR":77.9124,"ACTIVE_POWER":95.315},
+  {"index":19,"VOLTAGE":4.37924,"AMPERE":139.747,"POWER_FACTOR":52.4091,"ACTIVE_POWER":76.180},
+  {"index":20,"VOLTAGE":250.993,"AMPERE":67.0368,"POWER_FACTOR":38.9572,"ACTIVE_POWER":131.266},
+  {"index":21,"VOLTAGE":227.681,"AMPERE":31.4116,"POWER_FACTOR":72.9062,"ACTIVE_POWER":87.425},
+  {"index":22,"VOLTAGE":254.265,"AMPERE":76.687,"POWER_FACTOR":6.16971,"ACTIVE_POWER":11.824},
+  {"index":23,"VOLTAGE":170.622,"AMPERE":29.7353,"POWER_FACTOR":17.2216,"ACTIVE_POWER":104.363},
+  {"index":24,"VOLTAGE":229.785,"AMPERE":62.467,"POWER_FACTOR":84.3023,"ACTIVE_POWER":26.371},
+  {"index":25,"VOLTAGE":143.381,"AMPERE":105.354,"POWER_FACTOR":22.4692,"ACTIVE_POWER":88.889},
+  {"index":26,"VOLTAGE":5.6303,"AMPERE":56.4707,"POWER_FACTOR":77.4828,"ACTIVE_POWER":139.824},
+  {"index":27,"VOLTAGE":15.6596,"AMPERE":175.862,"POWER_FACTOR":48.9711,"ACTIVE_POWER":48.247},
+  {"index":28,"VOLTAGE":90.9947,"AMPERE":117.81,"POWER_FACTOR":94.3685,"ACTIVE_POWER":43.165},
+  {"index":29,"VOLTAGE":247.678,"AMPERE":194.608,"POWER_FACTOR":93.7803,"ACTIVE_POWER":55.856},
+  {"index":30,"VOLTAGE":236.527,"AMPERE":91.2419,"POWER_FACTOR":58.823,"ACTIVE_POWER":18.769},
+  {"index":31,"VOLTAGE":129.015,"AMPERE":104.698,"POWER_FACTOR":62.4397,"ACTIVE_POWER":137.208},
+  {"index":32,"VOLTAGE":174.626,"AMPERE":115.845,"POWER_FACTOR":44.5777,"ACTIVE_POWER":97.419},
+  {"index":33,"VOLTAGE":261.2,"AMPERE":192.459,"POWER_FACTOR":68.1391,"ACTIVE_POWER":109.469},
+  {"index":34,"VOLTAGE":230.224,"AMPERE":105.69,"POWER_FACTOR":25.2589,"ACTIVE_POWER":4.342},
+  {"index":35,"VOLTAGE":106.62,"AMPERE":172.38,"POWER_FACTOR":64.1113,"ACTIVE_POWER":40.382},
+  {"index":36,"VOLTAGE":235.58,"AMPERE":174.379,"POWER_FACTOR":14.3597,"ACTIVE_POWER":35.240},
+  {"index":37,"VOLTAGE":166.157,"AMPERE":102.712,"POWER_FACTOR":50.4042,"ACTIVE_POWER":149.317},
+  {"index":38,"VOLTAGE":108.026,"AMPERE":108.515,"POWER_FACTOR":77.3608,"ACTIVE_POWER":139.968},
+  {"index":39,"VOLTAGE":128.309,"AMPERE":176.072,"POWER_FACTOR":3.64591,"ACTIVE_POWER":83.846},
+  {"index":40,"VOLTAGE":140.223,"AMPERE":185.01,"POWER_FACTOR":78.501,"ACTIVE_POWER":149.901}]
+  res.send(data);
 });
 
 // send pie-chart data
@@ -290,10 +367,10 @@ router.get('/homeC', function(req, res, next) {
 	var user_id = userInfo.user_id;
 	var data = {user_id : user_id};
 
-  	res.render('homeC', {
-  		title: '치과병원',
-  		mainmenu: mainmenu,
-  		rtnData: data});
+ res.render('homeC', {
+  title: '치과병원',
+  mainmenu: mainmenu,
+  rtnData: data});
 });
 
 

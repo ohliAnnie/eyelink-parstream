@@ -9,13 +9,12 @@ var session = require('express-session');
 var multer  = require('multer');
 var pug = require('pug');
 
-var routes = require('./routes/index');
+var intro = require('./routes/intro');
 var dashboard = require('./routes/dashboard');
 var reports = require('./routes/reports');
 
 var app = express();
 
-//app.engine('html', require('ejs').renderFile)
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -35,9 +34,10 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', dashboard);
+app.use('/', intro);
+app.use('/dashboard', dashboard);
 app.use('/reports', reports);
-
+app.use('/intro', intro);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -62,13 +62,13 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
-  });
-});
+// app.use(function(err, req, res, next) {
+//   res.status(err.status || 500);
+//   res.render('error', {
+//     message: err.message,
+//     error: {}
+//   });
+// });
 
 
 module.exports = app;
