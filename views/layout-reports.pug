@@ -7,7 +7,6 @@ html
 		link(rel='stylesheet', href='/assets/styles/eyelink.css')
 		link(rel='stylesheet', type='text/css', href='/assets/annie/css/dc.css')
 		link(rel='stylesheet', type='text/css', href='/assets/annie/css/colorbrewer.css')
-		link(rel='stylesheet', type='text/css', href='/assets/annie/css/dc.css')
 		script(src="/assets/scripts/libs/moment.min.js")
 		script(src="/assets/scripts/libs/jquery-2.2.3.min.js")
 		script(src="/assets/scripts/libs/daterangepicker.custom.js")
@@ -33,8 +32,8 @@ html
 		aside.layout-header-utils
 			button.btn-menus(type="button") 메뉴 on/off
 			p.location
-			a(href="#") Analysis
-			a(href="#") Reports &nbsp;
+				a(href="#") Analysis
+				a(href="#") Reports &nbsp;
 			ul.list-utils
 				li
 					a.user(href="#", class="user") username.kim
@@ -51,7 +50,7 @@ html
 			a.btn-nyx-logo(href='./intro.html') NYX
 			ul.list-menus
 				li
-					a.menu.dashboard.has-submenus(href='/dashboard/') Dashboard
+					a.menu.dashboard.has-submenus(href='#') Dashboard
 					ul.list-sub-menus
 						li
 							a(href='./dashboard.html') Dashboard
@@ -72,7 +71,7 @@ html
 						li
 							a(href='./node_registration_01_als.html') Node Registration
 				li(data-state='is-selected')
-					a.menu.analysis.has-submenus(href='/reports/') Analysis
+					a.menu.analysis.has-submenus(href='#') Analysis
 					ul.list-sub-menus
 						li
 							a(href='./analysis_alarms.html') Alarms
