@@ -1,8 +1,39 @@
-var parstream = require('parstream');
-var pool = parstream.createPool({
-  size: 2,
-  host: 'm2u-parstream.eastus.cloudapp.azure.com',
-  port: 9043,
+var JDBC = require('jdbc');
+var jinst = require('jdbc/lib/jinst');
+
+console.log(1);
+if (!jinst.isJvmCreated()) {
+  jinst.addOption("-Xrs");
+  jinst.setupClasspath(['/routers/dao/drivers/jdbc-4.2.9.jar']);
+}
+
+console.log(2);
+var config = {
+  // Required
+  url: 'jdbc:parstream://m2u-parstream.eastus.cloudapp.azure.com:9043/eyelink',
+
+  // Optional
+  drivername: 'com.parstream.ParstreamDriver',
+  minpoolsize: 1,
+  maxpoolsize: 5,
+
+  // Note that if you sepecify the user and password as below, they get
+  // converted to properties and submitted to getConnection that way.  That
+  // means that if your driver doesn't support the 'user' and 'password'
+  // properties this will not work.  You will have to supply the appropriate
+  // values in the properties object instead.
+  user: 'parstream',
+  password: 'Rornfldkf!2',
+  properties: {}
+};
+
+console.log(3);
+var parstream = new JDBC(config);
+console.log(4);
+parstream.initialize(function(err) {
+  if (err) {
+    console.log(err);
+  }
 });
 
 var sqlList = {
