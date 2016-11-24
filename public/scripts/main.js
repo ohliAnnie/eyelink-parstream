@@ -6,14 +6,16 @@ var quarterChart = dc.pieChart('#quarter-chart');
 var dayOfWeekChart = dc.rowChart('#day-of-week-chart');
 var moveChart = dc.lineChart('#monthly-move-chart');
 var volumeChart = dc.barChart('#monthly-volume-chart');
+var yearlyBubbleChart = dc.bubbleChart('#yearly-bubble-chart');
 var nyxCount = dc.dataCount('.nyx-count');
 var nyxTable = dc.dataTable('.dc-data-table');
-var yearlyBubbleChart = dc.bubbleChart('#yearly-bubble-chart');
 
 d3.json("/reports/NYX3", function(err, data){       
     if (err) throw error;    
     var dateFormat = d3.time.format('%m/%d/%Y');        
     var numberFormat = d3.format('.2f'); 
+    var minDate  = new Date("01/01/2014");
+    var maxDate = new Date("12/31/2016");
 
     data.forEach(function (d) {                        
         d.dd = dateFormat.parse(d.date);            
@@ -25,108 +27,162 @@ d3.json("/reports/NYX3", function(err, data){
         d.REACTIVE_POWER = +d.REACTIVE_POWER;
         d.APPARENT_POWER = +d.APPARENT_POWER;
         d.AMOUNT_OF_ACTIVE_POWER = +d.AMOUNT_OF_ACTIVE_POWER;
-        d.check = +100;
+        d.check = +0.85;
 //        console.log(d);
 });
 
     var nyx = crossfilter(data);
     var all = nyx.groupAll();
 
-    var yearDim = nyx.dimension(function(d) {        
-        return d3.time.year(d.dd).getFullYear();
+    var yearDim = nyx.dimension(function(d) {
+  //      console.log(d3.time.year(d.dd).getFullYear()) ;
+        return d3.time.year(d.dd).getFullYear();        
     });
 
     var yearData = yearDim.group().reduce(
         function (p, v) {
             ++p.days;          
-            p.name = v.date;                    
             p.voltageT += v.VOLTAGE;
             p.ampareT += v.AMPERE;
             p.activePT += v.ACTIVE_POWER;
             p.amAPT += v.AMOUNT_OF_ACTIVE_POWER;
-            p.voltageA = p.voltageT/p.days;
-            p.ampareA = p.ampareT/p.days;
-            p.activePA += p.activePT/p.days;
-            p.amAPA = p.amAPT/p.days;
+            p.voltageA = d3.round(p.voltageT/p.days,2);
+            p.ampareA = d3.round(p.ampareT/p.days,2);
+            p.activePA = d3.round(p.activePT/p.days,2);
+            p.amAPA = d3.round(p.amAPT/p.days,2);
             console.log(p);
             return p;
         },
         function (p, v) {
             --p.days;          
-            p.name = v.date;                    
-            p.voltageT += v.VOLTAGE;
-            p.ampareT += v.AMPERE;
-            p.activePT += v.ACTIVE_POWER;
-            p.amAPT += v.AMOUNT_OF_ACTIVE_POWER * 100;
-            p.voltageA = p.voltageT/p.days;
-            p.ampareA = p.ampareT/p.days;
-            p.activePA += p.activePT/p.days;
-            p.amAPA = p.amAPT/p.days * 100;
-            console.log(v);
-            console.log(p);
+            p.voltageT -= v.VOLTAGE;
+            p.ampareT -= v.AMPERE;
+            p.activePT -= v.ACTIVE_POWER;
+            p.amAPT -= v.AMOUNT_OF_ACTIVE_POWER;
+            p.voltageA = d3.round(p.voltageT/p.days,2);
+            p.ampareA = d3.round(p.ampareT/p.days,2);
+            p.activePA = d3.round(p.activePT/p.days,2);
+            p.amAPA = d3.round(p.amAPT/p.days,2);
+//            console.log(p);
             return p;
         },
         function () {
-            console.log('check');
-            return { days:0, name : '', voltageT: 0, activePT:0, ampareT: 0, AmAPT:0, voltageA:0, ampareA:0, activePA:0, amAPA:0 };
-        }
-        );
+  //          console.log('check');
+            return { days:0, voltageT: 0, activePT:0, ampareT: 0, amAPT:0, voltageA:0, ampareA:0, activePA:0, amAPA:0 };
+        });
     var dateDimension = nyx.dimension(function (d) {
+//        console.log(d.dd);
         return d.dd;
     });
 
     var moveMonths = nyx.dimension(function (d) {
-//        console.log(d.month);
-        return d.month;
+//       console.log(d.month);
+        return +d.month;
     });
 
-    var voltageMonthGroup = moveMonths.group().reduceSum(function (d) {
-//        console.log(Math.abs(d.VOLTAGE - d.check));
-        return d.VOLTAGE;
-    });
-
-    var apparentPMonthGroup = moveMonths.group().reduceSum(function (d) {
-//        console.log(d);
-        return +d.APPARENT_POWER;
-    });
-        var ampereMonthGroup = moveMonths.group().reduceSum(function (d) {
-//        console.log(d);
-        return +d.AMPERE;
-    });
-        var activePMonthGroup = moveMonths.group().reduceSum(function (d) {
-//        console.log(d);
-        return +d.ACTIVE_POWER;
-    });
-
-    var indexAvgByMonthGroup = moveMonths.group().reduce(
+     var indexAvgByMonthGroup = moveMonths.group().reduce(
         function (p, v) {
             ++p.days;
             p.total += v.VOLTAGE;
-            p.avg = Math.round(p.total / p.days);
-            return p;
+            p.avg = p.days? Math.round(p.total / p.days) : 0;
+/*            console.log(p);
+            console.log('   month : '+v.month); */
+             return p;
         },
         function (p, v) {
             --p.days;
             p.total -= v.VOLTAGE;
             p.avg = p.days ? Math.round(p.total / p.days) : 0;
+//          console.log(p);
+            return p;
+        },
+        function () {            
+            return {days: 0, total: 0, avg: 0};
+        });
+
+   var apparentPMonthGroup = moveMonths.group().reduce(
+        function (p, v) {
+            ++p.days;
+            p.total += v.APPARENT_POWER;
+            p.avg = Math.round(p.total / p.days);
+   //         console.log(p);
+            return p;
+        },
+        function (p, v) {
+            --p.days;
+            p.total -= v.APPARENT_POWER;
+            p.avg = p.days ? Math.round(p.total / p.days) : 0;
             return p;
         },
         function () {
             return {days: 0, total: 0, avg: 0};
-        }
-        );
+        });
+        var ampereMonthGroup = moveMonths.group().reduce(
+        function (p, v) {
+            ++p.days;
+            p.total += v.AMPERE;
+            p.avg = p.days ? Math.round(p.total / p.days) : 0;
+//            console.log(p);
+            return p;
+        },
+        function (p, v) {
+            --p.days;
+            p.total -= v.AMPERE;
+            p.avg = p.days ? Math.round(p.total / p.days) : 0;
+            return p;
+        },
+        function () {
+            return {days: 0, total: 0, avg: 0};
+        });
+
+        var activePMonthGroup = moveMonths.group().reduce(
+        function (p, v) {
+            ++p.days;
+            p.total += v.ACTIVE_POWER;
+            p.avg = p.days ? Math.round(p.total / p.days) : 0;
+//            console.log(p);
+            return p;
+        },
+        function (p, v) {
+            --p.days;
+            p.total -= v.ACTIVE_POWER;
+            p.avg = p.days ? Math.round(p.total / p.days) : 0;
+            return p;
+        },
+        function () {
+            return {days: 0, total: 0, avg: 0};
+        });
+
+         var pFactorMonthGroup = moveMonths.group().reduce(
+        function (p, v) {
+            ++p.days;
+            p.total += v.POWER_FACTOR;
+            p.avg = p.days ? Math.round(p.total / p.days) : 0;
+      //      console.log(p);
+            return p;
+        },
+        function (p, v) {
+            --p.days;
+            p.total -= v.POWER_FACTOR;
+            p.avg = p.days ? Math.round(p.total / p.days) : 0;
+            return p;
+        },
+        function () {
+            return {days: 0, total: 0, avg: 0};
+        });
 
     var gainOrLoss = nyx.dimension(function (d) {
 //       console.log(d);
 //      console.log(d.VOLTAGE < d.check ? 'Loss' : 'Gain');
-        return d.POWER_FACTOR <= 0.85 ? 'Loss' : 'Gain';
+        return d.AMOUNT_OF_ACTIVE_POWER < d.check ? 'Loss' : 'Gain';
     });
 
     var gainOrLossGroup = gainOrLoss.group();
 
     var fluctuation = nyx.dimension(function (d) {
-        return Math.round((d.VOLTAGE - d.check) / d.VOLTAGE * 100);
+        return d.AMOUNT_OF_ACTIVE_POWER * 100;
     });
+
     var fluctuationGroup = fluctuation.group();
     
     var quarter = nyx.dimension(function (d) {
@@ -142,6 +198,7 @@ d3.json("/reports/NYX3", function(err, data){
             return 'Q4';
         }
     });
+
     var quarterGroup = quarter.group().reduceSum(function (d) {
         return d.VOLTAGE;
     });
@@ -151,6 +208,7 @@ d3.json("/reports/NYX3", function(err, data){
         var name = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         return day + '.' + name[day];
     });
+
     var dayOfWeekGroup = dayOfWeek.group();
    //#### Bubble Chart
 
@@ -182,26 +240,26 @@ d3.json("/reports/NYX3", function(err, data){
 
         // `.colorAccessor` - the returned value will be passed to the `.colors()` scale to determine a fill color
         .colorAccessor(function (d) {
-            return d.value.avg;
+            return d.value.voltageA;
         })
         // `.keyAccessor` - the `X` value will be passed to the `.x()` scale to determine pixel location
         .keyAccessor(function (p) {
-            return p.value.avg;
+            return p.value.voltageA;
         })
         // `.valueAccessor` - the `Y` value will be passed to the `.y()` scale to determine pixel location
         .valueAccessor(function (p) {
-            return p.value.per;
-            
+            console.log(p,value.amAPA);
+            return p.value.amAPA;
         })
         // `.radiusValueAccessor` - the value will be passed to the `.r()` scale to determine radius size;
         //   by default this maps linearly to [0,100]
         .radiusValueAccessor(function (p) {
-            return p.value.absPer;
+            return p.value.activePA;
         })
         .maxBubbleRelativeSize(0.3)
-        .x(d3.scale.linear().domain([0, 250]))
-        .y(d3.scale.linear().domain([-50, 50]))
-        .r(d3.scale.linear().domain([0, 200]))
+        .x(d3.scale.linear().domain([-250, 250]))
+        .y(d3.scale.linear().domain([-100, 100]))
+        .r(d3.scale.linear().domain([0, 4000]))
         //##### Elastic Scaling
 
         //`.elasticY` and `.elasticX` determine whether the chart should rescale each axis to fit the data.
@@ -216,9 +274,9 @@ d3.json("/reports/NYX3", function(err, data){
         // (_optional_) render vertical grid lines, `default=false`
         .renderVerticalGridLines(true)
         // (_optional_) render an axis label below the x axis
-        .xAxisLabel('VOLTAGE GAP')
+        .xAxisLabel('VOLTAGE AVG')
         // (_optional_) render a vertical axis lable left of the y axis
-        .yAxisLabel('VOLTAGE GAP %')
+        .yAxisLabel('AMOUNT_OF_ACTIVE_POWER %')
         //##### Labels and  Titles
 
         //Labels are displayed on the chart for each bubble. Titles displayed on mouseover.
@@ -232,9 +290,9 @@ d3.json("/reports/NYX3", function(err, data){
         .title(function (p) {
             return [
             p.key,
-            'VOLTAGE AVG : ' + numberFormat(p.value.avg),
-            'VOLTAGE GAP in Percentage: ' + numberFormat(p.value.per) + '%',
-            'Ratio: ' + numberFormat(p.value.absPer) + '%'
+            'VOLTAGE AVG : ' + numberFormat(p.value.activePA),
+            'AMOUNT_OF_ACTIVE_POWER AVG: ' + numberFormat(p.value.amAPA) + '%',
+            'Ratio: ' + numberFormat(p.value.amAPA) + '%'
             ].join('\n');
         })
         //#### Customize Axes
@@ -358,8 +416,8 @@ d3.json("/reports/NYX3", function(err, data){
         function (v) { return v + '%'; });
     fluctuationChart.yAxis().ticks(5);
 
-    //#### Stacked Area Chart
 
+    //#### Stacked Area Chart
     //Specify an area chart by using a line chart with `.renderArea(true)`.
     // <br>API: [Stack Mixin](https://github.com/dc-js/dc.js/blob/master/web/docs/api-latest.md#stack-mixin),
     // [Line Chart](https://github.com/dc-js/dc.js/blob/master/web/docs/api-latest.md#line-chart)
@@ -373,10 +431,11 @@ d3.json("/reports/NYX3", function(err, data){
     .mouseZoomable(true)
     // Specify a "range chart" to link its brush extent with the zoom of the current "focus chart".
     .rangeChart(volumeChart)
-    .x(d3.time.scale().domain([new Date(2014, 0, 1), new Date(2016, 12, 31)]))
+    .x(d3.time.scale().domain([minDate, maxDate]))
     .round(d3.time.month.round)
     .xUnits(d3.time.months)
     .elasticY(true)
+//    .y(d3.scale.linear().domain([0, 200]))
     .renderHorizontalGridLines(true)
     //##### Legend
 
@@ -386,27 +445,39 @@ d3.json("/reports/NYX3", function(err, data){
         // Add the base layer of the stack with group. The second parameter specifies a series name for use in the
         // legend.
         // The `.valueAccessor` will be used for the base layer
-        .group(voltageMonthGroup, 'VOLTAGE')
+        .group(indexAvgByMonthGroup, 'VOLTAGE')
         .valueAccessor(function (d) {
-            return d.value;
+ //           console.log(d.value.avg);
+            return d.value.avg;
         })
         // Stack additional layers with `.stack`. The first paramenter is a new group.
         // The second parameter is the series name. The third is a value accessor.
-        .stack(apparentPMonthGroup, 'APPARENT_POWER', function (d) {
-            return d.value;
-        })
-        .stack(ampereMonthGroup, 'AMPERE', function (d) {
-            return d.value;
-        })
-        .stack(activePMonthGroup, 'ACTIVE_POWER', function (d) {
-            return d.value;
-        })
+            .stack(apparentPMonthGroup, 'APPARENT_POWER', function (d) {
+      //          console.log('APPARENT_POWER:'+d.value.avg);
+                return d.value.avg;
+            })
+            .stack(ampereMonthGroup, 'AMPERE', function (d) {
+//                console.log('AMPERE:'+d.value.avg);
+                return d.value.avg;
+            })
+            .stack(activePMonthGroup, 'ACTIVE_POWER', function (d) {
+//             console.log('ACTIVE_POWER:'+d.value.avg);
+                return d.value.avg;
+            })
+           .stack(pFactorMonthGroup, 'POWER_FACTOR', function (d) {
+//                console.log('POWER_FACTOR:'+d.value.avg);
+                return d.value.avg;
+            })
         // Title can be called by any stack layer.
         .title(function (d) {
-            var value = d.value.avg ? d.value.avg : d.value;
+            var value = d.value.avg;
             if (isNaN(value)) {
                 value = 0;
             }
+            console.log(d)
+            console.log('title : '+value);
+            console.log('key:'+d.key)
+            console.log(dateFormat(d.key) + '\n' + numberFormat(value));
             return dateFormat(d.key) + '\n' + numberFormat(value);
         });
 
@@ -419,10 +490,10 @@ d3.json("/reports/NYX3", function(err, data){
     .height(40)
     .margins({top: 0, right: 50, bottom: 20, left: 40})
     .dimension(moveMonths)
-    .group(voltageMonthGroup)
+    .group(indexAvgByMonthGroup)
     .centerBar(true)
     .gap(1)
-    .x(d3.time.scale().domain([new Date(2014, 0, 1), new Date(2016, 12, 31)]))
+    .x(d3.time.scale().domain([minDate, maxDate]))
     .round(d3.time.month.round)
     .alwaysUseRounding(true)
     .xUnits(d3.time.months);
@@ -624,7 +695,7 @@ d3.json("/reports/NYX3", function(err, data){
     //#### Rendering
 
     //simply call `.renderAll()` to render all charts on the page
-   dc.renderAll();
+  //       dc.renderAll();
     /*
     // Or you can render charts belonging to a specific chart group
     dc.renderAll('group');
