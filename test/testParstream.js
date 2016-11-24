@@ -4,6 +4,7 @@ var request = require("supertest");
 var expect = require("chai").expect;
 var app = require("../app.js");
 var svr = "http://localhost:5223";
+var http = require('http');
 
 describe("Test", function(){
   var cookie;
@@ -19,9 +20,9 @@ describe("Test", function(){
   beforeEach(function(){
 
     // simulate async call w/ setTimeout
-    setTimeout(function(){
-      foo = true;
-    }, 50);
+    // setTimeout(function(){
+    //   foo = true;
+    // }, 50);
 
   });
 
@@ -32,20 +33,52 @@ describe("Test", function(){
   describe("ParStream -> ", function() {
     // it('login', login());
 
+    // TO-DO 수행 결과 로깅 처리 로직 보완 필요함. by 배성한.
     it('Search Data', function(done) {
       var datas = {user_id: "user_id"};
       request(svr)
         .get("/dashboard/restapi/get_successcount")
         .send(datas)
         .expect(200)
-        .end(function(err, res) {
-          if (err) return done(err);
-          console.log(res.body.rtnCode.code);
-          console.log(res.body.rtnCode.message);
-          expect('0000').to.equal(res.body.rtnCode.code);
+        .end(function(res) {
+          // console.log(err);
+          // if (err) return done(err);
+          console.log(res);
+          // console.log(res.body.rtnCode.code);
+          // console.log(res.body.rtnCode.message);
+          // expect('0000').to.equal(res.body.rtnCode.code);
+
+      var data = '';
+      res.on('data', function(chunk) {
+        data += chunk;
+        console.log('data');
+      });
+
+      res.on('end', function() {
+        console.log('end');
+        callback(null, JSON.parse(data));
+      });
+
           done();
         });
     });
+it('Search Data2', function(done) {
+        var req = http.request({
+      hostname: 'jsonplaceholder.typicode.com',
+      path: '/dashboard/restapi/get_successcount'
+    }, function(response) {
+      var data = '';
+      response.on('data', function(chunk) {
+        data += chunk;
+      });
+
+      response.on('end', function() {
+        callback(null, JSON.parse(data));
+      });
+    });
+
+    req.end();
+});
   });
 
   function login() {

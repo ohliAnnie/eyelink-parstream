@@ -17,11 +17,11 @@ router.get('/', function(req, res, next) {
 router.get('/restapi/get_successcount', function(req, res, next) {
   var in_data = ["user_id"];
   dashboardProvider.selectSingleQueryByID("selectSuccessCount", in_data, function(err, out_data) {
+    console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-    console.log(rtnCode);
     res.json({rtnCode: rtnCode, rtnData: out_data});
   });
 
