@@ -1,9 +1,10 @@
 var CONSTS = require('./consts');
 var express = require('express');
 var router = express.Router();
-// var DashboardProvider = require('./dao/parstream/db-dashboard').DashboardProvider;
 
-// var dashboardProvider = new DashboardProvider();
+var DashboardProvider = require('./dao/parstream/db-dashboard').DashboardProvider;
+
+var dashboardProvider = new DashboardProvider();
 
 var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', event: ''};
 
@@ -13,18 +14,5 @@ router.get('/', function(req, res, next) {
   	res.render('./dashboard/main', { title: 'EyeLink for ParStream' });
 });
 
-/*// send pie-chart data
-router.get('/restapi/get_successcount', function(req, res, next) {
-  var in_data = ["user_id"];
-  dashboardProvider.selectSingleQueryByID("selectSuccessCount", in_data, function(err, out_data) {
-    var rtnCode = CONSTS.getErrData('0000');
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');
-    }
-    console.log(rtnCode);
-    res.json({rtnCode: rtnCode, rtnData: out_data});
-  });
 
-});
-*/
 module.exports = router;

@@ -27,7 +27,7 @@ block content
                 strong.point.usd
                   span#bill.odometer 0
                   span.units /MWh
-                strong.growth.down 13.92
+                strong#pbill.growth.up 13.92
                   span %
                 p.description Average value of count in the past month
             li
@@ -36,7 +36,7 @@ block content
                 strong.point.tachometer
                   span#power.odometer 0
                   span.units MWh
-                strong.growth.up 13.92
+                strong#ppower.growth.up 13.92
                   span %
                 p.description Average value of count in the past month
             li
@@ -44,7 +44,7 @@ block content
                 em.title EVENT COUNT
                 strong.point.bell
                   span#event-count.odometer 0
-                strong.growth 13.92
+                strong#pevent-count.growth.up 13.92
                   span %
                 p.description Average value of count in the past month
             li
@@ -52,20 +52,54 @@ block content
                 em.title FAULT COUNT
                 strong.point.exclamation-circle
                   span#fault-count.odometer 0
-                strong.growth.down
+                strong#pfault-count.growth.down
                   | 13.92
                   span %
                 p.description Description of the numbers
         script.
           $(document).ready(function(e) {
-          var bill = new Odometer({ el: $('#bill')[0], format: '(,ddd).dd' });
-          var power = new Odometer({ el: $('#power')[0], format: '(,ddd)' });
-          var eventCount = new Odometer({ el: $('#event-count')[0], format: '(,ddd)' });
-          var falutCount = new Odometer({ el: $('#fault-count')[0], format: '(,ddd)' });
-          bill.update(104.5);
-          power.update(2356);
-          eventCount.update(23452);
-          falutCount.update(87);
+            var bill = new Odometer({ el: $('#bill')[0], format: '(,ddd).dd' });
+            var pbill = new Odometer({ el: $('#pbill')[0], format: '(,ddd).dd' });
+            var power = new Odometer({ el: $('#power')[0], format: '(,ddd)' });
+            var ppower = new Odometer({ el: $('#ppower')[0], format: '(,ddd)' });
+            var eventCount = new Odometer({ el: $('#event-count')[0], format: '(,ddd)' });
+            var peventCount = new Odometer({ el: $('#pevent-count')[0], format: '(,ddd)' });
+            var falutCount = new Odometer({ el: $('#fault-count')[0], format: '(,ddd)' });
+            var pfalutCount = new Odometer({ el: $('#pfault-count')[0], format: '(,ddd)' });
+            $.ajax({
+              url: "/dashboard/restapi/getDashboardSection1",
+              dataType: "json",
+              type: "GET",
+              data: '',
+              success: function(result) {
+                console.log(result);
+                if (result.rtnCode.code == "0000") {
+                  // TO-DO json data 수신 방식 점검 필요 by 배성한
+                  //- $("#successmsg").html(result.message);
+                  var data = result.rtnData[0][0];
+                  bill.update(data.today_power_charge);
+                  pbill.update(data.active_power_percent);
+                  //- if (data.active_power_percent < 0) {
+                  //-   pbill.attr('class','growth down');
+                  //- } else {
+                  //-   pbill.attr('class','growth up');
+                  //- }
+                  power.update(data.today_active_power);
+                  ppower.update(data.active_power_percent)
+                  eventCount.update(data.today_event_cnt);
+                  peventCount.update(data.event_cnt_percent);
+                  falutCount.update(data.today_event_fault_cnt);
+                  pfalutCount.update(data.event_fault_cnt_percent);
+
+                } else {
+                  //- $("#errormsg").html(result.message);
+                }
+              },
+              error: function(req, status, err) {
+                //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+              }
+            });
           });
         .grid-dashboard
           .grid-item.map
@@ -323,4 +357,3 @@ block content
   //- div.loading
   //-   span.txt
   //-     i.spin Loading
-

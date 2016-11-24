@@ -4,6 +4,8 @@ var request = require("supertest");
 var expect = require("chai").expect;
 var app = require("../app.js");
 var svr = "http://localhost:5223";
+var http = require('http');
+
 
 describe("Test", function(){
   var cookie;
@@ -19,10 +21,10 @@ describe("Test", function(){
   beforeEach(function(){
 
     // simulate async call w/ setTimeout
+
     setTimeout(function(){
       foo = true;
     }, 50);
-
   });
 
   afterEach(function() {
@@ -32,6 +34,7 @@ describe("Test", function(){
   describe("ParStream -> ", function() {
     // it('login', login());
 
+    // TO-DO 수행 결과 로깅 처리 로직 보완 필요함. by 배성한.
     it('Search Data', function(done) {
       var datas = {user_id: "user_id"};
       request(svr)
@@ -43,9 +46,28 @@ describe("Test", function(){
           console.log(res.body.rtnCode.code);
           console.log(res.body.rtnCode.message);
           expect('0000').to.equal(res.body.rtnCode.code);
+        .end(function(res) {
+          // console.log(err);
+          // if (err) return done(err);
+          console.log(res);
+          // console.log(res.body.rtnCode.code);
+          // console.log(res.body.rtnCode.message);
+          // expect('0000').to.equal(res.body.rtnCode.code);
+
+      var data = '';
+      res.on('data', function(chunk) {
+        data += chunk;
+        console.log('data');
+      });
+
+      res.on('end', function() {
+        console.log('end');
+        callback(null, JSON.parse(data));
+      });
+
           done();
         });
-    });
+    });   
   });
 
   function login() {
