@@ -62,23 +62,36 @@ describe("Test", function(){
           done();
         });
     });
-it('Search Data2', function(done) {
-        var req = http.request({
-      hostname: 'jsonplaceholder.typicode.com',
-      path: '/dashboard/restapi/get_successcount'
-    }, function(response) {
+
+    // TO-DO 수행 결과 로깅 처리 로직 보완 필요함. by 배성한.
+    it('Search Dashboard Section1', function(done) {
+      var datas = {user_id: "user_id"};
+      request(svr)
+        .get("/dashboard/restapi/getDashboardSection1")
+        .send(datas)
+        .expect(200)
+        .end(function(res) {
+          // console.log(err);
+          // if (err) return done(err);
+          console.log(res);
+          // console.log(res.body.rtnCode.code);
+          // console.log(res.body.rtnCode.message);
+          // expect('0000').to.equal(res.body.rtnCode.code);
+
       var data = '';
-      response.on('data', function(chunk) {
+      res.on('data', function(chunk) {
         data += chunk;
+        console.log('data');
       });
 
-      response.on('end', function() {
+      res.on('end', function() {
+        console.log('end');
         callback(null, JSON.parse(data));
       });
-    });
 
-    req.end();
-});
+          done();
+        });
+    });
   });
 
   function login() {

@@ -13,10 +13,24 @@ router.get('/', function(req, res, next) {
   	res.render('./dashboard/main', { title: 'EyeLink for ParStream' });
 });
 
-// send pie-chart data
+// test db query logic
 router.get('/restapi/get_successcount', function(req, res, next) {
   var in_data = ["user_id"];
   dashboardProvider.selectSingleQueryByID("selectSuccessCount", in_data, function(err, out_data) {
+    console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    res.json({rtnCode: rtnCode, rtnData: out_data});
+  });
+
+});
+
+// query Dashboard Section 1
+router.get('/restapi/getDashboardSection1', function(req, res, next) {
+  var in_data = ["user_id"];
+  dashboardProvider.selectSingleQueryByID("selectDashboardSection1", in_data, function(err, out_data) {
     console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
