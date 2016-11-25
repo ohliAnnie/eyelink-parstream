@@ -1,5 +1,9 @@
+var CONSTS = require('./consts');
 var express = require('express');
 var router = express.Router();
+var ReportsProvider = require('./dao/parstream/db-reports').ReportsProvider;
+
+var reportsProvider = new ReportsProvider();
 
 var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', event: ''};
 
@@ -10,10 +14,26 @@ router.get('/', function(req, res, next) {
 });
 
 
-router.get('/main', function(req, res, next) {s
+router.get('/main', function(req, res, next) {
   console.log('haha');
   res.render('./reports/main-old', { title: 'sample' });
 });
+
+
+// query Report
+router.get('/restapi/getReportRawData', function(req, res, next) {
+  var in_data = ["user_id"];
+  reportsProvider.selectSingleQueryByID("selectEventRawData", in_data, function(err, out_data) {
+    console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    res.json({rtnCode: rtnCode, rtnData: out_data});
+  });
+
+});
+
 
 // send pie-chart data
 router.get('/piechart', function(req, res, next) {
