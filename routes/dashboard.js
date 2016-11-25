@@ -42,4 +42,3 @@ router.get('/restapi/getDashboardSection1', function(req, res, next) {
 });
 
 module.exports = router;
-
