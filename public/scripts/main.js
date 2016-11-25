@@ -42,12 +42,8 @@ d3.json("/reports/NYX3", function(err, data){
     var yearData = yearDim.group().reduce(
         function (p, v) {
             ++p.days;          
-            p.voltageT += v.VOLTAGE;
-            p.ampareT += v.AMPERE;
             p.activePT += v.ACTIVE_POWER;
-            p.amAPT += v.AMOUNT_OF_ACTIVE_POWER;
-            p.voltageA = d3.round(p.voltageT/p.days,2);
-            p.ampareA = d3.round(p.ampareT/p.days,2);
+            p.amAPT += v.AMOUNT_OF_ACTIVE_POWER * 100;
             p.activePA = d3.round(p.activePT/p.days,2);
             p.amAPA = d3.round(p.amAPT/p.days,2);
             console.log(p);
@@ -55,12 +51,8 @@ d3.json("/reports/NYX3", function(err, data){
         },
         function (p, v) {
             --p.days;          
-            p.voltageT -= v.VOLTAGE;
-            p.ampareT -= v.AMPERE;
             p.activePT -= v.ACTIVE_POWER;
-            p.amAPT -= v.AMOUNT_OF_ACTIVE_POWER;
-            p.voltageA = d3.round(p.voltageT/p.days,2);
-            p.ampareA = d3.round(p.ampareT/p.days,2);
+            p.amAPT -= v.AMOUNT_OF_ACTIVE_POWER * 100;
             p.activePA = d3.round(p.activePT/p.days,2);
             p.amAPA = d3.round(p.amAPT/p.days,2);
 //            console.log(p);
@@ -695,7 +687,7 @@ d3.json("/reports/NYX3", function(err, data){
     //#### Rendering
 
     //simply call `.renderAll()` to render all charts on the page
-  //       dc.renderAll();
+        dc.renderAll();
     /*
     // Or you can render charts belonging to a specific chart group
     dc.renderAll('group');
