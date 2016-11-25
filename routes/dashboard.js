@@ -10,7 +10,7 @@ var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', 
 
 /* GET reports page. */
 router.get('/', function(req, res, next) {
-  	res.render('./dashboard/main', { title: 'EyeLink for ParStream' });
+    res.render('./dashboard/main', { title: 'EyeLink for ParStream' });
 });
 
 // test db query logic
