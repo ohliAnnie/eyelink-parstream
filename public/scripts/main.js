@@ -60,7 +60,7 @@ d3.json("/reports/NYX3", function(err, data){
         },
         function () {
   //          console.log('check');
-            return { days:0, voltageT: 0, activePT:0, ampareT: 0, amAPT:0, voltageA:0, ampareA:0, activePA:0, amAPA:0 };
+            return { days:0, activePT:0, amAPT:0, activePA:0, amAPA:0 };
         });
     var dateDimension = nyx.dimension(function (d) {
 //        console.log(d.dd);
