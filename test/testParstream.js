@@ -92,7 +92,38 @@ describe("Test", function(){
           done();
         });
     });
+
+        // TO-DO 수행 결과 로깅 처리 로직 보완 필요함. by 배성한.
+    it('Search Data RawData ', function(done) {
+      var datas = {user_id: "user_id"};
+      request(svr)
+        .get("/dashboard/restapi/getReportRawData")
+        .send(datas)
+        .expect(200)
+        .end(function(res) {
+          // console.log(err);
+          // if (err) return done(err);
+          console.log(res);
+          // console.log(res.body.rtnCode.code);
+          // console.log(res.body.rtnCode.message);
+          // expect('0000').to.equal(res.body.rtnCode.code);
+
+      var data = '';
+      res.on('data', function(chunk) {
+        data += chunk;
+        console.log('data');
+      });
+
+      res.on('end', function() {
+        console.log('end');
+        callback(null, JSON.parse(data));
+      });
+
+          done();
+        });
+    });
   });
+
 
   function login() {
     return function(done) {

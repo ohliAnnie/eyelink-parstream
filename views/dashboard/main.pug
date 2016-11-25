@@ -1,9 +1,14 @@
 extends ../layout-dashboard
 
 block style
-
+  link(rel='stylesheet', type='text/css', href='/assets/annie/css/dc.css')
+  link(rel='stylesheet', type='text/css', href='/assets/annie/css/colorbrewer.css')
 block scripts
-
+  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  script(type='text/javascript', src='/assets/annie/js/dc.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(src="/scripts/dashboard.js")
 block content
   main.layout-contents
     div.layout-contents-inner
@@ -107,10 +112,16 @@ block content
               .map-container
           .grid-item.other
             .inner
-              strong.grid-item-title ZONE RANKING 5
-              p.grid-item-desc Description of the graph
-              .chart
-                img(src='assets/images/@temp/chart01.jpg', alt='')
+              strong.grid-item-title Event/Fault Counts
+              p.grid-item-desc The event/fault Counts in today/yesterday
+              div.chart
+                #fluctuation-chart
+                  strong Days by Fluctuation(%) |
+                    span.reset(style='display: none;') | range:
+                    span.filter a|
+                    a.reset(href='javascript:fluctuationChart.filterAll();dc.redrawAll();', style='display: none;') reset
+                  .clearfix
+                //- img(src='assets/images/@temp/chart01.jpg', alt='')
           .grid-item
             .inner
               ul.list-chart.flip-in-x
