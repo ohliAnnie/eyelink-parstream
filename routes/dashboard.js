@@ -41,4 +41,18 @@ router.get('/restapi/getDashboardSection1', function(req, res, next) {
 
 });
 
+// query RawData
+router.get('/restapi/getReportRawData', function(req, res, next) {
+  var in_data = ["user_id"];
+  dashboardProvider.selectSingleQueryByID("selectEventRawData", in_data, function(err, out_data) {
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    res.json({rtnCode: rtnCode, rtnData: out_data});
+  });
+
+});
+
 module.exports = router;
