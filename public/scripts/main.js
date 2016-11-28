@@ -29,7 +29,7 @@ d3.json("/reports/NYX3", function(err, data){
         d.AMOUNT_OF_ACTIVE_POWER = +d.AMOUNT_OF_ACTIVE_POWER;
         d.check = +0.85;
 //        console.log(d);
-});
+    });
 
     var nyx = crossfilter(data);
     var all = nyx.groupAll();
@@ -61,7 +61,9 @@ d3.json("/reports/NYX3", function(err, data){
         function () {
   //          console.log('check');
             return { days:0, activePT:0, amAPT:0, activePA:0, amAPA:0 };
-        });
+        }
+    );
+
     var dateDimension = nyx.dimension(function (d) {
 //        console.log(d.dd);
         return d.dd;
@@ -77,8 +79,8 @@ d3.json("/reports/NYX3", function(err, data){
             ++p.days;
             p.total += v.VOLTAGE;
             p.avg = p.days? Math.round(p.total / p.days) : 0;
-/*            console.log(p);
-            console.log('   month : '+v.month); */
+           console.log(p);
+            console.log('   month : '+v.month);     
              return p;
         },
         function (p, v) {
@@ -90,7 +92,8 @@ d3.json("/reports/NYX3", function(err, data){
         },
         function () {            
             return {days: 0, total: 0, avg: 0};
-        });
+        }
+    );
 
    var apparentPMonthGroup = moveMonths.group().reduce(
         function (p, v) {
@@ -143,9 +146,10 @@ d3.json("/reports/NYX3", function(err, data){
         },
         function () {
             return {days: 0, total: 0, avg: 0};
-        });
+        }
+    );
 
-         var pFactorMonthGroup = moveMonths.group().reduce(
+     var pFactorMonthGroup = moveMonths.group().reduce(
         function (p, v) {
             ++p.days;
             p.total += v.POWER_FACTOR;
@@ -161,7 +165,8 @@ d3.json("/reports/NYX3", function(err, data){
         },
         function () {
             return {days: 0, total: 0, avg: 0};
-        });
+        }
+    );
 
     var gainOrLoss = nyx.dimension(function (d) {
 //       console.log(d);
@@ -387,25 +392,26 @@ d3.json("/reports/NYX3", function(err, data){
     .dimension(fluctuation)
     .group(fluctuationGroup)
     .elasticY(true)
-        // (_optional_) whether bar should be center to its x value. Not needed for ordinal chart, `default=false`
-        .centerBar(true)
-        // (_optional_) set gap between bars manually in px, `default=2`
-        .gap(1)
-        // (_optional_) set filter brush rounding
-        .round(dc.round.floor)
-        .alwaysUseRounding(true)
-        .x(d3.scale.linear().domain([-25, 25]))
-        .renderHorizontalGridLines(true)
-        // Customize the filter displayed in the control span
-        .filterPrinter(function (filters) {
-            var filter = filters[0], s = '';
-            s += numberFormat(filter[0]) + '% -> ' + numberFormat(filter[1]) + '%';
-            return s;
-        });
+    // (_optional_) whether bar should be center to its x value. Not needed for ordinal chart, `default=false`
+    .centerBar(true)
+    // (_optional_) set gap between bars manually in px, `default=2`
+    .gap(1)
+    // (_optional_) set filter brush rounding
+    .round(dc.round.floor)
+    .alwaysUseRounding(true)
+    .x(d3.scale.linear().domain([0,100]))
+    .renderHorizontalGridLines(true)
+    // Customize the filter displayed in the control span
+    .filterPrinter(function (filters) {
+        var filter = filters[0], s = '';
+        s += numberFormat(filter[0]) + '% -> ' + numberFormat(filter[1]) + '%';
+        return s;
+    });
 
     // Customize axes
     fluctuationChart.xAxis().tickFormat(
         function (v) { return v + '%'; });
+
     fluctuationChart.yAxis().ticks(5);
 
 
@@ -444,22 +450,22 @@ d3.json("/reports/NYX3", function(err, data){
         })
         // Stack additional layers with `.stack`. The first paramenter is a new group.
         // The second parameter is the series name. The third is a value accessor.
-            .stack(apparentPMonthGroup, 'APPARENT_POWER', function (d) {
-      //          console.log('APPARENT_POWER:'+d.value.avg);
-                return d.value.avg;
-            })
-            .stack(ampereMonthGroup, 'AMPERE', function (d) {
+        .stack(apparentPMonthGroup, 'APPARENT_POWER', function (d) {
+  //          console.log('APPARENT_POWER:'+d.value.avg);
+            return d.value.avg;
+        })
+        .stack(ampereMonthGroup, 'AMPERE', function (d) {
 //                console.log('AMPERE:'+d.value.avg);
-                return d.value.avg;
-            })
-            .stack(activePMonthGroup, 'ACTIVE_POWER', function (d) {
+            return d.value.avg;
+        })
+        .stack(activePMonthGroup, 'ACTIVE_POWER', function (d) {
 //             console.log('ACTIVE_POWER:'+d.value.avg);
-                return d.value.avg;
-            })
-           .stack(pFactorMonthGroup, 'POWER_FACTOR', function (d) {
+            return d.value.avg;
+        })
+       .stack(pFactorMonthGroup, 'POWER_FACTOR', function (d) {
 //                console.log('POWER_FACTOR:'+d.value.avg);
-                return d.value.avg;
-            })
+            return d.value.avg;
+        })
         // Title can be called by any stack layer.
         .title(function (d) {
             var value = d.value.avg;

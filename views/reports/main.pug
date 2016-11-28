@@ -45,52 +45,15 @@ block content
           });
         div.map-container
           div.inner 
-            #yearly-bubble-chart
-              strong Yearly Performance|(radius:fluctuation/index ratio, color:gain/loss)
-              a.reset(href='javascript:yearlyBubbleChart.filterAll();dc.redrawAll();', style='display: none;') reset
-              .clearfix
         ul.list-reports
           li
-            div.chart
-              #gain-loss-chart
-                strong Days by Gain/Loss|
-                a.reset(href='javascript:gainOrLossChart.filterAll();dc.redrawAll();', style='display: none;') reset
-                .clearfix
-              #quarter-chart
-                strong Quarters|
-                a.reset(href='javascript:quarterChart.filterAll();dc.redrawAll();', style='display: none;') reset
-                .clearfix
-                #day-of-week-chart
-                strong Day of Week|
-                a.reset(href='javascript:dayOfWeekChart.filterAll();dc.redrawAll();', style='display: none;') reset
-                .clearfix
+            div.chart(style='text-align:center')
+              #eventChart(style='margine:0 auto;')
           li
             div.chart
-              #fluctuation-chart
-                strong Days by Fluctuation(%) |
-                  span.reset(style='display: none;') | range:
-                  span.filter a|
-                  a.reset(href='javascript:fluctuationChart.filterAll();dc.redrawAll();', style='display: none;') reset
-                .clearfix
-        div.map-container
-          div.inner 
-            #monthly-move-chart
-                strong Monthly Index Abs Move &amp; Volume/500,000 Chart|
-                  span.reset(style='display: none;')| range:
-                  span.filter
-                a.reset(href='javascript:moveChart.filterAll();volumeChart.filterAll();dc.redrawAll();', style='display: none;') resets
-        div.map-container
-           div.inner
-              #monthly-volume-chart
-                p.muted.pull-right(style='margin-right: 15px;') select a time range to zoom in
-        .clearfix
-        .row
-          div
-            .dc-data-count
-              span.filter-count | selected out of
-              span.total-count |  records |
-              a(href='javascript:dc.filterAll(); dc.renderAll();') Reset All
-          div.map-container
-            div.inner
-              table.table.table-hover.dc-data-table
-    script(src='/scripts/main.js')
+              .radarChart
+          li
+            div.chart
+          li
+            div.chart
+    script(src='/scripts/report.js')
