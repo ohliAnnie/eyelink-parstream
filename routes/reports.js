@@ -34,7 +34,6 @@ router.get('/restapi/getReportRawData', function(req, res, next) {
 
 });
 
-
 // send pie-chart data
 router.get('/piechart', function(req, res, next) {
 
