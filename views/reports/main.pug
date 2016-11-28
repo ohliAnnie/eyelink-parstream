@@ -25,8 +25,10 @@ block content
                 select.select(name='', id='')
                   option(value='') ALL
               button.btn-submit.search(type='submit') SEARCH
+        script(src='/scripts/report.js')
         script.
           $(document).ready(function() {
+            report();
             var start = moment().subtract(29, 'days');
             var end = moment();
             $('input[name="daterange"]')
@@ -51,9 +53,14 @@ block content
               #eventChart(style='margine:0 auto;')
           li
             div.chart
+              #hourSeries
+          li
+            div.chart
+          li
+            div.chart
+          li
+            div.chart
+          li
+            div.chart
               .radarChart
-          li
-            div.chart
-          li
-            div.chart
-    script(src='/scripts/report.js')
+    //- script(src='/scripts/report.js')

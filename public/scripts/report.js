@@ -1,11 +1,21 @@
+  function report(){
+
   var eventChart = dc.pieChart('#eventChart');
+  var hourSeries = dc.seriesChart('#hourSeries');
 
 d3.json("/reports/restapi/getReportRawData", function(err, data){
   if(err) throw error;
-     console.log(data.rtnData[0]);
+  
+  var numberFormat = d3.format('.2f');
   data.rtnData[0].forEach(function(d){
+   // console.log(d);
+    //console.log(d.event_time);
+    d.dd = new Date(d.event_time.toString());
+    d.month = d3.time.month(d.dd);
+    d.hour = d3.time.hour(d.dd);
+//    console.log(d.month);
         var event = '';
-    switch(d.event_type){
+    switch(d.event_type){      
       case "1" :   // 피워
         event = 'POWER';
         break;   
@@ -28,20 +38,178 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
         event = 'REBOOT';
         break;
     }
+    d.active_power  =  parseInt(d.active_power);
+    d.vibration = (parseInt(d.vibration_x)+parseInt(d.vibration_y)+parseInt(d.vibration_z))/3;
     d.event_name= event;
-  });
+    console.log()
+  }); 
 
   var nyx = crossfilter(data.rtnData[0]);
   var all = nyx.groupAll();
 
   var eventDim = nyx.dimension(function(d) {
-    console.log(d.event_name);
+ //   console.log(d.event_name);
     return d.event_name;
   });
 
   var eventGroup = eventDim.group();
 
- /* dc.pieChart('#eventChart') */
+var yearDim = nyx.dimension(function(d) {
+//  return d3.time.year(d.dd).getFullYear();
+});
+
+var monthDim = nyx.dimension(function(d) {
+  return d.month;
+}) ;
+
+var dayDim = nyx.dimension(function(d){
+  return d.dd;
+});
+
+var hourDim = nyx.dimension(function(d){
+//  console.log(d3.time.hour(d.dd));
+  return d.hour;
+});
+
+var seriesDim = nyx. dimension(function(d){
+  return [+d.event_type, +d.hour];
+});
+
+var seriesGroup = seriesDim.group().reduce(  
+  function (p, v) {
+//    console.log(v);
+    if(v.event_type ===  "1") { // 파워
+      p.max = p.max < v.active_power ? v.active_power : p.max;
+      p.name = 'Active Power';
+      console.log(p);
+      return p;
+    } else if(v.event_type === " 17") { // 조도
+      p.max = 0;
+      p.name = '';      
+      return p;
+    } else if(v.event_type === "33") { // 진동
+      p.max = p.max < v.vibration ? v.vibration : p.max;
+      p.name = 'Vibration';
+      return p;
+    } else if(v.event_type === "49") { // 노이즈
+      p.max = 0;
+      p.name = '';
+      return p;
+    } else  if(v.event_type === "65") { // GPS
+      p.max = 0;
+      p.name = '';
+      return p;
+    } else if(v.event_type === "81") { // 센서상태
+      p.max = 0;
+      p.name = '';
+      return p;
+    } else if(v.event_type === "153") { // 재부팅
+      p.max = 0;
+      p.name = '';
+      return p;
+    }
+  },
+  function (p, v) {
+    if(v.event_type ===  "1") { // 파워
+      p.max = p.max < v.active_power ? v.active_power : p.max;
+      p.name = 'Active Power';
+      console.log(p);
+      return p;
+    } else if(v.event_type === " 17") { // 조도
+      p.max = 0;
+      p.name = '';      
+      return p;
+    } else if(v.event_type === "33") { // 진동
+      p.max = p.max < v.vibration ? v.vibration : p.max;
+      p.name = 'Vibration';
+      return p;
+    } else if(v.event_type === "49") { // 노이즈
+      p.max = 0;
+      p.name = '';
+      return p;
+    } else  if(v.event_type === "65") { // GPS
+      p.max = 0;
+      p.name = '';
+      return p;
+    } else if(v.event_type === "81") { // 센서상태
+      p.max = 0;
+      p.name = '';
+      return p;
+    } else if(v.event_type === "153") { // 재부팅
+      p.max = 0;
+      p.name = '';
+      return p;
+    } 
+  },
+  function() {
+    return { max :0, name:'' };
+  }
+);
+/*var  seriesAP = hourDim.group().reduce(
+  function(p, v) {
+    console.log(v);
+    if(v.event_name eq "Power")
+    p.active_power = p.active_power;
+    p.maxAP = p.maxAP < v.active_power ? v.active_power : p.maxAP;
+    console.log(p);
+    return p;
+  },
+  function(p, v) {
+    p.maxAP = p.maxAP < v.active_power ? v.active_power : p.maxAP;
+ //   console.log(v);
+    return p;
+  },
+  function() {
+    return { maxAP:0 };
+  }
+);
+var  seriesND = hourDim.group().reduce(
+  function(p, v) {    
+    p.maxND = p.maxND < v.noise_decibel ? v.noise_decibel : p.maxNF;    
+//    console.log(v);
+    return p;
+  },
+  function(p, v) {    
+    p.maxND = p.maxND < v.noise_decibel ? v.noise_decibel : p.maxNF;    
+//    console.log(v);
+    return p;
+  },
+  function() {
+    return { maxND:0 };
+  }
+);
+var  seriesNF = hourDim.group().reduce(
+  function(p, v) {
+    p.maxNF = p.maxNF < v.noise_frequency ? v.noise_frequency : p.maxNF;    
+    console.log(v);
+    return p;
+  },
+  function(p, v) {
+    p.maxNF = p.maxNF < v.noise_frequency ? v.noise_frequency : p.maxNF;    
+    console.log(v);
+    return p;
+  },
+  function() {
+    return { maxNF:0, };
+  }
+);
+var  seriesV = hourDim.group().reduce(
+  function(p, v) {
+    p.maxV = p,maxV < v.vibration ? v.vibration : p.maxV;
+    console.log(v);
+    return p;
+  },
+  function(p, v) {
+    p.maxV = p,maxV < v.vibration ? v.vibration : p.maxV;
+    console.log(v);
+    return p;
+  },
+  function() {
+    return { maxV:0 };
+  }
+);
+*/
+/* dc.pieChart('#eventChart') */
   eventChart 
     .radius(150)
     .dimension(eventDim)
@@ -51,7 +219,6 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
           return d.key + '(0%)';
         }
         var label = d.key;
-        console.log(d.key);
         if(all.value()) {
           label += label += '(' + Math.floor(d.value / all.value() * 100) + '%)';
         }
@@ -68,10 +235,32 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
         .text(function(d) {return d.value; });
   });
  //   eventChart.ordinalColors(['#3182bd', '#9ecae1', '#e6550d', '#fd8d3c', '#fdd0a2', '#31a354', '#a1d99b',  '#756bb1'])
- 
-/* Radar Chart */
 
-                  var raData = [
+/* dc.seriesChart('#hourSeries') */
+  hourSeries
+    .width(768)
+    .height(480)
+    .dimension(seriesDim)    
+    .group(seriesGroup)
+    .x(d3.time.scale().domain([0,24]))
+    .brushOn(false)
+    .yAxisLabel("Time")
+    .xAxisLabel("Value")
+    .clipPadding(10)
+    .elasticY(true)
+    .mouseZoomable(true)
+    .seriesAccessor(function(d) {
+      console.log(d.value);
+      var name = d.value.name ? d.value.name : '';
+        return name;})
+    .keyAccessor(function(d) {    return d.key[1];     })
+    .valueAccessor(function(d) {return +d.value.max;})
+    .legend(dc.legend().x(350).y(350).itemHeight(13).gap(5).horizontal(1).legendWidth(140).itemWidth(70));
+    hourSeries.margins().left += 40;  
+
+
+/* Radar Chart */
+        var raData = [
                   [//iPhone
                   {axis:"Battery Life",value:0.22},
                   {axis:"Brand",value:0.28},
@@ -101,22 +290,21 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
                   {axis:"To Be A Smartphone",value:0.30}
                   ]
                   ];
-    function RadarChart(id, data, options) {
-            var margin = {top: 100, right: 100, bottom: 100, left: 100},
-                  width = Math.min(700, window.innerWidth - 10) - margin.left - margin.right,
-                  height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
-                  var color = d3.scale.ordinal()
-                  .range(["#EDC951","#CC333F","#00A0B0", "#31a354"]);
-                  var radarChartOptions = {
-                  w: width,
-                  h: height,
-                  margin: margin,
-                  maxValue: 0.5,
-                  levels: 5,
-                  roundStrokes: true,
-                  color: color
-                  };
-
+  function RadarChart(id, data, options) {
+    var margin = {top: 100, right: 100, bottom: 100, left: 100},
+      width = Math.min(700, window.innerWidth - 10) - margin.left - margin.right,
+      height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+      var color = d3.scale.ordinal()
+      .range(["#EDC951","#CC333F","#00A0B0", "#31a354"]);
+      var radarChartOptions = {
+      w: width,
+      h: height,
+      margin: margin,
+      maxValue: 0.5,
+      levels: 5,
+      roundStrokes: true,
+      color: color
+    };
   var cfg = {
    w: 600,        //Width of the circle
    h: 600,        //Height of the circle
@@ -132,7 +320,6 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
    roundStrokes: false, //If true the area and stroke will follow a round path (cardinal-closed)
    color: d3.scale.category10() //Color function
   };
-  
   //Put all of the options into a variable called cfg
   if('undefined' !== typeof options){
     for(var i in options){
@@ -442,3 +629,5 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
 
     dc.renderAll();
 });
+
+}
