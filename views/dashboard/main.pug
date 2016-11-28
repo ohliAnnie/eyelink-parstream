@@ -1,14 +1,12 @@
 extends ../layout-dashboard
 
 block style
-  link(rel='stylesheet', type='text/css', href='/assets/annie/css/dc.css')
-  link(rel='stylesheet', type='text/css', href='/assets/annie/css/colorbrewer.css')
 block scripts
   script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
   script(type='text/javascript', src='/assets/annie/js/dc.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
-  script(src="/scripts/dashboard.js")
+  script(type='text/javascript', src="/scripts/dashboard.js")
 block content
   main.layout-contents
     div.layout-contents-inner
@@ -63,64 +61,31 @@ block content
                 p.description Description of the numbers
         script.
           $(document).ready(function(e) {
-            var bill = new Odometer({ el: $('#bill')[0], format: '(,ddd).dd' });
-            var pbill = new Odometer({ el: $('#pbill')[0], format: '(,ddd).dd' });
-            var power = new Odometer({ el: $('#power')[0], format: '(,ddd)' });
-            var ppower = new Odometer({ el: $('#ppower')[0], format: '(,ddd)' });
-            var eventCount = new Odometer({ el: $('#event-count')[0], format: '(,ddd)' });
-            var peventCount = new Odometer({ el: $('#pevent-count')[0], format: '(,ddd)' });
-            var falutCount = new Odometer({ el: $('#fault-count')[0], format: '(,ddd)' });
-            var pfalutCount = new Odometer({ el: $('#pfault-count')[0], format: '(,ddd)' });
-            $.ajax({
-              url: "/dashboard/restapi/getDashboardSection1",
-              dataType: "json",
-              type: "GET",
-              data: '',
-              success: function(result) {
-                console.log(result);
-                if (result.rtnCode.code == "0000") {
-                  // TO-DO json data 수신 방식 점검 필요 by 배성한
-                  //- $("#successmsg").html(result.message);
-                  var data = result.rtnData[0][0];
-                  bill.update(data.today_power_charge);
-                  pbill.update(data.active_power_percent);
-                  //- if (data.active_power_percent < 0) {
-                  //-   pbill.attr('class','growth down');
-                  //- } else {
-                  //-   pbill.attr('class','growth up');
-                  //- }
-                  power.update(data.today_active_power);
-                  ppower.update(data.active_power_percent)
-                  eventCount.update(data.today_event_cnt);
-                  peventCount.update(data.event_cnt_percent);
-                  falutCount.update(data.today_event_fault_cnt);
-                  pfalutCount.update(data.event_fault_cnt_percent);
+            // display Count 4 type.
+            displayCount();
 
-                } else {
-                  //- $("#errormsg").html(result.message);
-                }
-              },
-              error: function(req, status, err) {
-                //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-                $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-              }
-            });
+            // draw Chart
+            drawChart();
           });
         .grid-dashboard
           .grid-item.map
             .inner
-              .map-container
+              //- .map-container
+              div.chart
+                #bar-chart
           .grid-item.other
             .inner
               strong.grid-item-title Event/Fault Counts
               p.grid-item-desc The event/fault Counts in today/yesterday
               div.chart
-                #fluctuation-chart
-                  strong Days by Fluctuation(%) |
-                    span.reset(style='display: none;') | range:
-                    span.filter a|
-                    a.reset(href='javascript:fluctuationChart.filterAll();dc.redrawAll();', style='display: none;') reset
-                  .clearfix
+                #volumn-chart
+              div.chart(style="top:125px;")
+                #move-chart
+                  //- strong Days by Fluctuation(%) |
+                  //-   span.reset(style='display: none;') | range:
+                  //-   span.filter a|
+                    //- a.reset(href='javascript:fluctuationChart.filterAll();dc.redrawAll();', style='display: none;') reset
+                  //- .clearfix
                 //- img(src='assets/images/@temp/chart01.jpg', alt='')
           .grid-item
             .inner
@@ -140,8 +105,9 @@ block content
           .grid-item
             .inner
               strong.grid-item-title LIVE DATA
-              .chart
-                img(src='assets/images/@temp/chart03.jpg', alt='')
+              div.chart
+                #series-chart
+                //- img(src='assets/images/@temp/chart03.jpg', alt='')
         aside.event-alarm-container(data-state='')
           button.btn-toggle-event(type='button') EVENT ALARM
           p.btns
