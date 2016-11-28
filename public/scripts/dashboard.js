@@ -27,11 +27,12 @@ d3.json("/dashboard/restapi/getReportRawData", function(err, out_data) {
     // d.APPARENT_POWER = +d.APPARENT_POWER;
     // d.AMOUNT_OF_ACTIVE_POWER = +d.AMOUNT_OF_ACTIVE_POWER;
     d.check = +0.85;
-    console.log(d);
+    console.log(d.dd);
   });
 
   var nyx = crossfilter(data);
   var all = nyx.groupAll();
+
 
   var fluctuation = nyx.dimension(function (d) {
       return d.AMOUNT_OF_ACTIVE_POWER * 100;
@@ -41,7 +42,8 @@ d3.json("/dashboard/restapi/getReportRawData", function(err, out_data) {
 
     // Create a bar chart and use the given css selector as anchor. You can also specify
     // an optional chart group for this chart to be scoped within. When a chart belongs
-    // to a specific group then any interaction with such chart will only trigger redraw
+    // to a specific group then any interaction with
+ such chart will only trigger redraw
     // on other charts within the same chart group.
     // <br>API: [Bar Chart](https://github.com/dc-js/dc.js/blob/master/web/docs/api-latest.md#bar-chart)
   fluctuationChart /* dc.barChart('#volume-month-chart', 'chartGroup') */
