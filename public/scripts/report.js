@@ -9,11 +9,12 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
   var numberFormat = d3.format('.2f');
   data.rtnData[0].forEach(function(d){
    // console.log(d);
-    //console.log(d.event_time);
+  //  console.log(d.event_time);
     d.dd = new Date(d.event_time.toString());
     d.month = d3.time.month(d.dd);
     d.hour = d3.time.hour(d.dd);
 //    console.log(d.month);
+//console.log(d.hour);
         var event = '';
     switch(d.event_type){      
       case "1" :   // 피워
@@ -72,77 +73,71 @@ var hourDim = nyx.dimension(function(d){
 });
 
 var seriesDim = nyx. dimension(function(d){
-  return [+d.event_type, +d.hour];
+  return [+d.event_type, d.hour];
 });
 
 var seriesGroup = seriesDim.group().reduce(  
   function (p, v) {
 //    console.log(v);
     if(v.event_type ===  "1") { // 파워
-      p.max = p.max < v.active_power ? v.active_power : p.max;
-      p.name = 'Active Power';
-      console.log(p);
-      return p;
+      p.max = p.max < v.active_power ? v.active_power : p.max;      
+//      console.log(p);
+//      console.log(v.hour);
+        return p;
     } else if(v.event_type === " 17") { // 조도
       p.max = 0;
-      p.name = '';      
-      return p;
+        return p;
     } else if(v.event_type === "33") { // 진동
       p.max = p.max < v.vibration ? v.vibration : p.max;
-      p.name = 'Vibration';
-      return p;
+        return p;
     } else if(v.event_type === "49") { // 노이즈
       p.max = 0;
-      p.name = '';
-      return p;
+        return p;
     } else  if(v.event_type === "65") { // GPS
       p.max = 0;
-      p.name = '';
-      return p;
+        return p;
     } else if(v.event_type === "81") { // 센서상태
       p.max = 0;
-      p.name = '';
-      return p;
+        return p;
     } else if(v.event_type === "153") { // 재부팅
       p.max = 0;
-      p.name = '';
-      return p;
+        return p;
+    } else {
+      p,max = 0;
+        return p;
     }
   },
   function (p, v) {
     if(v.event_type ===  "1") { // 파워
-      p.max = p.max < v.active_power ? v.active_power : p.max;
-      p.name = 'Active Power';
+      p.max = p.max < v.active_power ? v.active_power : p.max;      
       console.log(p);
-      return p;
+        return p;
     } else if(v.event_type === " 17") { // 조도
       p.max = 0;
-      p.name = '';      
-      return p;
+        return p;
     } else if(v.event_type === "33") { // 진동
       p.max = p.max < v.vibration ? v.vibration : p.max;
-      p.name = 'Vibration';
-      return p;
+        return p;
     } else if(v.event_type === "49") { // 노이즈
       p.max = 0;
-      p.name = '';
-      return p;
+        return p;
     } else  if(v.event_type === "65") { // GPS
       p.max = 0;
-      p.name = '';
-      return p;
+        return p;
     } else if(v.event_type === "81") { // 센서상태
       p.max = 0;
-      p.name = '';
-      return p;
+        return p;
     } else if(v.event_type === "153") { // 재부팅
       p.max = 0;
-      p.name = '';
-      return p;
-    } 
+        return p;
+    } else {
+      p,max = 0;
+        return p;
+    }
+
   },
   function() {
-    return { max :0, name:'' };
+    return { max :0 };
   }
 );
 /*var  seriesAP = hourDim.group().reduce(
@@ -211,52 +206,75 @@ var  seriesV = hourDim.group().reduce(
 */
 /* dc.pieChart('#eventChart') */
   eventChart 
-    .radius(150)
+    .width(600)
+    .height (400)
+    .radius(200)
     .dimension(eventDim)
     .group(eventGroup)
-    .label(function (d){
+    .slicesCap(4)
+    .externalLabels(50)
+    .externalRadiusPadding(50)
+    .drawPaths(true)
+    .legend(dc.legend())
+   .label(function (d){
         if(eventChart.hasFilter() && !eventChart.hasFilter(d.key)) {
-          return d.key + '(0%)';
+          return '0(0%)';
         }
-        var label = d.key;
+        var label = d.value;
         if(all.value()) {
           label += label += '(' + Math.floor(d.value / all.value() * 100) + '%)';
         }
         return label;
-    })
-  .on('pretransition', function(chart) {
+    });
+eventChart.on('pretransition', function(chart) {
     eventChart. selectAll('.dc-legend-item test')
         .text('')
       .append('tspan')
-        .text(function(d) { return d.event_name; })
+        .text(function(d) { return d.key; })
       .append('tspan')
         .attr('x', 100)
         .attr('text-anchor', 'end')
-        .text(function(d) {return d.value; });
+        .text(function(d) {return Math.floor(d.value); });
   });
  //   eventChart.ordinalColors(['#3182bd', '#9ecae1', '#e6550d', '#fd8d3c', '#fdd0a2', '#31a354', '#a1d99b',  '#756bb1'])
 
 /* dc.seriesChart('#hourSeries') */
   hourSeries
-    .width(768)
-    .height(480)
+    .width(700)
+    .height(400)
     .dimension(seriesDim)    
     .group(seriesGroup)
-    .x(d3.time.scale().domain([0,24]))
+    .x(d3.time.scale().domain([new Date('2016-11-29T00:00:00'), new Date('2016-11-29T24:00:00')]))    
     .brushOn(false)
     .yAxisLabel("Time")
     .xAxisLabel("Value")
     .clipPadding(10)
     .elasticY(true)
     .mouseZoomable(true)
-    .seriesAccessor(function(d) {
-      console.log(d.value);
-      var name = d.value.name ? d.value.name : '';
-        return name;})
-    .keyAccessor(function(d) {    return d.key[1];     })
-    .valueAccessor(function(d) {return +d.value.max;})
+    .seriesAccessor(function(d) {  
+      if(d.key[0] === 1) return 'active_power'; else if(d.key[0] === 33) return 'vibration'; else if(d.key[0] === 17) return 17; else if(d.key[0] === 81) return 81; else return null;})
+    .keyAccessor(function(d) {         
+      console.log('key[0] : '+d.key[0]+'  key[1] : '+d.key[1]);
+     return d.key[1];     })
+    .valueAccessor(function(d) {
+      console.log('d.value.max : '+ d.value.max);
+      return +d.value.max;})
     .legend(dc.legend().x(350).y(350).itemHeight(13).gap(5).horizontal(1).legendWidth(140).itemWidth(70));
     hourSeries.margins().left += 40;  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* Radar Chart */
