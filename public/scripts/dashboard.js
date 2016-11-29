@@ -186,46 +186,53 @@ function drawChart() {
     })
     // console.log(ampereGroup);
 
-    // var indexAvgByMonthGroup = moveDays.group().reduce(
-    //     // add
-    //     function (p, v) {
-    //       console.log(moveDays.group().size());
-    //       console.log(p);
-    //         ++p.hours;
-    //         p.total += p.cnt_event;
-    //         p.avg += p.cnt_event;
-    //         return p;
-    //     },
-    //     // remove
-    //     function (p, v) {
-    //         --p.hours;
-    //         p.total -= cnt_event;
-    //         p.avg -= p.cnt_event;
-    //         return p;
-    //     },
-    //     // initial
-    //     function () {
-    //         return {hours: 0, cnt_event: 0, cnt_failure: 0};
-    //     }
-    // );
-
-    console.log('moveDays.group() size : ' + moveDays.group().size());
     var indexAvgByMonthGroup = moveDays.group().reduce(
         // add
         function (p, v) {
+          console.log('add');
           console.log(p);
           console.log(v);
-          return p+1;
+            ++p.hours;
+            p.total = 10;
+            p.avg += 5;
+            return p;
         },
         // remove
         function (p, v) {
-          return p-1;
+          // console.log('remove');
+          // console.log(p);
+          // console.log(v);
+            --p.hours;
+            p.total = 0;
+            p.avg = 0;
+            return p;
         },
         // initial
         function () {
-          return 0;
+          // console.log('init');
+          // console.log(p);
+          // console.log(v);
+            return {hours: 0, total: 0, avg: 0};
         }
     );
+
+    console.log('moveDays.group() size : ' + moveDays.group().size());
+    // var indexAvgByMonthGroup = moveDays.group().reduce(
+    //     // add
+    //     function (p, v) {
+    //       console.log(p);
+    //       console.log(v);
+    //       return p+1;
+    //     },
+    //     // remove
+    //     function (p, v) {
+    //       return p-1;
+    //     },
+    //     // initial
+    //     function () {
+    //       return 0;
+    //     }
+    // );
 
     // Group by total movement within month
     var monthlyMoveGroup = moveDays.group().reduceCount(function (d) {
