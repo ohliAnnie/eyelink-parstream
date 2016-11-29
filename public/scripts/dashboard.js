@@ -45,44 +45,44 @@ function displayCount() {
 }
 
 function drawChart() {
-  var barchart = dc.barChart('#bar-chart');
+  // var barchart = dc.barChart('#bar-chart');
   var volumeChart = dc.barChart('#volumn-chart');
-  // var moveChart = dc.lineChart('#move-chart');
+  var moveChart = dc.lineChart('#move-chart');
   // var fluctuationChart = dc.barChart('#fluctuation-chart');
   var seriesChart = dc.seriesChart('#series-chart');
-  d3.json('/dashboard/restapi/fruits', function(error, counts) {
-//      console.log(counts);
-      if(error)
-          throw new Error(error);
+//   d3.json('/dashboard/restapi/fruits', function(error, counts) {
+// //      console.log(counts);
+//       if(error)
+//           throw new Error(error);
 
-      counts = [
-        {event_time: "2016-11-28 10:05:21.0", "name": "apple", "cnt": 10},
-        {event_time: "2016-11-28 11:05:21.0", "name": "orange", "cnt": 15},
-        {event_time: "2016-11-28 12:05:21.0", "name": "banana", "cnt": 12},
-        // {event_time: "2016-11-28 13:05:21.0", "name": "grapefruit", "cnt": 2},
-        // {event_time: "2016-11-28 14:05:21.0", "name": "grapefruit", "cnt": 4},
-        // {event_time: "2016-11-28 15:05:21.0", "name": "pomegranate", "cnt": 1},
-        {event_time: "2016-11-28 16:05:21.0", "name": "lime", "cnt": 12},
-        {event_time: "2016-11-28 17:05:21.0", "name": "grape", "cnt": 50}
-      ];
+//       counts = [
+//         {event_time: "2016-11-28 10:05:21.0", "name": "apple", "cnt": 10},
+//         {event_time: "2016-11-28 11:05:21.0", "name": "orange", "cnt": 15},
+//         {event_time: "2016-11-28 12:05:21.0", "name": "banana", "cnt": 12},
+//         // {event_time: "2016-11-28 13:05:21.0", "name": "grapefruit", "cnt": 2},
+//         // {event_time: "2016-11-28 14:05:21.0", "name": "grapefruit", "cnt": 4},
+//         // {event_time: "2016-11-28 15:05:21.0", "name": "pomegranate", "cnt": 1},
+//         {event_time: "2016-11-28 16:05:21.0", "name": "lime", "cnt": 12},
+//         {event_time: "2016-11-28 17:05:21.0", "name": "grape", "cnt": 50}
+//       ];
 
-      var ndx            = crossfilter(counts),
-          fruitDimension = ndx.dimension(function(d) {return d.event_time;}),
-          sumGroup       = fruitDimension.group().reduceSum(function(d) {return d.cnt;});
-      barchart
-          .width(620)
-          .height(250)
-          .x(d3.scale.ordinal())
-          .xUnits(dc.units.ordinal)
-          .brushOn(false)
-          .xAxisLabel('Fruit')
-          .yAxisLabel('Quantity Sold')
-          .dimension(fruitDimension)
-          .barPadding(0.1)
-          .outerPadding(0.05)
-          .group(sumGroup);
-      barchart.render();
-  });
+//       var ndx            = crossfilter(counts),
+//           fruitDimension = ndx.dimension(function(d) {return d.event_time;}),
+//           sumGroup       = fruitDimension.group().reduceSum(function(d) {return d.cnt;});
+//       barchart
+//           .width(620)
+//           .height(250)
+//           .x(d3.scale.ordinal())
+//           .xUnits(dc.units.ordinal)
+//           .brushOn(false)
+//           .xAxisLabel('Fruit')
+//           .yAxisLabel('Quantity Sold')
+//           .dimension(fruitDimension)
+//           .barPadding(0.1)
+//           .outerPadding(0.05)
+//           .group(sumGroup);
+//       barchart.render();
+//   });
 
   d3.json("/dashboard/restapi/getReportRawData", function(err, out_data) {
     // if (err) throw Error(error);
@@ -90,7 +90,7 @@ function drawChart() {
     var dateFormat = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
     var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
     var numberFormat = d3.format('.2f');
-    var minDate  = new Date('2016-11-20T00:00:00');
+    var minDate  = new Date('2016-11-01T00:00:00');
     var maxDate = new Date("2016-11-30T00:00:00");
 
     // {"node_id":"0001.00000001","event_time":"2016-11-25 15:42:34.0","event_type":"1",
@@ -100,22 +100,37 @@ function drawChart() {
 
     var data = out_data.rtnData[0];
 
-    // data = [
-    //   {node_id: "0001.00000001", event_time: "2016-11-26 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2},
-    //   {node_id: "0001.00000001", event_time: "2016-11-26 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10},
-    //   {node_id: "0001.00000001", event_time: "2016-11-26 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5},
-    //   {node_id: "0001.00000001", event_time: "2016-11-26 10:05:22.0", event_type: "81", active_power: 20, ampere: 4, als_level:2},
-    //   {node_id: "0001.00000001", event_time: "2016-11-27 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2},
-    //   {node_id: "0001.00000001", event_time: "2016-11-27 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10},
-    //   {node_id: "0001.00000001", event_time: "2016-11-28 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5},
-    //   {node_id: "0001.00000001", event_time: "2016-11-28 10:05:22.0", event_type: "81", active_power: 20, ampere: 4, als_level:2},
-    //   {node_id: "0001.00000001", event_time: "2016-11-28 11:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:3},
-    //   {node_id: "0001.00000001", event_time: "2016-11-28 12:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
-    //   {node_id: "0001.00000001", event_time: "2016-11-28 13:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
-    //   {node_id: "0001.00000001", event_time: "2016-11-28 14:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:7},
-    //   {node_id: "0001.00000001", event_time: "2016-11-28 15:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:7},
-    //   {node_id: "0001.00000001", event_time: "2016-11-28 16:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
-    // ];
+    data = [
+      {node_id: "0001.00000001", event_time: "2016-11-25 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2},
+      {node_id: "0001.00000001", event_time: "2016-11-25 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10},
+      {node_id: "0001.00000001", event_time: "2016-11-25 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5},
+      {node_id: "0001.00000001", event_time: "2016-11-26 10:05:22.0", event_type: "81", active_power: 20, ampere: 4, als_level:2},
+      {node_id: "0001.00000001", event_time: "2016-11-26 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2},
+      {node_id: "0001.00000001", event_time: "2016-11-26 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10},
+      {node_id: "0001.00000001", event_time: "2016-11-26 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5},
+      {node_id: "0001.00000001", event_time: "2016-11-26 10:05:22.0", event_type: "81", active_power: 20, ampere: 4, als_level:2},
+      {node_id: "0001.00000001", event_time: "2016-11-27 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2},
+      {node_id: "0001.00000001", event_time: "2016-11-27 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10},
+      {node_id: "0001.00000001", event_time: "2016-11-28 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5},
+      {node_id: "0001.00000001", event_time: "2016-11-28 10:05:22.0", event_type: "81", active_power: 20, ampere: 4, als_level:2},
+      {node_id: "0001.00000001", event_time: "2016-11-28 11:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:3},
+      {node_id: "0001.00000001", event_time: "2016-11-28 12:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
+      {node_id: "0001.00000001", event_time: "2016-11-28 13:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
+      {node_id: "0001.00000001", event_time: "2016-11-28 14:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:7},
+      {node_id: "0001.00000001", event_time: "2016-11-28 15:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:7},
+      {node_id: "0001.00000001", event_time: "2016-11-28 16:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
+      {node_id: "0001.00000001", event_time: "2016-11-30 10:05:22.0", event_type: "81", active_power: 20, ampere: 4, als_level:2},
+      {node_id: "0001.00000001", event_time: "2016-11-30 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2},
+      {node_id: "0001.00000001", event_time: "2016-11-30 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10},
+      {node_id: "0001.00000001", event_time: "2016-11-30 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5},
+      {node_id: "0001.00000001", event_time: "2016-11-30 10:05:22.0", event_type: "81", active_power: 20, ampere: 4, als_level:2},
+      {node_id: "0001.00000001", event_time: "2016-11-30 11:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:3},
+      {node_id: "0001.00000001", event_time: "2016-11-30 12:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
+      {node_id: "0001.00000001", event_time: "2016-11-30 13:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
+      {node_id: "0001.00000001", event_time: "2016-11-30 14:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:7},
+      {node_id: "0001.00000001", event_time: "2016-11-30 15:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:7},
+      {node_id: "0001.00000001", event_time: "2016-11-30 16:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
+    ];
 
     // data = [
     //   {node_id: "0001.00000001", event_time: "2016-11-27", event_type: "17", active_power: 10, ampere: 10},
@@ -171,53 +186,97 @@ function drawChart() {
     })
     // console.log(ampereGroup);
 
-    var monthlyMoveGroup;
-    var indexAvgByMonthGroup;
+    // var indexAvgByMonthGroup = moveDays.group().reduce(
+    //     // add
+    //     function (p, v) {
+    //       console.log(moveDays.group().size());
+    //       console.log(p);
+    //         ++p.hours;
+    //         p.total += p.cnt_event;
+    //         p.avg += p.cnt_event;
+    //         return p;
+    //     },
+    //     // remove
+    //     function (p, v) {
+    //         --p.hours;
+    //         p.total -= cnt_event;
+    //         p.avg -= p.cnt_event;
+    //         return p;
+    //     },
+    //     // initial
+    //     function () {
+    //         return {hours: 0, cnt_event: 0, cnt_failure: 0};
+    //     }
+    // );
+
+    console.log('moveDays.group() size : ' + moveDays.group().size());
+    var indexAvgByMonthGroup = moveDays.group().reduce(
+        // add
+        function (p, v) {
+          console.log(p);
+          console.log(v);
+          return p+1;
+        },
+        // remove
+        function (p, v) {
+          return p-1;
+        },
+        // initial
+        function () {
+          return 0;
+        }
+    );
+
+    // Group by total movement within month
+    var monthlyMoveGroup = moveDays.group().reduceCount(function (d) {
+      console.log(moveDays.group().size());
+      return d.event_type;
+    });
 
     volumeChart
       .width(620)
-      .height(80)
+      .height(60)
       .margins({top: 10, right: 50, bottom: 30, left: 40})
       .dimension(moveDays)
       .group(volumnByDayGroup)
       .centerBar(true)
-      .gap(5)
+      .gap(10)
       .x(d3.time.scale().domain([minDate, maxDate]))
       .round(d3.time.day.round)
       .alwaysUseRounding(true)
       .xUnits(d3.time.days);
 
-    // moveChart
-    //   .renderArea(true)
-    //   .width(620)
-    //   .height(150)
-    //   .transitionDuration(1000)
-    //   .margins({top: 30, right: 50, bottom: 25, left: 40})
-    //   .dimension(moveDays)
-    //   .mouseZoomable(true)
-    //   .rangeChart(volumeChart)
-    //   .x(d3.time.scale().domain([new Date(1985, 0, 1), new Date(2012, 11, 31)]))
-    //   .round(d3.time.month.round)
-    //   .xUnits(d3.time.months)
-    //   .elasticY(true)
-    //   .renderHorizontalGridLines(true)
-    //   .legend(dc.legend().x(800).y(10).itemHeight(13).gap(5))
-    //   .brushOn(false)
-    //   .group(indexAvgByMonthGroup, 'Monthly Index Average')
-    //   .valueAccessor(function (d) {
-    //     return d.value.avg;
-    //   })
-    //   .stack(monthlyMoveGroup, 'Monthly Index Move', function (d) {
-    //     return d.value;
-    //   })
-    //   // Title can be called by any stack layer.
-    //   .title(function (d) {
-    //     var value = d.value.avg ? d.value.avg : d.value;
-    //     if (isNaN(value)) {
-    //       value = 0;
-    //     }
-    //     return dateFormat(d.key) + '\n' + numberFormat(value);
-    //   });
+    moveChart
+      .renderArea(true)
+      .width(620)
+      .height(150)
+      .transitionDuration(1000)
+      .margins({top: 30, right: 50, bottom: 25, left: 40})
+      .dimension(moveDays)
+      .mouseZoomable(true)
+      .rangeChart(volumeChart)
+      .x(d3.time.scale().domain([minDate, maxDate]))
+      .round(d3.time.day.round)
+      .xUnits(d3.time.days)
+      .elasticY(true)
+      .renderHorizontalGridLines(true)
+      .legend(dc.legend().x(800).y(10).itemHeight(13).gap(5))
+      .brushOn(false)
+      .group(indexAvgByMonthGroup, 'Daily Event Count')
+      .valueAccessor(function (d) {
+        return d.value.avg;
+      })
+      .stack(monthlyMoveGroup, 'Daily Error Count', function (d) {
+        return d.value;
+      })
+      // Title can be called by any stack layer.
+      .title(function (d) {
+        var value = d.value.avg ? d.value.avg : d.value;
+        if (isNaN(value)) {
+          value = 0;
+        }
+        return dateFormat(d.key) + '\n' + numberFormat(value);
+      });
 
     seriesChart
       .width(620)
