@@ -1,5 +1,12 @@
 extends ../layout-reports
 block style
+  style.
+    .dc-chart .axis text{
+      fill: white;
+    }
+    .dc-legend {
+      fill: white;
+    }
 block scripts
 block content
   main.layout-contents.padding
@@ -52,8 +59,8 @@ block content
             div.chart(style='text-align:center')
               #eventChart(style='margine:0 auto;')
           li
-            div.chart(style='text-align:center')
-              #hourSeries(style='margine:0 auto;')
+            div.chart
+              #hourSeries
           li
             div.chart
           li

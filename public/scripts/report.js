@@ -54,7 +54,7 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
   });
 
   var eventGroup = eventDim.group();
-
+/*
 var yearDim = nyx.dimension(function(d) {
 //  return d3.time.year(d.dd).getFullYear();
 });
@@ -71,9 +71,9 @@ var hourDim = nyx.dimension(function(d){
 //  console.log(d3.time.hour(d.dd));
   return d.hour;
 });
-
+*/
 var seriesDim = nyx. dimension(function(d){
-  return [+d.event_type, d.hour];
+  return [+d.event_type, +d.hour];
 });
 
 var seriesGroup = seriesDim.group().reduce(  
@@ -134,7 +134,6 @@ var seriesGroup = seriesDim.group().reduce(
       p,max = 0;
         return p;
     }
-
   },
   function() {
     return { max :0 };
@@ -242,6 +241,7 @@ eventChart.on('pretransition', function(chart) {
   hourSeries
     .width(700)
     .height(400)
+     .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
     .dimension(seriesDim)    
     .group(seriesGroup)
     .x(d3.time.scale().domain([new Date('2016-11-29T00:00:00'), new Date('2016-11-29T24:00:00')]))    
