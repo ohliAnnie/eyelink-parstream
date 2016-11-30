@@ -101,23 +101,26 @@ function drawChart() {
     var data = out_data.rtnData[0];
 
     data = [
+      {node_id: "0001.00000001", event_time: "2016-11-24 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2},
+      {node_id: "0001.00000001", event_time: "2016-11-24 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10},
+      {node_id: "0001.00000001", event_time: "2016-11-24 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5},
       {node_id: "0001.00000001", event_time: "2016-11-25 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2},
       {node_id: "0001.00000001", event_time: "2016-11-25 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10},
       {node_id: "0001.00000001", event_time: "2016-11-25 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5},
-      {node_id: "0001.00000001", event_time: "2016-11-26 10:05:22.0", event_type: "81", active_power: 20, ampere: 4, als_level:2},
+      {node_id: "0001.00000001", event_time: "2016-11-26 10:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:2},
       {node_id: "0001.00000001", event_time: "2016-11-26 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2},
       {node_id: "0001.00000001", event_time: "2016-11-26 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10},
       {node_id: "0001.00000001", event_time: "2016-11-26 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5},
-      {node_id: "0001.00000001", event_time: "2016-11-26 10:05:22.0", event_type: "81", active_power: 20, ampere: 4, als_level:2},
+      {node_id: "0001.00000001", event_time: "2016-11-26 10:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:2},
       {node_id: "0001.00000001", event_time: "2016-11-27 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2},
       {node_id: "0001.00000001", event_time: "2016-11-27 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10},
       {node_id: "0001.00000001", event_time: "2016-11-28 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5},
-      {node_id: "0001.00000001", event_time: "2016-11-28 10:05:22.0", event_type: "81", active_power: 20, ampere: 4, als_level:2},
-      {node_id: "0001.00000001", event_time: "2016-11-28 11:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:3},
+      {node_id: "0001.00000001", event_time: "2016-11-28 10:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:2},
+      {node_id: "0001.00000001", event_time: "2016-11-28 11:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:3},
       {node_id: "0001.00000001", event_time: "2016-11-28 12:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
       {node_id: "0001.00000001", event_time: "2016-11-28 13:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
-      {node_id: "0001.00000001", event_time: "2016-11-28 14:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:7},
-      {node_id: "0001.00000001", event_time: "2016-11-28 15:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:7},
+      {node_id: "0001.00000001", event_time: "2016-11-28 14:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
+      {node_id: "0001.00000001", event_time: "2016-11-28 15:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
       {node_id: "0001.00000001", event_time: "2016-11-28 16:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
       {node_id: "0001.00000001", event_time: "2016-11-30 10:05:22.0", event_type: "81", active_power: 20, ampere: 4, als_level:2},
       {node_id: "0001.00000001", event_time: "2016-11-30 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2},
@@ -132,12 +135,6 @@ function drawChart() {
       {node_id: "0001.00000001", event_time: "2016-11-30 16:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
     ];
 
-    // data = [
-    //   {node_id: "0001.00000001", event_time: "2016-11-27", event_type: "17", active_power: 10, ampere: 10},
-    //   {node_id: "0001.00000001", event_time: "2016-11-28", event_type: "17", active_power: 10, ampere: 10},
-    //   {node_id: "0001.00000001", event_time: "2016-11-29", event_type: "17", active_power: 20, ampere: 4},
-    // ];
-
     var cnt_event_type = 0,
         cnt_fault_type = 0;
     data.forEach(function (d) {
@@ -147,11 +144,8 @@ function drawChart() {
       d.day = d3.time.day(d.dd);
       // d.month = d3.time.month(d.dd); // pre-calculate month for better performance
       // d.VOLTAGE = +d.VOLTAGE;
-      d.cnt_event_type = ++cnt_event_type;
       if (d.event_type == '81')
-        d.cnt_fault_type = ++cnt_fault_type;
-      else
-        d.cnt_fault_type = cnt_fault_type;
+        d.event_type_fault = 1;
       d.ampere = d.ampere;
       // d.ampere += d.ampere;
       // d.POWER_FACTOR = +d.POWER_FACTOR;
@@ -186,58 +180,33 @@ function drawChart() {
     })
     // console.log(ampereGroup);
 
-    var indexAvgByMonthGroup = moveDays.group().reduce(
+    var faultCntByDayGroup = moveDays.group().reduce(
         // add
         function (p, v) {
-          console.log('add');
-          console.log(p);
-          console.log(v);
-            ++p.hours;
-            p.total = 10;
-            p.avg += 5;
-            return p;
+          // console.log('add');
+          ++p.hours;
+          p.event_type_count += 1;
+          return p;
         },
         // remove
         function (p, v) {
           // console.log('remove');
-          // console.log(p);
-          // console.log(v);
-            --p.hours;
-            p.total = 0;
-            p.avg = 0;
-            return p;
+          --p.hours;
+          p.event_type_count -= 1;
+          return p;
         },
         // initial
         function () {
           // console.log('init');
-          // console.log(p);
-          // console.log(v);
-            return {hours: 0, total: 0, avg: 0};
+          return {hours: 0, event_type_count: 0};
         }
     );
 
     console.log('moveDays.group() size : ' + moveDays.group().size());
-    // var indexAvgByMonthGroup = moveDays.group().reduce(
-    //     // add
-    //     function (p, v) {
-    //       console.log(p);
-    //       console.log(v);
-    //       return p+1;
-    //     },
-    //     // remove
-    //     function (p, v) {
-    //       return p-1;
-    //     },
-    //     // initial
-    //     function () {
-    //       return 0;
-    //     }
-    // );
 
     // Group by total movement within month
-    var monthlyMoveGroup = moveDays.group().reduceCount(function (d) {
-      console.log(moveDays.group().size());
-      return d.event_type;
+    var dailyMoveGroup = moveDays.group().reduceSum(function (d) {
+      return d.event_type == '81'? 1 : 0;
     });
 
     volumeChart
@@ -269,20 +238,20 @@ function drawChart() {
       .renderHorizontalGridLines(true)
       .legend(dc.legend().x(800).y(10).itemHeight(13).gap(5))
       .brushOn(false)
-      .group(indexAvgByMonthGroup, 'Daily Event Count')
+      .group(faultCntByDayGroup, 'Daily Event Count')
       .valueAccessor(function (d) {
-        return d.value.avg;
+        return d.value.event_type_count;
       })
-      .stack(monthlyMoveGroup, 'Daily Error Count', function (d) {
+      .stack(dailyMoveGroup, 'Daily Error Count', function (d) {
         return d.value;
       })
       // Title can be called by any stack layer.
       .title(function (d) {
-        var value = d.value.avg ? d.value.avg : d.value;
+        var value = d.value.event_type_count ? d.value.event_type_count : d.value;
         if (isNaN(value)) {
           value = 0;
         }
-        return dateFormat(d.key) + '\n' + numberFormat(value);
+        return 'day : ' + dateFormat(d.key) + '\n count : ' + numberFormat(value);
       });
 
     seriesChart
