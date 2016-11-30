@@ -64,7 +64,7 @@ ReportsProvider.prototype.selectSingleQueryByID = function (queryId, datas, call
                 if (err) {
                   callback(err);
                 } else {
-                  console.log(sqlList[queryId]);
+                  // console.log(sqlList[queryId]);
                   statement.executeQuery(sqlList[queryId],
                                          function(err, resultset) {
                     if (err) {

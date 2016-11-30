@@ -68,8 +68,7 @@ var sqlList = {
         "         vibration_x, vibration_y, vibration_z"+
         "    from tb_node_raw"+
         "  where year = date_part('YEAR', current_date()) "+
-        "    and month = date_part('MONTH', current_date())"+
-        "    and day = date_part('DAY', current_date())",
+        "    and month = date_part('MONTH', current_date())",
 };
 
 DashboardProvider = function() {
@@ -96,7 +95,7 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
                 if (err) {
                   callback(err);
                 } else {
-                  console.log(sqlList[queryId]);
+                  // console.log(sqlList[queryId]);
                   statement.executeQuery(sqlList[queryId],
                                          function(err, resultset) {
                     if (err) {
