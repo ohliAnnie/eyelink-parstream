@@ -36,8 +36,8 @@ var sqlList = {
         "         vibration_x, vibration_y, vibration_z"+
         "    from tb_node_raw"+
         "  where year = date_part('YEAR', current_date()) "+
-        "    and month = date_part('MONTH', current_date())"+
-        "    and day = date_part('DAY', current_date())",
+        "    and month = date_part('MONTH', current_date())",
+       // "    and day = date_part('DAY', current_date())",
 };
 
 ReportsProvider = function() {
