@@ -203,44 +203,52 @@ var  seriesV = hourDim.group().reduce(
   }
 );
 */
+
+var adjustX = 20, adjustY = 40;
+window.onresize = function()  {
+  eventChart
+  .width(window.innerWidth*0.4-adjustX)
+  .height(window.innerHeight*0.4-adjustY)
+  .redraw();
+};
 /* dc.pieChart('#eventChart') */
   eventChart 
-    .width(600)
-    .height (400)
+    .width(window.innerWidth-adjustX)    
+    .height (window.innerHeight-adjustY)
     .radius(200)
     .dimension(eventDim)
     .group(eventGroup)
     .slicesCap(4)
     .externalLabels(50)
-    .externalRadiusPadding(50)
+    .externalRadiusPadding(40)
     .drawPaths(true)
     .legend(dc.legend())
-   .label(function (d){
+    .label(function (d){
         if(eventChart.hasFilter() && !eventChart.hasFilter(d.key)) {
           return '0(0%)';
         }
-        var label = d.value;
+        console.log(d);
+        var label = d.key;
         if(all.value()) {
-          label += label += '(' + Math.floor(d.value / all.value() * 100) + '%)';
+          label += '(' + Math.floor(d.value / all.value() * 100) + '%)';
         }
         return label;
-    });
-eventChart.on('pretransition', function(chart) {
+    })
+    .colors(d3.scale.ordinal().range(["#EDC951","#CC333F","#00A0B0", "#756bb1"]));
+
+/*eventChart.on('pretransition', function(eventChart) {
     eventChart. selectAll('.dc-legend-item test')
         .text('')
       .append('tspan')
-        .text(function(d) { return d.key; })
-      .append('tspan')
-        .attr('x', 100)
-        .attr('text-anchor', 'end')
-        .text(function(d) {return Math.floor(d.value); });
-  });
+        .text(function(d) { return d.key + '(' + Math.floor(d.value / all.value() * 100) + '%)'; })
+      
+  });*/
  //   eventChart.ordinalColors(['#3182bd', '#9ecae1', '#e6550d', '#fd8d3c', '#fdd0a2', '#31a354', '#a1d99b',  '#756bb1'])
-
+// d3.scale.ordinal().range(["#EDC951","#CC333F","#00A0B0"]);
 /* dc.seriesChart('#hourSeries') */
   hourSeries
     .width(700)
-    .height(400)
+    .height(500)
      .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
     .dimension(seriesDim)    
     .group(seriesGroup)
@@ -312,17 +320,7 @@ eventChart.on('pretransition', function(chart) {
     var margin = {top: 100, right: 100, bottom: 100, left: 100},
       width = Math.min(700, window.innerWidth - 10) - margin.left - margin.right,
       height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
-      var color = d3.scale.ordinal()
-      .range(["#EDC951","#CC333F","#00A0B0", "#31a354"]);
-      var radarChartOptions = {
-      w: width,
-      h: height,
-      margin: margin,
-      maxValue: 0.5,
-      levels: 5,
-      roundStrokes: true,
-      color: color
-    };
+
   var cfg = {
    w: 600,        //Width of the circle
    h: 600,        //Height of the circle
