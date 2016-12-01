@@ -5,11 +5,12 @@
 
 d3.json("/reports/restapi/getReportRawData", function(err, data){
   if(err) throw error;
-  
-  var numberFormat = d3.format('.2f');
+   var numberFormat = d3.format('.2f');
+   var today = '';
   data.rtnData[0].forEach(function(d){
    // console.log(d);
   //  console.log(d.event_time);
+    today = d.event_time.toString();
     d.dd = new Date(d.event_time.toString());
     d.month = d3.time.month(d.dd);
     d.hour = d3.time.hour(d.dd);
@@ -208,14 +209,18 @@ var adjustX = 20, adjustY = 40;
 window.onresize = function()  {
   eventChart
   .width(window.innerWidth*0.4-adjustX)
-  .height(window.innerHeight*0.4-adjustY)
+  .height((window.innerWidth*0.4-adjustX)*0.8)
+  .redraw();
+ hourSeries
+  .width(window.innerWidth*0.4-adjustX)
+  .height((window.innerWidth*0.4-adjustX)*0.8)
   .redraw();
 };
 /* dc.pieChart('#eventChart') */
   eventChart 
-    .width(window.innerWidth-adjustX)    
-    .height (window.innerHeight-adjustY)
-    .radius(200)
+    .width(window.innerWidth*0.4-adjustX)    
+    .height((window.innerWidth*0.4-adjustX)*0.8)
+    .radius((window.innerWidth*0.4-adjustX)*0.3)
     .dimension(eventDim)
     .group(eventGroup)
     .slicesCap(4)
@@ -247,21 +252,21 @@ window.onresize = function()  {
 // d3.scale.ordinal().range(["#EDC951","#CC333F","#00A0B0"]);
 /* dc.seriesChart('#hourSeries') */
   hourSeries
-    .width(700)
-    .height(500)
+    .width(window.innerWidth*0.4-adjustX)    
+    .height((window.innerWidth*0.4-adjustX)*0.9)
      .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
     .dimension(seriesDim)    
     .group(seriesGroup)
-    .x(d3.time.scale().domain([new Date('2016-11-29T00:00:00'), new Date('2016-11-29T24:00:00')]))    
+    .x(d3.time.scale().domain([new Date('2016-11-24T00:00:00'), new Date('2016-12-01T24:00:00')]))    
     .brushOn(false)
     .yAxisLabel("Time")
     .xAxisLabel("Value")
     .clipPadding(10)
     .elasticY(true)
-    .mouseZoomable(true)
+//    .mouseZoomable(true)
     .seriesAccessor(function(d) {  
       if(d.key[0] === 1) return 'active_power'; else if(d.key[0] === 33) return 'vibration'; else if(d.key[0] === 17) return 17; else if(d.key[0] === 81) return 81; else return null;})
-    .keyAccessor(function(d) {         
+    .keyAccessor(function(d) {               
       console.log('key[0] : '+d.key[0]+'  key[1] : '+d.key[1]);
      return d.key[1];     })
     .valueAccessor(function(d) {
