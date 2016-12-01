@@ -56,9 +56,9 @@ var sqlList = {
           "              cast(0 as uint64) as today_event_fault_cnt, " +
           "              sum(case event_type when 81 then 1 else 0 end) as yesterday_event_fault_cnt " +
           "         from tb_node_raw " +
-          "        where year = date_part('YEAR', current_date()) " +
-          "          and month = date_part('MONTH', current_date()) " +
-          "          and day = date_part('DAY', current_date())-1 " +
+          "        where year = date_part('YEAR', current_date()-1) " +
+          "          and month = date_part('MONTH', current_date()-1) " +
+          "          and day = date_part('DAY', current_date()-1) " +
           "      ))  ",
   // Event Raw Data 조회
   "selectEventRawData" :
