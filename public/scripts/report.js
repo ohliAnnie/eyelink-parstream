@@ -279,7 +279,7 @@ window.onresize = function()  {
     .xAxisLabel("Value")
     .clipPadding(10)
     .elasticY(true)
-//    .mouseZoomable(true)
+    .mouseZoomable(true)
     .seriesAccessor(function(d) {  
       if(d.key[0] === 1) return 'active_power'; else if(d.key[0] === 33) return 'vibration'; else if(d.key[0] === 17) return 17; else if(d.key[0] === 81) return 81; else return null;})
     .keyAccessor(function(d) {               
