@@ -22,6 +22,8 @@ block content
                 li
                   input#monthly(type='radio', name='unit')
                   label(for='monthly') Month
+                li
+                  a.btn-action(href='http://m2u-oz.eastus.cloudapp.azure.com:9090/oz70/canvas.html' target='_blank') Reporting
             h1 System activity
           ul.list-dashboard-summary
             li
@@ -89,19 +91,22 @@ block content
                 //- img(src='assets/images/@temp/chart01.jpg', alt='')
           .grid-item
             .inner
-              ul.list-chart.flip-in-x
-                li
-                  strong.grid-item-title ACTIVE POWER
-                  .chart
-                    img(src='assets/images/@temp/chart02_01.jpg', alt='')
-                li
-                  strong.grid-item-title NOISE
-                  .chart
-                    img(src='assets/images/@temp/chart02_02.jpg', alt='')
-                li
-                  strong.grid-item-title VIBRATION
-                  .chart
-                    img(src='assets/images/@temp/chart02_03.jpg', alt='')
+              strong.grid-item-title ACTIVE POWER
+              div.chart
+                #number01-chart
+              //- ul.list-chart.flip-in-x
+              //-   li
+              //-     strong.grid-item-title ACTIVE POWER
+              //-     .chart
+              //-       img(src='assets/images/@temp/chart02_01.jpg', alt='')
+              //-   li
+              //-     strong.grid-item-title NOISE
+              //-     .chart
+              //-       img(src='assets/images/@temp/chart02_02.jpg', alt='')
+              //-   li
+              //-     strong.grid-item-title VIBRATION
+              //-     .chart
+              //-       img(src='assets/images/@temp/chart02_03.jpg', alt='')
           .grid-item
             .inner
               strong.grid-item-title LIVE DATA
