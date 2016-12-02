@@ -2,11 +2,14 @@
 
   var eventChart = dc.pieChart('#eventChart');
   var hourSeries = dc.seriesChart('#hourSeries');
+  var avgCom = dc.compositeChart("#avgCom");
 
 d3.json("/reports/restapi/getReportRawData", function(err, data){
   if(err) throw error;
    var numberFormat = d3.format('.2f');
    var today = '';
+   console.log(data);
+
   data.rtnData[0].forEach(function(d){
    // console.log(d);
   //  console.log(d.event_time);
@@ -46,7 +49,7 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
     console.log()
   }); 
 
-  var nyx = crossfilter(data.rtnData[0]);
+  var nyx = crossfilter(data.rtnData[0]);    
   var all = nyx.groupAll();
 
   var eventDim = nyx.dimension(function(d) {
@@ -74,7 +77,7 @@ var hourDim = nyx.dimension(function(d){
 });
 */
 var seriesDim = nyx. dimension(function(d){
-  return [+d.event_type, +d.hour];
+  return [+d.event_type, d.hour];
 });
 
 var seriesGroup = seriesDim.group().reduce(  
@@ -205,6 +208,19 @@ var  seriesV = hourDim.group().reduce(
 );
 */
 
+var avgComDim = nyx.dimension(function(d) { return [+d.dd, +d.event_type]});
+var avgComGroup = avgComDim.group().reduce(
+  function(p, v) {
+
+  } ,
+  function(p, v) {
+
+  },
+  function() {
+
+  }
+) ;
+
 var adjustX = 20, adjustY = 40;
 window.onresize = function()  {
   eventChart
@@ -253,11 +269,11 @@ window.onresize = function()  {
 /* dc.seriesChart('#hourSeries') */
   hourSeries
     .width(window.innerWidth*0.4-adjustX)    
-    .height((window.innerWidth*0.4-adjustX)*0.9)
+    .height((window.innerWidth*0.4-adjustX)*0.8)
      .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
     .dimension(seriesDim)    
     .group(seriesGroup)
-    .x(d3.time.scale().domain([new Date('2016-11-24T00:00:00'), new Date('2016-12-01T24:00:00')]))    
+    .x(d3.time.scale().domain([new Date('2016-11-25T00:00:00'), new Date('2016-12-02T24:00:00')]))    
     .brushOn(false)
     .yAxisLabel("Time")
     .xAxisLabel("Value")
@@ -274,8 +290,20 @@ window.onresize = function()  {
       return +d.value.max;})
     .legend(dc.legend().x(350).y(350).itemHeight(13).gap(5).horizontal(1).legendWidth(140).itemWidth(70));
     hourSeries.margins().left += 40;  
-
-
+/*
+    avgCom
+      .width(window.innerWidth*0.4-adjustX)    
+      .height((window.innerWidth*0.4-adjustX)*0.9)
+      .x(d3.scale.lineat().domain([0,400]))
+      .yAxisLabel("Date")
+      .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
+      .renderHorizontalGridLines(true)
+      .compose([
+          dc.lineChart(avgCom)
+            .dimension(avgCom)
+        ])
+      .brushOn(false)
+      .render();*/
 
 
 
