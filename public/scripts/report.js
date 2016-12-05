@@ -3,18 +3,22 @@
   var eventChart = dc.pieChart('#eventChart');
   var hourSeries = dc.seriesChart('#hourSeries');
   var avgCom = dc.compositeChart("#avgCom");
+  //var volumeChart = dc.seriesChart('#volumeChart');
 
 d3.json("/reports/restapi/getReportRawData", function(err, data){
   if(err) throw error;
    var numberFormat = d3.format('.2f');
+   var minDate = new Date('2016-11-25T00:00:00')
+   var maxDate = new Date('2016-12-02T24:00:00')   
    var today = '';
-   console.log(data);
+//   console.log(data);
 
   data.rtnData[0].forEach(function(d){
    // console.log(d);
   //  console.log(d.event_time);
     today = d.event_time.toString();
-    d.dd = new Date(d.event_time.toString());
+    d.today = new Date(today.substring(0,10));
+    d.dd = new Date(today);
     d.month = d3.time.month(d.dd);
     d.hour = d3.time.hour(d.dd);
 //    console.log(d.month);
@@ -58,6 +62,7 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
   });
 
   var eventGroup = eventDim.group();
+
 /*
 var yearDim = nyx.dimension(function(d) {
 //  return d3.time.year(d.dd).getFullYear();
@@ -65,7 +70,7 @@ var yearDim = nyx.dimension(function(d) {
 
 var monthDim = nyx.dimension(function(d) {
   return d.month;
-}) ;
+}) ; 
 
 var dayDim = nyx.dimension(function(d){
   return d.dd;
@@ -76,6 +81,71 @@ var hourDim = nyx.dimension(function(d){
   return d.hour;
 });
 */
+
+/*var dayTypeDim = nyx.dimension(function(d){    
+  return [+d.event_type, d.dd];
+});
+
+var volumeGroup = dayTypeDim.group().reduce(  
+  function (p, v) {    
+    if(v.event_type ===  "1") { // 파워
+      p.value = v.active_power;
+        return p;
+    } else if(v.event_type === " 17") { // 조도
+      p.value = 0;
+        return p;
+    } else if(v.event_type === "33") { // 진동
+      p.value = v.vibration;
+        return p;
+    } else if(v.event_type === "49") { // 노이즈
+      p.value = 0;
+        return p;
+    } else  if(v.event_type === "65") { // GPS
+      p.value = 0;
+        return p;
+    } else if(v.event_type === "81") { // 센서상태
+      p.value = 0;
+        return p;
+    } else if(v.event_type === "153") { // 재부팅
+      p.value = 0;
+        return p;
+    } else {
+      p.value = 0;
+        return p;
+    }
+  },
+  function (p, v) {
+    if(v.event_type ===  "1") { // 파워
+      p.value = v.active_power;      
+        return p;
+    } else if(v.event_type === " 17") { // 조도
+      p.value = 0;
+        return p;
+    } else if(v.event_type === "33") { // 진동
+      p.value = v.vibration;
+        return p;
+    } else if(v.event_type === "49") { // 노이즈
+      p.value = 0;
+        return p;
+    } else  if(v.event_type === "65") { // GPS
+      p.value = 0;
+        return p;
+    } else if(v.event_type === "81") { // 센서상태
+      p.value = 0;
+        return p;
+    } else if(v.event_type === "153") { // 재부팅
+      p.value = 0;
+        return p;
+    } else {
+      p.value = 0;
+        return p;
+    }
+  },
+  function() {
+    return { value :0 };
+  }
+);*/
+
 var seriesDim = nyx. dimension(function(d){
   return [+d.event_type, d.hour];
 });
@@ -143,83 +213,20 @@ var seriesGroup = seriesDim.group().reduce(
     return { max :0 };
   }
 );
-/*var  seriesAP = hourDim.group().reduce(
-  function(p, v) {
-    console.log(v);
-    if(v.event_name eq "Power")
-    p.active_power = p.active_power;
-    p.maxAP = p.maxAP < v.active_power ? v.active_power : p.maxAP;
-    console.log(p);
-    return p;
-  },
-  function(p, v) {
-    p.maxAP = p.maxAP < v.active_power ? v.active_power : p.maxAP;
- //   console.log(v);
-    return p;
-  },
-  function() {
-    return { maxAP:0 };
-  }
-);
-var  seriesND = hourDim.group().reduce(
-  function(p, v) {    
-    p.maxND = p.maxND < v.noise_decibel ? v.noise_decibel : p.maxNF;    
-//    console.log(v);
-    return p;
-  },
-  function(p, v) {    
-    p.maxND = p.maxND < v.noise_decibel ? v.noise_decibel : p.maxNF;    
-//    console.log(v);
-    return p;
-  },
-  function() {
-    return { maxND:0 };
-  }
-);
-var  seriesNF = hourDim.group().reduce(
-  function(p, v) {
-    p.maxNF = p.maxNF < v.noise_frequency ? v.noise_frequency : p.maxNF;    
-    console.log(v);
-    return p;
-  },
-  function(p, v) {
-    p.maxNF = p.maxNF < v.noise_frequency ? v.noise_frequency : p.maxNF;    
-    console.log(v);
-    return p;
-  },
-  function() {
-    return { maxNF:0, };
-  }
-);
-var  seriesV = hourDim.group().reduce(
-  function(p, v) {
-    p.maxV = p,maxV < v.vibration ? v.vibration : p.maxV;
-    console.log(v);
-    return p;
-  },
-  function(p, v) {
-    p.maxV = p,maxV < v.vibration ? v.vibration : p.maxV;
-    console.log(v);
-    return p;
-  },
-  function() {
-    return { maxV:0 };
-  }
-);
-*/
 
-var avgComDim = nyx.dimension(function(d) { return [+d.dd, +d.event_type]});
-var avgComGroup = avgComDim.group().reduce(
-  function(p, v) {
+  var avgComDim = nyx.dimension(function (d) { return d.dd; });
+  var activeGroup = avgComDim.group().reduceSum(function (d) {
+    console.log('check');
+    if(d.event_type === 1)
+      return d.active_power;
+  });
+  var vibrationGroup = avgComDim.group().reduceSum(function(d) {
+    if(d.event_type === 3)      
+      return d.vibration;
+  });
 
-  } ,
-  function(p, v) {
 
-  },
-  function() {
 
-  }
-) ;
 
 var adjustX = 20, adjustY = 40;
 window.onresize = function()  {
@@ -228,6 +235,10 @@ window.onresize = function()  {
   .height((window.innerWidth*0.4-adjustX)*0.8)
   .redraw();
  hourSeries
+  .width(window.innerWidth*0.4-adjustX)
+  .height((window.innerWidth*0.4-adjustX)*0.8)
+  .redraw();
+  avgCom
   .width(window.innerWidth*0.4-adjustX)
   .height((window.innerWidth*0.4-adjustX)*0.8)
   .redraw();
@@ -247,8 +258,7 @@ window.onresize = function()  {
     .label(function (d){
         if(eventChart.hasFilter() && !eventChart.hasFilter(d.key)) {
           return '0(0%)';
-        }
-        console.log(d);
+        }        
         var label = d.key;
         if(all.value()) {
           label += '(' + Math.floor(d.value / all.value() * 100) + '%)';
@@ -271,39 +281,78 @@ window.onresize = function()  {
     .width(window.innerWidth*0.4-adjustX)    
     .height((window.innerWidth*0.4-adjustX)*0.8)
      .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
-    .dimension(seriesDim)    
-    .group(seriesGroup)
-    .x(d3.time.scale().domain([new Date('2016-11-25T00:00:00'), new Date('2016-12-02T24:00:00')]))    
+     .x(d3.time.scale().domain([minDate, maxDate])) 
     .brushOn(false)
     .yAxisLabel("Time")
     .xAxisLabel("Value")
     .clipPadding(10)
-    .elasticY(true)
-    .mouseZoomable(true)
+    .elasticY(true)    
+    .dimension(seriesDim)    
+    .group(seriesGroup)
+//    .mouseZoomable(true)
     .seriesAccessor(function(d) {  
       if(d.key[0] === 1) return 'active_power'; else if(d.key[0] === 33) return 'vibration'; else if(d.key[0] === 17) return 17; else if(d.key[0] === 81) return 81; else return null;})
     .keyAccessor(function(d) {               
-      console.log('key[0] : '+d.key[0]+'  key[1] : '+d.key[1]);
      return d.key[1];     })
     .valueAccessor(function(d) {
-      console.log('d.value.max : '+ d.value.max);
       return +d.value.max;})
     .legend(dc.legend().x(350).y(350).itemHeight(13).gap(5).horizontal(1).legendWidth(140).itemWidth(70));
+    hourSeries.yAxis().tickFormat(function(d){  return d3.format('.d')(d); });
     hourSeries.margins().left += 40;  
-/*
+
     avgCom
       .width(window.innerWidth*0.4-adjustX)    
       .height((window.innerWidth*0.4-adjustX)*0.9)
-      .x(d3.scale.lineat().domain([0,400]))
-      .yAxisLabel("Date")
-      .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
-      .renderHorizontalGridLines(true)
-      .compose([
-          dc.lineChart(avgCom)
-            .dimension(avgCom)
-        ])
+      .dimension(avgComDim)
+      .transitionDuration(500)
+      .elasticY(true)
       .brushOn(false)
-      .render();*/
+      .x(d3.time.scale().domain([minDate, maxDate])) 
+   //   .yAxisLabel("Date")
+ //     .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
+//      .renderHorizontalGridLines(true)
+      .valueAccessor(function (d){
+        return d.value;
+      }) 
+      .title(function(d) {
+        return "\nNumber of Povetry: " + d.key;
+      })
+      .compose([
+          dc.lineChart(avgCom).group(activeGroup),
+          dc.lineChart(avgCom).group(vibrationGroup)
+        ]);
+
+/*volumeChart
+    .width(window.innerWidth*0.4-adjustX)    
+    .height((window.innerWidth*0.4-adjustX)*0.8)
+  .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
+  .x(d3.time.scale().domain([minDate, maxDate])) 
+  .brushOn(false)
+  .yAxisLabel("Day")
+  .xAxisLabel("Value")
+  .clipPadding(10)
+  .elasticY(true)    
+  .mouseZoomable(true)
+  .dimension(dayTypeDim)
+  .group(volumeGroup)
+  .seriesAccessor(function(d) {  
+    if(d.key[0] === 1) return 'active_power'; else if(d.key[0] === 33) return 'vibration'; else if(d.key[0] === 17) return 17; else if(d.key[0] === 81) return 81; else return null;})
+  .keyAccessor(function(d) {               
+   return d.key[1];     })
+  .valueAccessor(function(d) {
+   return +d.value.max;})
+  .legend(dc.legend().x(350).y(350).itemHeight(13).gap(5).horizontal(1).legendWidth(140).itemWidth(70));
+  volumeChart.yAxis().tickFormat(function(d){  return d3.format('.d')(d); });
+  volumeChart.margins().left += 40;  */
+
+
+
+
+
+
+
+
+
 
 
 
