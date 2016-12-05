@@ -24,14 +24,13 @@ router.get('/restapi/get_successcount', function(req, res, next) {
     }
     res.json({rtnCode: rtnCode, rtnData: out_data});
   });
-
 });
 
 // query Dashboard Section 1
 router.get('/restapi/getDashboardSection1', function(req, res, next) {
   var in_data = ["user_id"];
   dashboardProvider.selectSingleQueryByID("selectDashboardSection1", in_data, function(err, out_data) {
-    console.log(out_data);
+    // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');

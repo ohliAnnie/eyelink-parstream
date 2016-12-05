@@ -10,6 +10,7 @@ var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', 
 
 /* GET reports page. */
 router.get('/', function(req, res, next) {
+  console.log('/reports/');
   res.render('./reports/main', { title: 'EyeLink for ParStream' });
 });
 
@@ -22,6 +23,7 @@ router.get('/main', function(req, res, next) {
 
 // query Report
 router.get('/restapi/getReportRawData', function(req, res, next) {
+  console.log('/restapi/getReportRawData');
   var in_data = ["user_id"];
   reportsProvider.selectSingleQueryByID("selectEventRawData", in_data, function(err, out_data) {
     // console.log(out_data);

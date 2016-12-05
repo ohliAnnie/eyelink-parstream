@@ -107,21 +107,27 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
                 } else {
                   console.time(queryId+'-executeQuery');
                   // console.log(sqlList[queryId]);
-                  statement.executeQuery(sqlList[queryId],
+                  statement.execute(sqlList[queryId],
                                          function(err, resultset) {
                     if (err) {
                       callback(err)
                     } else {
                       console.timeEnd(queryId+'-executeQuery');
                       console.time(queryId+'-resultset.toObjArray');
+                      console.log('resultset');
+                      // console.log(resultset);
+                      // results = JSON.stringify(resultset[0]);
+
+                      // console.log(results);
                       resultset.toObjArray(function(err, results) {
-                        // if (results.length > 0) {
-                          // console.log("cnt: " + results[0].cnt);
-                        // }
-                        // console.log(results);
-                        console.timeEnd(queryId+'-resultset.toObjArray');
+                      //   if (results.length > 0) {
+                      //     console.log("cnt: " + results[0].cnt);
+                      //   }
+                      //   // console.log(results);
+                      //   console.timeEnd(queryId+'-resultset.toObjArray');
                         callback(null, results);
                       });
+                      // callback(null, resultset);
                     }
                   });
                 }
