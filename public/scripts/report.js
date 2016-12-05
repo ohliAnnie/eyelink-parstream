@@ -3,30 +3,34 @@
   var eventChart = dc.pieChart('#eventChart');
   var hourSeries = dc.seriesChart('#hourSeries');
   var avgCom = dc.compositeChart("#avgCom");
+  //var volumeChart = dc.seriesChart('#volumeChart');
 
 d3.json("/reports/restapi/getReportRawData", function(err, data){
   if(err) throw error;
    var numberFormat = d3.format('.2f');
+   var minDate = new Date('2016-11-25T00:00:00')
+   var maxDate = new Date('2016-12-02T24:00:00')   
    var today = '';
-   // console.log(data);
+//   console.log(data);
 
   data.rtnData[0].forEach(function(d){
    // console.log(d);
   //  console.log(d.event_time);
     today = d.event_time.toString();
-    d.dd = new Date(d.event_time.toString());
+    d.today = new Date(today.substring(0,10));
+    d.dd = new Date(today);
     d.month = d3.time.month(d.dd);
     d.hour = d3.time.hour(d.dd);
 //    console.log(d.month);
 //console.log(d.hour);
         var event = '';
-    switch(d.event_type){
+    switch(d.event_type){      
       case "1" :   // 피워
         event = 'POWER';
-        break;
+        break;   
       case "17" :   // 조도
         event = 'ALS';
-        break;
+        break;    
       case "33" :     // 진동
         event = 'VIBRATION';
         break;
@@ -46,10 +50,10 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
     d.active_power  =  parseInt(d.active_power);
     d.vibration = (parseInt(d.vibration_x)+parseInt(d.vibration_y)+parseInt(d.vibration_z))/3;
     d.event_name= event;
-    //console.log()
-  });
+    console.log()
+  }); 
 
-  var nyx = crossfilter(data.rtnData[0]);
+  var nyx = crossfilter(data.rtnData[0]);    
   var all = nyx.groupAll();
 
   var eventDim = nyx.dimension(function(d) {
@@ -58,6 +62,7 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
   });
 
   var eventGroup = eventDim.group();
+
 /*
 var yearDim = nyx.dimension(function(d) {
 //  return d3.time.year(d.dd).getFullYear();
@@ -65,7 +70,7 @@ var yearDim = nyx.dimension(function(d) {
 
 var monthDim = nyx.dimension(function(d) {
   return d.month;
-}) ;
+}) ; 
 
 var dayDim = nyx.dimension(function(d){
   return d.dd;
@@ -76,15 +81,80 @@ var hourDim = nyx.dimension(function(d){
   return d.hour;
 });
 */
+
+/*var dayTypeDim = nyx.dimension(function(d){    
+  return [+d.event_type, d.dd];
+});
+
+var volumeGroup = dayTypeDim.group().reduce(  
+  function (p, v) {    
+    if(v.event_type ===  "1") { // 파워
+      p.value = v.active_power;
+        return p;
+    } else if(v.event_type === " 17") { // 조도
+      p.value = 0;
+        return p;
+    } else if(v.event_type === "33") { // 진동
+      p.value = v.vibration;
+        return p;
+    } else if(v.event_type === "49") { // 노이즈
+      p.value = 0;
+        return p;
+    } else  if(v.event_type === "65") { // GPS
+      p.value = 0;
+        return p;
+    } else if(v.event_type === "81") { // 센서상태
+      p.value = 0;
+        return p;
+    } else if(v.event_type === "153") { // 재부팅
+      p.value = 0;
+        return p;
+    } else {
+      p.value = 0;
+        return p;
+    }
+  },
+  function (p, v) {
+    if(v.event_type ===  "1") { // 파워
+      p.value = v.active_power;      
+        return p;
+    } else if(v.event_type === " 17") { // 조도
+      p.value = 0;
+        return p;
+    } else if(v.event_type === "33") { // 진동
+      p.value = v.vibration;
+        return p;
+    } else if(v.event_type === "49") { // 노이즈
+      p.value = 0;
+        return p;
+    } else  if(v.event_type === "65") { // GPS
+      p.value = 0;
+        return p;
+    } else if(v.event_type === "81") { // 센서상태
+      p.value = 0;
+        return p;
+    } else if(v.event_type === "153") { // 재부팅
+      p.value = 0;
+        return p;
+    } else {
+      p.value = 0;
+        return p;
+    }
+  },
+  function() {
+    return { value :0 };
+  }
+);*/
+
 var seriesDim = nyx. dimension(function(d){
   return [+d.event_type, d.hour];
 });
 
-var seriesGroup = seriesDim.group().reduce(
+var seriesGroup = seriesDim.group().reduce(  
   function (p, v) {
 //    console.log(v);
     if(v.event_type ===  "1") { // 파워
-      p.max = p.max < v.active_power ? v.active_power : p.max;
+      p.max = p.max < v.active_power ? v.active_power : p.max;      
 //      console.log(p);
 //      console.log(v.hour);
         return p;
@@ -113,8 +183,8 @@ var seriesGroup = seriesDim.group().reduce(
   },
   function (p, v) {
     if(v.event_type ===  "1") { // 파워
-      p.max = p.max < v.active_power ? v.active_power : p.max;
-      // console.log(p);
+      p.max = p.max < v.active_power ? v.active_power : p.max;      
+      console.log(p);
         return p;
     } else if(v.event_type === " 17") { // 조도
       p.max = 0;
@@ -143,83 +213,20 @@ var seriesGroup = seriesDim.group().reduce(
     return { max :0 };
   }
 );
-/*var  seriesAP = hourDim.group().reduce(
-  function(p, v) {
-    console.log(v);
-    if(v.event_name eq "Power")
-    p.active_power = p.active_power;
-    p.maxAP = p.maxAP < v.active_power ? v.active_power : p.maxAP;
-    console.log(p);
-    return p;
-  },
-  function(p, v) {
-    p.maxAP = p.maxAP < v.active_power ? v.active_power : p.maxAP;
- //   console.log(v);
-    return p;
-  },
-  function() {
-    return { maxAP:0 };
-  }
-);
-var  seriesND = hourDim.group().reduce(
-  function(p, v) {
-    p.maxND = p.maxND < v.noise_decibel ? v.noise_decibel : p.maxNF;
-//    console.log(v);
-    return p;
-  },
-  function(p, v) {
-    p.maxND = p.maxND < v.noise_decibel ? v.noise_decibel : p.maxNF;
-//    console.log(v);
-    return p;
-  },
-  function() {
-    return { maxND:0 };
-  }
-);
-var  seriesNF = hourDim.group().reduce(
-  function(p, v) {
-    p.maxNF = p.maxNF < v.noise_frequency ? v.noise_frequency : p.maxNF;
-    console.log(v);
-    return p;
-  },
-  function(p, v) {
-    p.maxNF = p.maxNF < v.noise_frequency ? v.noise_frequency : p.maxNF;
-    console.log(v);
-    return p;
-  },
-  function() {
-    return { maxNF:0, };
-  }
-);
-var  seriesV = hourDim.group().reduce(
-  function(p, v) {
-    p.maxV = p,maxV < v.vibration ? v.vibration : p.maxV;
-    console.log(v);
-    return p;
-  },
-  function(p, v) {
-    p.maxV = p,maxV < v.vibration ? v.vibration : p.maxV;
-    console.log(v);
-    return p;
-  },
-  function() {
-    return { maxV:0 };
-  }
-);
-*/
 
-var avgComDim = nyx.dimension(function(d) { return [+d.dd, +d.event_type]});
-var avgComGroup = avgComDim.group().reduce(
-  function(p, v) {
+  var avgComDim = nyx.dimension(function (d) { return d.dd; });
+  var activeGroup = avgComDim.group().reduceSum(function (d) {
+    console.log('check');
+    if(d.event_type === 1)
+      return d.active_power;
+  });
+  var vibrationGroup = avgComDim.group().reduceSum(function(d) {
+    if(d.event_type === 3)      
+      return d.vibration;
+  });
 
-  } ,
-  function(p, v) {
 
-  },
-  function() {
 
-  }
-) ;
 
 var adjustX = 20, adjustY = 40;
 window.onresize = function()  {
@@ -231,10 +238,14 @@ window.onresize = function()  {
   .width(window.innerWidth*0.4-adjustX)
   .height((window.innerWidth*0.4-adjustX)*0.8)
   .redraw();
+  avgCom
+  .width(window.innerWidth*0.4-adjustX)
+  .height((window.innerWidth*0.4-adjustX)*0.8)
+  .redraw();
 };
 /* dc.pieChart('#eventChart') */
-  eventChart
-    .width(window.innerWidth*0.4-adjustX)
+  eventChart 
+    .width(window.innerWidth*0.4-adjustX)    
     .height((window.innerWidth*0.4-adjustX)*0.8)
     .radius((window.innerWidth*0.4-adjustX)*0.3)
     .dimension(eventDim)
@@ -247,8 +258,7 @@ window.onresize = function()  {
     .label(function (d){
         if(eventChart.hasFilter() && !eventChart.hasFilter(d.key)) {
           return '0(0%)';
-        }
-        // console.log(d);
+        }        
         var label = d.key;
         if(all.value()) {
           label += '(' + Math.floor(d.value / all.value() * 100) + '%)';
@@ -262,48 +272,87 @@ window.onresize = function()  {
         .text('')
       .append('tspan')
         .text(function(d) { return d.key + '(' + Math.floor(d.value / all.value() * 100) + '%)'; })
-
+      
   });*/
  //   eventChart.ordinalColors(['#3182bd', '#9ecae1', '#e6550d', '#fd8d3c', '#fdd0a2', '#31a354', '#a1d99b',  '#756bb1'])
 // d3.scale.ordinal().range(["#EDC951","#CC333F","#00A0B0"]);
 /* dc.seriesChart('#hourSeries') */
   hourSeries
-    .width(window.innerWidth*0.4-adjustX)
+    .width(window.innerWidth*0.4-adjustX)    
     .height((window.innerWidth*0.4-adjustX)*0.8)
      .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
-    .dimension(seriesDim)
-    .group(seriesGroup)
-    .x(d3.time.scale().domain([new Date('2016-11-25T00:00:00'), new Date('2016-12-02T24:00:00')]))
+     .x(d3.time.scale().domain([minDate, maxDate])) 
     .brushOn(false)
     .yAxisLabel("Time")
     .xAxisLabel("Value")
     .clipPadding(10)
-    .elasticY(true)
-    .mouseZoomable(true)
-    .seriesAccessor(function(d) {
+    .elasticY(true)    
+    .dimension(seriesDim)    
+    .group(seriesGroup)
+//    .mouseZoomable(true)
+    .seriesAccessor(function(d) {  
       if(d.key[0] === 1) return 'active_power'; else if(d.key[0] === 33) return 'vibration'; else if(d.key[0] === 17) return 17; else if(d.key[0] === 81) return 81; else return null;})
-    .keyAccessor(function(d) {
-      // console.log('key[0] : '+d.key[0]+'  key[1] : '+d.key[1]);
+    .keyAccessor(function(d) {               
      return d.key[1];     })
     .valueAccessor(function(d) {
-      // console.log('d.value.max : '+ d.value.max);
       return +d.value.max;})
     .legend(dc.legend().x(350).y(350).itemHeight(13).gap(5).horizontal(1).legendWidth(140).itemWidth(70));
-    hourSeries.margins().left += 40;
-/*
+    hourSeries.yAxis().tickFormat(function(d){  return d3.format('.d')(d); });
+    hourSeries.margins().left += 40;  
+
     avgCom
-      .width(window.innerWidth*0.4-adjustX)
+      .width(window.innerWidth*0.4-adjustX)    
       .height((window.innerWidth*0.4-adjustX)*0.9)
-      .x(d3.scale.lineat().domain([0,400]))
-      .yAxisLabel("Date")
-      .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
-      .renderHorizontalGridLines(true)
-      .compose([
-          dc.lineChart(avgCom)
-            .dimension(avgCom)
-        ])
+      .dimension(avgComDim)
+      .transitionDuration(500)
+      .elasticY(true)
       .brushOn(false)
-      .render();*/
+      .x(d3.time.scale().domain([minDate, maxDate])) 
+   //   .yAxisLabel("Date")
+ //     .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
+//      .renderHorizontalGridLines(true)
+      .valueAccessor(function (d){
+        return d.value;
+      }) 
+      .title(function(d) {
+        return "\nNumber of Povetry: " + d.key;
+      })
+      .compose([
+          dc.lineChart(avgCom).group(activeGroup),
+          dc.lineChart(avgCom).group(vibrationGroup)
+        ]);
+
+/*volumeChart
+    .width(window.innerWidth*0.4-adjustX)    
+    .height((window.innerWidth*0.4-adjustX)*0.8)
+  .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
+  .x(d3.time.scale().domain([minDate, maxDate])) 
+  .brushOn(false)
+  .yAxisLabel("Day")
+  .xAxisLabel("Value")
+  .clipPadding(10)
+  .elasticY(true)    
+  .mouseZoomable(true)
+  .dimension(dayTypeDim)
+  .group(volumeGroup)
+  .seriesAccessor(function(d) {  
+    if(d.key[0] === 1) return 'active_power'; else if(d.key[0] === 33) return 'vibration'; else if(d.key[0] === 17) return 17; else if(d.key[0] === 81) return 81; else return null;})
+  .keyAccessor(function(d) {               
+   return d.key[1];     })
+  .valueAccessor(function(d) {
+   return +d.value.max;})
+  .legend(dc.legend().x(350).y(350).itemHeight(13).gap(5).horizontal(1).legendWidth(140).itemWidth(70));
+  volumeChart.yAxis().tickFormat(function(d){  return d3.format('.d')(d); });
+  volumeChart.margins().left += 40;  */
+
+
+
+
+
+
+
+
+
 
 
 
@@ -375,41 +424,41 @@ window.onresize = function()  {
     if('undefined' !== typeof options[i]){ cfg[i] = options[i]; }
     }//for i
   }//if
-
+  
   //If the supplied maxValue is smaller than the actual one, replace by the max in the data
   var maxValue = Math.max(cfg.maxValue, d3.max(data, function(i){return d3.max(i.map(function(o){return o.value;}))}));
-
+    
   var allAxis = (data[0].map(function(i, j){return i.axis})), //Names of each axis
     total = allAxis.length,         //The number of different axes
     radius = Math.min(cfg.w/2, cfg.h/2),  //Radius of the outermost circle
     Format = d3.format('%'),        //Percentage formatting
     angleSlice = Math.PI * 2 / total;   //The width in radians of each "slice"
-
+  
   //Scale for the radius
   var rScale = d3.scale.linear()
     .range([0, radius])
     .domain([0, maxValue]);
-
+    
   /////////////////////////////////////////////////////////
   //////////// Create the container SVG and g /////////////
   /////////////////////////////////////////////////////////
 
   //Remove whatever chart with the same id/class was present before
   d3.select(id).select("svg").remove();
-
+  
   //Initiate the radar chart SVG
   var svg = d3.select(id).append("svg")
       .attr("width",  cfg.w + cfg.margin.left + cfg.margin.right)
       .attr("height", cfg.h + cfg.margin.top + cfg.margin.bottom)
       .attr("class", "radar"+id);
-  //Append a g element
+  //Append a g element    
   var g = svg.append("g")
       .attr("transform", "translate(" + (cfg.w/2 + cfg.margin.left) + "," + (cfg.h/2 + cfg.margin.top) + ")");
-
+  
   /////////////////////////////////////////////////////////
   ////////// Glow filter for some extra pizzazz ///////////
   /////////////////////////////////////////////////////////
-
+  
   //Filter for the outside glow
   var filter = g.append('defs').append('filter').attr('id','glow'),
     feGaussianBlur = filter.append('feGaussianBlur').attr('stdDeviation','2.5').attr('result','coloredBlur'),
@@ -420,10 +469,10 @@ window.onresize = function()  {
   /////////////////////////////////////////////////////////
   /////////////// Draw the Circular grid //////////////////
   /////////////////////////////////////////////////////////
-
+  
   //Wrapper for the grid & axes
   var axisGrid = g.append("g").attr("class", "axisWrapper");
-
+  
   //Draw the background circles
   axisGrid.selectAll(".levels")
      .data(d3.range(1,(cfg.levels+1)).reverse())
@@ -451,7 +500,7 @@ window.onresize = function()  {
   /////////////////////////////////////////////////////////
   //////////////////// Draw the axes //////////////////////
   /////////////////////////////////////////////////////////
-
+  
   //Create the straight lines radiating outward from the center
   var axis = axisGrid.selectAll(".axis")
     .data(allAxis)
@@ -482,24 +531,24 @@ window.onresize = function()  {
   /////////////////////////////////////////////////////////
   ///////////// Draw the radar chart blobs ////////////////
   /////////////////////////////////////////////////////////
-
+  
   //The radial line function
   var radarLine = d3.svg.line.radial()
     .interpolate("linear-closed")
     .radius(function(d) { return rScale(d.value); })
     .angle(function(d,i) {  return i*angleSlice; });
-
+    
   if(cfg.roundStrokes) {
     radarLine.interpolate("cardinal-closed");
   }
-
-  //Create a wrapper for the blobs
+        
+  //Create a wrapper for the blobs  
   var blobWrapper = g.selectAll(".radarWrapper")
     .data(data)
     .enter().append("g")
     .attr("class", "radarWrapper");
-
-  //Append the backgrounds
+      
+  //Append the backgrounds  
   blobWrapper
     .append("path")
     .attr("class", "radarArea")
@@ -510,11 +559,11 @@ window.onresize = function()  {
       //Dim all blobs
       d3.selectAll(".radarArea")
         .transition().duration(200)
-        .style("fill-opacity", 0.1);
+        .style("fill-opacity", 0.1); 
       //Bring back the hovered over blob
       d3.select(this)
         .transition().duration(200)
-        .style("fill-opacity", 0.7);
+        .style("fill-opacity", 0.7);  
     })
     .on('mouseout', function(){
       //Bring back all blobs
@@ -522,16 +571,16 @@ window.onresize = function()  {
         .transition().duration(200)
         .style("fill-opacity", cfg.opacityArea);
     });
-
-  //Create the outlines
+    
+  //Create the outlines 
   blobWrapper.append("path")
     .attr("class", "radarStroke")
     .attr("d", function(d,i) { return radarLine(d); })
     .style("stroke-width", cfg.strokeWidth + "px")
     .style("stroke", function(d,i) { return cfg.color(i); })
     .style("fill", "none")
-    .style("filter" , "url(#glow)");
-
+    .style("filter" , "url(#glow)");    
+  
   //Append the circles
   blobWrapper.selectAll(".radarCircle")
     .data(function(d,i) { return d; })
@@ -546,13 +595,13 @@ window.onresize = function()  {
   /////////////////////////////////////////////////////////
   //////// Append invisible circles for tooltip ///////////
   /////////////////////////////////////////////////////////
-
+  
   //Wrapper for the invisible circles on top
   var blobCircleWrapper = g.selectAll(".radarCircleWrapper")
     .data(data)
     .enter().append("g")
     .attr("class", "radarCircleWrapper");
-
+    
   //Append a set of invisible circles on top for the mouseover pop-up
   blobCircleWrapper.selectAll(".radarInvisibleCircle")
     .data(function(d,i) { return d; })
@@ -566,7 +615,7 @@ window.onresize = function()  {
     .on("mouseover", function(d,i) {
       newX =  parseFloat(d3.select(this).attr('cx')) - 10;
       newY =  parseFloat(d3.select(this).attr('cy')) - 10;
-
+          
       tooltip
         .attr('x', newX)
         .attr('y', newY)
@@ -578,18 +627,18 @@ window.onresize = function()  {
       tooltip.transition().duration(200)
         .style("opacity", 0);
     });
-
+    
   //Set up the small tooltip for when you hover over a circle
   var tooltip = g.append("text")
     .attr("class", "tooltip")
     .style("opacity", 0);
-
+  
   /////////////////////////////////////////////////////////
   /////////////////// Helper Function /////////////////////
   /////////////////////////////////////////////////////////
 
   //Taken from http://bl.ocks.org/mbostock/7555321
-  //Wraps SVG text
+  //Wraps SVG text  
   function wrap(text, width) {
     text.each(function() {
     var text = d3.select(this),
@@ -602,7 +651,7 @@ window.onresize = function()  {
       x = text.attr("x"),
       dy = parseFloat(text.attr("dy")),
       tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
-
+      
     while (word = words.pop()) {
       line.push(word);
       tspan.text(line.join(" "));
@@ -614,20 +663,20 @@ window.onresize = function()  {
       }
     }
     });
-  }//wrap
-
+  }//wrap 
+  
 }//RadarChart
-
-      //////////////////////////////////////////////////////////////
-      //////////////////////// Set-Up //////////////////////////////
-      //////////////////////////////////////////////////////////////
+              
+      ////////////////////////////////////////////////////////////// 
+      //////////////////////// Set-Up ////////////////////////////// 
+      ////////////////////////////////////////////////////////////// 
       var margin = {top: 100, right: 100, bottom: 100, left: 100},
         width = Math.min(700, window.innerWidth - 10) - margin.left - margin.right,
         height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
-
-      //////////////////////////////////////////////////////////////
-      ////////////////////////// Data //////////////////////////////
-      //////////////////////////////////////////////////////////////
+          
+      ////////////////////////////////////////////////////////////// 
+      ////////////////////////// Data ////////////////////////////// 
+      ////////////////////////////////////////////////////////////// 
       var data = [
             [//iPhone
             {axis:"Battery Life",value:0.22},
@@ -637,7 +686,7 @@ window.onresize = function()  {
             {axis:"Have Internet Connectivity",value:0.22},
             {axis:"Large Screen",value:0.02},
             {axis:"Price Of Device",value:0.21},
-            {axis:"To Be A Smartphone",value:0.50}
+            {axis:"To Be A Smartphone",value:0.50}      
             ],[//Samsung
             {axis:"Battery Life",value:0.27},
             {axis:"Brand",value:0.16},
@@ -658,12 +707,12 @@ window.onresize = function()  {
             {axis:"To Be A Smartphone",value:0.30}
             ]
           ];
-      //////////////////////////////////////////////////////////////
-      //////////////////// Draw the Chart //////////////////////////
-      //////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////// 
+      //////////////////// Draw the Chart ////////////////////////// 
+      ////////////////////////////////////////////////////////////// 
       var color = d3.scale.ordinal()
         .range(["#EDC951","#CC333F","#00A0B0"]);
-
+        
       var radarChartOptions = {
         w: width,
         h: height,
