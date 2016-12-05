@@ -30,6 +30,11 @@ block style
       height: auto;
     }
 block scripts
+  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  script(type='text/javascript', src='/assets/annie/js/dc.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(src='/scripts/report.js')
 block content
   main.layout-contents.padding
     div.layout-contents-inner
@@ -53,8 +58,7 @@ block content
                   option(value='') Node ID
                 select.select(name='', id='')
                   option(value='') ALL
-              button.btn-submit.search(type='submit') SEARCH
-        script(src='/scripts/report.js')
+              button.btn-submit.search(type='submit') SEARCH        
         script.
           $(document).ready(function() {
             report();
@@ -89,6 +93,7 @@ block content
               //- #volumeChart
           li
             div.chart
+              #avgVib
           li
             div.chart
           li

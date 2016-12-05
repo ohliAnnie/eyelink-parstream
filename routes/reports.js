@@ -24,7 +24,7 @@ router.get('/main', function(req, res, next) {
 router.get('/restapi/getReportRawData', function(req, res, next) {
   var in_data = ["user_id"];
   reportsProvider.selectSingleQueryByID("selectEventRawData", in_data, function(err, out_data) {
-    console.log(out_data);
+    // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -139,7 +139,7 @@ router.get('/NYX2', function(req, res, next){
 });
 
 router.get('/NYX4', function(req, res, next) {
-  var data = 
+  var data =
 [{"EVENT_TYPE":1,"MEASURE_TIME":"2016-07-28","EVENT_TIME":"2016-07-28 15:42:34","VOLTAGE":109.286,"AMPERE":183.354,"POWER_FACTOR":53.8557,"ACTIVE_POWER":19.619,"REACTIVE_POWER":62.0319,"APPARENT_POWER":64.7083,"AMOUNT_OF_ACTIVE_POWER":0.471427},
 {"EVENT_TYPE":2,"MEASURE_TIME":"2016-07-28","EVENT_TIME":"2016-07-28 15:42:59","VOLTAGE":125.217,"AMPERE":190.821,"POWER_FACTOR":6.12307,"ACTIVE_POWER":118.374,"REACTIVE_POWER":122.969,"APPARENT_POWER":37.3271,"AMOUNT_OF_ACTIVE_POWER":0.0882252},
 {"EVENT_TYPE":3,"MEASURE_TIME":"2016-07-28","EVENT_TIME":"2016-07-28 15:43:11","VOLTAGE":11.8469,"AMPERE":79.9082,"POWER_FACTOR":43.0052,"ACTIVE_POWER":146.784,"REACTIVE_POWER":27.5036,"APPARENT_POWER":76.3898,"AMOUNT_OF_ACTIVE_POWER":0.0303286},

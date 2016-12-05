@@ -48,6 +48,7 @@ function drawChart() {
   // var barchart = dc.barChart('#bar-chart');
   var volumeChart = dc.barChart('#volumn-chart');
   var moveChart = dc.lineChart('#move-chart');
+  var number01Chart = dc.numberDisplay('#number01-chart');
   // var fluctuationChart = dc.barChart('#fluctuation-chart');
   var seriesChart = dc.seriesChart('#series-chart');
 //   d3.json('/dashboard/restapi/fruits', function(error, counts) {
@@ -90,8 +91,11 @@ function drawChart() {
     var dateFormat = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
     var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
     var numberFormat = d3.format('.2f');
-    var minDate  = new Date('2016-11-01T00:00:00');
-    var maxDate = new Date("2016-11-30T00:00:00");
+    var minDate  = new Date('2016-11-20T00:00:00');
+    var maxDate = new Date("2016-12-02T00:00:00");
+
+    var minDay  = new Date('2016-12-01T16:00:00');
+    var maxDay = new Date("2016-12-02T16:00:00");
 
     // {"node_id":"0001.00000001","event_time":"2016-11-25 15:42:34.0","event_type":"1",
     //  "active_power":19.618999481201172,"ampere":183.35400390625,"als_level":null,
@@ -101,38 +105,50 @@ function drawChart() {
     var data = out_data.rtnData[0];
 
     data = [
-      {node_id: "0001.00000001", event_time: "2016-11-24 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2},
-      {node_id: "0001.00000001", event_time: "2016-11-24 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10},
-      {node_id: "0001.00000001", event_time: "2016-11-24 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5},
-      {node_id: "0001.00000001", event_time: "2016-11-25 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2},
-      {node_id: "0001.00000001", event_time: "2016-11-25 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10},
-      {node_id: "0001.00000001", event_time: "2016-11-25 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5},
-      {node_id: "0001.00000001", event_time: "2016-11-26 10:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:2},
-      {node_id: "0001.00000001", event_time: "2016-11-26 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2},
-      {node_id: "0001.00000001", event_time: "2016-11-26 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10},
-      {node_id: "0001.00000001", event_time: "2016-11-26 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5},
-      {node_id: "0001.00000001", event_time: "2016-11-26 10:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:2},
-      {node_id: "0001.00000001", event_time: "2016-11-27 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2},
-      {node_id: "0001.00000001", event_time: "2016-11-27 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10},
-      {node_id: "0001.00000001", event_time: "2016-11-28 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5},
-      {node_id: "0001.00000001", event_time: "2016-11-28 10:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:2},
-      {node_id: "0001.00000001", event_time: "2016-11-28 11:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:3},
-      {node_id: "0001.00000001", event_time: "2016-11-28 12:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
-      {node_id: "0001.00000001", event_time: "2016-11-28 13:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
-      {node_id: "0001.00000001", event_time: "2016-11-28 14:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
-      {node_id: "0001.00000001", event_time: "2016-11-28 15:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
-      {node_id: "0001.00000001", event_time: "2016-11-28 16:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
-      {node_id: "0001.00000001", event_time: "2016-11-30 10:05:22.0", event_type: "81", active_power: 20, ampere: 4, als_level:2},
-      {node_id: "0001.00000001", event_time: "2016-11-30 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2},
-      {node_id: "0001.00000001", event_time: "2016-11-30 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10},
-      {node_id: "0001.00000001", event_time: "2016-11-30 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5},
-      {node_id: "0001.00000001", event_time: "2016-11-30 10:05:22.0", event_type: "81", active_power: 20, ampere: 4, als_level:2},
-      {node_id: "0001.00000001", event_time: "2016-11-30 11:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:3},
-      {node_id: "0001.00000001", event_time: "2016-11-30 12:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
-      {node_id: "0001.00000001", event_time: "2016-11-30 13:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
-      {node_id: "0001.00000001", event_time: "2016-11-30 14:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:7},
-      {node_id: "0001.00000001", event_time: "2016-11-30 15:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:7},
-      {node_id: "0001.00000001", event_time: "2016-11-30 16:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7},
+      {node_id: "0001.00000001", event_time: "2016-11-24 01:00:00.0", event_type: "1", active_power: 24.702, ampere: 54.4188, als_level:2, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-24 10:05:21.0", event_type: "1", active_power: 13.814, ampere: 176.736, als_level:10, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-24 14:05:22.0", event_type: "1", active_power: 85.417, ampere: 40.3235, als_level:5, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-25 01:00:00.0", event_type: "17", active_power: 0, ampere: 0, als_level:2, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-25 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-25 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-26 10:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:2, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-26 01:00:00.0", event_type: "17", active_power: 0, ampere: 0, als_level:2, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-26 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-26 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-26 10:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:2, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-27 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-27 10:05:21.0", event_type: "33", active_power: 0, ampere: 0, als_level:0, vibration:120 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-28 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-28 10:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:2, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-28 11:05:21.0", event_type: "49", active_power: 0, ampere: 0, als_level:0, vibration:0 , noise_decibel:2.4, noise_frequency:13700},
+      {node_id: "0001.00000001", event_time: "2016-11-28 12:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-28 13:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-28 14:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-28 15:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-28 16:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-30 10:05:22.0", event_type: "81", active_power: 20, ampere: 4, als_level:2, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-30 01:00:00.0", event_type: "1", active_power: 10, ampere: 7, als_level:2, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-30 10:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:10, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-30 14:05:22.0", event_type: "1", active_power: 20, ampere: 4, als_level:5, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-30 10:05:22.0", event_type: "81", active_power: 20, ampere: 4, als_level:2, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-30 11:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:3, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-30 12:05:21.0", event_type: "1", active_power: 10, ampere: 10, als_level:7, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-30 13:05:21.0", event_type: "1", active_power: 85.417, ampere: 10, als_level:7, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-11-30 14:05:21.0", event_type: "49", active_power: 10, ampere: 10, als_level:7, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-12-01 14:05:21.0", event_type: "33", active_power: 10, ampere: 10, als_level:7, vibration:120 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-12-01 15:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:7, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-12-01 15:06:21.0", event_type: "17", active_power: 0, ampere: 0, als_level:12, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-12-01 15:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:7, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-12-01 16:05:21.0", event_type: "1", active_power: 24.702, ampere: 10, als_level:7, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-12-01 16:08:21.0", event_type: "33", active_power: 24.702, ampere: 10, als_level:7, vibration:50 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-12-01 16:07:21.0", event_type: "1", active_power: 13.814, ampere: 10, als_level:7, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-12-02 14:05:21.0", event_type: "33", active_power: 10, ampere: 10, als_level:7, vibration:120 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-12-02 15:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:7, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-12-02 15:06:21.0", event_type: "17", active_power: 0, ampere: 0, als_level:12, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-12-02 15:05:21.0", event_type: "81", active_power: 10, ampere: 10, als_level:7, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-12-02 16:05:21.0", event_type: "17", active_power: 24.702, ampere: 10, als_level:5, vibration:0 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-12-02 16:08:21.0", event_type: "33", active_power: 24.702, ampere: 10, als_level:7, vibration:50 , noise_decibel:0, noise_frequency:0},
+      {node_id: "0001.00000001", event_time: "2016-12-02 16:07:21.0", event_type: "1", active_power: 13.814, ampere: 10, als_level:7, vibration:0 , noise_decibel:0, noise_frequency:0},
     ];
 
     var cnt_event_type = 0,
@@ -142,6 +158,9 @@ function drawChart() {
       d.dd = df.parse(d.event_time);
       d.month = d3.time.month(d.dd);
       d.day = d3.time.day(d.dd);
+      d.hour = d.event_time.substring(11,13);
+      // console.log(d.hour);
+
       // d.month = d3.time.month(d.dd); // pre-calculate month for better performance
       // d.VOLTAGE = +d.VOLTAGE;
       if (d.event_type == '81')
@@ -160,16 +179,6 @@ function drawChart() {
     console.log(data);
 
     var ndx = crossfilter(data);
-
-    // console.log(ndx);
-    var apDim = ndx.dimension(function (d) {
-      return [+d.event_type, +d.dd];
-    });
-
-    // console.log(apDim);
-    var ampereGroup = apDim.group().reduceSum(function(d) {
-      return d.cnt_event_type;
-    });
 
     var moveDays = ndx.dimension(function (d) {
       return d.day;
@@ -209,6 +218,50 @@ function drawChart() {
       return d.event_type == '81'? 1 : 0;
     });
 
+    var active_powerGroup = moveDays.groupAll().reduce(
+          function (p, v) {
+            console.log(v);
+              ++p.n;
+              p.tot += p.active_power;
+              console.log(p);
+              return p;
+          },
+          function (p, v) {
+              --p.n;
+              p.tot -= v.active_power;
+              return p;
+          },
+          function () { return {n:0,active_power:0}; }
+      );
+
+    var avg_active_power = function(d) {
+      console.log(d);
+      return d.n ? d.tot / d.n : 0;
+    };
+
+    var apDim = ndx.dimension(function (d) {
+      return [+d.event_type, +d.hour];
+    });
+
+    console.log('apDim.group() size : ' + apDim.group().size());
+    var ampereGroup = apDim.group().reduceSum(function(d) {
+      var p = 0;
+      if (d.event_type == '1') {
+        p = d.active_power;
+      } else if (d.event_type == '17') {
+        p = d.als_level;
+      } else if (d.event_type == '33') {
+        p = d.vibration;
+      } else if (d.event_type == '49') {
+        p = d.noise_decibel;
+      } else {
+        p = 0;
+      }
+      // console.log(d);
+      // console.log('=> p : ' + p);
+      return p;
+    });
+
     volumeChart
       .width(620)
       .height(60)
@@ -236,7 +289,7 @@ function drawChart() {
       .xUnits(d3.time.days)
       .elasticY(true)
       .renderHorizontalGridLines(true)
-      .legend(dc.legend().x(800).y(10).itemHeight(13).gap(5))
+      .legend(dc.legend().x(500).y(10).itemHeight(13).gap(5))
       .brushOn(false)
       .group(faultCntByDayGroup, 'Daily Event Count')
       .valueAccessor(function (d) {
@@ -254,24 +307,39 @@ function drawChart() {
         return 'day : ' + dateFormat(d.key) + '\n count : ' + numberFormat(value);
       });
 
+    number01Chart
+      .formatNumber(d3.format(".3s"))
+      .valueAccessor(avg_active_power)
+      .group(active_powerGroup);
+
     seriesChart
       .width(620)
       .height(250)
       .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
-      .x(d3.time.scale().domain([minDate, maxDate]))
+      .x(d3.scale.linear().domain([0, 25]))
       .brushOn(false)
       .yAxisLabel("Values")
       .xAxisLabel("Time")
       .clipPadding(10)
+      .renderHorizontalGridLines(true)
       .elasticY(true)
       .dimension(apDim)
       .group(ampereGroup)
       .mouseZoomable(true)
-      .seriesAccessor(function(d) {return "Expt: " + d.key[0];})
-      .keyAccessor(function(d) {return +d.key[1];})
-      .valueAccessor(function(d) {return +d.value;})
-      .legend(dc.legend().x(350).y(350).itemHeight(13).gap(5).horizontal(1).legendWidth(140).itemWidth(70));
-    seriesChart.yAxis().tickFormat(function(d) {return d3.format(',d')(d);});
+      .seriesAccessor(function(d) {
+        // console.log(d);
+        // console.log(d.key[0]);
+        return "Event : " + d.key[0];
+      })
+      .keyAccessor(function(d) {
+        return +d.key[1];
+      })
+      .valueAccessor(function(d) {
+        // console.log(d);
+        return +d.value;
+      })
+      .legend(dc.legend().x(520).y(10).itemHeight(13).gap(5).horizontal(1).legendWidth(50).itemWidth(50));
+    seriesChart.yAxis().tickFormat(function(d) {return d;});
     seriesChart.margins().left += 40;
 
     dc.renderAll();
