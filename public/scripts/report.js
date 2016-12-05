@@ -3,13 +3,14 @@
   var eventChart = dc.pieChart('#eventChart');
   var hourSeries = dc.seriesChart('#hourSeries');
   var avgCom = dc.compositeChart("#avgCom");
+  var avgVib = dc.compositeChart("#avgVib");
   //var volumeChart = dc.seriesChart('#volumeChart');
 
 d3.json("/reports/restapi/getReportRawData", function(err, data){
   if(err) throw error;
    var numberFormat = d3.format('.2f');
-   var minDate = new Date('2016-11-25T00:00:00')
-   var maxDate = new Date('2016-12-02T24:00:00')   
+   var minDate = new Date('2016-11-29T00:00:00')
+   var maxDate = new Date('2016-12-05T24:00:00')   
    var today = '';
 //   console.log(data);
 
@@ -48,7 +49,10 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
         break;
     }
     d.active_power  =  parseInt(d.active_power);
-    d.vibration = (parseInt(d.vibration_x)+parseInt(d.vibration_y)+parseInt(d.vibration_z))/3;
+    d.vibration_x = parseInt(d.vibration_x);
+    d.vibration_y = parseInt(d.vibration_y);
+    d.vibration_z =  parseInt(d.vibration_z);
+    d.vibration = (d.vibration_x+d.vibration_y+d.vibration_z)/3;
     d.event_name= event;
     console.log()
   }); 
@@ -184,7 +188,6 @@ var seriesGroup = seriesDim.group().reduce(
   function (p, v) {
     if(v.event_type ===  "1") { // 파워
       p.max = p.max < v.active_power ? v.active_power : p.max;      
-      console.log(p);
         return p;
     } else if(v.event_type === " 17") { // 조도
       p.max = 0;
@@ -214,31 +217,159 @@ var seriesGroup = seriesDim.group().reduce(
   }
 );
 
-  var avgComDim = nyx.dimension(function (d) { return d.dd; });
-  var activeGroup = avgComDim.group().reduceSum(function (d) {
-    console.log('check');
-    if(d.event_type === 1)
-      return d.active_power;
-  });
-  var vibrationGroup = avgComDim.group().reduceSum(function(d) {
-    if(d.event_type === 3)      
-      return d.vibration;
+  var avgComDim = nyx.dimension(function (d) { return d3.time.day(d.dd); });
+  var activeGroup = avgComDim.group().reduce(  
+    function (p, v) {      
+      if(v.event_type != "1") {
+        p.value = 0;  
+      }  else {        
+        p.value = v.active_power;
+        ++p.cnt ;
+      }      
+      p.sum += p.value;
+      p.avg = numberFormat(p.sum / p.cnt);
+      return p;
+    },
+    function (p, v) {      
+      if(v.event_type != "1") {
+        p.value = 0;
+      }  else {        
+        p.value = v.active_power;
+        -- p.cnt ;
+      }      
+      p.sum -= p.value;
+      p.avg = numberFormat(p,sum / p.cnt);
+      return p;      
+    },
+    function() {
+      return { value :0, cnt:0, sum:0, avg:0 };
+    }
+);
+  var vibrationGroup = avgComDim.group().reduce(
+   function (p, v) {
+    if(v.event_type != "33") {
+      p.value = 0;
+    }  else {        
+      p.value = v.vibration;
+      ++ p.cnt ;
+    }      
+      p.sum += p.value;
+      p.avg = numberFormat(p.sum / p.cnt);
+      return p;
+  },
+  function (p, v) {
+    if(v.event_type != "33") {
+      p.value = 0;
+    }  else {     
+      p.value = v.vibration;   
+      -- p.cnt ;
+    }    
+    p.sum -= p.value;
+    p.avg = numberFormat(p.sum / p.cnt);
+    return p;
+  },
+  function() {
+    return { value :0, cnt:0, sum:0, avg:0 };
   });
 
-
+ var vibrationXGroup = avgComDim.group().reduce(
+   function (p, v) {
+      if(v.event_type != "33") {
+        p.value = 0;
+      }  else {        
+        p.value = v.vibration_x;
+        ++ p.cnt ;
+      }         
+        p.sum += p.value;
+        p.avg = numberFormat(p.sum / p.cnt);
+        return p;
+    },
+    function (p, v) {      
+      if(v.event_type != "33") {
+        p.value = 0;
+      }  else {        
+        p.value = v.vibration_x
+        -- p.cnt ;
+      }        
+        p.sum -= p.value;
+        p.avg = numberFormat(p.sum / p.cnt);
+        return p;      
+    },
+    function() {
+      return { value :0, cnt:0, sum:0, avg:0 };
+    }
+  );
+var vibrationYGroup = avgComDim.group().reduce(
+   function (p, v) {
+      if(v.event_type != "33") {
+        p.value = 0;
+      }  else {        
+        p.value = v.vibration_y;
+        ++ p.cnt ;
+      }
+      p.sum += p.value;
+      p.avg = numberFormat(p.sum / p.cnt);
+      return p;
+    },
+    function (p, v) {      
+     if(v.event_type != "33") {
+        p.value = 0;
+      }  else {        
+        p.value = v.vibration_y;
+        -- p.cnt ;
+      }        
+      p.sum -= p.value;
+      p.avg = numberFormat(p.sum / p.cnt);
+      return p;      
+    },
+    function() {
+      return { value :0, cnt:0, sum:0, avg:0 };
+    }
+  );
+var vibrationZGroup = avgComDim.group().reduce(
+   function (p, v) {
+     if(v.event_type != "33") {
+       p.value = 0;
+     }  else {        
+       p.value = v.vibration_z;
+        ++ p.cnt ;
+      }         
+      p.sum += p.value;
+      p.avg = numberFormat(p.sum / p.cnt);
+      return p;
+    },
+    function (p, v) {      
+      if(v.event_type != "33") {
+        p.value = 0;
+      }  else {      
+        p.value = v.vibration_z;
+        -- p.cnt ;
+      }
+      p.sum -= p.value;
+      p.avg = numberFormat(p.sum / p.cnt);
+      return p;      
+    },
+    function() {
+      return { value :0, cnt:0, sum:0, avg:0 };
+    }
+  );
 
 
 var adjustX = 20, adjustY = 40;
 window.onresize = function()  {
   eventChart
   .width(window.innerWidth*0.4-adjustX)
-  .height((window.innerWidth*0.4-adjustX)*0.8)
+  .height((window.innerWidth*0.4-adjustX)*0.75)
   .redraw();
  hourSeries
   .width(window.innerWidth*0.4-adjustX)
   .height((window.innerWidth*0.4-adjustX)*0.8)
   .redraw();
-  avgCom
+  avgCom  
+  .width(window.innerWidth*0.4-adjustX)
+  .height((window.innerWidth*0.4-adjustX)*0.8)
+  .redraw();
+  avgVib
   .width(window.innerWidth*0.4-adjustX)
   .height((window.innerWidth*0.4-adjustX)*0.8)
   .redraw();
@@ -246,7 +377,7 @@ window.onresize = function()  {
 /* dc.pieChart('#eventChart') */
   eventChart 
     .width(window.innerWidth*0.4-adjustX)    
-    .height((window.innerWidth*0.4-adjustX)*0.8)
+    .height((window.innerWidth*0.4-adjustX)*0.75)
     .radius((window.innerWidth*0.4-adjustX)*0.3)
     .dimension(eventDim)
     .group(eventGroup)
@@ -279,7 +410,7 @@ window.onresize = function()  {
 /* dc.seriesChart('#hourSeries') */
   hourSeries
     .width(window.innerWidth*0.4-adjustX)    
-    .height((window.innerWidth*0.4-adjustX)*0.8)
+    .height((window.innerWidth*0.4-adjustX)*0.75)
      .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
      .x(d3.time.scale().domain([minDate, maxDate])) 
     .brushOn(false)
@@ -300,14 +431,53 @@ window.onresize = function()  {
     hourSeries.yAxis().tickFormat(function(d){  return d3.format('.d')(d); });
     hourSeries.margins().left += 40;  
 
+    var active = 0, vibration = 0, vibX = 0, vibY = 0, vibZ = 0;
     avgCom
+/*      .renderArea(true)
+      .renderHorizontalGridLines(true)*/
       .width(window.innerWidth*0.4-adjustX)    
       .height((window.innerWidth*0.4-adjustX)*0.9)
       .dimension(avgComDim)
       .transitionDuration(500)
-      .elasticY(true)
+      //.elasticY(true)
+      .y(d3.scale.linear().domain([0, 150])) 
       .brushOn(false)
+      .mouseZoomable(true)
       .x(d3.time.scale().domain([minDate, maxDate])) 
+   //   .yAxisLabel("Date")
+ //     .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
+      .title(function(d) {
+        return "\nNumber of Povetry: " + d.key;
+      })
+      .compose([
+          dc.lineChart(avgCom).group(vibrationGroup)
+            .valueAccessor(function(d){
+              if(d.value.avg != 0)
+                vibration = d.value.avg;                        
+             return vibration; })
+            .colors('blue'),
+          dc.lineChart(avgCom).group(activeGroup)
+            .valueAccessor(function(d) {              
+              if(d.value.avg != 0)
+                active = d.value.avg;                
+              return active;  })
+            .colors('green'),
+        ]);
+
+
+    avgVib
+//      .renderArea(true)
+      .width(window.innerWidth*0.4-adjustX)    
+      .height((window.innerWidth*0.4-adjustX)*0.9)
+      .dimension(avgComDim)
+      .transitionDuration(500)
+      .y(d3.scale.linear().domain([0,150])) 
+//      .elasticY(true)
+//      .brushOn(true)
+      .mouseZoomable(true)
+      .x(d3.time.scale().domain([minDate, maxDate])) 
+//      .alwaysUseRounding(true)
+      .xUnits(d3.time.day)
    //   .yAxisLabel("Date")
  //     .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
 //      .renderHorizontalGridLines(true)
@@ -317,9 +487,33 @@ window.onresize = function()  {
       .title(function(d) {
         return "\nNumber of Povetry: " + d.key;
       })
-      .compose([
-          dc.lineChart(avgCom).group(activeGroup),
-          dc.lineChart(avgCom).group(vibrationGroup)
+      .compose([          
+          dc.barChart(avgVib).group(vibrationGroup)
+            .valueAccessor(function(d){
+              if(d.value.avg != 0)
+                vibration = d.value.avg;              
+             return vibration; })
+            .colors('blue')
+            .xUnits(function(){return 10;}),
+          dc.lineChart(avgVib).group(vibrationXGroup)
+            .valueAccessor(function(d){
+              if(d.value.avg != 0)
+                vibX = d.value.avg;                
+             return vibX; })
+            .colors('#E2F2FF'),
+          dc.lineChart(avgVib).group(vibrationYGroup)
+            .valueAccessor(function(d){
+              if(d.value.avg != 0)
+                vibY = d.value.avg;
+                return vibY; })
+            .colors('#6BBAFF'),
+          dc.lineChart(avgVib).group(vibrationZGroup)
+            .valueAccessor(function(d){
+              if(d.value.avg != 0)
+                vibZ = d.value.avg;
+//              console.log(d.value);
+             return vibZ; })
+            .colors('#0089FF')
         ]);
 
 /*volumeChart

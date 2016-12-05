@@ -35,7 +35,7 @@ var sqlList = {
         "         noise_decibel, noise_frequency, "+
         "         vibration_x, vibration_y, vibration_z"+
         "    from tb_node_raw"+
-        "   where measure_time > date '2016-11-25' ",
+        "   where measure_time > date '2016-11-29' ",
 //        "    where measure_time In ('2016-11-26', '2016-12-02') ",
 //        "  where year = date_part('YEAR', current_date()) "+
   //      "    and month = date_part('MONTH', current_date())",
