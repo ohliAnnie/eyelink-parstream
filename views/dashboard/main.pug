@@ -1,11 +1,13 @@
 extends ../layout-dashboard
 
 block style
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
 block scripts
   script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
   script(type='text/javascript', src='/assets/annie/js/dc.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(type='text/javascript', src='/assets/leaflet/leaflet.js')
   script(type='text/javascript', src="/scripts/dashboard.js")
 block content
   main.layout-contents
@@ -31,7 +33,7 @@ block content
                 em.title ELECTRICITY BILL
                 strong.point.usd
                   span#bill.odometer 0
-                  span.units /MWh
+                  span.units
                 strong#pbill.growth.up 13.92
                   span %
                 p.description Average value of count in the past month
@@ -68,13 +70,17 @@ block content
 
             // draw Chart
             drawChart();
+
+            // draw Map
+            drawMap();
           });
         .grid-dashboard
           .grid-item.map
             .inner
-              //- .map-container
-              div.chart
-                #bar-chart
+              div.map-container
+                #bubble-map(style="height: 100%")
+              //- div.chart
+              //-   #bar-chart
           .grid-item.other
             .inner
               strong.grid-item-title Event/Fault Counts
@@ -98,7 +104,7 @@ block content
                 #plot02-chart
               div.chart(style="left:350px;")
                 #plot03-chart
-              div.chart(style="left:500px;")
+              div.chart(style="left:500px;top:80px;")
                 #plot_pie-chart
               //- ul.list-chart.flip-in-x
               //-   li

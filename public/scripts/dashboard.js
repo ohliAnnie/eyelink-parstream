@@ -44,6 +44,19 @@ function displayCount() {
   });
 }
 
+function drawMap() {
+  var bubbleMap = L.map('bubble-map').setView([37.467271, 127.042861], 13);
+
+  L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox.streets',
+    accessToken: 'pk.eyJ1IjoidG92ZW5iYWUiLCJhIjoiY2l3YnQwbDM0MDR3ZTJvcXVxb2JrNDBxbCJ9.nN-PfJ9x8hU9K8OwO_ti1g'
+    // accessToken: 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw'
+  }).addTo(bubbleMap);
+
+}
+
 function drawChart() {
   // var barchart = dc.barChart('#bar-chart');
   var volumeChart = dc.barChart('#volumn-chart');
