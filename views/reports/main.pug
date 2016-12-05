@@ -15,8 +15,11 @@ block style
       width: 100%;
       height: auto;
       overflow: hidden;
-      padding-bottom: 56.26%;
+      padding-bottom: 56.26%;    
+      text-align:center;
+      color : white;
     }
+
     #eventChart {
       top: 0;
       left: 0;
@@ -35,6 +38,7 @@ block scripts
   script(type='text/javascript', src='/assets/annie/js/dc.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
   script(src='/scripts/report.js')
+  script(src='/scripts/radar.js')
 block content
   main.layout-contents.padding
     div.layout-contents-inner
@@ -58,7 +62,7 @@ block content
                   option(value='') Node ID
                 select.select(name='', id='')
                   option(value='') ALL
-              button.btn-submit.search(type='submit') SEARCH        
+              button.btn-submit.search(type='submit') SEARCH
         script.
           $(document).ready(function() {
             report();
@@ -79,20 +83,25 @@ block content
               });
           });
         div.map-container
-          div.inner             
+          div.inner
         ul.list-reports
           li
-            div.chart(style='text-align:center')
+            div.chart
+              strong Events Occurance By Type
               #eventChart(style='margine:0 auto;')
           li
             div.chart
+              strong Energy Consumption by Time of Day
               #hourSeries
           li
             div.chart
+              strong Daily Avg
               #avgCom
-              //- #volumeChart
+              a.reset(href='javascript:yearlyBubbleChart.filterAll();dc.redrawAll();', style='display: none;') reset
+              .clearfix          
           li
             div.chart
+              strong Daily Avg. Vibrations
               #avgVib
           li
             div.chart
