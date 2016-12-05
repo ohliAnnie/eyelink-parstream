@@ -81,7 +81,7 @@ block content
               p.grid-item-desc The event/fault Counts in today/yesterday
               div.chart
                 #volumn-chart(style="width:100%; height:100%; left:0; top:0;")
-              div.chart(style="top:125px;")
+              div.chart(style="top:100px;")
                 #move-chart
                   //- strong Days by Fluctuation(%) |
                   //-   span.reset(style='display: none;') | range:
@@ -91,9 +91,15 @@ block content
                 //- img(src='assets/images/@temp/chart01.jpg', alt='')
           .grid-item
             .inner
-              strong.grid-item-title ACTIVE POWER
+              strong.grid-item-title ACTIVE POWER / NOISE / VIBRATION
               div.chart
-                #number01-chart
+                #plot01-chart
+              div.chart(style="left:180px;")
+                #plot02-chart
+              div.chart(style="left:350px;")
+                #plot03-chart
+              div.chart(style="left:500px;")
+                #plot_pie-chart
               //- ul.list-chart.flip-in-x
               //-   li
               //-     strong.grid-item-title ACTIVE POWER
