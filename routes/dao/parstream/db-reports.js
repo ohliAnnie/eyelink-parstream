@@ -32,7 +32,8 @@ var sqlList = {
   "selectEventRawData" :
         "    select node_id, event_time, event_type, active_power, ampere,  "+
         "       als_level, dimming_level, "+
-        "         noise_decibel, noise_frequency, "+
+ //       "         noise_decibel, noise_frequency, "+
+        "   status_power_meter, "+
         "         vibration_x, vibration_y, vibration_z"+
         "    from tb_node_raw"+
         "   where measure_time > date '2016-11-29' ",
