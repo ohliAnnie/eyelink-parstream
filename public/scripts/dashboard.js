@@ -374,7 +374,7 @@ function drawChart() {
     });
 
     console.log('eventTypeDim.group() size : ' + eventTypeDim.group().size());
-    var eventTypeGroup = eventTypeDim.group().reduceSum(function(d) {
+    var eventTypeGroup = eventTypeDim.group().reduceCount(function(d) {
       var p = 0;
       if (d.event_type == '1') {
         p = d.active_power;
@@ -475,7 +475,7 @@ function drawChart() {
       .width(620)
       .height(210)
       .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
-      .x(d3.scale.linear().domain([0, 25]))
+      .x(d3.scale.linear().domain([0,24]))
       .brushOn(false)
       .yAxisLabel("Values")
       .xAxisLabel("Time")
