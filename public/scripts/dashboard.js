@@ -48,13 +48,75 @@ function drawMap() {
   var bubbleMap = L.map('bubble-map').setView([37.467271, 127.042861], 13);
 
   L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    // attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
     maxZoom: 18,
     id: 'mapbox.streets',
     accessToken: 'pk.eyJ1IjoidG92ZW5iYWUiLCJhIjoiY2l3YnQwbDM0MDR3ZTJvcXVxb2JrNDBxbCJ9.nN-PfJ9x8hU9K8OwO_ti1g'
     // accessToken: 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw'
   }).addTo(bubbleMap);
 
+  // d3.json("/dashboard/restapi/getNodeGeo", function(data) {
+  //   console.log(data);
+  //   drawMarkerSelect(data);
+  //   drawMarkerArea(data);
+  // });
+
+  function drawMarkerSelect(data) {
+    var xf = crossfilter(data);
+    var groupname = "marker-select";
+    var facilities = xf.dimension(function(d) { return d.geo; });
+    var facilitiesGroup = facilities.group().reduceCount();
+    console.log(facilitiesGroup.size());
+    dc.leafletMarkerChart("#bubble-map .map",groupname)
+        .dimension(facilities)
+        .group(facilitiesGroup)
+        .width(600)
+        .height(400)
+        .center([37.467271, 127.042861])
+        .zoom(7)
+        .cluster(true);
+    // var types = xf.dimension(function(d) { return d.type; });
+    // var typesGroup = types.group().reduceCount();
+    // dc.pieChart("#demo1 .pie",groupname)
+    //     .dimension(types)
+    //     .group(typesGroup)
+    //     .width(200)
+    //     .height(200)
+    //     .renderLabel(true)
+    //     .renderTitle(true)
+    //     .ordering(function (p) {
+    //       return -p.value;
+    //     });
+    dc.renderAll(groupname);
+  }
+  function drawMarkerArea(data) {
+    var xf = crossfilter(data);
+    var groupname = "marker-area";
+    var facilities = xf.dimension(function(d) { return d.geo; });
+    var facilitiesGroup = facilities.group().reduceCount();
+    dc.leafletMarkerChart("#bubble-map .map",groupname)
+        .dimension(facilities)
+        .group(facilitiesGroup)
+        .width(600)
+        .height(400)
+        .center([37.467271, 127.042861])
+        .zoom(7)
+        .renderPopup(false)
+        .filterByArea(true);
+    // var types = xf.dimension(function(d) { return d.type; });
+    // var typesGroup = types.group().reduceCount();
+    // dc.pieChart("#demo2 .pie",groupname)
+    //     .dimension(types)
+    //     .group(typesGroup)
+    //     .width(200)
+    //     .height(200)
+    //     .renderLabel(true)
+    //     .renderTitle(true)
+    //     .ordering(function (p) {
+    //       return -p.value;
+    //     });
+    dc.renderAll(groupname);
+  }
 }
 
 function drawChart() {
@@ -119,7 +181,7 @@ function drawChart() {
     //  "vibration_y":null,"vibration_z":null}
 
     var data = out_data.rtnData[0];
-    console.log(data);
+    // console.log(out_data);
 
     // data = [
     //   {node_id: "0001.00000001", event_time: "2016-11-24 01:00:00.0", event_type: "1", active_power: 24.702, ampere: 54.4188, als_level:2, vibration:0 , noise_decibel:0, noise_frequency:0},
@@ -333,11 +395,11 @@ function drawChart() {
     volumeChart
       .width(620)
       .height(60)
-      .margins({top: 10, right: 50, bottom: 30, left: 40})
+      .margins({top: 0, right: 50, bottom: 20, left: 40})
       .dimension(moveDays)
       .group(volumnByDayGroup)
       .centerBar(true)
-      .gap(10)
+      .gap(1)
       .x(d3.time.scale().domain([minDate, maxDate]))
       .round(d3.time.day.round)
       .alwaysUseRounding(true)
