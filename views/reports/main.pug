@@ -10,6 +10,9 @@ block style
     .dc-chart g.row text {
       fill: white;
     }
+    .dc-chart g.axis text {
+      fill: white;
+    }
    .chart {
       position: relative;
       width: 100%;
@@ -31,6 +34,14 @@ block style
       left: 0;
       width: auto;
       height: auto;
+    }
+    #apMax .x.axis text {
+      text-anchor: end !important;
+      transform: rotate(-30deg);
+    }
+    #vibMax .x.axis text {
+      text-anchor: end !important;
+      transform: rotate(-30deg);
     }
 block scripts
   script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
@@ -84,27 +95,33 @@ block content
           });
         div.map-container
           div.inner
+        a(href='javascript:dc.filterAll(); dc.renderAll();') Reset All
         ul.list-reports
           li
             div.chart
               strong Events Occurance By Type
+              br
               #eventChart(style='margine:0 auto;')
           li
             div.chart
-              strong Energy Consumption by Time of Day
-              #hourSeries
+              strong Energy Consumption by Time of Day (Max)
+              br
+              div
+                #apMax
+              div
+                #vibMax                    
           li
             div.chart
               strong Daily Avg
-              #avgCom
-              a.reset(href='javascript:yearlyBubbleChart.filterAll();dc.redrawAll();', style='display: none;') reset
-              .clearfix
+              br
+              #avgCom            
           li
             div.chart
               strong Daily Avg. Vibrations
               #avgVib
           li
             div.chart
+              #timeMax
           li
             div.chart
           li

@@ -80,6 +80,7 @@ div.dc-chart {
 }
 
 .dc-chart .axis text {
+    fill: white;
     font: 10px sans-serif;
 }
 
