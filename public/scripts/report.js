@@ -2,16 +2,20 @@
 
   var eventChart = dc.pieChart('#eventChart');
   var hourSeries = dc.seriesChart('#hourSeries');
+  var timeMax = dc.compositeChart("#timeMax");
+  var apMax = dc.barChart("#apMax");
+  var vibMax = dc.barChart("#vibMax");
   var avgCom = dc.compositeChart("#avgCom");
   var avgVib = dc.compositeChart("#avgVib");
-  var vibBar = dc.barChart(avgVib);
   //var volumeChart = dc.seriesChart('#volumeChart');
 
 d3.json("/reports/restapi/getReportRawData", function(err, data){
   if(err) throw error;
    var numberFormat = d3.format('.2f');
-   var minDate = new Date('2016-11-29T00:00:00')
-   var maxDate = new Date('2016-12-05T24:00:00')   
+   var minDate = new Date(2016,10,29);
+   var maxDate = new Date(2016,11,06); 
+   var yesDate = new Date(2016,11,05);
+
    var today = '';
 //   console.log(data.rtnData[0]);
 
@@ -149,74 +153,7 @@ var volumeGroup = dayTypeDim.group().reduce(
   }
 );*/
 
-var seriesDim = nyx. dimension(function(d){
-  return [+d.event_type, d.hour];
-});
-
-var seriesGroup = seriesDim.group().reduce(  
-  function (p, v) {
-//    console.log(v);
-    if(v.event_type ===  "1") { // 파워
-      p.max = p.max < v.active_power ? v.active_power : p.max;      
-//      console.log(p);
-//      console.log(v.hour);
-        return p;
-    } else if(v.event_type === " 17") { // 조도
-      p.max = p.max < v.als_level ? v.als_level : p.max;
-        return p;
-    } else if(v.event_type === "33") { // 진동
-      p.max = p.max < v.vibration ? v.vibration : p.max;
-        return p;
-    } else if(v.event_type === "49") { // 노이즈
-      p.max = 0;
-        return p;
-    } else  if(v.event_type === "65") { // GPS
-      p.max = 0;
-        return p;
-    } else if(v.event_type === "81") { // 센서상태
-      p.max = 0;
-        return p;
-    } else if(v.event_type === "153") { // 재부팅
-      p.max = 0;
-        return p;
-    } else {
-      p,max = 0;
-        return p;
-    }
-  },
-  function (p, v) {
-    if(v.event_type ===  "1") { // 파워
-      p.max = p.max < v.active_power ? v.active_power : p.max;      
-        return p;
-    } else if(v.event_type === " 17") { // 조도
-      p.max = p.max < v.als_level ? v.als_level : p.max;
-        return p;
-    } else if(v.event_type === "33") { // 진동
-      p.max = p.max < v.vibration ? v.vibration : p.max;
-        return p;
-    } else if(v.event_type === "49") { // 노이즈
-      p.max = 0;
-        return p;
-    } else  if(v.event_type === "65") { // GPS
-      p.max = 0;
-        return p;
-    } else if(v.event_type === "81") { // 센서상태
-      p.max = p.max < v.status_power_meter ? v.status_power_meter : p.max;
-        return p;
-    } else if(v.event_type === "153") { // 재부팅
-      p.max = 0;
-        return p;
-    } else {
-      p,max = 0;
-        return p;
-    }
-  },
-  function() {
-    return { max :0 };
-  }
-);
-
-  var avgComDim = nyx.dimension(function (d) { return d3.time.day(d.today); });
+  var avgComDim = nyx.dimension(function (d) { return d.today; });
   var activeGroup = avgComDim.group().reduce(  
     function (p, v) {      
       if(v.event_type != "1") {
@@ -354,30 +291,160 @@ var vibrationZGroup = avgComDim.group().reduce(
   );
 
 
+var timeMaxDim = nyx.dimension(function(d) {
+  return d.hour;
+});
+
+var apMaxGroup = timeMaxDim.group().reduce(  
+  function (p, v) {
+//    console.log(v);
+    if(v.event_type !=  "1") { // 파워
+      p.value=0;
+    } else {
+      p.value = v.active_power;
+    }
+    p.max = p.max < p.value ? p.value : p.max;        
+    return p;    
+  },
+  function (p, v) {
+    if(v.event_type !=  "33") { // 진동
+      p.value=0;
+    } else {
+      p.value = v.active_power;
+    }
+    p.max = p.max < p.value ? p.value : p.max;        
+    return p;    
+  },
+  function() {
+    return {value:0, max:0}
+  }
+);
+var vibMaxGroup = timeMaxDim.group().reduce(  
+  function (p, v) {
+//    console.log(v);
+    if(v.event_type !=  "33") { // 파워
+      p.value=0;
+    } else {
+      p.value = v.vibration;
+    }
+    p.max = p.max < p.value ? p.value : p.max;        
+    return p;    
+  },
+  function (p, v) {
+    if(v.event_type !=  "33") { // 파워
+      p.value=0;
+    } else {
+      p.value = v.vibration;
+    }
+    p.max = p.max < p.value ? p.value : p.max;        
+    return p;    
+  },
+  function() {
+    return {value:0, max:0}
+  }
+);
+
+
+var seriesDim = nyx. dimension(function(d){
+  return [+d.event_type, d.hour];
+});
+
+var seriesGroup = seriesDim.group().reduce(  
+  function (p, v) {
+//    console.log(v);
+    if(v.event_type ===  "1") { // 파워
+      p.max = p.max < v.active_power ? v.active_power : p.max;      
+//      console.log(p);
+//      console.log(v.hour);
+        return p;
+    } else if(v.event_type === " 17") { // 조도
+      p.max = p.max < v.als_level ? v.als_level : p.max;
+        return p;
+    } else if(v.event_type === "33") { // 진동
+      p.max = p.max < v.vibration ? v.vibration : p.max;
+        return p;
+    } else if(v.event_type === "49") { // 노이즈
+      p.max = 0;
+        return p;
+    } else  if(v.event_type === "65") { // GPS
+      p.max = 0;
+        return p;
+    } else if(v.event_type === "81") { // 센서상태
+      p.max = 0;
+        return p;
+    } else if(v.event_type === "153") { // 재부팅
+      p.max = 0;
+        return p;
+    } else {
+      p,max = 0;
+        return p;
+    }
+  },
+  function (p, v) {
+    if(v.event_type ===  "1") { // 파워
+      p.max = p.max < v.active_power ? v.active_power : p.max;      
+        return p;
+    } else if(v.event_type === " 17") { // 조도
+      p.max = p.max < v.als_level ? v.als_level : p.max;
+        return p;
+    } else if(v.event_type === "33") { // 진동
+      p.max = p.max < v.vibration ? v.vibration : p.max;
+        return p;
+    } else if(v.event_type === "49") { // 노이즈
+      p.max = 0;
+        return p;
+    } else  if(v.event_type === "65") { // GPS
+      p.max = 0;
+        return p;
+    } else if(v.event_type === "81") { // 센서상태
+      p.max = p.max < v.status_power_meter ? v.status_power_meter : p.max;
+        return p;
+    } else if(v.event_type === "153") { // 재부팅
+      p.max = 0;
+        return p;
+    } else {
+      p,max = 0;
+        return p;
+    }
+  },
+  function() {
+    return { max :0 };
+  }
+);
+
+
 var adjustX = 20, adjustY = 40;
 window.onresize = function()  {
   eventChart
   .width(window.innerWidth*0.4-adjustX)
-  .height((window.innerWidth*0.4-adjustX)*0.65)
+  .height((window.innerWidth*0.4-adjustX)*0.6)
   .redraw();
- hourSeries
+  timeMax
   .width(window.innerWidth*0.4-adjustX)
-  .height((window.innerWidth*0.4-adjustX)*0.65)
+  .height((window.innerWidth*0.4-adjustX)*0.6)
   .redraw();
   avgCom  
   .width(window.innerWidth*0.4-adjustX)
-  .height((window.innerWidth*0.4-adjustX)*0.75)
+  .height((window.innerWidth*0.4-adjustX)*0.7)
   .redraw();
   avgVib
   .width(window.innerWidth*0.4-adjustX)
-  .height((window.innerWidth*0.4-adjustX)*0.75)
+  .height((window.innerWidth*0.4-adjustX)*0.7)
+  .redraw();
+  apMax
+  .width((window.innerWidth*0.4-adjustX)*0.5)
+  .height((window.innerWidth*0.4-adjustX)*0.6)
+  .redraw();
+  vibMax
+  .width((window.innerWidth*0.4-adjustX)*0.5)
+  .height((window.innerWidth*0.4-adjustX)*0.6)
   .redraw();
 };
 /* dc.pieChart('#eventChart') */
   eventChart 
     .width(window.innerWidth*0.4-adjustX)    
-    .height((window.innerWidth*0.4-adjustX)*0.65)
-    .radius((window.innerWidth*0.4-adjustX)*0.3)
+    .height((window.innerWidth*0.4-adjustX)*0.6)
+    .radius((window.innerWidth*0.4-adjustX)*0.25)
     .dimension(eventDim)
     .group(eventGroup)
 //    .slicesCap(4)
@@ -395,6 +462,7 @@ window.onresize = function()  {
         }
         return label;
     })
+    .renderLabel(true)
     .colors(d3.scale.ordinal().range(["#CC333F","#EDC951","#00A0B0", "#756bb1"]));
 
 /*eventChart.on('pretransition', function(eventChart) {
@@ -409,12 +477,11 @@ window.onresize = function()  {
 /* dc.seriesChart('#hourSeries') */
   hourSeries
     .width(window.innerWidth*0.4)    
-    .height((window.innerWidth*0.4-adjustX)*0.65)
+    .height((window.innerWidth*0.4-adjustX)*0.6)
      .margins({top: 20, right: 45, bottom: 40, left: 50})
      .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
      .x(d3.time.scale().domain([minDate, maxDate])) 
     .brushOn(false)
-    .rangeChart(avgCom)
     /*.yAxisLabel("Time")
     .xAxisLabel("Value")*/
     .clipPadding(10)
@@ -438,18 +505,17 @@ window.onresize = function()  {
 /*      .renderArea(true)
       .renderHorizontalGridLines(true)*/
       .width(window.innerWidth*0.4-adjustX)    
-      .height((window.innerWidth*0.4-adjustX)*0.75)
+      .height((window.innerWidth*0.4-adjustX)*0.7)
        .margins({top: 20, right: 45, bottom: 40, left: 50})
       .dimension(avgComDim)
       .transitionDuration(500)
-      //.elasticY(true)
+//      .elasticY(true)
       .y(d3.scale.linear().domain([0, 150])) 
       .rangeChart(avgVib)
       .brushOn(false)
       .mouseZoomable(true)
       .x(d3.time.scale().domain([minDate, maxDate])) 
-   //   .yAxisLabel("Date")
- //     .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
+   //   .yAxisLabel("Date") 
       .title(function(d) {
         return "\nNumber of Povetry: " + d.key;
       })
@@ -466,14 +532,14 @@ window.onresize = function()  {
               if(d.value.avg != 0)
                 active = d.value.avg;                
               return active;  })
-            .colors('#CC333F'),
+            .colors('#EDC951'),
         ]);
 
 
     avgVib
 //      .renderArea(true)
       .width(window.innerWidth*0.4-adjustX)    
-      .height((window.innerWidth*0.4-adjustX)*0.75)
+      .height((window.innerWidth*0.4-adjustX)*0.7)
        .margins({top: 20, right: 45, bottom: 40, left: 50})
       .dimension(avgComDim)
       .transitionDuration(500)
@@ -482,9 +548,8 @@ window.onresize = function()  {
       .brushOn(false)
       .mouseZoomable(true)
       .rangeChart(avgCom)
-      .x(d3.time.scale().domain([minDate, maxDate])) 
+      .x(d3.time.scale().domain([minDate, maxDate]).nice(d3.time.day)) 
 //      .alwaysUseRounding(true)
-      .xUnits(d3.time.day)
    //   .yAxisLabel("Date")
  //     .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
 //      .renderHorizontalGridLines(true)
@@ -501,9 +566,7 @@ window.onresize = function()  {
               if(d.value.avg != 0)
                 vibration = d.value.avg;              
              return vibration; })
-            .colors('#756bb1')
-            .xUnits(function(){return 10;})
-            .barPadding(0.1).outerPadding(0.05)            ,
+            .colors('#756bb1'),        
           dc.lineChart(avgVib).group(vibrationXGroup, "X")
             .valueAccessor(function(d){
               if(d.value.avg != 0)
@@ -523,7 +586,86 @@ window.onresize = function()  {
              return vibZ; })
             .colors('green')
         ]);
+var apM = 0, vibM = 0;
+var apL = 0, vibL = 0;
 
+apMax
+  .width((window.innerWidth*0.4-adjustX)*0.5)    
+  .height((window.innerWidth*0.4-adjustX)*0.6)
+  .margins({top: 20, right: 45, bottom: 40, left: 50})
+  .dimension(timeMaxDim)
+  .group(apMaxGroup)
+  .transitionDuration(500)
+  .centerBar(true)    
+  .gap(1)                    // bar width 
+  .x(d3.time.scale().domain([yesDate, maxDate])) 
+  .xUnits(d3.time.hours)
+  .elasticY(true)  
+  .renderHorizontalGridLines(true)
+  .colors('#EDC951')  
+  .valueAccessor(function (d){
+    console.log(d);
+    if(d.value.max != 0)
+      apL = d.value.max;
+    return apL;
+  }) ;
+
+vibMax
+  .width((window.innerWidth*0.4-adjustX)*0.5)
+  .height((window.innerWidth*0.4-adjustX)*0.6)
+  .margins({top: 20, right: 45, bottom: 40, left: 50})
+  .dimension(timeMaxDim)
+  .group(vibMaxGroup)
+  .transitionDuration(500)
+  .centerBar(true)    
+  .gap(1)                    // bar width 
+  .x(d3.time.scale().domain([yesDate, maxDate])) 
+  .xUnits(d3.time.hours)
+  .elasticY(true)  
+  .renderHorizontalGridLines(true)
+  .colors('#756bb1')  
+  .valueAccessor(function (d){
+    console.log(d);
+    if(d.value.max != 0)
+      vibL = d.value.max;
+    return vibL;
+  }) ;
+
+
+timeMax
+      .width(window.innerWidth*0.4-adjustX)    
+      .height((window.innerWidth*0.4-adjustX)*0.7)
+       .margins({top: 20, right: 45, bottom: 40, left: 50})
+      .dimension(timeMaxDim)
+      .transitionDuration(500)
+//      .elasticY(true)
+     .y(d3.scale.linear().domain([0, 300])) 
+      .rangeChart(avgVib, avgCom)
+      .brushOn(false)
+      .mouseZoomable(true)
+      .x(d3.time.scale().domain([yesDate, maxDate])) 
+          .xUnits(d3.time.hour)
+   //   .yAxisLabel("Date")
+ //     .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
+//      .renderHorizontalGridLines(true)
+      .legend(dc.legend().x(100).y(20).itemHeight(13).gap(5).horizontal(true))  
+      .title(function(d) {
+        return "\nDate : " + d.key;
+      })
+      .compose([          
+          dc.lineChart(timeMax).group(apMaxGroup, "active_power")  
+            .valueAccessor(function(d){
+              if(d.value.max != 0)
+                apM = d.value.max;                
+             return apM; })
+            .colors('#EDC951'),
+          dc.lineChart(avgVib).group(vibMaxGroup, "vibration")
+            .valueAccessor(function(d){
+              if(d.value.avg != 0)
+                vibM = d.value.avg;
+                return vibM; })
+            .colors('#756bb1'),            
+        ]);
 /*volumeChart
     .width(window.innerWidth*0.4-adjustX)    
     .height((window.innerWidth*0.4-adjustX)*0.8)
