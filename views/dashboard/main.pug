@@ -2,12 +2,18 @@ extends ../layout-dashboard
 
 block style
   link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
+  link(rel='stylesheet', href='/assets/leaflet/dc.css')
 block scripts
+  //- script(type='text/javascript', src='/assets/leaflet/d3.js')
   script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
   script(type='text/javascript', src='/assets/annie/js/dc.js')
+  //- script(type='text/javascript', src='/assets/leaflet/dc.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
   script(type='text/javascript', src='/assets/leaflet/leaflet.js')
+  script(type='text/javascript', src='/assets/leaflet/leaflet.markercluster.js')
+  script(type='text/javascript', src='/assets/leaflet/dc.leaflet.js')
   script(type='text/javascript', src="/scripts/dashboard.js")
 block content
   main.layout-contents
@@ -79,6 +85,7 @@ block content
             .inner
               div.map-container
                 #bubble-map(style="height: 100%")
+                  div.map(style="width:300px; height:100px")
               //- div.chart
               //-   #bar-chart
           .grid-item.other

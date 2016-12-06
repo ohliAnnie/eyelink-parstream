@@ -36,11 +36,11 @@ var sqlList = {
         "   status_power_meter, "+
         "         vibration_x, vibration_y, vibration_z"+
         "    from tb_node_raw"+
-        "   where measure_time > date '2016-11-29' ",
+        // "   where measure_time > date '2016-11-29' ",
 //        "    where measure_time In ('2016-11-26', '2016-12-02') ",
-//        "  where year = date_part('YEAR', current_date()) "+
-  //      "    and month = date_part('MONTH', current_date())",
-       // "    and day = date_part('DAY', current_date())",
+        "  where year = date_part('YEAR', current_date()) "+
+        "    and month = date_part('MONTH', current_date())",
+        // "    and day = date_part('DAY', current_date())",
 };
 
 ReportsProvider = function() {
@@ -63,12 +63,12 @@ ReportsProvider.prototype.selectSingleQueryByID = function (queryId, datas, call
             if (err) {
               callback(err);
             } else {
-              statement.setFetchSize(100, function(err) {
+              statement.setFetchSize(1000, function(err) {
                 if (err) {
                   callback(err);
                 } else {
                   // console.log(sqlList[queryId]);
-                  statement.executeQuery(sqlList[queryId],
+                  statement.execute(sqlList[queryId],
                                          function(err, resultset) {
                     if (err) {
                       callback(err)

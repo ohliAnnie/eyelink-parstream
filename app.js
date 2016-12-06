@@ -12,6 +12,7 @@ var pug = require('pug');
 var intro = require('./routes/intro');
 var dashboard = require('./routes/dashboard');
 var reports = require('./routes/reports');
+var initapps = require('./routes/initApp');
 
 var app = express();
 
@@ -38,6 +39,17 @@ app.use('/', intro);
 app.use('/dashboard', dashboard);
 app.use('/reports', reports);
 app.use('/intro', intro);
+
+// TO-DO Hard Coding 변경 필요
+// -5 ~ -1일 Raw Data를 서비스 시작시 Loading 한다.
+global._rawDataByDay = {};
+initapps({id:'20161205', val:1});
+initapps({id:'20161204', val:2});
+initapps({id:'20161203', val:3});
+initapps({id:'20161202', val:4});
+initapps({id:'20161201', val:5});
+// initapps('20161202');
+// initapps('20161203');
 
 // catch 404 and forward to error handler
 // app.use(function(req, res, next) {
