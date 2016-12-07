@@ -1,34 +1,24 @@
 extends ../layout-reports
-block style
+block style  
   link(rel='stylesheet', href='/stylesheets/style.css')
-  style.
-   .chart {
-      position: relative;
-      width: 100%;
-      height: auto;
-      overflow: hidden;
-      padding-bottom: 56.26%;
-      text-align:center;
-      color : white;
-    }
-
-    #eventChart {
-      top: 0;
-      left: 0;
-      width: auto;
-      height: auto;
-    }
-    #hourSeries {
-      top: 0;
-      left: 0;
-      width: auto;
-      height: auto;
-    }
+  style.  
     #apMax .x.axis text {
       text-anchor: end !important;
       transform: rotate(-30deg);
     }
     #vibMax .x.axis text {
+      text-anchor: end !important;
+      transform: rotate(-30deg);
+    }
+    #noDMax .x.axis text {
+      text-anchor: end !important;
+      transform: rotate(-30deg);
+    }
+    #noFMax .x.axis text {
+      text-anchor: end !important;
+      transform: rotate(-30deg);
+    }
+    #volumeMax .x.axis text {
       text-anchor: end !important;
       transform: rotate(-30deg);
     }
@@ -38,7 +28,6 @@ block scripts
   script(type='text/javascript', src='/assets/annie/js/dc.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
   script(src='/scripts/report.js')
-  script(src='/scripts/radar.js')
 block content
   main.layout-contents.padding
     div.layout-contents-inner
@@ -93,16 +82,23 @@ block content
               #eventChart(style='margine:0 auto;')
           li
             div.chart
-              #volueMax
+              string Event Type Count by Day
+              #eventBar
           li
             div.chart
-              strong Energy Consumption by Time of Day (Max)
+              strong Energy Consumption volume chart
+              br
+              #volumeMax                
+          li
+            div.chart
+              strong Energy Consumption by Time of Week(Max)
               div
                 #apMax
               div
                 #vibMax
           li
             div.chart
+              strong Energy Consumption by Time of Week (Max)
               div
                 #noDMax
               div
@@ -118,7 +114,7 @@ block content
               #avgVib
           li
             div.chart
-              #timeMax
+              //- #timeMax
           li
             div.chart
           li
