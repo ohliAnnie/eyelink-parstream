@@ -1,18 +1,6 @@
 extends ../layout-reports
 block style
-  style.
-    .dc-chart .axis text{
-      fill: white;
-    }
-    .dc-legend {
-      fill: white;
-    }
-    .dc-chart g.row text {
-      fill: white;
-    }
-    .dc-chart g.axis text {
-      fill: white;
-    }
+  style.    
    .chart {
       position: relative;
       width: 100%;
@@ -20,20 +8,8 @@ block style
       overflow: hidden;
       padding-bottom: 56.26%;
       text-align:center;
+      fill : white;
       color : white;
-    }
-
-    #eventChart {
-      top: 0;
-      left: 0;
-      width: auto;
-      height: auto;
-    }
-    #hourSeries {
-      top: 0;
-      left: 0;
-      width: auto;
-      height: auto;
     }
     #apMax .x.axis text {
       text-anchor: end !important;
@@ -43,13 +19,24 @@ block style
       text-anchor: end !important;
       transform: rotate(-30deg);
     }
+    #noDMax .x.axis text {
+      text-anchor: end !important;
+      transform: rotate(-30deg);
+    }
+    #noFMax .x.axis text {
+      text-anchor: end !important;
+      transform: rotate(-30deg);
+    }
+    #volumeMax .x.axis text {
+      text-anchor: end !important;
+      transform: rotate(-30deg);
+    }
 block scripts
   script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
   script(type='text/javascript', src='/assets/annie/js/dc.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
   script(src='/scripts/report.js')
-  script(src='/scripts/radar.js')
 block content
   main.layout-contents.padding
     div.layout-contents-inner
@@ -96,7 +83,7 @@ block content
         div.map-container
           div.inner
         a(href='javascript:dc.filterAll(); dc.renderAll();') Reset All
-        ul.list-reports          
+        ul.list-reports
           li
             div.chart
               strong Events Occurance By Type
@@ -104,16 +91,23 @@ block content
               #eventChart(style='margine:0 auto;')
           li
             div.chart
-              #volueMax
+              string Event Type Count by Day
+              #eventBar
           li
             div.chart
-              strong Energy Consumption by Time of Day (Max)
+              strong Energy Consumption volume chart
+              br
+              #volumeMax                
+          li
+            div.chart
+              strong Energy Consumption by Time of Week(Max)
               div
                 #apMax
               div
                 #vibMax
           li
             div.chart
+              strong Energy Consumption by Time of Week (Max)
               div
                 #noDMax
               div
@@ -129,7 +123,7 @@ block content
               #avgVib
           li
             div.chart
-              #timeMax
+              //- #timeMax
           li
             div.chart
           li
