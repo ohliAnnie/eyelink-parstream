@@ -3,8 +3,11 @@
   var eventChart = dc.pieChart('#eventChart');
   var hourSeries = dc.seriesChart('#hourSeries');
   var timeMax = dc.compositeChart("#timeMax");
+  var volumeMax = dc.barChart("#volumeMax");
   var apMax = dc.barChart("#apMax");
   var vibMax = dc.barChart("#vibMax");
+  var noDMax = dc.barChart("#noDMax");
+  var noFMax = dc.barChart("#noFMax");
   var avgCom = dc.compositeChart("#avgCom");
   var avgVib = dc.compositeChart("#avgVib");
   //var volumeChart = dc.seriesChart('#volumeChart');
@@ -12,20 +15,17 @@
 d3.json("/reports/restapi/getReportRawData", function(err, data){
   if(err) throw error;
    var numberFormat = d3.format('.2f');
-   var minDate = new Date(2016,10,29);
-   var maxDate = new Date(2016,11,06); 
-   var yesDate = new Date(2016,11,05);
+   var minDate = new Date(2016,10,30);
+   var maxDate = new Date(2016,11,07); 
+   var yesDate = new Date(2016,11,06);
 
    var today = '';
-//   console.log(data.rtnData[0]);
 
   data.rtnData[0].forEach(function(d){
     d.dd = new Date(d.event_time);
     d.today = d3.time.day(d.dd);    
     d.month = d3.time.month(d.dd);
     d.hour = d3.time.hour(d.dd);
-//    console.log(d.month);
-//console.log(d.hour);
         var event = '';
     switch(d.event_type){      
       case "1" :   // 피워
@@ -55,103 +55,20 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
     d.vibration_y = parseInt(d.vibration_y);
     d.vibration_z =  parseInt(d.vibration_z);
     d.vibration = (d.vibration_x+d.vibration_y+d.vibration_z)/3;
-    d.als_level = parseInt(d.als_level);
-    d.status_power_meter = parseInt(d.status_power_meter);
-    d.event_name= event;    
+/*    d.als_level = parseInt(d.als_level);
+    d.status_power_meter = parseInt(d.status_power_meter);*/
+    d.noise_decibel= parseInt(d.noise_decibel);
+    d.noise_frequency = parseInt(d.noise_frequency);
+    d.event_name= event;        
   }); 
-
   var nyx = crossfilter(data.rtnData[0]);    
   var all = nyx.groupAll();
 
   var eventDim = nyx.dimension(function(d) {
- //   console.log(d.event_name);
     return d.event_name;
   });
 
   var eventGroup = eventDim.group();
-
-/*
-var yearDim = nyx.dimension(function(d) {
-//  return d3.time.year(d.dd).getFullYear();
-});
-
-var monthDim = nyx.dimension(function(d) {
-  return d.month;
-}) ; 
-
-var dayDim = nyx.dimension(function(d){
-  return d.dd;
-});
-
-var hourDim = nyx.dimension(function(d){
-//  console.log(d3.time.hour(d.dd));
-  return d.hour;
-});
-*/
-
-/*var dayTypeDim = nyx.dimension(function(d){    
-  return [+d.event_type, d.dd];
-});
-
-var volumeGroup = dayTypeDim.group().reduce(  
-  function (p, v) {    
-    if(v.event_type ===  "1") { // 파워
-      p.value = v.active_power;
-        return p;
-    } else if(v.event_type === " 17") { // 조도
-      p.value = 0;
-        return p;
-    } else if(v.event_type === "33") { // 진동
-      p.value = v.vibration;
-        return p;
-    } else if(v.event_type === "49") { // 노이즈
-      p.value = 0;
-        return p;
-    } else  if(v.event_type === "65") { // GPS
-      p.value = 0;
-        return p;
-    } else if(v.event_type === "81") { // 센서상태
-      p.value = 0;
-        return p;
-    } else if(v.event_type === "153") { // 재부팅
-      p.value = 0;
-        return p;
-    } else {
-      p.value = 0;
-        return p;
-    }
-  },
-  function (p, v) {
-    if(v.event_type ===  "1") { // 파워
-      p.value = v.active_power;      
-        return p;
-    } else if(v.event_type === " 17") { // 조도
-      p.value = 0;
-        return p;
-    } else if(v.event_type === "33") { // 진동
-      p.value = v.vibration;
-        return p;
-    } else if(v.event_type === "49") { // 노이즈
-      p.value = 0;
-        return p;
-    } else  if(v.event_type === "65") { // GPS
-      p.value = 0;
-        return p;
-    } else if(v.event_type === "81") { // 센서상태
-      p.value = 0;
-        return p;
-    } else if(v.event_type === "153") { // 재부팅
-      p.value = 0;
-        return p;
-    } else {
-      p.value = 0;
-        return p;
-    }
-  },
-  function() {
-    return { value :0 };
-  }
-);*/
 
   var avgComDim = nyx.dimension(function (d) { return d.today; });
   var activeGroup = avgComDim.group().reduce(  
@@ -295,9 +212,12 @@ var timeMaxDim = nyx.dimension(function(d) {
   return d.hour;
 });
 
+var volumeMaxGroup = timeMaxDim.group().reduceSum(function(d) {
+  return 1;
+});
+
 var apMaxGroup = timeMaxDim.group().reduce(  
   function (p, v) {
-//    console.log(v);
     if(v.event_type !=  "1") { // 파워
       p.value=0;
     } else {
@@ -321,7 +241,6 @@ var apMaxGroup = timeMaxDim.group().reduce(
 );
 var vibMaxGroup = timeMaxDim.group().reduce(  
   function (p, v) {
-//    console.log(v);
     if(v.event_type !=  "33") { // 파워
       p.value=0;
     } else {
@@ -343,6 +262,52 @@ var vibMaxGroup = timeMaxDim.group().reduce(
     return {value:0, max:0}
   }
 );
+var noDMaxGroup = timeMaxDim.group().reduce(  
+  function (p, v) {    
+    if(v.event_type !=  "49") { // 노이즈
+      p.value=0;
+    } else {
+      p.value = v.noise_decibel;
+    }
+    p.max = p.max < p.value ? p.value : p.max;        
+    return p;    
+  },
+  function (p, v) {
+    if(v.event_type !=  "49") { // 노이즈
+      p.value=0;
+    } else {
+      p.value = v.noise_decibel;
+    }
+    p.max = p.max < p.value ? p.value : p.max;        
+    return p;    
+  },
+  function() {
+    return {value:0, max:0}
+  }
+);
+var noFMaxGroup = timeMaxDim.group().reduce(  
+  function (p, v) {
+    if(v.event_type !=  "49") { // 노이즈
+      p.value=0;
+    } else {
+      p.value = v.noise_frequency;
+    }
+    p.max = p.max < p.value ? p.value : p.max;        
+    return p;    
+  },
+  function (p, v) {
+    if(v.event_type !=  "49") { // 노이즈
+      p.value=0;
+    } else {
+      p.value = v.noise_frequency;
+    }
+    p.max = p.max < p.value ? p.value : p.max;        
+    return p;    
+  },
+  function() {
+    return {value:0, max:0}
+  }
+);
 
 
 var seriesDim = nyx. dimension(function(d){
@@ -351,11 +316,8 @@ var seriesDim = nyx. dimension(function(d){
 
 var seriesGroup = seriesDim.group().reduce(  
   function (p, v) {
-//    console.log(v);
     if(v.event_type ===  "1") { // 파워
       p.max = p.max < v.active_power ? v.active_power : p.max;      
-//      console.log(p);
-//      console.log(v.hour);
         return p;
     } else if(v.event_type === " 17") { // 조도
       p.max = p.max < v.als_level ? v.als_level : p.max;
@@ -463,7 +425,7 @@ window.onresize = function()  {
         return label;
     })
     .renderLabel(true)
-    .colors(d3.scale.ordinal().range(["#CC333F","#EDC951","#00A0B0", "#756bb1"]));
+    .colors(d3.scale.ordinal().range(["#CC333F", "#31a354", "#EDC951","#00A0B0", "#756bb1"]));
 
 /*eventChart.on('pretransition', function(eventChart) {
     eventChart. selectAll('.dc-legend-item test')
@@ -515,6 +477,7 @@ window.onresize = function()  {
       .brushOn(false)
       .mouseZoomable(true)
       .x(d3.time.scale().domain([minDate, maxDate])) 
+       .round(d3.time.day.round)
    //   .yAxisLabel("Date") 
       .title(function(d) {
         return "\nNumber of Povetry: " + d.key;
@@ -549,6 +512,7 @@ window.onresize = function()  {
       .mouseZoomable(true)
       .rangeChart(avgCom)
       .x(d3.time.scale().domain([minDate, maxDate]).nice(d3.time.day)) 
+       .round(d3.time.day.round)
 //      .alwaysUseRounding(true)
    //   .yAxisLabel("Date")
  //     .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
@@ -589,6 +553,19 @@ window.onresize = function()  {
 var apM = 0, vibM = 0;
 var apL = 0, vibL = 0;
 
+volumeMax
+  .width(window.innerWidth*0.4)    
+  .height((window.innerWidth*0.4-adjustX)*0.6)
+  .margins({top: 0, right: 50, bottom: 20, left: 40})
+  .dimension(timeMaxDim)
+  .group(volumeMaxGroup)
+  .centerBar(true)
+  .gap(1)
+  .x(d3.time.scale().domain([minDate, maxDate]))
+  .round(d3.time.hours.round)
+  .alwaysUseRounding(true)
+  .xUnits(d3.time.hours);
+
 apMax
   .width((window.innerWidth*0.4-adjustX)*0.5)    
   .height((window.innerWidth*0.4-adjustX)*0.6)
@@ -603,11 +580,8 @@ apMax
   .elasticY(true)  
   .renderHorizontalGridLines(true)
   .colors('#EDC951')  
-  .valueAccessor(function (d){
-    console.log(d);
-    if(d.value.max != 0)
-      apL = d.value.max;
-    return apL;
+  .valueAccessor(function (d){  
+    return d.value.max;
   }) ;
 
 vibMax
@@ -624,12 +598,46 @@ vibMax
   .elasticY(true)  
   .renderHorizontalGridLines(true)
   .colors('#756bb1')  
-  .valueAccessor(function (d){
-    console.log(d);
-    if(d.value.max != 0)
-      vibL = d.value.max;
-    return vibL;
+  .valueAccessor(function (d){  
+    return d.value.max;
   }) ;
+
+noDMax
+  .width((window.innerWidth*0.4-adjustX)*0.5)
+  .height((window.innerWidth*0.4-adjustX)*0.6)
+  .margins({top: 20, right: 45, bottom: 40, left: 50})
+  .dimension(timeMaxDim)
+  .group(noDMaxGroup)
+  .transitionDuration(500)
+  .centerBar(true)    
+  .gap(1)                    // bar width 
+  .x(d3.time.scale().domain([yesDate, maxDate])) 
+  .xUnits(d3.time.hours)
+  .elasticY(true)  
+  .renderHorizontalGridLines(true)
+  .colors('#6BEC62')  
+  .valueAccessor(function (d){  
+    return d.value.max;
+  }) ;
+
+noFMax
+  .width((window.innerWidth*0.4-adjustX)*0.5)
+  .height((window.innerWidth*0.4-adjustX)*0.6)
+  .margins({top: 20, right: 45, bottom: 40, left: 50})
+  .dimension(timeMaxDim)
+  .group(noFMaxGroup)
+  .transitionDuration(500)
+  .centerBar(true)    
+  .gap(1)                    // bar width 
+  .x(d3.time.scale().domain([yesDate, maxDate])) 
+  .xUnits(d3.time.hours)
+  .elasticY(true)  
+  .renderHorizontalGridLines(true)
+  .colors('#2F9D27')  
+  .valueAccessor(function (d){  
+    return d.value.max;
+  }) ;
+
 
 
 timeMax
@@ -644,7 +652,7 @@ timeMax
       .brushOn(false)
       .mouseZoomable(true)
       .x(d3.time.scale().domain([yesDate, maxDate])) 
-          .xUnits(d3.time.hour)
+          .xUnits(d3.time.hours)
    //   .yAxisLabel("Date")
  //     .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
 //      .renderHorizontalGridLines(true)

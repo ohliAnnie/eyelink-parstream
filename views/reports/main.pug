@@ -96,7 +96,7 @@ block content
         div.map-container
           div.inner
         a(href='javascript:dc.filterAll(); dc.renderAll();') Reset All
-        ul.list-reports
+        ul.list-reports          
           li
             div.chart
               strong Events Occurance By Type
@@ -104,17 +104,25 @@ block content
               #eventChart(style='margine:0 auto;')
           li
             div.chart
+              #volueMax
+          li
+            div.chart
               strong Energy Consumption by Time of Day (Max)
-              br
               div
                 #apMax
               div
-                #vibMax                    
+                #vibMax
+          li
+            div.chart
+              div
+                #noDMax
+              div
+                #noFMax
           li
             div.chart
               strong Daily Avg
               br
-              #avgCom            
+              #avgCom
           li
             div.chart
               strong Daily Avg. Vibrations
