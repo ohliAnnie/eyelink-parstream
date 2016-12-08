@@ -408,7 +408,7 @@ d3.csv('ndx.csv', function (data) {
     // <br>API: [Stack Mixin](https://github.com/dc-js/dc.js/blob/master/web/docs/api-latest.md#stack-mixin),
     // [Line Chart](https://github.com/dc-js/dc.js/blob/master/web/docs/api-latest.md#line-chart)
     moveChart /* dc.lineChart('#monthly-move-chart', 'chartGroup') */
-        .renderArea(true)
+        
         .width(990)
         .height(200)
         .transitionDuration(1000)
