@@ -3,7 +3,6 @@
   var eventChart = dc.pieChart('#eventChart');
   var eventBar = dc.barChart('#eventBar');
   var eventSeries = dc.seriesChart('#eventSeries');
-  var eventHeat = dc.heatMap("#eventHeat");
   var timeMax = dc.compositeChart("#timeMax");
   var volumeMax = dc.barChart("#volumeMax");
   var apMax = dc.barChart("#apMax");
@@ -12,7 +11,7 @@
   var noFMax = dc.barChart("#noFMax");
   var avgCom = dc.compositeChart("#avgCom");
   var avgVib = dc.compositeChart("#avgVib");
-  var gapVib = dc.lineChart("#gapVib")
+  var gapVib = dc.lineChart("#gapVib");
   //var volumeChart = dc.seriesChart('#volumeChart');
 
 d3.json("/reports/restapi/getReportRawData", function(err, data){
@@ -73,13 +72,8 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
 
   var eventGroup = eventDim.group();
 
-  var eventSeriesDim = nyx.dimension(function(d) {    return [ d.event_name, +d.hour];  });
-  var eventSeriesGroup = eventSeriesDim.group().reduceCount(function(d) {
-    return 1;
-  });
-
-  var eventHeatDim = nyx.dimension(function(d) {  return [d.event_name, +d.today];  });
-  var eventHeatGroup = eventHeatDim.group().reduceCount(function(d) {
+  var eventSeriesDim = nyx.dimension(function(d) {    return [ d.event_name, +d.today];  });
+  eventSeriesGroup = eventSeriesDim.group().reduceCount(function(d) {
     return 1;
   });
 
@@ -282,32 +276,23 @@ var vibrationZGroup = todayDim.group().reduce(
         p.value = 0;
       } else {
         p.value = v.vibration;
-      }      
-      p.max = p.max < p.value ? p.value : p.max;
-      if (p.value != 0 ) {
-        if(p.min == 0)
-          p.min = p.value;
-        p.min = p.min > p.value ? p.value : p.min;
       }
-      p.gap = p.max-p.min;      
+      p.max = p.max < p.value ? p.value : p.max;
+      p.min = p.min > p.value ? p.value : p.min;
+      p.gap = p.max-p.min;
       return p;
-    }, 
-    function(p, v) {
-      if(v.event_type != "33") {
+    }, function(p,v){
+            if(v.event_type != "33") {
         p.value = 0;
       } else {
         p.value = v.vibration;
       }
       p.max = p.max < p.value ? p.value : p.max;
-      if (p.value != 0 ) {
-        if(p.min == 0)
-          p.min = p.value;
-        p.min = p.min > p.value ? p.value : p.min;
-      }
+      p.min = p.min > p.value ? p.value : p.min;
       p.gap = p.max-p.min;
       return p;
   }, function() {
-    return {  value:0, max:0, min:0, gap:0 };
+    return {  value:0, max:0, min:0, gap:0 }
   });
 
 var timeMaxDim = nyx.dimension(function(d) {
@@ -412,6 +397,71 @@ var noFMaxGroup = timeMaxDim.group().reduce(
 );
 
 
+/*var seriesDim = nyx. dimension(function(d){
+  return [+d.event_type, d.hour];
+});
+
+var seriesGroup = seriesDim.group().reduce(  
+  function (p, v) {
+    if(v.event_type ===  "1") { // 파워
+      p.max = p.max < v.active_power ? v.active_power : p.max;      
+        return p;
+    } else if(v.event_type === " 17") { // 조도
+      p.max = p.max < v.als_level ? v.als_level : p.max;
+        return p;
+    } else if(v.event_type === "33") { // 진동
+      p.max = p.max < v.vibration ? v.vibration : p.max;
+        return p;
+    } else if(v.event_type === "49") { // 노이즈
+      p.max = 0;
+        return p;
+    } else  if(v.event_type === "65") { // GPS
+      p.max = 0;
+        return p;
+    } else if(v.event_type === "81") { // 센서상태
+      p.max = 0;
+        return p;
+    } else if(v.event_type === "153") { // 재부팅
+      p.max = 0;
+        return p;
+    } else {
+      p,max = 0;
+        return p;
+    }
+  },
+  function (p, v) {
+    if(v.event_type ===  "1") { // 파워
+      p.max = p.max < v.active_power ? v.active_power : p.max;      
+        return p;
+    } else if(v.event_type === " 17") { // 조도
+      p.max = p.max < v.als_level ? v.als_level : p.max;
+        return p;
+    } else if(v.event_type === "33") { // 진동
+      p.max = p.max < v.vibration ? v.vibration : p.max;
+        return p;
+    } else if(v.event_type === "49") { // 노이즈
+      p.max = 0;
+        return p;
+    } else  if(v.event_type === "65") { // GPS
+      p.max = 0;
+        return p;
+    } else if(v.event_type === "81") { // 센서상태
+      p.max = p.max < v.status_power_meter ? v.status_power_meter : p.max;
+        return p;
+    } else if(v.event_type === "153") { // 재부팅
+      p.max = 0;
+        return p;
+    } else {
+      p,max = 0;
+        return p;
+    }
+  },
+  function() {
+    return { max :0 };
+  }
+);*/
+
+
 var adjustX = 20, adjustY = 40;
 /*window.onresize = function()  {
   eventChart
@@ -439,7 +489,6 @@ var adjustX = 20, adjustY = 40;
   .height((window.innerWidth*0.4-adjustX)*0.6)
   .redraw();
 };*/
-
 /* dc.pieChart('#eventChart') */
   eventChart 
     .width(window.innerWidth*0.4-adjustX)    
@@ -471,7 +520,6 @@ var adjustX = 20, adjustY = 40;
         };
     }
 
-/*dc.seriesChart('#eventSeries')*/
   eventSeries
     .width(window.innerWidth*0.4-adjustX)    
     .height((window.innerWidth*0.4-adjustX)*0.6)
@@ -479,42 +527,23 @@ var adjustX = 20, adjustY = 40;
     .x(d3.time.scale().domain([minDate, maxDate])) 
     .round(d3.time.day.round)
     .xUnits(d3.time.days)
-    .brushOn(true)
+    .brushOn(false)
     .yAxisLabel("Count")
     .xAxisLabel("Time")
-    .colors(d3.scale.ordinal().range(["#CC333F", "#31a354", "#EDC951","#00A0B0", "#756bb1"]))
     .clipPadding(10)
     .elasticY(true)
     .dimension(eventSeriesDim)
     .group(eventSeriesGroup)
-//    .mouseZoomable(true)
+    .mouseZoomable(true)
     .seriesAccessor(function(d) {return "EventType: " + d.key[0];})
     .keyAccessor(function(d) {return +d.key[1];})
     .valueAccessor(function(d) {
       return +d.value;})
+    .colors(d3.scale.ordinal().range(["#CC333F", "#31a354", "#EDC951","#00A0B0", "#756bb1"]))
     .legend(dc.legend().x(350).y(350).itemHeight(13).gap(5).horizontal(1).legendWidth(140).itemWidth(70));
   eventSeries.yAxis().tickFormat(function(d) {return d;});
   eventSeries.margins().left += 40;
 
-/* dc.heatMap("#eventHeat")  */ 
-  eventHeat
-    .width(window.innerWidth*0.4-adjustX)    
-    .height((window.innerWidth*0.4-adjustX)*0.6)
-    .dimension(eventHeatDim)
-    .group(eventHeatGroup)
-    .keyAccessor(function(d) { return +d.key[0]; })
-    .valueAccessor(function(d) { return +d.key[1]; })
-    .colorAccessor(function(d) { return +d.value; })
-    .title(function(d) {
-       console.log(d);
-        return "Date :   " + d.key[0] + "\n" +
-               "Event_name :  " + d.key[1] + "\n" +
-               "Cnt : " + d.value; })
-    .colors(["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"])
-    .calculateColorDomain();
-
-/*  dc.barChart('#eventBar')  */
-// TODO :  바 상단에 tot값 나오게 하거나 NaN 없애기
   eventBar
     .width(window.innerWidth*0.4-adjustX)    
     .height((window.innerWidth*0.4-adjustX)*0.6)
@@ -578,7 +607,6 @@ var adjustX = 20, adjustY = 40;
     hourSeries.yAxis().tickFormat(function(d){  return d3.format('.d')(d); });
     hourSeries.margins().left += 40;  */
 
-  /*  dc.compositeChart("#avgCom")  */
     var active = 0, vibration = 0, vibX = 0, vibY = 0, vibZ = 0;
     avgCom
 /*      .renderArea(true)
@@ -615,7 +643,7 @@ var adjustX = 20, adjustY = 40;
             .colors('#EDC951'),
         ]);
 
-/*  dc.compositeChart("#avgVib")  */
+
     avgVib
 //      .renderArea(true)
       .width(window.innerWidth*0.4-adjustX)    
@@ -668,7 +696,9 @@ var adjustX = 20, adjustY = 40;
             .colors('green')
         ]);
 
-/*  dc.barChart("#volumeMax")  */
+var apM = 0, vibM = 0;
+var apL = 0, vibL = 0;
+
 volumeMax
   .width(window.innerWidth*0.4)    
   .height((window.innerWidth*0.4-adjustX)*0.6)
@@ -683,9 +713,7 @@ volumeMax
   .alwaysUseRounding(true)
   .xUnits(d3.time.hours)
   
-var apM = 0, vibM = 0;
-var apL = 0, vibL = 0;
-/*  dc.barChart("#apMax")  */
+
 apMax
   .width((window.innerWidth*0.4-adjustX)*0.5)    
   .height((window.innerWidth*0.4-adjustX)*0.6)
@@ -704,7 +732,6 @@ apMax
     return d.value.max;
   }) ;
 
-/*  dc.barChart("#vibMax")  */
 vibMax
   .width((window.innerWidth*0.4-adjustX)*0.5)
   .height((window.innerWidth*0.4-adjustX)*0.6)
@@ -723,7 +750,6 @@ vibMax
     return d.value.max;
   }) ;
 
-/*  dc.barChart("#noDMax")  */
 noDMax
   .width((window.innerWidth*0.4-adjustX)*0.5)
   .height((window.innerWidth*0.4-adjustX)*0.6)
@@ -742,7 +768,6 @@ noDMax
     return d.value.max;
   }) ;
 
-/*  dc.barChart("#noFMax")  */
 noFMax
   .width((window.innerWidth*0.4-adjustX)*0.5)
   .height((window.innerWidth*0.4-adjustX)*0.6)
@@ -760,6 +785,7 @@ noFMax
   .valueAccessor(function (d){  
     return d.value.max;
   }) ;
+
 
   function rangesEqual(range1, range2) {
     if (!range1 && !range2) {
@@ -801,12 +827,11 @@ noFMax
     };
     volumeMax.focusCharts([apMax, vibMax, noDMax, noFMax]);
 
-/*  dc.lineChart("#gapVib")  */
-  var vMin=0, vGap=0;
+
   gapVib
-    .width(window.innerWidth*0.4-adjustX)    
-    .height((window.innerWidth*0.4-adjustX)*0.6)
-    .transitionDuration(100)
+    .renderArea(true)
+    .width((window.innerWidth*0.4-adjustX)*0.5)
+    .height((window.innerWidth*0.4-adjustX)*0.6)    
     .margins({top: 30, right: 50, bottom: 25, left: 40})
     .dimension(todayDim)
     .mouseZoomable(true)
@@ -815,28 +840,36 @@ noFMax
     .xUnits(d3.time.days)
     .elasticY(true)
     .renderHorizontalGridLines(true)
-    .legend(dc.legend().x(100).y(10).itemHeight(13).gap(5))
+    .legend(dc.legend().x(800).y(10).itemHeight(13).gap(5))
     .brushOn(false)
     .group(gapVibGroup, 'Daily Vibration Min')
     .valueAccessor(function (d) {
-        if (vMin == 0)
-          vMin = d.value.min
-        vMin = vMin < d.value.min ? vMin : d.value.min;
-        return vMin;
+        return d.value.min;
     })
     .stack(gapVibGroup, 'Daily Vibration Max', function (d) {
-        vGap = vGap > d.value.gap ? vGap : d.value.gap;
-        return vGap;
+        return d.value.gap;
     })
     .title(function (d) {
         var value = d.value.min ? d.value.min : d.value;
         if (isNaN(value)) {
             value = 0;
         }
-        return value;
+        return dateFormat(d.key) + '\n' + numberFormat(value);
     });
 
 
+
+
+
+
+
+
+
+
+
+
+
+/*
 timeMax
       .width(window.innerWidth*0.4-adjustX)    
       .height((window.innerWidth*0.4-adjustX)*0.7)
@@ -870,7 +903,7 @@ timeMax
                 vibM = d.value.avg;
                 return vibM; })
             .colors('#756bb1'),            
-        ]);
+        ]);*/
 /*volumeChart
     .width(window.innerWidth*0.4-adjustX)    
     .height((window.innerWidth*0.4-adjustX)*0.8)

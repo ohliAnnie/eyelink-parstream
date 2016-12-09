@@ -8,5 +8,12 @@ a {
 }
 
 .chart {
+  position: relative;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  padding-bottom: 56.26%;
+  text-align:center;
+  color : white;
   fill : white;
 }
