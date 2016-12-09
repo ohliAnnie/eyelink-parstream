@@ -6,6 +6,7 @@ var expect = require("chai").expect;
 // var svr = "http://localhost:5223";
 var http = require('http');
 require('date-utils');
+var CONSTS = require('../routes/consts');
 
 describe("Test", function(){
   var cookie;
@@ -34,7 +35,7 @@ describe("Test", function(){
   describe("Util -> ", function() {
     // it('login', login());
 
-    it('Date ', function(done) {
+    it('Date Function', function(done) {
       console.log(Date.today());
       console.log(Date.UTCtoday());
 
@@ -57,10 +58,10 @@ describe("Test", function(){
       d = new Date();
       console.log('toYMD : %s', d.toYMD());
       console.log('today : %s', d.toFormat('YYYY-MM-DD HH:MI:SS'));
-      expect('08').to.equal(d.addDays(1).toFormat('DD'));
-      expect('09').to.equal(d.addDays(1).toFormat('DD'));
-      expect('08').to.equal(d.removeDays(1).toFormat('DD'));
-      expect('07').to.equal(d.removeDays(1).toFormat('DD'));
+      // expect('08').to.equal(d.addDays(1).toFormat('DD'));
+      // expect('09').to.equal(d.addDays(1).toFormat('DD'));
+      // expect('08').to.equal(d.removeDays(1).toFormat('DD'));
+      // expect('07').to.equal(d.removeDays(1).toFormat('DD'));
 
       // ref : http://www.w3schools.com/jsref/jsref_obj_date.asp
       console.log('----- Javascript Date');
@@ -80,6 +81,20 @@ describe("Test", function(){
       console.log('getTimezoneOffset : %s', d.getTimezoneOffset());
       console.log('parse : %s', Date.parse('2016-12-07'));
 
+      done();
+
+    })
+
+
+    it('Calc -5 Day', function(done) {
+      console.log("CONFIG.ROADING_DAY : %s ", CONSTS.CONFIG.ROADING_DAY);
+      var d = new Date();
+      console.log('today : %s', Date.today());
+      console.log('hours : %s', d.removeHours(1).toFormat('YYYYMMDDTHH'));
+      for (var i=0; i<CONSTS.CONFIG.ROADING_DAY; i++) {
+        console.log('day : %s', d.removeDays(1).toFormat('YYYYMMDD'));
+
+      }
       done();
 
     })
