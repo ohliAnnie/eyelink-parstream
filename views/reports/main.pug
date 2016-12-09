@@ -77,12 +77,17 @@ block content
         ul.list-reports
           li
             div.chart
+              string Vibration & Noise Bubble
+              #dayBubble
+          li
+            div.chart
               strong Events Occurance By Type
               br
               #eventChart(style='margine:0 auto;')
-          li
+          li            
             div.chart
-              //- #eventHeat
+              strong Events Occurance by Type
+              #eventHeat
           li
             div.chart
               strong Events Occurance by Type
@@ -121,9 +126,8 @@ block content
               #avgVib
           li
             div.chart
+              strong  Hourly Vibration Min / Max
               #gapVib
-          li
-            div.chart
           li
             div.chart
               .radarChart
