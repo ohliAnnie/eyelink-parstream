@@ -4,7 +4,8 @@
   var eventBar = dc.barChart('#eventBar');
   var eventSeries = dc.seriesChart('#eventSeries');
   var eventHeat = dc.heatMap("#eventHeat");
-  var dayBubble = dc.bubbleChart("dayBubble");
+  var dayBubble = dc.bubbleChart("#dayBubble");
+  var scatterSeries = dc.seriesChart("scatterSeries");
   var timeMax = dc.compositeChart("#timeMax");
   var volumeMax = dc.barChart("#volumeMax");
   var apMax = dc.barChart("#apMax");
@@ -89,11 +90,53 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
     return 1;
   });
 
-  var eventHeatDim = nyx.dimension(function(d) {  
+  var indexDayDim = nyx.dimension(function(d) {  
     var day = d.today.getDay();
     return [d.index, day+'.'+week[day]];  });
-  var eventHeatGroup = eventHeatDim.group().reduceCount(function(d) {
+
+  var eventHeatGroup = indexDayDim.group().reduceCount(function(d) {
     return 1;
+  });
+
+  var scatterSeriesGroup = indexDayDim.group().reduce(
+    function(p, v) {
+      if (v.event_type == "1") {  // 파워
+        p.value = v.active_power;
+      } else if(v.event_type == "17") { // 조도
+        p.value = 0;
+      } else if(v.event_type == "33") { // 진동
+        p.value = v.vibration;
+      } else if(v.event_type == "49") {  // 노이즈
+        p.value = v.noise_frequency;
+      } else if(v.event_type == "65") { // GPS
+        p.value = 0;
+      } else if(v.event_type == "81") { // 센서 상태
+        p.value = 0;
+      } else if(v.event_type == "153") { // 재부팅
+        p.value = 0;
+      }
+        p.max = p.max < p.value ? p.value : p.max;
+        return p;
+    }, function(p, v) {
+      if (v.event_type == "1") {  // 파워
+        p.value = v.active_power;
+      } else if(v.event_type == "17") { // 조도
+        p.value = 0;
+      } else if(v.event_type == "33") { // 진동
+        p.value = v.vibration;
+      } else if(v.event_type == "49") {  // 노이즈
+        p.value = v.noise_frequency;
+      } else if(v.event_type == "65") { // GPS
+        p.value = 0;
+      } else if(v.event_type == "81") { // 센서 상태
+        p.value = 0;
+      } else if(v.event_type == "153") { // 재부팅
+        p.value = 0;
+      }
+      p.max =  p.max < p.value ? p.value : p.max;
+      return p;
+    }, function() {
+      return { value : 0, max : 0 }
   });
 
   var dayDim = nyx.dimension(function(d) {
@@ -119,20 +162,20 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
         p.noise_decibel = 0;
       }
         p.sumVib += p.vibration;        
-        p.avgVib = p.sumVib / p.cntV;
+        p.avgVib = p.cntV ? p.sumVib / p.cntV : 0;
         p.sumNoD += p.noise_decibel;
         p.sumNoF += p.noise_frequency;      
-        p.avgNoD = p.sumNoD / p.cntN;
-        p.avgNoF = p.sumNoF / p.cntN;      
+        p.avgNoD = p.cntN ? p.sumNoD / p.cntN : 0;
+        p.avgNoF = p.cntN ? p.sumNoF / p.cntN : 0; 
       return p;
     }, function(p, v) {
        if(v.event_type == "33") {
-        ++p.cntV;  
+        --p.cntV;  
         p.vibration = v.vibration;
         p.noise_frequency = 0;
         p.noise_decibel = 0;
       } else if(v.event_type == "49") {  
-        ++p.cntN;
+        --p.cntN;
         p.vibration = 0;
         p.noise_frequency = v.noise_frequency;
         p.noise_decibel = v.noise_decibel;
@@ -141,10 +184,10 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
         p.noise_frequency = 0;
         p.noise_decibel = 0;
       }
-        p.sumVib += p.vibration;        
+        p.sumVib -= p.vibration;        
         p.avgVib = p.sumVib / p.cntV;
-        p.sumNoD += p.noise_decibel;
-        p.sumNoF += p.noise_frequency;      
+        p.sumNoD -= p.noise_decibel;
+        p.sumNoF -= p.noise_frequency;      
         p.avgNoD = p.sumNoD / p.cntN;
         p.avgNoF = p.sumNoF / p.cntN;      
       return p;
@@ -532,12 +575,13 @@ var adjustX = 20, adjustY = 40;
     .width(window.innerWidth*0.4-adjustX)    
     .height((window.innerWidth*0.4-adjustX)*0.6)
     .margins({top: 20, right: 45, bottom: 40, left: 50})
-    .dimension(eventHeatDim)
+    .dimension(indexDayDim)
     .group(eventHeatGroup)
     .keyAccessor(function(d) { return eventName[d.key[0]]; })
     .valueAccessor(function(d) { return d.key[1].split('.')[1]; })
     .colorAccessor(function(d) { return +d.value; })
     .title(function(d) {
+        console.log(d);
         return "Date :   " + d.key[1].split('.')[1] + "\n" +
                "Event_name :  " + eventName[d.key[0]] + "\n" +
                "Cnt : " + d.value; })
@@ -554,12 +598,10 @@ var adjustX = 20, adjustY = 40;
     .group(dayBubbleGroup)
     .colors(colorbrewer.RdYlGn[9]) // (optional) define color function or array for bubbles
     .colorDomain([0, 100]) //(optional) defin
-/*    .colorAccessor(function (d) {
-      console.log(d);
-        return d.value.avgNoF;
+    .colorAccessor(function (d) {
+        return d.value.cntN + d.value.cntV;
     })
-*/    .keyAccessor(function (p) { // x
-        console.log(p);
+       .keyAccessor(function (p) { // x
         return p.value.avgNoF;
     })
     .valueAccessor(function (p) { // y
@@ -571,7 +613,7 @@ var adjustX = 20, adjustY = 40;
     .maxBubbleRelativeSize(0.3)
     .x(d3.scale.linear().domain([0, 20000]))
     .y(d3.scale.linear().domain([0, 4]))
-    // .r(d3.scale.linear().domain([0, 300]))
+    .r(d3.scale.linear().domain([0, 300]))
     .elasticY(true)
     .elasticX(true)
     .yAxisPadding(1)
@@ -586,7 +628,6 @@ var adjustX = 20, adjustY = 40;
     })
     .renderTitle(true)
     .title(function (p) {
-        console.log(p);
         return [        
             p.key,
             'Noise Decibel Avg: ' + numberFormat(p.value.avgNoD),
@@ -598,6 +639,36 @@ var adjustX = 20, adjustY = 40;
       console.log(v);
         return v ;
     });
+
+/* dc.seriesChart('#scatterSeries') */
+/*  var symbolScale = d3.scale.ordinal().range(d3.svg.symbolTypes);
+  var symbolAccessor = function(d) { return symbolScale(d.key[0]); };
+  var subChart = function(c) {
+    return dc.scatterPlot(c)
+        .symbol(symbolAccessor)
+        .symbolSize(8)
+        .highlightedSize(10)
+  };
+
+scatterSeries
+    .width(window.innerWidth*0.4-adjustX)    
+    .height((window.innerWidth*0.4-adjustX)*0.6)
+    .chart(subChart)
+    .brushOn(false)
+    .yAxisLabel("Days")
+    .xAxisLabel("Value")
+    .clipPadding(10)
+    .elasticX(true)
+    .elasticY(true)
+    .dimension(indexDayDim)
+    .group(scatterSeriesGroup)
+    .mouseZoomable(true)
+    .seriesAccessor(function(d) {return eventName[d.key[0]];})
+    .keyAccessor(function(d) {return +d.key[1];})
+    .valueAccessor(function(d) {return +d.value.max;})
+    .legend(dc.legend().x(350).y(350).itemHeight(13).gap(5).horizontal(1).legendWidth(140).itemWidth(70));*/
+//  chart.yAxis().tickFormat(function(d) {return d3.format(',d')(d+299500);});
+//  chart.margins().left += 40;
 
 /*  dc.barChart('#eventBar')  */
 // TODO :  바 상단에 tot값 나오게 하거나 NaN 없애기
