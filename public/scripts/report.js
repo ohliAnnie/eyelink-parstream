@@ -5,7 +5,7 @@
   var eventSeries = dc.seriesChart('#eventSeries');
   var eventHeat = dc.heatMap("#eventHeat");
   var dayBubble = dc.bubbleChart("#dayBubble");
-  var scatterSeries = dc.seriesChart("scatterSeries");
+/*  var scatterSeries = dc.seriesChart("#scatterSeries");*/
   var timeMax = dc.compositeChart("#timeMax");
   var volumeMax = dc.barChart("#volumeMax");
   var apMax = dc.barChart("#apMax");
@@ -98,7 +98,7 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
     return 1;
   });
 
-  var scatterSeriesGroup = indexDayDim.group().reduce(
+ /* var scatterSeriesGroup = indexDayDim.group().reduce(
     function(p, v) {
       if (v.event_type == "1") {  // 파워
         p.value = v.active_power;
@@ -137,7 +137,7 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
       return p;
     }, function() {
       return { value : 0, max : 0 }
-  });
+  });*/
 
   var dayDim = nyx.dimension(function(d) {
     var day = d.today.getDay();  
@@ -641,7 +641,7 @@ var adjustX = 20, adjustY = 40;
     });
 
 /* dc.seriesChart('#scatterSeries') */
-/*  var symbolScale = d3.scale.ordinal().range(d3.svg.symbolTypes);
+ /* var symbolScale = d3.scale.ordinal().range(d3.svg.symbolTypes);
   var symbolAccessor = function(d) { return symbolScale(d.key[0]); };
   var subChart = function(c) {
     return dc.scatterPlot(c)
