@@ -43,6 +43,9 @@ app.use('/intro', intro);
 // TO-DO Hard Coding 변경 필요
 // -5 ~ -1일 Raw Data를 서비스 시작시 Loading 한다.
 global._rawDataByDay = {};
+for (var i=0; i<CONSTS.CONFIG.ROADING_DAY; i++) {
+  console.log('day : %s', d.removeDays(1).toFormat('YYYYMMDD'));
+}
 initapps({id:'20161205', val:1});
 initapps({id:'20161204', val:2});
 initapps({id:'20161203', val:3});

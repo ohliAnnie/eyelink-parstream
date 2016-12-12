@@ -1,6 +1,7 @@
 var JDBC = require('jdbc');
 var jinst = require('jdbc/lib/jinst');
 var asyncjs = require('async');
+var Utils = require('../../util');
 
 if (!jinst.isJvmCreated()) {
   jinst.addOption("-Xrs");
@@ -68,9 +69,9 @@ var sqlList = {
         "         vibration_x, vibration_y, vibration_z, "+
         "         (vibration_x + vibration_y + vibration_z) / 3 as vibration" +
         "    from tb_node_raw"+
-        "  where year = date_part('YEAR', current_date()) "+
-        "    and month = date_part('MONTH', current_date())" +
-        "    and day = date_part('DAY', current_date() - #) ",
+        "  where event_time >= timestamp #START_TIMESTAMP# " +
+        "    and event_time < timestamp #END_TIMESTAMP# ",
+
  // Event Raw Data 조회
   "selectEventRawData" :
         "    select node_id, event_time, event_type, active_power, ampere,  "+
@@ -119,8 +120,8 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
                 } else {
                   console.time(queryId+'-executeQuery');
                   // console.log(sqlList[queryId]);
-                  console.log(datas);
-                  var sSql = sqlList[queryId].replace(/#/g, datas['val']);
+                  // var sSql = sqlList[queryId].replace(/#/g, datas['val']);
+                  var sSql = Utils.replaceSql(sqlList[queryId], datas);
                   console.log(sSql);
                   statement.execute(sSql,
                                          function(err, resultset) {
@@ -136,11 +137,14 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
                       // console.log(results);
                       resultset.toObjArray(function(err, results) {
                         if (results.length > 0) {
-                          console.log("cnt: " + results.length);
+                          console.log("Query Count : " + results.length);
+                          callback(null, results);
+                        } else {
+                          console.log('no data found');
+                          callback(null, null);
                         }
                       //   // console.log(results);
                       //   console.timeEnd(queryId+'-resultset.toObjArray');
-                        callback(null, results);
                       });
                       // callback(null, resultset);
                     }

@@ -170,10 +170,10 @@ function drawChart() {
     var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
     var numberFormat = d3.format('.2f');
     var minDate  = new Date('2016-11-20T00:00:00');
-    var maxDate = new Date("2016-12-07T00:00:00");
+    var maxDate = new Date("2016-12-12T00:00:00");
 
     var minDay  = new Date('2016-12-01T16:00:00');
-    var maxDay = new Date("2016-12-07T16:00:00");
+    var maxDay = new Date("2016-12-12T16:00:00");
 
     // {"node_id":"0001.00000001","event_time":"2016-11-25 15:42:34.0","event_type":"1",
     //  "active_power":19.618999481201172,"ampere":183.35400390625,"als_level":null,

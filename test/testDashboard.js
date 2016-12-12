@@ -2,7 +2,7 @@ var should = require('should');
 var assert = require("assert")
 var request = require("supertest");
 var expect = require("chai").expect;
-var app = require("../app.js");
+// var app = require("../app.js");
 var svr = "http://localhost:5223";
 var http = require('http');
 
@@ -30,95 +30,54 @@ describe("Test", function(){
 
   });
 
-  describe("ParStream -> ", function() {
+  describe("Dashboard -> ", function() {
     // it('login', login());
 
-    // TO-DO 수행 결과 로깅 처리 로직 보완 필요함. by 배성한.
-    it('Search Data Dashboard ', function(done) {
+    // 성공 건수 조회
+    it('Search get_successcount', function(done) {
       var datas = {user_id: "user_id"};
       request(svr)
         .get("/dashboard/restapi/get_successcount")
         .send(datas)
-        .expect(200)
-        .end(function(res) {
-          // console.log(err);
-          // if (err) return done(err);
-          console.log(res);
+        .expect('Content-Type', /json/)
+        .expect(200, function(err, res) {
+          if (err) return done(err);
           // console.log(res.body.rtnCode.code);
-          // console.log(res.body.rtnCode.message);
-          // expect('0000').to.equal(res.body.rtnCode.code);
-
-      var data = '';
-      res.on('data', function(chunk) {
-        data += chunk;
-        console.log('data');
-      });
-
-      res.on('end', function() {
-        console.log('end');
-        callback(null, JSON.parse(data));
-      });
-
+          res.body.rtnCode.code.should.be.equal('0000');
           done();
         });
     });
 
-    // TO-DO 수행 결과 로깅 처리 로직 보완 필요함. by 배성한.
+    // Dashboard 내 전력양, 금액, 이벤트 발생건수, 오류 발생건수, 전일 대비 값 조회
     it('Search Dashboard Section1', function(done) {
       var datas = {user_id: "user_id"};
       request(svr)
         .get("/dashboard/restapi/getDashboardSection1")
         .send(datas)
-        .expect(200)
-        .end(function(res) {
-          // console.log(err);
-          // if (err) return done(err);
-          console.log(res);
+        .expect('Content-Type', /json/)
+        .expect(200, function(err, res) {
+          if (err) return done(err);
+          // console.log(res.body);
           // console.log(res.body.rtnCode.code);
-          // console.log(res.body.rtnCode.message);
-          // expect('0000').to.equal(res.body.rtnCode.code);
-
-      var data = '';
-      res.on('data', function(chunk) {
-        data += chunk;
-        console.log('data');
-      });
-
-      res.on('end', function() {
-        console.log('end');
-        callback(null, JSON.parse(data));
-      });
-
+          res.body.rtnCode.code.should.be.equal('0000');
+          console.log(res.body.rtnData[0]);
+          (res.body.rtnData[0].today_event_cnt).should.be.above(0);
           done();
         });
     });
 
-        // TO-DO 수행 결과 로깅 처리 로직 보완 필요함. by 배성한.
-    it('Search Data RawData ', function(done) {
+    // Raw Data 조회
+    it('Search Data RawData for DC Chart ', function(done) {
       var datas = {user_id: "user_id"};
       request(svr)
         .get("/dashboard/restapi/getReportRawData")
         .send(datas)
-        .expect(200)
-        .end(function(res) {
-          // console.log(err);
-          // if (err) return done(err);
-          console.log(res);
+        .expect('Content-Type', /json/)
+        .expect(200, function(err, res) {
+          if (err) return done(err);
+          // console.log(res.body);
           // console.log(res.body.rtnCode.code);
-          // console.log(res.body.rtnCode.message);
-          // expect('0000').to.equal(res.body.rtnCode.code);
-
-      var data = '';
-      res.on('data', function(chunk) {
-        data += chunk;
-        console.log('data');
-      });
-
-      res.on('end', function() {
-        console.log('end');
-        callback(null, JSON.parse(data));
-      });
-
+          res.body.rtnCode.code.should.be.equal('0000');
           done();
         });
     });
