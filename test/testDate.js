@@ -90,11 +90,34 @@ describe("Test", function(){
       console.log("CONFIG.ROADING_DAY : %s ", CONSTS.CONFIG.ROADING_DAY);
       var d = new Date();
       console.log('today : %s', Date.today());
-      console.log('hours : %s', d.removeHours(1).toFormat('YYYYMMDDTHH'));
+      console.log('hours : %s', d.removeHours(1).toFormat('YYYYMMDDTHH24'));
       for (var i=0; i<CONSTS.CONFIG.ROADING_DAY; i++) {
         console.log('day : %s', d.removeDays(1).toFormat('YYYYMMDD'));
-
       }
+      done();
+
+    })
+
+    it('replace SQL Paramter', function(done) {
+      var sql = "SELECT * FROM A WHERE DATE >= #DATE# AND ID = #ID# AND NUM = #NUM#";
+      console.log("sql : %s ", sql);
+
+      var params = {ID : 'AAAA', DATE: '2016-12-12', NUM: 5};
+      console.log(params.keys);
+      for (var key in params) {
+        console.log('key : %s, value : %s', key, params[key]);
+
+        var re = new RegExp("#" + key + "#","g");
+        if (typeof params[key] === 'string') {
+          sql = sql.replace(re, "'" + params[key] + "'");
+        } else if (typeof params[key] === 'number') {
+          sql = sql.replace(re, params[key]);
+        } else {
+          throw new Error('Please check sql params');
+        }
+      }
+      console.log(sql);
+      sql.should.be.equal("SELECT * FROM A WHERE DATE >= '2016-12-12' AND ID = 'AAAA' AND NUM = 5");
       done();
 
     })
