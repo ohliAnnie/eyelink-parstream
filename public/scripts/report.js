@@ -19,21 +19,26 @@
 
 d3.json("/reports/restapi/getReportRawData", function(err, data){
   if(err) throw error;
+
+  
    var numberFormat = d3.format('.2f');
+
+// TODO :  날짜 자동 계산
    var minDate = new Date(2016,11,06);
    var maxDate = new Date(2016,11,13); 
    var yesDate = new Date(2016,11,12);
-
-   var today = '';
-
+ 
   var eventName = ["POWER", "ALS", "VIBRATION", "NOISE", "GPS", "STREET LIGHT", "REBOOT"];
   var week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];  
 
   data.rtnData[0].forEach(function(d){
-    d.dd = new Date(d.event_time);
+    var a = d.event_time.split(" ");
+    var b = a[0].split("-");
+    var t = a[1].split(":");
+    d.dd = new Date(b[0], (b[1]-1), b[2], t[0], t[1], [2]);
     d.today = d3.time.day(d.dd);    
     d.month = d3.time.month(d.dd);
-    d.hour = d3.time.hour(d.dd);
+    d.hour = d3.time.hour(d.dd);    
         var event = '';
     switch(d.event_type){      
       case "1" :   // 피워
@@ -491,11 +496,11 @@ var adjustX = 20, adjustY = 40;
 /*window.onresize = function()  {
   eventChart
   .width(window.innerWidth*0.4-adjustX)
-  .height((window.innerWidth*0.4-adjustX)*0.6)
+  .height((window.innerWidth*0.4-adjustX)*0.5)
   .redraw();
   timeMax
   .width(window.innerWidth*0.4-adjustX)
-  .height((window.innerWidth*0.4-adjustX)*0.6)
+  .height((window.innerWidth*0.4-adjustX)*0.5)
   .redraw();
   avgCom  
   .width(window.innerWidth*0.4-adjustX)
@@ -507,18 +512,18 @@ var adjustX = 20, adjustY = 40;
   .redraw();
   apMax
   .width((window.innerWidth*0.4-adjustX)*0.5)
-  .height((window.innerWidth*0.4-adjustX)*0.6)
+  .height((window.innerWidth*0.4-adjustX)*0.5)
   .redraw();
   vibMax
   .width((window.innerWidth*0.4-adjustX)*0.5)
-  .height((window.innerWidth*0.4-adjustX)*0.6)
+  .height((window.innerWidth*0.4-adjustX)*0.5)
   .redraw();
 };*/
 
 /* dc.pieChart('#eventChart') */
   eventChart 
     .width(window.innerWidth*0.4-adjustX)    
-    .height((window.innerWidth*0.4-adjustX)*0.6)
+    .height((window.innerWidth*0.4-adjustX)*0.5)
     .radius((window.innerWidth*0.4-adjustX)*0.25)
     .dimension(eventDim)
     .group(eventGroup)
@@ -551,7 +556,7 @@ var adjustX = 20, adjustY = 40;
 // FIXME : 필터링 적용
   eventSeries
     .width(window.innerWidth*0.4-adjustX)    
-    .height((window.innerWidth*0.4-adjustX)*0.6)
+    .height((window.innerWidth*0.4-adjustX)*0.5)
     .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
     .x(d3.time.scale().domain([minDate, maxDate])) 
     .round(d3.time.day.round)
@@ -576,7 +581,7 @@ var adjustX = 20, adjustY = 40;
 /* dc.heatMap("#eventHeat")  */ 
   eventHeat
     .width(window.innerWidth*0.4-adjustX)    
-    .height((window.innerWidth*0.4-adjustX)*0.6)
+    .height((window.innerWidth*0.4-adjustX)*0.5)
     .margins({top: 20, right: 45, bottom: 40, left: 50})
     .dimension(indexWeekDim)
     .group(eventHeatGroup)
@@ -593,7 +598,7 @@ var adjustX = 20, adjustY = 40;
 /*  dc.bubbleChart('#dayBubble')  */
   dayBubble
     .width(window.innerWidth*0.4-adjustX)    
-    .height((window.innerWidth*0.4-adjustX)*0.6)
+    .height((window.innerWidth*0.4-adjustX)*0.5)
     .transitionDuration(1500)
     .margins({top: 10, right: 50, bottom: 30, left: 40})  
     .dimension(dayDim)
@@ -653,7 +658,7 @@ var adjustX = 20, adjustY = 40;
 
 scatterSeries
     .width(window.innerWidth*0.4-adjustX)    
-    .height((window.innerWidth*0.4-adjustX)*0.6)
+    .height((window.innerWidth*0.4-adjustX)*0.5)
     .margins({top: 10, right: 50, bottom: 30, left: 40})  
     .chart(subChart)
     .brushOn(false)
@@ -679,7 +684,7 @@ scatterSeries
 // TODO :  바 상단에 tot값 나오게 하거나 NaN 없애기
   eventBar
     .width(window.innerWidth*0.4-adjustX)    
-    .height((window.innerWidth*0.4-adjustX)*0.6)
+    .height((window.innerWidth*0.4-adjustX)*0.5)
     .margins({left: 100, top: 20, right: 10, bottom: 20}) 
     .brushOn(false) 
     .clipPadding(10) 
@@ -719,7 +724,7 @@ scatterSeries
 /* dc.seriesChart('#hourSeries') */
 /*  hourSeries
     .width(window.innerWidth*0.4)    
-    .height((window.innerWidth*0.4-adjustX)*0.6)
+    .height((window.innerWidth*0.4-adjustX)*0.5)
      .margins({top: 20, right: 45, bottom: 40, left: 50})
      .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
      .x(d3.time.scale().domain([minDate, maxDate])) 
@@ -833,7 +838,7 @@ scatterSeries
 /*  dc.barChart("#volumeMax")  */
 volumeMax
   .width(window.innerWidth*0.4)    
-  .height((window.innerWidth*0.4-adjustX)*0.6)
+  .height((window.innerWidth*0.4-adjustX)*0.5)
   .margins({top: 0, right: 50, bottom: 40, left: 40})
   .dimension(timeMaxDim)
   .group(volumeMaxGroup)
@@ -850,7 +855,7 @@ var apL = 0, vibL = 0;
 /*  dc.barChart("#apMax")  */
 apMax
   .width((window.innerWidth*0.4-adjustX)*0.5)    
-  .height((window.innerWidth*0.4-adjustX)*0.6)
+  .height((window.innerWidth*0.4-adjustX)*0.5)
   .margins({top: 20, right: 45, bottom: 40, left: 50})
   .dimension(timeMaxDim)
   .group(apMaxGroup)
@@ -869,7 +874,7 @@ apMax
 /*  dc.barChart("#vibMax")  */
 vibMax
   .width((window.innerWidth*0.4-adjustX)*0.5)
-  .height((window.innerWidth*0.4-adjustX)*0.6)
+  .height((window.innerWidth*0.4-adjustX)*0.5)
   .margins({top: 20, right: 45, bottom: 40, left: 50})
   .dimension(timeMaxDim)
   .group(vibMaxGroup)
@@ -888,7 +893,7 @@ vibMax
 /*  dc.barChart("#noDMax")  */
 noDMax
   .width((window.innerWidth*0.4-adjustX)*0.5)
-  .height((window.innerWidth*0.4-adjustX)*0.6)
+  .height((window.innerWidth*0.4-adjustX)*0.5)
   .margins({top: 20, right: 45, bottom: 40, left: 50})
   .dimension(timeMaxDim)
   .group(noDMaxGroup)
@@ -907,7 +912,7 @@ noDMax
 /*  dc.barChart("#noFMax")  */
 noFMax
   .width((window.innerWidth*0.4-adjustX)*0.5)
-  .height((window.innerWidth*0.4-adjustX)*0.6)
+  .height((window.innerWidth*0.4-adjustX)*0.5)
   .margins({top: 20, right: 45, bottom: 40, left: 50})
   .dimension(timeMaxDim)
   .group(noFMaxGroup)
@@ -967,7 +972,7 @@ noFMax
   var vMin=0, vGap=0;
   gapVib
     .width(window.innerWidth*0.4-adjustX)    
-    .height((window.innerWidth*0.4-adjustX)*0.6)
+    .height((window.innerWidth*0.4-adjustX)*0.5)
     .transitionDuration(100)
     .margins({top: 30, right: 50, bottom: 25, left: 40})
     .dimension(todayDim)
