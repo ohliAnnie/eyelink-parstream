@@ -5,7 +5,7 @@
   var eventSeries = dc.seriesChart('#eventSeries');
   var eventHeat = dc.heatMap("#eventHeat");
   var dayBubble = dc.bubbleChart("#dayBubble");
-/*  var scatterSeries = dc.seriesChart("#scatterSeries");*/
+  var scatterSeries = dc.seriesChart("#scatterSeries");
   var timeMax = dc.compositeChart("#timeMax");
   var volumeMax = dc.barChart("#volumeMax");
   var apMax = dc.barChart("#apMax");
@@ -20,14 +20,14 @@
 d3.json("/reports/restapi/getReportRawData", function(err, data){
   if(err) throw error;
    var numberFormat = d3.format('.2f');
-   var minDate = new Date(2016,11,03);
-   var maxDate = new Date(2016,11,10); 
-   var yesDate = new Date(2016,11,09);
+   var minDate = new Date(2016,11,06);
+   var maxDate = new Date(2016,11,13); 
+   var yesDate = new Date(2016,11,12);
 
    var today = '';
 
   var eventName = ["POWER", "ALS", "VIBRATION", "NOISE", "GPS", "STREET LIGHT", "REBOOT"];
-  var week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  var week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];  
 
   data.rtnData[0].forEach(function(d){
     d.dd = new Date(d.event_time);
@@ -56,7 +56,7 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
         d.index = 4;
         event = 'GPS';
         break;
-      case "81" :     // 센서상태
+      case "81" :     // 센서상태        
         d.index = 5;
         event = 'STREET LIGHT';
         break;
@@ -70,8 +70,8 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
     d.vibration_y = parseInt(d.vibration_y);
     d.vibration_z =  parseInt(d.vibration_z);
     d.vibration = (d.vibration_x+d.vibration_y+d.vibration_z)/3;
-/*    d.als_level = parseInt(d.als_level);
-    d.status_power_meter = parseInt(d.status_power_meter);*/
+    d.als_level = parseInt(d.als_level);
+    d.status_power_meter = parseInt(d.status_power_meter);
     d.noise_decibel= parseInt(d.noise_decibel);
     d.noise_frequency = parseInt(d.noise_frequency);
     d.event_name= event;        
@@ -90,54 +90,57 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
     return 1;
   });
 
-  var indexDayDim = nyx.dimension(function(d) {  
-    var day = d.today.getDay();
+  var indexWeekDim = nyx.dimension(function(d) {  
+    var day = d.today.getDay();    
     return [d.index, day+'.'+week[day]];  });
 
-  var eventHeatGroup = indexDayDim.group().reduceCount(function(d) {
+  var eventHeatGroup = indexWeekDim.group().reduceCount(function(d) {
     return 1;
   });
 
- /* var scatterSeriesGroup = indexDayDim.group().reduce(
+  var indexDayDim = nyx.dimension(function(d){
+    return [d.index, d.today];
+  }) ;
+  var scatterSeriesGroup = indexDayDim.group().reduce(
     function(p, v) {
-      if (v.event_type == "1") {  // 파워
+      if (v.index == 0) {  // 파워
         p.value = v.active_power;
-      } else if(v.event_type == "17") { // 조도
-        p.value = 0;
-      } else if(v.event_type == "33") { // 진동
+      } else if(v.index == 1) { // 조도
+        p.value = v.als_level;
+      } else if(v.index == 2) { // 진동
         p.value = v.vibration;
-      } else if(v.event_type == "49") {  // 노이즈
-        p.value = v.noise_frequency;
-      } else if(v.event_type == "65") { // GPS
+      } else if(v.index == 3) {  // 노이즈
+        p.value = v.noise_decibel;
+      } else if(v.index == 4) { // GPS
         p.value = 0;
-      } else if(v.event_type == "81") { // 센서 상태
-        p.value = 0;
-      } else if(v.event_type == "153") { // 재부팅
+      } else if(v.index == 5) { // 센서 상태
+        p.value = v.status_power_meter;
+      } else if(v.index == 6) { // 재부팅
         p.value = 0;
       }
         p.max = p.max < p.value ? p.value : p.max;
         return p;
     }, function(p, v) {
-      if (v.event_type == "1") {  // 파워
+      if (v.index == 0) {  // 파워
         p.value = v.active_power;
-      } else if(v.event_type == "17") { // 조도
-        p.value = 0;
-      } else if(v.event_type == "33") { // 진동
+      } else if(v.index == 1) { // 조도
+        p.value = v.als_level;
+      } else if(v.index == 2) { // 진동
         p.value = v.vibration;
-      } else if(v.event_type == "49") {  // 노이즈
-        p.value = v.noise_frequency;
-      } else if(v.event_type == "65") { // GPS
+      } else if(v.index == 3) {  // 노이즈
+        p.value = v.noise_decibel;
+      } else if(v.index == 4) { // GPS
         p.value = 0;
-      } else if(v.event_type == "81") { // 센서 상태
-        p.value = 0;
-      } else if(v.event_type == "153") { // 재부팅
+      } else if(v.index == 5) { // 센서 상태
+        p.value = v.status_power_meter;
+      } else if(v.index == 6) { // 재부팅
         p.value = 0;
       }
       p.max =  p.max < p.value ? p.value : p.max;
       return p;
     }, function() {
       return { value : 0, max : 0 }
-  });*/
+  });
 
   var dayDim = nyx.dimension(function(d) {
     var day = d.today.getDay();  
@@ -221,7 +224,7 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
         ++p.cnt ;
       }      
       p.sum += p.value;
-      p.avg = numberFormat(p.sum / p.cnt);
+      p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
       return p;
     },
     function (p, v) {      
@@ -232,7 +235,7 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
         -- p.cnt ;
       }      
       p.sum -= p.value;
-      p.avg = numberFormat(p.sum / p.cnt);
+      p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
       return p;      
     },
     function() {
@@ -248,7 +251,7 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
       ++ p.cnt ;
     }      
       p.sum += p.value;
-      p.avg = numberFormat(p.sum / p.cnt);
+      p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
       return p;
   },
   function (p, v) {
@@ -259,7 +262,7 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
       -- p.cnt ;
     }    
     p.sum -= p.value;
-    p.avg = numberFormat(p.sum / p.cnt);
+    p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
     return p;
   },
   function() {
@@ -275,7 +278,7 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
         ++ p.cnt ;
       }         
         p.sum += p.value;
-        p.avg = numberFormat(p.sum / p.cnt);
+        p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
         return p;
     },
     function (p, v) {      
@@ -286,7 +289,7 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
         -- p.cnt ;
       }        
         p.sum -= p.value;
-        p.avg = numberFormat(p.sum / p.cnt);
+        p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
         return p;      
     },
     function() {
@@ -302,7 +305,7 @@ var vibrationYGroup = todayDim.group().reduce(
         ++ p.cnt ;
       }
       p.sum += p.value;
-      p.avg = numberFormat(p.sum / p.cnt);
+      p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
       return p;
     },
     function (p, v) {      
@@ -313,7 +316,7 @@ var vibrationYGroup = todayDim.group().reduce(
         -- p.cnt ;
       }        
       p.sum -= p.value;
-      p.avg = numberFormat(p.sum / p.cnt);
+      p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
       return p;      
     },
     function() {
@@ -553,7 +556,7 @@ var adjustX = 20, adjustY = 40;
     .x(d3.time.scale().domain([minDate, maxDate])) 
     .round(d3.time.day.round)
     .xUnits(d3.time.days)
-    .brushOn(true)
+    .brushOn(false)
     .yAxisLabel("Count")
     .xAxisLabel("Time")
     .colors(d3.scale.ordinal().range(["#CC333F", "#31a354", "#EDC951","#00A0B0", "#756bb1"]))
@@ -575,13 +578,12 @@ var adjustX = 20, adjustY = 40;
     .width(window.innerWidth*0.4-adjustX)    
     .height((window.innerWidth*0.4-adjustX)*0.6)
     .margins({top: 20, right: 45, bottom: 40, left: 50})
-    .dimension(indexDayDim)
+    .dimension(indexWeekDim)
     .group(eventHeatGroup)
     .keyAccessor(function(d) { return eventName[d.key[0]]; })
     .valueAccessor(function(d) { return d.key[1].split('.')[1]; })
     .colorAccessor(function(d) { return +d.value; })
     .title(function(d) {
-        console.log(d);
         return "Date :   " + d.key[1].split('.')[1] + "\n" +
                "Event_name :  " + eventName[d.key[0]] + "\n" +
                "Cnt : " + d.value; })
@@ -635,13 +637,12 @@ var adjustX = 20, adjustY = 40;
             'Vibration Avg: ' + numberFormat(p.value.avgVib)
         ].join('\n');
     })
-    .yAxis().tickFormat(function (v) {
-      console.log(v);
+    .yAxis().tickFormat(function (v) {      
         return v ;
     });
 
 /* dc.seriesChart('#scatterSeries') */
- /* var symbolScale = d3.scale.ordinal().range(d3.svg.symbolTypes);
+  var symbolScale = d3.scale.ordinal().range(d3.svg.symbolTypes);
   var symbolAccessor = function(d) { return symbolScale(d.key[0]); };
   var subChart = function(c) {
     return dc.scatterPlot(c)
@@ -653,20 +654,24 @@ var adjustX = 20, adjustY = 40;
 scatterSeries
     .width(window.innerWidth*0.4-adjustX)    
     .height((window.innerWidth*0.4-adjustX)*0.6)
+    .margins({top: 10, right: 50, bottom: 30, left: 40})  
     .chart(subChart)
     .brushOn(false)
     .yAxisLabel("Days")
     .xAxisLabel("Value")
     .clipPadding(10)
-    .elasticX(true)
+    .x(d3.time.scale().domain([minDate, maxDate])) 
+    .round(d3.time.day.round)
+    .xUnits(d3.time.day)
     .elasticY(true)
     .dimension(indexDayDim)
     .group(scatterSeriesGroup)
     .mouseZoomable(true)
-    .seriesAccessor(function(d) {return eventName[d.key[0]];})
+    .seriesAccessor(function(d) {
+      return eventName[d.key[0]];})
     .keyAccessor(function(d) {return +d.key[1];})
     .valueAccessor(function(d) {return +d.value.max;})
-    .legend(dc.legend().x(350).y(350).itemHeight(13).gap(5).horizontal(1).legendWidth(140).itemWidth(70));*/
+    .legend(dc.legend().x(window.innderWidth*0.35).y(window.innerWidth*0.3).itemHeight(13).gap(5).horizontal(1).legendWidth(140).itemWidth(70));
 //  chart.yAxis().tickFormat(function(d) {return d3.format(',d')(d+299500);});
 //  chart.margins().left += 40;
 
@@ -688,14 +693,15 @@ scatterSeries
     .group(eventBarGroup, "POWER", sel_stack('0'))
     .mouseZoomable(true)
     .x(d3.time.scale().domain([minDate, maxDate])) 
+    .gap(5)
     .round(d3.time.day.round)
-    .xUnits(d3.time.day)
+    .xUnits(function(){return 10;})
     .colors(d3.scale.ordinal().range(["#EDC951", "#CC333F", "#756bb1", "#31a354", "#fd8d3c", "#00A0B0", "#003399"]))
-    .renderLabel(true);
+    /*.renderLabel(true)*/;
   
   eventBar.legend(dc.legend());
   dc.override(eventBar, 'legendables', function() {
-    var items = eventBar._legendables();
+    var items = eventBar._legendables();    
     return items.reverse();
   });
  for(var i = 1; i<7; ++i)
@@ -764,7 +770,7 @@ scatterSeries
              return vibration; })
             .colors('#756bb1'),
           dc.lineChart(avgCom).group(activeGroup, "ActivePower")
-            .valueAccessor(function(d) {              
+            .valueAccessor(function(d) {                   
               if(d.value.avg != 0)
                 active = d.value.avg;                
               return active;  })
