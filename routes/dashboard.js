@@ -48,15 +48,19 @@ router.get('/restapi/getReportRawData', function(req, res, next) {
   dashboardProvider.selectSingleQueryByID("selectEventRawData", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
-    if (out_data == null) {
+    if (out_data[0] === null) {
       rtnCode = CONSTS.getErrData('0001');
-      out_data[0] = [];
     }
+
+    // console.log('typeof array : %s', (typeof out_data[0] !== 'undefined'));
+    // console.log('typeof array : %s', (out_data[0] !== null));
 
     // MERGE = 'Y'이면 이전 날짜의 RawData를 합쳐준다.
     if (params.MERGE === 'Y')
-      Utils.mergeLoadedData(out_data);
+      out_data = Utils.mergeLoadedData(out_data);
 
+    // console.log('dashboard/restapi/getReportRawData -> out_data : %s', out_data);
+    // console.log('dashboard/restapi/getReportRawData -> out_data : %s', out_data[0]);
     console.log('dashboard/restapi/getReportRawData -> length : %s', out_data[0].length);
     res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });
