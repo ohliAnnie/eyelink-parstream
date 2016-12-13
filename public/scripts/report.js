@@ -14,7 +14,8 @@
   var noFMax = dc.barChart("#noFMax");
   var avgCom = dc.compositeChart("#avgCom");
   var avgVib = dc.compositeChart("#avgVib");
-  var gapVib = dc.lineChart("#gapVib")
+  var gapVib = dc.lineChart("#gapVib");
+  var groupBar = dc.composeChart("#groupBar");
   //var volumeChart = dc.seriesChart('#volumeChart');
 
 d3.json("/reports/restapi/getReportRawData", function(err, data){
@@ -24,9 +25,9 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
    var numberFormat = d3.format('.2f');
 
 // TODO :  날짜 자동 계산
-   var minDate = new Date(2016,11,06);
-   var maxDate = new Date(2016,11,13); 
-   var yesDate = new Date(2016,11,12);
+   var minDate = new Date(2016,11,07);
+   var maxDate = new Date(2016,11,14); 
+   var yesDate = new Date(2016,11,13);
  
   var eventName = ["POWER", "ALS", "VIBRATION", "NOISE", "GPS", "STREET LIGHT", "REBOOT"];
   var week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];  
@@ -104,41 +105,41 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
   });
 
   var indexDayDim = nyx.dimension(function(d){
-    return [d.index, d.today];
+    return [d.event_type, d.today];
   }) ;
   var scatterSeriesGroup = indexDayDim.group().reduce(
     function(p, v) {
-      if (v.index == 0) {  // 파워
+      if (v.event_type == "1") {  // 파워
         p.value = v.active_power;
-      } else if(v.index == 1) { // 조도
+      } else if(v.event_type == "17") { // 조도
         p.value = v.als_level;
-      } else if(v.index == 2) { // 진동
+      } else if(v.event_type == "33") { // 진동
         p.value = v.vibration;
-      } else if(v.index == 3) {  // 노이즈
+      } else if(v.event_type == "49") {  // 노이즈
         p.value = v.noise_decibel;
-      } else if(v.index == 4) { // GPS
+      } else if(v.event_type == "65") { // GPS
         p.value = 0;
-      } else if(v.index == 5) { // 센서 상태
+      } else if(v.event_type == "81") { // 센서 상태
         p.value = v.status_power_meter;
-      } else if(v.index == 6) { // 재부팅
+      } else if(v.event_type == "153") { // 재부팅
         p.value = 0;
       }
         p.max = p.max < p.value ? p.value : p.max;
         return p;
     }, function(p, v) {
-      if (v.index == 0) {  // 파워
+        if (v.event_type == "1") {  // 파워
         p.value = v.active_power;
-      } else if(v.index == 1) { // 조도
+      } else if(v.event_type == "17") { // 조도
         p.value = v.als_level;
-      } else if(v.index == 2) { // 진동
+      } else if(v.event_type == "33") { // 진동
         p.value = v.vibration;
-      } else if(v.index == 3) {  // 노이즈
+      } else if(v.event_type == "49") {  // 노이즈
         p.value = v.noise_decibel;
-      } else if(v.index == 4) { // GPS
+      } else if(v.event_type == "65") { // GPS
         p.value = 0;
-      } else if(v.index == 5) { // 센서 상태
+      } else if(v.event_type == "81") { // 센서 상태
         p.value = v.status_power_meter;
-      } else if(v.index == 6) { // 재부팅
+      } else if(v.event_type == "153") { // 재부팅
         p.value = 0;
       }
       p.max =  p.max < p.value ? p.value : p.max;
@@ -1037,6 +1038,52 @@ timeMax
                 vibM = d.value.avg;
                 return vibM; })
             .colors('#756bb1'),            
+        ]);
+
+      /*  dc.compositeChart("#avgVib")  */
+    groupBar
+//      .renderArea(true)
+      .width(window.innerWidth*0.4-adjustX)    
+      .height((window.innerWidth*0.4-adjustX)*0.7)
+      .margins({top: 20, right: 45, bottom: 40, left: 50})
+      .dimension(todayDim)
+      .transitionDuration(500)
+      .y(d3.scale.linear().domain([0,150])) 
+//      .elasticY(true)
+      .brushOn(false)
+      .mouseZoomable(true)
+      .x(d3.time.scale().domain([minDate, maxDate]).nice(d3.time.day)) 
+       .round(d3.time.day.round)
+//      .alwaysUseRounding(true)
+   //   .yAxisLabel("Date")
+ //     .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
+//      .renderHorizontalGridLines(true)
+      .legend(dc.legend().x(100).y(20).itemHeight(13).gap(5).horizontal(true))  
+      .valueAccessor(function (d){
+        return d.value;
+      }) 
+      .title(function(d) {
+        return "\nNumber of Povetry: " + d.key;
+      })
+      .compose([                 
+          dc.barChart(avgVib).group(vibrationXGroup, "X")
+            .valueAccessor(function(d){
+              if(d.value.avg != 0)
+                vibX = d.value.avg;                
+             return vibX; })
+            .colors('#E2F2FF'),
+          dc.barChart(avgVib).group(vibrationYGroup, "Y")
+            .valueAccessor(function(d){
+              if(d.value.avg != 0)
+                vibY = d.value.avg;
+                return vibY; })
+            .colors('pink'),
+          dc.barChart(avgVib).group(vibrationZGroup, "Z")
+            .valueAccessor(function(d){
+              if(d.value.avg != 0)
+                vibZ = d.value.avg;
+             return vibZ; })
+            .colors('green')
         ]);
 /*volumeChart
     .width(window.innerWidth*0.4-adjustX)    
