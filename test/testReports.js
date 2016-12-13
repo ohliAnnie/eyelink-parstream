@@ -29,11 +29,11 @@ describe("Test", function(){
 
   });
 
-  describe("ParStream -> ", function() {
+  describe("Reports -> ", function() {
     // it('login', login());
 
-    // TO-DO 수행 결과 로깅 처리 로직 보완 필요함. by 배성한.
-    it('Search Data Report ', function(done) {
+    // Raw Data 조회
+    it('Search Data RawData for DC Chart ', function(done) {
       var datas = {user_id: "user_id"};
       request(svr)
         .get("/reports/restapi/getReportRawData")
@@ -42,10 +42,8 @@ describe("Test", function(){
         .expect(200, function(err, res) {
           if (err) return done(err);
           // console.log(res.body);
-          // console.log(res.body.rtnCode.code);
+          console.log('testReports -> rtnData length : %s', res.body.rtnData.length);
           res.body.rtnCode.code.should.be.equal('0000');
-          console.log(res.body.rtnData[0]);
-          (res.body.rtnData[0].today_event_cnt).should.be.above(0);
           done();
         });
     });

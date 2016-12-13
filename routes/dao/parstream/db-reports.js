@@ -38,8 +38,8 @@ var sqlList = {
  //        "   where measure_time > date '2016-11-29' ",
 //        "    where measure_time In ('2016-11-26', '2016-12-02') ",
         "  where year = date_part('YEAR', current_date()) "+
-        "    and month = date_part('MONTH', current_date())",
-        // "    and day = date_part('DAY', current_date())",
+        "    and month = date_part('MONTH', current_date())" +
+        "    and day = date_part('DAY', current_date())",
 };
 
 ReportsProvider = function() {
@@ -48,12 +48,12 @@ ReportsProvider = function() {
 
 // 단건에 대해서 Query를 수행한다.
 ReportsProvider.prototype.selectSingleQueryByID = function (queryId, datas, callback) {
-  console.log('queryID : ' + queryId)
-  console.log('data : ' + datas);
+  console.log('db-report/selectSingleQueryByID -> queryID : ' + queryId)
+  // console.log('db-report/selectSingleQueryByID -> data : ' + datas);
 
   parstream.reserve(function(err, connObj) {
     if (connObj) {
-      console.log("Using connection: " + connObj.uuid);
+      console.log("db-report/selectSingleQueryByID -> Using connection: " + connObj.uuid);
       // Grab the Connection for use.
       var conn = connObj.conn;
       asyncjs.series([
@@ -73,11 +73,13 @@ ReportsProvider.prototype.selectSingleQueryByID = function (queryId, datas, call
                       callback(err)
                     } else {
                       resultset.toObjArray(function(err, results) {
-                        // if (results.length > 0) {
-                        //   console.log("cnt: " + results[0].cnt);
-                        // }
-                        // console.log(results);
-                        callback(null, results);
+                        if (results.length > 0) {
+                          console.log("db-report/selectSingleQueryByID -> Query Count : " + results.length);
+                          callback(null, results);
+                        } else {
+                          console.log('db-report/selectSingleQueryByID -> no data found');
+                          callback(null, null);
+                        }
                       });
                     }
                   });
@@ -89,11 +91,11 @@ ReportsProvider.prototype.selectSingleQueryByID = function (queryId, datas, call
       ], function(err, results) {
         // console.log(results);
         parstream.release(connObj, function(err) {
-          console.log('released connection!!!');
+          console.log('db-report/selectSingleQueryByID -> released connection!!!');
           if (err) {
             console.log(err.message);
           }
-          callback(err, results);
+          callback(err, results, datas);
         })
       });
     }

@@ -1,4 +1,5 @@
 var CONSTS = require('./consts');
+var Utils = require('./util');
 var express = require('express');
 var router = express.Router();
 var DashboardProvider = require('./dao/parstream/db-dashboard').DashboardProvider;
@@ -51,18 +52,10 @@ router.get('/restapi/getReportRawData', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
       out_data[0] = [];
     }
+
     // MERGE = 'Y'이면 이전 날짜의 RawData를 합쳐준다.
-    var old_out_data = [];
-    var d = new Date();
-    console.log('dashboard/restapi/getReportRawData ->  today : %s', Date.today());
-    if (params.MERGE === 'Y') {
-      for (var key in _rawDataByDay) {
-        console.log('dashboard/restapi/getReportRawData -> date %s, data count : %s', key, _rawDataByDay[key].length);
-        if (_rawDataByDay[key].length > 0)
-          old_out_data = old_out_data.concat(_rawDataByDay[key]);
-      }
-    }
-    out_data[0] = out_data[0].concat(old_out_data);
+    if (params.MERGE === 'Y')
+      Utils.mergeLoadedData(out_data);
 
     console.log('dashboard/restapi/getReportRawData -> length : %s', out_data[0].length);
     res.json({rtnCode: rtnCode, rtnData: out_data[0]});

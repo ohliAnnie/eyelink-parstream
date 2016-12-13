@@ -1,4 +1,5 @@
 var CONSTS = require('./consts');
+var Utils = require('./util');
 var express = require('express');
 var router = express.Router();
 var ReportsProvider = require('./dao/parstream/db-reports').ReportsProvider;
@@ -10,34 +11,36 @@ var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', 
 
 /* GET reports page. */
 router.get('/', function(req, res, next) {
-  console.log('/reports/');
   res.render('./reports/main', { title: 'EyeLink for ParStream' });
 });
 
 
 router.get('/main', function(req, res, next) {
-  console.log('haha');
   res.render('./reports/main-old', { title: 'sample' });
 });
 
 
 // query Report
 router.get('/restapi/getReportRawData', function(req, res, next) {
-  console.log('/restapi/getReportRawData');
-  var in_data = ["user_id"];
-  reportsProvider.selectSingleQueryByID("selectEventRawData", in_data, function(err, out_data) {
+  console.log('reports/restapi/getReportRawData');
+  var in_data = {MERGE:'Y'};
+  reportsProvider.selectSingleQueryByID("selectEventRawData", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-    res.json({rtnCode: rtnCode, rtnData: out_data});
+    // MERGE = 'Y'이면 이전 날짜의 RawData를 합쳐준다.
+    if (params.MERGE === 'Y')
+      Utils.mergeLoadedData(out_data);
+
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });
 
 });
 
 router.get('/NYX', function(req, res, next) {
-  var data = 
+  var data =
 [{"event_type":1,"event_time":"2016-12-08 22:18:08","active_power":58.566,"als_level":null,"dimming_level":null,"vibration_x":null,"vibration_y":null,"vibration_z":null,"noise_decibel":null,"noise_frequency":null,"status_power_meter":null},
 {"event_type":1,"event_time":"2016-12-08 22:18:30","active_power":99.564,"als_level":null,"dimming_level":null,"vibration_x":null,"vibration_y":null,"vibration_z":null,"noise_decibel":null,"noise_frequency":null,"status_power_meter":null},
 {"event_type":1,"event_time":"2016-12-09 17:58:08","active_power":121.367,"als_level":null,"dimming_level":null,"vibration_x":null,"vibration_y":null,"vibration_z":null,"noise_decibel":null,"noise_frequency":null,"status_power_meter":null},
