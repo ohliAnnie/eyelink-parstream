@@ -1,7 +1,7 @@
 function replaceSql(sql, params) {
   // var params = {ID : 'AAAA', DATE: '2016-12-12', NUM: 5};
   for (var key in params) {
-    console.log('key : %s, value : %s', key, params[key]);
+    console.log('util/replaceSql -> key : %s, value : %s', key, params[key]);
 
     // TO-DO 대소문자 구별없이 처리할 수 있도록 보완 필
     var re = new RegExp("#" + key + "#","g");

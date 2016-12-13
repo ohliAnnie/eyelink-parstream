@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
 
 // test db query logic
 router.get('/restapi/get_successcount', function(req, res, next) {
-  var in_data = ["user_id"];
+  var in_data = {};
   dashboardProvider.selectSingleQueryByID("selectSuccessCount", in_data, function(err, out_data) {
     console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
@@ -29,47 +29,43 @@ router.get('/restapi/get_successcount', function(req, res, next) {
 
 // query Dashboard Section 1
 router.get('/restapi/getDashboardSection1', function(req, res, next) {
-  var in_data = ["user_id"];
+  var in_data = {};
   dashboardProvider.selectSingleQueryByID("selectDashboardSection1", in_data, function(err, out_data) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-    res.json({rtnCode: rtnCode, rtnData: out_data});
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });
 
 });
 
 // query RawData
 router.get('/restapi/getReportRawData', function(req, res, next) {
-  var in_data = ["user_id"];
-  dashboardProvider.selectSingleQueryByID("selectEventRawData", in_data, function(err, out_data) {
+  var in_data = {MERGE:'Y'};
+  dashboardProvider.selectSingleQueryByID("selectEventRawData", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
       out_data[0] = [];
     }
-    // 이전 날짜의 RawData를 합쳐준다.
-    // TO-DO Hard Coding 변경 필요
-    // if (_rawDataByDay['20161201'][0].length > 0)
-    //   _rawDataByDay['20161201'][0] = _rawDataByDay['20161201'][0].concat(out_data[0]);
-    // if (_rawDataByDay['20161202'][0].length > 0)
-    //   _rawDataByDay['20161202'][0] = _rawDataByDay['20161201'][0].concat(out_data[0]);
-    // if (_rawDataByDay['20161201'][0].length > 0)
-    //   _rawDataByDay['20161201'][0] = _rawDataByDay['20161201'][0].concat(out_data[0]);
-    // if (_rawDataByDay['20161201'][0].length > 0)
-    //   _rawDataByDay['20161201'][0] = _rawDataByDay['20161201'][0].concat(out_data[0]);
-    // if (_rawDataByDay['20161201'][0].length > 0)
-    //   _rawDataByDay['20161201'][0] = _rawDataByDay['20161201'][0].concat(out_data[0]);
-    // out_data[0] = out_data[0].concat(_rawDataByDay['20161201'][0]);
-    out_data[0] = out_data[0].concat(_rawDataByDay['20161202'][0]);
-    out_data[0] = out_data[0].concat(_rawDataByDay['20161203'][0]);
-    out_data[0] = out_data[0].concat(_rawDataByDay['20161204'][0]);
-    out_data[0] = out_data[0].concat(_rawDataByDay['20161205'][0]);
-    console.log(out_data[0].length);
-    res.json({rtnCode: rtnCode, rtnData: out_data});
+    // MERGE = 'Y'이면 이전 날짜의 RawData를 합쳐준다.
+    var old_out_data = [];
+    var d = new Date();
+    console.log('dashboard/restapi/getReportRawData ->  today : %s', Date.today());
+    if (params.MERGE === 'Y') {
+      for (var key in _rawDataByDay) {
+        console.log('dashboard/restapi/getReportRawData -> date %s, data count : %s', key, _rawDataByDay[key].length);
+        if (_rawDataByDay[key].length > 0)
+          old_out_data = old_out_data.concat(_rawDataByDay[key]);
+      }
+    }
+    out_data[0] = out_data[0].concat(old_out_data);
+
+    console.log('dashboard/restapi/getReportRawData -> length : %s', out_data[0].length);
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });
 });
 

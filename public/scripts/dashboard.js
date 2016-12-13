@@ -18,7 +18,7 @@ function displayCount() {
       if (result.rtnCode.code == "0000") {
         // TO-DO json data 수신 방식 점검 필요 by 배성한
         //- $("#successmsg").html(result.message);
-        var data = result.rtnData[0][0];
+        var data = result.rtnData[0];
         bill.update(data.today_power_charge);
         pbill.update(data.active_power_percent);
         //- if (data.active_power_percent < 0) {
@@ -180,7 +180,7 @@ function drawChart() {
     //  "dimming_level":null,"noise_decibel":0,"noise_frequency":null,"vibration_x":null,
     //  "vibration_y":null,"vibration_z":null}
 
-    var data = out_data.rtnData[0];
+    var data = out_data.rtnData;
     // console.log(out_data);
 
     // data = [

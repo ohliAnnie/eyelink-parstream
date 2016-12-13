@@ -13,7 +13,7 @@ var config = {
   url: 'jdbc:parstream://m2u-parstream.eastus.cloudapp.azure.com:9043/eyelink',
   drivername: 'com.parstream.ParstreamDriver',
   minpoolsize: 1,
-  maxpoolsize: 5,
+  maxpoolsize: 10,
   properties: {
     user: 'parstream',
     password: 'Rornfldkf!2',
@@ -97,15 +97,15 @@ DashboardProvider = function() {
 
 // 단건에 대해서 Query를 수행한다.
 DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, callback) {
-  console.log('queryID : ' + queryId)
-  console.log('data : ' + datas);
+  console.log('db-Dashboard/selectSingleQueryByID -> queryID : ' + queryId)
+  // console.log('db-Dashboard/selectSingleQueryByID -> data : ' + datas);
 
   console.time(queryId+'-total');
   console.time(queryId+'-reserve');
   parstream.reserve(function(err, connObj) {
     if (connObj) {
       console.timeEnd(queryId+'-reserve');
-      console.log("Using connection: " + connObj.uuid);
+      console.log("db-Dashboard/selectSingleQueryByID -> Using connection: " + connObj.uuid);
       // Grab the Connection for use.
       var conn = connObj.conn;
       asyncjs.series([
@@ -119,10 +119,9 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
                   callback(err);
                 } else {
                   console.time(queryId+'-executeQuery');
-                  // console.log(sqlList[queryId]);
-                  // var sSql = sqlList[queryId].replace(/#/g, datas['val']);
+                  // SQL 내 파라메타를 변경해준다.
                   var sSql = Utils.replaceSql(sqlList[queryId], datas);
-                  console.log(sSql);
+                  console.log('db-Dashboard/selectSingleQueryByID -> ' + sSql);
                   statement.execute(sSql,
                                          function(err, resultset) {
                     if (err) {
@@ -130,17 +129,13 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
                     } else {
                       console.timeEnd(queryId+'-executeQuery');
                       console.time(queryId+'-resultset.toObjArray');
-                      console.log('resultset');
-                      // console.log(resultset);
-                      // results = JSON.stringify(resultset[0]);
-
                       // console.log(results);
                       resultset.toObjArray(function(err, results) {
                         if (results.length > 0) {
-                          console.log("Query Count : " + results.length);
+                          console.log("db-Dashboard/selectSingleQueryByID -> Query Count : " + results.length);
                           callback(null, results);
                         } else {
-                          console.log('no data found');
+                          console.log('db-Dashboard/selectSingleQueryByID -> no data found');
                           callback(null, null);
                         }
                       //   // console.log(results);
@@ -157,12 +152,12 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
       ], function(err, results) {
         // console.log(results);
         parstream.release(connObj, function(err) {
-          console.log('released connection!!!');
+          console.log('db-Dashboard/selectSingleQueryByID -> released connection!!!');
           if (err) {
             console.log(err.message);
           }
           console.timeEnd('total');
-          callback(err, results);
+          callback(err, results, datas);
         })
       });
     }

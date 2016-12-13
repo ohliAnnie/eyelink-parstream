@@ -40,19 +40,9 @@ app.use('/dashboard', dashboard);
 app.use('/reports', reports);
 app.use('/intro', intro);
 
-// TO-DO Hard Coding 변경 필요
-// -5 ~ -1일 Raw Data를 서비스 시작시 Loading 한다.
+// CONSTS.CONFIG.LOADING_DAY 기간의 Raw Data를 서버 시작시 메모리에 Loading
 global._rawDataByDay = {};
-for (var i=0; i<CONSTS.CONFIG.ROADING_DAY; i++) {
-  console.log('day : %s', d.removeDays(1).toFormat('YYYYMMDD'));
-}
-initapps({id:'20161205', val:1});
-initapps({id:'20161204', val:2});
-initapps({id:'20161203', val:3});
-initapps({id:'20161202', val:4});
-initapps({id:'20161201', val:5});
-// initapps('20161202');
-// initapps('20161203');
+initapps.loadData(function(in_params) {});
 
 // catch 404 and forward to error handler
 // app.use(function(req, res, next) {

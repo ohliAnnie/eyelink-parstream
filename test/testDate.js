@@ -87,11 +87,11 @@ describe("Test", function(){
 
 
     it('Calc -5 Day', function(done) {
-      console.log("CONFIG.ROADING_DAY : %s ", CONSTS.CONFIG.ROADING_DAY);
+      console.log("CONFIG.LOADING_DAY : %s ", CONSTS.CONFIG.LOADING_DAY);
       var d = new Date();
       console.log('today : %s', Date.today());
       console.log('hours : %s', d.removeHours(1).toFormat('YYYYMMDDTHH24'));
-      for (var i=0; i<CONSTS.CONFIG.ROADING_DAY; i++) {
+      for (var i=0; i<CONSTS.CONFIG.LOADING_DAY; i++) {
         console.log('day : %s', d.removeDays(1).toFormat('YYYYMMDD'));
       }
       done();
