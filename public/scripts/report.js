@@ -15,8 +15,8 @@
   var avgCom = dc.compositeChart("#avgCom");
   var avgVib = dc.compositeChart("#avgVib");
   var gapVib = dc.lineChart("#gapVib");
-  /*var groupBar = dc.compositeChart("#groupBar");*/
-  //var volumeChart = dc.seriesChart('#volumeChart');
+  var groupBar = dc.compositeChart("#groupBar");
+  /*var volumeChart = dc.seriesChart('#volumeChart');*/
 
 d3.json("/reports/restapi/getReportRawData", function(err, data){
   if(err) throw error;
@@ -103,7 +103,7 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
   });
 
   var indexDayDim = nyx.dimension(function(d){
-    return [d.event_type, d.today];
+    return [d.index, d.today];
   }) ;
   var scatterSeriesGroup = indexDayDim.group().reduce(
     function(p, v) {
@@ -523,7 +523,7 @@ var adjustX = 20, adjustY = 40;
   eventChart
     .width(window.innerWidth*0.4-adjustX)
     .height((window.innerWidth*0.4-adjustX)*0.5)
-    .radius((window.innerWidth*0.4-adjustX)*0.25)
+    .radius((window.innerWidth*0.4-adjustX)*0.2)
     .dimension(eventDim)
     .group(eventGroup)
 //    .slicesCap(4)
@@ -658,7 +658,7 @@ var adjustX = 20, adjustY = 40;
 scatterSeries
     .width(window.innerWidth*0.4-adjustX)
     .height((window.innerWidth*0.4-adjustX)*0.5)
-    .margins({top: 10, right: 50, bottom: 30, left: 40})
+    .margins({top: 10, right: 50, bottom: 30, left: 140})
     .chart(subChart)
     .brushOn(false)
     .yAxisLabel("Days")
@@ -675,22 +675,22 @@ scatterSeries
       return eventName[d.key[0]];})
     .keyAccessor(function(d) {return +d.key[1];})
     .valueAccessor(function(d) {return +d.value.max;})
-    .legend(dc.legend().x(window.innderWidth*0.35).y(window.innerWidth*0.3).itemHeight(13).gap(5).horizontal(1).legendWidth(140).itemWidth(70));
+    .colors(d3.scale.ordinal().range(["#CC333F", "#EDC951", "#756bb1", "#31a354", "#fd8d3c", "#00A0B0", "#003399"]))
+    .legend(dc.legend().x(window.innderWidth*0.35).y(window.innerWidth*0.3).itemHeight(13).gap(5).legendWidth(140).itemWidth(70));
 //  chart.yAxis().tickFormat(function(d) {return d3.format(',d')(d+299500);});
 //  chart.margins().left += 40;
 
 /*  dc.barChart('#eventBar')  */
-// TODO :  바 상단에 tot값 나오게 하거나 NaN 없애기
   eventBar
     .width(window.innerWidth*0.4-adjustX)
     .height((window.innerWidth*0.4-adjustX)*0.5)
-    .margins({left: 100, top: 20, right: 10, bottom: 20})
+    .margins({left: 140, top: 20, right: 10, bottom: 20})
     .brushOn(false)
     .clipPadding(10)
     .title(function(d) {
       for(var i=0; i<7; i++) {
         if(this.layer == eventName[i])
-          return d.key + '[' + this.layer + ']: ' + d.value[i];
+          return this.layer + ' : ' + d.value[i];
       }
     })
     .dimension(todayDim)
@@ -750,7 +750,7 @@ scatterSeries
 /*      .renderArea(true)
       .renderHorizontalGridLines(true)*/
       .width(window.innerWidth*0.4-adjustX)
-      .height((window.innerWidth*0.4-adjustX)*0.7)
+      .height((window.innerWidth*0.4-adjustX)*0.5)
        .margins({top: 20, right: 45, bottom: 40, left: 50})
       .dimension(todayDim)
       .transitionDuration(500)
@@ -785,7 +785,7 @@ scatterSeries
     avgVib
 //      .renderArea(true)
       .width(window.innerWidth*0.4-adjustX)
-      .height((window.innerWidth*0.4-adjustX)*0.7)
+      .height((window.innerWidth*0.4-adjustX)*0.5)
        .margins({top: 20, right: 45, bottom: 40, left: 50})
       .dimension(todayDim)
       .transitionDuration(500)
@@ -795,6 +795,7 @@ scatterSeries
       .mouseZoomable(true)
       .rangeChart(avgCom)
       .x(d3.time.scale().domain([minDate, maxDate]).nice(d3.time.day))
+      .xUnits(function(){return 20;})      
        .round(d3.time.day.round)
 //      .alwaysUseRounding(true)
    //   .yAxisLabel("Date")
@@ -980,17 +981,17 @@ noFMax
     .round(d3.time.day.round)
     .xUnits(d3.time.days)
     .elasticY(true)
-    .renderHorizontalGridLines(true)
-    .legend(dc.legend().x(100).y(10).itemHeight(13).gap(5))
+    .renderHorizontalGridLines(true)    
+    .legend(dc.legend().x(100).y(10).itemHeight(13).gap(10).horizontal(true))
     .brushOn(false)
-    .group(gapVibGroup, 'Vibration Min')
+    .group(gapVibGroup, 'Min')
     .valueAccessor(function (d) {
         if (vMin == 0)
           vMin = d.value.min
         vMin = vMin < d.value.min ? vMin : d.value.min;
         return vMin;
     })
-    .stack(gapVibGroup, 'Vibration Max', function (d) {
+    .stack(gapVibGroup, 'Max', function (d) {
         vGap = vGap > d.value.gap ? vGap : d.value.gap;
         return vGap;
     })
@@ -1039,18 +1040,20 @@ timeMax
         ]);
 
       /*  dc.compositeChart("#avgVib")  */
- /*   groupBar
+  var translate = 15;
+    groupBar
 //      .renderArea(true)
       .width(window.innerWidth*0.4-adjustX)    
       .height((window.innerWidth*0.4-adjustX)*0.7)
-      .margins({top: 20, right: 45, bottom: 40, left: 50})
-      .dimension(todayDim)
+      .margins({top: 60, right: 60, bottom: 40, left: 50})
+      .dimension(timeMaxDim)
       .transitionDuration(500)
-      .y(d3.scale.linear().domain([0,150])) 
-//      .elasticY(true)
+//      .y(d3.scale.linear().domain([0,150])) 
+      .elasticY(true)
       .brushOn(false)
       .mouseZoomable(true)
-      .x(d3.time.scale().domain([minDate, maxDate]).nice(d3.time.day)) 
+//      .x(d3.time.scale().domain([minDate, maxDate]).nice(d3.time.day)) 
+      .x(d3.time.scale().domain([minDate, maxDate])) 
        .round(d3.time.day.round)
 //      .alwaysUseRounding(true)
    //   .yAxisLabel("Date")
@@ -1064,25 +1067,25 @@ timeMax
         return "\nNumber of Povetry: " + d.key;
       })
       .compose([                 
-          dc.barChart(avgVib).group(vibrationXGroup, "X")
-            .valueAccessor(function(d){
+          dc.barChart(groupBar).gap(20).group(noDMaxGroup, "decibel")
+            .valueAccessor(function(d){              
               if(d.value.avg != 0)
-                vibX = d.value.avg;                
+                vibX = d.value.max;                
              return vibX; })
             .colors('#E2F2FF'),
-          dc.barChart(avgVib).group(vibrationYGroup, "Y")
+          dc.barChart(groupBar).gap(20).group(noFMaxGroup, "frequency")
             .valueAccessor(function(d){
               if(d.value.avg != 0)
-                vibY = d.value.avg;
+                vibY = d.value.max;
                 return vibY; })
-            .colors('pink'),
-          dc.barChart(avgVib).group(vibrationZGroup, "Z")
-            .valueAccessor(function(d){
-              if(d.value.avg != 0)
-                vibZ = d.value.avg;
-             return vibZ; })
-            .colors('green')
-        ]);*/
+            .colors('pink')
+            .useRightYAxis(true)
+            .y(d3.scale.linear().domain([0,150])) 
+              
+        ])
+      .renderlet(function (chart) {
+    chart.selectAll("g._1").attr("transform", "translate(" + translate + ", 0)");
+  });;
 /*volumeChart
     .width(window.innerWidth*0.4-adjustX)
     .height((window.innerWidth*0.4-adjustX)*0.8)
