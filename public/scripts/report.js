@@ -25,11 +25,12 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
 
 // TODO :  날짜 자동 계산
    var minDate = new Date(2016,11,07);
-   var maxDate = new Date(2016,11,14); 
-   var yesDate = new Date(2016,11,13);
-   var eventName = ["POWER", "ALS", "VIBRATION", "NOISE", "GPS", "STREET LIGHT", "REBOOT"];
+  var maxDate = new Date(2016,11,14); 
+  var yesDate = new Date(2016,11,13);
+  var eventName = ["POWER", "ALS", "VIBRATION", "NOISE", "GPS", "STREET LIGHT", "REBOOT"];
   var week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+// Data Setting
   data.rtnData.forEach(function(d){
     var a = d.event_time.split(" ");
     var b = a[0].split("-");
@@ -80,20 +81,25 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
     d.noise_frequency = parseInt(d.noise_frequency);
     d.event_name= event;
   });
+
   var nyx = crossfilter(data.rtnData);
   var all = nyx.groupAll();
 
+// Dimension by event_name
   var eventDim = nyx.dimension(function(d) {
     return d.event_name;
   });
 
   var eventGroup = eventDim.group();
 
+// Dimension by event_name & hour
   var eventSeriesDim = nyx.dimension(function(d) {    return [ d.event_name, +d.hour];  });
+
   var eventSeriesGroup = eventSeriesDim.group().reduceCount(function(d) {
     return 1;
   });
 
+// Dimension by index & week
   var indexWeekDim = nyx.dimension(function(d) {
     var day = d.today.getDay();
     return [d.index, day+'.'+week[day]];  });
@@ -102,43 +108,61 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
     return 1;
   });
 
+// Dimension by index & today
   var indexDayDim = nyx.dimension(function(d){
     return [d.index, d.today];
   }) ;
+
   var scatterSeriesGroup = indexDayDim.group().reduce(
     function(p, v) {
-      if (v.event_type == "1") {  // 파워
+     switch(v.event_type){
+      case "1" :   // 피워
         p.value = v.active_power;
-      } else if(v.event_type == "17") { // 조도
+        break;
+      case "17" :   // 조도
         p.value = v.als_level;
-      } else if(v.event_type == "33") { // 진동
+        break;
+      case "33" :     // 진동
         p.value = v.vibration;
-      } else if(v.event_type == "49") {  // 노이즈
+        break;
+      case "49" :    // 노이즈
         p.value = v.noise_decibel;
-      } else if(v.event_type == "65") { // GPS
+        break;
+      case "65" :    // GPS
         p.value = 0;
-      } else if(v.event_type == "81") { // 센서 상태
+        break;
+      case "81" :     // 센서상태
         p.value = v.status_power_meter;
-      } else if(v.event_type == "153") { // 재부팅
+        break;
+      case "153" :    // 재부팅
         p.value = 0;
+        break;
       }
         p.max = p.max < p.value ? p.value : p.max;
         return p;
     }, function(p, v) {
-        if (v.event_type == "1") {  // 파워
+     switch(v.event_type){
+      case "1" :   // 피워
         p.value = v.active_power;
-      } else if(v.event_type == "17") { // 조도
+        break;
+      case "17" :   // 조도
         p.value = v.als_level;
-      } else if(v.event_type == "33") { // 진동
+        break;
+      case "33" :     // 진동
         p.value = v.vibration;
-      } else if(v.event_type == "49") {  // 노이즈
+        break;
+      case "49" :    // 노이즈
         p.value = v.noise_decibel;
-      } else if(v.event_type == "65") { // GPS
+        break;
+      case "65" :    // GPS
         p.value = 0;
-      } else if(v.event_type == "81") { // 센서 상태
+        break;
+      case "81" :     // 센서상태
         p.value = v.status_power_meter;
-      } else if(v.event_type == "153") { // 재부팅
+        break;
+      case "153" :    // 재부팅
         p.value = 0;
+        break;
       }
       p.max =  p.max < p.value ? p.value : p.max;
       return p;
@@ -146,6 +170,7 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
       return { value : 0, max : 0 }
   });
 
+// Dimension by week
   var dayDim = nyx.dimension(function(d) {
     var day = d.today.getDay();
     return week[day];
@@ -155,58 +180,38 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
     function(p, v) {
       if(v.event_type == "33") {
         ++p.cntV;
-        p.vibration = v.vibration;
-        p.noise_frequency = 0;
-        p.noise_decibel = 0;
+        p.sumVib += v.vibration;        
       } else if(v.event_type == "49") {
-        ++p.cntN;
-        p.vibration = 0;
-        p.noise_frequency = v.noise_frequency;
-        p.noise_decibel = v.noise_decibel;
-      } else {
-        p.vibration = 0;
-        p.noise_frequency = 0;
-        p.noise_decibel = 0;
-      }
-        p.sumVib += p.vibration;
+        ++p.cntN;        
+        p.sumNoD += v.noise_decibel;
+        p.sumNoF += v.noise_frequency;
+      } 
         p.avgVib = p.cntV ? p.sumVib / p.cntV : 0;
-        p.sumNoD += p.noise_decibel;
-        p.sumNoF += p.noise_frequency;
         p.avgNoD = p.cntN ? p.sumNoD / p.cntN : 0;
         p.avgNoF = p.cntN ? p.sumNoF / p.cntN : 0;
       return p;
     }, function(p, v) {
-       if(v.event_type == "33") {
+      if(v.event_type == "33") {
         --p.cntV;
-        p.vibration = v.vibration;
-        p.noise_frequency = 0;
-        p.noise_decibel = 0;
+        p.sumVib -= v.vibration;        
       } else if(v.event_type == "49") {
-        --p.cntN;
-        p.vibration = 0;
-        p.noise_frequency = v.noise_frequency;
-        p.noise_decibel = v.noise_decibel;
-      } else {
-        p.vibration = 0;
-        p.noise_frequency = 0;
-        p.noise_decibel = 0;
-      }
-        p.sumVib -= p.vibration;
-        p.avgVib = p.sumVib / p.cntV;
-        p.sumNoD -= p.noise_decibel;
-        p.sumNoF -= p.noise_frequency;
-        p.avgNoD = p.sumNoD / p.cntN;
-        p.avgNoF = p.sumNoF / p.cntN;
+        --p.cntN;        
+        p.sumNoD -= v.noise_decibel;
+        p.sumNoF -= v.noise_frequency;
+      } 
+        p.avgVib = p.cntV ? p.sumVib / p.cntV : 0;
+        p.avgNoD = p.cntN ? p.sumNoD / p.cntN : 0;
+        p.avgNoF = p.cntN ? p.sumNoF / p.cntN : 0;
       return p;
     }, function() {
       return {  cntV:0, cntN:0,
         sumVib:0, sumNoD:0, sumNoF:0,
-        avgVib:0, avgNoD:0, avgNoF:0 ,
-        vibration:0, noise_decibel:0, noise_frequency:0
+        avgVib:0, avgNoD:0, avgNoF:0 ,      
       };
     }
   );
 
+// Dimension by today
   var todayDim = nyx.dimension(function (d) { return d.today; });
 
   var eventBarGroup = todayDim.group().reduce(function(p, v){
@@ -221,172 +226,135 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
 
   var activeGroup = todayDim.group().reduce(
     function (p, v) {
-      if(v.event_type != "1") {
-        p.value = 0;
-      }  else {
-        p.value = v.active_power;
+      if(v.event_type == "1") {        
+        p.sum += v.active_power;
         ++p.cnt ;
-      }
-      p.sum += p.value;
+      }      
       p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
       return p;
     },
     function (p, v) {
-      if(v.event_type != "1") {
-        p.value = 0;
-      }  else {
-        p.value = v.active_power;
+      if(v.event_type == "1") {
+        p.sum -= v.active_power;  
         -- p.cnt ;
-      }
-      p.sum -= p.value;
+      }      
       p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
       return p;
     },
     function() {
-      return { value :0, cnt:0, sum:0, avg:0 };
+      return { cnt:0, sum:0, avg:0 };
     }
-);
+  );
+
   var vibrationGroup = todayDim.group().reduce(
    function (p, v) {
-    if(v.event_type != "33") {
-      p.value = 0;
-    }  else {
-      p.value = v.vibration;
+    if(v.event_type == "33") {
+       p.sum += v.vibration;
       ++ p.cnt ;
-    }
-      p.sum += p.value;
+    }      
       p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
-      return p;
+    return p;
   },
   function (p, v) {
-    if(v.event_type != "33") {
-      p.value = 0;
-    }  else {
-      p.value = v.vibration;
+    if(v.event_type == "33") {
+       p.sum -= v.vibration;
       -- p.cnt ;
-    }
-    p.sum -= p.value;
-    p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
+    }      
+      p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
     return p;
   },
   function() {
-    return { value :0, cnt:0, sum:0, avg:0 };
+    return { cnt:0, sum:0, avg:0 };
   });
 
  var vibrationXGroup = todayDim.group().reduce(
    function (p, v) {
-      if(v.event_type != "33") {
-        p.value = 0;
-      }  else {
-        p.value = v.vibration_x;
+      if(v.event_type == "33") {
+        p.sum +=  v.vibration_x;
         ++ p.cnt ;
-      }
-        p.sum += p.value;
+      }      
         p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
-        return p;
+      return p;
     },
     function (p, v) {
-      if(v.event_type != "33") {
-        p.value = 0;
-      }  else {
-        p.value = v.vibration_x
+      if(v.event_type == "33") {
+        p.sum -= v.vibration_x;
         -- p.cnt ;
-      }
-        p.sum -= p.value;
+      }         
         p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
-        return p;
+      return p;
     },
     function() {
-      return { value :0, cnt:0, sum:0, avg:0 };
+      return { cnt:0, sum:0, avg:0 };
     }
   );
-var vibrationYGroup = todayDim.group().reduce(
+
+ var vibrationYGroup = todayDim.group().reduce(
    function (p, v) {
-      if(v.event_type != "33") {
-        p.value = 0;
-      }  else {
-        p.value = v.vibration_y;
+      if(v.event_type == "33") {
+        p.sum +=  v.vibration_y;
         ++ p.cnt ;
-      }
-      p.sum += p.value;
-      p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
+      }      
+        p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
       return p;
     },
     function (p, v) {
-     if(v.event_type != "33") {
-        p.value = 0;
-      }  else {
-        p.value = v.vibration_y;
+      if(v.event_type == "33") {
+        p.sum -= v.vibration_y;
         -- p.cnt ;
-      }
-      p.sum -= p.value;
-      p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
+      }         
+        p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
       return p;
     },
     function() {
-      return { value :0, cnt:0, sum:0, avg:0 };
+      return { cnt:0, sum:0, avg:0 };
     }
   );
-var vibrationZGroup = todayDim.group().reduce(
+
+ var vibrationZGroup = todayDim.group().reduce(
    function (p, v) {
-     if(v.event_type != "33") {
-       p.value = 0;
-     }  else {
-       p.value = v.vibration_z;
+      if(v.event_type == "33") {
+        p.sum +=  v.vibration_z;
         ++ p.cnt ;
-      }
-      p.sum += p.value;
-      p.avg = numberFormat(p.sum / p.cnt);
+      }      
+        p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
       return p;
     },
     function (p, v) {
-      if(v.event_type != "33") {
-        p.value = 0;
-      }  else {
-        p.value = v.vibration_z;
+      if(v.event_type == "33") {
+        p.sum -= v.vibration_z;
         -- p.cnt ;
-      }
-      p.sum -= p.value;
-      p.avg = numberFormat(p.sum / p.cnt);
+      }         
+        p.avg = p.cnt ? numberFormat(p.sum / p.cnt) : 0;
       return p;
     },
     function() {
-      return { value :0, cnt:0, sum:0, avg:0 };
+      return { cnt:0, sum:0, avg:0 };
     }
   );
 
   var gapVibGroup = todayDim.group().reduce(
     function(p, v){
-      if(v.event_type != "33") {
-        p.value = 0;
-      } else {
-        p.value = v.vibration;
-      }
-      p.max = p.max < p.value ? p.value : p.max;
-      if (p.value != 0 ) {
+      if(v.event_type == "33") {        
         if(p.min == 0)
-          p.min = p.value;
-        p.min = p.min > p.value ? p.value : p.min;
-      }
+          p.min = v.vibration;
+        p.max = p.max < v.vibration ? v.vibration : p.max;
+        p.min = p.min > v.vibration ? v.vibration : p.min;
+      }       
       p.gap = p.max-p.min;
       return p;
     },
     function(p, v) {
-      if(v.event_type != "33") {
-        p.value = 0;
-      } else {
-        p.value = v.vibration;
-      }
-      p.max = p.max < p.value ? p.value : p.max;
-      if (p.value != 0 ) {
+      if(v.event_type == "33") {        
         if(p.min == 0)
-          p.min = p.value;
-        p.min = p.min > p.value ? p.value : p.min;
-      }
+          p.min = v.vibration;
+        p.max = p.max < v.vibration ? v.vibration : p.max;
+        p.min = p.min > v.vibration ? v.vibration : p.min;
+      }       
       p.gap = p.max-p.min;
       return p;
   }, function() {
-    return {  value:0, max:0, min:0, gap:0 };
+    return {  max:0, min:0, gap:0 };
   });
 
 var timeMaxDim = nyx.dimension(function(d) {
@@ -490,40 +458,38 @@ var noFMaxGroup = timeMaxDim.group().reduce(
   }
 );
 
-
-var adjustX = 20, adjustY = 40;
 /*window.onresize = function()  {
   eventChart
-  .width(window.innerWidth*0.4-adjustX)
-  .height((window.innerWidth*0.4-adjustX)*0.5)
+  .width(window.innerWidth*0.4)
+  .height((window.innerWidth*0.4)*0.5)
   .redraw();
   timeMax
-  .width(window.innerWidth*0.4-adjustX)
-  .height((window.innerWidth*0.4-adjustX)*0.5)
+  .width(window.innerWidth*0.4)
+  .height((window.innerWidth*0.4)*0.5)
   .redraw();
   avgCom
-  .width(window.innerWidth*0.4-adjustX)
-  .height((window.innerWidth*0.4-adjustX)*0.7)
+  .width(window.innerWidth*0.4)
+  .height((window.innerWidth*0.4)*0.7)
   .redraw();
   avgVib
-  .width(window.innerWidth*0.4-adjustX)
-  .height((window.innerWidth*0.4-adjustX)*0.7)
+  .width(window.innerWidth*0.4)
+  .height((window.innerWidth*0.4)*0.7)
   .redraw();
   apMax
-  .width((window.innerWidth*0.4-adjustX)*0.5)
-  .height((window.innerWidth*0.4-adjustX)*0.5)
+  .width((window.innerWidth*0.4)*0.5)
+  .height((window.innerWidth*0.4)*0.5)
   .redraw();
   vibMax
-  .width((window.innerWidth*0.4-adjustX)*0.5)
-  .height((window.innerWidth*0.4-adjustX)*0.5)
+  .width((window.innerWidth*0.4)*0.5)
+  .height((window.innerWidth*0.4)*0.5)
   .redraw();
 };*/
 
 /* dc.pieChart('#eventChart') */
   eventChart
-    .width(window.innerWidth*0.4-adjustX)
-    .height((window.innerWidth*0.4-adjustX)*0.5)
-    .radius((window.innerWidth*0.4-adjustX)*0.2)
+    .width(window.innerWidth*0.4)
+    .height((window.innerWidth*0.4)*0.5)
+    .radius((window.innerWidth*0.4)*0.2)
     .dimension(eventDim)
     .group(eventGroup)
 //    .slicesCap(4)
@@ -554,9 +520,10 @@ var adjustX = 20, adjustY = 40;
 // FIXME : legend
 // FIXME : 필터링 적용
   eventSeries
-    .width(window.innerWidth*0.4-adjustX)
-    .height((window.innerWidth*0.4-adjustX)*0.5)
+    .width(window.innerWidth*0.4)
+    .height((window.innerWidth*0.4)*0.5)
     .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
+    .margins({top: 40, right: 40, bottom: 25, left: 20})
     .x(d3.time.scale().domain([minDate, maxDate]))
     .round(d3.time.day.round)
     .xUnits(d3.time.days)
@@ -573,14 +540,14 @@ var adjustX = 20, adjustY = 40;
     .keyAccessor(function(d) {return +d.key[1];})
     .valueAccessor(function(d) {
       return +d.value;})
-    .legend(dc.legend().x(window.innerWidth*0.2).y(window.innerWidth*0.2).itemHeight(13).gap(5).horizontal(1).legendWidth(140).itemWidth(70));
+    .legend(dc.legend().x(10).y(0).itemHeight(13).gap(5).horizontal(1).legendWidth(140).itemWidth(70));
   eventSeries.yAxis().tickFormat(function(d) {return d;});
   eventSeries.margins().left += 40;
 
 /* dc.heatMap("#eventHeat")  */
   eventHeat
-    .width(window.innerWidth*0.4-adjustX)
-    .height((window.innerWidth*0.4-adjustX)*0.5)
+    .width(window.innerWidth*0.4)
+    .height((window.innerWidth*0.4)*0.5)
     .margins({top: 20, right: 45, bottom: 40, left: 50})
     .dimension(indexWeekDim)
     .group(eventHeatGroup)
@@ -596,8 +563,8 @@ var adjustX = 20, adjustY = 40;
 
 /*  dc.bubbleChart('#dayBubble')  */
   dayBubble
-    .width(window.innerWidth*0.4-adjustX)
-    .height((window.innerWidth*0.4-adjustX)*0.5)
+    .width(window.innerWidth*0.4)
+    .height((window.innerWidth*0.4)*0.5)
     .transitionDuration(1500)
     .margins({top: 10, right: 50, bottom: 30, left: 40})
     .dimension(dayDim)
@@ -656,13 +623,12 @@ var adjustX = 20, adjustY = 40;
   };
 
 scatterSeries
-    .width(window.innerWidth*0.4-adjustX)
-    .height((window.innerWidth*0.4-adjustX)*0.5)
-    .margins({top: 10, right: 50, bottom: 30, left: 140})
+    .width(window.innerWidth*0.4)
+    .height((window.innerWidth*0.4)*0.5)
+    .margins({top: 15, right: 20, bottom: 30, left: 140})
     .chart(subChart)
-    .brushOn(false)
-    .yAxisLabel("Days")
-    .xAxisLabel("Value")
+    .brushOn(false)    
+    .xAxisLabel("Days")
     .clipPadding(10)
     .x(d3.time.scale().domain([minDate, maxDate]))
     .round(d3.time.day.round)
@@ -670,20 +636,21 @@ scatterSeries
     .elasticY(true)
     .dimension(indexDayDim)
     .group(scatterSeriesGroup)
-    .mouseZoomable(true)
+//    .mouseZoomable(true)
+    .rangeChart(volumeMax)
     .seriesAccessor(function(d) {
       return eventName[d.key[0]];})
     .keyAccessor(function(d) {return +d.key[1];})
     .valueAccessor(function(d) {return +d.value.max;})
     .colors(d3.scale.ordinal().range(["#CC333F", "#EDC951", "#756bb1", "#31a354", "#fd8d3c", "#00A0B0", "#003399"]))
-    .legend(dc.legend().x(window.innderWidth*0.35).y(window.innerWidth*0.3).itemHeight(13).gap(5).legendWidth(140).itemWidth(70));
+    .legend(dc.legend().x(10).y(0).itemHeight(13).gap(5).legendWidth(140).itemWidth(70));
 //  chart.yAxis().tickFormat(function(d) {return d3.format(',d')(d+299500);});
 //  chart.margins().left += 40;
 
 /*  dc.barChart('#eventBar')  */
   eventBar
-    .width(window.innerWidth*0.4-adjustX)
-    .height((window.innerWidth*0.4-adjustX)*0.5)
+    .width(window.innerWidth*0.4)
+    .height((window.innerWidth*0.4)*0.5)
     .margins({left: 140, top: 20, right: 10, bottom: 20})
     .brushOn(false)
     .clipPadding(10)
@@ -723,7 +690,7 @@ scatterSeries
 /* dc.seriesChart('#hourSeries') */
 /*  hourSeries
     .width(window.innerWidth*0.4)
-    .height((window.innerWidth*0.4-adjustX)*0.5)
+    .height((window.innerWidth*0.4)*0.5)
      .margins({top: 20, right: 45, bottom: 40, left: 50})
      .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
      .x(d3.time.scale().domain([minDate, maxDate]))
@@ -749,8 +716,8 @@ scatterSeries
     avgCom
 /*      .renderArea(true)
       .renderHorizontalGridLines(true)*/
-      .width(window.innerWidth*0.4-adjustX)
-      .height((window.innerWidth*0.4-adjustX)*0.5)
+      .width(window.innerWidth*0.4)
+      .height((window.innerWidth*0.4)*0.5)
        .margins({top: 20, right: 45, bottom: 40, left: 50})
       .dimension(todayDim)
       .transitionDuration(500)
@@ -784,8 +751,8 @@ scatterSeries
 /*  dc.compositeChart("#avgVib")  */
     avgVib
 //      .renderArea(true)
-      .width(window.innerWidth*0.4-adjustX)
-      .height((window.innerWidth*0.4-adjustX)*0.5)
+      .width(window.innerWidth*0.4)
+      .height((window.innerWidth*0.4)*0.5)
        .margins({top: 20, right: 45, bottom: 40, left: 50})
       .dimension(todayDim)
       .transitionDuration(500)
@@ -838,7 +805,7 @@ scatterSeries
 /*  dc.barChart("#volumeMax")  */
 volumeMax
   .width(window.innerWidth*0.4)
-  .height((window.innerWidth*0.4-adjustX)*0.5)
+  .height((window.innerWidth*0.4)*0.5)
   .margins({top: 0, right: 50, bottom: 40, left: 40})
   .dimension(timeMaxDim)
   .group(volumeMaxGroup)
@@ -854,8 +821,8 @@ var apM = 0, vibM = 0;
 var apL = 0, vibL = 0;
 /*  dc.barChart("#apMax")  */
 apMax
-  .width((window.innerWidth*0.4-adjustX)*0.5)
-  .height((window.innerWidth*0.4-adjustX)*0.5)
+  .width((window.innerWidth*0.4)*0.5)
+  .height((window.innerWidth*0.4)*0.5)
   .margins({top: 20, right: 45, bottom: 40, left: 50})
   .dimension(timeMaxDim)
   .group(apMaxGroup)
@@ -873,8 +840,8 @@ apMax
 
 /*  dc.barChart("#vibMax")  */
 vibMax
-  .width((window.innerWidth*0.4-adjustX)*0.5)
-  .height((window.innerWidth*0.4-adjustX)*0.5)
+  .width((window.innerWidth*0.4)*0.5)
+  .height((window.innerWidth*0.4)*0.5)
   .margins({top: 20, right: 45, bottom: 40, left: 50})
   .dimension(timeMaxDim)
   .group(vibMaxGroup)
@@ -892,8 +859,8 @@ vibMax
 
 /*  dc.barChart("#noDMax")  */
 noDMax
-  .width((window.innerWidth*0.4-adjustX)*0.5)
-  .height((window.innerWidth*0.4-adjustX)*0.5)
+  .width((window.innerWidth*0.4)*0.5)
+  .height((window.innerWidth*0.4)*0.5)
   .margins({top: 20, right: 45, bottom: 40, left: 50})
   .dimension(timeMaxDim)
   .group(noDMaxGroup)
@@ -911,8 +878,8 @@ noDMax
 
 /*  dc.barChart("#noFMax")  */
 noFMax
-  .width((window.innerWidth*0.4-adjustX)*0.5)
-  .height((window.innerWidth*0.4-adjustX)*0.5)
+  .width((window.innerWidth*0.4)*0.5)
+  .height((window.innerWidth*0.4)*0.5)
   .margins({top: 20, right: 45, bottom: 40, left: 50})
   .dimension(timeMaxDim)
   .group(noFMaxGroup)
@@ -971,16 +938,17 @@ noFMax
 /*  dc.lineChart("#gapVib")  */
   var vMin=0, vGap=0;
   gapVib
-    .width(window.innerWidth*0.4-adjustX)
-    .height((window.innerWidth*0.4-adjustX)*0.5)
+    .width(window.innerWidth*0.4)
+    .height((window.innerWidth*0.4)*0.5)
     .transitionDuration(100)
-    .margins({top: 30, right: 50, bottom: 25, left: 40})
+    .margins({top: 40, right: 20, bottom: 25, left: 40})
     .dimension(todayDim)
     .mouseZoomable(true)
     .x(d3.time.scale().domain([minDate, maxDate ]))
     .round(d3.time.day.round)
     .xUnits(d3.time.days)
     .elasticY(true)
+    .renderArea(true)
     .renderHorizontalGridLines(true)    
     .legend(dc.legend().x(100).y(10).itemHeight(13).gap(10).horizontal(true))
     .brushOn(false)
@@ -1005,9 +973,9 @@ noFMax
 
 
 timeMax
-      .width(window.innerWidth*0.4-adjustX)
-      .height((window.innerWidth*0.4-adjustX)*0.7)
-       .margins({top: 20, right: 45, bottom: 40, left: 50})
+      .width(window.innerWidth*0.4)
+      .height((window.innerWidth*0.4)*0.5)
+       .margins({top: 40, right: 20, bottom: 25, left: 40})
       .dimension(timeMaxDim)
       .transitionDuration(500)
 //      .elasticY(true)
@@ -1020,7 +988,7 @@ timeMax
    //   .yAxisLabel("Date")
  //     .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
 //      .renderHorizontalGridLines(true)
-      .legend(dc.legend().x(100).y(20).itemHeight(13).gap(5).horizontal(true))
+      .legend(dc.legend().x(100).y(10).itemHeight(13).gap(5).horizontal(true))
       .title(function(d) {
         return "\nDate : " + d.key;
       })
@@ -1043,9 +1011,9 @@ timeMax
   var translate = 15;
     groupBar
 //      .renderArea(true)
-      .width(window.innerWidth*0.4-adjustX)    
-      .height((window.innerWidth*0.4-adjustX)*0.7)
-      .margins({top: 60, right: 60, bottom: 40, left: 50})
+      .width(window.innerWidth*0.4)    
+      .height((window.innerWidth*0.4)*0.5)
+      .margins({top: 40, right: 20, bottom: 25, left: 40})
       .dimension(timeMaxDim)
       .transitionDuration(500)
 //      .y(d3.scale.linear().domain([0,150])) 
@@ -1059,7 +1027,7 @@ timeMax
    //   .yAxisLabel("Date")
  //     .legend(dc.legend().x(80).y(20).itemHeight(13).gap(5))
 //      .renderHorizontalGridLines(true)
-      .legend(dc.legend().x(100).y(20).itemHeight(13).gap(5).horizontal(true))  
+      .legend(dc.legend().x(100).y(10).itemHeight(13).gap(5).horizontal(true))  
       .valueAccessor(function (d){
         return d.value;
       }) 
@@ -1084,11 +1052,11 @@ timeMax
               
         ])
       .renderlet(function (chart) {
-    chart.selectAll("g._1").attr("transform", "translate(" + translate + ", 0)");
-  });;
+         chart.selectAll("g._1").attr("transform", "translate(" + translate + ", 0)");
+      });
 /*volumeChart
-    .width(window.innerWidth*0.4-adjustX)
-    .height((window.innerWidth*0.4-adjustX)*0.8)
+    .width(window.innerWidth*0.4)
+    .height((window.innerWidth*0.4)*0.8)
   .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
   .x(d3.time.scale().domain([minDate, maxDate]))
   .brushOn(false)
