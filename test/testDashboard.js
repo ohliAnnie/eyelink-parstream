@@ -60,7 +60,7 @@ describe("Test", function(){
           // console.log(res.body);
           // console.log(res.body.rtnCode.code);
           res.body.rtnCode.code.should.be.equal('0000');
-          console.log(res.body.rtnData[0]);
+          console.log('testDashboard -> rtnData : ', res.body.rtnData);
           (res.body.rtnData[0].today_event_cnt).should.be.above(0);
           done();
         });
@@ -76,7 +76,7 @@ describe("Test", function(){
         .expect(200, function(err, res) {
           if (err) return done(err);
           // console.log(res.body);
-          // console.log(res.body.rtnCode.code);
+          console.log('testDashboard -> rtnData length : %s', res.body.rtnData.length);
           res.body.rtnCode.code.should.be.equal('0000');
           done();
         });

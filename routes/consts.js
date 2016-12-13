@@ -8,8 +8,8 @@ function define(name, value) {
 define("CONFIG", {
 	"UPLOADPATH_OFFICE": {real: "/Users/baesunghan/git/dentalJobs/public/upload/office/",
 						  relative: "/upload/office/"},
-	"ROADING_DAY" : 7,
-	"ROADING_TIME" : 1,
+	"LOADING_DAY" : 7,
+	"LOADING_TIME" : 1,
 });
 
 define(	"CODE", {
