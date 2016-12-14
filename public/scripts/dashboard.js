@@ -511,9 +511,15 @@ function processSocket() {
   // 소켓 이벤트 수행
   var socket = io.connect();
 
+  socket.emit('getEventListForAlarm', 0);
+
   // 이벤트를 연결
   socket.on('refreshData', function(data) {
-    console.log(data);
+    // console.log(data);
+
+    // 신규 Event List를 조회요청.
+    socket.emit('getEventListForAlarm', 0);
+
     // display Count 4 type.
     displayCount();
 
@@ -524,6 +530,51 @@ function processSocket() {
     drawMap();
   });
 
-  socket.emit('join', 'welcome');
+  // Event List 정보.
+  socket.on('sendEventListForAlarm', function(data) {
+    // console.log(data);
+    // console.log(data.length);
+    for (var i in data) {
+      // console.log(data[i]);
+      $('.tbl-alarm-list > tbody:first').prepend(makeAlarmList(data[data.length-i-1]));
+    }
+  })
+}
+
+function makeAlarmList(raw) {
+  var sb = new StringBuffer();
+  sb.append('<tr><td>');
+  sb.append(raw.node_id)
+  sb.append('</td><td>');
+  sb.append('<time datetime="'+ raw.event_time + '">');
+  sb.append(raw.event_time);
+  sb.append('</time></td><td>');
+  sb.append(raw.event_type);
+  sb.append('</td><td class="l">');
+  if (raw.active_power > 0) {
+    sb.append('<em class="status-icon power">');
+    sb.append(raw.active_power);
+    sb.append('</em>');
+  }
+  if (raw.vibration > 0) {
+    sb.append('<em class="status-icon vibration fault" value="');
+    sb.append('X' + raw.vibration_x + ' Y' + raw.vibration_y + ' Z' + raw.vibration_z);
+    sb.append('">');
+    sb.append('<span>VIBRATION</span>');
+    sb.append('</em>');
+  }
+  if (raw.noise_decibel > 0) {
+    sb.append('<em class="status-icon decibel" value="'+ raw.noise_decibel +'">');
+    sb.append('<span>DECIBEL</span>');
+    sb.append('</em>');
+    sb.append('<em class="status-icon frequency" value="'+ raw.noise_frequency +'">');
+    sb.append('<span>FREQUENCY</span>');
+    sb.append('</em>');
+  }
+  sb.append('</td><td>');
+  sb.append('<button class="btn-delete" type="button"><span>delete</span></button>')
+
+  sb.append('</td></tr>');
+  return sb.toString();
 }
 

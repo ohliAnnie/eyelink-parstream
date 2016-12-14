@@ -72,7 +72,7 @@ var sqlList = {
         "  where event_time >= timestamp #START_TIMESTAMP# " +
         "    and event_time < timestamp #END_TIMESTAMP# ",
 
- // Event Raw Data 조회
+  // Event Raw Data 조회
   "selectEventRawData" :
         "    select node_id, event_time, event_type, active_power, ampere,  "+
         "       als_level, dimming_level, "+
@@ -83,12 +83,28 @@ var sqlList = {
         "  where year = date_part('YEAR', current_date()) "+
         "    and month = date_part('MONTH', current_date())" +
         "    and day = date_part('DAY', current_date()) ",
- "selectCountEventRawDataByToDay" :
+
+  // Event Count on Today
+  "selectCountEventRawDataByToDay" :
         "    select count(*) as cnt " +
         "    from tb_node_raw"+
         "  where year = date_part('YEAR', current_date()) "+
         "    and month = date_part('MONTH', current_date())" +
         "    and day = date_part('DAY', current_date()) ",
+
+  // Event Raw Data for Event Alarm
+  "selectEventListForAlarm" :
+        "    select node_id, event_time, event_type, active_power, ampere,  "+
+        "       als_level, dimming_level, "+
+        "         noise_decibel, noise_frequency, "+
+        "         vibration_x, vibration_y, vibration_z, "+
+        "         (vibration_x + vibration_y + vibration_z) / 3 as vibration" +
+        "    from tb_node_raw"+
+        "  where year = date_part('YEAR', current_date()) "+
+        "    and month = date_part('MONTH', current_date())" +
+        "    and day = date_part('DAY', current_date()) " +
+        "   order by event_time desc " +
+        "   limit 8 offset #last_pos# ",
 };
 
 DashboardProvider = function() {
