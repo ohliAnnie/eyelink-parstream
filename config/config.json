@@ -1,0 +1,13 @@
+{
+	"#comment": "Customer module configs",
+	"productname": "EyeLink for ParStream",
+	"version": "1.0",
+	"username": "root",
+	"password": "foot",
+	"loaddataonstartup": {
+		"active": true,
+		"loading_day": 6,
+		"loading_time": 1
+	},
+	"queryposition": 100
+}

@@ -48,7 +48,7 @@ describe("Test", function(){
         });
     });
 
-    // Dashboard 내 전력양, 금액, 이벤트 발생건수, 오류 발생건수, 전일 대비 값 조회
+    // Dashboard 내 전력량, 금액, 이벤트 발생건수, 오류 발생건수, 전일 대비 값 조회
     it('Search Dashboard Section1', function(done) {
       var datas = {user_id: "user_id"};
       request(svr)
