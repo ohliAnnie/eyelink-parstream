@@ -1,0 +1,83 @@
+extends ../layout-reports
+block style  
+  link(rel='stylesheet', href='/stylesheets/style.css')
+block scripts
+  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(type='text/javascript', src='/assets/annie/js/d3pie.min.js')
+  script(type='text/javascript', src='/assets/annie/js/d3pie.js')
+  script(type='text/javascript', src='/assets/annie/js/gauge.js')
+  script(type='text/javascript', src='/assets/annie/js/Donut3D.js')
+  script(type='text/javascript', src='/scripts/report_d3.js')  
+block content
+  main.layout-contents.padding
+    div.layout-contents-inner
+      section
+        header.page-title
+          h1.title Reports
+          p.count Total
+            mark.report 836
+        fieldset.search-container
+          legend search
+            div.right-content-view
+              label(for='') List view
+                select.select(name='', id='')
+                  option(value='') 15
+            div.left-content-view
+              span.datepicker
+                input(type='text', name='daterange', id='', value='')
+                select.select(name='', id='')
+                  option(value='') Zone ID
+                select.select(name='', id='')
+                  option(value='') Node ID
+                select.select(name='', id='')
+                  option(value='') ALL
+              button.btn-submit.search(type='submit') SEARCH
+        script.
+          $(document).ready(function() {
+            report();
+            var start = moment().subtract(29, 'days');
+            var end = moment();
+            $('input[name="daterange"]')
+              .daterangepicker(
+              {
+                "autoApply" : true,
+                startDate : start,
+                endDate : end,
+                locale : {
+                  format : 'YYYY-MM-DD'
+                }
+              },
+              function(start, end, label) {
+                console.log("New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')");
+              });
+          });      
+        div.map-container
+          div.inner        
+        ul.list-reports
+          li            
+            div.chart
+              #pieChart
+          li            
+            div.chart              
+              pie3D
+              button(onclick='report.changeData()') Change Data
+          li
+            div.chart
+              span#vibXGaugeContainer
+              span#vibYGaugeContainer
+              span#vibZGaugeContainer
+              br
+              span#vibGaugeContainer           
+          li            
+            div.chart
+          li
+            div.chart
+          li            
+            div.chart
+          li
+            div.chart
+          li            
+            div.chart
+          li
+            div.chart
+              .radarChart

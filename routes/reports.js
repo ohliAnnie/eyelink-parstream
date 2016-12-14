@@ -15,8 +15,12 @@ router.get('/', function(req, res, next) {
 });
 
 
-router.get('/main', function(req, res, next) {
-  res.render('./reports/main-old', { title: 'sample' });
+router.get('/d3', function(req, res, next) {
+  res.render('./reports/d3', { title: 'EyeLInk D3 Reports' });
+});
+
+router.get('/test', function(req, res, next) {
+  res.render('./reports/test', { title: 'Test' });
 });
 
 
