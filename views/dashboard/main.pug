@@ -15,6 +15,8 @@ block scripts
   script(type='text/javascript', src='/assets/leaflet/leaflet.js')
   script(type='text/javascript', src='/assets/leaflet/leaflet.markercluster.js')
   script(type='text/javascript', src='/assets/leaflet/dc.leaflet.js')
+  script(type='text/javascript', src='/socket.io/socket.io.js')
+  script(type='text/javascript', src="/scripts/util.js")
   script(type='text/javascript', src="/scripts/dashboard.js")
 block content
   main.layout-contents
@@ -80,6 +82,9 @@ block content
 
             // draw Map
             drawMap();
+
+            // process websocket
+            processSocket();
           });
         .grid-dashboard
           .grid-item.map
@@ -257,15 +262,15 @@ block content
                       span delete
         script.
           $(document).ready(function(e) {
-          /* close button */
-          $('.event-alarm-container .btn-toggle-event, .event-alarm-container .btn-close').on('click', function(e) {
-          $('.event-alarm-container').attr('data-state', $('.event-alarm-container').attr('data-state') == '' ? 'is-open' : '')
-          });
-          /* help button */
-          $('.event-alarm-container .btn-help, .popup-icon-guide .btn-close').on('click', function(e) {
-          var target = $(this).val();
-          $(target).toggle();
-          });
+            /* close button */
+            $('.event-alarm-container .btn-toggle-event, .event-alarm-container .btn-close').on('click', function(e) {
+            $('.event-alarm-container').attr('data-state', $('.event-alarm-container').attr('data-state') == '' ? 'is-open' : '')
+            });
+            /* help button */
+            $('.event-alarm-container .btn-help, .popup-icon-guide .btn-close').on('click', function(e) {
+              var target = $(this).val();
+              $(target).toggle();
+            });
           });
         aside#popup-icon-guide.popup-icon-guide
           button.btn-close(type='button', value='#popup-icon-guide') close

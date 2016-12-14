@@ -14,6 +14,7 @@ var dashboard = require('./routes/dashboard');
 var reports = require('./routes/reports');
 var initapps = require('./routes/initApp');
 var config = require('./config/config.json');
+var socketapps = require('./routes/socketApp');
 
 var app = express();
 
@@ -43,10 +44,13 @@ app.use('/intro', intro);
 
 console.log('config : %j', config);
 
-// CONSTS.CONFIG.LOADING_DAY 기간의 Raw Data를 서버 시작시 메모리에 Loading
+// 지정된 기간의 Raw Data를 서버 시작시 메모리에 Loading
 global._rawDataByDay = {};
 if (config.loaddataonstartup.active === true)
   initapps.loadData(function(in_params) {});
+
+// Client로 Data를 Push 하기위한 Socket 초기화.
+socketapps.initSocket(app, function() {});
 
 // catch 404 and forward to error handler
 // app.use(function(req, res, next) {
