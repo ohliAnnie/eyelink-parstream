@@ -83,12 +83,12 @@ var sqlList = {
         "  where year = date_part('YEAR', current_date()) "+
         "    and month = date_part('MONTH', current_date())" +
         "    and day = date_part('DAY', current_date()) ",
- // "selectEventRawData" :
-  //       "    select count(*) " +
-  //       "    from tb_node_raw"+
-  //       "  where year = date_part('YEAR', current_date()) "+
-  //       "    and month = date_part('MONTH', current_date())",
-
+ "selectCountEventRawDataByToDay" :
+        "    select count(*) as cnt " +
+        "    from tb_node_raw"+
+        "  where year = date_part('YEAR', current_date()) "+
+        "    and month = date_part('MONTH', current_date())" +
+        "    and day = date_part('DAY', current_date()) ",
 };
 
 DashboardProvider = function() {
@@ -100,11 +100,11 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
   console.log('db-Dashboard/selectSingleQueryByID -> queryID : ' + queryId)
   // console.log('db-Dashboard/selectSingleQueryByID -> data : ' + datas);
 
-  console.time(queryId+'-total');
-  console.time(queryId+'-reserve');
+  console.time('db-Dashboard/selectSingleQueryByID -> ' + queryId+'-total');
+  console.time('db-Dashboard/selectSingleQueryByID -> ' + queryId+'-reserve');
   parstream.reserve(function(err, connObj) {
     if (connObj) {
-      console.timeEnd(queryId+'-reserve');
+      console.timeEnd('db-Dashboard/selectSingleQueryByID -> ' + queryId+'-reserve');
       console.log("db-Dashboard/selectSingleQueryByID -> Using connection: " + connObj.uuid);
       // Grab the Connection for use.
       var conn = connObj.conn;
@@ -118,7 +118,7 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
                 if (err) {
                   callback(err);
                 } else {
-                  console.time(queryId+'-executeQuery');
+                  console.time('db-Dashboard/selectSingleQueryByID -> ' + queryId+'-executeQuery');
                   // SQL 내 파라메타를 변경해준다.
                   var sSql = Utils.replaceSql(sqlList[queryId], datas);
                   console.log('db-Dashboard/selectSingleQueryByID -> ' + sSql);
@@ -127,8 +127,8 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
                     if (err) {
                       callback(err)
                     } else {
-                      console.timeEnd(queryId+'-executeQuery');
-                      console.time(queryId+'-resultset.toObjArray');
+                      console.timeEnd('db-Dashboard/selectSingleQueryByID -> ' + queryId+'-executeQuery');
+                      console.time('db-Dashboard/selectSingleQueryByID -> ' + queryId+'-resultset.toObjArray');
                       // console.log(results);
                       resultset.toObjArray(function(err, results) {
                         if (results.length > 0) {
@@ -156,7 +156,7 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
           if (err) {
             console.log(err.message);
           }
-          console.timeEnd('total');
+          console.timeEnd('db-Dashboard/selectSingleQueryByID -> ' + queryId+'-total');
           callback(err, results, datas);
         })
       });

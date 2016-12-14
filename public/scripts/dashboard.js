@@ -169,11 +169,13 @@ function drawChart() {
     var dateFormat = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
     var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
     var numberFormat = d3.format('.2f');
-    var minDate  = new Date('2016-11-20T00:00:00');
-    var maxDate = new Date("2016-12-12T00:00:00");
+    var maxDate = new Date();;
+    var minDate  = addDays(new Date(), -20);
+    // console.log(minDate);
+    // console.log(maxDate);
 
-    var minDay  = new Date('2016-12-01T16:00:00');
-    var maxDay = new Date("2016-12-12T16:00:00");
+    var maxDay = new Date();
+    var minDay  = addDays(new Date(), -20);
 
     // {"node_id":"0001.00000001","event_time":"2016-11-25 15:42:34.0","event_type":"1",
     //  "active_power":19.618999481201172,"ampere":183.35400390625,"als_level":null,
@@ -256,7 +258,7 @@ function drawChart() {
       d.active_power += d.active_power;
     });
 
-    console.log(data);
+    // console.log(data);
 
     var ndx = crossfilter(data);
 
@@ -505,4 +507,23 @@ function drawChart() {
   });
 }
 
+function processSocket() {
+  // 소켓 이벤트 수행
+  var socket = io.connect();
+
+  // 이벤트를 연결
+  socket.on('refreshData', function(data) {
+    console.log(data);
+    // display Count 4 type.
+    displayCount();
+
+    // draw Chart
+    drawChart();
+
+    // draw Map
+    drawMap();
+  });
+
+  socket.emit('join', 'welcome');
+}
 

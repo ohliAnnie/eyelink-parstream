@@ -1,4 +1,5 @@
 var CONSTS = require('./consts');
+var config = require('../config/config.json');
 require('date-utils');
 
 var DashboardProvider = require('./dao/parstream/db-dashboard').DashboardProvider;
@@ -10,10 +11,10 @@ function loadData(callback) {
   var d = new Date();
   console.log('initApps/loadData -> today : %s', Date.today());
 
-  for (var i=0; i<CONSTS.CONFIG.LOADING_DAY; i++) {
+  for (var i=0; i<config.loaddataonstartup.loading_day; i++) {
     console.log('initApps/loadData -> day : %s', d.removeDays(1).toFormat('YYYY-MM-DD'));
     var flag = 'R';
-    if (i === (CONSTS.CONFIG.LOADING_DAY-1))
+    if (i === (config.loaddataonstartup.loading_day-1))
       flag = 'C';
     // console.log('initApps/loadData -> i :   %s, loadind day : %s, flag : %s', i, (CONSTS.CONFIG.LOADING_DAY-1), flag);
     var vDate = d.toFormat('YYYY-MM-DD');
