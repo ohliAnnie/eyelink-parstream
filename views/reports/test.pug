@@ -1,34 +1,21 @@
 doctype html
-html
-  meta(charset='utf-8')
-  script.
-    $(document).ready(function() {
-        report();
-    });
-  style.
-    body {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    width: 960px;
-    height: 500px;
-    position: relative;
-    }
-    path.slice{
-    stroke-width:2px;
-    }
-    polyline{
-    opacity: .3;
-    stroke: black;
-    stroke-width: 2px;
-    fill: none;
-    }
-    svg text.percent{
-    fill:white;
-    text-anchor:middle;
-    font-size:12px;
-    }
-  body
-    button(onclick='changeData()') Change Data
-    pie3D
+html(lang='en')
+  head
+    title Home | A Visualization System Prototype of Security Monitoring Product
+    meta(charset='utf-8')
+    //- meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
+    link(rel='stylesheet', type='text/css', href='/assets/annie/css/bootstrap.min.css')
+    link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')
+  body#table    
+    .container
+      .col-sm-12.col-md-12
+        .panel.panel-card
+          .panel-title
+            h5.no-margin.m-b Sensor People Counting Monitor
+          .panel-body
+            #sensor-count-multi-d3(style='height:400px;')    
     script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
-    script(src='/assets/annie/js/Donut3D.js')
-    script(type='text/javascript', src='/scripts/report_d3.js')      
+    script(src="/assets/scripts/libs/jquery-2.2.3.min.js")
+    script(src="/assets/scripts/libs/bootstrap.min.js")
+    script(type='text/javascript', src='/assets/annie/js/vue.min.js')
+    script(type='text/javascript', src='/scripts/integrateIndex.js')

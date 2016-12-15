@@ -5,7 +5,7 @@
 	"username": "root",
 	"password": "foot",
 	"loaddataonstartup": {
-		"active": false,
+		"active": true,
 		"loading_day": 6,
 		"loading_time": 1
 	},
