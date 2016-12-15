@@ -20,12 +20,17 @@
 d3.json("/reports/restapi/getReportRawData", function(err, data){
   if(err) throw error;
 
-   var numberFormat = d3.format('.2f');
 
 // TODO :  날짜 자동 계산
-   var minDate = new Date(2016,11,08);
+    var dateFormat = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
+    var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
+    var numberFormat = d3.format('.2f');
+    var maxDate = new Date();
+    var minDate  = addDays(new Date(), -7);
+
+   /*var minDate = new Date(2016,11,08);
   var maxDate = new Date(2016,11,14,24,0,0); 
-  var yesDate = new Date(2016,11,14);
+  */
   var eventName = ["POWER", "ALS", "VIBRATION", "NOISE", "GPS", "STREET LIGHT", "REBOOT"];
   var week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -435,33 +440,6 @@ var noFMaxGroup = timeMaxDim.group().reduce(
   }
 );
 
-/*window.onresize = function()  {
-  eventChart
-  .width(window.innerWidth*0.4)
-  .height((window.innerWidth*0.4)*0.5)
-  .redraw();
-  timeMax
-  .width(window.innerWidth*0.4)
-  .height((window.innerWidth*0.4)*0.5)
-  .redraw();
-  avgCom
-  .width(window.innerWidth*0.4)
-  .height((window.innerWidth*0.4)*0.7)
-  .redraw();
-  avgVib
-  .width(window.innerWidth*0.4)
-  .height((window.innerWidth*0.4)*0.7)
-  .redraw();
-  apMax
-  .width((window.innerWidth*0.4)*0.5)
-  .height((window.innerWidth*0.4)*0.5)
-  .redraw();
-  vibMax
-  .width((window.innerWidth*0.4)*0.5)
-  .height((window.innerWidth*0.4)*0.5)
-  .redraw();
-};*/
-
 /* dc.pieChart('#eventChart') */
   eventChart 
     .width(window.innerWidth*0.4)
@@ -766,7 +744,7 @@ noFMax
       .rangeChart(avgVib)
       .brushOn(false)
       .mouseZoomable(true)
-      .x(d3.time.scale().domain([minDate, yesDate]))
+      .x(d3.time.scale().domain([minDate, maxDate]))
       .round(d3.time.day.round)
       .renderHorizontalGridLines(true)
       .renderVerticalGridLines(true)
@@ -853,7 +831,7 @@ noFMax
     .margins({top: 40, right: 20, bottom: 25, left: 40})
     .dimension(todayDim)
     .mouseZoomable(true)
-    .x(d3.time.scale().domain([minDate, yesDate ]))
+    .x(d3.time.scale().domain([minDate, maxDate ]))
     .round(d3.time.day.round)
     .xUnits(d3.time.days)
     .elasticY(true)
@@ -947,7 +925,7 @@ scatterSeries
     .brushOn(false)    
     .xAxisLabel("Days")
     .clipPadding(10)
-    .x(d3.time.scale().domain([minDate, yesDate]))
+    .x(d3.time.scale().domain([minDate, maxDate]))
     .round(d3.time.day.round)
     .xUnits(d3.time.day)
     .elasticY(true)
