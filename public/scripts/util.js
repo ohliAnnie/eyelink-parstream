@@ -4,6 +4,7 @@ function addDays(date, numOfDays) {
   return date;
 }
 
+// Java의 StringBuffer 기능 구현.
 var StringBuffer = function() {
     this.buffer = new Array();
 };
