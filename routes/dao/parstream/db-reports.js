@@ -40,6 +40,17 @@ var sqlList = {
         "  where year = date_part('YEAR', current_date()) "+
         "    and month = date_part('MONTH', current_date())" +
         "    and day = date_part('DAY', current_date())",
+
+// test Data 
+  "testData" :
+        "   select event_time, ampere, voltage, power_factor, active_power,  reactive_power,  apparent_power "+        
+           "    from tb_node_raw"+
+        "  where year = date_part('YEAR', current_date()) "+
+        "    and month = date_part('MONTH', current_date())" +
+        "  and day = 1 " +
+        "    and event_type = 1" +
+        "   order by event_time",
+
 };
 
 ReportsProvider = function() {
@@ -80,7 +91,7 @@ ReportsProvider.prototype.selectSingleQueryByID = function (queryId, datas, call
                           console.log('db-report/selectSingleQueryByID -> no data found');
                           callback(null, null);
                         }
-                      });
+                      });  
                     }
                   });
                 }

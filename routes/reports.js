@@ -42,6 +42,22 @@ router.get('/restapi/getReportRawData', function(req, res, next) {
   });
 
 });
+  
+// query Report
+router.get('/restapi/testData', function(req, res, next) {
+  console.log('reports/restapi/testData');
+  var in_data = {MERGE:'Y'};
+  reportsProvider.selectSingleQueryByID("testData", in_data, function(err, out_data, params) {
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+  
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+  });
+
+});
 
 router.get('/NYX', function(req, res, next) {
   var data =
