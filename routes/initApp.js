@@ -26,8 +26,11 @@ function loadData(callback) {
     dashboardProvider.selectSingleQueryByID("selectEventRawDataOld", in_data, function(err, out_data, params) {
       // console.log(out_data);
       _rawDataByDay[params.LOAD_DATE] = out_data[0];
-      console.log('initApps/loadData -> load_date : %s, count : %s', params.LOAD_DATE, _rawDataByDay[params.LOAD_DATE].length);
-      // console.log('initApps/loadData -> flag : %s', params['FLAG'], params.FLAG);
+      try {
+        console.log('initApps/loadData -> load_date : %s, count : %s', params.LOAD_DATE, _rawDataByDay[params.LOAD_DATE].length);
+        // console.log('initApps/loadData -> flag : %s', params['FLAG'], params.FLAG);
+      } catch (e) {
+      }
       callback(params);
     });
   }

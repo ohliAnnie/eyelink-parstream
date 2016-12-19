@@ -58,7 +58,7 @@ function drawMap() {
   d3.json("/dashboard/restapi/getNodeGeo", function(data) {
     console.log(data);
     drawMarkerSelect(data);
-    drawMarkerArea(data);
+    // drawMarkerArea(data);
   });
 
   function drawMarkerSelect(data) {

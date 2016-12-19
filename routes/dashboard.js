@@ -69,7 +69,9 @@ router.get('/restapi/getReportRawData', function(req, res, next) {
 router.get('/restapi/getNodeGeo', function(req, res, next) {
   var out_data = [
     {type : '0001.0000001', geo : '37.457271, 127.042861'},
-    {type : '0001.0000002', geo : '37.467271, 128.042861'},
+    {type : '0001.0000002', geo : '37.467271, 127.032861'},
+    {type : '0001.0000003', geo : '37.468271, 127.042861'},
+    {type : '0001.0000004', geo : '37.468271, 127.052761'},
   ];
   res.json(out_data);
 });
