@@ -6,9 +6,7 @@
               var numberFormat = d3.format('.2f');
 
               // TODO :  날짜 자동 계산
-              var minDate = new Date(2016, 11, 08);
-              var maxDate = new Date(2016, 11, 14, 24, 0, 0);
-              var yesDate = new Date(2016, 11, 14);
+                         
               var eventName = ["POWER", "ALS", "VIBRATION", "NOISE", "GPS", "STREET LIGHT", "REBOOT"];
               var eventCnt = [0, 0, 0, 0, 0, 0, 0];
               var weekCnt = [
@@ -27,7 +25,6 @@
               for(var i=0; i<eventName.length; i++)
                 maxData[i] = [0,0,0,0,0,0,0];
               var index = 0;
-
               // Data Setting
               data.rtnData.forEach(function(d) {
                   var a = d.event_time.split(" ");
@@ -436,8 +433,106 @@
                   };
 
 
-
-
+      var gIndex = 0;
+      var margin = { top: 20, right: 20, bottom: 30, left: 40 },
+          width = window.innerWidth*0.4- margin.left - margin.right,
+          height = (window.innerWidth*0.4)*0.5 - margin.top - margin.bottom;
+      var x0 = d3.scale.ordinal()
+      .rangeRoundBands([0, width], .1);
+      var x1 = d3.scale.ordinal();
+      var y = d3.scale.linear()
+      .range([height, 0]);
+      var colorRange = d3.scale.category20();
+      var color = d3.scale.ordinal()
+      .range(colorRange.range());
+      var xAxis = d3.svg.axis()
+      .scale(x0)
+      .orient("bottom");
+      var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient("left")
+      .tickFormat(d3.format(".2s"));
+      var divTooltip = d3.select("body").append("div").attr("class", "toolTip");
+      var svg = d3.select("groupTip").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      dataset = [
+      {label: week[gIndex], "POWER":maxData[0][gIndex],  "ALS":maxData[1][gIndex], "VIBRATION":maxData[2][gIndex], "NOISE":maxData[3][gIndex], "GPS":maxData[4][gIndex], "STREET LIGHT":maxData[5][gIndex], "REBOOT":maxData[6][gIndex++]},
+      {label: week[gIndex], "POWER":maxData[0][gIndex],  "ALS":maxData[1][gIndex], "VIBRATION":maxData[2][gIndex], "NOISE":maxData[3][gIndex], "GPS":maxData[4][gIndex], "STREET LIGHT":maxData[5][gIndex], "REBOOT":maxData[6][gIndex++]},
+      {label: week[gIndex], "POWER":maxData[0][gIndex],  "ALS":maxData[1][gIndex], "VIBRATION":maxData[2][gIndex], "NOISE":maxData[3][gIndex], "GPS":maxData[4][gIndex], "STREET LIGHT":maxData[5][gIndex], "REBOOT":maxData[6][gIndex++]},
+      {label: week[gIndex], "POWER":maxData[0][gIndex],  "ALS":maxData[1][gIndex], "VIBRATION":maxData[2][gIndex], "NOISE":maxData[3][gIndex], "GPS":maxData[4][gIndex], "STREET LIGHT":maxData[5][gIndex], "REBOOT":maxData[6][gIndex++]},
+      {label: week[gIndex], "POWER":maxData[0][gIndex],  "ALS":maxData[1][gIndex], "VIBRATION":maxData[2][gIndex], "NOISE":maxData[3][gIndex], "GPS":maxData[4][gIndex], "STREET LIGHT":maxData[5][gIndex], "REBOOT":maxData[6][gIndex++]},
+      {label: week[gIndex], "POWER":maxData[0][gIndex],  "ALS":maxData[1][gIndex], "VIBRATION":maxData[2][gIndex], "NOISE":maxData[3][gIndex], "GPS":maxData[4][gIndex], "STREET LIGHT":maxData[5][gIndex], "REBOOT":maxData[6][gIndex++]},
+      {label: week[gIndex], "POWER":maxData[0][gIndex],  "ALS":maxData[1][gIndex], "VIBRATION":maxData[2][gIndex], "NOISE":maxData[3][gIndex], "GPS":maxData[4][gIndex], "STREET LIGHT":maxData[5][gIndex], "REBOOT":maxData[6][gIndex++]},
+      ];
+      var options = d3.keys(dataset[0]).filter(function(key) { return key !== "label"; });
+      dataset.forEach(function(d) {
+      d.valores = options.map(function(name) { return {name: name, value: +d[name]}; });
+      });
+      x0.domain(dataset.map(function(d) { return d.label; }));
+      x1.domain(options).rangeRoundBands([0, x0.rangeBand()]);
+      y.domain([0, d3.max(dataset, function(d) { return d3.max(d.valores, function(d) { return d.value; }); })]);
+      svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+      svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Event Count");
+      var bar = svg.selectAll(".bar")
+      .data(dataset)
+      .enter().append("g")
+      .attr("class", "rect")
+      .attr("transform", function(d) { return "translate(" + x0(d.label) + ",0)"; });
+      bar.selectAll("rect")
+      .data(function(d) { return d.valores; })
+      .enter().append("rect")
+      .attr("width", x1.rangeBand())
+      .attr("x", function(d) { return x1(d.name); })
+      .attr("y", function(d) { return y(d.value); })
+      .attr("value", function(d){return d.name;})
+      .attr("height", function(d) { return height - y(d.value); })
+      .style("fill", function(d) { return color(d.name); });
+      bar
+      .on("mousemove", function(d){
+      divTooltip.style("left", d3.event.pageX+10+"px");
+      divTooltip.style("top", d3.event.pageY-25+"px");
+      divTooltip.style("display", "inline-block");
+      var x = d3.event.pageX, y = d3.event.pageY
+      var elements = document.querySelectorAll(':hover');
+      l = elements.length
+      l = l-1
+      elementData = elements[l].__data__
+      divTooltip.html((d.label)+"<br>"+elementData.name+"<br>"+elementData.value);
+      });
+      bar
+      .on("mouseout", function(d){
+      divTooltip.style("display", "none");
+      });
+      var legend = svg.selectAll(".legend")
+      .data(options.slice())
+      .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+      legend.append("rect")
+      .attr("x", width - 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color);
+      legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
 
 
 
@@ -456,47 +551,15 @@
 
 
                   /* Radar Chart */
-                  var raData = [
-                      [ //iPhone
-                          { axis: "Battery Life", value: 0.22 },
-                          { axis: "Brand", value: 0.28 },
-                          { axis: "Contract Cost", value: 0.29 },
-                          { axis: "Design And Quality", value: 0.17 },
-                          { axis: "Have Internet Connectivity", value: 0.22 },
-                          { axis: "Large Screen", value: 0.02 },
-                          { axis: "Price Of Device", value: 0.21 },
-                          { axis: "To Be A Smartphone", value: 0.50 }
-                      ],
-                      [ //Samsung
-                          { axis: "Battery Life", value: 0.27 },
-                          { axis: "Brand", value: 0.16 },
-                          { axis: "Contract Cost", value: 0.35 },
-                          { axis: "Design And Quality", value: 0.13 },
-                          { axis: "Have Internet Connectivity", value: 0.20 },
-                          { axis: "Large Screen", value: 0.13 },
-                          { axis: "Price Of Device", value: 0.35 },
-                          { axis: "To Be A Smartphone", value: 0.38 }
-                      ],
-                      [ //Nokia Smartphone
-                          { axis: "Battery Life", value: 0.26 },
-                          { axis: "Brand", value: 0.10 },
-                          { axis: "Contract Cost", value: 0.30 },
-                          { axis: "Design And Quality", value: 0.14 },
-                          { axis: "Have Internet Connectivity", value: 0.22 },
-                          { axis: "Large Screen", value: 0.04 },
-                          { axis: "Price Of Device", value: 0.41 },
-                          { axis: "To Be A Smartphone", value: 0.30 }
-                      ]
-                  ];
 
                   function RadarChart(id, data, options) {
-                      var margin = { top: 100, right: 100, bottom: 100, left: 100 },
-                          width = Math.min(700, window.innerWidth - 10) - margin.left - margin.right,
-                          height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+                      var margin = { top: 20, right: 20, bottom: 20, left: 20 },
+                             width = window.innerWidth*0.4- margin.left - margin.right,
+                            height = (window.innerWidth*0.4)*1.2 - margin.top - margin.bottom;
 
                       var cfg = {
-                          w: 600, //Width of the circle
-                          h: 600, //Height of the circle
+                          w: width*0.5, //Width of the circle
+                          h: width*0.5, //Height of the circle
                           margin: { top: 20, right: 20, bottom: 20, left: 20 }, //The margins of the SVG
                           levels: 3, //How many levels or inner circles should there be drawn
                           maxValue: 0, //What is the value that the biggest circle will represent
@@ -785,50 +848,52 @@
                   //////////////////////////////////////////////////////////////
                   //////////////////////// Set-Up //////////////////////////////
                   //////////////////////////////////////////////////////////////
-                  var margin = { top: 100, right: 100, bottom: 100, left: 100 },
-                      width = Math.min(700, window.innerWidth - 10) - margin.left - margin.right,
-                      height = Math.min(width, window.innerHeight - margin.top - margin.bottom - 20);
+                var margin = { top: 20, right: 20, bottom: 20, left: 20 },
+                       width = window.innerWidth*0.4- margin.left - margin.right,
+                      height = (window.innerWidth*0.4)*1.2 - margin.top - margin.bottom;
 
                   //////////////////////////////////////////////////////////////
                   ////////////////////////// Data //////////////////////////////
-                  //////////////////////////////////////////////////////////////
+                  //////////////////////////////////////////////////////////////                  
                   var data = [
-                      [ //iPhone
-                          { axis: "Battery Life", value: 0.22 },
-                          { axis: "Brand", value: 0.28 },
-                          { axis: "Contract Cost", value: 0.29 },
-                          { axis: "Design And Quality", value: 0.17 },
-                          { axis: "Have Internet Connectivity", value: 0.22 },
-                          { axis: "Large Screen", value: 0.02 },
-                          { axis: "Price Of Device", value: 0.21 },
-                          { axis: "To Be A Smartphone", value: 0.50 }
-                      ],
-                      [ //Samsung
-                          { axis: "Battery Life", value: 0.27 },
-                          { axis: "Brand", value: 0.16 },
-                          { axis: "Contract Cost", value: 0.35 },
-                          { axis: "Design And Quality", value: 0.13 },
-                          { axis: "Have Internet Connectivity", value: 0.20 },
-                          { axis: "Large Screen", value: 0.13 },
-                          { axis: "Price Of Device", value: 0.35 },
-                          { axis: "To Be A Smartphone", value: 0.38 }
-                      ],
-                      [ //Nokia Smartphone
-                          { axis: "Battery Life", value: 0.26 },
-                          { axis: "Brand", value: 0.10 },
-                          { axis: "Contract Cost", value: 0.30 },
-                          { axis: "Design And Quality", value: 0.14 },
-                          { axis: "Have Internet Connectivity", value: 0.22 },
-                          { axis: "Large Screen", value: 0.04 },
-                          { axis: "Price Of Device", value: 0.41 },
-                          { axis: "To Be A Smartphone", value: 0.30 }
-                      ]
+                      [ //POWER
+                          { axis: week[0], value: maxData[0][0] },
+                          { axis: week[1], value: maxData[0][1] },
+                          { axis: week[2], value: maxData[0][2] },
+                          { axis: week[3], value: maxData[0][3] },
+                          { axis: week[4], value: maxData[0][4] },
+                          { axis: week[5], value: maxData[0][5] },
+                          { axis: week[6], value: maxData[0][6] },                                         ],
+                      [ //ALS
+                          { axis: week[0], value: maxData[1][0] },
+                          { axis: week[1], value: maxData[1][1] },
+                          { axis: week[2], value: maxData[1][2] },
+                          { axis: week[3], value: maxData[1][3] },
+                          { axis: week[4], value: maxData[1][4] },
+                          { axis: week[5], value: maxData[1][5] },
+                          { axis: week[6], value: maxData[1][6] }                                         ],
+                      [ //VIBRATION
+                          { axis: week[0], value: maxData[2][0] },
+                          { axis: week[1], value: maxData[2][1] },
+                          { axis: week[2], value: maxData[2][2] },
+                          { axis: week[3], value: maxData[2][3] },
+                          { axis: week[4], value: maxData[2][4] },
+                          { axis: week[5], value: maxData[2][5] },
+                          { axis: week[6], value: maxData[2][6] }                                         ],
+                      [ //NOISE
+                          { axis: week[0], value: maxData[3][0] },
+                          { axis: week[1], value: maxData[3][1] },
+                          { axis: week[2], value: maxData[3][2] },
+                          { axis: week[3], value: maxData[3][3] },
+                          { axis: week[4], value: maxData[3][4] },
+                          { axis: week[5], value: maxData[3][5] },
+                          { axis: week[6], value: maxData[3][6] }                                         ],                      
                   ];
                   //////////////////////////////////////////////////////////////
                   //////////////////// Draw the Chart //////////////////////////
                   //////////////////////////////////////////////////////////////
                   var color = d3.scale.ordinal()
-                      .range(["#EDC951", "#CC333F", "#00A0B0"]);
+                      .range(["#EDC951", "#CC333F", "#756bb1", "#31a354", "#fd8d3c", "#00A0B0", "#003399"]);
 
                   var radarChartOptions = {
                       w: width,

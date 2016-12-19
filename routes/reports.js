@@ -23,6 +23,10 @@ router.get('/test', function(req, res, next) {
   res.render('./reports/test', { title: 'Test' });
 });
 
+router.get('/ing', function(req, res, next) {
+  res.render('./reports/ing', { title: 'Test' });
+});
+
 
 // query Report
 router.get('/restapi/getReportRawData', function(req, res, next) {

@@ -1,127 +1,176 @@
 doctype html
-html(lang='en')
-  head
-    title Home | A Visualization System Prototype of Security Monitoring Product
-    meta(charset='utf-8')
-    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
-    link(rel='stylesheet', type='text/css', href='/assets/annie/css/bootstrap.min.css')
-    link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')
-  body#table
-    .container
-      .col-sm-12.col-md-12
-        h2 An Integrated Version of Security Monitor Vis System
-        p
-          | You can find the codes here in 
-          a(href='https://github.com/hijiangtao/ss-vis-component/') Github Repo
-    br
-    .container
-      .col-sm-12.col-md-12
-        h3 SENSOR PART
-      .col-sm-12.col-md-4
-        .panel.panel-card.people-panel
-          .panel-title
-            h5.no-margin.m-b People
-          .panel-body
-            #sensor-moni-text(style='height:250px;')
-              h1 {{people_count}}
-      .col-sm-12.col-md-8
-        .panel.panel-card
-          .panel-title
-            h5.no-margin.m-b Sensor Memory Monitor
-          .panel-body
-            #sensor-mem-area-d3(style='height:270px;')
-      .col-sm-12.col-md-8
-        .panel.panel-card
-          .panel-title
-            h5.no-margin.m-b Sensor Docker Issues Monitor
-          .panel-body
-            .panel-checkbox-xs.visible-xs-block.visible-sm-block
-              p &#x9650;&#x9009;5&#x4E2A;&#xFF1A;
-              form#checkbox_opt
-                input#issue1.scatter_checkbox(type='checkbox', name='ampere', value='1', v-on='click:checkOpt', checked='true')
-                text  ampere
-                |  
-                input#issue2.scatter_checkbox(type='checkbox', name='voltage', value='2', v-on='click:checkOpt', checked='true')
-                text  voltage
-                |  
-                input#issue3.scatter_checkbox(type='checkbox', name='active_power', value='3', v-on='click:checkOpt')
-                text  active_power
-                |  
-                input#issue4.scatter_checkbox(type='checkbox', name='apparent_power', value='4', v-on='click:checkOpt', checked='true')
-                text  apparent_power
-                |  
-                input#issue5.scatter_checkbox(type='checkbox', name='reactive_power', value='5', v-on='click:checkOpt')
-                text  reactive_power
-                |  
-                input#issue6.scatter_checkbox(type='checkbox', name='power_factor', value='6', v-on='click:checkOpt')
-                text  power_factor
-            .col-xm-12.col-sm-12.col-md-10.col-xs-12
-              #sensor-docker-scatterplot-d3(style='width:100%;height:370px;')
-      .col-sm-12.col-md-4
-        .panel.panel-card
-          .panel-title
-            h5.no-margin.m-b Sensor CPU Monitor
-          .panel-body
-            #sensor-cpu-donut-d3(style='height:370px;')
-      .col-sm-12.col-md-6
-        .panel.panel-card
-          .panel-title
-            h5.no-margin.m-b Sensor Network Monitor
-          .panel-body
-            #sensor-net-area-d3(style='height:280px;')
-      .col-sm-12.col-md-6
-        .panel.panel-card
-          .panel-title
-            h5.no-margin.m-b Sensor Disk IO Monitor
-          .panel-body
-            #sensor-disk-multi-d3(style='height:280px;')
-      .col-sm-12.col-md-4
-        .panel.panel-card
-          .panel-title
-            h5.no-margin.m-b Single Sensor People Monitor
-          .panel-body
-            #sensor-moni-arcpie-d3(style='height:247px;')
-      .col-sm-12.col-md-8
-        .panel.panel-card
-          .panel-title
-            h5.no-margin.m-b Sensor: People Distance and Duration Monitor
-          .panel-body
-            #sensor-dis-dur-timeline-d3(style='height:247px;')
-      .col-sm-12.col-md-6
-        .panel.panel-card
-          .panel-title
-            h5.no-margin.m-b Sensor Detection Monitor
-          .panel-body
-            #sensor-detec-aster-d3(style='height:300px;')
-      .col-sm-12.col-md-6
-        .panel.panel-card
-          .panel-title
-            h5.no-margin.m-b Sensor Latency Monitor
-          .panel-body
-            #sensor-detec-aster2-d3(style='height:300px;')
-      .col-sm-12.col-md-12
-        .panel.panel-card
-          .panel-title
-            h5.no-margin.m-b Sensor People Counting Monitor
-          .panel-body
-            #sensor-count-multi-d3(style='height:400px;')
-    .container
-      .col-sm-12.col-md-12
-        h3 DOCKER PART
-      .col-sm-12.col-md-4
-        .panel.panel-card
-          .panel-title
-            h5.no-margin.m-b Docker CPU Monitor
-          .panel-body
-            #docker-cpu-rect-d3(style='height:280px;')
-      .col-sm-12.col-md-8
-        .panel.panel-card
-          .panel-title
-            h5.no-margin.m-b Sensor Memory Monitor
-          .panel-body
-            #docker-mem-area-d3(style='height:280px;')
+html
+  meta(charset='utf-8')
+  style.
+    groupTip {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    width: 960px;
+    height: 500px;
+    position: relative;
+    }
+    svg {
+    width: 100%;
+    height: 100%;
+    position: center;
+    }
+    text{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    .toolTip {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    position: absolute;
+    display: none;
+    width: auto;
+    height: auto;
+    background: none repeat scroll 0 0 white;
+    border: 0 none;
+    border-radius: 8px 8px 8px 8px;
+    box-shadow: -3px 3px 15px #888888;
+    color: black;
+    font: 12px sans-serif;
+    padding: 5px;
+    text-align: center;
+    }
+    .legend {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 60%;
+    }
+    rect {
+    stroke-width: 2;
+    }
+    text {
+    font: 10px sans-serif;
+    }
+    .axis text {
+    font: 10px sans-serif;
+    }
+    .axis path{
+    fill: none;
+    stroke: #000;
+    }
+    .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+    }
+    .axis .tick line {
+    stroke-width: 1;
+    stroke: rgba(0, 0, 0, 0.2);
+    }
+    .axisHorizontal path{
+    fill: none;
+    }
+    .axisHorizontal line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+    }
+    .axisHorizontal .tick line {
+    stroke-width: 1;
+    stroke: rgba(0, 0, 0, 0.2);
+    }
+    .bar {
+    fill: steelblue;
+    fill-opacity: .9;
+    }
+    .x.axis path {
+    display: none;
+    }
+  body
+    groupTip
     script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
-    script(src="/assets/scripts/libs/jquery-2.2.3.min.js")
-    script(src="/assets/scripts/libs/bootstrap.min.js")
-    script(src='/assets/annie/js/vue.min.js')
-    script(src='/scripts/integrateIndex.js')
+    script.
+      var margin = {top: 30, right: 30, bottom: 30, left: 30},
+      width = 960 - margin.left - margin.right,
+      height = 500 - margin.top - margin.bottom;
+      var x0 = d3.scale.ordinal()
+      .rangeRoundBands([0, width], .1);
+      var x1 = d3.scale.ordinal();
+      var y = d3.scale.linear()
+      .range([height, 0]);
+      var colorRange = d3.scale.category20();
+      var color = d3.scale.ordinal()
+      .range(colorRange.range());
+      var xAxis = d3.svg.axis()
+      .scale(x0)
+      .orient("bottom");
+      var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient("left")
+      .tickFormat(d3.format(".2s"));
+      var divTooltip = d3.select("body").append("div").attr("class", "toolTip");
+      var svg = d3.select("groupTip").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      dataset = [
+      {label:"Men", "Not Satisfied":20, "Not Much Satisfied":10, "Satisfied": 50, "Very Satisfied":20},
+      {label:"Women", "Not Satisfied":15, "Not Much Satisfied":30, "Satisfied":40, "Very Satisfied":15}
+      ];
+      var options = d3.keys(dataset[0]).filter(function(key) { return key !== "label"; });
+      dataset.forEach(function(d) {
+      d.valores = options.map(function(name) { return {name: name, value: +d[name]}; });
+      });
+      x0.domain(dataset.map(function(d) { return d.label; }));
+      x1.domain(options).rangeRoundBands([0, x0.rangeBand()]);
+      y.domain([0, d3.max(dataset, function(d) { return d3.max(d.valores, function(d) { return d.value; }); })]);
+      svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+      svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+      .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Satisfaction %");
+      var bar = svg.selectAll(".bar")
+      .data(dataset)
+      .enter().append("g")
+      .attr("class", "rect")
+      .attr("transform", function(d) { return "translate(" + x0(d.label) + ",0)"; });
+      bar.selectAll("rect")
+      .data(function(d) { return d.valores; })
+      .enter().append("rect")
+      .attr("width", x1.rangeBand())
+      .attr("x", function(d) { return x1(d.name); })
+      .attr("y", function(d) { return y(d.value); })
+      .attr("value", function(d){return d.name;})
+      .attr("height", function(d) { return height - y(d.value); })
+      .style("fill", function(d) { return color(d.name); });
+      bar
+      .on("mousemove", function(d){
+      divTooltip.style("left", d3.event.pageX+10+"px");
+      divTooltip.style("top", d3.event.pageY-25+"px");
+      divTooltip.style("display", "inline-block");
+      var x = d3.event.pageX, y = d3.event.pageY
+      var elements = document.querySelectorAll(':hover');
+      l = elements.length
+      l = l-1
+      elementData = elements[l].__data__
+      divTooltip.html((d.label)+"<br>"+elementData.name+"<br>"+elementData.value+"%");
+      });
+      bar
+      .on("mouseout", function(d){
+      divTooltip.style("display", "none");
+      });
+      var legend = svg.selectAll(".legend")
+      .data(options.slice())
+      .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+      legend.append("rect")
+      .attr("x", width - 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color);
+      legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
