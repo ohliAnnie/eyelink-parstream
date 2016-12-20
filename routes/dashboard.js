@@ -43,7 +43,7 @@ router.get('/restapi/getDashboardSection1', function(req, res, next) {
 });
 
 // query RawData
-router.get('/restapi/getReportRawData', function(req, res, next) {
+router.get('/restapi/getDashboardRawData', function(req, res, next) {
   var in_data = {MERGE:'Y'};
   dashboardProvider.selectSingleQueryByID("selectEventRawData", in_data, function(err, out_data, params) {
     // console.log(out_data);
@@ -61,15 +61,19 @@ router.get('/restapi/getReportRawData', function(req, res, next) {
 
     // console.log('dashboard/restapi/getReportRawData -> out_data : %s', out_data);
     // console.log('dashboard/restapi/getReportRawData -> out_data : %s', out_data[0]);
-    console.log('dashboard/restapi/getReportRawData -> length : %s', out_data[0].length);
+    console.log('dashboard/restapi/getDashboardRawData -> length : %s', out_data[0].length);
     res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });
 });
 
+
+// for Map Test
 router.get('/restapi/getNodeGeo', function(req, res, next) {
   var out_data = [
-    {type : '0001.0000001', geo : '37.467271, 127.042861'},
-    {type : '0001.0000002', geo : '37.467271, 128.042861'},
+    {type : '0001.0000001', geo : '37.457271, 127.042861'},
+    {type : '0001.0000002', geo : '37.467271, 127.032861'},
+    {type : '0001.0000003', geo : '37.468271, 127.042861'},
+    {type : '0001.0000004', geo : '37.468271, 127.052761'},
   ];
   res.json(out_data);
 });
