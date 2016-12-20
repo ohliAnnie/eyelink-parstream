@@ -17,11 +17,10 @@ html(lang='en')
       .col-sm-12.col-md-8
         .panel.panel-card
           .panel-title
-            h5.no-margin.m-b Sensor Docker Issues Monitor
+            h5.no-margin.m-b click line chart
           .panel-body
             .panel-checkbox-xs.visible-xs-block.visible-sm-block
-              p &#x9650;&#x9009;5&#x4E2A;&#xFF1A;
-              form#checkbox_opt
+              p 5개 이하 선택
                 input#ampere.scatter_checkbox(type='checkbox', name='ampere', value='1', v-on='click:checkOpt', checked='true')
                 text  ampere
                 |  
@@ -40,7 +39,7 @@ html(lang='en')
                 input#power_factor.scatter_checkbox(type='checkbox', name='power_factor', value='6', v-on='click:checkOpt')
                 text  power_factor
             .col-xm-12.col-sm-12.col-md-10.col-xs-12
-              #sensor-docker-scatterplot-d3(style='width:100%;height:370px;')   
+              #sensor-docker-scatterplot-d3(style='width:100%;height:370px;')                 
       .col-sm-12.col-md-6
         .panel.panel-card
           .panel-title

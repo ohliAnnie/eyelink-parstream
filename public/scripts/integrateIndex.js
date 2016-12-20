@@ -44,21 +44,23 @@ var demo = new Vue({
       var data = [];
       var hAxis = pData[input]['hAxis'], mAxis = pData[input]['mAxis'], sAxis = pData[input]['sAxis'];
       for(var i=0; i<9; i++) {
-        var tAxis = hAxis + ":" + mAxis + ":" + sAxis;        
+        var tAxis = hAxis + ":" + mAxis + ":" + sAxis;    
         if(tAxis == pData[input]['time']) {    
           data.push({time: pData[input]['time'], ampere: pData[input]['ampere'], voltage: pData[input]['voltage'], apparent_power: pData[input++]['apparent_power']});        
         } else {
           data.push({time: tAxis, ampere: 0, voltage: 0, apparent_power: 0});
         }
-         if(mAxis === 59 && sAxis === 59) {
+        if(mAxis === 59 && sAxis === 59) {
           hAxis++;
-          mAxis=0;
-          sAxis = 0;
+          mAxis = '0' + 0;
+          sAxis = '0' + 0;
         } else if(sAxis === 59) {
           mAxis++;
-          sAxis = 0;
+          if(mAxis < 10) {            mAxis = '0' + mAxis;          }
+          sAxis = '0' +0;
         } else {
           sAxis++;
+          if(sAxis < 10) {            sAxis = '0' + sAxis;          }
         }
       }
       var category = ['ampere'];
@@ -70,7 +72,6 @@ var demo = new Vue({
             height = $(id).height() - margin.top - margin.bottom;
 
         var parseDate = d3.time.format("%H:%M:%S").parse;
-        var formatPercent = d3.format(".0%");
 
         var legendSize = 10,
             legendColor = 'rgba(0, 160, 233, 0.7)';
@@ -247,7 +248,6 @@ var demo = new Vue({
       function redraw(data, id, x, y, xAxis, svg, area, path, points, height, axisNum) {
         //format of time data
         var parseDate = d3.time.format("%H:%M:%S").parse;
-        var formatPercent = d3.format(".0%");
 
         var ddata = (function() {
           var temp = [];
@@ -364,23 +364,24 @@ var demo = new Vue({
           data.push({time:tAxis,ampere:0, voltage:0, apparent_power:0});
         }
 
-      // console.log(tAxis);
         if(mAxis === 59 && sAxis === 59) {
           hAxis++;
-          mAxis=0;
-          sAxis = 0;
+          mAxis = '0' + 0;
+          sAxis = '0' + 0;
         } else if(sAxis === 59) {
           mAxis++;
-          sAxis = 0;
+          if(mAxis < 10) {            mAxis = '0' + mAxis;          }
+          sAxis = '0' +0;
         } else {
           sAxis++;
+          if(sAxis < 10) {            sAxis = '0' + sAxis;          }
         }
 
         if (Object.keys(data).length === 20) data.shift();
 
         // generate(data, "#sensor-mem-area-d3");
         redraw(data, "#sensor-mem-area-d3", sca.getOpt()['x'], sca.getOpt()['y'], sca.getOpt()['xAxis'], sca.getSvg()['svg'], sca.getSvg()['area'], sca.getSvg()['path'], sca.getSvg()['points'], sca.getOpt()['height'], 8);
-      }, 3500);
+      }, 1000);
     },
 
     displayDocker: function () {
@@ -388,6 +389,7 @@ var demo = new Vue({
       var input = 0;      
       var hAxis = pData[input]['hAxis'], mAxis = pData[input]['mAxis'], sAxis = pData[input]['sAxis'];            
       var data = [];
+
       for(var i = 0; i<9; i++) {
         var tAxis = hAxis + ':' + mAxis + ':' + sAxis;        
         if(tAxis == pData[input]['time']) {
@@ -395,16 +397,18 @@ var demo = new Vue({
         } else {
           data.push({time:tAxis, ampere:0, voltage:0, active_power:0, apparent_power:0, reactive_power:0, power_factor:0});
        }
-       if(mAxis === 59 && sAxis === 59) {
-        hAxis++;
-        mAxis=0;
-        sAxis = 0;
-       } else if(sAxis === 59) {
-        mAxis++;
-        sAxis = 0;
-      } else {
-        sAxis++;
-      }
+        if(mAxis === 59 && sAxis === 59) {
+          hAxis++;
+          mAxis = '0' + 0;
+          sAxis = '0' + 0;
+        } else if(sAxis === 59) {
+          mAxis++;
+          if(mAxis < 10) {            mAxis = '0' + mAxis;          }
+          sAxis = '0' +0;
+        } else {
+          sAxis++;
+          if(sAxis < 10) {            sAxis = '0' + sAxis;          }
+        }
     }
 
       //generation function
@@ -441,6 +445,13 @@ var demo = new Vue({
         x.domain( d3.extent(ddata, function(d) { return d['time']; }) );
         y.domain([0,200]);
 
+         var tranLength = (x(parseDate('00:00:10'))-x(parseDate('00:00:09'))) / 4;
+
+      var line = d3.svg.line()
+            .interpolate("monotone")
+            .x(function(d) { return x(d['time']); })
+            .y(function(d) { return y(d['reactive_power']); });
+
         var xAxis = d3.svg.axis()
             .scale(x)
             .orient("bottom")
@@ -473,6 +484,15 @@ var demo = new Vue({
         svg.append("g")
             .attr("class", "y axis")
             .call(yAxis);
+
+        var path = svg.append("g")
+            .attr("class", "countPath");
+
+        path.append("path")
+            .attr("d", line(ddata))
+            .attr("class", 'countRemainPath');
+ //           .attr('stroke', legendColor['reactive_power']);
+   
 
         var dots = svg.append("g")
             .attr("class", "scatter_dots");
@@ -559,6 +579,10 @@ var demo = new Vue({
               return 'translate(' + (i * (5 + (width-20) / 5)) + ',' + (height + margin.bottom - legendSize - 20) + ')';
             });
 
+        function xTransLen(t) {
+          return x(parseDate(t)) + tranLength;
+        }
+
         this.getOpt = function() {
           var axisOpt = new Object();
           axisOpt['x'] = x;
@@ -569,7 +593,6 @@ var demo = new Vue({
           axisOpt['height'] = height;
           axisOpt['width'] = width;
           axisOpt['margin'] = margin;
-
           return axisOpt;
         }
 
@@ -580,7 +603,8 @@ var demo = new Vue({
           svgD['color'] = color;
           svgD['legend'] = legend
           svgD['rect'] = rect;
-
+          svgD['path'] = path;
+          svgD['line'] = line;
           return svgD;
         }
       }
@@ -604,6 +628,10 @@ var demo = new Vue({
 
         x.domain( d3.extent(ddata, function(d) { return d['time']; }) );
         xAxis.ticks(d3.time.seconds, Math.floor(data.length / axisNum));
+
+        var tranLength = (x(parseDate('00:00:10'))-x(parseDate('00:00:09'))) / 4;
+
+        line.x(function(d) { return xTransLen(d['time']); });
 
         //update the axis
         svg.select("#docker-x-axis")
@@ -671,6 +699,16 @@ var demo = new Vue({
             .duration(500)
             .remove();
 
+        d3.selectAll('.countPath').remove();
+
+        var path = svg.append("g")
+            .attr("class", "countPath");
+
+        path.append("path")
+            .attr("d", line(ddata))
+            .attr("class", 'countRemainPath')
+       //     .attr('stroke', legendColor['reactive_power']);        
+
         //redraw legend
         self.legendRedraw(self.selectScaCate, id, init.getSvg()['legend'], init.getSvg()['rect'], init.getOpt()['legendSize'], init.getOpt()['margin'], init.getOpt()['height'], init.getOpt()['width'], init.getSvg()['color']);
       }
@@ -678,30 +716,35 @@ var demo = new Vue({
       //inits chart
       self.sensorDockerFunc = new generate(data, "#sensor-docker-scatterplot-d3", 5);
 
-      //dynamic data and chart update
+/*      //dynamic data and chart update
       setInterval(function() {
         //update donut data
         var tAxis = hAxis + ":" + mAxis + ":" + sAxis;
+        console.log(tAxis);
+        console.log(pData[input]['time']);
         if(pData[input]['time'] ==  tAxis) {
+          console.log('in');
           data.push({time:pData[input]['time'], ampere:pData[input]['ampere'], voltage:pData[input]['voltage'], active_power:pData[input]['active_power'], apparent_power:pData[input]['apparent_power'] , reactive_power:pData[input]['reactive_power'], power_factor:pData[input++]['power_factor']});
         } else {
           data.push({time:tAxis, ampere:0, voltage:0, active_power:0, apparent_power:0, reactive_power:0, power_factor:0})
         }
         if(mAxis === 59 && sAxis === 59) {
           hAxis++;
-          mAxis=0;
-          sAxis = 0;
+          mAxis = '0' + 0;
+          sAxis = '0' + 0;
         } else if(sAxis === 59) {
           mAxis++;
-          sAxis = 0;
+          if(mAxis < 10) {            mAxis = '0' + mAxis;          }
+          sAxis = '0' +0;
         } else {
           sAxis++;
+          if(sAxis < 10) {            sAxis = '0' + sAxis;          }
         }
 
         if (Object.keys(data).length === 15) data.shift();
 
         redraw(data, "#sensor-docker-scatterplot-d3", self.sensorDockerFunc.getSvg()['svg'], self.sensorDockerFunc.getSvg()['dots'], self.sensorDockerFunc.getSvg()['color'], self.sensorDockerFunc.getOpt()['x'], self.sensorDockerFunc.getOpt()['xAxis'], self.sensorDockerFunc.getOpt()['y'], self.sensorDockerFunc.getOpt()['r'], self.sensorDockerFunc, 5);
-      }, 6000);
+      }, 1000);*/
     },
  /*   displayCPU: function () {
       var data = [
@@ -871,6 +914,7 @@ var demo = new Vue({
       var input = 0;
       var data = [];
       var hAxis = pData[input]['hAxis'], mAxis = pData[input]['mAxis'], sAxis = pData[input]['sAxis'];
+
       for(var i=0; i<9; i++) {      
         var tAxis = hAxis + ":" + mAxis + ":" + sAxis;
         if(tAxis == pData[input]['time']) {
@@ -878,17 +922,20 @@ var demo = new Vue({
         } else {
           data.push({time: tAxis, active_power: 0, power_factor: 0, apparent_power: 0});
         }
-       if(mAxis === 59 && sAxis === 59) {
+        if(mAxis === 59 && sAxis === 59) {
           hAxis++;
-          mAxis=0;
-          sAxis = 0;
+          mAxis = '0' + 0;
+          sAxis = '0' + 0;
         } else if(sAxis === 59) {
           mAxis++;
-          sAxis = 0;
+          if(mAxis < 10) {            mAxis = '0' + mAxis;          }
+          sAxis = '0' +0;
         } else {
           sAxis++;
+          if(sAxis < 10) {            sAxis = '0' + sAxis;          }
         }
       }
+
       var category = ['active_power', 'power_factor'];
 
       //generation function
@@ -1315,7 +1362,6 @@ var demo = new Vue({
             .transition()
             .duration(200)
             .remove();
-
       }
 
       //inits chart
@@ -1325,21 +1371,29 @@ var demo = new Vue({
       setInterval(function() {
         //update donut data
         var tAxis = hAxis + ":" + mAxis + ":" + sAxis;
-        data.push({time: tAxis, active_power: pData[input]['active_power'], power_factor: pData[input]['power_factor'], appare_power: pData[input++]['apparent_power']});
-
-        // console.log(tAxis);
-        if(mAxis === 59) {
-          hAxis++;
-          mAxis=0;
+        if(pData[input]['time'] ==  tAxis) {          
+          data.push({time: tAxis, active_power: pData[input]['active_power'], power_factor: pData[input]['power_factor'], appare_power: pData[input++]['apparent_power']});
+        } else {
+          data.push({time:tAxis, active_power:0, power_factor:0, apparent_power:0});
         }
-        else {
+
+        if(mAxis === 59 && sAxis === 59) {
+          hAxis++;
+          mAxis = '0' + 0;
+          sAxis = '0' + 0;
+        } else if(sAxis === 59) {
           mAxis++;
+          if(mAxis < 10) {            mAxis = '0' + mAxis;          }
+          sAxis = '0' +0;
+        } else {
+          sAxis++;
+          if(sAxis < 10) {            sAxis = '0' + sAxis;          }
         }
 
         if (Object.keys(data).length === 20) data.shift();
 
         redraw(data, "#sensor-net-area-d3", sca.getOpt()['x'], sca.getOpt()['y'], sca.getOpt()['xAxis'], sca.getSvg()['svg'], sca.getSvg()['area'], sca.getSvg()['path'], sca.getSvg()['points'], sca.getSvg()['legendColor'], sca.getOpt()['height'], 6);
-      }, 3500);
+      }, 1000);
     },
     displayDisk: function () {
       var input = 0;
@@ -1352,15 +1406,17 @@ var demo = new Vue({
           } else {
             data.push({time: tAxis, ampere: 0, voltage: 0, apparent_power: 0});
           }
-         if(mAxis === 59 && sAxis === 59) {
+        if(mAxis === 59 && sAxis === 59) {
           hAxis++;
-          mAxis=0;
-          sAxis = 0;
+          mAxis = '0' + 0;
+          sAxis = '0' + 0;
         } else if(sAxis === 59) {
           mAxis++;
-          sAxis = 0;
+          if(mAxis < 10) {            mAxis = '0' + mAxis;          }
+          sAxis = '0' +0;
         } else {
           sAxis++;
+          if(sAxis < 10) {            sAxis = '0' + sAxis;          }
         }
       }    
 
@@ -1368,8 +1424,6 @@ var demo = new Vue({
 
       var drawLine = ['voltage'],
           drawArea = ['ampere'];
-
-      var hAxis = 10, mAxis = 10;
 
       //generation function
       function generate(data, id, lineType, axisNum) {
@@ -1550,7 +1604,7 @@ var demo = new Vue({
             .attr("r", "6px")
             .style("fill",function (d) { return legendColor[d['category']]; })
             .style("stroke", function (d) {
-              if (d['category'] === 'write')
+              if (d['category'] === 'voltage')
                 return legendColor['ampere'];
               else
                 return legendColor['voltage'];
@@ -1573,7 +1627,7 @@ var demo = new Vue({
 
               var mainCate = (function() {
                 if (jud === 0)
-                  return 'read/write';
+                  return 'ampere/voltage';
                 else
                   return d['category'];
               })();
@@ -1904,18 +1958,20 @@ var demo = new Vue({
         // console.log(tAxis);
         if(mAxis === 59 && sAxis === 59) {
           hAxis++;
-          mAxis=0;
-          sAxis = 0;
+          mAxis = '0' + 0;
+          sAxis = '0' + 0;
         } else if(sAxis === 59) {
           mAxis++;
-          sAxis = 0;
+          if(mAxis < 10) {            mAxis = '0' + mAxis;          }
+          sAxis = '0' +0;
         } else {
           sAxis++;
+          if(sAxis < 10) {            sAxis = '0' + sAxis;          }
         }
 
         if (Object.keys(data).length === 20) data.shift();
         redraw(data, "#sensor-disk-multi-d3", sca.getOpt()['x'], sca.getOpt()['y'], sca.getOpt()['xAxis'], sca.getSvg()['svg'], sca.getSvg()['area'], sca.getSvg()['line'], sca.getSvg()['path'], sca.getSvg()['lpath'], sca.getSvg()['points'], sca.getSvg()['legendColor'], sca.getOpt()['height'], 6);
-      }, 3000);
+      }, 1000);
     },
  /*   displayPeople: function () {
       var data = [];
@@ -2760,15 +2816,17 @@ var demo = new Vue({
           } else {
             data.push({time: tAxis, power_factor: 0, active_power: 0, reactive_power: 0});
          }
-         if(mAxis === 59 && sAxis === 59) {
+        if(mAxis === 59 && sAxis === 59) {
           hAxis++;
-          mAxis=0;
-          sAxis = 0;
+          mAxis = '0' + 0;
+          sAxis = '0' + 0;
         } else if(sAxis === 59) {
           mAxis++;
-          sAxis = 0;
+          if(mAxis < 10) {            mAxis = '0' + mAxis;          }
+          sAxis = '0' +0;
         } else {
           sAxis++;
+          if(sAxis < 10) {            sAxis = '0' + sAxis;          }
         }
       }
 
@@ -2776,8 +2834,6 @@ var demo = new Vue({
 
       var drawLine = ['write'],
           drawBar = ['power_factor', 'active_power'];
-
-      var hAxis = 10, mAxis = 10;
 
       //generation function
       function generate(data, id, lineType, axisNum, drawBar, category) {
@@ -2832,7 +2888,7 @@ var demo = new Vue({
 
         var line = d3.svg.line()
             .interpolate(lineType)
-            .x(function(d) { return xTransLen(d['time']); })
+            .x(function(d) { return x(d['time']); })
             .y(function(d) { return y(d['reactive_power']); });
 
         d3.select('#svg-count').remove();
@@ -2939,7 +2995,7 @@ var demo = new Vue({
                 'placement': 'top',
                 'html': 'true',
                 'title': d['time'],
-                'content': '<table><tr><td>' + 'TIME' + '</td><td> | ' + d['time'] + '</td></tr>' + '<tr><td>' + 'reactive_power' + '</td><td> | ' + d['reactive_power'] + '</td></tr>' + '<tr><td>' + 'power_factor' + '</td><td> | ' + d['power_factor'] + '</td></tr>' + '<tr><td>' + 'active_power' + '</td><td> | ' + d['active_power'] + '</td></tr></table>',
+                'content': '<table><tr><td>' + 'TIME' + '</td><td> | ' + d['time'] +  '</td></tr>' + '<tr><td>' + 'power_factor' + '</td><td> | ' + d['power_factor'] + '</td></tr>' + '<tr><td>' + 'active_power' + '</td><td> | ' + d['active_power'] + '</td></tr>' + '<tr><td>' + 'reactive_power' + '</td><td> | ' + d['reactive_power'] + '</td></tr></table>',
                 'trigger': 'hover'
               })
                   .popover('show');
@@ -3097,7 +3153,7 @@ var demo = new Vue({
                 'placement': 'top',
                 'html': 'true',
                 'title': d['time'],
-                'content': '<table><tr><td>' + 'TIME' + '</td><td> | ' + d['time'] + '</td></tr>' + '<tr><td>' + 'reactive_power' + '</td><td> | ' + d['reactive_power'] + '</td></tr>' + '<tr><td>' + 'PF' + '</td><td> | ' + d['power_factor'] + '</td></tr>' + '<tr><td>' + 'active_power' + '</td><td> | ' + d['active_power'] + '</td></tr></table>',
+                'content': '<table><tr><td>' + 'TIME' + '</td><td> | ' + d['time'] + '</td></tr>'  + '<tr><td>' + 'power_factor' + '</td><td> | ' + d['power_factor'] + '</td></tr>' + '<tr><td>' + 'active_power' + '</td><td> | ' + d['active_power'] + '<tr><td>' + 'reactive_power' + '</td><td> | ' + d['reactive_power'] + '</td></tr>' + '</td></tr></table>',
                 'trigger': 'hover'
               })
                   .popover('show');
@@ -3130,13 +3186,30 @@ var demo = new Vue({
       //dynamic data and chart update
       setInterval(function() {
         //update donut data
-        data.push({time: pData[input]['time'], 'power_factor': pData[input]['power_factor'], 'active_power': pData[input]['active_power'], 'reactive_power': pData[input]['reactive_power']});
+        var tAxis = hAxis + ":" + mAxis + ":" + sAxis;
+        if(pData[input]['time'] ==  tAxis) {          
+          data.push({time: pData[input]['time'], 'power_factor': pData[input]['power_factor'], 'active_power': pData[input]['active_power'], 'reactive_power': pData[input++]['reactive_power']});
+        } else {
+          data.push({time:tAxis,power_factor:0, active_power:0, reactive_power:0});
+        }        
 
+        if(mAxis === 59 && sAxis === 59) {
+          hAxis++;
+          mAxis = '0' + 0;
+          sAxis = '0' + 0;
+        } else if(sAxis === 59) {
+          mAxis++;
+          if(mAxis < 10) {            mAxis = '0' + mAxis;          }
+          sAxis = '0' +0;
+        } else {
+          sAxis++;
+          if(sAxis < 10) {            sAxis = '0' + sAxis;          }
+        }
 
         if (Object.keys(data).length === 18) data.shift();
 
         redraw(data, "#sensor-disk-multi-d3", sca.getOpt()['x'], sca.getOpt()['y'], sca.getOpt()['xAxis'], sca.getSvg()['svg'], sca.getSvg()['stat'], sca.getSvg()['path'], sca.getSvg()['line'], sca.getSvg()['points'], sca.getSvg()['legendColor'], sca.getOpt()['height'], sca.getOpt()['axisNum'], sca.getOpt()['drawBar']);
-      }, 3000);
+      }, 1000);
     },
     checkOpt: function (e) {
       var self = this;
@@ -3685,14 +3758,13 @@ var demo = new Vue({
 //    self.displayPeople();
 //    self.displayDisDur();
 //    self.displayDetec();
-    self.displayCount();
-
+    self.displayCount();    
 //    self.displayDCPU();
 //    self.displayDMem();
 
-    setInterval(function () {
+/*    setInterval(function () {
       self.people_count = Math.floor( Math.random() * 1000 );
-    }, 2000);
+    }, 2000);*/
   }
 });
 });
