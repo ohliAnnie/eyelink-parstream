@@ -55,11 +55,11 @@ function drawMap() {
   //   // accessToken: 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw'
   // }).addTo(bubbleMap);
 
-  d3.json("/dashboard/restapi/getNodeGeo", function(data) {
-    console.log(data);
-    drawMarkerSelect(data);
-    // drawMarkerArea(data);
-  });
+  // d3.json("/dashboard/restapi/getNodeGeo", function(data) {
+  //   console.log(data);
+  //   // drawMarkerSelect(data);
+  //   // drawMarkerArea(data);
+  // });
 
   function drawMarkerSelect(data) {
     var xf = crossfilter(data);
@@ -120,6 +120,37 @@ function drawMap() {
   }
 }
 
+function drawMarkerSelect2(xf, data) {
+  console.log(data);
+  // var xf = crossfilter(data);
+  var groupname = "marker-select";
+  var facilities = xf.dimension(function(d) { return d.geo; });
+  var facilitiesGroup = facilities.group().reduceCount();
+  console.log('facilitiesGroup : %s', facilitiesGroup.size());
+  // console.log($('#bubble-map .map'));
+  dc_leaflet.markerChart("#bubble-map .map",groupname)
+      .dimension(facilities)
+      .group(facilitiesGroup)
+      .width(600)
+      .height(400)
+      .center([37.467271, 127.042861])
+      .zoom(13)
+      .cluster(true);
+  var types = xf.dimension(function(d) { return d.node_id; });
+  var typesGroup = types.group().reduceCount();
+  dc.pieChart("#bubble-map .pie",groupname)
+      .dimension(types)
+      .group(typesGroup)
+      .width(150)
+      .height(150)
+      .renderLabel(true)
+      .renderTitle(true)
+      .ordering(function (p) {
+        return -p.value;
+      });
+  dc.renderAll(groupname);
+}
+
 function drawChart() {
   // var barchart = dc.barChart('#bar-chart');
   var volumeChart = dc.barChart('#volumn-chart');
@@ -130,8 +161,10 @@ function drawChart() {
   var plot_pieChart = dc.pieChart("#plot_pie-chart");
   // var fluctuationChart = dc.barChart('#fluctuation-chart');
   var seriesChart = dc.seriesChart('#series-chart');
+  var markerChart = dc.seriesChart('#series-chart');
+  var pieChart = dc.pieChart('#bubble-map .pie');
 
-  d3.json("/dashboard/restapi/getReportRawData", function(err, out_data) {
+  d3.json("/dashboard/restapi/getDashboardRawData", function(err, out_data) {
     // if (err) throw Error(error);
 
     var dateFormat = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
@@ -177,11 +210,31 @@ function drawChart() {
       // d.check = +0.85;
       // console.log(d);
       d.active_power += d.active_power;
+      // d.geo = (d.node_id === '') ? d.gps_latitude + ',' + d.gps_longtitude;
+      d.geo = (d.node_id === '0001.00000001') ? '37.457271, 127.042861':'37.468271, 127.032861';
     });
 
     // console.log(data);
 
+
     var ndx = crossfilter(data);
+
+    drawMarkerSelect2(ndx, data);
+
+    // var groupname = "marker-select";
+    // var facilities = ndx.dimension(function(d) { return d.geo; });
+    // var facilitiesGroup = facilities.group().reduceCount();
+    // console.log('facilitiesGroup : %s', facilitiesGroup.size());
+    // // console.log($('#bubble-map .map'));
+    // dc_leaflet.markerChart("#bubble-map .map",groupname)
+    //     .dimension(facilities)
+    //     .group(facilitiesGroup)
+    //     .width(600)
+    //     .height(400)
+    //     .center([37.467271, 127.042861])
+    //     .zoom(13)
+    //     .cluster(true);
+    // dc.renderAll(groupname);
 
     var moveDays = ndx.dimension(function (d) {
       return d.day;

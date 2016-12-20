@@ -78,6 +78,7 @@ var sqlList = {
         "       als_level, dimming_level, "+
         "         noise_decibel, noise_frequency, "+
         "         vibration_x, vibration_y, vibration_z, "+
+        "         gps_latitude, gps_longitude, gps_altitude, "+
         "         (vibration_x + vibration_y + vibration_z) / 3 as vibration" +
         "    from tb_node_raw"+
         "  where year = date_part('YEAR', current_date()) "+
