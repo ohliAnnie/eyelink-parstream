@@ -1,0 +1,69 @@
+body {
+  background-color: #f1f1f1;
+}
+
+.people-panel {
+  background-color: #00a0e9 !important;
+  color: #ffffff;
+}
+.people-panel h1 {
+  font-size: 10.5em;
+  font-weight: bold;
+  text-align: center;
+  padding-top: 20px;
+}
+
+.panel-title h5 {
+  padding-left: 10px;
+  margin-bottom: 0px;
+}
+
+.panel-body {
+  padding-top: 0px;
+}
+
+.panel-card {
+  box-shadow: 1px 0px 1px rgba(0, 0, 0, 0.25);
+  background-color: white;
+}
+
+.container h1 {
+/*     text-align: center; */
+}
+
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #f3f3f3;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-size: .7em;
+    color: #a0a0a0;
+}
+
+.path_line {
+    fill: none;    
+    shape-rendering: crispEdges;
+}
+
+
+.path_circle {
+    stroke-width: 2px;
+    opacity: 1;
+    fill: #41DB00;
+    stroke: white;
+}
+
+.legendRect {
+    stroke: #aaabb1;
+    stroke-width: 1px;
+    fill: none;
+}
+
+
+.scatter_checkbox text{
+    font-size: .3em;
+}

@@ -122,6 +122,13 @@ body {
     stroke: none;
 }
 
+.scatter_line {
+    fill: none;
+    stroke: none;
+    shape-rendering: crispEdges;
+}
+
+
 /*STYLESHEETS FOR SENSOR CPU*/
 .donutCenterText {
     font-size: 1.5em;
