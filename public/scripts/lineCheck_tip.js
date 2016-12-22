@@ -37,7 +37,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
         var data = [];
         var hAxis = pData[input]['hAxis'], mAxis = pData[input]['mAxis'], sAxis = pData[input]['sAxis'];
 
-        for(var i=0; i<10; i++) {      
+        for(var i=0; i<60; i++) {      
           var tAxis = hAxis + ":" + mAxis + ":" + sAxis;
           if(tAxis == pData[input]['time']) {
               data.push({time:pData[input]['time'], ampere:pData[input]['ampere'], voltage:pData[input]['voltage'], active_power:pData[input]['active_power'], apparent_power:pData[input]['apparent_power'] , reactive_power:pData[input]['reactive_power'], power_factor:pData[input++]['power_factor']});
@@ -90,7 +90,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
         })();
 
         x.domain( d3.extent(data, function(d) { return parseDate(d['time']); }) );
-        y.domain([0, 200]);
+        y.domain([0, 250]);
 
         //data.length/10 is set for the garantte of timeseries's fitting effect in svg chart
         var xAxis = d3.svg.axis()
@@ -196,6 +196,91 @@ d3.json("/reports/restapi/testData", function(err, data) {
           return 'translate(' + (i * (5 + (width-20) / 5)) + ',' + (height + margin.bottom - legendSize - 20) + ')';
         });
 
+        var points = svg.selectAll(".seriesPoints")
+        .data(ddata)
+        .enter().append("g")
+        .attr("class", "seriesPoints");
+
+        points.selectAll(".tipNetPoints")
+        .data(function (d) { return d['values']; })
+        .enter().append("circle")
+        .attr("class", "tipNetPoints")
+        .attr("cx", function (d) { return x(d['time']); })
+        .attr("cy", function (d) { return y(d['num']); })
+        .text(function (d) { return d['num']; })
+        .attr("r", "6px")
+        .style("fill", "transparent")
+        .on("mouseover", function (d) {
+              // console.log();
+              var currentX = $(this)[0]['cx']['animVal']['value'],
+              currentY = $(this)[0]['cy']['animVal']['value'];
+
+              d3.select(this).transition().duration(100).style("opacity", 1);
+
+              var ret = $('.tipNetPoints').filter(function(index) {
+                return ($(this)[0]['cx']['animVal']['value'] === currentX && $(this)[0]['cy']['animVal']['value'] !== currentY);
+              });
+
+              //to adjust tooltip'x content if upload and download data are the same
+              var jud = ret.length;
+
+          var mainCate = (function() {
+            if (d['num'] != 0)
+              return d['category'] + ' | ';
+            else
+              return '';
+          })();
+
+              svg.append("g")
+              .attr("class", "tipDot")
+              .append("line")
+              .attr("class", "tipDot")
+              .transition()
+              .duration(50)
+              .attr("x1", $(this)[0]['cx']['animVal']['value'])
+              .attr("x2", $(this)[0]['cx']['animVal']['value'])
+              .attr("y2", height);
+
+              svg.append("polyline")
+              .attr("class", "tipDot")
+              .style("fill", "black")
+              .attr("points", ($(this)[0]['cx']['animVal']['value']-3.5)+","+(0-2.5)+","+$(this)[0]['cx']['animVal']['value']+","+(0+6)+","+($(this)[0]['cx']['animVal']['value']+3.5)+","+(0-2.5));
+
+              svg.append("polyline")
+              .attr("class", "tipDot")
+              .style("fill", "black")
+              .attr("points", ($(this)[0]['cx']['animVal']['value']-3.5)+","+(y(0)+2.5)+","+$(this)[0]['cx']['animVal']['value']+","+(y(0)-6)+","+($(this)[0]['cx']['animVal']['value']+3.5)+","+(y(0)+2.5));
+   
+              $(this).tooltip({
+                'container': 'body',
+                'placement': 'left',
+                'title': mainCate + d['num'],
+                'trigger': 'hover'
+              })
+              .tooltip('show');
+            })
+        .on("mouseout",  function (d) {
+          var currentX = $(this)[0]['cx']['animVal']['value'];
+
+          d3.select(this).transition().duration(100).style("opacity", 0);
+
+          var ret = $('.tipNetPoints').filter(function(index) {
+            return ($(this)[0]['cx']['animVal']['value'] === currentX);
+          });
+
+          $.each(ret, function(index, val) {
+            $(val).animate({
+              opacity: "0"
+            }, 100);
+
+            $(val).tooltip('destroy');
+          });
+
+          d3.selectAll('.tipDot').transition().duration(100).remove();
+
+          $(this).tooltip('destroy');
+        });
+
        this.getOpt = function() {
           var axisOpt = new Object();
           axisOpt['x'] = x;
@@ -216,13 +301,13 @@ d3.json("/reports/restapi/testData", function(err, data) {
           svgD['rect'] = rect;
           svgD['legend'] = legend;
           svgD['color']= color;
-/*          svgD['points'] = points;*/
+          svgD['points'] = points;
           return svgD;
         }
       }
 
       //inits chart
-      self.lineFunc = new generate(data, "#LINE", "linear",10);
+      self.lineFunc = new generate(data, "#LINE", "linear",30);
     },
     checkOpt: function (e) {
       var self = this;

@@ -58,32 +58,6 @@ html(lang='en')
             h5.no-margin.m-b Sensor People Counting Monitor
           .panel-body
             #sensor-count-multi-d3(style='height:400px;')
-      .col-sm-12.col-md-8
-        .panel.panel-card
-          .panel-title
-            h5.no-margin.m-b click line chart
-          .panel-body
-            .panel-checkbox-xs.visible-xs-block.visible-sm-block
-              p 5개 이하 선택
-                input#line_ampere.scatter_checkbox(type='checkbox', name='ampere', value='1', v-on='click:checkOpt', checked='true')
-                text  ampere
-                |  
-                input#line_voltage.scatter_checkbox(type='checkbox', name='voltage', value='2', v-on='click:checkOpt', checked='true')
-                text  voltage
-                |  
-                input#line_active_power.scatter_checkbox(type='checkbox', name='active_power', value='3', v-on='click:checkOpt')
-                text  active_power
-                |  
-                input#line_apparent_power.scatter_checkbox(type='checkbox', name='apparent_power', value='4', v-on='click:checkOpt', checked='true')
-                text  apparent_power
-                |  
-                input#line_reactive_power.scatter_checkbox(type='checkbox', name='reactive_power', value='5', v-on='click:checkOpt')
-                text  reactive_power
-                |  
-                input#line_power_factor.scatter_checkbox(type='checkbox', name='power_factor', value='6', v-on='click:checkOpt')
-                text  power_factor
-            .col-xm-12.col-sm-12.col-md-10.col-xs-12
-              #path_check(style='width:100%;height:370px;')         
     script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
     script(src="/assets/scripts/libs/jquery-2.2.3.min.js")
     script(src="/assets/scripts/libs/bootstrap.min.js")

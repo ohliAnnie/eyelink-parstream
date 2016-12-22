@@ -15,22 +15,22 @@ html(lang='en')
           .panel-body
             .panel-checkbox-xs.visible-xs-block.visible-sm-block
               p 5개 이하 선택
-                input#ampere.scatter_checkbox(type='checkbox', name='ampere', value='1', v-on='click:checkOpt', checked='true')
+                input#ampere.click_checkbox(type='checkbox', name='ampere', value='1', v-on='click:checkOpt', checked='true')
                 text  ampere
                 |  
-                input#voltage.scatter_checkbox(type='checkbox', name='voltage', value='2', v-on='click:checkOpt', checked='true')
+                input#voltage.click_checkbox(type='checkbox', name='voltage', value='2', v-on='click:checkOpt', checked='true')
                 text  voltage
                 |  
-                input#active_power.scatter_checkbox(type='checkbox', name='active_power', value='3', v-on='click:checkOpt')
+                input#active_power.click_checkbox(type='checkbox', name='active_power', value='3', v-on='click:checkOpt')
                 text  active_power
                 |  
-                input#apparent_power.scatter_checkbox(type='checkbox', name='apparent_power', value='4', v-on='click:checkOpt', checked='true')
+                input#apparent_power.click_checkbox(type='checkbox', name='apparent_power', value='4', v-on='click:checkOpt', checked='true')
                 text  apparent_power
                 |  
-                input#reactive_power.scatter_checkbox(type='checkbox', name='reactive_power', value='5', v-on='click:checkOpt')
+                input#reactive_power.click_checkbox(type='checkbox', name='reactive_power', value='5', v-on='click:checkOpt')
                 text  reactive_power
                 |  
-                input#power_factor.scatter_checkbox(type='checkbox', name='power_factor', value='6', v-on='click:checkOpt')
+                input#power_factor.click_checkbox(type='checkbox', name='power_factor', value='6', v-on='click:checkOpt')
                 text  power_factor
             .col-xm-12.col-sm-12.col-md-10.col-xs-12
               #LINE(style='width:100%;height:370px;')
@@ -38,4 +38,4 @@ html(lang='en')
     script(src="/assets/scripts/libs/jquery-2.2.3.min.js")
     script(src="/assets/scripts/libs/bootstrap.min.js")
     script(src='/assets/annie/js/vue.min.js')
-    script(src='/scripts/lineCheck.js')
+    script(src='/scripts/lineCheck_tip.js')
