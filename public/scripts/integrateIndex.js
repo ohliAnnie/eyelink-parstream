@@ -1,44 +1,229 @@
-
 d3.json("/reports/restapi/testData", function(err, data) {
   if (err) throw error;
-
   var numberFormat = d3.format('.2f');
-        /*var t = new Date().toString().split(" ");
-        var time = t[4];
-        var tt = time.split(":");
-        var hour = tt[0];
-        var min = tt[1];
-        var sec = tt[2];*/
 
-        var first = 0;
-          // Data Setting
-          data.rtnData.forEach(function(d) {            
-            var a = d.event_time.split(" ");
-            var b = a[1].split(".");
-            d.time = b[0];                 
-            var c = d.time.split(":");            
-            d.hAxis  = c[0];
-            d.mAxis = c[1];
-            d.sAxis = c[2];
-            d.ampere = numberFormat(d.ampere);
-            d.voltage = numberFormat(d.voltage);
-            d.active_power = numberFormat(d.active_power);
-            d.apparent_power = numberFormat(d.apparent_power);
-            d.reactive_power = numberFormat(d.reactive_power);
-            d.power_factor = numberFormat(d.power_factor);
+  var first = 0;
+// Data Setting
+  data.rtnData.forEach(function(d) {            
+    var a = d.event_time.split(" ");
+    var b = a[1].split(".");
+    d.time = b[0];                 
+    var c = d.time.split(":");            
+    d.hAxis  = c[0];
+    d.mAxis = c[1];
+    d.sAxis = c[2];
+    d.ampere = numberFormat(d.ampere);
+    d.voltage = numberFormat(d.voltage);
+    d.active_power = numberFormat(d.active_power);
+    d.apparent_power = numberFormat(d.apparent_power);
+    d.reactive_power = numberFormat(d.reactive_power);
+    d.power_factor = numberFormat(d.power_factor);
+  });
+  var pData = data.rtnData;
+
+  // Vue component define
+  var demo = new Vue({
+    el: '#table',
+    data: {
+      people_count: 200,
+      lineCategory: ['ampere', 'voltage', 'active_power', 'apparent_power', 'reactive_power', 'power_factor'],
+      selectCate: ['ampere', 'voltage', 'apparent_power'],
+      lineFunc: null
+    },
+    methods: {
+      displayLine: function() {
+        var self = this;
+        var input = 0;
+        var data = [];
+        var hAxis = pData[input]['hAxis'], mAxis = pData[input]['mAxis'], sAxis = pData[input]['sAxis'];
+
+        for(var i=0; i<60; i++) {      
+          var tAxis = hAxis + ":" + mAxis + ":" + sAxis;
+          if(tAxis == pData[input]['time']) {
+              data.push({time:pData[input]['time'], ampere:pData[input]['ampere'], voltage:pData[input]['voltage'], active_power:pData[input]['active_power'], apparent_power:pData[input]['apparent_power'] , reactive_power:pData[input]['reactive_power'], power_factor:pData[input++]['power_factor']});
+            } else {
+             data.push({time:tAxis, ampere:0, voltage:0, active_power:0, apparent_power:0, reactive_power:0, power_factor:0});
+           }
+          if(mAxis === 59 && sAxis === 59) {
+            hAxis++;
+            mAxis = '0' + 0;
+            sAxis = '0' + 0;
+          } else if(sAxis === 59) {
+            mAxis++;
+            if(mAxis < 10) {            mAxis = '0' + mAxis;          }
+            sAxis = '0' +0;
+          } else {
+            sAxis++;
+            if(sAxis < 10) {            sAxis = '0' + sAxis;          }
+          }
+        }
+        
+              //generation function
+      function generate(data, id, lineType, axisNum) {
+        var margin = {top: 20, right: 18, bottom: 35, left: 28},
+        width = $(id).width() - margin.left - margin.right,
+        height = $(id).height() - margin.top - margin.bottom;
+
+        var parseDate = d3.time.format("%H:%M:%S").parse;
+        var legendSize = 10,
+               color = d3.scale.category20();
+
+        var x = d3.time.scale().range([0, width]);
+        var y = d3.scale.linear().rangeRound([height, 0]);
+
+        var ddata = (function() {
+          var temp = {}, seriesArr = [];
+
+          self.lineCategory.forEach(function (name) {
+            temp[name] = {category: name, values:[]};
+            seriesArr.push(temp[name]);
           });
-          var pData = data.rtnData;
 
-// Vue component define
-var demo = new Vue({
-  el: '#table',
-  data: {
-    people_count: 200,
-    scatterCategory: ['ampere', 'voltage', 'active_power', 'apparent_power', 'reactive_power', 'power_factor'],
-    selectScaCate: ['ampere', 'voltage', 'apparent_power'],
-    sensorDockerFunc: null
-  },
-  methods: {
+          data.forEach(function (d) {
+            self.lineCategory.map(function (name) {
+              temp[name].values.push({'category': name, 'time': parseDate(d['time']), 'num': d[name]});
+            });
+          });
+
+          return seriesArr;
+        })();
+
+        x.domain( d3.extent(data, function(d) { return parseDate(d['time']); }) );
+        y.domain([0, 200]);
+
+        //data.length/10 is set for the garantte of timeseries's fitting effect in svg chart
+        var xAxis = d3.svg.axis()
+        .scale(x)
+        .ticks(d3.time.seconds, Math.floor(data.length / axisNum))
+        .tickSize(-height)
+        .tickPadding([6])
+        .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+        .scale(y)
+        .ticks(10)
+        .tickSize(-width)
+        .orient("left");            
+
+        d3.select('#svg-line').remove();
+
+        var svg = d3.select(id).append("svg")
+            .attr("id", "#svg-line")
+            .attr("width", width + margin.right + margin.left)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("id", "line-x-axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+
+       var line = d3.svg.line()
+          .interpolate(lineType)
+          .x(function(d) { return x(d['time']); })
+          .y(function(d) { return y(d['num']); });
+       
+        var path = svg.append("g")
+            .attr("class", "click_path");
+
+        path.selectAll(".click_line")
+          .data(ddata)
+          .enter()
+          .append("path")             
+          .attr("class", function (d) {          
+            return "click_line click_line_" + d['category']; })
+          .attr("d", function(d) { return line(d['values']); })         
+           .style("display", function (d) {
+              //to check if the checkbox has been selected and decide whether to show it out
+              //use display:none and display:inherit to control the display of scatter dots
+              if ($("#"+d['category']).prop("checked"))
+                return 'inherit';
+              else
+                return 'none';
+            })
+          .attr("stroke",function (d) { return color(d['category']); });
+
+           d3.selectAll('.click_legend').remove();
+
+           var legend = svg.append('g')
+           .attr('class', 'click_legend');
+
+          var singLegend = legend.selectAll('.path_legend')
+           .data(self.selectCate)
+           .enter()
+           .append('g')
+           .attr('class', 'path_legend')
+           .attr('transform', function(d, i) {
+            return 'translate(' + ((5 + (width-20) / 6) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
+          });
+
+           singLegend.append('g:rect')
+           .attr('width', legendSize)
+           .attr('height', legendSize)
+           .style('fill', function(d) {            return color(d);          });
+
+           singLegend.append('g:text')
+           .attr('x', legendSize*1.4)
+           .attr('y', legendSize/1.3)
+           .attr('font-size', function() {
+            if ($(id).width() > 415)
+              return '.9em';
+            else {
+              return '.55em';
+            }
+          })
+           .text(function(d) {            return d;          });
+
+          //draw the rect for legends
+        var rect = svg.append('g')
+        .attr("class", 'legendOuter');
+
+        rect.selectAll('.legendRect')
+        .data(self.selectCate)
+        .enter()
+        .append('rect')
+        .attr('class', 'legendRect')
+        .attr('width', (width - 20) / 6)
+        .attr('height', legendSize + 10)
+        .attr('transform', function(d, i) {
+          return 'translate(' + (i * (5 + (width-20) / 6)) + ',' + (height + margin.bottom - legendSize - 20) + ')';
+        });
+
+       this.getOpt = function() {
+          var axisOpt = new Object();
+          axisOpt['x'] = x;
+          axisOpt['y'] = y;
+          axisOpt['xAxis'] = xAxis;
+          axisOpt['legendSize'] = legendSize;
+          axisOpt['height'] = height;
+          axisOpt['width'] = width;
+          axisOpt['margin'] = margin;
+          return axisOpt;
+        }
+
+        this.getSvg = function() {
+          var svgD = new Object();
+          svgD['svg'] = svg;
+          svgD['path'] = path;          
+          svgD['line'] = line;
+          svgD['rect'] = rect;
+          svgD['legend'] = legend;
+          svgD['color']= color;
+/*          svgD['points'] = points;*/
+          return svgD;
+        }
+      }
+
+      //inits chart
+      self.lineFunc = new generate(data, "#LINE", "linear",30);
+    },
+
     displayMem: function () {
       var input = 0;
       var data = [];
@@ -383,533 +568,6 @@ var demo = new Vue({
         redraw(data, "#sensor-mem-area-d3", sca.getOpt()['x'], sca.getOpt()['y'], sca.getOpt()['xAxis'], sca.getSvg()['svg'], sca.getSvg()['area'], sca.getSvg()['path'], sca.getSvg()['points'], sca.getOpt()['height'], 8);
       }, 1000);
     },
-
-    displayDocker: function () {
-      var self = this;
-      var input = 0;      
-      var hAxis = pData[input]['hAxis'], mAxis = pData[input]['mAxis'], sAxis = pData[input]['sAxis'];            
-      var data = [];
-
-      for(var i = 0; i<9; i++) {
-        var tAxis = hAxis + ':' + mAxis + ':' + sAxis;        
-        if(tAxis == pData[input]['time']) {
-          data.push({time:pData[input]['time'], ampere:pData[input]['ampere'], voltage:pData[input]['voltage'], active_power:pData[input]['active_power'], apparent_power:pData[input]['apparent_power'] , reactive_power:pData[input]['reactive_power'], power_factor:pData[input++]['power_factor']});
-        } else {
-          data.push({time:tAxis, ampere:0, voltage:0, active_power:0, apparent_power:0, reactive_power:0, power_factor:0});
-        }
-        if(mAxis === 59 && sAxis === 59) {
-          hAxis++;
-          mAxis = '0' + 0;
-          sAxis = '0' + 0;
-        } else if(sAxis === 59) {
-          mAxis++;
-          if(mAxis < 10) {            mAxis = '0' + mAxis;          }
-          sAxis = '0' +0;
-        } else {
-          sAxis++;
-          if(sAxis < 10) {            sAxis = '0' + sAxis;          }
-        }
-      }
-
-      //generation function
-      function generate(data, id, axisNum) {
-        var margin = {top: 14, right: 20, bottom: 60, left: 30},
-        width = $(id).width() - margin.left - margin.right,
-        height = $(id).height() - margin.top - margin.bottom;
-
-        var parseDate = d3.time.format("%H:%M:%S").parse;
-
-        var legendSize = Math.floor(width / 27.5),
-        color = d3.scale.category20();
-
-        var x = d3.time.scale().range([0, width]),
-        y = d3.scale.linear().rangeRound([height, 0]);
-
-        //the radius of circle can be adjustable
-        var r = d3.scale.linear()
-        .domain([0, 20])
-        .range([0, width / 45]);
-
-        //deal with the datum, and store them into ddata
-        var ddata = [];        
-        data.forEach(function(d) {          
-          var dinput = 0;
-          ddata.push({'time': parseDate(d['time']), 'issue': self.scatterCategory[dinput++], 'num': d['ampere'] });
-          ddata.push({'time': parseDate(d['time']), 'issue': self.scatterCategory[dinput++], 'num': d['voltage'] });
-          ddata.push({'time': parseDate(d['time']), 'issue': self.scatterCategory[dinput++], 'num': d['active_power'] });
-          ddata.push({'time': parseDate(d['time']), 'issue': self.scatterCategory[dinput++], 'num': d['apparent_power'] });
-          ddata.push({'time': parseDate(d['time']), 'issue': self.scatterCategory[dinput++], 'num': d['reactive_power'] });
-          ddata.push({'time': parseDate(d['time']), 'issue': self.scatterCategory[dinput++], 'num': d['power_factor'] });
-        });
-
-        x.domain( d3.extent(ddata, function(d) { return d['time']; }) );
-        y.domain([0,200]);
-
-        var tranLength = (x(parseDate('00:00:10'))-x(parseDate('00:00:09'))) / 4;
-
-        var line = d3.svg.line()
-        .interpolate("monotone")
-        .x(function(d) { return x(d['time']); })
-        .y(function(d) { return y(d['reactive_power']); });
-
-        var xAxis = d3.svg.axis()
-        .scale(x)
-        .orient("bottom")
-        .ticks(d3.time.seconds, Math.floor(data.length / axisNum))
-        .tickPadding([6])
-        .tickSize(-height);
-
-        var yAxis = d3.svg.axis()
-        .scale(y)
-        .orient("left")
-        .ticks(10)
-        .tickPadding([8])
-        .tickSize(-width);
-
-        d3.select('#svg-docker').remove();
-
-        var svg = d3.select(id).append("svg")
-        .attr('id', "#svg-docker")
-        .attr("width", width+margin.left+margin.right)
-        .attr("height", height+margin.top+margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        svg.append("g")
-        .attr("class", "x axis")
-        .attr("id", "docker-x-axis")
-        .attr("transform", "translate(0, " + height + ")")
-        .call(xAxis);
-
-        svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis);
-
-        var path = svg.append("g")
-        .attr("class", "countPath");
-
-        path.append("path")
-        .attr("d", line(ddata))
-        .attr("class", 'countRemainPath');
- //           .attr('stroke', legendColor['reactive_power']);
-
-
- var dots = svg.append("g")
- .attr("class", "scatter_dots");
-
- dots.selectAll(".scatter_circle")
- .data(ddata)
- .enter()
- .append("circle")
- .attr("class", function (d) { return "scatter_circle scatter_circle_" + d['issue']; })
- .attr("cx", function (d) { return x(d['time']); })
- .attr("cy", function (d) { return y(d['num']); })
- .attr("r", function (d) { return r(10); })
- .style("display", function (d) {
-              //to check if the checkbox has been selected and decide whether to show it out
-              //use display:none and display:inherit to control the display of scatter dots
-              if ($("#"+d['issue']).prop("checked"))
-                return 'inherit';
-              else
-                return 'none';
-            })
- .style("fill", function (d) { return color(d['issue']) })
- .on("mouseover", function (d) {
-  if ($("#"+d['issue']).prop("checked")) {
-    $(this).tooltip({
-      'container': 'body',
-      'placement': 'left',
-      'title': d["issue"] + " | " +d['num'],
-      'trigger': 'hover'
-    })
-    .tooltip('show');
-  }
-})
- .on("mouseout", function(d) {
-  $(this).tooltip('destroy');
-});
-
- d3.selectAll('.scatter_legend').remove();
-
- var legend = svg.append('g')
- .attr('class', 'scatter_legend');
-
- var singLegend = legend.selectAll('.docker_legend')
- .data(self.selectScaCate)
- .enter()
- .append('g')
- .attr('class', 'docker_legend')
- .attr('transform', function(d, i) {
-  return 'translate(' + ((5 + (width-20) / 5) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
-});
-
- singLegend.append('g:rect')
- .attr('width', legendSize)
- .attr('height', legendSize)
- .style('fill', function(d) {
-  return color(d);
-});
-
- singLegend.append('g:text')
- .attr('x', legendSize*1.4)
- .attr('y', legendSize/1.3)
- .attr('font-size', function() {
-  if ($(id).width() > 415)
-    return '.9em';
-  else {
-    return '.55em';
-  }
-})
- .text(function(d) {
-  return d;
-});
-
-        //draw the rect for legends
-        var rect = svg.append('g')
-        .attr("class", 'legendOuter');
-
-        rect.selectAll('.legendRect')
-        .data(self.selectScaCate)
-        .enter()
-        .append('rect')
-        .attr('class', 'legendRect')
-        .attr('width', (width - 20) / 5)
-        .attr('height', legendSize + 10)
-        .attr('transform', function(d, i) {
-          return 'translate(' + (i * (5 + (width-20) / 5)) + ',' + (height + margin.bottom - legendSize - 20) + ')';
-        });
-
-        function xTransLen(t) {
-          return x(parseDate(t)) + tranLength;
-        }
-
-        this.getOpt = function() {
-          var axisOpt = new Object();
-          axisOpt['x'] = x;
-          axisOpt['xAxis'] = xAxis;
-          axisOpt['y'] = y;
-          axisOpt['r'] = r;
-          axisOpt['legendSize'] = legendSize;
-          axisOpt['height'] = height;
-          axisOpt['width'] = width;
-          axisOpt['margin'] = margin;
-          return axisOpt;
-        }
-
-        this.getSvg = function() {
-          var svgD = new Object();
-          svgD['svg'] = svg;
-          svgD['dots'] = dots;
-          svgD['color'] = color;
-          svgD['legend'] = legend
-          svgD['rect'] = rect;
-          svgD['path'] = path;
-          svgD['line'] = line;
-          return svgD;
-        }
-      }
-
-/*      //redraw function
-      function redraw(data, id, svg, dots, color, x, xAxis, y, r, init, axisNum) {
-        //update the axis
-        var parseDate = d3.time.format("%H:%M:%S").parse;
-
-        //parse the data
-        var ddata = [];
-        data.forEach(function(d) {          
-            var dinput = 0;
-            ddata.push({'time': parseDate(d['time']), 'issue': self.scatterCategory[dinput++], 'num': d['ampere'] });
-            ddata.push({'time': parseDate(d['time']), 'issue': self.scatterCategory[dinput++], 'num': d['voltage'] });
-            ddata.push({'time': parseDate(d['time']), 'issue': self.scatterCategory[dinput++], 'num': d['active_power'] });
-            ddata.push({'time': parseDate(d['time']), 'issue': self.scatterCategory[dinput++], 'num': d['apparent_power'] });
-            ddata.push({'time': parseDate(d['time']), 'issue': self.scatterCategory[dinput++], 'num': d['reactive_power'] });
-            ddata.push({'time': parseDate(d['time']), 'issue': self.scatterCategory[dinput++], 'num': d['power_factor'] });
-        });
-
-        x.domain( d3.extent(ddata, function(d) { return d['time']; }) );
-        xAxis.ticks(d3.time.seconds, Math.floor(data.length / axisNum));
-
-        var tranLength = (x(parseDate('00:00:10'))-x(parseDate('00:00:09'))) / 4;
-
-        line.x(function(d) { return xTransLen(d['time']); });
-
-        //update the axis
-        svg.select("#docker-x-axis")
-            .transition()
-            .duration(200)
-            .ease("sin-in-out")
-            .call(xAxis);
-
-        //update the dot
-        dots.selectAll(".scatter_circle")
-            .data(ddata)
-            .transition()
-            .duration(200)
-            .attr("cx", function (d) {
-              return x(d['time']);
-            })
-            .style("display", function (d) {
-              //to check if the checkbox has been selected and decide whether to show it out
-              //use display:none and display:inherit to control the display of scatter dots
-              if ($("#"+d['issue']).prop("checked"))
-                return 'inherit';
-              else
-                return 'none';
-            });
-        //////////////////////////
-
-        //draw new dot
-        dots.selectAll(".scatter_circle")
-            .data(ddata)
-            .enter()
-            .append("circle")
-            .attr("class", function (d) { return "scatter_circle scatter_circle_" + d['issue']; })
-            .attr("cx", function (d) { return x(d['time']); })
-            .attr("cy", function (d) { return y(d['num']); })
-            .attr("r", function (d) { return r(10); })
-            .style("display", function (d) {
-              //to check if the checkbox has been selected and decide whether to show it out
-              //use display:none and display:inherit to control the display of scatter dots
-              if ($("#"+d['issue']).prop("checked"))
-                return 'inherit';
-              else
-                return 'none';
-            })
-            .style("fill", function (d) { return color(d['issue']) })
-            .on("mouseover", function (d) {
-              if ($("#"+d['issue']).prop("checked")) {
-                $(this).tooltip({
-                  'container': 'body',
-                  'placement': 'left',
-                  'title': d["issue"] + " | " +d['num'],
-                  'trigger': 'hover'
-                })
-                    .tooltip('show');
-              }
-            })
-            .on("mouseout", function(d) {
-              $(this).tooltip('destroy');
-            });
-
-        //remove old dot
-        dots.selectAll(".scatter_circle")
-            .data(ddata)
-            .exit()
-            .transition()
-            .duration(500)
-            .remove();
-
-        d3.selectAll('.countPath').remove();
-
-        var path = svg.append("g")
-            .attr("class", "countPath");
-
-        path.append("path")
-            .attr("d", line(ddata))
-            .attr("class", 'countRemainPath')
-       //     .attr('stroke', legendColor['reactive_power']);        
-
-        //redraw legend
-        self.legendRedraw(self.selectScaCate, id, init.getSvg()['legend'], init.getSvg()['rect'], init.getOpt()['legendSize'], init.getOpt()['margin'], init.getOpt()['height'], init.getOpt()['width'], init.getSvg()['color']);
-      }*/
-
-      //inits chart
-      self.sensorDockerFunc = new generate(data, "#sensor-docker-scatterplot-d3", 5);
-
-/*      //dynamic data and chart update
-      setInterval(function() {
-        //update donut data
-        var tAxis = hAxis + ":" + mAxis + ":" + sAxis;
-        console.log(tAxis);
-        console.log(pData[input]['time']);
-        if(pData[input]['time'] ==  tAxis) {
-          console.log('in');
-          data.push({time:pData[input]['time'], ampere:pData[input]['ampere'], voltage:pData[input]['voltage'], active_power:pData[input]['active_power'], apparent_power:pData[input]['apparent_power'] , reactive_power:pData[input]['reactive_power'], power_factor:pData[input++]['power_factor']});
-        } else {
-          data.push({time:tAxis, ampere:0, voltage:0, active_power:0, apparent_power:0, reactive_power:0, power_factor:0})
-        }
-        if(mAxis === 59 && sAxis === 59) {
-          hAxis++;
-          mAxis = '0' + 0;
-          sAxis = '0' + 0;
-        } else if(sAxis === 59) {
-          mAxis++;
-          if(mAxis < 10) {            mAxis = '0' + mAxis;          }
-          sAxis = '0' +0;
-        } else {
-          sAxis++;
-          if(sAxis < 10) {            sAxis = '0' + sAxis;          }
-        }
-
-        if (Object.keys(data).length === 15) data.shift();
-
-        redraw(data, "#sensor-docker-scatterplot-d3", self.sensorDockerFunc.getSvg()['svg'], self.sensorDockerFunc.getSvg()['dots'], self.sensorDockerFunc.getSvg()['color'], self.sensorDockerFunc.getOpt()['x'], self.sensorDockerFunc.getOpt()['xAxis'], self.sensorDockerFunc.getOpt()['y'], self.sensorDockerFunc.getOpt()['r'], self.sensorDockerFunc, 5);
-      }, 1000);*/
-    },
- /*   displayCPU: function () {
-      var data = [
-        { inits: 'A', value: 10 },
-        { inits: 'B', value: 100 },
-        { inits: 'C', value: 60 },
-        { inits: 'D', value: 10 },
-        { inits: 'E', value: 80 },
-        { inits: 'F', value: 100 }
-      ];
-
-      var category = ['A', 'B', 'C', 'D', 'E', 'F'],
-          cateColor = ["#fff799", "#ffee00" , "#0068b7", '#00b7ee', '#a5d4f3', '#eff9ff'];
-
-      //generation function
-      function generate(data, id) {
-        var margin = {top: 20, right: 0, bottom: 40, left: 0},
-            width = $(id).width() - margin.left - margin.right,
-            height = $(id).height() - margin.top - margin.bottom;
-
-        var radius = Math.min(width, height) / 2,
-            innerRadius = radius * 0.25,
-            outerRadius = radius * 0.75;
-
-        var legendRectSize = radius/8,
-            legendSpacing = radius/5;
-
-        var color = d3.scale.ordinal()
-            .domain(category)
-            .range(cateColor);
-
-        var formatPercent = d3.format(".0%");
-
-        var pie = d3.layout.pie()
-            .value(function(d) {return d.value; })
-            .sort(null);
-
-        var arc = d3.svg.arc()
-            .innerRadius(innerRadius)
-            .outerRadius(outerRadius);
-
-        var svgX = (width+margin.right+margin.left) / 2,
-            svgY = (radius*2 + margin.top*2) / 2;
-
-        var svg = d3.select(id).append("svg")
-            .attr("width", width+margin.right+margin.left)
-            .attr("height", height+margin.top+margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + svgX + "," + svgY + ")");
-
-        path = svg.datum(data).selectAll(".solidArc")
-            .data(pie)
-            .enter()
-            .append("path")
-            .attr("fill", function(d) {
-              return color(d.data.inits);
-            })
-            .attr("class", "solidArc")
-            .attr("stroke", "none")
-            .attr("d", arc)
-            .each(function(d) {
-              this._current=d;
-            })
-            .on('mouseover', function(d) {
-              console.log(d);
-
-              d3.select(this).transition().duration(200).attr("d", arc.innerRadius(innerRadius).outerRadius(outerRadius / 0.75 * 0.9));
-
-              //count the sum
-              var count = 0;
-              for (var i = 0; i < category.length; i++) {
-                count += data[i]['value'];
-              }
-
-              svg.append("svg:text")
-                  .attr("class", "donutCenterText")
-                  .attr("dy", "-.3em")
-                  .attr("text-anchor", "middle")
-                  .transition().duration(200)
-                  .text(d['data']['inits']);
-
-              svg.append("svg:text")
-                  .attr("class", "donutCenterText")
-                  .attr("dy", ".8em")
-                  .attr("text-anchor", "middle")
-                  .transition().duration(200)
-                  .text(formatPercent(d['value'] / count));
-
-            })
-            .on('mouseout', function(d) {
-              d3.select(this).transition().duration(200).attr("d", arc.innerRadius(innerRadius).outerRadius(outerRadius));
-
-              d3.selectAll('.donutCenterText').remove();
-            });
-
-        //legend rendering
-        var legend = svg.selectAll('.legend')
-            .data(color.domain())
-            .enter()
-            .append('g')
-            .attr("id", function(d) {
-              return "legend-" + d;
-            })
-            .attr('class', 'legend')
-            .attr('transform', function(d, i) {
-              var horz = (i-2.8)*(legendSpacing+legendRectSize);
-              var vert =  radius + margin.bottom / 4;
-              return 'translate(' + horz + ',' + vert + ')';
-            });
-
-        legend.append('rect')
-            .attr('width', legendRectSize)
-            .attr('height', legendRectSize)
-            .style('fill', color)
-            .style('stroke', color);
-
-        legend.append('text')
-            .data(data)
-            .attr('x', legendRectSize*1.2)
-            .attr('y', legendRectSize/1.3)
-            .text(function(d) {
-              //console.log(d);
-              return d.inits; });
-
-        this.getPath = function() {
-          return path;
-        }
-
-        this.getArc = function() {
-          return d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius);
-        }
-      }
-
-      //redraw function
-      function redraw(data, path, arc) {
-        //for the transition effect of donut chart
-        var arcTween = function arcTween(a) {
-          var i = d3.interpolate(this._current, a);
-          this._current = i(0);
-          return function(t) {
-            return arc(i(t));
-          };
-        }
-
-        var donut = d3.layout.pie()
-            .value(function(d) {return d.value; })
-            .sort(null);
-
-        donut.value(function(d) { return d['value']; });
-        path = path.datum(data).data(donut).attr("d", arc); // compute the new angles
-        path.transition().duration(750).attrTween("d", arcTween);
-      }
-
-   //inits chart
-      var sca = new generate(data, "#sensor-cpu-donut-d3");
-
-      //dynamic data and chart update
-      setInterval(function() {
-        //update donut data
-        for (var i=0; i<Object.keys(data).length; i++){
-          data[i].value = Math.floor(Math.random()*100);
-        }
-        redraw(data, sca.getPath(), sca.getArc());
-      }, 5000);
-    },*/
     displayNet: function () {
       var input = 0;
       var data = [];
@@ -3216,46 +2874,44 @@ var demo = new Vue({
 
       //check the Scatter Choice and Refresh the charts
       var count = 0;
-      for (var i=0; i < self.scatterCategory.length; i++) {
-        if ($("#" + self.scatterCategory[i]).prop("checked"))
+      for (var i=0; i < self.lineCategory.length; i++) {
+        if ($("#" + self.lineCategory[i]).prop("checked"))
           count++;
       }
 
       //judge if the checked checkbox reach the max limitation
-      if (count>5) {
+      if (count>10) {
         alert("NOTICE: The MAXIMUM selection should be FIVE.");
         e.target.checked = false;
       }
 
-      self.selectScaCate = [];
+      self.selectCate = [];
 
-      for (var i=0; i<self.scatterCategory.length; i++) {
-        if ($("#"+self.scatterCategory[i]).prop("checked")) {
-          self.selectScaCate.push(self.scatterCategory[i]);
-          d3.selectAll(".scatter_circle_"+self.scatterCategory[i]).transition().duration(300).style("display", 'inherit');
+      for (var i=0; i<self.lineCategory.length; i++) {
+        if ($("#"+self.lineCategory[i]).prop("checked")) {
+          self.selectCate.push(self.lineCategory[i]);
+          d3.selectAll(".click_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'inherit');
         }
         else
-          d3.selectAll(".scatter_circle_"+self.scatterCategory[i]).transition().duration(300).style("display", 'none');
+          d3.selectAll(".click_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'none');
       }
 
       //redraw the legend and chart
-      this.legendRedraw(self.selectScaCate, "#sensor-docker-scatterplot-d3", self.sensorDockerFunc.getSvg()['legend'], self.sensorDockerFunc.getSvg()['rect'], self.sensorDockerFunc.getOpt()['legendSize'], self.sensorDockerFunc.getOpt()['margin'], self.sensorDockerFunc.getOpt()['height'], self.sensorDockerFunc.getOpt()['width'], self.sensorDockerFunc.getSvg()['color']);
+      this.legendRedraw(self.selectCate, "#LINE", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
     },
     legendRedraw: function (selectCate, id, legend, rect, legendSize, margin, height, width, color) {
       //update the scatter plot legend
-      legend.selectAll('.docker_legend')
+      legend.selectAll('.path_legend')
       .data(selectCate)
         // .transition()
         // .duration(200)
         .attr('transform', function(d, i) {
-          return 'translate(' + ((5 + (width-20) / 5) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
+          return 'translate(' + ((5 + (width-20) / 6) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
         })
 
         legend.selectAll('rect')
         .data(selectCate)
-        .style('fill', function(d) {
-          return color(d);
-        });
+        .style('fill', function(d) {          return color(d);        });
 
         legend.selectAll('text')
         .data(selectCate)
@@ -3268,18 +2924,16 @@ var demo = new Vue({
             return '.55em';
           }
         })
-        .text(function(d) {
-          return d;
-        });
+        .text(function(d) {          return d;        });
 
       //create new legends
-      var singLegend = legend.selectAll('.docker_legend')
+      var singLegend = legend.selectAll('.path_legend')
       .data(selectCate)
       .enter()
       .append('g')
-      .attr('class', 'docker_legend')
+      .attr('class', 'path_legend')
       .attr('transform', function(d, i) {
-        return 'translate(' + ((5 + (width-20) / 5) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
+        return 'translate(' + ((5 + (width-20) / 6) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
       });
 
       singLegend.append('rect')
@@ -3299,12 +2953,10 @@ var demo = new Vue({
           return '.55em';
         }
       })
-      .text(function(d) {
-        return d;
-      });
+      .text(function(d) {        return d;      });
 
       //remove the old legends
-      legend.selectAll('.docker_legend')
+      legend.selectAll('.path_legend')
       .data(selectCate)
       .exit()
       .remove();
@@ -3313,7 +2965,7 @@ var demo = new Vue({
       rect.selectAll('.legendRect')
       .data(selectCate)
       .attr('transform', function(d, i) {
-        return 'translate(' + ((5 + (width-20) / 5) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
+        return 'translate(' + ((5 + (width-20) / 6) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
       });
 
       rect.selectAll('.legendRect')
@@ -3321,451 +2973,26 @@ var demo = new Vue({
       .enter()
       .append('rect')
       .attr('class', 'legendRect')
-      .attr('width', (width - 20) / 5)
+      .attr('width', (width - 20) / 6)
       .attr('height', legendSize + 10)
       .attr('transform', function(d, i) {
-        return 'translate(' + ((5 + (width-20) / 5) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
+        return 'translate(' + ((5 + (width-20) / 6) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
       });
 
       rect.selectAll('.legendRect')
       .data(selectCate)
       .exit()
       .remove();
-    },
- /*   displayDCPU: function () {
-      var data = 55;
-
-      //generation function
-      function generate(data, id) {
-        var margin = {top: 45, right: 10, bottom: 10, left: 10},
-            width = $(id).width() - margin.left - margin.right,
-            height = $(id).height() - margin.top - margin.bottom;
-
-        var svg = d3.select(id).append("svg")
-            .attr("width", width+margin.right+margin.left)
-            .attr("height", height+margin.top+margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        for (var i=0; i<20; i++) {
-          svg.append('rect')
-              .attr("width", (width - 84) / 20)
-              .attr("height", height * 0.55)
-              .attr('id', 'docker_cpu_rect_' + (i+1))
-              .attr('transform', "translate(" + (i * (width - 4) / 20) + ",0)" );
-        }
-
-        var i=0;
-        var temp = Math.floor(data / 5);
-        if (temp === 0 && data !== 0)
-          temp =1;
-
-        for ( ; i < temp; i++) {
-          svg.select('#docker_cpu_rect_' + (i+1)).style('fill', '#00afff');
-        }
-
-        for ( ; i<20; i++) {
-          svg.select('#docker_cpu_rect_' + (i+1)).style('fill', '#f3f3f3');
-        }
-
-        svg.selectAll('.dockerCpuText').remove();
-
-        svg.append('text')
-            .attr('class', 'dockerCpuText')
-            .attr('x', 0)
-            .attr('y', height * 0.8 + margin.top)
-            .text(data + '%');
-      }
-
-      //redraw function
-      function redraw(data) {
-        //format of time data
-        var i=0;
-        var temp = Math.floor(data / 5);
-        if (temp === 0 && data !== 0)
-          temp =1;
-
-        for ( ; i < temp; i++) {
-          d3.select('#docker_cpu_rect_' + (i+1)).style('fill', '#00afff');
-        }
-
-        for ( ; i<20; i++) {
-          d3.select('#docker_cpu_rect_' + (i+1)).style('fill', '#f3f3f3');
-        }
-
-        d3.select('.dockerCpuText').text(data + '%');
-      }
-
-      //inits chart
-      var sca = new generate(data, "#docker-cpu-rect-d3");
-
-      //dynamic data and chart update
-      setInterval(function() {
-        //update donut data
-        data = Math.floor(Math.random() * 100);
-
-        redraw(data);
-      }, 1500);
-    },*/
-/*    displayDMem: function () {
-      var input = 0;
-      var data = [];
-      var hAxis = pData[input]['hAxis'], mAxis = pData[input]['mAxis'], sAxis = pData[input]['sAxis'];
-      console.log(pData[0]);
-      for(var i=0; i<9; i++) {
-        var tAxis = hAxis + ":" + mAxis + ":" + sAxis;        
-        if(tAxis == pData[input]['time']) {
-          console.log(pData[0]);          
-          data.push({time: pData[input]['time'], ampere: pData[input]['ampere'], voltage: pData[input]['voltage'], apparent_power: pData[input++]['apparent_power']});        
-        } else {
-          data.push({time: tAxis, ampere: 0, voltage: 0, apparent_power: 0});
-        }
-         if(mAxis === 59 && sAxis === 59) {
-          hAxis++;
-          mAxis=0;
-          sAxis = 0;
-        } else if(sAxis === 59) {
-          mAxis++;
-          sAxis = 0;
-        } else {
-          sAxis++;
-        }
-      }
-
-      var category = ['voltage'];
-
-      //generation function
-      function generate(data, id, axisNum) {
-        var margin = {top: 20, right: 18, bottom: 35, left: 28},
-            width = $(id).width() - margin.left - margin.right,
-            height = $(id).height() - margin.top - margin.bottom;
-
-        var parseDate = d3.time.format("%H:%M:%S").parse;
-        var formatPercent = d3.format(".0%");
-
-        var legendSize = 10,
-            legendColor = 'rgba(0, 160, 233, 0.7)';
-
-        var x = d3.time.scale()
-            .range([0, width]);
-
-        var y = d3.scale.linear()
-            .range([height, 0]);
-
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .ticks(d3.time.seconds, Math.floor(data.length/axisNum))
-            .tickSize(-height)
-            .tickPadding([6])
-            .orient("bottom");
-
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .ticks(10)
-            .tickSize(-width)
-            .tickFormat(formatPercent)
-            .orient("left");
-
-        var ddata = (function() {
-          var temp = [];
-
-          for (var i=0; i<data.length; i++) {
-            temp.push({'time': parseDate(data[i]['time']), 'ampere': data[i]['ampere'], 'voltage': data[i]['voltage'], 'apparent_power': data[i]['apparent_power']});
-          }
-
-          return temp;
-        })();
-
-        x.domain(d3.extent(ddata, function(d) { return d.time; }));
-
-        var area = d3.svg.area()
-            .x(function(d) { return x(d.time); })
-            .y0(height)
-            .y1(function(d) { return y(d['voltage']); })
-            .interpolate("cardinal");
-
-        d3.select('#svg-memD').remove();
-
-        var svg = d3.select(id).append("svg")
-            .attr("id", "svg-memD")
-            .attr("width", width+margin.right+margin.left)
-            .attr("height", height+margin.top+margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("id", "memD-x-axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis);
-
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis);
-
-        var path = svg.append("svg:path")
-            .datum(ddata)
-            .attr("class", "areaDM")
-            .attr("d", area);
-
-        var points = svg.selectAll(".gPoints")
-            .data(ddata)
-            .enter().append("g")
-            .attr("class", "gPoints");
-
-        //legend rendering
-        var legend = svg.append('g')
-            .attr('class', 'legend')
-            .attr('transform', 'translate(0,'+ (height + margin.bottom - legendSize * 1.2) +')');
-
-        legend.append('rect')
-            .attr('width', legendSize)
-            .attr('height', legendSize)
-            .style('fill', legendColor);
-
-        legend.append('text')
-            .data(ddata)
-            .attr('x', legendSize*1.2)
-            .attr('y', legendSize/1.1)
-            .text('voltage');
-
-        points.selectAll(".circle")
-            .data(ddata)
-            .enter().append("circle")
-            .attr("class", "memtipDPoints")
-            .attr("cx", function (d) {
-              return x(d.time);
-            })
-            .attr("cy", function (d) {
-              return y(d['voltage']);
-            })
-            .attr("r", "6px")
-            .on("mouseover", function (d) {
-              console.log(this);
-
-              d3.select(this).transition().duration(100).style("opacity", 1);
-
-              svg.append("g")
-                  .attr("class", "tipDot")
-                  .append("line")
-                  .attr("class", "tipDot")
-                  .transition()
-                  .duration(50)
-                  .attr("x1", x(d['time']))
-                  .attr("x2", x(d['time']))
-                  .attr("y2", height);
-
-              svg.append("polyline")      // attach a polyline
-                  .attr("class", "tipDot")  // colour the line
-                  .style("fill", "black")     // remove any fill colour
-                  .attr("points", (x(d['time'])-3.5)+","+(y(1)-2.5)+","+x(d['time'])+","+(y(1)+6)+","+(x(d['time'])+3.5)+","+(y(1)-2.5));
-
-              svg.append("polyline")      // attach a polyline
-                  .attr("class", "tipDot")  // colour the line
-                  .style("fill", "black")     // remove any fill colour
-                  .attr("points", (x(d['time'])-3.5)+","+(y(0)+2.5)+","+x(d['time'])+","+(y(0)-6)+","+(x(d['time'])+3.5)+","+(y(0)+2.5));
-
-              $(this).tooltip({
-                'container': 'body',
-                'placement': 'left',
-                'title': 'voltage' + ' | ' + formatPercent(d['voltage']),
-                'trigger': 'hover'
-              })
-                  .tooltip('show');
-            })
-            .on("mouseout",  function (d) {
-              d3.select(this).transition().duration(100).style("opacity", 0);
-
-              d3.selectAll('.tipDot').transition().duration(100).remove();
-
-              $(this).tooltip('destroy');
-            });
-
-        this.getOpt = function() {
-          var axisOpt = new Object();
-          axisOpt['x'] = x;
-          axisOpt['y'] = y;
-          axisOpt['xAxis'] = xAxis;
-          axisOpt['width'] = width;
-          axisOpt['height'] = height;
-
-          return axisOpt;
-        }
-
-        this.getSvg = function() {
-          var svgD = new Object();
-          svgD['svg'] = svg;
-          svgD['points'] = points;
-          svgD['area'] = area;
-          svgD['path'] = path;
-
-          return svgD;
-        }
-      }
-
-      //redraw function
-      function redraw(data, id, x, y, xAxis, svg, area, path, points, height, axisNum) {
-        //format of time data
-        var parseDate = d3.time.format("%H:%M:%S").parse;
-        var formatPercent = d3.format(".0%");
-
-        var ddata = (function() {
-          var temp = [];
-
-          for (var i=0; i<data.length; i++) {
-            temp.push({'time': parseDate(data[i]['time']), 'ampere': data[i]['ampere'], 'voltage': data[i]['voltage'], 'apparent_power': data[i]['apparent_power']});
-          }
-
-          return temp;
-        })();
-
-        // svg.attr("width", $(id).width())
-        //   .attr("height", $(id).height());
-
-        x.domain(d3.extent(ddata, function(d) {
-          return d['time'];
-        }));
-
-        xAxis.ticks(d3.time.seconds, Math.floor(data.length / axisNum));
-
-        svg.select("#memD-x-axis")
-            .transition()
-            .duration(200)
-            .ease("sin-in-out")
-            .call(xAxis);
-
-        //area line updating
-        path.datum(ddata)
-            .transition()
-            .duration(200)
-            .attr("class", "areaDM")
-            .attr("d", area);
-
-        //circle updating
-        points.selectAll(".memtipDPoints")
-            .data(ddata)
-            .attr("class", "memtipDPoints")
-            .attr("cx", function (d) {
-              return x(d.time);
-            })
-            .attr("cy", function (d) {
-              return y(d['ampere']);
-            })
-            .attr("r", "6px");
-
-        //draw new dot
-        points.selectAll(".memtipDPoints")
-            .data(ddata)
-            .enter().append("circle")
-            .attr("class", "memtipDPoints")
-            .attr("cx", function (d) {
-              return x(d.time);
-            })
-            .attr("cy", function (d) {
-              return y(d['ampere']);
-            })
-            .attr("r", "6px")
-            .on("mouseover", function (d) {
-              d3.select(this).transition().duration(100).style("opacity", 1);
-
-              svg.append("g")
-                  .attr("class", "tipDot")
-                  .append("line")
-                  .attr("class", "tipDot")
-                  .transition()
-                  .duration(50)
-                  .attr("x1", x(d['time']))
-                  .attr("x2", x(d['time']))
-                  .attr("y2", height);
-
-              svg.append("polyline")      // attach a polyline
-                  .attr("class", "tipDot")  // colour the line
-                  .style("fill", "black")     // remove any fill colour
-                  .attr("points", (x(d['time'])-3.5)+","+(y(1)-2.5)+","+x(d['time'])+","+(y(1)+6)+","+(x(d['time'])+3.5)+","+(y(1)-2.5));
-
-              svg.append("polyline")      // attach a polyline
-                  .attr("class", "tipDot")  // colour the line
-                  .style("fill", "black")     // remove any fill colour
-                  .attr("points", (x(d['time'])-3.5)+","+(y(0)+2.5)+","+x(d['time'])+","+(y(0)-6)+","+(x(d['time'])+3.5)+","+(y(0)+2.5));
-
-              $(this).tooltip({
-                'container': 'body',
-                'placement': 'left',
-                'title': 'ampere' + ' | ' +formatPercent(d['ampere']),
-                'trigger': 'hover'
-              })
-                  .tooltip('show');
-            })
-            .on("mouseout",  function (d) {
-              d3.select(this).transition().duration(100).style("opacity", 0);
-
-              d3.selectAll('.tipDot').transition().duration(100).remove();
-
-              $(this).tooltip('destroy');
-            });
-
-        //remove old dot
-        points.selectAll(".memtipDPoints")
-            .data(ddata)
-            .exit()
-            .transition()
-            .duration(200)
-            .remove();
-
-      }
-
-      //inits chart
-      var sca = new generate(data, "#docker-mem-area-d3", 8);
-
-      //dynamic data and chart update
-      setInterval(function() {
-        //update donut data
-        var tAxis = hAxis + ":" + mAxis + ":" + sAxis;
-        if(pData[input]['time'] ==  tAxis) {
-         data.push({time:pData[input]['time'],ampere:pData[input]['ampere'], voltage:pData[input]['voltage'], apparent_power:pData[input++]['apparent_power']});         
-        } else {
-          data.push({time:tAxis,ampere:0, voltage:0, apparent_power:0});
-        }
-
-        // console.log(tAxis);
-        if(mAxis === 59 && sAxis === 59) {
-          hAxis++;
-          mAxis=0;
-          sAxis = 0;
-        } else if(sAxis === 59) {
-          mAxis++;
-          sAxis = 0;
-        } else {
-          sAxis++;
-        }
-
-        if (Object.keys(data).length === 20) data.shift();
-
-        // generate(data, "#docker-mem-area-d3");
-        redraw(data, "#docker-mem-area-d3", sca.getOpt()['x'], sca.getOpt()['y'], sca.getOpt()['xAxis'], sca.getSvg()['svg'], sca.getSvg()['area'], sca.getSvg()['path'], sca.getSvg()['points'], sca.getOpt()['height'], 8);
-      }, 3500);
-    }*/
-  }, 
-
+    }
+  },
     compiled: function () {
       var self = this;
 
+      self.displayLine();
       self.displayMem();
-      self.displayDocker();
-//    self.displayCPU();
-self.displayNet();
-self.displayDisk();
-
-//    self.displayPeople();
-//    self.displayDisDur();
-//    self.displayDetec();
-self.displayCount();    
-//    self.displayDCPU();
-//    self.displayDMem();
-
-/*    setInterval(function () {
-      self.people_count = Math.floor( Math.random() * 1000 );
-    }, 2000);*/
+      self.displayNet();
+      self.displayDisk();
+      self.displayCount();    
   }
 });
 });
