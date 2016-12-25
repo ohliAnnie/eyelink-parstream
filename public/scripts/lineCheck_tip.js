@@ -90,7 +90,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
         })();
 
         x.domain( d3.extent(data, function(d) { return parseDate(d['time']); }) );
-        y.domain([0, 250]);
+        y.domain([0, 300]);
 
         //data.length/10 is set for the garantte of timeseries's fitting effect in svg chart
         var xAxis = d3.svg.axis()
@@ -320,8 +320,8 @@ d3.json("/reports/restapi/testData", function(err, data) {
       }
 
       //judge if the checked checkbox reach the max limitation
-      if (count>5) {
-        alert("NOTICE: The MAXIMUM selection should be FIVE.");
+      if (count>10) {
+        alert("NOTICE: The MAXIMUM selection should be TEN.");
         e.target.checked = false;
       }
 

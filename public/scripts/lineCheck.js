@@ -109,7 +109,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
         d3.select('#svg-line').remove();
 
         var svg = d3.select(id).append("svg")
-            .attr("id", "svg-line")
+            .attr("id", "#svg-line")
             .attr("width", width + margin.right + margin.left)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")

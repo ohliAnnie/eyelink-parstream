@@ -1,6 +1,4 @@
-body {
-	background-color: #f1f1f1;
-}
+body {font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; font-size: 100%; line-height: 1.3em;  position: relative; min-height: 320px; margin: 0 auto; -ms-text-size-adjust: 100%; text-size-adjust: 100%; -webkit-text-size-adjust: 100%; }
 
 .people-panel {
 	background-color: #00a0e9 !important;
@@ -112,6 +110,10 @@ body {
     font-size: .3em;
 }
 
+.click_checkbox text{
+    font-size: .3em;
+}
+
 .legendRect {
     stroke: #aaabb1;
     stroke-width: 1px;
@@ -128,6 +130,16 @@ body {
     shape-rendering: crispEdges;
 }
 
+.click_line {
+    fill: none;        
+}
+
+.path_circle {
+    stroke-width: 2px;
+    opacity: 1;
+    fill: #41DB00;
+    stroke: white;
+}
 
 /*STYLESHEETS FOR SENSOR CPU*/
 .donutCenterText {
@@ -269,3 +281,4 @@ body {
 }
 
 /*END: STYLESHEETS FOR VIS CHARTS*/
+
