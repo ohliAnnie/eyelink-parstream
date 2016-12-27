@@ -13,50 +13,50 @@ html(lang='en')
           .panel-title
             h5.no-margin.m-b click line chart
           .panel-body
-              .panel-checkbox-xs.visible-xs-block.visible-sm-block                
-                  input#ampere.click_checkbox(type='checkbox', name='ampere', value='1', v-on='click:checkOpt', checked='true')
-                  text  ampere
-                  |  
-                  input#voltage.click_checkbox(type='checkbox', name='voltage', value='2', v-on='click:checkOpt', checked='true')
-                  text  voltage
-                  |  
-                  input#active_power.click_checkbox(type='checkbox', name='active_power', value='3', v-on='click:checkOpt')
-                  text  active_power
-                  |  
-                  input#apparent_power.click_checkbox(type='checkbox', name='apparent_power', value='4', v-on='click:checkOpt', checked='true')
-                  text  apparent_power
-                  |  
-                  input#reactive_power.click_checkbox(type='checkbox', name='reactive_power', value='5', v-on='click:checkOpt')
-                  text  reactive_power
-                  |  
-                  input#power_factor.click_checkbox(type='checkbox', name='power_factor', value='6', v-on='click:checkOpt')
-                  text  power_factor
-              .col-xm-12.col-sm-12.col-md-10.col-xs-12
-                #LINE(style='width:100%;height:370px;')          
+            .panel-checkbox-xs.visible-xs-block.visible-sm-block
+              input#ampere.click_checkbox(type='checkbox', name='ampere', value='1', v-on='click:checkOpt', checked='true')
+              text  ampere
+              |  
+              input#voltage.click_checkbox(type='checkbox', name='voltage', value='2', v-on='click:checkOpt', checked='true')
+              text  voltage
+              |  
+              input#active_power.click_checkbox(type='checkbox', name='active_power', value='3', v-on='click:checkOpt')
+              text  active_power
+              |  
+              input#apparent_power.click_checkbox(type='checkbox', name='apparent_power', value='4', v-on='click:checkOpt', checked='true')
+              text  apparent_power
+              |  
+              input#reactive_power.click_checkbox(type='checkbox', name='reactive_power', value='5', v-on='click:checkOpt')
+              text  reactive_power
+              |  
+              input#power_factor.click_checkbox(type='checkbox', name='power_factor', value='6', v-on='click:checkOpt')
+              text  power_factor
+            .col-xm-12.col-sm-12.col-md-10.col-xs-12
+              #LINE(style='width:100%;height:370px;')          
       .col-sm-12.col-md-8
         .panel.panel-card
           .panel-title
-            h5.no-margin.m-b Sensor Memory Monitor
+            h5.no-margin.m-b Area Chart
           .panel-body
-            #sensor-mem-area-d3(style='height:270px;')
+            #Area(style='height:270px;')
       .col-sm-12.col-md-6
         .panel.panel-card
           .panel-title
             h5.no-margin.m-b Sensor Network Monitor
           .panel-body
-            #sensor-net-area-d3(style='height:280px;')
+            #DualArea(style='height:280px;')
       .col-sm-12.col-md-6
         .panel.panel-card
           .panel-title
             h5.no-margin.m-b Sensor Disk IO Monitor
           .panel-body
-            #sensor-disk-multi-d3(style='height:280px;')
+            #LineArea(style='height:280px;')
       .col-sm-12.col-md-12
         .panel.panel-card
           .panel-title
             h5.no-margin.m-b Sensor People Counting Monitor
           .panel-body
-            #sensor-count-multi-d3(style='height:400px;')
+            #LineBar(style='height:400px;')
     script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
     script(src="/assets/scripts/libs/jquery-2.2.3.min.js")
     script(src="/assets/scripts/libs/bootstrap.min.js")

@@ -64,27 +64,36 @@ block content
               #pieChart
           li            
             div.chart              
+              h2 Event Count Chart
               pie3D
               button(onclick='report.changeData()') Change Data
           li
             div.chart
+              h2 Vibration Value
+              br
               span#vibXGaugeContainer
               span#vibYGaugeContainer
               span#vibZGaugeContainer
-              span#vibGaugeContainer           
+              br
+              br
+              span#vibGaugeContainer                         
           li
             div.chart
-              svg#fillgauge1(width='95%', height='250', onclick='gauge1.update(NewValue());')
-              svg#fillgauge2(width='19%', height='200', onclick='gauge2.update(NewValue());')
-              svg#fillgauge3(width='19%', height='200', onclick='gauge3.update(NewValue());')
-              svg#fillgauge4(width='19%', height='200', onclick='gauge4.update(NewValue());')
-              svg#fillgauge5(width='19%', height='200', onclick='gauge5.update(NewValue());')
-              svg#fillgauge6(width='19%', height='200', onclick='gauge6.update(NewValue());')
+              h2 Event Count Percentage
+              br
+              svg#fillgauge1(width='90%', height='184', onclick='gauge1.update(NewValue());')
+              svg#fillgauge2(width='17%', height='140', onclick='gauge2.update(NewValue());')
+              svg#fillgauge3(width='17%', height='140', onclick='gauge3.update(NewValue());')
+              svg#fillgauge4(width='17%', height='140', onclick='gauge4.update(NewValue());')
+              svg#fillgauge5(width='17%', height='140', onclick='gauge5.update(NewValue());')
+              svg#fillgauge6(width='17%', height='140', onclick='gauge6.update(NewValue());')
           li            
             div.chart
+              h2 Daily Max Value
               groupBar
-          li
+          li            
             div.chart
+              h2 Daily Event Count
               groupTip
           li            
             div.chart
