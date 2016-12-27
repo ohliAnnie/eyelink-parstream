@@ -1,4 +1,6 @@
-body {font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; font-size: 100%; line-height: 1.3em;  position: relative; min-height: 320px; margin: 0 auto; -ms-text-size-adjust: 100%; text-size-adjust: 100%; -webkit-text-size-adjust: 100%; }
+body {
+    background-color: #283036;
+ }
 
 .people-panel {
 	background-color: #00a0e9 !important;

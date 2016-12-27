@@ -91,7 +91,7 @@
                       "title": {
                           "text": "Event Count Pie",
                           "color": "#ffffff",
-                          "fontSize": 24,
+                          "fontSize": 20,
                           "font": "open sans"
                       },
                       "subtitle": {
@@ -110,7 +110,7 @@
                   },
                   "size": {
                       "canvasWidth": 500,
-                      "pieOuterRadius": "90%"
+                      "pieOuterRadius": "70%"
                   },
                   "data": {
                       "sortOrder": "value-desc",
@@ -165,34 +165,55 @@
                   }
               });
 
-              /*  http://bl.ocks.org/NPashaP/9994181  */
-              // TODO : changeData
-              var cntData = [
-                  { "label": eventName[0], "value": eventCnt[0], "color": color[0] },
-                  { "label": eventName[1], "value": eventCnt[1], "color": color[1] },
-                  { "label": eventName[2], "value": eventCnt[2], "color": color[2] },
-                  { "label": eventName[3], "value": eventCnt[3], "color": color[3] },
-                  { "label": eventName[4], "value": eventCnt[4], "color": color[4] },
-                  { "label": eventName[5], "value": eventCnt[5], "color": color[5] },
-                  { "label": eventName[6], "value": eventCnt[6], "color": color[6] }
-              ];
+    /*  http://bl.ocks.org/NPashaP/9994181  */
+    // TODO : changeData
+    var cntData = [
+        { "label": eventName[0], "value": eventCnt[0], "color": color[0] },
+        { "label": eventName[1], "value": eventCnt[1], "color": color[1] },
+        { "label": eventName[2], "value": eventCnt[2], "color": color[2] },
+        { "label": eventName[3], "value": eventCnt[3], "color": color[3] },
+        { "label": eventName[4], "value": eventCnt[4], "color": color[4] },
+        { "label": eventName[5], "value": eventCnt[5], "color": color[5] },
+        { "label": eventName[6], "value": eventCnt[6], "color": color[6] }
+    ];
 
-              var svg = d3.select("pie3D").append("svg").attr("width", 700).attr("height", 300);
-              svg.append("g").attr("id", "salesDonut");
-              svg.append("g").attr("id", "quotesDonut");
-              Donut3D.draw("salesDonut", randomData(), 150, 150, 130, 100, 30, 0.4);
-              Donut3D.draw("quotesDonut", randomData(), 450, 150, 130, 100, 30, 0);
+    var svg = d3.select("pie3D").append("svg").attr("width", 700).attr("height", 323);
+    svg.append("g").attr("id", "salesDonut");
+    svg.append("g").attr("id", "quotesDonut");
+    Donut3D.draw("salesDonut", randomData(), 150, 150, 130, 100, 30, 0.4);
+    Donut3D.draw("quotesDonut", randomData(), 450, 150, 130, 100, 30, 0);
 
-              function changeData() {
-                  Donut3D.transition("salesDonut", randomData(), 130, 100, 30, 0.4);
-                  Donut3D.transition("quotesDonut", randomData(), 130, 100, 30, 0);
-              }
+    function changeData() {
+        Donut3D.transition("salesDonut", randomData(), 130, 100, 30, 0.4);
+        Donut3D.transition("quotesDonut", randomData(), 130, 100, 30, 0);
+    }
 
-              function randomData() {
-                  return cntData.map(function(d) {
-                      return { label: d.label, value: d.value, color: d.color };
-                  });
-              }
+    function randomData() {
+        return cntData.map(function(d) {
+            return { label: d.label, value: d.value, color: d.color };
+        });
+    }
+
+    var legend = d3.select("pie3D").append("svg")
+          .attr("class", "legend")
+          .attr("width", 200)
+          .attr("height", 150)
+        .selectAll("g")
+          .data(cntData)
+        .enter().append("g")
+          .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+      legend.append("rect")
+          .attr("width", 18)
+          .attr("height", 18)
+          .style("fill", function(d) { return d.color; });
+
+      legend.append("text")
+          .attr("x", 24)
+          .attr("y", 9)
+          .attr("dy", ".35em")
+          .text(function(d) { return d.label + '  :  ' + d.value; });
+
 
 
               var gauges = [];
@@ -248,7 +269,7 @@
               var sum = 0;
               for (var i = 0; i < eventCnt.length; i++)
                   sum += eventCnt[i];
-              var gauge1 = loadLiquidFillGauge("fillgauge1", sum / sum * 100);
+              var gauge1 = loadLiquidFillGauge("fillgauge1", (sum/eventCnt.length) / sum * 100);
               var config1 = liquidFillGaugeDefaultSettings();
               config1.circleColor = "#FF7777";
               config1.textColor = "#FF4444";
@@ -553,10 +574,6 @@
                   /* Radar Chart */
 
                   function RadarChart(id, data, options) {
-                      var margin = { top: 20, right: 20, bottom: 20, left: 20 },
-                             width = window.innerWidth*0.4- margin.left - margin.right,
-                            height = (window.innerWidth*0.4)*1.2 - margin.top - margin.bottom;
-
                       var cfg = {
                           w: width*0.5, //Width of the circle
                           h: width*0.5, //Height of the circle
@@ -849,8 +866,8 @@
                   //////////////////////// Set-Up //////////////////////////////
                   //////////////////////////////////////////////////////////////
                 var margin = { top: 20, right: 20, bottom: 20, left: 20 },
-                       width = window.innerWidth*0.4- margin.left - margin.right,
-                      height = (window.innerWidth*0.4)*1.2 - margin.top - margin.bottom;
+                       width = window.innerWidth*0.25- margin.left - margin.right,
+                      height = (window.innerWidth*0.25)*1.3 - margin.top - margin.bottom;
 
                   //////////////////////////////////////////////////////////////
                   ////////////////////////// Data //////////////////////////////
