@@ -109,7 +109,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
         d3.select('#svg-line').remove();
 
         var svg = d3.select(id).append("svg")
-            .attr("id", "svg-line")
+            .attr("id", "#svg-line")
             .attr("width", width + margin.right + margin.left)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -155,11 +155,11 @@ d3.json("/reports/restapi/testData", function(err, data) {
            var legend = svg.append('g')
            .attr('class', 'click_legend');
 
-          var singLegend = legend.selectAll('.line_legend')
+          var singLegend = legend.selectAll('.path_legend')
            .data(self.selectCate)
            .enter()
            .append('g')
-           .attr('class', 'line_legend')
+           .attr('class', 'path_legend')
            .attr('transform', function(d, i) {
             return 'translate(' + ((5 + (width-20) / 5) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
           });
@@ -333,7 +333,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
           d3.selectAll(".click_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'inherit');
         }
         else
-          d3.selectAll("._line_"+self.lineCategory[i]).transition().duration(300).style("display", 'none');
+          d3.selectAll(".cllick_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'none');
       }
 
       //redraw the legend and chart
@@ -341,7 +341,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
     },
     legendRedraw: function (selectCate, id, legend, rect, legendSize, margin, height, width, color) {
       //update the scatter plot legend
-      legend.selectAll('.line_legend')
+      legend.selectAll('.path_legend')
       .data(selectCate)
         // .transition()
         // .duration(200)
@@ -367,11 +367,11 @@ d3.json("/reports/restapi/testData", function(err, data) {
         .text(function(d) {          return d;        });
 
       //create new legends
-      var singLegend = legend.selectAll('.line_legend')
+      var singLegend = legend.selectAll('.path_legend')
       .data(selectCate)
       .enter()
       .append('g')
-      .attr('class', 'line_legend')
+      .attr('class', 'path_legend')
       .attr('transform', function(d, i) {
         return 'translate(' + ((5 + (width-20) / 5) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
       });
@@ -396,7 +396,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
       .text(function(d) {        return d;      });
 
       //remove the old legends
-      legend.selectAll('.line_legend')
+      legend.selectAll('.path_legend')
       .data(selectCate)
       .exit()
       .remove();

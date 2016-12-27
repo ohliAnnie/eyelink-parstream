@@ -39,7 +39,7 @@ router.get('/restapi/getReportRawData', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     }
     // MERGE = 'Y'이면 이전 날짜의 RawData를 합쳐준다.
-    if (params.MERGE === 'Y')
+    if (params.MERGE === 'N')
       out_data = Utils.mergeLoadedData(out_data);
 
     res.json({rtnCode: rtnCode, rtnData: out_data[0]});
