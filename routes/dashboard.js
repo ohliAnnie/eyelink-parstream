@@ -15,6 +15,12 @@ router.get('/', function(req, res, next) {
   res.render('./dashboard/main', { title: 'EyeLink for ParStream' });
 });
 
+router.get('/timeseries', function(req, res, next) {
+  console.log(_rawDataByDay);
+  res.render('./dashboard/timeseries', { title: 'EyeLink for ParStream' });
+});
+
+
 // test db query logic
 router.get('/restapi/get_successcount', function(req, res, next) {
   var in_data = {};
