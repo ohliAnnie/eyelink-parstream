@@ -66,5 +66,21 @@ describe("Test", function(){
       out_data[0].length.should.be.equal(6);
       done();
     })
+    it('merge Data : query no data found', function(done) {
+      global._rawDataByDay = {
+        '2016-12-11' : [{event_type:1, als_level:2}, {event_type:12, als_level:2}],
+        '2016-12-10' : [{event_type:12, als_level:2}]};
+      var out_data = [undefined];
+      // out_data[0] = null;
+      out_data = Utils.mergeLoadedData(out_data);
+      console.log(out_data);
+      out_data[0].length.should.be.equal(3);
+      out_data = [[{event_type:21, als_level:2},{event_type:22, als_level:2},{event_type:23, als_level:2}]];
+      console.log(out_data);
+      Utils.mergeLoadedData(out_data);
+      console.log(out_data[0]);
+      out_data[0].length.should.be.equal(6);
+      done();
+    })
   });
 });
