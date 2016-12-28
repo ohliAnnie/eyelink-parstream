@@ -59,16 +59,16 @@ block content
         div.map-container
           div.inner        
         ul.list-reports
-          li            
-            div.chart
+          li
+            div.chart(style='height:500px;')
               #pieChart
           li            
-            div.chart              
+            div.chart(style='height:500px;')
               h2 Event Count Chart
               pie3D
               button(onclick='report.changeData()') Change Data
           li
-            div.chart
+            div.chart(style='height:430px;')
               h2 Vibration Value
               br
               span#vibXGaugeContainer
@@ -78,7 +78,7 @@ block content
               br
               span#vibGaugeContainer                         
           li
-            div.chart
+            div.chart(style='height:430px;')
               h2 Event Count Percentage
               br
               svg#fillgauge1(width='90%', height='184', onclick='gauge1.update(NewValue());')
@@ -88,11 +88,11 @@ block content
               svg#fillgauge5(width='17%', height='140', onclick='gauge5.update(NewValue());')
               svg#fillgauge6(width='17%', height='140', onclick='gauge6.update(NewValue());')
           li            
-            div.chart
+            div.chart(style='height:530px;')
               h2 Daily Max Value
               groupBar
           li            
-            div.chart
+            div.chart(style='height:530px;')
               h2 Daily Event Count
               groupTip
           li            

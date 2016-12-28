@@ -1,5 +1,8 @@
 d3.json("/reports/restapi/testData", function(err, data) {
   if (err) throw error;
+
+  // FIXME : 툴팁위치
+  
   var numberFormat = d3.format('.2f');
 
   var first = 0;
@@ -19,6 +22,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
     d.reactive_power = numberFormat(d.reactive_power);
     d.power_factor = numberFormat(d.power_factor);
   });
+
   var pData = data.rtnData;
 
   // Vue component define
@@ -41,6 +45,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
           var tAxis = hAxis + ":" + mAxis + ":" + sAxis;
           if(tAxis == pData[input]['time']) {
               data.push({time:pData[input]['time'], ampere:pData[input]['ampere'], voltage:pData[input]['voltage'], active_power:pData[input]['active_power'], apparent_power:pData[input]['apparent_power'] , reactive_power:pData[input]['reactive_power'], power_factor:pData[input++]['power_factor']});
+              while(tAxis == pData[input++]['time']) { }
             } else {
              data.push({time:tAxis, ampere:0, voltage:0, active_power:0, apparent_power:0, reactive_power:0, power_factor:0});
            }
@@ -318,6 +323,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
         var tAxis = hAxis + ":" + mAxis + ":" + sAxis;    
         if(tAxis == pData[input]['time']) {    
           data.push({time: pData[input]['time'], ampere: pData[input]['ampere'], voltage: pData[input]['voltage'], apparent_power: pData[input++]['apparent_power']});        
+          while(tAxis == pData[input++]['time']) { }
         } else {
           data.push({time: tAxis, ampere: 0, voltage: 0, apparent_power: 0});
         }
@@ -334,11 +340,11 @@ d3.json("/reports/restapi/testData", function(err, data) {
           if(sAxis < 10) {            sAxis = '0' + sAxis;          }
         }
       }
-      var category = ['ampere'];
+      var category = ['voltage'];
       
       //generation function
       function generate(data, id, axisNum) {
-        var margin = {top: 20, right: 18, bottom: 35, left: 28},
+        var margin = {top: 20, right: 18, bottom: 35, left: 35},
         width = $(id).width() - margin.left - margin.right,
         height = $(id).height() - margin.top - margin.bottom;
 
@@ -367,124 +373,124 @@ d3.json("/reports/restapi/testData", function(err, data) {
             //.tickFormat(formatPercent)
             .orient("left");
 
-            var ddata = (function() {
-              var temp = [];
-              for (var i=0; i<data.length; i++) {
-                temp.push({'time': parseDate(data[i]['time']), 'ampere': data[i]['ampere'], 'voltage': data[i]['voltage'], 'apparent_power': data[i]['apparent_power']});
-              }
-              return temp;
-            })();
+          var ddata = (function() {
+            var temp = [];
+            for (var i=0; i<data.length; i++) {
+              temp.push({'time': parseDate(data[i]['time']), 'ampere': data[i]['ampere'], 'voltage': data[i]['voltage'], 'apparent_power': data[i]['apparent_power']});
+            }
+            return temp;
+          })();
 
-            x.domain(d3.extent(ddata, function(d) { return d.time; }));
-            y.domain([0,200]);
+          x.domain(d3.extent(ddata, function(d) { return d.time; }));
+          y.domain([0,250]);
 
-            var area = d3.svg.area()
-            .x(function(d) { return x(d.time); })
-            .y0(height)
-            .y1(function(d) { return y(d['ampere']); })
-            .interpolate("cardinal");
+          var area = d3.svg.area()
+          .x(function(d) { return x(d.time); })
+          .y0(height)
+          .y1(function(d) { return y(d['voltage']); })
+          .interpolate("cardinal");
 
-            d3.select('#svg-mem').remove();
+          d3.select('#svg-mem').remove();
 
-            var svg = d3.select(id).append("svg")
-            .attr("id", "svg-mem")
-            .attr("width", width+margin.right+margin.left)
-            .attr("height", height+margin.top+margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-            svg.append("g")
-            .attr("class", "x axis")
-            .attr("id", "mem-x-axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis);
-
-            svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis);
-
-            var path = svg.append("svg:path")
-            .datum(ddata)
-            .attr("class", "areaM")
-            .attr("d", area);
-
-            var points = svg.selectAll(".gPoints")
-            .data(ddata)
-            .enter().append("g")
-            .attr("class", "gPoints");
-
-        //legend rendering
-        var legend = svg.append('g')
-        .attr('class', 'legend')
-        .attr('transform', 'translate(0,'+ (height + margin.bottom - legendSize * 1.2) +')');
-
-        legend.append('rect')
-        .attr('width', legendSize)
-        .attr('height', legendSize)
-        .style('fill', legendColor);
-
-        legend.append('text')
-        .data(ddata)
-        .attr('x', legendSize*1.2)
-        .attr('y', legendSize/1.1)
-        .text('ampere');
-
-        points.selectAll(".memtipPoints")
-        .data(ddata)
-        .enter().append("circle")
-        .attr("class", "memtipPoints")
-        .attr("cx", function (d) {
-          return x(d.time);
-        })
-        .attr("cy", function (d) {
-          return y(d['ampere']);
-        })
-        .attr("r", "6px")
-        .on("mouseover", function (d) {
-          console.log(this);
-
-          d3.select(this).transition().duration(100).style("opacity", 1);
+          var svg = d3.select(id).append("svg")
+          .attr("id", "svg-mem")
+          .attr("width", width+margin.right+margin.left)
+          .attr("height", height+margin.top+margin.bottom)
+          .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
           svg.append("g")
-          .attr("class", "tipDot")
-          .append("line")
-          .attr("class", "tipDot")
-          .transition()
-          .duration(50)
-          .attr("x1", x(d['time']))
-          .attr("x2", x(d['time']))
-          .attr("y2", height);
+          .attr("class", "x axis")
+          .attr("id", "mem-x-axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
 
-              // svg.append("circle")
-              //   .attr('class', 'tipDot')
-              //   .attr("cx", x(d['time']))
-              //   .attr("cy", y(0))
-              //   .attr("r", "4px");
+          svg.append("g")
+          .attr("class", "y axis")
+          .call(yAxis);
 
-              // svg.append("circle")
-              //   .attr('class', 'tipDot')
-              //   .attr("cx", x(d['time']))
-              //   .attr("cy", y(1))
-              //   .attr("r", "4px");
+          var path = svg.append("svg:path")
+          .datum(ddata)
+          .attr("class", "areaM")
+          .attr("d", area);
 
-              svg.append("polyline")      // attach a polyline
-                  .attr("class", "tipDot")  // colour the line
-                  .style("fill", "black")     // remove any fill colour
-                  .attr("points", (x(d['time'])-3.5)+","+(y(1)-2.5)+","+x(d['time'])+","+(y(1)+6)+","+(x(d['time'])+3.5)+","+(y(1)-2.5));
+          var points = svg.selectAll(".gPoints")
+          .data(ddata)
+          .enter().append("g")
+          .attr("class", "gPoints");
 
-              svg.append("polyline")      // attach a polyline
-                  .attr("class", "tipDot")  // colour the line
-                  .style("fill", "black")     // remove any fill colour
-                  .attr("points", (x(d['time'])-3.5)+","+(y(0)+2.5)+","+x(d['time'])+","+(y(0)-6)+","+(x(d['time'])+3.5)+","+(y(0)+2.5));
+      //legend rendering
+      var legend = svg.append('g')
+      .attr('class', 'legend')
+      .attr('transform', 'translate(0,'+ (height + margin.bottom - legendSize * 1.2) +')');
 
-                  $(this).tooltip({
-                    'container': 'body',
-                    'placement': 'left',
-                    'title': 'ampere' + ' | ' + d['ampere'],
-                    'trigger': 'hover'
-                  })
-                  .tooltip('show');
+      legend.append('rect')
+      .attr('width', legendSize)
+      .attr('height', legendSize)
+      .style('fill', legendColor);
+
+      legend.append('text')
+      .data(ddata)
+      .attr('x', legendSize*1.2)
+      .attr('y', legendSize/1.1)
+      .text('voltage');
+
+      points.selectAll(".memtipPoints")
+      .data(ddata)
+      .enter().append("circle")
+      .attr("class", "memtipPoints")
+      .attr("cx", function (d) {
+        return x(d.time);
+      })
+      .attr("cy", function (d) {
+        return y(d['voltage']);
+      })
+      .attr("r", "6px")
+      .on("mouseover", function (d) {
+        console.log(this);
+
+        d3.select(this).transition().duration(100).style("opacity", 1);
+
+        svg.append("g")
+        .attr("class", "tipDot")
+        .append("line")
+        .attr("class", "tipDot")
+        .transition()
+        .duration(50)
+        .attr("x1", x(d['time']))
+        .attr("x2", x(d['time']))
+        .attr("y2", height);
+
+            // svg.append("circle")
+            //   .attr('class', 'tipDot')
+            //   .attr("cx", x(d['time']))
+            //   .attr("cy", y(0))
+            //   .attr("r", "4px");
+
+            // svg.append("circle")
+            //   .attr('class', 'tipDot')
+            //   .attr("cx", x(d['time']))
+            //   .attr("cy", y(1))
+            //   .attr("r", "4px");
+
+            svg.append("polyline")      // attach a polyline
+                .attr("class", "tipDot")  // colour the line
+                .style("fill", "black")     // remove any fill colour
+                .attr("points", (x(d['time'])-3.5)+","+(y(1)-2.5)+","+x(d['time'])+","+(y(1)+6)+","+(x(d['time'])+3.5)+","+(y(1)-2.5));
+
+            svg.append("polyline")      // attach a polyline
+                .attr("class", "tipDot")  // colour the line
+                .style("fill", "black")     // remove any fill colour
+                .attr("points", (x(d['time'])-3.5)+","+(y(0)+2.5)+","+x(d['time'])+","+(y(0)-6)+","+(x(d['time'])+3.5)+","+(y(0)+2.5));
+
+                $(this).tooltip({
+                  'container': 'body',
+                  'placement': 'left',
+                  'title': 'voltage' + ' | ' + d['voltage'],
+                  'trigger': 'hover'
                 })
+                .tooltip('show');
+              })
         .on("mouseout",  function (d) {
           d3.select(this).transition().duration(100).style("opacity", 0);
 
@@ -557,7 +563,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
           return x(d.time);
         })
         .attr("cy", function (d) {
-          return y(d['ampere']);
+          return y(d['voltage']);
         })
         .attr("r", "6px");
 
@@ -570,7 +576,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
           return x(d.time);
         })
         .attr("cy", function (d) {
-          return y(d['ampere']);
+          return y(d['voltage']);
         })
         .attr("r", "6px")
         .on("mouseover", function (d) {
@@ -599,7 +605,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
                   $(this).tooltip({
                     'container': 'body',
                     'placement': 'left',
-                    'title': 'ampere' + ' | ' +d['ampere'],
+                    'title': 'voltage' + ' | ' +d['voltage'],
                     'trigger': 'hover'
                   })
                   .tooltip('show');
@@ -662,9 +668,10 @@ d3.json("/reports/restapi/testData", function(err, data) {
       for(var i=0; i<9; i++) {      
         var tAxis = hAxis + ":" + mAxis + ":" + sAxis;
         if(tAxis == pData[input]['time']) {
-          data.push({time: pData[input]['time'], active_power: pData[input]['active_power'], power_factor: pData[input]['power_factor'], apparent_power: pData[input++]['apparent_power']});
+          data.push({time: pData[input]['time'], active_power: pData[input]['active_power'], voltage: pData[input++]['voltage'], power_factor: pData[input]['power_factor']});
+          while(tAxis == pData[input++]['time']) { }
         } else {
-          data.push({time: tAxis, active_power: 0, power_factor: 0, apparent_power: 0});
+          data.push({time: tAxis, active_power: 0, voltage: 0, power_factor: 0});
         }
         if(mAxis === 59 && sAxis === 59) {
           hAxis++;
@@ -680,24 +687,24 @@ d3.json("/reports/restapi/testData", function(err, data) {
         }
       }
 
-      var category = ['active_power', 'power_factor'];
+      var category = ['active_power', 'voltage'];
 
       //generation function
       function generate(data, id, lineType, axisNum) {
-        var margin = {top: 20, right: 18, bottom: 35, left: 28},
-        width = $(id).width() - margin.left - margin.right,
-        height = $(id).height() - margin.top - margin.bottom;
+        var margin = {top: 20, right: 18, bottom: 35, left: 35},
+              width = $(id).width() - margin.left - margin.right,
+              height = $(id).height() - margin.top - margin.bottom;
 
         var parseDate = d3.time.format("%H:%M:%S").parse;
 
         var legendSize = 10,
-        legendColor = {'active_power': 'rgba(0, 160, 233, 1)', 'power_factor': 'rgba(34, 172, 56, 1)'};
+              legendColor = {'active_power': 'rgba(34, 172, 56, 1)', 'voltage': 'rgba(0, 160, 233, 1)'};
 
         var x = d3.time.scale()
-        .range([0, width]);
+          .range([0, width]);
 
         var y = d3.scale.linear()
-        .range([height, 0]);
+         .range([height, 0]);
 
         //data.length/10 is set for the garantte of timeseries's fitting effect in svg chart
         var xAxis = d3.svg.axis()
@@ -730,81 +737,74 @@ d3.json("/reports/restapi/testData", function(err, data) {
           return seriesArr;
         })();
 
-        // q = ddata;
-        // console.log(ddata);
-
         x.domain( d3.extent(data, function(d) { return parseDate(d['time']); }) );
-
-        y.domain([
-          0, 200
-//          d3.max(ddata, function(c) { return d3.max(c.values, function(v) { return v['num']; }); })+100
-]);
+        y.domain([0, 250]);
 
         var area = d3.svg.area()
-        .x(function(d) { return x(d['time']); })
-        .y0(height)
-        .y1(function(d) { return y(d['num']); })
-        .interpolate(lineType);
+          .x(function(d) { return x(d['time']); })
+          .y0(height)
+          .y1(function(d) { return y(d['num']); })
+          .interpolate(lineType);
 
         d3.select('#svg-net').remove();
 
         var svg = d3.select(id).append("svg")
-        .attr("id", "svg-net")
-        .attr("width", width+margin.right+margin.left)
-        .attr("height", height+margin.top+margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+          .attr("id", "svg-net")
+          .attr("width", width+margin.right+margin.left)
+          .attr("height", height+margin.top+margin.bottom)
+          .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         svg.append("g")
-        .attr("class", "x axis")
-        .attr("id", "net-x-axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+          .attr("class", "x axis")
+          .attr("id", "net-x-axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
 
         svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis);
+          .attr("class", "y axis")
+          .call(yAxis);
 
         var path = svg.selectAll(".gPath")
-        .data(ddata)
-        .enter().append("g")
-        .attr("class", "gPath");
+          .data(ddata)
+          .enter().append("g")
+          .attr("class", "gPath");
 
         path.append("path")
-        .attr("d", function(d) { return area(d['values']); })
-        .attr("class", function(d) {
-          if (d['category'] === 'active_power')
-            return 'areaU';
-          else
-            return 'areaD';
-        });
+          .attr("d", function(d) { return area(d['values']); })
+          .attr("class", function(d) {
+            if (d['category'] === 'active_power')
+              return 'areaU';
+            else
+              return 'areaD';
+          });
 
         var legend = svg.selectAll('.legend')
-        .data(category)
-        .enter()
-        .append('g')
-        .attr('class', 'legend')
-        .attr('transform', function(d, i) {
-          return 'translate(' + (i * 10 * legendSize) + ',' + (height + margin.bottom - legendSize * 1.2) + ')';
-        });
+          .data(category)
+          .enter()
+          .append('g')
+          .attr('class', 'legend')
+          .attr('transform', function(d, i) {
+            return 'translate(' + (i * 10 * legendSize) + ',' + (height + margin.bottom - legendSize * 1.2) + ')';
+          });
 
         legend.append('rect')
-        .attr('width', legendSize)
-        .attr('height', legendSize)
-        .style('fill', function(d) { return legendColor[d]});
+          .attr('width', legendSize)
+          .attr('height', legendSize)
+          .style('fill', function(d) { return legendColor[d]});
 
         legend.append('text')
-        .data(category)
-        .attr('x', legendSize*1.2)
-        .attr('y', legendSize/1.1)
-        .text(function(d) {
-          return d;
-        });
+          .data(category)
+          .attr('x', legendSize*1.2)
+          .attr('y', legendSize/1.1)
+          .text(function(d) {
+            return d;
+          });
 
         var points = svg.selectAll(".seriesPoints")
-        .data(ddata)
-        .enter().append("g")
-        .attr("class", "seriesPoints");
+          .data(ddata)
+          .enter().append("g")
+          .attr("class", "seriesPoints");
 
         points.selectAll(".tipNetPoints")
         .data(function (d) { return d['values']; })
@@ -815,35 +815,32 @@ d3.json("/reports/restapi/testData", function(err, data) {
         .text(function (d) { return d['num']; })
         .attr("r", "6px")
         .style("fill",function (d) { return legendColor[d['category']]; })
-        .on("mouseover", function (d) {
-              // console.log();
-              var currentX = $(this)[0]['cx']['animVal']['value'],
-              currentY = $(this)[0]['cy']['animVal']['value'];
+        .on("mouseover", function (d) {           
+            var currentX = $(this)[0]['cx']['animVal']['value'],
+                 currentY = $(this)[0]['cy']['animVal']['value'];
 
-              d3.select(this).transition().duration(100).style("opacity", 1);
+            d3.select(this).transition().duration(100).style("opacity", 1);
 
-              var ret = $('.tipNetPoints').filter(function(index) {
-                return ($(this)[0]['cx']['animVal']['value'] === currentX && $(this)[0]['cy']['animVal']['value'] !== currentY);
-              });
+            var ret = $('.tipNetPoints').filter(function(index) {
+              return ($(this)[0]['cx']['animVal']['value'] === currentX && $(this)[0]['cy']['animVal']['value'] !== currentY);
+            });
 
-              //to adjust tooltip'x content if upload and download data are the same
-              var jud = ret.length;
+            //to adjust tooltip'x content if upload and download data are the same
+            var jud = ret.length;
 
-              // console.log(ret.length);
+            var mainCate = (function() {
+              if (jud === 0)
+                return 'active_power/voltage';
+              else
+                return d['category'];
+            })();
 
-              var mainCate = (function() {
-                if (jud === 0)
-                  return 'active_power/power_factor';
-                else
-                  return d['category'];
-              })();
-
-              var viceCate = (function() {
-                if (category[0] === d['category'])
-                  return category[1];
-                else
-                  return category[0];
-              })();
+            var viceCate = (function() {
+              if (category[0] === d['category'])
+                return category[1];
+              else
+                return category[0];
+            })();
 
               $.each(ret, function(index, val) {
                 // console.log(mainCate + ' | ' + viceCate);
@@ -880,7 +877,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
               .attr("class", "tipDot")
               .style("fill", "black")
               .attr("points", ($(this)[0]['cx']['animVal']['value']-3.5)+","+(y(0)+2.5)+","+$(this)[0]['cx']['animVal']['value']+","+(y(0)-6)+","+($(this)[0]['cx']['animVal']['value']+3.5)+","+(y(0)+2.5));
-
+  
               $(this).tooltip({
                 'container': 'body',
                 'placement': 'left',
@@ -889,19 +886,19 @@ d3.json("/reports/restapi/testData", function(err, data) {
               })
               .tooltip('show');
             })
-        .on("mouseout",  function (d) {
-          var currentX = $(this)[0]['cx']['animVal']['value'];
+          .on("mouseout",  function (d) {
+            var currentX = $(this)[0]['cx']['animVal']['value'];
 
-          d3.select(this).transition().duration(100).style("opacity", 0);
+            d3.select(this).transition().duration(100).style("opacity", 0);
 
-          var ret = $('.tipNetPoints').filter(function(index) {
-            return ($(this)[0]['cx']['animVal']['value'] === currentX);
-          });
+            var ret = $('.tipNetPoints').filter(function(index) {
+              return ($(this)[0]['cx']['animVal']['value'] === currentX);
+           });
 
-          $.each(ret, function(index, val) {
-            $(val).animate({
-              opacity: "0"
-            }, 100);
+            $.each(ret, function(index, val) {
+              $(val).animate({
+                opacity: "0"
+              }, 100);
 
             $(val).tooltip('destroy');
           });
@@ -951,8 +948,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
             category.map(function (name) {
               temp[name].values.push({'category': name, 'time': parseDate(d['time']), 'num': d[name]});
             });
-          });
-
+          });          
           return seriesArr;
         })();
 
@@ -995,33 +991,33 @@ d3.json("/reports/restapi/testData", function(err, data) {
         points.data(ddata);
 
         points.selectAll(".tipNetPoints")
-        .data(function (d) {
-          return d['values'];
-        })
-        .enter().append("circle")
-        .attr("class", "tipNetPoints")
-        .attr("cx", function (d) { return x(d['time']); })
-        .attr("cy", function (d) { return y(d['num']); })
-        .text(function (d) { return d['num']; })
-        .attr("r", "6px")
-        .style("fill",function (d) { return legendColor[d['category']]; })
-        .on("mouseover", function (d) {
-              // console.log();
-              var currentX = $(this)[0]['cx']['animVal']['value'],
-              currentY = $(this)[0]['cy']['animVal']['value'];
+          .data(function (d) {
+            return d['values'];
+          })
+          .enter().append("circle")
+          .attr("class", "tipNetPoints")
+          .attr("cx", function (d) { return x(d['time']); })
+          .attr("cy", function (d) { return y(d['num']); })
+          .text(function (d) { return d['num']; })
+          .attr("r", "6px")
+          .style("fill",function (d) { return legendColor[d['category']]; })
+          .on("mouseover", function (d) {
+                // console.log();
+                var currentX = $(this)[0]['cx']['animVal']['value'],
+                      currentY = $(this)[0]['cy']['animVal']['value'];
 
-              d3.select(this).transition().duration(100).style("opacity", 1);
+                d3.select(this).transition().duration(100).style("opacity", 1);
 
-              var ret = $('.tipNetPoints').filter(function(index) {
-                return ($(this)[0]['cx']['animVal']['value'] === currentX && $(this)[0]['cy']['animVal']['value'] !== currentY);
-              });
+                var ret = $('.tipNetPoints').filter(function(index) {
+                  return ($(this)[0]['cx']['animVal']['value'] === currentX && $(this)[0]['cy']['animVal']['value'] !== currentY);
+                });
 
               //to adjust tooltip'x content if upload and download data are the same
               var jud = ret.length;
 
               var mainCate = (function() {
                 if (jud === 0)
-                  return 'active_power/power_factor';
+                  return 'active_power/voltage';
                 else
                   return d['category'];
               })();
@@ -1037,13 +1033,13 @@ d3.json("/reports/restapi/testData", function(err, data) {
                 $(val).animate({
                   opacity: "1"
                 }, 100);
-
+console.log(d);
                 $(val).tooltip({
                   'container': 'body',
                   'placement': 'left',
                   'title': viceCate + ' | ' + $(this)[0]['textContent'],
                   'trigger': 'hover'
-                })
+                })                
                 .tooltip('show');
               });
 
@@ -1063,7 +1059,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
               .attr("class", "tipDot")
               .style("fill", "black")
               .attr("points", ($(this)[0]['cx']['animVal']['value']-3.5)+","+(0-2.5)+","+$(this)[0]['cx']['animVal']['value']+","+(0+6)+","+($(this)[0]['cx']['animVal']['value']+3.5)+","+(0-2.5));
-
+              
               svg.append("polyline")
               .attr("class", "tipDot")
               .style("fill", "black")
@@ -1116,9 +1112,9 @@ d3.json("/reports/restapi/testData", function(err, data) {
         //update donut data
         var tAxis = hAxis + ":" + mAxis + ":" + sAxis;
         if(pData[input]['time'] ==  tAxis) {          
-          data.push({time: tAxis, active_power: pData[input]['active_power'], power_factor: pData[input]['power_factor'], appare_power: pData[input++]['apparent_power']});
+          data.push({time: tAxis, active_power: pData[input]['active_power'], voltage: pData[input++]['voltage'], power_factor: pData[input]['power_factor']});
         } else {
-          data.push({time:tAxis, active_power:0, power_factor:0, apparent_power:0});
+          data.push({time:tAxis, active_power:0, voltage:0, power_factor:0});
         }
 
         if(mAxis === 59 && sAxis === 59) {
@@ -1138,6 +1134,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
 
         redraw(data, "#DualArea", sca.getOpt()['x'], sca.getOpt()['y'], sca.getOpt()['xAxis'], sca.getSvg()['svg'], sca.getSvg()['area'], sca.getSvg()['path'], sca.getSvg()['points'], sca.getSvg()['legendColor'], sca.getOpt()['height'], 6);
       }, 1000);
+
     },
     displayDisk: function () {
       var input = 0;
@@ -1146,9 +1143,10 @@ d3.json("/reports/restapi/testData", function(err, data) {
       for(var i=0; i<9; i++) {
         var tAxis = hAxis + ":" + mAxis + ":" + sAxis;
         if(tAxis == pData[input]['time']) {
-          data.push({time: pData[input]['time'], ampere: pData[input]['ampere'], voltage: pData[input]['voltage'], apparent_power: pData[input++]['apparent_power']});       
+          data.push({time: pData[input]['time'], ampere: pData[input]['ampere'], voltage: pData[input]['voltage'], power_factor: pData[input++]['power_factor']});       
+          while(tAxis == pData[input++]['time']) { }
         } else {
-          data.push({time: tAxis, ampere: 0, voltage: 0, apparent_power: 0});
+          data.push({time: tAxis, ampere: 0, voltage: 0, power_factor: 0});
         }
         if(mAxis === 59 && sAxis === 59) {
           hAxis++;
@@ -1164,21 +1162,21 @@ d3.json("/reports/restapi/testData", function(err, data) {
         }
       }    
 
-      var category = ['ampere', 'voltage'];
+      var category = ['ampere', 'power_factor'];
 
-      var drawLine = ['voltage'],
+      var drawLine = ['power_factor'],
       drawArea = ['ampere'];
 
       //generation function
       function generate(data, id, lineType, axisNum) {
-        var margin = {top: 20, right: 18, bottom: 35, left: 28},
+        var margin = {top: 20, right: 18, bottom: 35, left: 35},
         width = $(id).width() - margin.left - margin.right,
         height = $(id).height() - margin.top - margin.bottom;
 
         var parseDate = d3.time.format("%H:%M:%S").parse;
 
         var legendSize = 10,
-        legendColor = {'read': 'rgba(0, 160, 233, 1)', 'write': 'rgba(255, 255, 255, 1)'};
+        legendColor = {'ampere': 'rgba(0, 160, 233, 1)', 'power_factor': 'rgba(255, 255, 255, 1)'};
 
         var x = d3.time.scale()
         .range([0, width]);
@@ -1252,11 +1250,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
 
         x.domain( d3.extent(data, function(d) { return parseDate(d['time']); }) );
 
-        y.domain([
-          0,
-          300
-//          d3.max(ddata, function(c) { return d3.max(c.values, function(v) { return v['num']; }); })+100
-]);
+        y.domain([0, 1]);
 
         var area = d3.svg.area()
         .x(function(d) { return x(d['time']); })
@@ -1319,10 +1313,10 @@ d3.json("/reports/restapi/testData", function(err, data) {
         .attr('width', legendSize)
         .attr('height', legendSize)
         .style('fill', function(d) {
-          return legendColor[d]
+          return legendColor[d];
         })
         .style('stroke', function(d) {
-          return legendColor['read'];
+          return legendColor['ampere'];
         });
 
         legend.append('text')
@@ -1348,10 +1342,10 @@ d3.json("/reports/restapi/testData", function(err, data) {
         .attr("r", "6px")
         .style("fill",function (d) { return legendColor[d['category']]; })
         .style("stroke", function (d) {
-          if (d['category'] === 'voltage')
+          if (d['category'] === 'power_factor')
             return legendColor['ampere'];
           else
-            return legendColor['voltage'];
+            return legendColor['power_factor'];
         })
         .on("mouseover", function (d) {
               // console.log();
@@ -1371,7 +1365,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
 
               var mainCate = (function() {
                 if (jud === 0)
-                  return 'ampere/voltage';
+                  return 'ampere/power_factor';
                 else
                   return d['category'];
               })();
@@ -1526,10 +1520,6 @@ d3.json("/reports/restapi/testData", function(err, data) {
           return seriesArr;
         })();
 
-        // console.log(ddata);
-        // console.log(adata);
-        // console.log(ldata);
-
         x.domain( d3.extent(data, function(d) { return parseDate(d['time']); }) );
         xAxis.ticks(d3.time.seconds, Math.floor(data.length / axisNum));
 
@@ -1564,8 +1554,6 @@ d3.json("/reports/restapi/testData", function(err, data) {
         .attr("cy", function (d) { return y(d['num']); });
 
         // //draw new dot
-
-        // console.log(ddata);
         points.data(ddata);
 
         points.selectAll(".tipPoints")
@@ -1580,10 +1568,10 @@ d3.json("/reports/restapi/testData", function(err, data) {
         .attr("r", "6px")
         .style("fill",function (d) { return legendColor[d['category']]; })
         .style("stroke", function (d) {
-          if (d['category'] === 'voltage')
+          if (d['category'] === 'power_factor')
             return legendColor['ampere'];
           else
-            return legendColor['voltage'];
+            return legendColor['power_factor'];
         })
         .on("mouseover", function (d) {
               // console.log();
@@ -1601,7 +1589,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
 
               var mainCate = (function() {
                 if (jud === 0)
-                  return 'ampere/voltage';
+                  return 'ampere/power_factor';
                 else
                   return d['category'];
               })();
@@ -1694,9 +1682,9 @@ d3.json("/reports/restapi/testData", function(err, data) {
         //update donut data
         var tAxis = hAxis + ":" + mAxis + ":" + sAxis;
         if(pData[input]['time'] ==  tAxis) {
-         data.push({time:pData[input]['time'],ampere:pData[input]['ampere'], voltage:pData[input]['voltage'], apparent_power:pData[input++]['apparent_power']});         
+         data.push({time:pData[input]['time'],ampere:pData[input]['ampere'], voltage:pData[input]['voltage'], power_factor:pData[input++]['power_factor']});         
        } else {
-        data.push({time:tAxis,ampere:0, voltage:0, apparent_power:0});
+        data.push({time:tAxis,ampere:0, voltage:0, power_factor:0});
       }
 
         // console.log(tAxis);
@@ -1724,9 +1712,10 @@ d3.json("/reports/restapi/testData", function(err, data) {
       for(var i=0; i<9; i++) {
         var tAxis = hAxis + ":" + mAxis + ":" + sAxis;
         if(tAxis == pData[input]['time']) {
-          data.push({time: pData[input]['time'], power_factor: pData[input]['power_factor'], active_power: pData[input]['active_power'], reactive_power: pData[input++]['reactive_power']});       
+          data.push({time: pData[input]['time'], voltage: pData[input]['voltage'], active_power: pData[input]['active_power'], apparent_power: pData[input++]['apparent_power']});       
+          while(tAxis == pData[input++]['time']) { }
         } else {
-          data.push({time: tAxis, power_factor: 0, active_power: 0, reactive_power: 0});
+          data.push({time: tAxis, voltage: 0, active_power: 0, apparent_power: 0});
         }
         if(mAxis === 59 && sAxis === 59) {
           hAxis++;
@@ -1742,21 +1731,21 @@ d3.json("/reports/restapi/testData", function(err, data) {
         }
       }
 
-      var category = ['power_factor', 'active_power', 'reactive_power'];
+      var category = ['voltage', 'active_power', 'apparent_power'];
 
       var drawLine = ['write'],
-      drawBar = ['power_factor', 'active_power'];
+      drawBar = ['voltage', 'active_power'];
 
       //generation function
       function generate(data, id, lineType, axisNum, drawBar, category) {
-        var margin = {top: 10, right: 70, bottom: 35, left: 32},
+        var margin = {top: 10, right: 70, bottom: 35, left: 35},
         width = $(id).width() - margin.left - margin.right,
         height = $(id).height() - margin.top - margin.bottom;
 
         var parseDate = d3.time.format("%H:%M:%S").parse;
 
         var legendSize = 10,
-        legendColor = {'power_factor': 'rgba(0, 160, 233, .8)', 'active_power': 'rgba(0, 160, 233, .2)', 'reactive_power': '#41DB00'};
+        legendColor = {'voltage': 'rgba(0, 160, 233, .8)', 'active_power': 'rgba(0, 160, 233, .2)', 'apparent_power': '#41DB00'};
 
         var x = d3.time.scale()
         .range([0, width]);
@@ -1785,18 +1774,18 @@ d3.json("/reports/restapi/testData", function(err, data) {
           d.ages = drawBar.map(function(name) { return {name: name, value: +d[name]}; });
         });
 
-        x.domain( d3.extent(ddata, function(d) { return parseDate(d['time']); }) );
-
-        // console.log(x(parseDate(10:10))-x(parseDate(10:09)));
+        x.domain( d3.extent(ddata, function(d) { return parseDate(d['time']); }) );       
 
         var tranLength = (x(parseDate('00:00:10'))-x(parseDate('00:00:09'))) / 4;
 
         x1.domain(drawBar).rangeRoundBands([0, tranLength * 2]);
 
-        y.domain([
-          0, 160
-//          d3.max(ddata, function(d) {      return d3.max([d['power_factor'], d['active_power'], d['reactive_power']]); }) + 50
-]);
+        y.domain([ 0, 300 ]);
+
+        var line = d3.svg.line()
+          .interpolate(lineType)
+          .x(function(d) { return x(d['time']); })
+          .y(function(d) { return y(d['apparent_power']); });
 
         d3.select('#svg-count').remove();
 
@@ -1833,18 +1822,13 @@ d3.json("/reports/restapi/testData", function(err, data) {
         .attr("height", function(d) { return height - y(d['value']); })
         .style("fill", function(d) { return legendColor[d['name']]; });
 
-        var line = d3.svg.line()
-        .interpolate(lineType)
-        .x(function(d) { return x(d['time']); })
-        .y(function(d) { return y(d['reactive_power']); });
-
         var path = svg.append("g")
         .attr("class", "countPath");
 
         path.append("path")
         .attr("d", line(ddata))
         .attr("class", 'countRemainPath')
-        .attr('stroke', legendColor['reactive_power']);
+        .attr('stroke', legendColor['apparent_power']);
 
         var legend = svg.selectAll('.countLegend')
         .data(category)
@@ -1878,47 +1862,28 @@ d3.json("/reports/restapi/testData", function(err, data) {
         .enter().append("circle")
         .attr("class", "tipCountPoints")
         .attr("cx", function (d) { return xTransLen(d['time']); })
-        .attr("cy", function (d) { return y(d['reactive_power']); })
+        .attr("cy", function (d) { return y(d['apparent_power']); })
         .attr("r", "6px")
         .on("mouseover", function (d) {
           d3.select(this).transition().duration(100).attr("r", '8px');
-
-              // svg.append("g")
-              //   .append("line")
-              //   .attr("class", "tipDot")
-              //   .transition()
-              //   .duration(50)
-              //   .attr("x1", xTransLen(d['time']))
-              //   .attr("x2", xTransLen(d['time']))
-              //   .attr("y2", height);
-
-              // svg.append("polyline")
-              //   .attr("class", "tipDot")
-              //   .style("fill", "black")
-              //   .attr("points", (xTransLen(d['time'])-3.5)+","+(0-2.5)+","+xTransLen(d['time'])+","+(0+6)+","+(xTransLen(d['time'])+3.5)+","+(0-2.5));
-
-              // svg.append("polyline")
-              //   .attr("class", "tipDot")
-              //   .style("fill", "black")
-              //   .attr("points", (xTransLen(d['time'])-3.5)+","+(y(0)+2.5)+","+xTransLen(d['time'])+","+(y(0)-6)+","+(xTransLen(d['time'])+3.5)+","+(y(0)+2.5));
-
-              $(this).popover({
-                'container': 'body',
-                'placement': 'top',
-                'html': 'true',
-                'title': d['time'],
-                'content': '<table><tr><td>' + 'TIME' + '</td><td> | ' + d['time'] +  '</td></tr>' + '<tr><td>' + 'power_factor' + '</td><td> | ' + d['power_factor'] + '</td></tr>' + '<tr><td>' + 'active_power' + '</td><td> | ' + d['active_power'] + '</td></tr>' + '<tr><td>' + 'reactive_power' + '</td><td> | ' + d['reactive_power'] + '</td></tr></table>',
-                'trigger': 'hover'
-              })
-              .popover('show');
+          $(this).popover({
+            'container': 'body',
+            'placement': 'top',
+            'html': 'true',
+            'title': d['time'],
+            'content': '<table><tr><td>' + 'TIME' + '</td><td> | ' + d['time'] +  '</td></tr>' 
+                + '<tr><td>' + 'voltage' + '</td><td> | ' + d['voltage'] + '</td></tr>'
+                + '<tr><td>' + 'active_power' + '</td><td> | ' + d['active_power'] + '</td></tr>' 
+                + '<tr><td>' + 'apparent_power' + '</td><td> | ' + d['apparent_power'] + '</td></tr></table>',
+            'trigger': 'hover'         
             })
+            .popover('show');          
+        })
         .on("mouseout",  function (d) {
-          d3.select(this).transition().duration(100).attr("r", '6px');
-
-          d3.selectAll('.tipDot').transition().duration(100).remove();
-
-          $(this).popover('destroy');
-        });
+            d3.select(this).transition().duration(100).attr("r", '6px');
+            d3.selectAll('.tipDot').transition().duration(100).remove();
+            $(this).popover('destroy');
+          });
 
         function xTransLen(t) {
           return x(parseDate(t)) + tranLength;
@@ -2026,23 +1991,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
         path.append("path")
         .attr("d", line(ddata))
         .attr("class", 'countRemainPath')
-        .attr('stroke', legendColor['reactive_power']);
-
-        //update the path line
-        // path.selectAll('.countRemainPath')
-        //   .data(ddata)
-        //   .transition()
-        //   .duration(200)
-        //   .attr("d", line(ddata))
-        //   .attr("class", 'countRemainPath')
-        //   .attr('stroke', legendColor['remain']);
-
-        //circle updating
-        // points.selectAll(".tipCountPoints")
-        //   .data(ddata)
-        //   .attr("class", "tipCountPoints")
-        //   .attr("cx", function (d) { return xTransLen(d['time']); })
-        //   .attr("cy", function (d) { return y(d['remain']); });
+        .attr('stroke', legendColor['apparent_power']);
 
         //remove all the points and append new points
         d3.selectAll('.countPoints').remove();
@@ -2055,17 +2004,20 @@ d3.json("/reports/restapi/testData", function(err, data) {
         .enter().append("circle")
         .attr("class", "tipCountPoints")
         .attr("cx", function (d) { return xTransLen(d['time']); })
-        .attr("cy", function (d) { return y(d['reactive_power']); })
+        .attr("cy", function (d) { return y(d['apparent_power']); })
         .attr("r", "6px")
         .on("mouseover", function (d) {
           d3.select(this).transition().duration(100).attr("r", '8px');
 
-          $(this).popover({
+         $(this).popover({
             'container': 'body',
             'placement': 'top',
             'html': 'true',
             'title': d['time'],
-            'content': '<table><tr><td>' + 'TIME' + '</td><td> | ' + d['time'] + '</td></tr>'  + '<tr><td>' + 'power_factor' + '</td><td> | ' + d['power_factor'] + '</td></tr>' + '<tr><td>' + 'active_power' + '</td><td> | ' + d['active_power'] + '<tr><td>' + 'reactive_power' + '</td><td> | ' + d['reactive_power'] + '</td></tr>' + '</td></tr></table>',
+            'content': '<table><tr><td>' + 'TIME' + '</td><td> | ' + d['time'] + '</td></tr>'  
+                    + '<tr><td>' + 'voltage' + '</td><td> | ' + d['voltage'] + '</td></tr>' 
+                    + '<tr><td>' + 'active_power' + '</td><td> | ' + d['active_power'] + '</td></tr>' 
+                    + '<tr><td>' + 'apparent_power' + '</td><td> | ' + d['apparent_power'] + '</td></tr></table>',
             'trigger': 'hover'
           })
           .popover('show');
@@ -2077,14 +2029,6 @@ d3.json("/reports/restapi/testData", function(err, data) {
 
           $(this).popover('destroy');
         });
-
-        //remove old dot
-        // points.selectAll(".tipCountPoints")
-        //   .data(ddata)
-        //   .exit()
-        //   .transition()
-        //   .duration(200)
-        //   .remove();
 
         function xTransLen(t) {
           return x(parseDate(t)) + tranLength;
@@ -2100,9 +2044,9 @@ d3.json("/reports/restapi/testData", function(err, data) {
         //update donut data
         var tAxis = hAxis + ":" + mAxis + ":" + sAxis;
         if(pData[input]['time'] ==  tAxis) {          
-          data.push({time: pData[input]['time'], 'power_factor': pData[input]['power_factor'], 'active_power': pData[input]['active_power'], 'reactive_power': pData[input++]['reactive_power']});
+          data.push({time: pData[input]['time'], 'voltage': pData[input]['voltage'], 'active_power': pData[input]['active_power'], 'apparent_power': pData[input++]['apparent_power']});
         } else {
-          data.push({time:tAxis,power_factor:0, active_power:0, reactive_power:0});
+          data.push({time:tAxis, voltage:0, active_power:0, apparent_power:0});
         }        
 
         if(mAxis === 59 && sAxis === 59) {
@@ -2124,8 +2068,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
       }, 1000);
     },
     checkOpt: function (e) {
-      var self = this;
-      console.log('click');
+      var self = this;      
       //check the Scatter Choice and Refresh the charts
       var count = 0;
       for (var i=0; i < self.lineCategory.length; i++) {
@@ -2143,7 +2086,6 @@ d3.json("/reports/restapi/testData", function(err, data) {
 
       for (var i=0; i<self.lineCategory.length; i++) {
         if ($("#"+self.lineCategory[i]).prop("checked")) {
-          console.log(self.lineCategory[i]);
           self.selectCate.push(self.lineCategory[i]);
           d3.selectAll(".click_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'inherit');
         }
