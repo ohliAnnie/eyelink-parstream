@@ -34,9 +34,11 @@ var sqlList = {
         "         noise_decibel, noise_frequency, "+
         "   status_power_meter, "+
         "         vibration_x, vibration_y, vibration_z"+
-        "    from tb_node_raw"+
- //        "   where measure_time > date '2016-11-29' ",
-        "    where measure_time In ('2016-12-26') ",
+        "    from tb_node_raw"+ 
+        "    where event_year=2016 and event_month=12  " +
+        "    and event_day in (1,2,3,4,5,6,7) "+
+        "    and node_id in ('0001.00000007', '0002.00000022') " +
+        "     order by event_time",
 //        "  where year = date_part('YEAR', current_date()) "+
 //        "    and month = date_part('MONTH', current_date())" +
 //        "    and day = date_part('DAY', current_date())",
@@ -47,10 +49,9 @@ var sqlList = {
            "    from tb_node_raw"+
         "  where event_year = date_part('YEAR', current_date()) "+
         "    and event_month = date_part('MONTH', current_date())" +
-        "  and event_day = 1 " +
+        "  and event_day = 11 " +
         "    and event_type = 1" +
         "   order by event_time",
-
 };
 
 ReportsProvider = function() {
