@@ -1,5 +1,8 @@
 d3.json("/reports/restapi/testData", function(err, data) {
   if (err) throw error;
+
+  // FIXME : 툴팁위치
+  
   var numberFormat = d3.format('.2f');
 
   var first = 0;
@@ -338,7 +341,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
       
       //generation function
       function generate(data, id, axisNum) {
-        var margin = {top: 20, right: 18, bottom: 35, left: 28},
+        var margin = {top: 20, right: 18, bottom: 35, left: 35},
         width = $(id).width() - margin.left - margin.right,
         height = $(id).height() - margin.top - margin.bottom;
 
@@ -684,7 +687,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
 
       //generation function
       function generate(data, id, lineType, axisNum) {
-        var margin = {top: 20, right: 18, bottom: 35, left: 28},
+        var margin = {top: 20, right: 18, bottom: 35, left: 35},
         width = $(id).width() - margin.left - margin.right,
         height = $(id).height() - margin.top - margin.bottom;
 
@@ -730,15 +733,8 @@ d3.json("/reports/restapi/testData", function(err, data) {
           return seriesArr;
         })();
 
-        // q = ddata;
-        // console.log(ddata);
-
         x.domain( d3.extent(data, function(d) { return parseDate(d['time']); }) );
-
-        y.domain([
-          0, 200
-//          d3.max(ddata, function(c) { return d3.max(c.values, function(v) { return v['num']; }); })+100
-]);
+        y.domain([0, 200]);
 
         var area = d3.svg.area()
         .x(function(d) { return x(d['time']); })
@@ -952,7 +948,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
               temp[name].values.push({'category': name, 'time': parseDate(d['time']), 'num': d[name]});
             });
           });
-
+          console.log(seriesArr);
           return seriesArr;
         })();
 
@@ -1008,7 +1004,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
         .on("mouseover", function (d) {
               // console.log();
               var currentX = $(this)[0]['cx']['animVal']['value'],
-              currentY = $(this)[0]['cy']['animVal']['value'];
+                    currentY = $(this)[0]['cy']['animVal']['value'];
 
               d3.select(this).transition().duration(100).style("opacity", 1);
 
@@ -1171,14 +1167,14 @@ d3.json("/reports/restapi/testData", function(err, data) {
 
       //generation function
       function generate(data, id, lineType, axisNum) {
-        var margin = {top: 20, right: 18, bottom: 35, left: 28},
+        var margin = {top: 20, right: 18, bottom: 35, left: 35},
         width = $(id).width() - margin.left - margin.right,
         height = $(id).height() - margin.top - margin.bottom;
 
         var parseDate = d3.time.format("%H:%M:%S").parse;
 
         var legendSize = 10,
-        legendColor = {'read': 'rgba(0, 160, 233, 1)', 'write': 'rgba(255, 255, 255, 1)'};
+        legendColor = {'ampere': 'rgba(0, 160, 233, 1)', 'voltage': 'rgba(255, 255, 255, 1)'};
 
         var x = d3.time.scale()
         .range([0, width]);
@@ -1252,11 +1248,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
 
         x.domain( d3.extent(data, function(d) { return parseDate(d['time']); }) );
 
-        y.domain([
-          0,
-          300
-//          d3.max(ddata, function(c) { return d3.max(c.values, function(v) { return v['num']; }); })+100
-]);
+        y.domain([0, 300]);
 
         var area = d3.svg.area()
         .x(function(d) { return x(d['time']); })
@@ -1319,10 +1311,10 @@ d3.json("/reports/restapi/testData", function(err, data) {
         .attr('width', legendSize)
         .attr('height', legendSize)
         .style('fill', function(d) {
-          return legendColor[d]
+          return legendColor[d];
         })
         .style('stroke', function(d) {
-          return legendColor['read'];
+          return legendColor['ampere'];
         });
 
         legend.append('text')
@@ -1749,7 +1741,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
 
       //generation function
       function generate(data, id, lineType, axisNum, drawBar, category) {
-        var margin = {top: 10, right: 70, bottom: 35, left: 32},
+        var margin = {top: 10, right: 70, bottom: 35, left: 35},
         width = $(id).width() - margin.left - margin.right,
         height = $(id).height() - margin.top - margin.bottom;
 
@@ -2124,8 +2116,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
       }, 1000);
     },
     checkOpt: function (e) {
-      var self = this;
-      console.log('click');
+      var self = this;      
       //check the Scatter Choice and Refresh the charts
       var count = 0;
       for (var i=0; i < self.lineCategory.length; i++) {
@@ -2143,7 +2134,6 @@ d3.json("/reports/restapi/testData", function(err, data) {
 
       for (var i=0; i<self.lineCategory.length; i++) {
         if ($("#"+self.lineCategory[i]).prop("checked")) {
-          console.log(self.lineCategory[i]);
           self.selectCate.push(self.lineCategory[i]);
           d3.selectAll(".click_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'inherit');
         }
