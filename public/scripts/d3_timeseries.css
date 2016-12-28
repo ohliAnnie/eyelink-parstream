@@ -19,7 +19,8 @@
 
 .d3_timeseries.mousevline {
   fill:none;
-  stroke: #666;
+  /*stroke: #666;*/
+  stroke: yellow;
   stroke-dasharray: 3,6;
   stroke-width:1;
 }

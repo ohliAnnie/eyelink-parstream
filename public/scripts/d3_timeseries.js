@@ -18,12 +18,12 @@ function(d3,d3tip)
   var timeseries = function()
   {
     //default
-    var height = 480
-    var width = 600
+    var height = 260
+    var width = 500
 
     var drawerHeight = 80
     var drawerTopMargin = 10
-    var margin = {top:10,bottom:20,left:30,right:10}
+    var margin = {top:0,bottom:20,left:0,right:10}
 
     var series = []
 
@@ -40,9 +40,9 @@ function(d3,d3tip)
     yscale.setformat = function(n){return n.toLocaleString()}
     xscale.setformat = xscale.tickFormat()
 
-    //default tool tip function
+    // default tool tip function
     var _tipFunction = function(date,series) {
-
+      // console.log('_tipFunction');
         var spans = '<table style="border:none">'+series.filter(function(d){
             return d.item!==undefined && d.item!==null
           }).map(function(d){
@@ -54,6 +54,7 @@ function(d3,d3tip)
       }
 
     function createLines(serie){
+      // console.log('createLines');
       var aes = serie.aes
       //https://github.com/mbostock/d3/wiki/SVG-Shapes#line_interpolate
       if(! serie.options.interpolate)
@@ -182,12 +183,14 @@ function(d3,d3tip)
       }
     }
 
+    //
     function updatefocusRing(xdate){
       var s = annotationsContainer.selectAll("circle.d3_timeseries.focusring")
 
+// console.log(s);
       if(xdate==null){
         s=s.data([])
-      }else{
+      } else {
         s=s.data(series.map(function(s,i){
             return { x:xdate,item:s.find(xdate),
                   aes:s.aes,
@@ -257,11 +260,13 @@ function(d3,d3tip)
     function mouseMove(e){
       var x = d3.mouse(container[0][0])[0]
       x = xscale.invert(x)
-      console.log(x);
       mousevline.datum({x:x,visible:true})
       mousevline.update()
       updatefocusRing(x)
       updateTip(x)
+
+      drawAllMousevline(x);
+
     }
 
     function mouseOut(e){
@@ -270,6 +275,20 @@ function(d3,d3tip)
       updatefocusRing(null)
       updateTip(null)
     }
+
+    function drawAllMousevline(x) {
+      chart02.mousevline().datum({x:x, visiable:true});
+      chart02.mousevline().update();
+      // mousevlineAll = d3.selectAll('.d3_g_mousevline');
+      // // console.log(mousevline);
+      // mousevlineAll.datum({x:x, visiable:true});
+      // mousevlineAll.attr('transform',function(d){
+      //             return 'translate('+(margin.left+xscale(d.x))+','+margin.top+')'
+      //           })
+      //           .style('opacity',function(d){return 1})
+      // console.log(mousevlineAll);
+    }
+
     var chart = function(elem)
     {
       //compute mins max on all series
@@ -339,6 +358,7 @@ function(d3,d3tip)
                           x:new Date(),
                           visible:false
                         })
+                        .attr('class', 'd3_g_mousevline')
       mousevline.append('line')
                   .attr('x1',0)
                   .attr('x2',0)
@@ -415,9 +435,9 @@ function(d3,d3tip)
                           .style('opacity',0)
 
 
+      drawMiniDrawer()
       series.forEach(createLines)
       series.forEach(drawSerie)
-      drawMiniDrawer()
     };
 
 
@@ -438,6 +458,11 @@ function(d3,d3tip)
       margin = _;
       return chart;
     };
+    chart.mousevline = function(_) {
+      if (!arguments.length) return mousevline;
+      mousevline = _;
+      return chart;
+    }
     //accessors for margin.left(), margin.right(), margin.top(), margin.bottom()
     d3.keys(margin).forEach(function(k){
       chart.margin[k] = function(_){
