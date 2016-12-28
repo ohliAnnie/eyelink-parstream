@@ -10,7 +10,7 @@ if (!jinst.isJvmCreated()) {
 
 var config = {
   // Required
-  url: 'jdbc:parstream://m2u-parstream.eastus.cloudapp.azure.com:9043/eyelink',
+  url: 'jdbc:parstream://m2u-da.eastus.cloudapp.azure.com:9043/eyelink',
   drivername: 'com.parstream.ParstreamDriver',
   minpoolsize: 1,
   maxpoolsize: 10,
@@ -35,9 +35,9 @@ var sqlList = {
   "selectDashboardSection1" :
           "select today_active_power / 1000 * 85.9 as today_power_charge, " +
           "    yesterday_active_power / 1000 * 85.9 as yesterday_power_charge, " +
-          "   today_active_power, yesterday_active_power, today_active_power/yesterday_active_power * 100 - 100 as active_power_percent, " +
-          "      today_event_cnt, yesterday_event_cnt, today_event_cnt / yesterday_event_cnt * 100 - 100 as event_cnt_percent, " +
-          "      today_event_fault_cnt, yesterday_event_fault_cnt, today_event_fault_cnt / yesterday_event_fault_cnt * 100 - 100 as event_fault_cnt_percent " +
+          "   today_active_power, yesterday_active_power, today_active_power/if(yesterday_active_power, yesterday_active_power, 1) * 100 - 100 as active_power_percent, " +
+          "      today_event_cnt, yesterday_event_cnt, today_event_cnt / if(yesterday_event_cnt, yesterday_event_cnt, 1) * 100 - 100 as event_cnt_percent, " +
+          "      today_event_fault_cnt, yesterday_event_fault_cnt, today_event_fault_cnt / if(yesterday_event_fault_cnt, yesterday_event_fault_cnt, 1) * 100 - 100 as event_fault_cnt_percent " +
           " from ( " +
           "   select sum(today_active_power) as today_active_power, sum(yesterday_active_power) as yesterday_active_power, " +
           "          sum(today_event_cnt) as today_event_cnt, sum(yesterday_event_cnt) as yesterday_event_cnt, " +
@@ -48,18 +48,18 @@ var sqlList = {
           "              sum(case event_type when 81 then 1 else 0 end) as today_event_fault_cnt, " +
           "              cast(0 as uint64) as yesterday_event_fault_cnt " +
           "         from tb_node_raw " +
-          "        where year = date_part('YEAR', current_date()) " +
-          "          and month = date_part('MONTH', current_date()) " +
-          "          and day = date_part('DAY', current_date()) " +
+          "        where event_year = date_part('YEAR', current_date()) " +
+          "          and event_month = date_part('MONTH', current_date()) " +
+          "          and event_day = date_part('DAY', current_date()) " +
           "       UNION " +
           "       select 0.0 as today_active_power, sum(amount_active_power) as yesterday_active_power, " +
           "              cast(0 as int64) as today_event_cnt, count(*) as yesterday_event_cnt, " +
           "              cast(0 as uint64) as today_event_fault_cnt, " +
           "              sum(case event_type when 81 then 1 else 0 end) as yesterday_event_fault_cnt " +
           "         from tb_node_raw " +
-          "        where year = date_part('YEAR', current_date()-1) " +
-          "          and month = date_part('MONTH', current_date()-1) " +
-          "          and day = date_part('DAY', current_date()-1) " +
+          "        where event_year = date_part('YEAR', current_date()-1) " +
+          "          and event_month = date_part('MONTH', current_date()-1) " +
+          "          and event_day = date_part('DAY', current_date()-1) " +
           "      ))  ",
   // Event Raw Data 조회
   "selectEventRawDataOld" :
@@ -81,17 +81,17 @@ var sqlList = {
         "         gps_latitude, gps_longitude, gps_altitude, "+
         "         (vibration_x + vibration_y + vibration_z) / 3 as vibration" +
         "    from tb_node_raw"+
-        "  where year = date_part('YEAR', current_date()) "+
-        "    and month = date_part('MONTH', current_date())" +
-        "    and day = date_part('DAY', current_date()) ",
+        "  where event_year = date_part('YEAR', current_date()) "+
+        "    and event_month = date_part('MONTH', current_date())" +
+        "    and event_day = date_part('DAY', current_date()) ",
 
   // Event Count on Today
   "selectCountEventRawDataByToDay" :
         "    select count(*) as cnt " +
         "    from tb_node_raw"+
-        "  where year = date_part('YEAR', current_date()) "+
-        "    and month = date_part('MONTH', current_date())" +
-        "    and day = date_part('DAY', current_date()) ",
+        "  where event_year = date_part('YEAR', current_date()) "+
+        "    and event_month = date_part('MONTH', current_date())" +
+        "    and event_day = date_part('DAY', current_date()) ",
 
   // Event Raw Data for Event Alarm
   "selectEventListForAlarm" :
@@ -101,9 +101,9 @@ var sqlList = {
         "         vibration_x, vibration_y, vibration_z, "+
         "         (vibration_x + vibration_y + vibration_z) / 3 as vibration" +
         "    from tb_node_raw"+
-        "  where year = date_part('YEAR', current_date()) "+
-        "    and month = date_part('MONTH', current_date())" +
-        "    and day = date_part('DAY', current_date()) " +
+        "  where event_year = date_part('YEAR', current_date()) "+
+        "    and event_month = date_part('MONTH', current_date())" +
+        "    and event_day = date_part('DAY', current_date()) " +
         "   order by event_time desc " +
         "   limit 8 offset #last_pos# ",
 };

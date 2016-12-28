@@ -32,10 +32,13 @@ function mergeLoadedData(out_data) {
         old_out_data = old_out_data.concat(_rawDataByDay[key]);
     }
   }
-  console.log('util/mergeLoadedData -> old_out_data.length : %s', old_out_data.length);
+  try {
+    console.log('util/mergeLoadedData -> old_out_data.length : %s', old_out_data.length);
+  } catch (e) {}
   // console.log('util/mergeLoadedData -> out_data.length : %s', out_data);
   // console.log('util/mergeLoadedData -> out_data : %s', out_data[0]);
-  if (out_data[0] === null )
+
+  if (out_data[0] === undefined || out_data[0] === null)
     return [old_out_data];
   else {
     console.log('util/mergeLoadedData -> out_data.length : %s', out_data[0].length);
