@@ -42,7 +42,7 @@ function(d3,d3tip)
 
     // default tool tip function
     var _tipFunction = function(date,series) {
-      // console.log('_tipFunction');
+      console.log('_tipFunction : ' + xscale.setformat(d3.time.day(date)));
         var spans = '<table style="border:none">'+series.filter(function(d){
             return d.item!==undefined && d.item!==null
           }).map(function(d){
@@ -50,7 +50,7 @@ function(d3,d3tip)
                   '<td style="color:#333333;text-align:right">'+yscale.setformat(d.item[d.aes.y])+'</td></tr>'
           }).join('')+'</table>'
 
-        return '<h4>'+xscale.setformat(d3.time.day(date))+'</h4>'+spans
+        return '<h4 style="color:#333333;text-align:center">'+xscale.setformat(d3.time.day(date))+'</h4>'+spans
       }
 
     function createLines(serie){
@@ -310,6 +310,9 @@ function(d3,d3tip)
         chart02.brushedAll(_brush);
         chart03.brushedAll(_brush);
         chart04.brushedAll(_brush);
+      } else {
+        var aextent = d3.selectAll('.d3_timeseries.brush > rect.extent')
+          .style("visibility", "");
 
       }
     }
