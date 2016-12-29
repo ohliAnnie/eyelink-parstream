@@ -13,65 +13,82 @@ function drawChart() {
     {date:new Date('2016-10-02'), als_level: 8, dimming_level: 3, power:160, noise:150, vibration:100},
     {date:new Date('2016-11-02'), als_level: 5, dimming_level: 2, power:50 , noise:150, vibration:100},
   ];
+  // $.ajax({
+  //   url: "/dashboard/restapi/getTbRawDataByPeriod",
+  //   dataType: "json",
+  //   type: "GET",
+  //   data: '',
+  //   success: function(result) {
+  //     // console.log(result);
+  //     if (result.rtnCode.code == "0000") {
+  //       // TO-DO json data 수신 방식 점검 필요 by 배성한
+  //       //- $("#successmsg").html(result.message);
+  //       data = result.rtnData[0];
+  //       drawTimeseries(data);
+  //     } else {
+  //       //- $("#errormsg").html(result.message);
+  //     }
+  //   },
+  //   error: function(req, status, err) {
+  //     //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+  //     $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+  //   }
+  // });
+}
+
+function drawTimeseries(data) {
+  var chartName = '#ts-chart01';
   chart01 = d3.timeseries()
     .addSerie(data,{x:'date',y:'power'},{interpolate:'linear'})
     .addSerie(data,{x:'date',y:'noise'},{interpolate:'step-before'})
     .addSerie(data,{x:'date',y:'vibration'},{interpolate:'linear'})
     // .xscale.tickFormat(french_timeformat)
-    .width(600)
-    .height(200)
+    .width($(chartName).parent().width()-100)
+    .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);
 
     // console.log(chart01);
-  chart01('#ts-chart01');
+  chart01(chartName);
 
+  var chartName = '#ts-chart02';
   chart02 = d3.timeseries()
     .addSerie(data,{x:'date',y:'als_level'},{interpolate:'step-before'})
     .addSerie(data,{x:'date',y:'dimming_level'},{interpolate:'linear'})
     // .xscale.tickFormat(french_timeformat)
-    .width(600)
-    .height(260)
+    .width($(chartName).parent().width()-100)
+    .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);
 
-  chart02('#ts-chart02');
+  chart02(chartName);
 
+  chartName = '#ts-chart03';
   chart03 = d3.timeseries()
     .addSerie(data,{x:'date',y:'als_level'},{interpolate:'step-before'})
     .addSerie(data,{x:'date',y:'dimming_level'},{interpolate:'linear'})
     // .xscale.tickFormat(french_timeformat)
-    .width(600)
-    .height(260)
+    .width($(chartName).parent().width()-100)
+    .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);
 
-  chart03('#ts-chart03');
+  chart03(chartName);
 
+  chartName = '#ts-chart04';
   chart04 = d3.timeseries()
     .addSerie(data,{x:'date',y:'power'},{interpolate:'linear'})
     .addSerie(data,{x:'date',y:'noise'},{interpolate:'step-before'})
     .addSerie(data,{x:'date',y:'vibration'},{interpolate:'linear'})
     // .xscale.tickFormat(french_timeformat)
-    .width(600)
-    .height(260)
+    .width($(chartName).parent().width()-100)
+    .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);
 
-  chart04('#ts-chart04');
+  chart04(chartName);
 
 }
-
-// function clickSyncBtn() {
-//   $('#syncY').on('click', function() {
-//     console.log($(this).is(':checked'));
-//   });
-
-//   $('#syncN').on('click', function() {
-//     console.log($(this).is(':checked'));
-//   });
-
-// }
 
 
 

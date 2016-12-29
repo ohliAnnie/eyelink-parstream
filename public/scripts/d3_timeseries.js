@@ -21,8 +21,8 @@ function(d3,d3tip)
     var height = 260
     var width = 500
 
-    var drawerHeight = 80
-    var drawerTopMargin = 10
+    var drawerHeight = 50
+    var drawerTopMargin = 20
     var margin = {top:0,bottom:20,left:0,right:10}
 
     var series = []
@@ -42,7 +42,7 @@ function(d3,d3tip)
 
     // default tool tip function
     var _tipFunction = function(date,series) {
-      console.log('_tipFunction : ' + xscale.setformat(d3.time.day(date)));
+      // console.log('_tipFunction : ' + xscale.setformat(d3.time.day(date)));
         var spans = '<table style="border:none">'+series.filter(function(d){
             return d.item!==undefined && d.item!==null
           }).map(function(d){
@@ -237,24 +237,26 @@ function(d3,d3tip)
     }
 
     function drawMiniDrawer(){
-        var smallyscale = yscale.copy()
-                                .range([drawerHeight - drawerTopMargin,0])
-        var serie = series[0]
-        var line = d3.svg.line()
-                    .x(functorkeyscale(serie.aes.x,fullxscale))
-                    .y(functorkeyscale(serie.aes.y,smallyscale))
-                    .interpolate(serie.options.interpolate)
-                    .defined(keyNotNull(serie.aes.y))
-        var linepath = drawerContainer.insert("path",":first-child")
-                .datum(serie.data)
-                .attr('class','d3_timeseries.line')
-                .attr('transform','translate(0,'+drawerTopMargin+')')
-                .attr('d',line)
-                .attr('stroke',serie.options.color)
-                .attr('stroke-width',serie.options.width || 1.5)
-                .attr('fill','none')
-        if(serie.hasOwnProperty('stroke-dasharray'))
-          linepath.attr('stroke-dasharray',serie['stroke-dasharray'])
+      // console.log(drawerTopMargin);
+      // console.log(drawerHeight)
+      var smallyscale = yscale.copy()
+                              .range([drawerHeight - drawerTopMargin,0])
+      var serie = series[0]
+      var line = d3.svg.line()
+                  .x(functorkeyscale(serie.aes.x,fullxscale))
+                  .y(functorkeyscale(serie.aes.y,smallyscale))
+                  .interpolate(serie.options.interpolate)
+                  .defined(keyNotNull(serie.aes.y))
+      var linepath = drawerContainer.insert("path",":first-child")
+              .datum(serie.data)
+              .attr('class','d3_timeseries.line')
+              .attr('transform','translate(0,'+drawerTopMargin+')')
+              .attr('d',line)
+              .attr('stroke',serie.options.color)
+              .attr('stroke-width',serie.options.width || 1.5)
+              .attr('fill','none')
+      if(serie.hasOwnProperty('stroke-dasharray'))
+        linepath.attr('stroke-dasharray',serie['stroke-dasharray'])
     }
 
     function mouseMove(e){
@@ -378,6 +380,7 @@ function(d3,d3tip)
       serieContainer = container.append('g')
       annotationsContainer = container.append('g')
 
+      // console.log('%d, %d, %d', height, drawerHeight, margin.bottom);
       // mini container at the bottom
       drawerContainer = svg.append('g')
                           .attr('transform','translate('+margin.left+','+(height-drawerHeight-margin.bottom)+')')
