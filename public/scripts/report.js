@@ -393,15 +393,41 @@ var minDate = new Date(2016,11,01);
     }
   );
 
-  var gapVibGroup = todayDim.group().reduce(
+  var gapVibMinGroup = todayDim.group().reduce(
+    function(p, v){
+      if(v.event_type == "33") {   
+        if(p.min == 0)
+          p.min = v.vibration;        
+        p.min = p.min > v.vibration ? v.vibration : p.min;        
+        p.tip = p.min;
+      }                   
+      return p;
+    },
+    function(p, v) {
+      if(v.event_type == "33") {        
+        if(p.min == 0)
+          p.min = v.vibration;        
+        p.min = p.min > v.vibration ? v.vibration : p.min;        
+        p.tip = p.min;
+      }          
+      return p;
+  }, function() {
+    return {  min:0, tip:0 };
+  });
+
+  var gapVibMaxGroup = todayDim.group().reduce(
     function(p, v){
       if(v.event_type == "33") {        
+        console.log(v.dd);
+        console.log(v.vibration);
         if(p.min == 0)
           p.min = v.vibration;
         p.max = p.max < v.vibration ? v.vibration : p.max;
         p.min = p.min > v.vibration ? v.vibration : p.min;
-      }       
-      p.gap = p.max-p.min;
+        p.gap = p.max-p.min;          
+        p.tip = p.max;
+      }             
+      console.log(p);
       return p;
     },
     function(p, v) {
@@ -410,11 +436,12 @@ var minDate = new Date(2016,11,01);
           p.min = v.vibration;
         p.max = p.max < v.vibration ? v.vibration : p.max;
         p.min = p.min > v.vibration ? v.vibration : p.min;
-      }       
-      p.gap = p.max-p.min;
+        p.gap = p.max-p.min;
+        p.tip = p.max;
+      }          
       return p;
   }, function() {
-    return {  max:0, min:0, gap:0 };
+    return {  max:0, min:0, gap:0, tip:0 };
   });
 
 // Dimension by hour
@@ -903,22 +930,21 @@ noFMax
     .renderVerticalGridLines(true)
     .legend(dc.legend().x(100).y(10).itemHeight(13).gap(10).horizontal(true))
     .brushOn(false)
-    .group(gapVibGroup, 'Min')
-    .valueAccessor(function (d) {
+    .group(gapVibMinGroup, 'Min')
+    .valueAccessor(function (d) {      
         if (vMin == 0)
           vMin = d.value.min
-        vMin = vMin < d.value.min ? vMin : d.value.min;
+         vMin = vMin < d.value.min ? vMin : d.value.min;               
         return vMin;
     })
-    .stack(gapVibGroup, 'Max', function (d) {
-        vGap = vGap > d.value.gap ? vGap : d.value.gap;
-        return vGap;
+    .stack(gapVibMaxGroup, 'Max', function (d) {                        
+        return d.value.gap;
     })
     .title(function (d) {
-        var value = d.value.min ? d.value.min : d.value;
+        var value = d.value.tip ? d.value.tip : d.value;
         if (isNaN(value)) {
             value = 0;
-        }
+        }        
         return value;
     });
 
