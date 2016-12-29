@@ -1,5 +1,4 @@
 function drawChart() {
-  var chartList = [];
   var data = [
     {date:new Date('2016-01-01'), als_level: 5, dimming_level: 5, power:120, noise:130, vibration:200},
     {date:new Date('2016-01-15'), als_level: 7, dimming_level: 1, power:100, noise:150, vibration:100},
@@ -61,8 +60,18 @@ function drawChart() {
 
   chart04('#ts-chart04');
 
-  chartList.push(chart01);
-  chartList.push(chart02);
-  console.log(chartList);
 }
+
+// function clickSyncBtn() {
+//   $('#syncY').on('click', function() {
+//     console.log($(this).is(':checked'));
+//   });
+
+//   $('#syncN').on('click', function() {
+//     console.log($(this).is(':checked'));
+//   });
+
+// }
+
+
 

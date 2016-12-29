@@ -265,7 +265,7 @@ function(d3,d3tip)
       updatefocusRing(x)
       updateTip(x)
 
-      drawAllMousevline(x, true);
+      drawAllChartMousevline(x, true);
 
     }
 
@@ -275,17 +275,49 @@ function(d3,d3tip)
       updatefocusRing(null)
       updateTip(null)
 
-      drawAllMousevline(null, false);
+      drawAllChartMousevline(null, false);
     }
 
-    function drawAllMousevline(x, visible) {
-      chart02.updateAllMousevlineFocusRingTip(x, visible);
-      chart03.updateAllMousevlineFocusRingTip(x, visible);
-      chart04.updateAllMousevlineFocusRingTip(x, visible);
+    function brushed(e) {
+      xscale.domain(brush.empty() ? fullxscale.domain() : brush.extent());
+
+      var xAxis = d3.svg.axis().scale(xscale).orient('bottom').tickFormat(xscale.setformat)
+
+      series.forEach(drawSerie)
+      svg.select(".focus.x.axis").call(xAxis);
+      mousevline.update()
+      updatefocusRing()
+
+      drawAllChartBrushed(brush, this.id);
+    }
+
+    function drawAllChartMousevline(x, visible) {
+      if ($('#syncY').is(':checked') === true) {
+        chart01.updateAllMousevlineFocusRingTip(x, visible);
+        chart02.updateAllMousevlineFocusRingTip(x, visible);
+        chart03.updateAllMousevlineFocusRingTip(x, visible);
+        chart04.updateAllMousevlineFocusRingTip(x, visible);
+      }
+    }
+
+    function drawAllChartBrushed(_brush, sId) {
+      if ($('#syncY').is(':checked') === true) {
+        var aextent = d3.selectAll('.d3_timeseries.brush > rect.extent')
+          .style("visibility", function() {
+            // console.log(this.parentNode.id + ', ' + sId);
+            return (this.parentNode.id === sId)? "" : "hidden"});
+        chart01.brushedAll(_brush);
+        chart02.brushedAll(_brush);
+        chart03.brushedAll(_brush);
+        chart04.brushedAll(_brush);
+
+      }
     }
 
     var chart = function(elem)
     {
+      // console.log(elem.substring(1, 100));
+      var sId = elem.substring(1, 100);
       //compute mins max on all series
       series = series.map(function(s){
         var extent = d3.extent(s.data.map(functorkey(s.aes.y)))
@@ -374,14 +406,7 @@ function(d3,d3tip)
       var yAxis = d3.svg.axis().scale(yscale).orient('left').tickFormat(yscale.setformat)
 
       brush.x(fullxscale)
-            .on('brush',function(){
-              xscale.domain(brush.empty() ? fullxscale.domain() : brush.extent());
-
-              series.forEach(drawSerie)
-              svg.select(".focus.x.axis").call(xAxis);
-              mousevline.update()
-              updatefocusRing()
-            })
+            .on('brush', brushed)
 
       svg.append('g')
             .attr('class','d3_timeseries focus x axis')
@@ -394,11 +419,12 @@ function(d3,d3tip)
             .call(xAxis);
 
       drawerContainer.append("g")
-           .attr("class", "d3_timeseries brush")
-           .call(brush)
-         .selectAll("rect")
-            .attr('y',drawerTopMargin)
-           .attr("height", (drawerHeight - drawerTopMargin));
+          .attr("id", sId)
+          .attr("class", "d3_timeseries brush")
+          .call(brush)
+          .selectAll("rect")
+          .attr('y',drawerTopMargin)
+          .attr("height", (drawerHeight - drawerTopMargin));
 
 
       svg.append('g')
@@ -459,11 +485,23 @@ function(d3,d3tip)
       return chart;
     }
     chart.updateAllMousevlineFocusRingTip = function(xdate, visible) {
-      // console.log(chartList);
       mousevline.datum({x:xdate, visible:visible});
       mousevline.update();
       updatefocusRing(xdate);
       updateTip(xdate);
+    }
+    chart.brushedAll = function(_brush) {
+      // console.log(_brush.x);
+      // console.log(brush.x);
+      // brush.extent(['2016-08-02T00:00:00Z', '2016-08-10T23:59:59Z'])
+      xscale.domain(_brush.empty() ? fullxscale.domain() : _brush.extent());
+
+      var xAxis = d3.svg.axis().scale(xscale).orient('bottom').tickFormat(xscale.setformat)
+
+      series.forEach(drawSerie)
+      svg.select(".focus.x.axis").call(xAxis);
+      mousevline.update()
+      updatefocusRing()
     }
     //accessors for margin.left(), margin.right(), margin.top(), margin.bottom()
     d3.keys(margin).forEach(function(k){

@@ -7,16 +7,16 @@ block style
   link(rel='stylesheet', href='/stylesheets/style.css')
   link(rel='stylesheet', href='/scripts/d3_timeseries.css')
 block scripts
-  //- script(type='text/javascript', src='/assets/leaflet/d3.js')
-  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(type='text/javascript', src='/assets/leaflet/d3.js')
+  //- script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
-  script(type='text/javascript', src='/assets/annie/js/dc.js')
+  //- script(type='text/javascript', src='/assets/annie/js/dc.js')
   //- script(type='text/javascript', src='/assets/leaflet/dc.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
-  script(type='text/javascript', src='/assets/leaflet/leaflet.js')
-  script(type='text/javascript', src='/assets/leaflet/leaflet.markercluster.js')
-  script(type='text/javascript', src='/assets/leaflet/dc.leaflet.js')
-  script(type='text/javascript', src='/socket.io/socket.io.js')
+  //- script(type='text/javascript', src='/assets/leaflet/leaflet.js')
+  //- script(type='text/javascript', src='/assets/leaflet/leaflet.markercluster.js')
+  //- script(type='text/javascript', src='/assets/leaflet/dc.leaflet.js')
+  //- script(type='text/javascript', src='/socket.io/socket.io.js')
   script(type='text/javascript', src="/scripts/util.js")
   script(type='text/javascript', src="/scripts/d3_timeseries.js")
   script(type='text/javascript', src="/scripts/timeseries.js")
@@ -24,20 +24,23 @@ block content
   main.layout-contents
     div.layout-contents-inner
       section
+        header.system-activity
+          div.title
+            fieldset.segmented-control
+              legend Sync
+              ul.list
+                li
+                  input#syncY(type='radio', name='syncYN', checked='Y')
+                  label(for='syncY') Sync
+                li
+                  input#syncN(type='radio', name='syncYN')
+                  label(for='syncN') UnSync
         script.
           $(document).ready(function(e) {
-            // display Count 4 type.
-            //- displayCount();
-
             // draw Chart
             drawChart();
 
-            // draw Map
-            //- drawMap();
-
-            // process websocket
-            //- processSocket();
-
+            //- clickSyncBtn();
           });
         .grid-dashboard
           .grid-item.map
