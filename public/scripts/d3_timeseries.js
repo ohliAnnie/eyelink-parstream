@@ -265,7 +265,7 @@ function(d3,d3tip)
       updatefocusRing(x)
       updateTip(x)
 
-      drawAllMousevline(x);
+      drawAllMousevline(x, true);
 
     }
 
@@ -274,19 +274,14 @@ function(d3,d3tip)
       mousevline.update()
       updatefocusRing(null)
       updateTip(null)
+
+      drawAllMousevline(null, false);
     }
 
-    function drawAllMousevline(x) {
-      chart02.mousevline().datum({x:x, visiable:true});
-      chart02.mousevline().update();
-      // mousevlineAll = d3.selectAll('.d3_g_mousevline');
-      // // console.log(mousevline);
-      // mousevlineAll.datum({x:x, visiable:true});
-      // mousevlineAll.attr('transform',function(d){
-      //             return 'translate('+(margin.left+xscale(d.x))+','+margin.top+')'
-      //           })
-      //           .style('opacity',function(d){return 1})
-      // console.log(mousevlineAll);
+    function drawAllMousevline(x, visible) {
+      chart02.updateAllMousevlineFocusRingTip(x, visible);
+      chart03.updateAllMousevlineFocusRingTip(x, visible);
+      chart04.updateAllMousevlineFocusRingTip(x, visible);
     }
 
     var chart = function(elem)
@@ -462,6 +457,13 @@ function(d3,d3tip)
       if (!arguments.length) return mousevline;
       mousevline = _;
       return chart;
+    }
+    chart.updateAllMousevlineFocusRingTip = function(xdate, visible) {
+      // console.log(chartList);
+      mousevline.datum({x:xdate, visible:visible});
+      mousevline.update();
+      updatefocusRing(xdate);
+      updateTip(xdate);
     }
     //accessors for margin.left(), margin.right(), margin.top(), margin.bottom()
     d3.keys(margin).forEach(function(k){
