@@ -39,20 +39,34 @@ var minDate = new Date(2016,11,01);
     var a = d.event_time.split(" ");
     var b = a[0].split("-");
     var t = a[1].split(":");
-    d.dd = new Date(b[0], (b[1]-1), b[2], t[0], t[1], [2]);
+    d.dd = new Date(b[0], (b[1]-1), b[2], t[0], t[1], t[2]);
     d.today = d3.time.day(d.dd);
     d.month = d3.time.month(d.dd);
-    d.hour = d3.time.hour(d.dd);
+    d.hour = d3.time.hour(d.dd);    
     switch(d.event_type){
       case "1" :   // 피워
         d.index = 0;
-        d.event_name = 'POWER';
-        d.active_power  =  parseFloat(d.active_power);
+        d.event_name = 'POWER';        
+        d.active_power  = parseFloat(d.active_power);
+        d.als_level = 0;
+        d.vibration_x = 0;
+        d.vibration_y = 0;
+        d.vibration_z =  0;
+        d.noise_decibel= 0;
+        d.noise_frequency = 0;
+        d.status_power_meter = 0; 
         break;
       case "17" :   // 조도
         d.index = 1;
         d.event_name = 'ALS';
         d.als_level = parseInt(d.als_level);
+        d.active_power  = 0;
+        d.vibration_x = 0;
+        d.vibration_y = 0;
+        d.vibration_z =  0;
+        d.noise_decibel= 0;
+        d.noise_frequency = 0;
+        d.status_power_meter = 0; 
         break;
       case "33" :     // 진동
         d.index = 2;
@@ -61,30 +75,71 @@ var minDate = new Date(2016,11,01);
         d.vibration_y = parseFloat(d.vibration_y);
         d.vibration_z =  parseFloat(d.vibration_z);
         d.vibration = (d.vibration_x+d.vibration_y+d.vibration_z)/3;
+        d.active_power  = 0;        
+        d.als_level = 0;
+        d.noise_decibel= 0;
+        d.noise_frequency = 0;
+        d.status_power_meter = 0; 
         break;
       case "49" :    // 노이즈
         d.index = 3;
         d.noise_decibel= parseInt(d.noise_decibel);
         d.noise_frequency = parseInt(d.noise_frequency);
         d.event_name = 'NOISE';
+        d.active_power  = 0;
+        d.als_level = 0;
+        d.vibration_x = 0;
+        d.vibration_y = 0;
+        d.vibration_z =  0;
+        d.status_power_meter = 0; 
         break;
       case "65" :    // GPS
         d.index = 4;
         d.event_name = 'GPS';
+        d.active_power  = 0;
+        d.vibration_x = 0;
+        d.vibration_y = 0;
+        d.vibration_z =  0;
+        d.noise_decibel= 0;
+        d.noise_frequency = 0;
+        d.status_power_meter = 0; 
         break;
       case "81" :     // 센서상태
         d.index = 5;
         d.status_power_meter = parseInt(d.status_power_meter);         
         d.event_name = 'STREET LIGHT';   
+        d.active_power  = 0;
+        d.als_level = 0;
+        d.vibration_x = 0;
+        d.vibration_y = 0;
+        d.vibration_z =  0;
+        d.noise_decibel= 0;
+        d.noise_frequency = 0;        
         break;
       case "97" : 
         d.index = 6;
         d.event_name = "DL";
+        d.active_power  = 0;
+        d.als_level = 0;
+        d.vibration_x = 0;
+        d.vibration_y = 0;
+        d.vibration_z =  0;
+        d.noise_decibel= 0;
+        d.noise_frequency = 0;
+        d.status_power_meter = 0; 
         break;
       case "153" :    // 재부팅
         d.index = 7;
         d.event_name = 'REBOOT';
-        break;
+        d.active_power  = 0;
+        d.als_level = 0;
+        d.vibration_x = 0;
+        d.vibration_y = 0;
+        d.vibration_z =  0;
+        d.noise_decibel= 0;
+        d.noise_frequency = 0;
+        d.status_power_meter = 0;         
+        break;       
     }        
   });  
   var nyx = crossfilter(data.rtnData);
@@ -595,7 +650,6 @@ var noFMaxGroup = timeMaxDim.group().reduce(
     return items.reverse();
   });
  for(var i = 1; i<8; ++i){
-    console.log(eventName[i]);
    eventBar.stack(eventBarGroup, eventName[i], sel_stack(i));
  }
 
@@ -624,6 +678,7 @@ apMax
   .dimension(timeMaxDim)
   .group(apMaxGroup)
   .transitionDuration(500)
+  .brushOn(false)
   .centerBar(true)
   .gap(1)                    // bar width
   .x(d3.time.scale().domain([minDate, maxDate]))
@@ -644,6 +699,7 @@ vibMax
   .dimension(timeMaxDim)
   .group(vibMaxGroup)
   .transitionDuration(500)
+  .brushOn(false)
   .centerBar(true)
   .gap(1)                    // bar width
   .x(d3.time.scale().domain([minDate, maxDate]))
@@ -663,6 +719,7 @@ noDMax
   .dimension(timeMaxDim)
   .group(noDMaxGroup)
   .transitionDuration(500)
+  .brushOn(false)
   .centerBar(true)
   .gap(1)                    // bar width
   .x(d3.time.scale().domain([minDate, maxDate]))
@@ -682,6 +739,7 @@ noFMax
   .dimension(timeMaxDim)
   .group(noFMaxGroup)
   .transitionDuration(500)
+  .brushOn(false)
   .centerBar(true)
   .gap(1)                    // bar width
   .x(d3.time.scale().domain([minDate, maxDate]))
@@ -693,22 +751,22 @@ noFMax
     return d.value.max;
   }) ;
 
-  function rangesEqual(range1, range2) {
-    if (!range1 && !range2) {
-        return true;
-    }
-    else if (!range1 || !range2) {
+    function rangesEqual(range1, range2) {
+        if (!range1 && !range2) {
+            return true;
+        }
+        else if (!range1 || !range2) {
+            return false;
+        }
+        else if (range1.length === 0 && range2.length === 0) {
+            return true;
+        }
+        else if (range1[0].valueOf() === range2[0].valueOf() &&
+            range1[1].valueOf() === range2[1].valueOf()) {
+            return true;
+        }
         return false;
     }
-    else if (range1.length === 0 && range2.length === 0) {
-        return true;
-    }
-    else if (range1[0].valueOf() === range2[0].valueOf() &&
-        range1[1].valueOf() === range2[1].valueOf()) {
-        return true;
-    }
-    return false;
-}
    volumeMax.focusCharts = function (chartlist) {
         if (!arguments.length) {
             return this._focusCharts;
@@ -729,6 +787,7 @@ noFMax
                 }
             });
         });
+        console.log(this);
         return this;
     };
     volumeMax.focusCharts([apMax, vibMax, noDMax, noFMax]);
@@ -938,73 +997,13 @@ scatterSeries
 //    .mouseZoomable(true)
     .renderHorizontalGridLines(true)
     .renderVerticalGridLines(true)
-    .rangeChart(volumeMax)
+//    .rangeChart(volumeMax)
     .seriesAccessor(function(d) {
       return eventName[d.key[0]];})
     .keyAccessor(function(d) {return +d.key[1];})
     .valueAccessor(function(d) {return +d.value.max;})
     .colors(d3.scale.ordinal().range(["#CC333F", "#EDC951", "#756bb1", "#31a354", "#fd8d3c", "#00A0B0", "#003399", "#FFB2F5"]))
     .legend(dc.legend().x(10).y(0).itemHeight(13).gap(5).legendWidth(140).itemWidth(70));
-//  chart.yAxis().tickFormat(function(d) {return d3.format(',d')(d+299500);});
-//  chart.margins().left += 40;
-
-
-/*eventChart.on('pretransition', function(eventChart) {
-    eventChart. selectAll('.dc-legend-item test')
-        .text('')
-      .append('tspan')
-        .text(function(d) { return d.key + '(' + Math.floor(d.value / all.value() * 100) + '%)'; })
-
-  });*/
- //   eventChart.ordinalColors(['#3182bd', '#9ecae1', '#e6550d', '#fd8d3c', '#fdd0a2', '#31a354', '#a1d99b',  '#756bb1'])
-// d3.scale.ordinal().range(["#EDC951","#CC333F","#00A0B0"]);
-/* dc.seriesChart('#hourSeries') */
-/*  hourSeries
-    .width(window.innerWidth*0.4)
-    .height((window.innerWidth*0.4)*0.5)
-     .margins({top: 20, right: 45, bottom: 40, left: 50})
-     .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
-     .x(d3.time.scale().domain([minDate, maxDate]))
-    .brushOn(false)
-    .clipPadding(10)
-    .elasticY(true)
-    .dimension(seriesDim)
-    .group(seriesGroup)
-    .colors(d3.scale.ordinal().range(["#CC333F","#00A0B0","#EDC951","#756bb1"]))
-    .mouseZoomable(true)
-    .seriesAccessor(function(d) {
-      if(d.key[0] === 1) return 'active_power'; else if(d.key[0] === 33) return 'vibration'; else if(d.key[0] === 17) return 'als_level'; else if(d.key[0] === 81) return 'status_power_meter'; else return null;})
-    .keyAccessor(function(d) {
-     return d.key[1];     })
-    .valueAccessor(function(d) {
-      return +d.value.max;})
-    .legend(dc.legend().x(window.innerWidth*0.3).y(window.innerWidth*0.3*0.4).itemHeight(13).gap(15));
-    hourSeries.yAxis().tickFormat(function(d){  return d3.format('.d')(d); });
-    hourSeries.margins().left += 40;  */
-
-
-/*volumeChart
-    .width(window.innerWidth*0.4)
-    .height((window.innerWidth*0.4)*0.8)
-  .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
-  .x(d3.time.scale().domain([minDate, maxDate]))
-  .brushOn(false)
-  .yAxisLabel("Day")
-  .xAxisLabel("Value")
-  .clipPadding(10)
-  .elasticY(true)
-  .mouseZoomable(true)
-  .dimension(dayTypeDim)
-  .group(volumeGroup)
-  .seriesAccessor(function(d) {
-    if(d.key[0] === 1) return 'active_power'; else if(d.key[0] === 33) return 'vibration'; else if(d.key[0] === 17) return 17; else if(d.key[0] === 81) return 81; else return null;})
-  .keyAccessor(function(d) {
-   return d.key[1];     })
-  .valueAccessor(function(d) {
-   return +d.value.max;})
-  .legend(dc.legend().x(350).y(350).itemHeight(13).gap(5).horizontal(1).legendWidth(140).itemWidth(70));
-  volumeChart.yAxis().tickFormat(function(d){  return d3.format('.d')(d); });
-  volumeChart.margins().left += 40;  */
 
     dc.renderAll();
 });
