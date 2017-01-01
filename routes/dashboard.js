@@ -74,9 +74,10 @@ router.get('/restapi/getDashboardRawData', function(req, res, next) {
 
 // query RawData
 router.get('/restapi/getTbRawDataByPeriod', function(req, res, next) {
+  console.log(req.query);
    var in_data = {
-      START_TIMESTAMP: '2016-12-01 00:00:00',
-      END_TIMESTAMP: '2016-12-31 23:59:59',
+      START_TIMESTAMP: req.query.startDate + ' 00:00:00',
+      END_TIMESTAMP: req.query.endDate + ' 23:59:59',
       FLAG : 'N'};
   dashboardProvider.selectSingleQueryByID("selectEventRawDataOld", in_data, function(err, out_data, params) {
     // console.log(out_data);

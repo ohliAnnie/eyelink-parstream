@@ -40,17 +40,17 @@ block content
                   label(for='syncN') Async
           .left-content-view
             span.datepicker
-              input(type='text', name='daterange', id='', value='')
+              input(type='text', name='daterange', id='daterange', value='')
             select.select(name='', id='')
               option(value='') Zone ID
             select.select(name='', id='')
               option(value='') Node ID
             select.select(name='', id='')
               option(value='') ALL
-            button.btn-submit.search(type='submit') SEARCH
+            button#btn_search.btn-submit.search(type='submit') SEARCH
             script.
               $(document).ready(function() {
-                var start = moment().subtract(29, 'days');
+                var start = moment().subtract(5, 'days');
                 var end = moment();
                 $('input[name="daterange"]').daterangepicker({
                     "autoApply": true,
@@ -66,6 +66,9 @@ block content
                 // time series char를 그린다.
                 drawChart();
 
+                $('#btn_search').click(function() {
+                  drawChart();
+                });
 
               });
         .grid-dashboard
