@@ -29,3 +29,20 @@ gps_altitude, gps_satellite_count,status_als,status_gps,status_noise,status_vibr
 from tb_node_raw
 where event_type = 1
 limit 1;
+
+
+
+
+   select node_id, event_time, event_type, active_power, ampere,
+      als_level, dimming_level,
+        noise_decibel, noise_frequency,
+        vibration_x, vibration_y, vibration_z,
+        (vibration_x + vibration_y + vibration_z) / 3 as vibration
+   from tb_node_raw
+ where event_time >= timestamp '2016-12-13 00:00:00'
+   and event_time < timestamp '2016-12-13 23:59:59'
+
+   select count(*)
+   from tb_node_raw
+ where event_time >= timestamp '2016-12-13 00:00:00'
+   and event_time < timestamp '2016-12-13 23:59:59'

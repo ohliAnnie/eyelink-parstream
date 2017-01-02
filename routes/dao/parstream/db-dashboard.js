@@ -10,7 +10,8 @@ if (!jinst.isJvmCreated()) {
 
 var config = {
   // Required
-  url: 'jdbc:parstream://m2u-da.eastus.cloudapp.azure.com:9043/eyelink',
+  // url: 'jdbc:parstream://m2u-da.eastus.cloudapp.azure.com:9043/eyelink',
+  url: 'jdbc:parstream://m2u-parstream.eastus.cloudapp.azure.com:9043/eyelink',
   drivername: 'com.parstream.ParstreamDriver',
   minpoolsize: 1,
   maxpoolsize: 10,
@@ -70,7 +71,7 @@ var sqlList = {
         "         (vibration_x + vibration_y + vibration_z) / 3 as vibration" +
         "    from tb_node_raw"+
         "  where event_time >= timestamp #START_TIMESTAMP# " +
-        "    and event_time < timestamp #END_TIMESTAMP# ",
+        "    and event_time < timestamp #END_TIMESTAMP#",
 
   // Event Raw Data 조회
   "selectEventRawData" :
@@ -146,7 +147,10 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
                     } else {
                       console.timeEnd('db-Dashboard/selectSingleQueryByID -> ' + queryId+'-executeQuery');
                       console.time('db-Dashboard/selectSingleQueryByID -> ' + queryId+'-resultset.toObjArray');
-                      // console.log(results);
+                      // console.log(resultset);
+                      // console.log(resultset.length);
+                      // console.log(resultset[0]);
+                      // console.log('length %d ', resultset[0].node_id);
                       resultset.toObjArray(function(err, results) {
                         if (results.length > 0) {
                           console.log("db-Dashboard/selectSingleQueryByID -> Query Count : " + results.length);

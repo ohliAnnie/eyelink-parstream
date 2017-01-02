@@ -31,7 +31,6 @@ function drawChart() {
         //   {date:new Date('2016-10-02'), als_level: 8, dimming_level: 3, power:160, noise:150, vibration:100},
         //   {date:new Date('2016-11-02'), als_level: 5, dimming_level: 2, power:50 , noise:150, vibration:100},
         // ];
-        console.log(data);
         var data = result.rtnData;
         console.log(data);
         drawTimeseries(data);
@@ -48,6 +47,8 @@ function drawChart() {
 
 function drawTimeseries(data) {
 
+  d3.selectAll("svg").remove();
+
   // 데이터 가공
   var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
   data.forEach(function(d) {
@@ -61,12 +62,13 @@ function drawTimeseries(data) {
     d.vibration_z = d.vibration_z === null? 0 : d.vibration_z;
   });
 
+
   var chartName = '#ts-chart01';
   chart01 = d3.timeseries()
     .addSerie(data,{x:'event_time',y:'active_power'},{interpolate:'linear'})
     .addSerie(data,{x:'event_time',y:'ampere'},{interpolate:'step-before'})
     // .addSerie(data,{x:'event_time',y:'active_power'},{interpolate:'linear'})
-    // .xscale.tickFormat(french_timeformat)
+    // .xscale.tickFormat(d3.time.format("%b %d"))
     .width($(chartName).parent().width()-100)
     .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
