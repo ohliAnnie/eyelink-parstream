@@ -1,6 +1,7 @@
 var JDBC = require('jdbc');
 var jinst = require('jdbc/lib/jinst');
 var asyncjs = require('async');
+var Utils = require('../../util');
 
 if (!jinst.isJvmCreated()) {
   jinst.addOption("-Xrs");
@@ -12,8 +13,9 @@ var config = {
   url: 'jdbc:parstream://m2u-da.eastus.cloudapp.azure.com:9043/eyelink',
   drivername: 'com.parstream.ParstreamDriver',
   minpoolsize: 1,
-  maxpoolsize: 5,
+  maxpoolsize: 10,
   properties: {
+    user: 'parstream',
     password: 'Rornfldkf!2',
   }
 };
@@ -52,6 +54,17 @@ var sqlList = {
         "  and event_day = 11 " +
         "    and event_type = 1" +
         "   order by event_time",
+
+  // Event Raw Data 조회
+  "selectEventRawDataOld" :
+        "    select node_id, event_time, event_type, active_power, ampere,  "+
+        "       als_level, dimming_level, "+
+        "         noise_decibel, noise_frequency, "+
+        "         vibration_x, vibration_y, vibration_z, "+
+        "         (vibration_x + vibration_y + vibration_z) / 3 as vibration" +
+        "    from tb_node_raw"+
+        "  where event_time >= timestamp #START_TIMESTAMP# " +
+        "    and event_time < timestamp #END_TIMESTAMP# ",
 };
 
 ReportsProvider = function() {
@@ -63,8 +76,12 @@ ReportsProvider.prototype.selectSingleQueryByID = function (queryId, datas, call
   console.log('db-report/selectSingleQueryByID -> queryID : ' + queryId)
   // console.log('db-report/selectSingleQueryByID -> data : ' + datas);
 
+  console.time('db-report/selectSingleQueryByID -> ' + queryId+'-total');
+  console.time('db-report/selectSingleQueryByID -> ' + queryId+'-reserve');
+
   parstream.reserve(function(err, connObj) {
     if (connObj) {
+      console.timeEnd('db-report/selectSingleQueryByID -> ' + queryId+'-reserve');
       console.log("db-report/selectSingleQueryByID -> Using connection: " + connObj.uuid);
       // Grab the Connection for use.
       var conn = connObj.conn;
@@ -74,11 +91,13 @@ ReportsProvider.prototype.selectSingleQueryByID = function (queryId, datas, call
             if (err) {
               callback(err);
             } else {
-              statement.setFetchSize(1000, function(err) {
+              statement.setFetchSize(100, function(err) {
                 if (err) {
                   callback(err);
                 } else {
-                  // console.log(sqlList[queryId]);
+                  // SQL 내 파라메타를 변경해준다.
+                  var sSql = Utils.replaceSql(sqlList[queryId], datas);
+                  console.log('db-report/selectSingleQueryByID -> ' + sSql);
                   statement.execute(sqlList[queryId],
                                          function(err, resultset) {
                     if (err) {
@@ -107,6 +126,7 @@ ReportsProvider.prototype.selectSingleQueryByID = function (queryId, datas, call
           if (err) {
             console.log(err.message);
           }
+          console.timeEnd('db-report/selectSingleQueryByID -> ' + queryId+'-total');
           callback(err, results, datas);
         })
       });
