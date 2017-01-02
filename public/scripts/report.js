@@ -10,7 +10,7 @@
   var apMax = dc.barChart("#apMax");
   var vibMax = dc.barChart("#vibMax");
   var noDMax = dc.barChart("#noDMax");
-  var noFMax = dc.barChart("#noFMax");
+  var noFMax = dc.barChart("#noFMax");eve
   var avgCom = dc.compositeChart("#avgCom");
   var avgVib = dc.compositeChart("#avgVib");
   var gapVib = dc.lineChart("#gapVib");
@@ -47,100 +47,46 @@ var minDate = new Date(2016,11,01);
       case "1" :   // 피워
         d.index = 0;
         d.event_name = 'POWER';        
-        d.active_power  = parseFloat(d.active_power);
-        d.als_level = 0;
-        d.vibration_x = 0;
-        d.vibration_y = 0;
-        d.vibration_z =  0;
-        d.noise_decibel= 0;
-        d.noise_frequency = 0;
-        d.status_power_meter = 0; 
         break;
       case "17" :   // 조도
         d.index = 1;
         d.event_name = 'ALS';
-        d.als_level = parseInt(d.als_level);
-        d.active_power  = 0;
-        d.vibration_x = 0;
-        d.vibration_y = 0;
-        d.vibration_z =  0;
-        d.noise_decibel= 0;
-        d.noise_frequency = 0;
-        d.status_power_meter = 0; 
         break;
       case "33" :     // 진동
         d.index = 2;
         d.event_name = 'VIBRATION';
-        d.vibration_x = parseFloat(d.vibration_x);
-        d.vibration_y = parseFloat(d.vibration_y);
-        d.vibration_z =  parseFloat(d.vibration_z);
-        d.vibration = (d.vibration_x+d.vibration_y+d.vibration_z)/3;
-        d.active_power  = 0;        
-        d.als_level = 0;
-        d.noise_decibel= 0;
-        d.noise_frequency = 0;
-        d.status_power_meter = 0; 
         break;
       case "49" :    // 노이즈
         d.index = 3;
-        d.noise_decibel= parseInt(d.noise_decibel);
-        d.noise_frequency = parseInt(d.noise_frequency);
-        d.event_name = 'NOISE';
-        d.active_power  = 0;
-        d.als_level = 0;
-        d.vibration_x = 0;
-        d.vibration_y = 0;
-        d.vibration_z =  0;
-        d.status_power_meter = 0; 
+        d.event_name = 'NOISE';        
         break;
       case "65" :    // GPS
         d.index = 4;
-        d.event_name = 'GPS';
-        d.active_power  = 0;
-        d.vibration_x = 0;
-        d.vibration_y = 0;
-        d.vibration_z =  0;
-        d.noise_decibel= 0;
-        d.noise_frequency = 0;
-        d.status_power_meter = 0; 
+        d.event_name = 'GPS';        
         break;
       case "81" :     // 센서상태
-        d.index = 5;
-        d.status_power_meter = parseInt(d.status_power_meter);         
-        d.event_name = 'STREET LIGHT';   
-        d.active_power  = 0;
-        d.als_level = 0;
-        d.vibration_x = 0;
-        d.vibration_y = 0;
-        d.vibration_z =  0;
-        d.noise_decibel= 0;
-        d.noise_frequency = 0;        
+        d.index = 5;    
+        d.event_name = 'STREET LIGHT';           
         break;
       case "97" : 
         d.index = 6;
-        d.event_name = "DL";
-        d.active_power  = 0;
-        d.als_level = 0;
-        d.vibration_x = 0;
-        d.vibration_y = 0;
-        d.vibration_z =  0;
-        d.noise_decibel= 0;
-        d.noise_frequency = 0;
-        d.status_power_meter = 0; 
+        d.event_name = "DL";        
         break;
       case "153" :    // 재부팅
         d.index = 7;
         d.event_name = 'REBOOT';
-        d.active_power  = 0;
-        d.als_level = 0;
-        d.vibration_x = 0;
-        d.vibration_y = 0;
-        d.vibration_z =  0;
-        d.noise_decibel= 0;
-        d.noise_frequency = 0;
-        d.status_power_meter = 0;         
-        break;       
-    }        
+        break;     
+      }       
+    d.event_time = df.parse(d.event_time);
+    d.active_power = d.active_power === undefined? 0 : d.active_power;    
+    d.als_level = d.als_level === null? 0 : d.als_level;    
+    d.noise_decibel = d.noise_decibel === null? 0 : d.noise_decibel;
+    d.noise_frequency = d.noise_frequency === null?0:d.noise_frequency;
+    d.vibration_x = d.vibration_x === null? 0 : d.vibration_x;
+    d.vibration_y = d.vibration_y === null? 0 : d.vibration_y;
+    d.vibration_z = d.vibration_z === null? 0 : d.vibration_z;
+    d.vibration = (d.vibration_x+d.vibration_y+d.vibration_z)/3;        
+    d.status_power_meter = d.status_power_meter === null? 0 : d.status_power_meter;         
   });  
   var nyx = crossfilter(data.rtnData);
   var all = nyx.groupAll();
