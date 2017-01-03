@@ -30,8 +30,8 @@ function drawChart() {
         //   {date:new Date('2016-09-02'), als_level: 7, dimming_level: 5, power:132, noise:50, vibration:100},
         //   {date:new Date('2016-10-02'), als_level: 8, dimming_level: 3, power:160, noise:150, vibration:100},
         //   {date:new Date('2016-11-02'), als_level: 5, dimming_level: 2, power:50 , noise:150, vibration:100},
-        // ];
-        var data = result.rtnData;
+        // ];        
+        var data = result.rtnData;        
         drawAll(data, sdate, edate);
       } else {
         //- $("#errormsg").html(result.message);
@@ -47,20 +47,40 @@ function drawChart() {
 function drawAll(data, sdate, edate) {
   var eventChart = dc.pieChart('#eventChart');
   var eventBar = dc.barChart('#eventBar');
+  var checkLine = dc.compositeChart("#checkLine");
   var nodeBar = dc.barChart('#nodeBar');
 
-  var minDate = new Date(sdate);
+  var minDate = new Date(sdate);  
   var maxDate = new Date(edate);
 
+  var node_id = new Array();
+console.log(node_id.length);
   // 데이터 가공
   var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
-  data.forEach(function(d) {
+  data.forEach(function(d) {    
+    var index = 0;
+    while(index <= node_id.length) {
+      if(node_id.length === 0) {
+        node_id[0] = d.node_id;
+        console.log(node_id);
+      }
+      if(node_id[index] === d.node_id) {
+        break;
+      }
+      if(index === (node_id.length)){
+        node_id[index] = d.node_id;
+        break;
+      }
+      index++;
+    }
+    console.log(node_id);
+    console.log(node_id.length);
     d.event_time = df.parse(d.event_time);
     d.today = d3.time.day(d.event_time);
     switch(d.event_type){
       case "1" :   // 피워
         d.index = 0;
-        d.event_name = 'POWER';
+        d.event_name = 'POWER';        
         break;
       case "17" :   // 조도
         d.index = 1;
@@ -72,24 +92,24 @@ function drawAll(data, sdate, edate) {
         break;
       case "49" :    // 노이즈
         d.index = 3;
-        d.event_name = 'NOISE';
+        d.event_name = 'NOISE';        
         break;
       case "65" :    // GPS
         d.index = 4;
-        d.event_name = 'GPS';
+        d.event_name = 'GPS';        
         break;
       case "81" :     // 센서상태
-        d.index = 5;
-        d.event_name = 'STREET LIGHT';
+        d.index = 5;    
+        d.event_name = 'STREET LIGHT';           
         break;
-      case "97" :
+      case "97" : 
         d.index = 6;
-        d.event_name = "DL";
+        d.event_name = "DL";        
         break;
       case "153" :    // 재부팅
         d.index = 7;
         d.event_name = 'REBOOT';
-        break;
+        break;       
       }
   });
 
@@ -99,12 +119,11 @@ function drawAll(data, sdate, edate) {
   var all = nyx.groupAll();
 
 // Dimension by event_name
-  var eventDim = nyx.dimension(function(d) {
+  var eventDim = nyx.dimension(function(d) {     
     return d.event_name;
   });
-
+var cnt = 0;
   var eventGroup = eventDim.group().reduceCount(function(d) {
-    console.log(d);
     return 1;
   });
 
@@ -121,15 +140,8 @@ function drawAll(data, sdate, edate) {
     return{};
   });
 
-// Dimension by Node_ID
-  var nodeDim = nyx.dimension(function(d) { return d.node_id; });
-  var nodeBarGroup = nodeDim.group().reduceCount(function(d) {
-    return 1;
-  });
-
   // Dimension by today
   var todayDim = nyx.dimension(function (d) { return d.today; });
-
   var eventBarGroup = todayDim.group().reduce(function(p, v){
     p[v.index] = (p[v.index] || 0) + 1;
     return p;
@@ -140,13 +152,152 @@ function drawAll(data, sdate, edate) {
     return{};
   });
 
+  console.log((maxDate-minDate)/(24 * 60 * 60 * 1000));
+  var gap = (maxDate-minDate)/(24 * 60 * 60 * 1000);
+  var checkDim = nyx.dimension(function(d) {  return d.today; });
+  var powerGroup = checkDim.group().reduce(
+    function (p, v) {
+      p.tot++;
+      if(v.event_type == "1") {                
+        ++p.cnt ;
+      }
+      p.per = p.cnt/p.tot * 100;           
+      return p;
+    },
+    function (p, v) {
+      p.tot--;
+      if(v.event_type == "1") {        
+        -- p.cnt ;
+      }            
+      p.per = p.cnt/p.tot * 100;
+      return p;
+    },
+    function() {
+      return { cnt:0, tot:0, per:0 };
+    }
+  );
+  var alsGroup = checkDim.group().reduce(
+    function (p, v) {
+      p.tot++;
+      if(v.event_type == "17") {                
+        ++p.cnt ;
+      }
+      p.per = p.cnt/p.tot * 100;           
+      return p;
+    },
+    function (p, v) {
+      p.tot--;
+      if(v.event_type == "17") {        
+        -- p.cnt ;
+      }            
+      p.per = p.cnt/p.tot * 100;
+      return p;
+    },
+    function() {
+      return { cnt:0, tot:0, per:0 };
+    }
+  );
+  var vibGroup = checkDim.group().reduce(
+    function (p, v) {
+      p.tot++;
+      if(v.event_type == "33") {                
+        ++p.cnt ;
+      }
+      p.per = p.cnt/p.tot * 100;           
+      return p;
+    },
+    function (p, v) {
+      p.tot--;
+      if(v.event_type == "33") {        
+        -- p.cnt ;
+      }            
+      p.per = p.cnt/p.tot * 100;
+      return p;
+    },
+    function() {
+      return { cnt:0, tot:0, per:0 };
+    }
+  );
+  var noiseGroup = checkDim.group().reduce(
+    function (p, v) {
+      p.tot++;
+      if(v.event_type == "49") {                
+        ++p.cnt ;
+      }
+      p.per = p.cnt/p.tot * 100;           
+      return p;
+    },
+    function (p, v) {
+      p.tot--;
+      if(v.event_type == "49") {        
+        -- p.cnt ;
+      }            
+      p.per = p.cnt/p.tot * 100;
+      return p;
+    },
+    function() {
+      return { cnt:0, tot:0, per:0 };
+    }
+  );
+  var gpsGroup = checkDim.group().reduce(
+    function (p, v) {
+      p.tot++;
+      if(v.event_type == "65") {                
+        ++p.cnt ;
+      }
+      p.per = p.cnt/p.tot * 100;           
+      return p;
+    },
+    function (p, v) {
+      p.tot--;
+      if(v.event_type == "65") {        
+        -- p.cnt ;
+      }            
+      p.per = p.cnt/p.tot * 100;
+      return p;
+    },
+    function() {
+      return { cnt:0, tot:0, per:0 };
+    }
+  );
+  var lightGroup = checkDim.group().reduce(
+    function (p, v) {
+      p.tot++;
+      if(v.event_type == "81") {                
+        ++p.cnt ;
+      }
+      p.per = p.cnt/p.tot * 100;           
+      return p;
+    },
+    function (p, v) {
+      p.tot--;
+      if(v.event_type == "81") {        
+        -- p.cnt ;
+      }            
+      p.per = p.cnt/p.tot * 100;
+      return p;
+    },
+    function() {
+      return { cnt:0, tot:0, per:0 };
+    }
+  );
+
+
+
+// Dimension by Node_ID
+  var nodeDim = nyx.dimension(function(d) { 
+    return d.node_id; });
+  var nodeBarGroup = nodeDim.group().reduceCount(function(d) {
+    return 1;
+  });
+
   /* dc.pieChart('#eventChart') */
-  eventChart
+  eventChart 
     .width(window.innerWidth*0.4)
     .height((window.innerWidth*0.4)*0.5)
     .radius((window.innerWidth*0.4)*0.2)
     .dimension(eventDim)
-    .group(eventGroup)
+    .group(eventGroup)    
     .drawPaths(true)
     .legend(dc.legend())
     .label(function (d){
@@ -163,11 +314,11 @@ function drawAll(data, sdate, edate) {
     .colors(d3.scale.ordinal().range(["#EDC951", "#CC333F", "#756bb1", "#31a354", "#fd8d3c", "#00A0B0", "#003399", "#FFB2F5"]));
 
 /*  dc.barChart('#eventBar')  */
-    function sel_stack(i) {
-        return function(d) {
-            return d.value[i]?d.value[i]:0;
-        };
-    }
+  function sel_stack(i) {
+      return function(d) {            
+          return d.value[i]?d.value[i]:0;
+      };
+  }
   eventBar
     .width(window.innerWidth*0.4)
     .height((window.innerWidth*0.4)*0.5)
@@ -186,37 +337,88 @@ function drawAll(data, sdate, edate) {
     .mouseZoomable(true)
     .renderHorizontalGridLines(true)
     .x(d3.time.scale().domain([minDate, maxDate]))
-    .gap(3)
+    .gap(gap)
     .round(d3.time.day.round)
     .xUnits(function(){return 10;})
     .elasticY(true)
     .elasticX(true)
     .colors(d3.scale.ordinal().range(["#EDC951", "#CC333F", "#756bb1", "#31a354", "#fd8d3c", "#00A0B0", "#003399", "#FFB2F5"]))
     /*.renderLabel(true)*/;
-  eventBar.legend(dc.legend());
-  dc.override(eventBar, 'legendables', function() {
-    var items = eventBar._legendables();
-    return items.reverse();
-  });
-  for(var i = 1; i<8; ++i){
-    eventBar.stack(eventBarGroup, eventName[i], sel_stack(i));
-  }
+    eventBar.legend(dc.legend());
+    dc.override(eventBar, 'legendables', function() {
+      var items = eventBar._legendables();
+      return items.reverse();
+    });
+    for(var i = 1; i<8; ++i){
+      eventBar.stack(eventBarGroup, eventName[i], sel_stack(i));
+    }
 
-nodeBar
-  .width(window.innerWidth*0.4)
-  .height((window.innerWidth*0.4)*0.5)
-  .margins({top: 15, right: 50, bottom: 40, left: 40})
-  .transitionDuration(500)
-  .dimension(nodeDim)
-  .group(nodeBarGroup)
-  .elasticY(true)
-  .elasticX(true)
-  .brushOn(true)
-  .centerBar(true)
-  .gap(1)
-  .x(d3.time.scale().domain([minDate, maxDate]))
-  .alwaysUseRounding(true)
-  .renderHorizontalGridLines(true)
+    checkLine
+/*      .renderArea(true)
+      .renderHorizontalGridLines(true)*/
+      .width(window.innerWidth*0.4)
+      .height((window.innerWidth*0.4)*0.5)
+       .margins({top: 20, right: 40, bottom: 30, left: 40})
+      .dimension(checkDim)
+      .transitionDuration(500)
+      .elasticY(true)
+//      .y(d3.scale.linear().domain([0, 150]))      
+      .brushOn(false)
+      .mouseZoomable(true)
+      .x(d3.time.scale().domain([minDate, maxDate]))
+      .round(d3.time.day.round)
+      .renderHorizontalGridLines(true)
+      .renderVerticalGridLines(true)
+   //   .yAxisLabel("Date")
+      .title(function(d) {
+        return "\nNumber of Povetry: " + d.key;
+      })
+      .legend(dc.legend().x(100).y(20).itemHeight(13).gap(5).horizontal(true))
+      .compose([
+          dc.lineChart(checkLine).group(powerGroup, "Power")
+            .valueAccessor(function(d){
+              if(d.value.avg != 0)
+                vibration = d.value.avg;
+             return vibration; })
+            .colors('#756bb1'),
+          dc.lineChart(checkLine).group(alsGroup, "ALS")
+            .valueAccessor(function(d){
+              if(d.value.avg != 0)
+                vibration = d.value.avg;
+             return vibration; })
+            .colors('#756bb1'),
+          dc.lineChart(checkLine).group(alsGroup, "Vibration")
+            .valueAccessor(function(d){
+              if(d.value.avg != 0)
+                vibration = d.value.avg;
+             return vibration; })
+            .colors('#756bb1'),
+          dc.lineChart(checkLine).group(alsGroup, "Noise")
+            .valueAccessor(function(d){
+              if(d.value.avg != 0)
+                vibration = d.value.avg;
+             return vibration; })
+            .colors('#756bb1'),
+        ]);
 
 
+  /*  dc.barChart('#nodeBar')  */
+  nodeBar
+    .width(window.innerWidth*0.4)
+    .height((window.innerWidth*0.4)*0.5)
+    .margins({top: 15, right: 50, bottom: 40, left: 40})
+    .transitionDuration(500)
+    .dimension(nodeDim)
+    .group(nodeBarGroup)
+    .elasticY(true)
+    .elasticX(true)
+    .brushOn(true)
+    .centerBar(true)
+    .gap(1)
+    .x(d3.time.scale().domain(d3.extent(node_id, function(d){        
+      return d; })))  
+    .alwaysUseRounding(true)
+    .renderHorizontalGridLines(true)
+
+    dc.renderAll();
 }
