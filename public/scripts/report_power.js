@@ -54,13 +54,15 @@ function drawPower(data, sdate, edate) {
 
 // Dimension by Week
   var weekDim = nyx.dimension(function(d) { return d.week; });
-  var weekPlotGroup = weekDim.group().reduce(function(d) {
+  var weekPlotGroup = weekDim.group().reduce(
     function(p, v) {
 
     }, function(p, v) {
-      
-    }
-  });
+
+    }, function() {
+
+    }  
+  );
 
   /*  dc.barChart("#volumeMax")  */
 powerSum
