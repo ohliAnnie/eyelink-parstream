@@ -53,30 +53,31 @@ function drawAll(data, sdate, edate) {
   var minDate = new Date(sdate);  
   var maxDate = new Date(edate);
 
-  var node_id = new Array();
-console.log(node_id.length);
+  var group_id = new Array();
+
   // 데이터 가공
   var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
   data.forEach(function(d) {    
+    var group = d.node_id.split('.');    
+    d.group_id = group[0];
     var index = 0;
-    while(index <= node_id.length) {
-      if(node_id.length === 0) {
-        node_id[0] = d.node_id;
-        console.log(node_id);
+    while(index <= group_id.length) {
+      if(group_id.length === 0) {
+        group_id[0] = d.group_id;
+        console.log(group_id);
       }
-      if(node_id[index] === d.node_id) {
+      if(group_id[index] === d.group_id) {
         break;
       }
-      if(index === (node_id.length)){
-        node_id[index] = d.node_id;
+      if(index === (group_id.length)){
+        group_id[index] = d.group_id;
         break;
       }
       index++;
     }
-    console.log(node_id);
-    console.log(node_id.length);
     d.event_time = df.parse(d.event_time);
     d.today = d3.time.day(d.event_time);
+    d.month = d3.time.month(d.event_time);
     switch(d.event_type){
       case "1" :   // 피워
         d.index = 0;
@@ -154,14 +155,25 @@ var cnt = 0;
 
   console.log((maxDate-minDate)/(24 * 60 * 60 * 1000));
   var gap = (maxDate-minDate)/(24 * 60 * 60 * 1000);
-  var checkDim = nyx.dimension(function(d) {  return d.today; });
+  var checkDim = nyx.dimension(function(d) {  
+    if(gap < 31) {
+      return d.today; 
+    } else {
+      return d.month;
+    }
+
+  });
   var powerGroup = checkDim.group().reduce(
     function (p, v) {
       p.tot++;
       if(v.event_type == "1") {                
         ++p.cnt ;
       }
-      p.per = p.cnt/p.tot * 100;           
+      if(p.cnt === 0){
+        p.per = 0;
+      } else {
+        p.per = p.cnt/p.tot * 100;
+      }
       return p;
     },
     function (p, v) {
@@ -169,7 +181,11 @@ var cnt = 0;
       if(v.event_type == "1") {        
         -- p.cnt ;
       }            
-      p.per = p.cnt/p.tot * 100;
+     if(p.cnt === 0){
+        p.per = 0;
+      } else {
+        p.per = p.cnt/p.tot * 100;
+      }
       return p;
     },
     function() {
@@ -182,7 +198,11 @@ var cnt = 0;
       if(v.event_type == "17") {                
         ++p.cnt ;
       }
-      p.per = p.cnt/p.tot * 100;           
+      if(p.cnt === 0){
+        p.per = 0;
+      } else {
+        p.per = p.cnt/p.tot * 100;
+      }          
       return p;
     },
     function (p, v) {
@@ -190,7 +210,11 @@ var cnt = 0;
       if(v.event_type == "17") {        
         -- p.cnt ;
       }            
-      p.per = p.cnt/p.tot * 100;
+      if(p.cnt === 0){
+        p.per = 0;
+      } else {
+        p.per = p.cnt/p.tot * 100;
+      }
       return p;
     },
     function() {
@@ -203,7 +227,11 @@ var cnt = 0;
       if(v.event_type == "33") {                
         ++p.cnt ;
       }
-      p.per = p.cnt/p.tot * 100;           
+      if(p.cnt === 0){
+        p.per = 0;
+      } else {
+        p.per = p.cnt/p.tot * 100;
+      }          
       return p;
     },
     function (p, v) {
@@ -211,7 +239,11 @@ var cnt = 0;
       if(v.event_type == "33") {        
         -- p.cnt ;
       }            
-      p.per = p.cnt/p.tot * 100;
+      if(p.cnt === 0){
+        p.per = 0;
+      } else {
+        p.per = p.cnt/p.tot * 100;
+      }
       return p;
     },
     function() {
@@ -224,7 +256,11 @@ var cnt = 0;
       if(v.event_type == "49") {                
         ++p.cnt ;
       }
-      p.per = p.cnt/p.tot * 100;           
+      if(p.cnt === 0){
+        p.per = 0;
+      } else {
+        p.per = p.cnt/p.tot * 100;
+      }           
       return p;
     },
     function (p, v) {
@@ -232,7 +268,11 @@ var cnt = 0;
       if(v.event_type == "49") {        
         -- p.cnt ;
       }            
-      p.per = p.cnt/p.tot * 100;
+      if(p.cnt === 0){
+        p.per = 0;
+      } else {
+        p.per = p.cnt/p.tot * 100;
+      }
       return p;
     },
     function() {
@@ -245,7 +285,11 @@ var cnt = 0;
       if(v.event_type == "65") {                
         ++p.cnt ;
       }
-      p.per = p.cnt/p.tot * 100;           
+      if(p.cnt === 0){
+        p.per = 0;
+      } else {
+        p.per = p.cnt/p.tot * 100;
+      }
       return p;
     },
     function (p, v) {
@@ -253,7 +297,11 @@ var cnt = 0;
       if(v.event_type == "65") {        
         -- p.cnt ;
       }            
-      p.per = p.cnt/p.tot * 100;
+      if(p.cnt === 0){
+        p.per = 0;
+      } else {
+        p.per = p.cnt/p.tot * 100;
+      }
       return p;
     },
     function() {
@@ -266,7 +314,11 @@ var cnt = 0;
       if(v.event_type == "81") {                
         ++p.cnt ;
       }
-      p.per = p.cnt/p.tot * 100;           
+      if(p.cnt === 0){
+        p.per = 0;
+      } else {
+        p.per = p.cnt/p.tot * 100;
+      }           
       return p;
     },
     function (p, v) {
@@ -274,7 +326,69 @@ var cnt = 0;
       if(v.event_type == "81") {        
         -- p.cnt ;
       }            
-      p.per = p.cnt/p.tot * 100;
+      if(p.cnt === 0){
+        p.per = 0;
+      } else {
+        p.per = p.cnt/p.tot * 100;
+      }
+      return p;
+    },
+    function() {
+      return { cnt:0, tot:0, per:0 };
+    }
+  );
+  var dlGroup = checkDim.group().reduce(
+    function (p, v) {
+      p.tot++;
+      if(v.event_type == "97") {                
+        ++p.cnt ;
+      }
+      if(p.cnt === 0){
+        p.per = 0;
+      } else {
+        p.per = p.cnt/p.tot * 100;
+      }           
+      return p;
+    },
+    function (p, v) {
+      p.tot--;
+      if(v.event_type == "97") {        
+        -- p.cnt ;
+      }            
+      if(p.cnt === 0){
+        p.per = 0;
+      } else {
+        p.per = p.cnt/p.tot * 100;
+      }
+      return p;
+    },
+    function() {
+      return { cnt:0, tot:0, per:0 };
+    }
+  );
+  var rebootGroup = checkDim.group().reduce(
+    function (p, v) {
+      p.tot++;
+      if(v.event_type == "153") {                
+        ++p.cnt ;
+      }
+      if(p.cnt === 0){
+        p.per = 0;
+      } else {
+        p.per = p.cnt/p.tot * 100;
+      }           
+      return p;
+    },
+    function (p, v) {
+      p.tot--;
+      if(v.event_type == "153") {        
+        -- p.cnt ;
+      }            
+      if(p.cnt === 0){
+        p.per = 0;
+      } else {
+        p.per = p.cnt/p.tot * 100;
+      }
       return p;
     },
     function() {
@@ -282,11 +396,10 @@ var cnt = 0;
     }
   );
 
-
-
 // Dimension by Node_ID
   var nodeDim = nyx.dimension(function(d) { 
-    return d.node_id; });
+    
+    return d.group_id; });
   var nodeBarGroup = nodeDim.group().reduceCount(function(d) {
     return 1;
   });
@@ -358,14 +471,15 @@ var cnt = 0;
       .renderHorizontalGridLines(true)*/
       .width(window.innerWidth*0.4)
       .height((window.innerWidth*0.4)*0.5)
-       .margins({top: 20, right: 40, bottom: 30, left: 40})
+       .margins({top: 30, right: 20, bottom: 30, left: 140})
       .dimension(checkDim)
       .transitionDuration(500)
-      .elasticY(true)
-//      .y(d3.scale.linear().domain([0, 150]))      
+//      .elasticY(true)
+      .y(d3.scale.linear().domain([0, data.length]))      
       .brushOn(false)
       .mouseZoomable(true)
       .x(d3.time.scale().domain([minDate, maxDate]))
+      .y(d3.scale.linear().domain([0, 100]))
       .round(d3.time.day.round)
       .renderHorizontalGridLines(true)
       .renderVerticalGridLines(true)
@@ -373,32 +487,40 @@ var cnt = 0;
       .title(function(d) {
         return "\nNumber of Povetry: " + d.key;
       })
-      .legend(dc.legend().x(100).y(20).itemHeight(13).gap(5).horizontal(true))
+      .legend(dc.legend().x(20).y(10).itemHeight(13).gap(5))
       .compose([
           dc.lineChart(checkLine).group(powerGroup, "Power")
             .valueAccessor(function(d){
-              if(d.value.avg != 0)
-                vibration = d.value.avg;
-             return vibration; })
-            .colors('#756bb1'),
+             return d.value.per; })
+            .colors('#EDC951'),
           dc.lineChart(checkLine).group(alsGroup, "ALS")
             .valueAccessor(function(d){
-              if(d.value.avg != 0)
-                vibration = d.value.avg;
-             return vibration; })
-            .colors('#756bb1'),
-          dc.lineChart(checkLine).group(alsGroup, "Vibration")
+              return d.value.per; })
+            .colors('#CC333F'),
+          dc.lineChart(checkLine).group(vibGroup, "Vibration")
             .valueAccessor(function(d){
-              if(d.value.avg != 0)
-                vibration = d.value.avg;
-             return vibration; })
+              return d.value.per; })
             .colors('#756bb1'),
-          dc.lineChart(checkLine).group(alsGroup, "Noise")
+          dc.lineChart(checkLine).group(noiseGroup, "Noise")
             .valueAccessor(function(d){
-              if(d.value.avg != 0)
-                vibration = d.value.avg;
-             return vibration; })
-            .colors('#756bb1'),
+              return d.value.per; })
+            .colors('#31a354'),
+          dc.lineChart(checkLine).group(gpsGroup, "GPS")
+            .valueAccessor(function(d){
+              return d.value.per; })
+            .colors('#fd8d3c'),
+          dc.lineChart(checkLine).group(lightGroup, "StreetLight")
+            .valueAccessor(function(d){
+              return d.value.per; })
+            .colors('#00A0B0'),
+          dc.lineChart(checkLine).group(dlGroup, "DL")
+            .valueAccessor(function(d){
+              return d.value.per; })
+            .colors('#003399'),
+          dc.lineChart(checkLine).group(rebootGroup, "Reboot")
+            .valueAccessor(function(d){
+              return d.value.per; })
+            .colors('#FFB2F5'),
         ]);
 
 
@@ -414,8 +536,9 @@ var cnt = 0;
     .elasticX(true)
     .brushOn(true)
     .centerBar(true)
-    .gap(1)
-    .x(d3.time.scale().domain(d3.extent(node_id, function(d){        
+    .gap(group_id.length)
+    .x(d3.time.scale().domain(d3.extent(group_id, function(d){        
+      console.log(d);
       return d; })))  
     .alwaysUseRounding(true)
     .renderHorizontalGridLines(true)
