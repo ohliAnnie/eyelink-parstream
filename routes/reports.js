@@ -88,5 +88,28 @@ router.get('/restapi/getTbRawDataByPeriod', function(req, res, next) {
   });
 });
 
+// query RawData Power
+router.get('/restapi/getTbRawDataByPeriodPower', function(req, res, next) {
+  console.log(req.query);
+   var in_data = {
+      START_TIMESTAMP: req.query.startDate + ' 00:00:00',
+      END_TIMESTAMP: req.query.endDate + ' 23:59:59',
+      FLAG : 'N'};
+  reportsProvider.selectSingleQueryByID("selectEventRawDataPower", in_data, function(err, out_data, params) {
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data[0] === null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+
+    // MERGE = 'Y'이면 이전 날짜의 RawData를 합쳐준다.
+    if (params.MERGE === 'Y')
+      out_data = Utils.mergeLoadedData(out_data);
+
+    console.log('reports/restapi/getTbRawDataByPeriodPower -> length : %s', out_data[0].length);
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+  });
+});
+
 
 module.exports = router;

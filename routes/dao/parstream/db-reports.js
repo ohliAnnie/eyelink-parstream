@@ -65,6 +65,15 @@ var sqlList = {
         "    from tb_node_raw"+
         "  where event_time >= timestamp #START_TIMESTAMP# " +
         "    and event_time < timestamp #END_TIMESTAMP# ",
+
+    // Power 조회
+  "selectEventRawDataPower" :
+        "    select node_id, event_time, event_type, active_power, ampere,  "+
+        "     voltage, power_factor, reactive_power, apparent_power, amount_active_power "+
+        "    from tb_node_raw"+
+        "  where event_time >= timestamp #START_TIMESTAMP# " +
+        "    and event_time < timestamp #END_TIMESTAMP# " +
+        "    and event_type = 1 ",
 };
 
 ReportsProvider = function() {
