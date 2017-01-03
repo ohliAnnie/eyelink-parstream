@@ -7,7 +7,7 @@ function drawChart() {
   var edate = searchDate.substring(ind+3);
   console.log('%s, %s', sdate, edate);
   $.ajax({
-    url: "/dashboard/restapi/getTbRawDataByPeriod" ,
+    url: "/reports/restapi/getTbRawDataByPeriod" ,
     dataType: "json",
     type: "get",
     data: {startDate:sdate, endDate:edate},
@@ -30,8 +30,8 @@ function drawChart() {
         //   {date:new Date('2016-09-02'), als_level: 7, dimming_level: 5, power:132, noise:50, vibration:100},
         //   {date:new Date('2016-10-02'), als_level: 8, dimming_level: 3, power:160, noise:150, vibration:100},
         //   {date:new Date('2016-11-02'), als_level: 5, dimming_level: 2, power:50 , noise:150, vibration:100},
-        // ];        
-        var data = result.rtnData;        
+        // ];
+        var data = result.rtnData;
         drawAll(data, sdate, edate);
       } else {
         //- $("#errormsg").html(result.message);
@@ -49,18 +49,18 @@ function drawAll(data, sdate, edate) {
   var eventBar = dc.barChart('#eventBar');
   var nodeBar = dc.barChart('#nodeBar');
 
-  var minDate = new Date(sdate);  
+  var minDate = new Date(sdate);
   var maxDate = new Date(edate);
 
   // 데이터 가공
   var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
-  data.forEach(function(d) {    
+  data.forEach(function(d) {
     d.event_time = df.parse(d.event_time);
     d.today = d3.time.day(d.event_time);
     switch(d.event_type){
       case "1" :   // 피워
         d.index = 0;
-        d.event_name = 'POWER';        
+        d.event_name = 'POWER';
         break;
       case "17" :   // 조도
         d.index = 1;
@@ -72,24 +72,24 @@ function drawAll(data, sdate, edate) {
         break;
       case "49" :    // 노이즈
         d.index = 3;
-        d.event_name = 'NOISE';        
+        d.event_name = 'NOISE';
         break;
       case "65" :    // GPS
         d.index = 4;
-        d.event_name = 'GPS';        
+        d.event_name = 'GPS';
         break;
       case "81" :     // 센서상태
-        d.index = 5;    
-        d.event_name = 'STREET LIGHT';           
+        d.index = 5;
+        d.event_name = 'STREET LIGHT';
         break;
-      case "97" : 
+      case "97" :
         d.index = 6;
-        d.event_name = "DL";        
+        d.event_name = "DL";
         break;
       case "153" :    // 재부팅
         d.index = 7;
         d.event_name = 'REBOOT';
-        break;       
+        break;
       }
   });
 
@@ -99,7 +99,7 @@ function drawAll(data, sdate, edate) {
   var all = nyx.groupAll();
 
 // Dimension by event_name
-  var eventDim = nyx.dimension(function(d) {     
+  var eventDim = nyx.dimension(function(d) {
     return d.event_name;
   });
 
@@ -141,12 +141,12 @@ function drawAll(data, sdate, edate) {
   });
 
   /* dc.pieChart('#eventChart') */
-  eventChart 
+  eventChart
     .width(window.innerWidth*0.4)
     .height((window.innerWidth*0.4)*0.5)
     .radius((window.innerWidth*0.4)*0.2)
     .dimension(eventDim)
-    .group(eventGroup)    
+    .group(eventGroup)
     .drawPaths(true)
     .legend(dc.legend())
     .label(function (d){
@@ -164,7 +164,7 @@ function drawAll(data, sdate, edate) {
 
 /*  dc.barChart('#eventBar')  */
     function sel_stack(i) {
-        return function(d) {            
+        return function(d) {
             return d.value[i]?d.value[i]:0;
         };
     }
@@ -214,7 +214,7 @@ nodeBar
   .brushOn(true)
   .centerBar(true)
   .gap(1)
-  .x(d3.time.scale().domain([minDate, maxDate]))  
+  .x(d3.time.scale().domain([minDate, maxDate]))
   .alwaysUseRounding(true)
   .renderHorizontalGridLines(true)
 

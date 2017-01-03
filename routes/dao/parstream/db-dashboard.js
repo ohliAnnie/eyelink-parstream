@@ -5,13 +5,13 @@ var Utils = require('../../util');
 
 if (!jinst.isJvmCreated()) {
   jinst.addOption("-Xrs");
-  jinst.setupClasspath(['./drivers/jdbc-4.2.9.jar']);
+  jinst.setupClasspath(['./drivers/cisco-parstream-jdbc-4.3.3.jar']);
 }
 
 var config = {
   // Required
-  // url: 'jdbc:parstream://m2u-da.eastus.cloudapp.azure.com:9043/eyelink',
-  url: 'jdbc:parstream://m2u-parstream.eastus.cloudapp.azure.com:9043/eyelink',
+  url: 'jdbc:parstream://m2u-da.eastus.cloudapp.azure.com:9043/eyelink',
+  // url: 'jdbc:parstream://m2u-parstream.eastus.cloudapp.azure.com:9043/eyelink',
   drivername: 'com.parstream.ParstreamDriver',
   minpoolsize: 1,
   maxpoolsize: 10,
