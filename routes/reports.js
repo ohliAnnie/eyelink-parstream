@@ -2,7 +2,7 @@ var CONSTS = require('./consts');
 var Utils = require('./util');
 var express = require('express');
 var router = express.Router();
-var ReportsProvider = require('./dao/parstream/db-reports').ReportsProvider;
+var ReportsProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-reports').ReportsProvider;
 
 var reportsProvider = new ReportsProvider();
 
@@ -48,7 +48,7 @@ router.get('/restapi/getReportRawData', function(req, res, next) {
     res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });
 });
-  
+
 // query Report
 router.get('/restapi/testData', function(req, res, next) {
   console.log('reports/restapi/testData');
@@ -59,7 +59,7 @@ router.get('/restapi/testData', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-  
+
     res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });
 
