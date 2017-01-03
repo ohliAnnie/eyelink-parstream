@@ -98,7 +98,7 @@ ReportsProvider.prototype.selectSingleQueryByID = function (queryId, datas, call
                   // SQL 내 파라메타를 변경해준다.
                   var sSql = Utils.replaceSql(sqlList[queryId], datas);
                   console.log('db-report/selectSingleQueryByID -> ' + sSql);
-                  statement.execute(sqlList[queryId],
+                  statement.execute(sSql,
                                          function(err, resultset) {
                     if (err) {
                       callback(err)
