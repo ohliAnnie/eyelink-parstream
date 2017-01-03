@@ -1,6 +1,6 @@
 var socketio = require('socket.io');
 var CONSTS = require('./consts');
-var DashboardProvider = require('./dao/parstream/db-dashboard').DashboardProvider;
+var DashboardProvider = require('./dao/' + global.config.fetchData.database + '/'+ global.config.fetchData.method + '-dashboard').DashboardProvider;
 var dashboardProvider = new DashboardProvider();
 
 function initSocket(app, callback) {

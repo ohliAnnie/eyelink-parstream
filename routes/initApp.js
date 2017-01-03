@@ -2,7 +2,8 @@ var CONSTS = require('./consts');
 var config = require('../config/config.json');
 require('date-utils');
 
-var DashboardProvider = require('./dao/parstream/db-dashboard').DashboardProvider;
+
+var DashboardProvider = require('./dao/' + global.config.fetchData.database + '/'+ global.config.fetchData.method + '-dashboard').DashboardProvider;
 var dashboardProvider = new DashboardProvider();
 
 // 어제날짜까지의 Raw Data를 메모리에 적재 처리함.

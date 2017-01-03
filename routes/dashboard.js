@@ -2,7 +2,7 @@ var CONSTS = require('./consts');
 var Utils = require('./util');
 var express = require('express');
 var router = express.Router();
-var DashboardProvider = require('./dao/parstream/db-dashboard').DashboardProvider;
+var DashboardProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-dashboard').DashboardProvider;
 
 var dashboardProvider = new DashboardProvider();
 

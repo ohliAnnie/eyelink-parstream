@@ -9,5 +9,9 @@
 		"loading_day": 6,
 		"loading_time": 1
 	},
-	"queryposition": 100
+	"queryposition": 100,
+	"fetchData": {
+		"database" : "parstream",
+		"method" : "jdbc"
+	}
 }

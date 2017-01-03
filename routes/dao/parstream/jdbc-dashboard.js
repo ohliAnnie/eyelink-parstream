@@ -115,6 +115,10 @@ DashboardProvider = function() {
 
 // 단건에 대해서 Query를 수행한다.
 DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, callback) {
+
+  // parstream.status(function(err, status) {
+  //   console.log('status : %s, %s', status.pool, status.rpool);
+  // });
   console.log('db-Dashboard/selectSingleQueryByID -> queryID : ' + queryId)
   // console.log('db-Dashboard/selectSingleQueryByID -> data : ' + datas);
 
@@ -126,6 +130,7 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
       console.log("db-Dashboard/selectSingleQueryByID -> Using connection: " + connObj.uuid);
       // Grab the Connection for use.
       var conn = connObj.conn;
+      // console.log(conn);
       asyncjs.series([
         function(callback) {
           conn.createStatement(function(err, statement) {
@@ -185,28 +190,81 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
   });
 };
 
-// 복수건에 대해서 Query를 수행한다.
-DashboardProvider.prototype.selectMultiQueryByID = function (queryId, datas, callback) {
-  // console.log('queryID : ' + queryId)
-  // console.log('data : ' + datas);
-  // pool.getConnection(function (err, conn) {
-  //   if (err) {
-  //     conn.release();
-  //     callback(err);
-  //     return;
-  //   }
-  //   conn.query(sqlList[queryId], datas, function(err, rows) {
-  //     if (err) {
-  //       conn.release();
-  //       console.error("err : " + err);
-  //       callback(err);
-  //     } else {
-  //       conn.release();
-  //       console.log("rows : " + JSON.stringify(rows));
-  //       callback(null, rows);
-  //     }
-  //   });
+// 단건에 대해서 Query를 수행한다.
+DashboardProvider.prototype.selectSingleQueryByID2 = function (queryId, datas, callback) {
+
+  // parstream.status(function(err, status) {
+  //   console.log('status : %s, %s', status.pool, status.rpool);
   // });
+  console.log('db-Dashboard/selectSingleQueryByID -> queryID : ' + queryId)
+  // console.log('db-Dashboard/selectSingleQueryByID -> data : ' + datas);
+
+  console.time('db-Dashboard/selectSingleQueryByID -> ' + queryId+'-total');
+  console.time('db-Dashboard/selectSingleQueryByID -> ' + queryId+'-reserve');
+  parstream.reserve(function(err, connObj) {
+    if (connObj) {
+      console.timeEnd('db-Dashboard/selectSingleQueryByID -> ' + queryId+'-reserve');
+      console.log("db-Dashboard/selectSingleQueryByID -> Using connection: " + connObj.uuid);
+      // Grab the Connection for use.
+      var conn = connObj.conn;
+      console.log(conn);
+      asyncjs.series([
+        function(callback) {
+          conn.createStatement(function(err, statement) {
+            if (err) {
+              callback(err);
+            } else {
+              statement.setFetchSize(100, function(err) {
+                if (err) {
+                  callback(err);
+                } else {
+                  console.time('db-Dashboard/selectSingleQueryByID -> ' + queryId+'-executeQuery');
+                  // SQL 내 파라메타를 변경해준다.
+                  var sSql = Utils.replaceSql(sqlList[queryId], datas);
+                  console.log('db-Dashboard/selectSingleQueryByID -> ' + sSql);
+                  statement.execute(sSql,
+                                         function(err, resultset) {
+                    if (err) {
+                      callback(err)
+                    } else {
+                      console.timeEnd('db-Dashboard/selectSingleQueryByID -> ' + queryId+'-executeQuery');
+                      console.time('db-Dashboard/selectSingleQueryByID -> ' + queryId+'-resultset.toObjArray');
+                      // console.log(resultset);
+                      // console.log(resultset.length);
+                      // console.log(resultset[0]);
+                      // console.log('length %d ', resultset[0].node_id);
+                      resultset.toObjArray(function(err, results) {
+                        if (results.length > 0) {
+                          console.log("db-Dashboard/selectSingleQueryByID -> Query Count : " + results.length);
+                          callback(null, results);
+                        } else {
+                          console.log('db-Dashboard/selectSingleQueryByID -> no data found');
+                          callback(null, null);
+                        }
+                      //   // console.log(results);
+                      //   console.timeEnd(queryId+'-resultset.toObjArray');
+                      });
+                      // callback(null, resultset);
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }
+      ], function(err, results) {
+        // console.log(results);
+        parstream.release(connObj, function(err) {
+          console.log('db-Dashboard/selectSingleQueryByID -> released connection!!!');
+          if (err) {
+            console.log(err.message);
+          }
+          console.timeEnd('db-Dashboard/selectSingleQueryByID -> ' + queryId+'-total');
+          callback(err, results, datas);
+        })
+      });
+    }
+  });
 };
 
 exports.DashboardProvider = DashboardProvider;
