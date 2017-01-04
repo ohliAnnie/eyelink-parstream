@@ -13,5 +13,6 @@
 	"fetchData": {
 		"database" : "parstream",
 		"method" : "jdbc"
+
 	}
 }

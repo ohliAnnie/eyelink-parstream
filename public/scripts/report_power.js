@@ -30,14 +30,15 @@ function drawChart() {
 function drawPower(data, sdate, edate) {
   var powerSum = dc.barChart('#powerSum');
   var weekPlot = dc.boxPlot('#weekPlot');
-  var hourPlot = dc.boxPlot('#hourPlot');
+  var timePlot = dc.boxPlot('#timePlot');
+  var volLine = dc.lineChart('#volLine');
 
   var minDate = new Date(sdate);  
   var maxDate = new Date(edate);
 
   var msHour = 1000*60*60;
   var gap = (maxDate-minDate)/(24 * msHour);
-
+  var maxCnt = 0;
   var week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
    // 데이터 가공
@@ -49,8 +50,8 @@ function drawPower(data, sdate, edate) {
     d.event_time = df.parse(d.event_time);
     d.today = d3.time.day(d.event_time);        
     d.week = week[d.event_time.getDay()];
-    d.hour = b[0];
-    console.log(d);
+    d.time = b[0];
+    d.hour = d3.time.hour(d.event_time);    
   });
 
   var nyx = crossfilter(data);
@@ -66,10 +67,10 @@ function drawPower(data, sdate, edate) {
   var weekDim = nyx.dimension(function(d) {  return d.week; });
   var weekPlotGroup = weekDim.group().reduce(
     function(p, v) {
-      p.push(v.active_power);
+      p.push(v.amount_active_power);
       return p;
     }, function(p, v) {
-      p.splice(p.indexOf(v.active_power), 1);
+      p.splice(p.indexOf(v.amount_active_power), 1);
       return p;
     }, function() {
       return [];
@@ -77,8 +78,8 @@ function drawPower(data, sdate, edate) {
   );
 
   // Dimension by hour
-  var hourDim = nyx.dimension(function(d) { return d.hour;  });
-  var hourPlotGroup = hourDim.group().reduce(
+  var timeDim = nyx.dimension(function(d) { return d.time;  });
+  var timePlotGroup = timeDim.group().reduce(
     function(p, v) {
       p.push(v.active_power);
       return p;
@@ -90,12 +91,29 @@ function drawPower(data, sdate, edate) {
     }  
   );
 
+var hourDim = nyx.dimension(function(d) { return d.hour; });
+var volLineGroup = hourDim.group().reduce(
+  function(p, v) {
+    p.cnt++;
+    p.sum += v.voltage;
+    p.avg = p.sum/p.cnt;
+    return p;
+  }, function(p, v) {
+    p.cnt--;
+    p.sum -= v.voltage;
+    p.avg = p.sum/p.cnt;
+    return p;
+  }, function() {
+    return { cnt:0, sum:0, avg:0 };
+  }
+);
+
 
   /*  dc.barChart("#volumeMax")  */
 powerSum
   .width(window.innerWidth*0.4)
   .height((window.innerWidth*0.4)*0.5)
-  .margins({top: 15, right: 50, bottom: 40, left: 40})
+  .margins({top: 15, right: 50, bottom: 40, left: 70})
   .transitionDuration(500)
   .dimension(todayDim)
   .group(powerSumGroup)
@@ -111,25 +129,48 @@ powerSum
   weekPlot
     .width(window.innerWidth*0.4)
     .height((window.innerWidth*0.4)*0.5)
-    .margins({top: 10, right: 50, bottom: 30, left: 50})
+    .margins({top: 10, right: 50, bottom: 30, left: 70})
     .dimension(weekDim)
     .group(weekPlotGroup)
     .x(d3.scale.ordinal().domain(week))    
     .xUnits(dc.units.ordinal)    
     .elasticY(true);
 
-  hourPlot
+  timePlot
     .width(window.innerWidth*0.4)
     .height((window.innerWidth*0.4)*0.5)
     .margins({top: 10, right: 50, bottom: 30, left: 50})
-    .dimension(hourDim)
-    .group(hourPlotGroup)
+    .dimension(timeDim)
+    .group(timePlotGroup)
     .x(d3.scale.linear().domain([0, 24]))
-
     .xUnits(d3.time.hours)
     .round(d3.time.hours.round)
-    .elasticY(true);
+    .y(d3.scale.linear().domain([0, 24]));
 
+    var vol = 0;
+  volLine
+    .width(window.innerWidth*0.4)
+    .height((window.innerWidth*0.4)*0.5)
+    .transitionDuration(100)
+    .margins({top: 40, right: 20, bottom: 25, left: 40})
+    .dimension(hourDim)
+    .mouseZoomable(true)
+    .x(d3.time.scale().domain([minDate, maxDate ]))
+    .round(d3.time.hour.round)
+    .xUnits(d3.time.hours)
+    .elasticY(true)
+    .renderHorizontalGridLines(true)
+    .renderVerticalGridLines(true)
+    .legend(dc.legend().x(100).y(10).itemHeight(13).gap(10).horizontal(true))
+    .brushOn(false)
+    .group(volLineGroup, "voltage")
+    .valueAccessor(function (d) {      
+        if (d.avg > 240 || d.avg < 200)
+          vol = d.avg;
+        else 
+          vol = 220;
+        return vol;
+    })
 
   dc.renderAll();
 }

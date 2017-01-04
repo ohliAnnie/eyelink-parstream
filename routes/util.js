@@ -26,7 +26,7 @@ function mergeLoadedData(out_data) {
   // var d = new Date();
   // console.log('util/mergeLoadedData ->  today : %s', Date.today());
   for (var key in _rawDataByDay) {
-    if (_rawDataByDay[key] !== null) {
+    if (_rawDataByDay[key] !== null && _rawDataByDay[key] !== undefined) {
       console.log('util/mergeLoadedData -> date %s, data count : %s', key, _rawDataByDay[key].length);
       if (_rawDataByDay[key].length > 0)
         old_out_data = old_out_data.concat(_rawDataByDay[key]);
