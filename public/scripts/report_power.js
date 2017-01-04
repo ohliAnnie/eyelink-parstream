@@ -30,16 +30,26 @@ function drawChart() {
 function drawPower(data, sdate, edate) {
   var powerSum = dc.barChart('#powerSum');
   var weekPlot = dc.boxPlot('#weekPlot');
+  var hourPlot = dc.boxPlot('#hourPlot');
 
   var minDate = new Date(sdate);  
   var maxDate = new Date(edate);
 
+  var msHour = 1000*60*60;
+  var gap = (maxDate-minDate)/(24 * msHour);
+
+  var week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
    // 데이터 가공
   var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
+  var timeFormat = d3.time.format.utc("%H:%M");
   data.forEach(function(d) {    
+    var a = d.event_time.split(" ");
+    var b = a[1].split(":");
     d.event_time = df.parse(d.event_time);
     d.today = d3.time.day(d.event_time);        
-    d.week = d.event_time.getDay();
+    d.week = week[d.event_time.getDay()];
+    d.hour = b[0];
     console.log(d);
   });
 
@@ -53,16 +63,33 @@ function drawPower(data, sdate, edate) {
   });
 
 // Dimension by Week
-  var weekDim = nyx.dimension(function(d) { return d.week; });
+  var weekDim = nyx.dimension(function(d) {  return d.week; });
   var weekPlotGroup = weekDim.group().reduce(
     function(p, v) {
-
+      p.push(v.active_power);
+      return p;
     }, function(p, v) {
-
+      p.splice(p.indexOf(v.active_power), 1);
+      return p;
     }, function() {
-
+      return [];
     }  
   );
+
+  // Dimension by hour
+  var hourDim = nyx.dimension(function(d) { return d.hour;  });
+  var hourPlotGroup = hourDim.group().reduce(
+    function(p, v) {
+      p.push(v.active_power);
+      return p;
+    }, function(p, v) {
+      p.splice(p.indexOf(v.active_power), 1);
+      return p;
+    }, function() {
+      return [];
+    }  
+  );
+
 
   /*  dc.barChart("#volumeMax")  */
 powerSum
@@ -74,7 +101,7 @@ powerSum
   .group(powerSumGroup)
   .brushOn(true)
   .centerBar(true)
-  .gap(5)
+  .gap(gap)
   .x(d3.time.scale().domain([minDate, maxDate]))
   .round(d3.time.days.round)
   .alwaysUseRounding(true)
@@ -82,15 +109,27 @@ powerSum
   .xUnits(d3.time.days)
 
   weekPlot
-    .width(768)
-    .height(480)
+    .width(window.innerWidth*0.4)
+    .height((window.innerWidth*0.4)*0.5)
     .margins({top: 10, right: 50, bottom: 30, left: 50})
     .dimension(weekDim)
     .group(weekPlotGroup)
-    .x(d3.time.scale().domain([minDate, maxDate]))
-    .round(d3.time.day.round)
-    .xUnits(d3.time.days)
+    .x(d3.scale.ordinal().domain(week))    
+    .xUnits(dc.units.ordinal)    
     .elasticY(true);
+
+  hourPlot
+    .width(window.innerWidth*0.4)
+    .height((window.innerWidth*0.4)*0.5)
+    .margins({top: 10, right: 50, bottom: 30, left: 50})
+    .dimension(hourDim)
+    .group(hourPlotGroup)
+    .x(d3.scale.linear().domain([0, 24]))
+
+    .xUnits(d3.time.hours)
+    .round(d3.time.hours.round)
+    .elasticY(true);
+
 
   dc.renderAll();
 }

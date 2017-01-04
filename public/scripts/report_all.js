@@ -53,6 +53,8 @@ function drawAll(data, sdate, edate) {
   var minDate = new Date(sdate);  
   var maxDate = new Date(edate);
 
+  var gap = (maxDate-minDate)/(24 * 60 * 60 * 1000);
+
   var group_id = new Array();
 
   // 데이터 가공
@@ -153,8 +155,7 @@ var cnt = 0;
     return{};
   });
 
-  console.log((maxDate-minDate)/(24 * 60 * 60 * 1000));
-  var gap = (maxDate-minDate)/(24 * 60 * 60 * 1000);
+  console.log((maxDate-minDate)/(24 * 60 * 60 * 1000));  
   var checkDim = nyx.dimension(function(d) {  
     if(gap < 31) {
       return d.today; 
@@ -533,13 +534,11 @@ var cnt = 0;
     .dimension(nodeDim)
     .group(nodeBarGroup)
     .elasticY(true)
-    .elasticX(true)
     .brushOn(true)
-    .centerBar(true)
-    .gap(group_id.length)
-    .x(d3.time.scale().domain(d3.extent(group_id, function(d){        
-      console.log(d);
-      return d; })))  
+    //.centerBar(true)
+    .gap(group_id.length)         
+    .x(d3.scale.ordinal().domain(group_id))    
+    .xUnits(dc.units.ordinal)     
     .alwaysUseRounding(true)
     .renderHorizontalGridLines(true)
 
