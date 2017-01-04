@@ -2,7 +2,8 @@ var Utils = require('../../util');
 
 var parstream = require("parstream")
 var parstream =  parstream.createPool({
-    host: 'm2u-parstream.eastus.cloudapp.azure.com',
+//    host: 'm2u-parstream.eastus.cloudapp.azure.com',
+    host: 'm2u-da.eastus.cloudapp.azure.com',
     port: 9042,
     size: 5,
 });

@@ -12,7 +12,7 @@
 	"queryposition": 100,
 	"fetchData": {
 		"database" : "parstream",
-		"#method" : "jdbc",
-		"method" : "nodelib"
+		"method" : "jdbc"
+
 	}
 }
