@@ -39,8 +39,8 @@ limit 1;
         vibration_x, vibration_y, vibration_z,
         (vibration_x + vibration_y + vibration_z) / 3 as vibration
    from tb_node_raw
- where event_time >= timestamp '2016-12-13 00:00:00'
-   and event_time < timestamp '2016-12-13 23:59:59'
+ where event_time >= timestamp '2016-12-30 00:00:00'
+   and event_time < timestamp '2017-01-05 23:59:59';
 
    select count(*)
    from tb_node_raw
