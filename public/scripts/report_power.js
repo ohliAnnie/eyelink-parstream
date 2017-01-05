@@ -5,7 +5,7 @@ function drawChart() {
   var ind = searchDate.indexOf(' - ');
   var sdate = searchDate.substring(0, ind);
   var edate = searchDate.substring(ind+3);
-  console.log('%s, %s', sdate, edate);
+  console.log('%s, %s', sdate, edate);  
   $.ajax({
     url: "/reports/restapi/getTbRawDataByPeriodPower" ,
     dataType: "json",
@@ -31,7 +31,7 @@ function drawPower(data, sdate, edate) {
   var powerSum = dc.barChart('#powerSum');
   var weekPlot = dc.boxPlot('#weekPlot');
   var timePlot = dc.boxPlot('#timePlot');
-  var volLine = dc.lineChart('#volLine');
+  var volLine = dc.compositeChart('#volLine');
 
   var minDate = new Date(sdate);  
   var maxDate = new Date(edate);
@@ -151,26 +151,29 @@ powerSum
   volLine
     .width(window.innerWidth*0.4)
     .height((window.innerWidth*0.4)*0.5)
-    .transitionDuration(100)
     .margins({top: 40, right: 20, bottom: 25, left: 40})
-    .dimension(hourDim)
-    .mouseZoomable(true)
+    .transitionDuration(100)
+    .dimension(hourDim)    
     .x(d3.time.scale().domain([minDate, maxDate ]))
     .round(d3.time.hour.round)
     .xUnits(d3.time.hours)
-    .elasticY(true)
+    .y(d3.scale.linear().domain([180, 260]))
     .renderHorizontalGridLines(true)
     .renderVerticalGridLines(true)
     .legend(dc.legend().x(100).y(10).itemHeight(13).gap(10).horizontal(true))
     .brushOn(false)
-    .group(volLineGroup, "voltage")
-    .valueAccessor(function (d) {      
-        if (d.avg > 240 || d.avg < 200)
-          vol = d.avg;
-        else 
-          vol = 220;
-        return vol;
-    })
-
+    .compose([
+      dc.lineChart(volLine).group(volLineGroup, "voltage")
+        .valueAccessor(function (d) {  return d.value.avg;  })
+        .colors('yellow'),
+      dc.lineChart(volLine).group(volLineGroup, "Min")
+        .valueAccessor(function (d) {  return 200;  })
+        .colors('blue')
+        .dashStyle([5,5]),
+      dc.lineChart(volLine).group(volLineGroup, "Max")
+        .valueAccessor(function (d) {  return 240;  })
+        .colors('red')
+        .dashStyle([5,5]),
+    ])
   dc.renderAll();
 }

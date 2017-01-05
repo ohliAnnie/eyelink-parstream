@@ -7,7 +7,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
 
   var first = 0;
 // Data Setting
-  data.rtnData.forEach(function(d) {            
+  data.rtnData.forEach(function(d) {
     var a = d.event_time.split(" ");
     var b = a[1].split(".");
     d.time = b[0];                 

@@ -486,7 +486,7 @@ var cnt = 0;
       .renderVerticalGridLines(true)
    //   .yAxisLabel("Date")
       .title(function(d) {
-        return "\nNumber of Povetry: " + d.key;
+        return "\nCount : " + d.value.cnt;
       })
       .legend(dc.legend().x(20).y(10).itemHeight(13).gap(5))
       .compose([
