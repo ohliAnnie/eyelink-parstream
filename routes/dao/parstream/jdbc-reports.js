@@ -74,6 +74,14 @@ var sqlList = {
         "  where event_time >= timestamp #START_TIMESTAMP# " +
         "    and event_time < timestamp #END_TIMESTAMP# " +
         "    and event_type = 1 ",
+
+    // Power All 조회
+  "selectEventRawDataPowerAll" :
+        "   select event_year, event_month, event_day, avg(active_power) AS amount_active_power "+
+        "      from tb_node_raw " +
+        "      where  event_type = 1 " +
+        "       group by event_year, event_month, event_day " +
+        "       order by event_year, event_month, event_day ",
 };
 
 ReportsProvider = function() {
