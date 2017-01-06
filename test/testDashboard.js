@@ -70,7 +70,7 @@ describe("Test", function(){
     it('Search Data RawData for DC Chart ', function(done) {
       var datas = {user_id: "user_id"};
       request(svr)
-        .get("/dashboard/restapi/getReportRawData")
+        .get("/dashboard/restapi/getDashboardRawData")
         .send(datas)
         .expect('Content-Type', /json/)
         .expect(200, function(err, res) {

@@ -189,6 +189,7 @@ function drawChart() {
     var cnt_event_type = 0,
         cnt_fault_type = 0;
     data.forEach(function (d) {
+      console.log(d);
       // console.log('date : ' + df.parse("2016-11-28"));
       d.dd = df.parse(d.event_time);
       d.month = d3.time.month(d.dd);

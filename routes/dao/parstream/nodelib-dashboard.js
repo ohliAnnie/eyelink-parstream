@@ -110,9 +110,9 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
       console.time('nodelib-Dashboard/selectSingleQueryByID -> ('+ queryId +') executeQuery');
       parstream.query(sSql, function(err, resultset) {
         console.timeEnd('nodelib-Dashboard/selectSingleQueryByID -> ('+ queryId +') executeQuery');
-        console.log('nodelib-Dashboard/selectSingleQueryByID -> resultset : %j', resultset);
+        // console.log('nodelib-Dashboard/selectSingleQueryByID -> resultset : %j', resultset);
 
-        console.log(err);
+        // console.log(err);
         // occur error
         var err = null;
         if (typeof resultset.error === 'string') {
