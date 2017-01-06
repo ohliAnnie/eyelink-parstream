@@ -1,18 +1,18 @@
-function drawCheckChart() {
-  var sdate = moment().subtract(100, 'days').format('YYYY-MM-DD');
+function drawCheckChart() {  
   var edate = moment().format('YYYY-MM-DD');
+  var wPoint = new Date(edate).getDay();  
+  var sdate = moment().subtract(21+wPoint, 'days').format('YYYY-MM-DD');    
+  console.log(wPoint);
   console.log('%s, %s', sdate, edate);
-  console.log('check');
   $.ajax({
     url: "/reports/restapi/getTbRawDataByAllPower" ,
     dataType: "json",
     type: "get",
     data: {startDate:sdate, endDate:edate},
-    success: function(result) {
-      // console.log(result);
+    success: function(result) {     
       if (result.rtnCode.code == "0000") {
-        var data = result.rtnData;        
-        drawPower(data, sdate, edate);
+        var data = result.rtnData;       
+        drawCheckPower(data, sdate, edate);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -24,78 +24,85 @@ function drawCheckChart() {
   });
 }
 
-function drawPower(data, sdate, edate) {
-  var today=moment().format('YYYY-MM-DD');
-  var a = today.split("-");  
-  var mon0 = a[0]+"-"+a[1];
-  var mon = [[0,0],[0,0],[0,0]];
-for(var i=0; i<3; i++){
-  mon[i][0] = parseInt(a[0]);
-  mon[i][1] = parseInt(a[1]);  
-  if(a[1]>1){
-    a[1]--;
-  }  else {
-    a[1]=12;
-    a[0]--;
+function drawCheckPower(data, sdate, edate) {
+  var wPoint = new Date(edate).getDay();
+  var start = new Date(sdate)
+  var week = new Array();
+  var weekly = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];    
+  var getD = 21+wPoint;
+
+  var dCnt = 21+wPoint+1;
+  var apData = new Array();
+  var dData = new Array();
+  dData[0] = edate;  
+  for(var i=0; i<28; i++){    
+    dData[i] = moment().subtract(getD--, 'days').format('YYYY-MM-DD');      
+    apData[i] = 0;
+    if(dCnt-i < 0) {
+      apData[i] =  null;
+    }
   }
-}
-
+  console.log(dData);
+  console.log(apData);
   // Data Setting
-  data.forEach(function(d) {                
-    d.yAxis  = d.event_year;
-    d.mAxis = d.event_month;
-    d.dAxis = d.event_day;
-    d.day = d.yAxis+'-'+d.mAxis+'-'+d.dAxis;
+ 
+  var max = 0;
+  data.forEach(function(d) {                    
+    if(d.event_month<10)
+      var mon = '0'+d.event_month;
+    else 
+      var mon = d.event_month;
+    if(d.event_day<10)
+      var day = '0'+d.event_day;
+    else 
+      var day = d.event_day;
+    d.day = d.event_year+'-'+mon+'-'+day;
+    console.log(d.day+" : "+d.active_power);
+    for(var i = apData.length; i>=0; i--) {
+      if(d.day == dData[i]){
+        apData[i] = d.active_power;
+        if(max < d.active_power){
+          max = d.active_power;
+        }
+      }
+    }
   });
-
+    console.log(apData);
   var demo = new Vue({
     el: '#table',
     data: {
       people_count: 200,
-      lineCategory: ['0month', '1month', '2month'],
-      selectCate: [],
+      lineCategory: ['week0', 'week1', 'week2', 'week3'],
+      selectCate: ['week0', 'week3'],
       lineFunc: null
     },
     methods: {
       displayLine: function() {
         var self = this;
         var input = 0;
-        var data = [];
-        var hAxis = pData[input]['hAxis'], mAxis = pData[input]['mAxis'], sAxis = pData[input]['sAxis'];
-
-        for(var i=0; i<60; i++) {      
-          var tAxis = hAxis + ":" + mAxis + ":" + sAxis;
-          if(tAxis == pData[input]['time']) {
-              data.push({time:pData[input]['time'], ampere:pData[input]['ampere'], voltage:pData[input]['voltage'], active_power:pData[input]['active_power'], apparent_power:pData[input]['apparent_power'] , reactive_power:pData[input]['reactive_power'], power_factor:pData[input++]['power_factor']});
-              while(tAxis == pData[input++]['time']) { }
-            } else {
-             data.push({time:tAxis, ampere:0, voltage:0, active_power:0, apparent_power:0, reactive_power:0, power_factor:0});
-           }
-          if(mAxis === 59 && sAxis === 59) {
-            hAxis++;
-            mAxis = '0' + 0;
-            sAxis = '0' + 0;
-          } else if(sAxis === 59) {
-            mAxis++;
-            if(mAxis < 10) {            mAxis = '0' + mAxis;          }
-            sAxis = '0' +0;
-          } else {
-            sAxis++;
-            if(sAxis < 10) {            sAxis = '0' + sAxis;          }
-          }
+        var data = [];      
+        var edate = moment().subtract(28, 'days').format('YYYY-MM-DD');  
+        console.log(edate);
+        var wPoint = new Date(edate).getDay();
+        for(var i=0; i<7; i++) {        
+          console.log(wPoint);
+         if(i<=wPoint) {
+            data.push({time:weekly[i], week0:apData[i+21], week1:apData[i+14], week2:apData[i+7], week3:apData[i]});      
+         }          else {
+            data.push({time:weekly[i], week1:apData[i+14], week2:apData[i+7], week3:apData[i]});      
+         }
         }
-        
+          console.log(data);
               //generation function
       function generate(data, id, lineType, axisNum) {
         var margin = {top: 14, right: 20, bottom: 60, left: 40},
         width = $(id).width() - margin.left - margin.right, 
         height = $(id).height() - margin.top - margin.bottom;
 
-        var parseDate = d3.time.format("%H:%M:%S").parse;
         var legendSize = 10,
-               color = d3.scale.category20();
+         color = d3.scale.category20();
 
-        var x = d3.time.scale().range([0, width]);
+        var x = d3.scale.ordinal().rangePoints([0, width]);
         var y = d3.scale.linear().rangeRound([height, 0]);
 
         var ddata = (function() {
@@ -108,22 +115,22 @@ for(var i=0; i<3; i++){
 
           data.forEach(function (d) {
             self.lineCategory.map(function (name) {
-              temp[name].values.push({'category': name, 'time': parseDate(d['time']), 'num': d[name]});
+              temp[name].values.push({'category': name, 'time': d['time'], 'num': d[name]});
             });
           });
 
           return seriesArr;
         })();
 
-        x.domain( d3.extent(data, function(d) { return parseDate(d['time']); }) );
-        y.domain([0, 300]);
+        x.domain(weekly);
+        y.domain([0, max]);
 
         //data.length/10 is set for the garantte of timeseries's fitting effect in svg chart
         var xAxis = d3.svg.axis()
         .scale(x)
-        .ticks(d3.time.seconds, Math.floor(data.length / axisNum))
+        .ticks(7)
         .tickSize(-height)
-        .tickPadding([6])
+        .tickPadding([7])
         .orient("bottom");
 
         var yAxis = d3.svg.axis()
@@ -164,9 +171,10 @@ for(var i=0; i<3; i++){
           .data(ddata)
           .enter()
           .append("path")             
-          .attr("class", function (d) {          
+          .attr("class", function (d) {        
             return "click_line click_line_" + d['category']; })
-          .attr("d", function(d) { return line(d['values']); })         
+          .attr("d", function(d) {            
+           return line(d['values']); })         
            .style("display", function (d) {
               //to check if the checkbox has been selected and decide whether to show it out
               //use display:none and display:inherit to control the display of scatter dots
@@ -206,7 +214,18 @@ for(var i=0; i<3; i++){
               return '.55em';
             }
           })
-           .text(function(d) {            return d;          });
+           .text(function(d) {  
+              if(d === 'week0')   {
+                var rename = "이번주";
+              } else if(d === 'week1') {
+                var rename = "1주전";              
+              } else if(d === 'week2') {
+                var rename = "2주전"
+              } else {
+                var rename = "3주전";
+              }
+                  return rename;          });
+        
 
           //draw the rect for legends
         var rect = svg.append('g')
@@ -240,11 +259,18 @@ for(var i=0; i<3; i++){
         .on("mouseover", function (d) {
           // console.log();
           var currentX = $(this)[0]['cx']['animVal']['value'],
-          currentY = $(this)[0]['cy']['animVal']['value'];
-
+          currentY = $(this)[0]['cy']['animVal']['value'];          
           d3.select(this).transition().duration(100).style("opacity", 1);
 
+          var lpoint = $('#LINE');
+          lpoint.on("mouseover", function(d) {
+            currentX = event.clientX;
+            currentYs = event.clientY;
+          });
+
           var ret = $('.tipNetPoints').filter(function(index) {
+            console.log('x : '+currentX);
+            console.log('y : '+currentY);
             return ($(this)[0]['cx']['animVal']['value'] === currentX && $(this)[0]['cy']['animVal']['value'] !== currentY);
           });
 
@@ -252,9 +278,18 @@ for(var i=0; i<3; i++){
           var jud = ret.length;
 
           var mainCate = (function() {
-            if (d['num'] != 0)
-              return d['category'] + ' | ';
-            else
+            if (d['num'] != 0){
+              if(d['category'] === 'week0')   {
+                var rename = "이번주";
+              } else if(d['category'] === 'week1') {
+                var rename = "1주전";              
+              } else if(d['category'] === 'week2') {
+                var rename = "2주전"
+              } else {
+                var rename = "3주전";
+              }            
+              return rename + ' | ';
+            } else
               return '';
           })();
 
@@ -292,6 +327,7 @@ for(var i=0; i<3; i++){
           d3.select(this).transition().duration(100).style("opacity", 0);
 
           var ret = $('.tipNetPoints').filter(function(index) {
+            console.log(currentX);
             return ($(this)[0]['cx']['animVal']['value'] === currentX);
           });
 
@@ -336,6 +372,35 @@ for(var i=0; i<3; i++){
       //inits chart
       self.lineFunc = new generate(data, "#LINE", "linear",30);
     },
+    checkOpt: function (e) {
+      var self = this;      
+      //check the Scatter Choice and Refresh the charts
+      var count = 0;
+      for (var i=0; i < self.lineCategory.length; i++) {
+        if ($("#" + self.lineCategory[i]).prop("checked"))
+          count++;
+      }
+
+      //judge if the checked checkbox reach the max limitation
+      if (count>10) {
+        alert("NOTICE: The MAXIMUM selection should be TEN.");
+        e.target.checked = false;
+      }
+
+      self.selectCate = [];
+
+      for (var i=0; i<self.lineCategory.length; i++) {
+        if ($("#"+self.lineCategory[i]).prop("checked")) {
+          self.selectCate.push(self.lineCategory[i]);
+          d3.selectAll(".click_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'inherit');
+        }
+        else
+          d3.selectAll(".click_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'none');
+      }
+
+      //redraw the legend and chart
+      this.legendRedraw(self.selectCate, "#LINE", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
+    },
     legendRedraw: function (selectCate, id, legend, rect, legendSize, margin, height, width, color) {
       //update the scatter plot legend
       legend.selectAll('.path_legend')
@@ -361,7 +426,18 @@ for(var i=0; i<3; i++){
             return '.55em';
           }
         })
-        .text(function(d) {          return d;        });
+        .text(function(d) {  
+          if(d === 'week0')   {
+            var rename = "이번주";
+          } else if(d === 'week1') {
+            var rename = "1주전";              
+          } else if(d === 'week2') {
+            var rename = "2주전"
+          } else {
+            var rename = "3주전";
+          }
+              return rename;          });
+        
 
       //create new legends
       var singLegend = legend.selectAll('.path_legend')
@@ -390,7 +466,18 @@ for(var i=0; i<3; i++){
           return '.55em';
         }
       })
-      .text(function(d) {        return d;      });
+     .text(function(d) {  
+        if(d === 'week0')   {
+          var rename = "이번주";
+        } else if(d === 'week1') {
+          var rename = "1주전";              
+        } else if(d === 'week2') {
+          var rename = "2주전"
+        } else {
+          var rename = "3주전";
+        }
+            return rename;          });
+        
 
       //remove the old legends
       legend.selectAll('.path_legend')
