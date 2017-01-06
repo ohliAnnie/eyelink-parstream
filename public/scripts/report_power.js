@@ -81,10 +81,10 @@ function drawPower(data, sdate, edate) {
   var timeDim = nyx.dimension(function(d) { return d.time;  });
   var timePlotGroup = timeDim.group().reduce(
     function(p, v) {
-      p.push(v.active_power);
+      p.push(v.amount_active_power);
       return p;
     }, function(p, v) {
-      p.splice(p.indexOf(v.active_power), 1);
+      p.splice(p.indexOf(v.amount_active_power), 1);
       return p;
     }, function() {
       return [];
@@ -132,9 +132,8 @@ powerSum
     .margins({top: 10, right: 50, bottom: 30, left: 70})
     .dimension(weekDim)
     .group(weekPlotGroup)
-    .x(d3.scale.ordinal().domain(week))    
-    .xUnits(dc.units.ordinal)    
-    .elasticY(true);
+      .y(d3.scale.linear().domain([0, 2000]))
+      .elasticX(true);
 
   timePlot
     .width(window.innerWidth*0.4)
@@ -142,10 +141,9 @@ powerSum
     .margins({top: 10, right: 50, bottom: 30, left: 50})
     .dimension(timeDim)
     .group(timePlotGroup)
-    .x(d3.scale.linear().domain([0, 24]))
-    .xUnits(d3.time.hours)
-    .round(d3.time.hours.round)
-    .y(d3.scale.linear().domain([0, 24]));
+      .elasticY(true)
+      .elasticX(true);
+
 
     var vol = 0;
   volLine

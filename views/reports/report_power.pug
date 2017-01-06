@@ -88,7 +88,7 @@ block content
               strong Over Flow Voltage Value
               br
               #volLine
-        div.map-container
+        div.map-container(style='width:98%;height:440px;')
           div.inner
             #table
               .panel.panel-card
@@ -96,13 +96,16 @@ block content
                     h5.no-margin.m-b Click Line Show Chart
                   .panel-body
                     .panel-checkbox-xs.visible-xs-block.visible-sm-block                
-                      input#0month.click_checkbox(type='checkbox', name='voltage', value='2', v-on='click:checkOpt')
-                      text  이번달
+                      input#week0.click_checkbox(type='checkbox', name='week0', value='1', v-on='click:checkOpt', checked='true')
+                      text  이번주
                       |  
-                      input#1month.click_checkbox(type='checkbox', name='active_power', value='3', v-on='click:checkOpt')
-                      text  지난달
+                      input#week1.click_checkbox(type='checkbox', name='week1', value='2', v-on='click:checkOpt')
+                      text  1주전
                       |  
-                      input#2month.click_checkbox(type='checkbox', name='apparent_power', value='4', v-on='click:checkOpt')
-                      text  지지난달                      
+                      input#week2.click_checkbox(type='checkbox', name='week2', value='3', v-on='click:checkOpt')
+                      text  2주전
+                      |  
+                      input#week3.click_checkbox(type='checkbox', name='week3', value='4', v-on='click:checkOpt', checked='true')
+                      text  3주전
                     .col-xm-12.col-sm-12.col-md-10.col-xs-12
-                      #LINE(style='width:98%;height:350px;')
+                      #LINE(style='width:95%;height:350px;')
