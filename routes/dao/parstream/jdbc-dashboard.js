@@ -10,8 +10,8 @@ if (!jinst.isJvmCreated()) {
 
 var config = {
   // Required
-  url: 'jdbc:parstream://m2u-da.eastus.cloudapp.azure.com:9043/eyelink',
-  // url: 'jdbc:parstream://m2u-parstream.eastus.cloudapp.azure.com:9043/eyelink',
+  // url: 'jdbc:parstream://m2u-da.eastus.cloudapp.azure.com:9043/eyelink',
+  url: 'jdbc:parstream://m2u-parstream.eastus.cloudapp.azure.com:9043/eyelink',
   drivername: 'com.parstream.ParstreamDriver',
   minpoolsize: 1,
   maxpoolsize: 10,
