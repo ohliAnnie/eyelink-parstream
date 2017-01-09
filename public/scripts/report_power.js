@@ -6,6 +6,8 @@ function drawChart() {
   var sdate = searchDate.substring(0, ind);
   var edate = searchDate.substring(ind+3);
   console.log('%s, %s', sdate, edate);  
+  sdate = '2016-11-26';
+  edate = '2016-12-07'
   $.ajax({
     url: "/reports/restapi/getTbRawDataByPeriodPower" ,
     dataType: "json",
@@ -78,13 +80,13 @@ function drawPower(data, sdate, edate) {
   );
 
   // Dimension by hour
-  var timeDim = nyx.dimension(function(d) { return d.time;  });
+  var timeDim = nyx.dimension(function(d) {    return d.time;  });
   var timePlotGroup = timeDim.group().reduce(
     function(p, v) {
-      p.push(v.amount_active_power);
+      p.push(v.active_power);
       return p;
     }, function(p, v) {
-      p.splice(p.indexOf(v.amount_active_power), 1);
+      p.splice(p.indexOf(v.active_power), 1);
       return p;
     }, function() {
       return [];
@@ -141,8 +143,12 @@ powerSum
     .margins({top: 10, right: 50, bottom: 30, left: 50})
     .dimension(timeDim)
     .group(timePlotGroup)
-      .elasticY(true)
-      .elasticX(true);
+      .y(d3.scale.linear().domain([0, 500]))
+      .elasticX(true)
+      .title(function(d) {
+        console.log(d);
+        return "\n"+d.key+" : " + d.value;
+      });
 
 
     var vol = 0;
@@ -158,8 +164,11 @@ powerSum
     .y(d3.scale.linear().domain([180, 260]))
     .renderHorizontalGridLines(true)
     .renderVerticalGridLines(true)
-    .legend(dc.legend().x(100).y(10).itemHeight(13).gap(10).horizontal(true))
-    .brushOn(false)
+    .mouseZoomable(true)
+    .legend(dc.legend().x(100).y(10).itemHeight(13).gap(10).horizontal(true))    
+    .title(function(d) {
+        return "\n"+d.key+" : " + d.value.avg;
+      })
     .compose([
       dc.lineChart(volLine).group(volLineGroup, "voltage")
         .valueAccessor(function (d) {  return d.value.avg;  })

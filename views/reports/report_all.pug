@@ -38,8 +38,10 @@ block content
             button#btn_search.btn-submit.search(type='submit') SEARCH
             script.
               $(document).ready(function() {
-                var start = moment().subtract(5, 'days');
+                var start = moment().subtract(5, 'daterangeys');
                 var end = moment();
+                start = '2016-11-26';
+                end = '2016-12-04';
                 $('input[name="daterange"]').daterangepicker({
                     "autoApply": true,
                     startDate: start,

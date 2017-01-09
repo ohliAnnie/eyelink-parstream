@@ -1,8 +1,7 @@
 function drawCheckChart() {  
   var edate = moment().format('YYYY-MM-DD');
   var wPoint = new Date(edate).getDay();  
-  var sdate = moment().subtract(21+wPoint, 'days').format('YYYY-MM-DD');    
-  console.log(wPoint);
+  var sdate = moment().subtract(21+wPoint, 'days').format('YYYY-MM-DD');      
   console.log('%s, %s', sdate, edate);
   $.ajax({
     url: "/reports/restapi/getTbRawDataByAllPower" ,
@@ -42,8 +41,7 @@ function drawCheckPower(data, sdate, edate) {
       apData[i] =  null;
     }
   }
-  console.log(dData);
-  console.log(apData);
+  
   // Data Setting
  
   var max = 0;
@@ -57,7 +55,7 @@ function drawCheckPower(data, sdate, edate) {
     else 
       var day = d.event_day;
     d.day = d.event_year+'-'+mon+'-'+day;
-    console.log(d.day+" : "+d.active_power);
+    
     for(var i = apData.length; i>=0; i--) {
       if(d.day == dData[i]){
         apData[i] = d.active_power;
@@ -67,7 +65,7 @@ function drawCheckPower(data, sdate, edate) {
       }
     }
   });
-    console.log(apData);
+    
   var demo = new Vue({
     el: '#table',
     data: {
@@ -82,17 +80,15 @@ function drawCheckPower(data, sdate, edate) {
         var input = 0;
         var data = [];      
         var edate = moment().subtract(28, 'days').format('YYYY-MM-DD');  
-        console.log(edate);
+        
         var wPoint = new Date(edate).getDay();
         for(var i=0; i<7; i++) {        
-          console.log(wPoint);
          if(i<=wPoint) {
             data.push({time:weekly[i], week0:apData[i+21], week1:apData[i+14], week2:apData[i+7], week3:apData[i]});      
          }          else {
             data.push({time:weekly[i], week1:apData[i+14], week2:apData[i+7], week3:apData[i]});      
          }
         }
-          console.log(data);
               //generation function
       function generate(data, id, lineType, axisNum) {
         var margin = {top: 14, right: 20, bottom: 60, left: 40},
@@ -139,6 +135,12 @@ function drawCheckPower(data, sdate, edate) {
         .tickSize(-width)
         .tickPadding([8])
         .orient("left");            
+
+    // Define the div for the tooltip
+    var div = d3.select("body").append("div") 
+        .attr("class", "tip")       
+        .style("opacity", 0);
+
 
         d3.select('#svg-path').remove();
 
@@ -242,7 +244,7 @@ function drawCheckPower(data, sdate, edate) {
           return 'translate(' + (i * (5 + (width-20) / 6)) + ',' + (height + margin.bottom - legendSize - 20) + ')';
         });
 
-        var points = svg.selectAll(".seriesPoints")
+      var points = svg.selectAll(".seriesPoints")
         .data(ddata)
         .enter().append("g")
         .attr("class", "seriesPoints");
@@ -257,26 +259,7 @@ function drawCheckPower(data, sdate, edate) {
         .attr("r", "6px")
         .style("fill", "transparent")
         .on("mouseover", function (d) {
-          // console.log();
-          var currentX = $(this)[0]['cx']['animVal']['value'],
-          currentY = $(this)[0]['cy']['animVal']['value'];          
-          d3.select(this).transition().duration(100).style("opacity", 1);
-
-          var lpoint = $('#LINE');
-          lpoint.on("mouseover", function(d) {
-            currentX = event.clientX;
-            currentYs = event.clientY;
-          });
-
-          var ret = $('.tipNetPoints').filter(function(index) {
-            console.log('x : '+currentX);
-            console.log('y : '+currentY);
-            return ($(this)[0]['cx']['animVal']['value'] === currentX && $(this)[0]['cy']['animVal']['value'] !== currentY);
-          });
-
-          //to adjust tooltip'x content if upload and download data are the same
-          var jud = ret.length;
-
+        
           var mainCate = (function() {
             if (d['num'] != 0){
               if(d['category'] === 'week0')   {
@@ -293,6 +276,13 @@ function drawCheckPower(data, sdate, edate) {
               return '';
           })();
 
+            div.transition()    
+                .duration(200)    
+                .style("opacity", .9);    
+            div .html(' ' + mainCate + d['num'] + ' ')  
+                .style("left", (d3.event.pageX) + "px")   
+                .style("top", (d3.event.pageY - 28) + "px");  
+
               svg.append("g")
               .attr("class", "tipDot")
               .append("line")
@@ -305,43 +295,36 @@ function drawCheckPower(data, sdate, edate) {
 
               svg.append("polyline")
               .attr("class", "tipDot")
-              .style("fill", "black")
+              .style("fill", "white")
               .attr("points", ($(this)[0]['cx']['animVal']['value']-3.5)+","+(0-2.5)+","+$(this)[0]['cx']['animVal']['value']+","+(0+6)+","+($(this)[0]['cx']['animVal']['value']+3.5)+","+(0-2.5));
 
               svg.append("polyline")
               .attr("class", "tipDot")
-              .style("fill", "black")
+              .style("fill", "white")
               .attr("points", ($(this)[0]['cx']['animVal']['value']-3.5)+","+(y(0)+2.5)+","+$(this)[0]['cx']['animVal']['value']+","+(y(0)-6)+","+($(this)[0]['cx']['animVal']['value']+3.5)+","+(y(0)+2.5));
-   
-              $(this).tooltip({
-                'container': 'body',
-                'placement': 'left',
-                'title': mainCate + d['num'],
-                'trigger': 'hover'
-              })
-              .tooltip('show');
             })
         .on("mouseout",  function (d) {
+
+            div.transition()    
+                .duration(500)    
+                .style("opacity", 0);
+
           var currentX = $(this)[0]['cx']['animVal']['value'];
 
           d3.select(this).transition().duration(100).style("opacity", 0);
 
           var ret = $('.tipNetPoints').filter(function(index) {
-            console.log(currentX);
             return ($(this)[0]['cx']['animVal']['value'] === currentX);
           });
 
           $.each(ret, function(index, val) {
             $(val).animate({
               opacity: "0"
-            }, 100);
-
-            $(val).tooltip('destroy');
+            }, 100);     
           });
 
           d3.selectAll('.tipDot').transition().duration(100).remove();
 
-          $(this).tooltip('destroy');
         });
 
        this.getOpt = function() {
