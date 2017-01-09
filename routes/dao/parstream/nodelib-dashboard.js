@@ -1,12 +1,13 @@
 var Utils = require('../../util');
 
-var parstream = require("parstream")
-var parstream =  parstream.createPool({
-//    host: 'm2u-parstream.eastus.cloudapp.azure.com',
-    host: 'm2u-da.eastus.cloudapp.azure.com',
+var parstream = require("/routes/dao/parstream/parstream");
+var opts = {
+    host: 'm2u-parstream.eastus.cloudapp.azure.com',
+    // host: 'm2u-da.eastus.cloudapp.azure.com',
     port: 9042,
     size: 5,
-});
+}
+// var parstream =  parstream.createPool(opts);
 
 var sqlList = {
   // Event 발생 건수 조회
@@ -94,10 +95,12 @@ DashboardProvider = function() {
 
 // 단건에 대해서 Query를 수행한다.
 DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, callback) {
-
   var vTimeStamp = Date.now();
-  console.time('nodelib-Dashboard/selectSingleQueryByID -> total '+ queryId);
-  console.log('nodelib-Dashboard/selectSingleQueryByID -> (%s) queryID' + queryId)
+  console.time('nodelib-Dashboard/selectSingleQueryByID -> '+ queryId +' total ');
+  console.log('nodelib-Dashboard/selectSingleQueryByID -> (%s) queryID', queryId)
+
+  // no pool method
+  var parstream = require('parstream').createClient(opts);
 
   parstream.connect(function(err) {
     if (err) {
@@ -105,24 +108,28 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
     } else {
       // SQL 내 파라메타를 변경해준다.
       var sSql = Utils.replaceSql(sqlList[queryId], datas);
-      // console.log('nodelib-Dashboard/selectSingleQueryByID -> ' + sSql);
+      console.log('nodelib-Dashboard/selectSingleQueryByID -> ' + sSql);
 
-      console.time('nodelib-Dashboard/selectSingleQueryByID -> executeQuery'+ queryId);
+      console.time('nodelib-Dashboard/selectSingleQueryByID -> ('+ queryId +') executeQuery');
       parstream.query(sSql, function(err, resultset) {
-        console.timeEnd('nodelib-Dashboard/selectSingleQueryByID -> executeQuery'+ queryId);
-        // console.log('nodelib-Dashboard/selectSingleQueryByID -> resultset : %j', resultset);
+        console.timeEnd('nodelib-Dashboard/selectSingleQueryByID -> ('+ queryId +') executeQuery');
+        console.log('nodelib-Dashboard/selectSingleQueryByID -> resultset : %j', resultset);
+
+        // console.log(err);
         // occur error
         var err = null;
         if (typeof resultset.error === 'string') {
           console.log('nodelib-Dashboard/selectSingleQueryByID -> (%s) resultset error : %s', queryId, (typeof resultset.error === 'string'));
           err = resultset.error;
-          console.timeEnd('nodelib-Dashboard/selectSingleQueryByID -> (%s) total ', queryId);
+          console.timeEnd('nodelib-Dashboard/selectSingleQueryByID -> '+ queryId +' total ');
+          parstream.close();
           callback(resultset.error, [[]], datas);
         } else {
           console.log('nodelib-Dashboard/selectSingleQueryByID -> (%s) resultset.rows.length : %d', queryId, resultset.rows.length);
           // console.log('nodelib-Dashboard/selectSingleQueryByID -> resultset type : %s', (typeof resultset === 'object'));
           // console.log('nodelib-Dashboard/selectSingleQueryByID -> resultset rows type : %s', (typeof resultset.rows === 'object'));
-          console.timeEnd('nodelib-Dashboard/selectSingleQueryByID -> total '+ queryId);
+          console.timeEnd('nodelib-Dashboard/selectSingleQueryByID -> '+ queryId +' total ');
+          parstream.close();
           callback(err, [resultset.rows], datas);
         }
         // parstream.close(function () {
