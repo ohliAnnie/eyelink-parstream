@@ -1,6 +1,7 @@
 var Utils = require('../../util');
 
-var parstream = require("/routes/dao/parstream/parstream");
+var parstream = require("./m2u-parstream")
+
 var opts = {
     host: 'm2u-parstream.eastus.cloudapp.azure.com',
     // host: 'm2u-da.eastus.cloudapp.azure.com',
