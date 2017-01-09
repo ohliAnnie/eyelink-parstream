@@ -1,6 +1,6 @@
 var Utils = require('../../util');
 
-var parstream = require("parstream")
+var parstream = require("./parstream")
 var opts = {
     host: 'm2u-parstream.eastus.cloudapp.azure.com',
     // host: 'm2u-da.eastus.cloudapp.azure.com',
@@ -95,7 +95,6 @@ DashboardProvider = function() {
 
 // 단건에 대해서 Query를 수행한다.
 DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, callback) {
-
   var vTimeStamp = Date.now();
   console.time('nodelib-Dashboard/selectSingleQueryByID -> '+ queryId +' total ');
   console.log('nodelib-Dashboard/selectSingleQueryByID -> (%s) queryID', queryId)
