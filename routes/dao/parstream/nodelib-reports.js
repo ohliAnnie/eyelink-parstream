@@ -1,3 +1,5 @@
+var Utils = require('../../util');
+
 var parstream = require("parstream")
 var parstream =  parstream.createPool({
     host: 'm2u-da.eastus.cloudapp.azure.com',
@@ -13,7 +15,7 @@ var sqlList = {
         "         noise_decibel, noise_frequency, "+
         "   status_power_meter, "+
         "         vibration_x, vibration_y, vibration_z"+
-        "    from tb_node_raw"+ 
+        "    from tb_node_raw"+
         "    where event_year=2016 and event_month=12  " +
         "    and event_day in (1,2,3,4,5,6,7) "+
         "    and node_id in ('0001.00000007', '0002.00000022') " +
@@ -60,7 +62,7 @@ ReportsProvider = function() {
 
 // 단건에 대해서 Query를 수행한다.
 ReportsProvider.prototype.selectSingleQueryByID = function (queryId, datas, callback) {
-  
+
   var vTimeStamp = Date.now();
   console.time('nodelib-Reports/selectSingleQueryByID -> total '+ queryId);
   console.log('nodelib-Reports/selectSingleQueryByID -> (%s) queryID' + queryId)
