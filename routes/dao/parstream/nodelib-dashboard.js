@@ -44,7 +44,8 @@ var sqlList = {
           "      ))  ",
   // Event Raw Data 조회
   "selectEventRawDataOld" :
-        "    select node_id, event_time, event_type, active_power, ampere,  "+
+        "    select node_id, event_time, event_type, active_power, ampere, voltage,  power_factor, "+
+        "       reactive_power, apparent_power, amount_active_power, " +
         "       als_level, dimming_level, "+
         "         noise_decibel, noise_frequency, "+
         "         vibration_x, vibration_y, vibration_z, "+

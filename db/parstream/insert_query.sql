@@ -4,11 +4,11 @@ select date_part('YEAR', current_date()) as event_year,
       date_part('DAY', current_date()) as event_day,
       current_timestamp()+32400000 as measure_time,
       current_timestamp()+32400000 as event_time,
-      cast('0001.00000002' as VARSTRING) as node_id, event_type, voltage,
+      cast('0001.00000003' as VARSTRING) as node_id, event_type, voltage,
       ampere,
       power_factor,
  active_power,reactive_power,apparent_power,amount_active_power,als_level,dimming_level,vibration_x,vibration_y,vibration_z,vibration_max,noise_origin_decibel,noise_origin_frequency,noise_decibel,noise_frequency,
-      127.042861 as gps_longitude, 37.567271 as gps_latitude,
+      127.042861 as gps_longitude, 37.667271 as gps_latitude,
 gps_altitude, gps_satellite_count,status_als,status_gps,status_noise,status_vibration,status_power_meter,status_emergency_led_active,status_self_diagnostics_led_active,status_active_mode,status_led_on_off_type,reboot_time,event_remain,failfirmwareupdate
 from tb_node_raw
 where event_type = 1
@@ -42,7 +42,7 @@ limit 1;
  where event_time >= timestamp '2016-12-30 00:00:00'
    and event_time < timestamp '2017-01-07 23:59:59';
 
-   select count(*)
+   select node_id
    from tb_node_raw
  where event_time >= timestamp '2016-12-13 00:00:00'
    and event_time < timestamp '2016-12-13 23:59:59'
@@ -209,5 +209,22 @@ CREATE TABLE tb_node_raw
      "month" INT8          INDEX EQUAL CSV_COLUMN ETL,
      "day" INT8          INDEX EQUAL CSV_COLUMN ETL
 )
+
+
+select a.zone_id, b.node_id
+  from tb_node_info as a
+        left outer join tb_node_raw as b
+        on a.node_id = b.node_id;
+
+
+insert into tb_node_info
+select date_part('YEAR', current_date()) as node_year,
+      'ZONE-01' as zone_id,
+      '0001.00000002' as node_id,
+      current_timestamp()- 32400000 as reg_date
+from tb_node_info
+where zone_id = 'aa'
+limit 1;
+
 
 

@@ -1,9 +1,8 @@
-
 CREATE TABLE tb_node_raw
 (
 	node_id VARSTRING(13) COMPRESSION NONE MAPPING_FILE_GRANULARITY 256 SINGLE_VALUE CSV_COLUMN 0 SKIP FALSE,
 	event_type UINT64 COMPRESSION NONE SINGLE_VALUE CSV_COLUMN 1 SKIP FALSE,
-	measure_time DATE SEPARATED BY "year" INDEX RANGE INDEX_GRANULARITY DAY CSV_FORMAT 'YYYY.MM.DD',
+	measure_time TIMESTAMP INDEX RANGE INDEX_GRANULARITY DAY, 
 	event_time TIMESTAMP INDEX RANGE INDEX_GRANULARITY DAY,
 	voltage FLOAT COMPRESSION NONE SINGLE_VALUE CSV_COLUMN 4 SKIP FALSE,
 	ampere FLOAT COMPRESSION NONE SINGLE_VALUE CSV_COLUMN 5 SKIP FALSE,
@@ -38,13 +37,17 @@ CREATE TABLE tb_node_raw
 	reboot_time TIMESTAMP INDEX RANGE INDEX_GRANULARITY DAY,
 	event_remain UINT8 COMPRESSION NONE SINGLE_VALUE CSV_COLUMN 35 SKIP FALSE,
 	failfirmwareupdate UINT64 COMPRESSION NONE SINGLE_VALUE CSV_COLUMN 36 SKIP FALSE,
-	"year" INT16		INDEX EQUAL CSV_COLUMN ETL,
-	"month" INT8		INDEX EQUAL CSV_COLUMN ETL,
-	"day" INT8		INDEX EQUAL CSV_COLUMN ETL
+	event_year INT16		INDEX EQUAL CSV_COLUMN ETL,
+	event_month INT8		INDEX EQUAL CSV_COLUMN ETL,
+	event_day INT8		INDEX EQUAL CSV_COLUMN ETL
 )
-PARTITIONED BY "year"
+PARTITION BY event_year
+DISTRIBUTE OVER event_year
+ORDER BY event_time, node_id
 IMPORT_DIRECTORY_PATTERN '.*'
-IMPORT_FILE_PATTERN '.*\.csv'
-ETL (select *, date_part('year', measure_time) as year,
-			date_part('month', measure_time) as month,
-			date_part('day', measure_time) as day  from csvfetch(tb_node_raw));
+IMPORT_FILE_PATTERN 'tb_node_raw.*\.csv'
+ETL (select *, date_part('year', measure_time) as event_year,
+			date_part('month', measure_time) as event_month,
+			date_part('day', measure_time) as event_day  from csvfetch(tb_node_raw));
+
+

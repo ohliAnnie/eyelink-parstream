@@ -211,8 +211,8 @@ function drawChart() {
       // d.check = +0.85;
       // console.log(d);
       d.active_power += d.active_power;
-      // d.geo = (d.node_id === '') ? d.gps_latitude + ',' + d.gps_longtitude;
-      d.geo = (d.node_id === '0001.00000001') ? '37.457271, 127.042861':'37.468271, 127.032861';
+      d.geo = d.gps_latitude + ',' + d.gps_longtitude;
+      // d.geo = (d.node_id === '0001.00000001') ? '37.457271, 127.042861':'37.468271, 127.032861';
     });
 
     // console.log(data);
@@ -350,7 +350,7 @@ function drawChart() {
       return [+d.event_type, +d.hour];
     });
 
-    console.log('eventTypeDim.group() size : ' + eventTypeDim.group().size());
+    // console.log('eventTypeDim.group() size : ' + eventTypeDim.group().size());
     var eventTypeGroup = eventTypeDim.group().reduceCount(function(d) {
       var p = 0;
       if (d.event_type == '1') {

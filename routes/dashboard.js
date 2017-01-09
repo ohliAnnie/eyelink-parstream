@@ -101,13 +101,13 @@ router.get('/restapi/getTbRawDataByPeriod', function(req, res, next) {
 });
 
 
-// for Map Test
+// Node Map
 router.get('/restapi/getNodeGeo', function(req, res, next) {
   var out_data = [
-    {type : '0001.0000001', geo : '37.457271, 127.042861'},
-    {type : '0001.0000002', geo : '37.467271, 127.032861'},
-    {type : '0001.0000003', geo : '37.468271, 127.042861'},
-    {type : '0001.0000004', geo : '37.468271, 127.052761'},
+    {zone_id : 'Zone-01', node_id : '0001.0000001', geo : '37.457271, 127.042861'},
+    {zone_id : 'Zone-01', node_id : '0001.0000002', geo : '37.567271, 127.032861'},
+    {zone_id : 'Zone-02', node_id : '0001.0000003', geo : '37.668271, 127.042861'},
+    {zone_id : 'Zone-02', node_id : '0001.0000004', geo : '37.768271, 127.052761'},
   ];
   res.json(out_data);
 });
