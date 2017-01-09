@@ -100,7 +100,7 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
   console.log('nodelib-Dashboard/selectSingleQueryByID -> (%s) queryID', queryId)
 
   // no pool method
-  var parstream = require('parstream').createClient(opts);
+  var parstream = require("./m2u-parstream").createClient(opts);
 
   parstream.connect(function(err) {
     if (err) {

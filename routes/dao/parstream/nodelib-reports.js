@@ -1,11 +1,13 @@
 var Utils = require('../../util');
 
-var parstream = require("parstream")
-var parstream =  parstream.createPool({
-    host: 'm2u-da.eastus.cloudapp.azure.com',
+var m2uparstream = require("./m2u-parstream")
+var opts = {
+    host: 'm2u-parstream.eastus.cloudapp.azure.com',
+    // host: 'm2u-da.eastus.cloudapp.azure.com',
     port: 9042,
     size: 5,
-});
+}
+// var parstream =  parstream.createPool(opts);
 
 var sqlList = {
   // Event Raw Data 조회
@@ -66,6 +68,9 @@ ReportsProvider.prototype.selectSingleQueryByID = function (queryId, datas, call
   var vTimeStamp = Date.now();
   console.time('nodelib-Reports/selectSingleQueryByID -> total '+ queryId);
   console.log('nodelib-Reports/selectSingleQueryByID -> (%s) queryID' + queryId)
+
+  // no pool method
+  var parstream = require("./m2u-parstream").createClient(opts);
 
   parstream.connect(function(err) {
     if (err) {
