@@ -1,12 +1,13 @@
 var Utils = require('../../util');
 
-var parstream = require("./m2u-parstream")
+var m2uparstream = require("./m2u-parstream")
 var opts = {
     host: 'm2u-parstream.eastus.cloudapp.azure.com',
     // host: 'm2u-da.eastus.cloudapp.azure.com',
     port: 9042,
     size: 5,
 }
+// var parstream =  parstream.createPool(opts);
 
 var sqlList = {
   // Event Raw Data 조회
@@ -16,7 +17,7 @@ var sqlList = {
         "         noise_decibel, noise_frequency, "+
         "   status_power_meter, "+
         "         vibration_x, vibration_y, vibration_z"+
-        "    from tb_node_raw"+
+        "    from tb_node_raw"+ 
         "    where event_year=2016 and event_month=12  " +
         "    and event_day in (1,2,3,4,5,6,7) "+
         "    and node_id in ('0001.00000007', '0002.00000022') " +
@@ -54,7 +55,18 @@ var sqlList = {
         "  where event_time >= timestamp #START_TIMESTAMP# " +
         "    and event_time < timestamp #END_TIMESTAMP# " +
         "    and event_type = 1 ",
+
+    // Power All 조회
+  "selectEventRawDataPowerAll" :
+        "   select event_year, event_month, event_day, avg(active_power) AS active_power "+
+        "      from tb_node_raw " +
+        "      where  event_type = 1 " +
+        "         and event_time >= timestamp #START_TIMESTAMP# " +
+        "         and event_time < timestamp #END_TIMESTAMP# " +
+        "       group by event_year, event_month, event_day " +
+        "       order by event_year, event_month, event_day ",
 };
+
 
 
 ReportsProvider = function() {
@@ -67,6 +79,9 @@ ReportsProvider.prototype.selectSingleQueryByID = function (queryId, datas, call
   var vTimeStamp = Date.now();
   console.time('nodelib-Reports/selectSingleQueryByID -> total '+ queryId);
   console.log('nodelib-Reports/selectSingleQueryByID -> (%s) queryID' + queryId)
+
+  // no pool method
+  var parstream = require("./m2u-parstream").createClient(opts);
 
   parstream.connect(function(err) {
     if (err) {

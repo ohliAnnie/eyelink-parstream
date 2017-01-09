@@ -6,8 +6,7 @@ function drawChart() {
   var sdate = searchDate.substring(0, ind);
   var edate = searchDate.substring(ind+3);
   console.log('%s, %s', sdate, edate);  
-  sdate = '2016-11-26';
-  edate = '2016-12-07'
+
   $.ajax({
     url: "/reports/restapi/getTbRawDataByPeriodPower" ,
     dataType: "json",
@@ -52,9 +51,13 @@ function drawPower(data, sdate, edate) {
     d.event_time = df.parse(d.event_time);
     d.today = d3.time.day(d.event_time);        
     d.week = week[d.event_time.getDay()];
-    d.time = b[0];
+    d.time = parseInt(b[0]);
     d.hour = d3.time.hour(d.event_time);    
+    d.active_power = parseFloat(d.active_power);
+    d.amount_active_power = parseFloat(d.amount_active_power);
+    d.voltage = parseFloat(d.voltage);   
   });
+
 
   var nyx = crossfilter(data);
   var all = nyx.groupAll();
@@ -135,7 +138,7 @@ powerSum
     .dimension(weekDim)
     .group(weekPlotGroup)
       .y(d3.scale.linear().domain([0, 2000]))
-      .elasticX(true);
+      .x(d3.scale.ordinal().domain(week));
 
   timePlot
     .width(window.innerWidth*0.4)
