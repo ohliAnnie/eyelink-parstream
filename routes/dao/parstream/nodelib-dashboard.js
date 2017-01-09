@@ -1,7 +1,6 @@
 var Utils = require('../../util');
 
 var parstream = require("./m2u-parstream")
-
 var opts = {
     host: 'm2u-parstream.eastus.cloudapp.azure.com',
     // host: 'm2u-da.eastus.cloudapp.azure.com',
@@ -101,7 +100,7 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
   console.log('nodelib-Dashboard/selectSingleQueryByID -> (%s) queryID', queryId)
 
   // no pool method
-  var parstream = require('parstream').createClient(opts);
+  var parstream = parstream.createClient(opts);
 
   parstream.connect(function(err) {
     if (err) {
@@ -114,7 +113,7 @@ DashboardProvider.prototype.selectSingleQueryByID = function (queryId, datas, ca
       console.time('nodelib-Dashboard/selectSingleQueryByID -> ('+ queryId +') executeQuery');
       parstream.query(sSql, function(err, resultset) {
         console.timeEnd('nodelib-Dashboard/selectSingleQueryByID -> ('+ queryId +') executeQuery');
-        console.log('nodelib-Dashboard/selectSingleQueryByID -> resultset : %j', resultset);
+        // console.log('nodelib-Dashboard/selectSingleQueryByID -> resultset : %j', resultset);
 
         // console.log(err);
         // occur error
