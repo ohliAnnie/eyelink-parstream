@@ -196,7 +196,9 @@ function csvToJson2(data) {
         tmp = {}
         row = d.split(";")
         for(var i = 0; i < headers.length; i++){
-            tmp[headers[i]] = row[i];
+          // console.log('%s, %d, %s', row[i], row[i].indexOf("\""), (row[i].indexOf("\"") > -1) ? row[i].substring(1, row[i].length-1) : row[i]);
+          // varchar 값 \"0001.00000002\" 에 대한 처리.
+          tmp[headers[i]] = ((row[i].indexOf("\"") === 0) ? row[i].substring(1, row[i].length-1) : row[i]);
         }
         // Add object to list
         json.push(tmp);
