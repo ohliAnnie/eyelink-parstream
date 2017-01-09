@@ -282,5 +282,21 @@ body {
     stroke: white;
 }
 
+
+/* 툴팁 추가 구현 */
+div.tip {   
+    position: absolute;         
+    text-align: center;         
+    width: auto;                    
+    height: 20;                   
+    padding: 5px;               
+    font: 12px sans-serif;      
+    background: lightsteelblue; 
+    border: 0px;        
+    border-radius: 8px;         
+    pointer-events: none;           
+}
+
+
 /*END: STYLESHEETS FOR VIS CHARTS*/
 

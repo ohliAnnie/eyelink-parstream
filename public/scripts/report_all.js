@@ -155,7 +155,7 @@ var cnt = 0;
     return{};
   });
 
-  console.log((maxDate-minDate)/(24 * 60 * 60 * 1000));  
+  console.log('gap : '+(maxDate-minDate)/(24 * 60 * 60 * 1000));  
   var checkDim = nyx.dimension(function(d) {  
     if(gap < 31) {
       return d.today; 
@@ -481,11 +481,17 @@ var cnt = 0;
       .mouseZoomable(true)
       .x(d3.time.scale().domain([minDate, maxDate]))
       .y(d3.scale.linear().domain([0, 100]))
-      .round(d3.time.day.round)
+      .round(function(d) {
+        if(gap > 30) {
+          return d3.time.month.round;
+        } else {
+        return d3.time.day.round;
+      }})
       .renderHorizontalGridLines(true)
       .renderVerticalGridLines(true)
    //   .yAxisLabel("Date")
       .title(function(d) {
+        console.log(d);
         return "\nCount : " + d.value.cnt;
       })
       .legend(dc.legend().x(20).y(10).itemHeight(13).gap(5))
@@ -536,7 +542,7 @@ var cnt = 0;
     .elasticY(true)
     .brushOn(true)
     //.centerBar(true)
-    .gap(group_id.length)         
+    .gap(group_id.length+20)         
     .x(d3.scale.ordinal().domain(group_id))    
     .xUnits(dc.units.ordinal)     
     .alwaysUseRounding(true)

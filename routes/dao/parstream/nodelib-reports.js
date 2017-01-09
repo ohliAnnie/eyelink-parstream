@@ -17,7 +17,7 @@ var sqlList = {
         "         noise_decibel, noise_frequency, "+
         "   status_power_meter, "+
         "         vibration_x, vibration_y, vibration_z"+
-        "    from tb_node_raw"+
+        "    from tb_node_raw"+ 
         "    where event_year=2016 and event_month=12  " +
         "    and event_day in (1,2,3,4,5,6,7) "+
         "    and node_id in ('0001.00000007', '0002.00000022') " +
@@ -55,7 +55,18 @@ var sqlList = {
         "  where event_time >= timestamp #START_TIMESTAMP# " +
         "    and event_time < timestamp #END_TIMESTAMP# " +
         "    and event_type = 1 ",
+
+    // Power All 조회
+  "selectEventRawDataPowerAll" :
+        "   select event_year, event_month, event_day, avg(active_power) AS active_power "+
+        "      from tb_node_raw " +
+        "      where  event_type = 1 " +
+        "         and event_time >= timestamp #START_TIMESTAMP# " +
+        "         and event_time < timestamp #END_TIMESTAMP# " +
+        "       group by event_year, event_month, event_day " +
+        "       order by event_year, event_month, event_day ",
 };
+
 
 
 ReportsProvider = function() {

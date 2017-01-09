@@ -81,12 +81,13 @@ var minDate = new Date(2016,11,01);
     d.active_power = d.active_power === undefined? 0 : d.active_power;    
     d.als_level = d.als_level === null? 0 : d.als_level;    
     d.noise_decibel = d.noise_decibel === null? 0 : d.noise_decibel;
-    d.noise_frequency = d.noise_frequency === null?0:d.noise_frequency;
+    d.noise_frequency = d.noise_frequency === null ? 0 : parseInt(d.noise_frequency);    
     d.vibration_x = d.vibration_x === null? 0 : d.vibration_x;
     d.vibration_y = d.vibration_y === null? 0 : d.vibration_y;
     d.vibration_z = d.vibration_z === null? 0 : d.vibration_z;
     d.vibration = (d.vibration_x+d.vibration_y+d.vibration_z)/3;        
     d.status_power_meter = d.status_power_meter === null? 0 : d.status_power_meter;         
+    console.log(d);
   });  
   var nyx = crossfilter(data.rtnData);
   var all = nyx.groupAll();
@@ -195,6 +196,7 @@ var minDate = new Date(2016,11,01);
         p.avgVib = p.cntV ? p.sumVib / p.cntV : 0;
         p.avgNoD = p.cntN ? p.sumNoD / p.cntN : 0;
         p.avgNoF = p.cntN ? p.sumNoF / p.cntN : 0;
+        p.getDay = v.today.getDay();
       return p;
     }, function(p, v) {
       if(v.event_type == "33") {
@@ -208,6 +210,7 @@ var minDate = new Date(2016,11,01);
         p.avgVib = p.cntV ? p.sumVib / p.cntV : 0;
         p.avgNoD = p.cntN ? p.sumNoD / p.cntN : 0;
         p.avgNoF = p.cntN ? p.sumNoF / p.cntN : 0;
+        p.getDay = v.today.getDay();
       return p;
     }, function() {
       return {  cntV:0, cntN:0,
@@ -364,16 +367,13 @@ var minDate = new Date(2016,11,01);
   var gapVibMaxGroup = todayDim.group().reduce(
     function(p, v){
       if(v.event_type == "33") {        
-        console.log(v.dd);
-        console.log(v.vibration);
         if(p.min == 0)
           p.min = v.vibration;
         p.max = p.max < v.vibration ? v.vibration : p.max;
         p.min = p.min > v.vibration ? v.vibration : p.min;
         p.gap = p.max-p.min;          
         p.tip = p.max;
-      }             
-      console.log(p);
+      }                   
       return p;
     },
     function(p, v) {
@@ -523,19 +523,19 @@ var noFMaxGroup = timeMaxDim.group().reduce(
     .colorAccessor(function (d) {
         return d.value.cntN + d.value.cntV;
     })
-       .keyAccessor(function (p) { // x
-        return p.value.avgNoF;
+       .keyAccessor(function (p) { // x        
+        return p.value.getDay;
     })
     .valueAccessor(function (p) { // y
         return p.value.avgNoD;
     })
     .radiusValueAccessor(function (p) { // r
-        return p.value.avgVib;
+        return p.value.avgNoF;
     })
     .maxBubbleRelativeSize(0.3)
-    .x(d3.scale.linear().domain([0, 20000]))
+    .x(d3.scale.linear().domain([0, 7]))
     .y(d3.scale.linear().domain([0, 4]))
-    .r(d3.scale.linear().domain([0, 300]))
+    .r(d3.scale.linear().domain([0, 20000]))
     .elasticY(true)
     .elasticX(true)
     .yAxisPadding(1)
@@ -553,8 +553,7 @@ var noFMaxGroup = timeMaxDim.group().reduce(
         return [
             p.key,
             'Noise Decibel Avg: ' + numberFormat(p.value.avgNoD),
-            'Noise Frequecy Avg: ' + numberFormat(p.value.avgNoF),
-            'Vibration Avg: ' + numberFormat(p.value.avgVib)
+            'Noise Frequecy Avg: ' + numberFormat(p.value.avgNoF),            
         ].join('\n');
     })
     .yAxis().tickFormat(function (v) {
