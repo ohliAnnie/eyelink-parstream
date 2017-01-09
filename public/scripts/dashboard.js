@@ -101,7 +101,7 @@ function drawMap() {
         .width(600)
         .height(400)
         .center([37.467271, 127.042861])
-        .zoom(13)
+        .zoom(8)
         .renderPopup(false)
         .filterByArea(true);
     // var types = xf.dimension(function(d) { return d.type; });
@@ -134,9 +134,9 @@ function drawMarkerSelect2(xf, data) {
       .width(600)
       .height(400)
       .center([37.467271, 127.042861])
-      .zoom(13)
+      .zoom(9)
       .cluster(true);
-  var types = xf.dimension(function(d) { return d.node_id; });
+  var types = xf.dimension(function(d) { return d.zone_id; });
   var typesGroup = types.group().reduceCount();
   dc.pieChart("#bubble-map .pie",groupname)
       .dimension(types)
@@ -211,7 +211,7 @@ function drawChart() {
       // d.check = +0.85;
       // console.log(d);
       d.active_power += d.active_power;
-      d.geo = d.gps_latitude + ',' + d.gps_longtitude;
+      d.geo = d.gps_latitude + ',' + d.gps_longitude;
       // d.geo = (d.node_id === '0001.00000001') ? '37.457271, 127.042861':'37.468271, 127.032861';
     });
 

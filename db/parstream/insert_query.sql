@@ -211,20 +211,29 @@ CREATE TABLE tb_node_raw
 )
 
 
-select a.zone_id, b.node_id
+// select count(*)
+select a.zone_id, b.node_id, a.gps_longitude, a.gps_latitude, b.active_power
   from tb_node_info as a
         left outer join tb_node_raw as b
         on a.node_id = b.node_id;
 
+select a.zone_id, b.node_id, a.gps_longitude, a.gps_latitude, b.active_power
+  from tb_node_info as a
+        left outer join tb_node_raw as b
+        on a.node_id = b.node_id
+ where b.event_time > timestamp '2017-01-01 00:00:00';
+
 
 insert into tb_node_info
 select date_part('YEAR', current_date()) as node_year,
-      'ZONE-01' as zone_id,
-      '0001.00000002' as node_id,
+      'ZONE-02' as zone_id,
+      '0001.00000005' as node_id,
+      37.667271 as gps_longitude,
+      127.142861 as gps_latitude,
+      0 as gps_altitude,
       current_timestamp()- 32400000 as reg_date
-from tb_node_info
-where zone_id = 'aa'
-limit 1;
+;
+
 
 
 
