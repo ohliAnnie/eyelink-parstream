@@ -84,15 +84,16 @@ block content
             //- drawMap();
 
             // process websocket
+            // FIXME 실행시 map Container 오류 발생함.
             //- processSocket();
           });
         .grid-dashboard
           .grid-item.map
             .inner
               div.map-container
-                #bubble-map(style="height: 100%")
-                  div.pie
-                  div.map(style="width:300px; height:100px")
+                  #bubble-map(style="height: 100%")
+                    div.pie
+                    div.map(style="width:300px; height:100px")
               //- div.chart
               //-   #bar-chart
           .grid-item.other
