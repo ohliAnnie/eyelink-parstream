@@ -1,11 +1,9 @@
 function drawChart() {
-  var searchDate = $('#daterange').val()
-  console.log('daterange : ' + searchDate);
-
-  var ind = searchDate.indexOf(' - ');
-  var sdate = searchDate.substring(0, ind);
-  var edate = searchDate.substring(ind+3);
-  console.log('%s, %s', sdate, edate);
+  var sdate = $('#sdate').val();
+  var edate = $('#edate').val();
+  // sdate = '2017-01-01'
+  // edate = '2017-01-09'
+  // console.log('%s, %s', sdate, edate);
   $.ajax({
     url: "/dashboard/restapi/getTbRawDataByPeriod" ,
     dataType: "json",

@@ -134,8 +134,8 @@ function drawMarkerSelect2(ndx, data, mapMarkerChart, mapPieChart) {
   mapMarkerChart
       .dimension(dimGeo)
       .group(dimGeoGroup)
-      .width(600)
-      .height(400)
+      // .width(600)
+      // .height(400)
       .center([37.467271, 127.042861])
       .zoom(9)
       .cluster(true);
@@ -145,8 +145,8 @@ function drawMarkerSelect2(ndx, data, mapMarkerChart, mapPieChart) {
       .dimension(zone)
       .group(zoneGroup)
       .radius(55)
-      .width(150)
-      .height(150)
+      // .width(150)
+      // .height(150)
       .renderLabel(true)
       .renderTitle(true)
       .ordering(function (p) {
@@ -166,8 +166,8 @@ function drawChart() {
   var plot_pieChart = dc.pieChart("#plot_pie-chart", markerName);
   // var fluctuationChart = dc.barChart('#fluctuation-chart');
   var seriesChart = dc.seriesChart('#series-chart', markerName);
-  var mapMarkerChart = dc_leaflet.markerChart("#bubble-map .map", markerName);
-  var mapPieChart = dc.pieChart('#bubble-map .pie', markerName);
+  var mapMarkerChart = dc_leaflet.markerChart("#bubble-map-map", markerName);
+  var mapPieChart = dc.pieChart('#bubble-map-pie', markerName);
 
   d3.json("/dashboard/restapi/getDashboardRawData", function(err, out_data) {
     // if (err) throw Error(error);
@@ -359,7 +359,7 @@ function drawChart() {
     });
 
     volumeChart
-      .width(620)
+      .width(600)
       .height(60)
       .margins({top: 0, right: 50, bottom: 20, left: 40})
       .dimension(moveDays)
@@ -373,8 +373,8 @@ function drawChart() {
 
     moveChart
       .renderArea(true)
-      .width(620)
-      .height(150)
+      // .width(620)
+      // .height(150)
       .transitionDuration(1000)
       .margins({top: 30, right: 50, bottom: 25, left: 40})
       .dimension(moveDays)
@@ -404,8 +404,8 @@ function drawChart() {
       });
 
     plot01Chart
-      .width(200)
-      .height(210)
+      // .width('100%')
+      // .height(210)
       .margins({top: 10, right: 50, bottom: 30, left: 50})
       .dimension(apDim)
       .group(apArrayGroup)
@@ -413,8 +413,8 @@ function drawChart() {
       .elasticX(true);
 
     plot02Chart
-      .width(200)
-      .height(210)
+      // .width(200)
+      // .height(210)
       .margins({top: 10, right: 50, bottom: 30, left: 50})
       .dimension(noiseDim)
       .group(noiseArrayGroup)
@@ -422,8 +422,8 @@ function drawChart() {
       .elasticX(true);
 
     plot03Chart
-      .width(200)
-      .height(210)
+      // .width(200)
+      // .height(210)
       .margins({top: 10, right: 50, bottom: 30, left: 50})
       .dimension(vibDim)
       .group(vibArrayGroup)
@@ -431,15 +431,15 @@ function drawChart() {
       .elasticX(true);
 
     plot_pieChart
-      .width(150)
-      .height(140)
+      // .width(150)
+      // .height(140)
       .radius(60)
       .dimension(nodeDim)
       .group(nodeGroup);
 
     seriesChart
-      .width(620)
-      .height(210)
+      // .width(620)
+      // .height(210)
       .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
       .x(d3.scale.linear().domain([0,24]))
       .brushOn(false)

@@ -134,10 +134,17 @@ block content
                 a.fullscreen(href='javascript:;')
                 a.remove(href='javascript:;')
             .portlet-body
-              div.map-container
-                #bubble-map
-                  div.pie
-                  div.map(style="width:300px; height:100px")
+              .row
+                .col-md-2
+                  #bubble-map-pie
+                    //- div.pie
+                    //- div.map(style="width:300px; height:100px")
+                .col-md-4
+                  #bubble-map-map(style="width:300px; height:100px")
+                    //- div.pie
+                    //- div.map(style="width:300px; height:100px")
+              //- .chart
+              //-   div.map-container
         .col-md-6
           .portlet.light.bordered
             .portlet-title
@@ -170,16 +177,16 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .row
-                .col-md-2(id='')
+                .col-md-3(id='')
                   p Active Power
                   #plot01-chart.chart
-                .col-md-2(id='')
+                .col-md-3(id='')
                   p Noise
-                  #plot01-chart.chart
-                .col-md-2(id='')
+                  #plot02-chart.chart
+                .col-md-3(id='')
                   p Vibration
-                  #plot01-chart.chart
-                .col-md-2(id='')
+                  #plot03-chart.chart
+                .col-md-3(id='')
                   p Event Type
                   #plot_pie-chart.chart
         .col-md-4
