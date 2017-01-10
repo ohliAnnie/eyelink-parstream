@@ -89,6 +89,12 @@ html
         Demo.init(); // init index page
         ComponentsPickers.init();
         ComponentsDropdowns.init();
+
+        $('#menudashboard').addClass( '#{mainmenu.dashboard}');
+        $('#menureports').addClass( '#{mainmenu.reports}');
+        $('#menutimeseries').addClass( '#{mainmenu.timeseries}');
+        $('#menuusers').addClass( '#{mainmenu.users}');
+        $('#menusettings').addClass( '#{mainmenu.settings}');
       });
   body.page-header-fixed.page-quick-sidebar-over-content
     .wrapper
@@ -226,7 +232,7 @@ html
                   i.icon-logout
             .nav-collapse.collapse.navbar-collapse.navbar-responsive-collapse
               ul.nav.navbar-nav.text-uppercase
-                li.dropdown.dropdown-fw
+                li#menudashboard.dropdown.dropdown-fw
                   a(href='javascript:;') DASHBOARD
                   ul.dropdown-menu.dropdown-menu-fw
                     li
@@ -235,7 +241,7 @@ html
                       a(href='/dashboard/livedata') Live Data
                     li
                       a(href='#') Requested task
-                li.dropdown.dropdown-fw
+                li#menureports.dropdown.dropdown-fw
                   a(href='javascript:;') Reports
                   ul.dropdown-menu.dropdown-menu-fw
                     li.active
@@ -246,21 +252,21 @@ html
                       a(href='/reports/fault') Fault
                     li
                       a(href='reports.html') Report Name
-                li.dropdown.dropdown-fw
+                li#menutimeseries.dropdown.dropdown-fw
                   a(href='javascript:;') Time Series
                   ul.dropdown-menu.dropdown-menu-fw
                     li
                       a(href='/dashboard/timeseries') Time Series
                     //- li
                       a(href='timeseries.html') Time Series Name
-                li.dropdown.dropdown-fw
+                li#menuusers.dropdown.dropdown-fw
                   a(href='javascript:;') Users
                   ul.dropdown-menu.dropdown-menu-fw
                     li
                       a(href='#') Users Menu
                     li
                       a(href='#') Users Menu
-                li.dropdown.dropdown-fw
+                li#menusettings.dropdown.dropdown-fw
                   a(href='javascript:;') Settings
                   ul.dropdown-menu.dropdown-menu-fw
                     li

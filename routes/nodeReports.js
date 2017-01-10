@@ -6,44 +6,44 @@ var ReportsProvider = require('./dao/' + global.config.fetchData.database + '/'+
 
 var reportsProvider = new ReportsProvider();
 
-var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', event: ''};
+var mainmenu = {dashboard:' ', reports:'open selected', timeseries:'', users:'', settings:''};
 
 
 /* GET reports page. */
 router.get('/', function(req, res, next) {
-  res.render('./reports/report_all', { title: 'EyeLink for ParStream' });
+  res.render('./reports/report_all', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
 });
 
 router.get('/main', function(req, res, next) {
-  res.render('./reports/main', { title: 'EyeLink for ParStream' });
+  res.render('./reports/main', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
 });
 
 router.get('/d3', function(req, res, next) {
-  res.render('./reports/d3', { title: 'EyeLInk D3 Reports' });
+  res.render('./reports/d3', { title: 'EyeLInk D3 Reports', mainmenu:mainmenu });
 });
 
 router.get('/test', function(req, res, next) {
-  res.render('./reports/test', { title: 'Test' });
+  res.render('./reports/test', { title: 'Test', mainmenu:mainmenu });
 });
 
 router.get('/all', function(req, res, next) {
-  res.render('./reports/report_all', { title: 'Report_All' });
+  res.render('./reports/report_all', { title: 'Report_All', mainmenu:mainmenu });
 });
 
 router.get('/power', function(req, res, next) {
-  res.render('./reports/report_power', { title: 'Report_Power' });
+  res.render('./reports/report_power', { title: 'Report_Power', mainmenu:mainmenu });
 });
 
 router.get('/fault', function(req, res, next) {
-  res.render('./reports/fault_notification', { title: 'Report_Power' });
+  res.render('./reports/fault_notification', { title: 'Report_Power', mainmenu:mainmenu });
 });
 
 router.get('/view', function(req, res, next) {
-  res.render('./design/reports', { title: 'Report_Power' });
+  res.render('./design/reports', { title: 'Report_Power', mainmenu:mainmenu });
 });
 
 router.get('/index', function(req, res, next) {
-  res.render('./design/index', { title: 'Report_Power' });
+  res.render('./design/index', { title: 'Report_Power', mainmenu:mainmenu });
 });
 
 

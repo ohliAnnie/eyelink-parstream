@@ -6,7 +6,7 @@ var DashboardProvider = require('./dao/' + global.config.fetchData.database + '/
 
 var dashboardProvider = new DashboardProvider();
 
-var mainmenu = {dashboard:'open.selected', report:''};
+var mainmenu = {dashboard:' open selected', reports:'', timeseries:'', users:'', settings:''};
 
 
 /* GET reports page. */
@@ -17,7 +17,9 @@ router.get('/', function(req, res, next) {
 
 router.get('/timeseries', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./dashboard/timeseries', { title: 'EyeLink for ParStream' });
+  mainmenu.dashboard = '';
+  mainmenu.timeseries = ' open selected';
+  res.render('./dashboard/timeseries', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
 });
 
 
