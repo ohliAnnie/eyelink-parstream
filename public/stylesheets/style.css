@@ -7,17 +7,12 @@ a {
   color: #00B7FF;
 }
 
-.chart {
-  position: relative;
+.chart_custom {
   width: 100%;
-  height: auto;
+  position: relative;
   overflow: hidden;
-  padding-bottom: 56.26%;
   text-align:center;
-  color : white;
-  fill : white;
 }
-
 
 .toolTip {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;

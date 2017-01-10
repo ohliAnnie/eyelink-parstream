@@ -1,13 +1,19 @@
 'use strict';
 function displayCount() {
-  var bill = new Odometer({ el: $('#bill')[0], format: '(,ddd).dd' });
-  var pbill = new Odometer({ el: $('#pbill')[0], format: '(,ddd).dd' });
-  var power = new Odometer({ el: $('#power')[0], format: '(,ddd)' });
-  var ppower = new Odometer({ el: $('#ppower')[0], format: '(,ddd)' });
-  var eventCount = new Odometer({ el: $('#event-count')[0], format: '(,ddd)' });
-  var peventCount = new Odometer({ el: $('#pevent-count')[0], format: '(,ddd)' });
-  var falutCount = new Odometer({ el: $('#fault-count')[0], format: '(,ddd)' });
-  var pfalutCount = new Odometer({ el: $('#pfault-count')[0], format: '(,ddd)' });
+  // var bill = new Odometer({ el: $('#bill')[0], format: '(,ddd).dd' });
+  // var pbill = new Odometer({ el: $('#pbill')[0], format: '(,ddd).dd' });
+  // var power = new Odometer({ el: $('#power')[0], format: '(,ddd)' });
+  // var ppower = new Odometer({ el: $('#ppower')[0], format: '(,ddd)' });
+  // var eventCount = new Odometer({ el: $('#event-count')[0], format: '(,ddd)' });
+  // var peventCount = new Odometer({ el: $('#pevent-count')[0], format: '(,ddd)' });
+  // var falutCount = new Odometer({ el: $('#fault-count')[0], format: '(,ddd)' });
+  // var pfalutCount = new Odometer({ el: $('#pfault-count')[0], format: '(,ddd)' });
+  var eventCount = $('#event-count');
+  var peventCount = $('#pevent-count');
+  var falutCount = $('#fault-count');
+  var pfalutCount = $('#pfault-count');
+  var power = $('#power');
+  var ppower = $('#ppower');
   $.ajax({
     url: "/dashboard/restapi/getDashboardSection1",
     dataType: "json",
@@ -16,22 +22,21 @@ function displayCount() {
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
-        // TO-DO json data 수신 방식 점검 필요 by 배성한
         //- $("#successmsg").html(result.message);
         var data = result.rtnData[0];
-        bill.update(data.today_power_charge);
-        pbill.update(data.active_power_percent);
+        // bill.update(data.today_power_charge);
+        // pbill.update(data.active_power_percent);
         //- if (data.active_power_percent < 0) {
         //-   pbill.attr('class','growth down');
         //- } else {
         //-   pbill.attr('class','growth up');
         //- }
-        power.update(data.today_active_power);
-        ppower.update(data.active_power_percent)
-        eventCount.update(data.today_event_cnt);
-        peventCount.update(data.event_cnt_percent);
-        falutCount.update(data.today_event_fault_cnt);
-        pfalutCount.update(data.event_fault_cnt_percent);
+        power.text(data.today_active_power);
+        ppower.text(data.active_power_percent + '%')
+        eventCount.text(data.today_event_cnt);
+        peventCount.text(data.event_cnt_percent + '%');
+        falutCount.text(data.today_event_fault_cnt);
+        pfalutCount.text(data.event_fault_cnt_percent + '%');
 
       } else {
         //- $("#errormsg").html(result.message);

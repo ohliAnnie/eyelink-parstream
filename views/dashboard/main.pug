@@ -15,6 +15,21 @@ block script
   script(type='text/javascript', src='/socket.io/socket.io.js')
   script(type='text/javascript', src="/scripts/util.js")
   script(type='text/javascript', src="/scripts/dashboard.js")
+  script.
+    $(document).ready(function(e) {
+      // display Count 4 type.
+      displayCount();
+
+      // draw Chart
+      drawChart();
+
+      // draw Map
+      //- drawMap();
+
+      // process websocket
+      // FIXME 실행시 map Container 오류 발생함.
+      //- processSocket();
+    });
 block content
   .container-fluid
     .page-content
@@ -24,29 +39,29 @@ block content
           li
             a(href='#') Home
           li
-            a(href='#') Status
+            a(href='#') Dashboard
           li.active Dashboard
       .row
         .col-lg-3.col-md-3.col-sm-6.col-xs-12
           .dashboard-stat2
             .display
               .number
-                h3.font-blue-sharp 47,800
+                h3#mevent-count.font-blue-sharp 0
                 small TOTAL MONTHLY EVENT
               .icon
                 i.icon-calendar
             .progress-info
               .progress
-                span.progress-bar.progress-bar-success.blue-sharp(style='width: 76%;')
+                span.progress-bar.progress-bar-success.blue-sharp(style='width: 90%;')
                   span.sr-only 76% progress
               .status
                 .status-title  From the previous month
-                .status-number  76%
+                #pmevent-count.status-number  0%
         .col-lg-3.col-md-3.col-sm-6.col-xs-12
           .dashboard-stat2
             .display
               .number
-                h3.font-green-sharp 1,246
+                h3#event-count.font-green-sharp 0
                 small Total Daily Event
               .icon
                 i.icon-pie-chart
@@ -55,14 +70,14 @@ block content
                 span.progress-bar.progress-bar-success.green-sharp(style='width: 85%;')
                   span.sr-only 85% change
               .status
-                .status-title  From the daily average
-                .status-number  85%
+                .status-title  From the previous day
+                #pevent-count.status-number  0%
         .col-lg-3.col-md-3.col-sm-6.col-xs-12
           .dashboard-stat2
             .display
               .number
-                h3.font-red-haze 567
-                small Daily Active Event
+                h3#fault-count.font-red-haze 0
+                small Daily Fault Event
               .icon
                 i.icon-speedometer
             .progress-info
@@ -70,14 +85,14 @@ block content
                 span.progress-bar.progress-bar-success.red-haze(style='width: 45%;')
                   span.sr-only 45% grow
               .status
-                .status-title  From the daily average
-                .status-number  45%
+                .status-title  From the previous day
+                #pfault-count.status-number  0%
         .col-lg-3.col-md-3.col-sm-6.col-xs-12
           .dashboard-stat2
             .display
               .number
-                h3.font-yellow-green 276
-                small Process Active Event
+                h3#power.font-yellow-green 0
+                small Daily Active Power
               .icon
                 i.icon-energy
             .progress-info
@@ -85,15 +100,15 @@ block content
                 span.progress-bar.progress-bar-success.yellow-green(style='width: 57%;')
                   span.sr-only 57% change
               .status
-                .status-title  process
-                .status-number  57%
+                .status-title  From the previous day
+                #ppower.status-number  0%
       .row
         .col-md-12
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase Chart title
-                span.caption-helper One Column chart
+                span.caption-subject.bold.uppercase Event Trend
+                span.caption-helper The event counts
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-pencil
@@ -103,8 +118,82 @@ block content
                   |  Add
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
-              .chart(id='')
-                | &#xC774;&#xACF3;&#xC5D0; &#xCC28;&#xD2B8;&#xB97C; &#xB123;&#xC2B5;&#xB2C8;&#xB2E4;.
-                br
-                br
-                |  height&#xB294; css&#xC5D0; &#xAE30;&#xBCF8; 300px&#xB85C; &#xC815;&#xC758;&#xB418;&#xC5B4; &#xC788;&#xC73C;&#xB098;, div&#xC548;&#xC5D0; style&#xC815;&#xC758;&#xB85C; height&#xAC12;&#xC740; &#xBCC0;&#xACBD; &#xAC00;&#xB2A5;.
+              .chart(style='height:80px')
+                #volumn-chart.chart_custom
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-blue-sharp Zone/Node Map
+                span.caption-helper Zone/Node Map
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              div.map-container
+                #bubble-map
+                  div.pie
+                  div.map(style="width:300px; height:100px")
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Event / Fault Count
+                span.caption-helper vent / Fault Count
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart
+                #move-chart
+      .row
+        .col-md-8
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase ACTIVE POWER / NOISE / VIBRATION
+                span.caption-helper ACTIVE POWER / NOISE / VIBRATION
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-pencil
+                  |  Edit
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-plus
+                  |  Add
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .row
+                .col-md-2(id='')
+                  p Active Power
+                  #plot01-chart.chart
+                .col-md-2(id='')
+                  p Noise
+                  #plot01-chart.chart
+                .col-md-2(id='')
+                  p Vibration
+                  #plot01-chart.chart
+                .col-md-2(id='')
+                  p Event Type
+                  #plot_pie-chart.chart
+        .col-md-4
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Event / Fault Count
+                span.caption-helper vent / Fault Count
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart
+                #series-chart
