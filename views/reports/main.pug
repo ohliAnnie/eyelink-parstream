@@ -57,7 +57,7 @@ block content
           $(document).ready(function() {
             report();
             var start = moment().subtract(29, 'days');
-            var end = moment();
+            var end = moment().substract(0,'days');
             $('input[name="daterange"]')
               .daterangepicker(
               {
