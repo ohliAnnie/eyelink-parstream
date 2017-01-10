@@ -102,8 +102,8 @@ html
                   span.icon-bar
                   span.icon-bar
                   span.icon-bar
-              a#index.page-logo(href='dashboard.html')
-                h1 #{title}
+              a#index.page-logo(href='/dashboard')
+                h1 EYELINK
               form.search(action='', method='GET')
                 input.form-control(type='name', name='query', placeholder='Search...')
                 a.btn.submit(href='javascript:;')
@@ -232,7 +232,7 @@ html
                     li
                       a(href='/dashboard/') Dashboard
                     li
-                      a(href='/livedata/livedata') Live Data
+                      a(href='/dashboard/livedata') Live Data
                     li
                       a(href='#') Requested task
                 li.dropdown.dropdown-fw
@@ -241,7 +241,9 @@ html
                     li.active
                       a(href='/reports/all') OverView
                     li
-                      a(href='/reports/report_power') Power
+                      a(href='/reports/power') Power
+                    li
+                      a(href='/reports/fault') Fault
                     li
                       a(href='reports.html') Report Name
                 li.dropdown.dropdown-fw
