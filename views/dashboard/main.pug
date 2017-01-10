@@ -1,16 +1,13 @@
-extends ../layout-dashboard
-
+extends ../layout-type01
 block style
   link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
   link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
   link(rel='stylesheet', href='/assets/leaflet/dc.css')
   link(rel='stylesheet', href='/stylesheets/style.css')
-block scripts
-  //- script(type='text/javascript', src='/assets/leaflet/d3.js')
+block script
   script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
   script(type='text/javascript', src='/assets/annie/js/dc.js')
-  //- script(type='text/javascript', src='/assets/leaflet/dc.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
   script(type='text/javascript', src='/assets/leaflet/leaflet.js')
   script(type='text/javascript', src='/assets/leaflet/leaflet.markercluster.js')
@@ -19,260 +16,95 @@ block scripts
   script(type='text/javascript', src="/scripts/util.js")
   script(type='text/javascript', src="/scripts/dashboard.js")
 block content
-  main.layout-contents
-    div.layout-contents-inner
-      section
-        header.system-activity
-          div.title
-            fieldset.segmented-control
-              legend Select Day/Month
-              ul.list
-                li
-                  input#daily(type='radio', name='unit', checked='')
-                  label(for='daily') Day
-                li
-                  input#monthly(type='radio', name='unit')
-                  label(for='monthly') Month
-                li
-                  a.btn-action(href='http://m2u-oz.eastus.cloudapp.azure.com:9090/oz70/canvas.html' target='_blank') Reporting
-            h1 System activity
-          ul.list-dashboard-summary
-            li
-              div.lds-item
-                em.title ELECTRICITY BILL
-                strong.point.usd
-                  span#bill.odometer 0
-                  span.units
-                strong#pbill.growth.up 13.92
-                  span %
-                p.description Average value of count in the past month
-            li
-              .lds-item
-                em.title POWER CONSUMPTION
-                strong.point.tachometer
-                  span#power.odometer 0
-                  span.units MWh
-                strong#ppower.growth.up 13.92
-                  span %
-                p.description Average value of count in the past month
-            li
-              .lds-item
-                em.title EVENT COUNT
-                strong.point.bell
-                  span#event-count.odometer 0
-                strong#pevent-count.growth.up 13.92
-                  span %
-                p.description Average value of count in the past month
-            li
-              .lds-item
-                em.title FAULT COUNT
-                strong.point.exclamation-circle
-                  span#fault-count.odometer 0
-                strong#pfault-count.growth.down
-                  | 13.92
-                  span %
-                p.description Description of the numbers
-        script.
-          $(document).ready(function(e) {
-            // display Count 4 type.
-            displayCount();
-
-            // draw Chart
-            drawChart();
-
-            // draw Map
-            //- drawMap();
-
-            // process websocket
-            // FIXME 실행시 map Container 오류 발생함.
-            //- processSocket();
-          });
-        .grid-dashboard
-          .grid-item.map
-            .inner
-              div.map-container
-                  #bubble-map(style="height: 100%")
-                    div.pie
-                    div.map(style="width:300px; height:100px")
-              //- div.chart
-              //-   #bar-chart
-          .grid-item.other
-            .inner
-              strong.grid-item-title Event/Fault Counts
-              p.grid-item-desc The event/fault Counts in today/yesterday
-              div.chart
-                #volumn-chart(style="width:100%; height:100%; left:0; top:0;")
-              div.chart(style="top:100px;")
-                #move-chart
-                  //- strong Days by Fluctuation(%) |
-                  //-   span.reset(style='display: none;') | range:
-                  //-   span.filter a|
-                    //- a.reset(href='javascript:fluctuationChart.filterAll();dc.redrawAll();', style='display: none;') reset
-                  //- .clearfix
-                //- img(src='assets/images/@temp/chart01.jpg', alt='')
-          .grid-item
-            .inner
-              strong.grid-item-title ACTIVE POWER / NOISE / VIBRATION
-              div.chart
-                #plot01-chart
-              div.chart(style="left:180px;")
-                #plot02-chart
-              div.chart(style="left:350px;")
-                #plot03-chart
-              div.chart(style="left:500px;top:80px;")
-                #plot_pie-chart
-              //- ul.list-chart.flip-in-x
-              //-   li
-              //-     strong.grid-item-title ACTIVE POWER
-              //-     .chart
-              //-       img(src='assets/images/@temp/chart02_01.jpg', alt='')
-              //-   li
-              //-     strong.grid-item-title NOISE
-              //-     .chart
-              //-       img(src='assets/images/@temp/chart02_02.jpg', alt='')
-              //-   li
-              //-     strong.grid-item-title VIBRATION
-              //-     .chart
-              //-       img(src='assets/images/@temp/chart02_03.jpg', alt='')
-          .grid-item
-            .inner
-              strong.grid-item-title LIVE DATA
-              div.chart
-                #series-chart
-                //- img(src='assets/images/@temp/chart03.jpg', alt='')
-        aside.event-alarm-container(data-state='')
-          button.btn-toggle-event(type='button') EVENT ALARM
-          p.btns
-            button.btn.btn-play(type='button') play
-            button.btn.btn-pause(type='button') pause
-            button.btn.btn-help(type='button', value='#popup-icon-guide') help
-            button.btn.btn-close(type='button') close
-          table.tbl-alarm-list
-            caption
-            colgroup
-              col(style='width: 147px;')
-              col(style='width: 197px;')
-              col(style='width: 125px;')
-              col(style='width: auto;')
-              col(style='width: 74px;')
-            thead
-              tr
-                th(scope='col') NODE ID
-                th(scope='col') DATE
-                th(scope='col') TYPE
-                th(scope='col') EVENT
-                th(scope='col')
-          .scroll-contents
-            table.tbl-alarm-list
-              caption
-              colgroup
-                col(style='width: 147px;')
-                col(style='width: 197px;')
-                col(style='width: 125px;')
-                col(style='width: auto;')
-                col(style='width: 74px;')
-              tbody
-        script.
-          $(document).ready(function(e) {
-            /* close button */
-            $('.event-alarm-container .btn-toggle-event, .event-alarm-container .btn-close').on('click', function(e) {
-            $('.event-alarm-container').attr('data-state', $('.event-alarm-container').attr('data-state') == '' ? 'is-open' : '')
-            });
-            /* help button */
-            $('.event-alarm-container .btn-help, .popup-icon-guide .btn-close').on('click', function(e) {
-              var target = $(this).val();
-              $(target).toggle();
-            });
-          });
-        aside#popup-icon-guide.popup-icon-guide
-          button.btn-close(type='button', value='#popup-icon-guide') close
-          h2.title
-            | Icon Guide
-            small Node, Mode, Status
-          table
-            caption
-            thead
-              tr
-                th.l.node(scope='col') NODE
-                th(scope='col') NORMAL
-                th(scope='col') FAULT
-                th.l(scope='col') DESCRIPTION
-            tbody
-              tr
-                td.l.node
-                  img(src='assets/images/node/node_normal.png', alt='normal')
-                  |  DEFAULT
-                td
-                  em.status-icon.als.txt-none
-                    span ALS
-                td
-                  em.status-icon.als.fault.txt-none
-                    span ALS
-                td.l ALS
-              tr
-                td.l.node
-                  img(src='assets/images/node/node_fault.png', alt='fault')
-                  |  FAULT
-                td
-                  em.status-icon.decibel.txt-none
-                    span DECIBEL
-                td
-                  em.status-icon.decibel.fault.txt-none
-                    span DECIBEL
-                td.l NOISE DECIBEL
-              tr
-                td.l.node
-                  img(src='assets/images/node/node_auto_on.png', alt='auto mode / led on')
-                  |  AUTO MODE / LED ON
-                td
-                  em.status-icon.frequency.txt-none
-                    span FREQUENCY
-                td
-                  em.status-icon.frequency.fault.txt-none
-                    span FREQUENCY
-                td.l NOISE FREQUENCY
-              tr
-                td.l.node
-                  img(src='assets/images/node/node_auto_off.png', alt='auto mode / led off')
-                  |  AUTO MODE / LED OFF
-                td
-                  em.status-icon.vibration.txt-none
-                    span VIBRATION
-                td
-                  em.status-icon.vibration.fault.txt-none
-                    span VIBRATION
-                td.l VIBRATION
-              tr
-                td.l.node
-                  img(src='assets/images/node/node_manual_on.png', alt='manual mode / led on')
-                  |  MANUAL MODE / LED ON
-                td
-                  em.status-icon.power.txt-none
-                    span POWER
-                td
-                  em.status-icon.power.fault.txt-none
-                    span POWER
-                td.l POWER
-              tr
-                td.l.node
-                  img(src='assets/images/node/node_manual_off.png', alt='manual mode / led off')
-                  |  MANUAL MODE / LED OFF
-                td
-                  em.status-icon.dimming.txt-none
-                    span DIMMING
-                td
-                  em.status-icon.dimming.fault.txt-none
-                    span DIMMING
-                td.l DIMMING
-              tr
-                td.l.node
-                td
-                  em.status-icon.gps.txt-none
-                    span GPS
-                td
-                  em.status-icon.gps.fault.txt-none
-                    span GPS
-                td.l GPS
-  //- div.loading
-  //-   span.txt
-  //-     i.spin Loading
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Dashboard
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Status
+          li.active Dashboard
+      .row
+        .col-lg-3.col-md-3.col-sm-6.col-xs-12
+          .dashboard-stat2
+            .display
+              .number
+                h3.font-blue-sharp 47,800
+                small TOTAL MONTHLY EVENT
+              .icon
+                i.icon-calendar
+            .progress-info
+              .progress
+                span.progress-bar.progress-bar-success.blue-sharp(style='width: 76%;')
+                  span.sr-only 76% progress
+              .status
+                .status-title  From the previous month
+                .status-number  76%
+        .col-lg-3.col-md-3.col-sm-6.col-xs-12
+          .dashboard-stat2
+            .display
+              .number
+                h3.font-green-sharp 1,246
+                small Total Daily Event
+              .icon
+                i.icon-pie-chart
+            .progress-info
+              .progress
+                span.progress-bar.progress-bar-success.green-sharp(style='width: 85%;')
+                  span.sr-only 85% change
+              .status
+                .status-title  From the daily average
+                .status-number  85%
+        .col-lg-3.col-md-3.col-sm-6.col-xs-12
+          .dashboard-stat2
+            .display
+              .number
+                h3.font-red-haze 567
+                small Daily Active Event
+              .icon
+                i.icon-speedometer
+            .progress-info
+              .progress
+                span.progress-bar.progress-bar-success.red-haze(style='width: 45%;')
+                  span.sr-only 45% grow
+              .status
+                .status-title  From the daily average
+                .status-number  45%
+        .col-lg-3.col-md-3.col-sm-6.col-xs-12
+          .dashboard-stat2
+            .display
+              .number
+                h3.font-yellow-green 276
+                small Process Active Event
+              .icon
+                i.icon-energy
+            .progress-info
+              .progress
+                span.progress-bar.progress-bar-success.yellow-green(style='width: 57%;')
+                  span.sr-only 57% change
+              .status
+                .status-title  process
+                .status-number  57%
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Chart title
+                span.caption-helper One Column chart
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-pencil
+                  |  Edit
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-plus
+                  |  Add
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(id='')
+                | &#xC774;&#xACF3;&#xC5D0; &#xCC28;&#xD2B8;&#xB97C; &#xB123;&#xC2B5;&#xB2C8;&#xB2E4;.
+                br
+                br
+                |  height&#xB294; css&#xC5D0; &#xAE30;&#xBCF8; 300px&#xB85C; &#xC815;&#xC758;&#xB418;&#xC5B4; &#xC788;&#xC73C;&#xB098;, div&#xC548;&#xC5D0; style&#xC815;&#xC758;&#xB85C; height&#xAC12;&#xC740; &#xBCC0;&#xACBD; &#xAC00;&#xB2A5;.

@@ -1,33 +1,14 @@
 doctype html
 html
   head
-    meta(charset='utf-8')
     title= title
-    meta(http-equiv='X-UA-Compatible', content='IE=edge')
-    meta(content='width=device-width, initial-scale=1', name='viewport')
-    meta(content='', name='description')
-    meta(content='', name='author')
-    link(href='http://fonts.googleapis.com/css?family=Open+Sans:400,300', rel='stylesheet', type='text/css')
-    link(href='/assets/fonts/font-awesome/css/font-awesome.min.css', rel='stylesheet', type='text/css')
-    link(href='/assets/fonts/simple-line-icons/simple-line-icons.min.css', rel='stylesheet', type='text/css')
-    link(href='/assets/css/bootstrap.min.css', rel='stylesheet', type='text/css')
-    link(href='/assets/css/uniform.default.css', rel='stylesheet', type='text/css')
-    link(href='/assets/css/bootstrap-switch.min.css', rel='stylesheet', type='text/css')
-    link(rel='stylesheet', type='text/css', href='/assets/plugins/clockface/css/clockface.css')
-    link(rel='stylesheet', type='text/css', href='/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css')
-    link(rel='stylesheet', type='text/css', href='/assets/plugins/bootstrap-timepicker/css/bootstrap-timepicker.min.css')
-    link(rel='stylesheet', type='text/css', href='/assets/plugins/bootstrap-colorpicker/css/colorpicker.css')
-    link(rel='stylesheet', type='text/css', href='/assets/plugins/bootstrap-daterangepicker/daterangepicker-bs3.css')
-    link(rel='stylesheet', type='text/css', href='/assets/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css')
-    link(rel='stylesheet', type='text/css', href='/assets/plugins/bootstrap-select/bootstrap-select.min.css')
-    link(rel='stylesheet', type='text/css', href='/assets/plugins/select2/select2.css')
-    link(rel='stylesheet', type='text/css', href='/assets/plugins/jquery-multi-select/css/multi-select.css')
-    link#style_components(href='/assets/css/eyelink-components.css', rel='stylesheet', type='text/css')
-    link(href='/assets/css/plugins.css', rel='stylesheet', type='text/css')
-    link(href='/assets/css/eyelink-layout.css', rel='stylesheet', type='text/css')
-    link(href='/assets/css/eyelink-custom.css', rel='stylesheet', type='text/css')
-    link(rel='shortcut icon', href='/assets/images/favicon.ico')
-    script(src="/assets/scripts/libs/moment.min.js")    
+    meta(name="viewport", content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no")
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', type='text/css', href='/assets/annie/css/dc.css')
+    link(rel='stylesheet', type='text/css', href='/assets/annie/css/colorbrewer.css')
+    link(rel='stylesheet', href='/assets/styles/eyelink.css')
+    script(src="/assets/scripts/libs/moment.min.js")
+    script(src="/assets/scripts/libs/jquery-2.2.3.min.js")
     script(src="/assets/scripts/libs/daterangepicker.custom.js")
     script(src="/assets/scripts/libs/jquery-confirm.custom.js")
     script(src="/assets/scripts/libs/jquery.magnific-popup.min.js")
@@ -36,246 +17,93 @@ html
     script(src="/assets/scripts/libs/jquery-clockpicker.min.js")
     script(src="/assets/scripts/libs/odometer.min.js")
     script(src="/assets/scripts/libs/jquery.cookie.js")
+    script(src="/assets/scripts/libs/bootstrap.min.js")
     script(src="/assets/scripts/libs/bootstrap-select.min.js")
     script(src="/assets/scripts/libs/bootstrap-slider-custom.js")
     script(src="/assets/scripts/libs/d3.min.js")
-    script(src="/scripts/common.js")    
-    script(src='/assets/scripts/libs/jquery.min.js', type='text/javascript')
-    script(src='/assets/scripts/libs/jquery-migrate.min.js', type='text/javascript')
-    script(src='/assets/scripts/libs/bootstrap.min.js', type='text/javascript')
-    script(src='/assets/scripts/libs/bootstrap-hover-dropdown.min.js', type='text/javascript')
-    script(src='/assets/scripts/libs/jquery.slimscroll.min.js', type='text/javascript')
-    script(src='/assets/scripts/libs/jquery.blockui.min.js', type='text/javascript')
-    script(src='/assets/scripts/libs/jquery.uniform.min.js', type='text/javascript')
-    script(src='/assets/scripts/libs/bootstrap-switch.min.js', type='text/javascript')
-    script(src='/assets/plugins/jquery-ui/jquery-ui.min.js', type='text/javascript')
-    script(src='/assets/plugins/jquery.cokie.min.js', type='text/javascript')
-    script(src='/assets/plugins/charts/amcharts/amstockcharts/amstock.js', type='text/javascript')
-    script(src='/assets/plugins/charts/charts-amcharts.js', type='text/javascript')
-    script(src='/assets/plugins/charts/amcharts/amcharts/amcharts.js', type='text/javascript')
-    script(src='/assets/plugins/charts/amcharts/amcharts/serial.js', type='text/javascript')
-    script(src='/assets/plugins/charts/amcharts/amcharts/themes/light.js', type='text/javascript')
-    script(src='/assets/plugins/charts/amcharts/ammap/ammap.js', type='text/javascript')
-    script(src='/assets/plugins/charts/amcharts/ammap/maps/js/worldLow.js', type='text/javascript')
-    script(src='/assets/plugins/charts/morris/morris.min.js', type='text/javascript')
-    script(src='/assets/plugins/charts/morris/raphael-min.js', type='text/javascript')
-    script(src='/assets/plugins/charts/jquery.sparkline.min.js', type='text/javascript')
-    script(src='/assets/plugins/bootstrap-select/bootstrap-select.min.js', type='text/javascript')
-    script(src='/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js', type='text/javascript')
-    script(src='/assets/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js', type='text/javascript')
-    script(src='/assets/plugins/clockface/js/clockface.js', type='text/javascript')
-    script(src='/assets/plugins/bootstrap-daterangepicker/moment.min.js', type='text/javascript')
-    script(src='/assets/plugins/bootstrap-daterangepicker/daterangepicker.js', type='text/javascript')
-    script(src='/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js', type='text/javascript')
-    script(type='text/javascript', src='/assets/plugins/bootstrap-select/bootstrap-select.min.js')
-    script(type='text/javascript', src='/assets/plugins/select2/select2.min.js')
-    script(type='text/javascript', src='/assets/plugins/jquery-multi-select/js/jquery.multi-select.js')
-    script(src='/assets/scripts/eyelink-ui.js', type='text/javascript')
-    script(src='/assets/scripts/eyelink-layout.js', type='text/javascript')
-    script(src='/assets/scripts/eyelink-quick-sidebar.js', type='text/javascript')
-    script(src='/assets/scripts/page/components-pickers.js', type='text/javascript')
-    script(src='/assets/scripts/page/components-dropdowns.js', type='text/javascript')
-    script(src='/assets/scripts/page/layout.js', type='text/javascript')
-    script(src='/assets/scripts/page/demo.js', type='text/javascript')
+    script(src="/scripts/common.js")
     block style
-    block script
-    script.
-      jQuery(document).ready(function() {
-        console.log('jQuery');
-        Metronic.init(); // init metronic core componets
-        eyelinkLayout.init(); // init eyelinklayout
-        QuickSidebar.init(); // init quick sidebar
-        Layout.init(); // init layout
-        Demo.init(); // init index page
-        ComponentsPickers.init();
-        ComponentsDropdowns.init();
-      });
-  body.page-header-fixed.page-quick-sidebar-over-content
-    .wrapper
-      header.page-header
-        nav.navbar.mega-menu(role='navigation')
-          .container-fluid
-            .clearfix.navbar-fixed-top
-              button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-responsive-collapse')
-                span.sr-only Toggle navigation
-                span.toggle-icon
-                  span.icon-bar
-                  span.icon-bar
-                  span.icon-bar
-              a#index.page-logo(href='dashboard.html')
-                h1 EYELINK
-              form.search(action='', method='GET')
-                input.form-control(type='name', name='query', placeholder='Search...')
-                a.btn.submit(href='javascript:;')
-                  i.fa.fa-search
-              .topbar-actions
-                #header_notification_bar.btn-group-notification.btn-group
-                  button.btn.btn-sm.dropdown-toggle(type='button', data-toggle='dropdown', data-hover='dropdown', data-close-others='true')
-                    i.icon-bell
-                    |  
-                    span.badge 12
-                  ul.dropdown-menu-v2
-                    li.external
-                      h3
-                        span.bold 12 pending
-                        |  notifications
-                      |  
-                      a(href='#') view all
-                    li
-                      ul.dropdown-menu-list.scroller(style='height: 250px; padding: 0;', data-handle-color='#637283')
-                        li
-                          a(href='javascript:;')
-                            span.details
-                              span.label.label-sm.label-icon.label-success
-                                i.fa.fa-plus
-                              |  Add new datasheet.
-                            |  
-                            span.time just now
-                        li
-                          a(href='javascript:;')
-                            span.details
-                              span.label.label-sm.label-icon.label-danger
-                                i.fa.fa-bolt
-                              |  Server #12 overloaded.
-                            |  
-                            span.time 3 mins
-                        li
-                          a(href='javascript:;')
-                            span.details
-                              span.label.label-sm.label-icon.label-warning
-                                i.fa.fa-bell-o
-                              |  Server #2 not responding.
-                            |  
-                            span.time 10 mins
-                        li
-                          a(href='javascript:;')
-                            span.details
-                              span.label.label-sm.label-icon.label-info
-                                i.fa.fa-bullhorn
-                              |  Application error.
-                            |  
-                            span.time 14 hrs
-                        li
-                          a(href='javascript:;')
-                            span.details
-                              span.label.label-sm.label-icon.label-danger
-                                i.fa.fa-bolt
-                              |  Database overloaded 68%.
-                            |  
-                            span.time 2 days
-                        li
-                          a(href='javascript:;')
-                            span.details
-                              span.label.label-sm.label-icon.label-danger
-                                i.fa.fa-bolt
-                              |  A user IP blocked.
-                            |  
-                            span.time 3 days
-                        li
-                          a(href='javascript:;')
-                            span.details
-                              span.label.label-sm.label-icon.label-warning
-                                i.fa.fa-bell-o
-                              |  Storage Server #4 not responding.
-                            |  
-                            span.time 4 days
-                        li
-                          a(href='javascript:;')
-                            span.details
-                              span.label.label-sm.label-icon.label-info
-                                i.fa.fa-bullhorn
-                              |  System Error.
-                            |  
-                            span.time 5 days
-                        li
-                          a(href='javascript:;')
-                            span.details
-                              span.label.label-sm.label-icon.label-danger
-                                i.fa.fa-bolt
-                              |  Storage server failed.
-                            |  
-                            span.time 9 days
-                .btn-group-add.btn-group
-                  button.btn.btn-sm.dropdown-toggle(type='button', data-toggle='dropdown', data-hover='dropdown', data-close-others='true')
-                    i.icon-plus
-                  ul.dropdown-menu-v2(role='menu')
-                    li.active
-                      a(href='#') New Schedule
-                    li
-                      a(href='#') New Datasheet
-                    li
-                      a(href='#') New Task
-                    li.divider
-                    li
-                      a(href='#')
-                        | Comments 
-                        span.badge.badge-success 4
-                    li
-                      a(href='#')
-                        | Feedbacks 
-                        span.badge.badge-danger 2
-                .btn-group-user.btn-group
-                  button.btn.btn-sm.dropdown-toggle(type='button', data-toggle='dropdown', data-hover='dropdown', data-close-others='true')
-                    i.icon-user
-                    |  
-                    span Damon kim
-                  ul.dropdown-menu-v2(role='menu')
-                    li.active
-                      a(href='#')
-                        | My Profile 
-                        span.badge.badge-danger 1
-                    li
-                      a(href='#')
-                        | My Schedule 
-                        span.badge.badge-info 3
-                    li
-                      a(href='#') My Tasks
-                    li.divider
-                    li
-                      a(href='index.html') Log Out
-                |  
-                button.quick-sidebar-toggler(type='button', data-toggle='collapse')
-                  span.sr-only Toggle Quick Sidebar
-                  i.icon-logout
-            .nav-collapse.collapse.navbar-collapse.navbar-responsive-collapse
-              ul.nav.navbar-nav.text-uppercase
-                li.dropdown.dropdown-fw
-                  a(href='javascript:;') STATUS
-                  ul.dropdown-menu.dropdown-menu-fw
-                    li
-                      a(href='dashboard.html') Dashboard
-                    li
-                      a(href='livedata.html') Live Data
-                    li
-                      a(href='#') Requested task
-                li.dropdown.dropdown-fw.open.selected
-                  a(href='javascript:;') Reports
-                  ul.dropdown-menu.dropdown-menu-fw
-                    li.active
-                      a(href='reports.html') Report Name
-                    li
-                      a(href='reports.html') Report Name
-                    li
-                      a(href='reports.html') Report Name
-                li.dropdown.dropdown-fw
-                  a(href='javascript:;') Time Series
-                  ul.dropdown-menu.dropdown-menu-fw
-                    li
-                      a(href='timeseries.html') Time Series Name
-                    li
-                      a(href='timeseries.html') Time Series Name
-                li.dropdown.dropdown-fw
-                  a(href='javascript:;') Users
-                  ul.dropdown-menu.dropdown-menu-fw
-                    li
-                      a(href='#') Users Menu
-                    li
-                      a(href='#') Users Menu
-                li.dropdown.dropdown-fw
-                  a(href='javascript:;') Settings
-                  ul.dropdown-menu.dropdown-menu-fw
-                    li
-                      a(href='#') Preferences
-                    li
-                      a(href='#') Configuration
+    block scripts
+  body.page-analysis
+    aside.layout-header-utils
+      button.btn-menus(type="button") 메뉴 on/off
+      p.location
+        a(href="#") Analysis
+        a(href="#") Reports &nbsp;
+      ul.list-utils
+        li
+          a.user(href="#", class="user") username.kim
+        li
+          select.selectpicker
+            option(data-icon="en", selected) ENGLISH
+            option(data-icon="ko") KOREAN
+            option(data-icon="zh") CHINESE
+        li
+          a.help(href="#") HELP
+        li
+          button.logout(type="button") LOGOUT
+    nav.layout-sidemenu
+      a.btn-nyx-logo(href='./intro.html') NYX
+      ul.list-menus
+        li
+          a.menu.dashboard.has-submenus(href='/dashboard') Dashboard
+          ul.list-sub-menus
+            li
+              a(href='/dashboard/') Dashboard
+            li
+              a(href='/realtime_event/') Realtime Event
+        //- li
+        //-   a.menu.zoning.has-submenus(href='#') Zoning
+        //-   ul.list-sub-menus
+        //-     li
+        //-       a(href='./zones.html') Zones
+        //-     li
+        //-       a(href='./zone_registration_01.html') Zone Registration
+        //- li
+        //-   a.menu.node.has-submenus(href='#') Node
+        //-   ul.list-sub-menus
+        //-     li
+        //-       a(href='./nodes.html') Nodes
+        //-     li
+        //-       a(href='./node_registration_01_als.html') Node Registration
+        li(data-state='is-selected')
+          a.menu.analysis.has-submenus(href='/reports/') Analysis
+          ul.list-sub-menus
+            //- li
+            //-   a(href='./analysis_alarms.html') Alarms
+            li
+              a(href='/reports/') Report
+            li
+              a(href='/reports/d3') d3_Report
+            li
+              a(href='/reports/test') test
+            li
+              a(href='/reports/all') Report_All
+            li
+              a(href='/reports/power') Report_Power
+            //- li
+            //-   a(href='./analysis_asset.html') Asset Management
+        //- li
+        //-   a.menu.user(href='./users.html') Users
+        //-   ul.list-sub-menus
+        //-   li
+        //-     a(href='./users.html') Users
+        //- li
+        //-   a.menu.preferences(href='./preferences.html') Preferences
+        //-   ul.list-sub-menus
+        //-     li
+        //-       a(href='./preferences.html') Preferences
     block content
+  //- footer
+  //-   nav.footer-nav
+  //-     div.row
+  //-       ul.second-nav
+  //-         li
+  //-           a(href="/intl/corp") 설명
+  //-         li
+  //-           a(href="/intl/legal") 법적고지
+  //-         li
+  //-           a(href="/intl/contact") 연락처
+  //-     div.row.bottom-section
+  //-       div.copyright 저작권 2016 M2U Technology.
+  //-         span.all-rihts 모든 권리 보유.

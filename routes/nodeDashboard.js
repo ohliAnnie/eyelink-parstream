@@ -6,13 +6,13 @@ var DashboardProvider = require('./dao/' + global.config.fetchData.database + '/
 
 var dashboardProvider = new DashboardProvider();
 
-var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', event: ''};
+var mainmenu = {dashboard:'open.selected', report:''};
 
 
 /* GET reports page. */
 router.get('/', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./dashboard/main', { title: 'EyeLink for ParStream' });
+  res.render('./dashboard/main', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
 });
 
 router.get('/timeseries', function(req, res, next) {

@@ -11,9 +11,12 @@ var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', 
 
 /* GET reports page. */
 router.get('/', function(req, res, next) {
-  res.render('./reports/main', { title: 'EyeLink for ParStream' });
+  res.render('./reports/report_all', { title: 'EyeLink for ParStream' });
 });
 
+router.get('/main', function(req, res, next) {
+  res.render('./reports/main', { title: 'EyeLink for ParStream' });
+});
 
 router.get('/d3', function(req, res, next) {
   res.render('./reports/d3', { title: 'EyeLInk D3 Reports' });

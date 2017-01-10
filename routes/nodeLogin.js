@@ -6,8 +6,9 @@ var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', 
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  console.log('login');
   // res.redirect('/dashboard/');
-  res.redirect('/login/');
+  res.render('./login/login', { title: 'EyeLink for ParStream' });
 });
 
 module.exports = router;

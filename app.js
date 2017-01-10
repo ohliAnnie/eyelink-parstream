@@ -14,8 +14,9 @@ console.log('config : %j', config);
 global.config = config;
 
 var intro = require('./routes/intro');
-var dashboard = require('./routes/dashboard');
-var reports = require('./routes/reports');
+var login = require('./routes/nodeLogin');
+var dashboard = require('./routes/nodeDashboard');
+var reports = require('./routes/nodeReports');
 var initapps = require('./routes/initApp');
 var socketapps = require('./routes/socketApp');
 
@@ -40,7 +41,8 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', intro);
+// app.use('/', intro);
+app.use('/', login);
 app.use('/dashboard', dashboard);
 app.use('/reports', reports);
 app.use('/intro', intro);
