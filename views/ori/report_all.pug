@@ -1,0 +1,87 @@
+extends ../layout-reports
+block style  
+  link(rel='stylesheet', href='/stylesheets/style.css')
+block scripts
+  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  script(type='text/javascript', src='/assets/annie/js/dc.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(src='/scripts/report_all.js')
+block content
+  main.layout-contents
+    div.layout-contents-inner
+      section
+        header.page-title
+          h1.title Reports_All
+        fieldset.search-container
+          legend search
+          .right-content-view
+            fieldset.segmented-control
+              legend Sync
+              ul.list
+                li
+                  input#syncY(type='radio', name='syncYN', checked='Y')
+                  label(for='syncY') Sync
+                li
+                  input#syncN(type='radio', name='syncYN')
+                  label(for='syncN') Async
+          .left-content-view
+            span.datepicker
+              input(type='text', name='daterange', id='daterange', value='')
+            select.select(name='', id='')
+              option(value='') Zone ID
+            select.select(name='', id='')
+              option(value='') Node ID
+            select.select(name='', id='')
+              option(value='') ALL
+            button#btn_search.btn-submit.search(type='submit') SEARCH
+            script.
+              $(document).ready(function() {
+                var start = moment().subtract(5, 'daterangeys');
+                var end = moment();
+                start = '2016-11-26';
+                end = '2016-12-04';
+                $('input[name="daterange"]').daterangepicker({
+                    "autoApply": true,
+                    startDate: start,
+                    endDate: end,
+                    locale: {
+                      format: 'YYYY-MM-DD'
+                    }
+                  }, function(start, end, label) {
+                    console.log("New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')");
+                    });
+
+                // time series char를 그린다.
+                drawChart();
+
+                $('#btn_search').click(function() {
+                  drawChart();
+                });
+
+              });
+        div.map-container
+          div.inner
+        a(href='javascript:dc.filterAll(); dc.renderAll();') Reset All
+        ul.list-reports
+          li
+            div.chart
+              strong Event Count
+              br
+              #eventChart(style='margine:0 auto;')
+          li
+            div.chart
+              strong Event Type Count by Day
+              br
+              #eventBar
+          li
+            div.chart
+              strong Event Count by Day
+              br
+              #checkLine
+          li
+            div.chart
+              strong Event Count by Node
+              br
+              #nodeBar

@@ -31,6 +31,16 @@ router.get('/power', function(req, res, next) {
   res.render('./reports/report_power', { title: 'Report_Power' });
 });
 
+router.get('/view', function(req, res, next) {
+  res.render('./design/reports', { title: 'Report_Power' });
+});
+
+router.get('/index', function(req, res, next) {
+  res.render('./design/index', { title: 'Report_Power' });
+});
+
+
+
 // query Report
 router.get('/restapi/getReportRawData', function(req, res, next) {
   console.log('reports/restapi/getReportRawData');
