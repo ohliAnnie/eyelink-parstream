@@ -2,13 +2,13 @@ var ComponentsPickers = function () {
 
     var handleDatePickers = function () {
 
-        if (jQuery().datepicker) {
+        if (jQuery().datepicker) {            
             $('.date-picker').datepicker({
                 rtl: Metronic.isRTL(),
                 orientation: "left",
                 autoclose: true
             });
-            //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal
+            //$('body').removeClass("modal-open"); // fix bug when inline picker is used in modal            //
         }
 
         /* Workaround to restrict daterange past date select: http://stackoverflow.com/questions/11933173/how-to-restrict-the-selectable-date-ranges-in-bootstrap-datepicker */
@@ -47,7 +47,6 @@ var ComponentsPickers = function () {
         if (!jQuery().daterangepicker) {
             return;
         }
-
         $('#defaultrange').daterangepicker({
                 opens: (Metronic.isRTL() ? 'left' : 'right'),
                 format: 'MM/DD/YYYY',

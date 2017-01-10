@@ -39,9 +39,11 @@ block content
                     label.control-label.col-md-1 Date Range
                     .col-md-4
                       .input-group.input-large.date-picker.input-daterange(data-date='10/11/2012', data-date-format='mm/dd/yyyy')
-                        input.form-control(type='text', name='from')
-                        span.input-group-addon to
-                        input.form-control(type='text', name='to')
+                            input.form-control(type='text', name='from')
+                            |  
+                            span.input-group-addon to
+                            |  
+                            input.form-control(type='text', name='to')
                     label.control-label.col-md-1 Select Area
                     .col-md-6.form-inline
                       select.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Area')
@@ -58,25 +60,27 @@ block content
                         i.fa.fa-search
                         |  Search
                       script.
-                        $(document).ready(function() {
-                          var start = moment().subtract(5, 'daterangeys');
+                        $(document).ready(function() {                          
+                          var start = moment().subtract(5, 'days');
                           var end = moment();
                           $('input[name="daterange"]').daterangepicker({
-                              "autoApply": true,
-                              startDate: start,
-                              endDate: end,
-                              locale: {
-                                format: 'YYYY-MM-DD'
-                              }
-                            }, function(start, end, label) {
-                              console.log("New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')");
-                            });
+                            "autoApply": true,
+                            startDate: start,
+                            endDate: end,
+                            locale: {
+                              format: 'YYYY-MM-DD'
+                            }
+                          }, function(start, end, label) {
+                            console.log("New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')");
+                          });
+                          console.log('kk : '+$('#daterange').val());
                           // time series char를 그린다.
                             drawChart();
-                            $('#btn_search').click(function() {
+                            $('btn.blue').click(function() {
+                              alter('check');
                               drawChart();
                             });
-                        });
+                        });                      
                         jQuery(document).ready(function() {
                           console.log('jQuery');
                           Metronic.init(); // init metronic core componets
@@ -311,7 +315,7 @@ block content
                   li.media
                     .media-status
                       span.badge.badge-warning 2
-                    img.media-object(src='assets/images/user2.png', alt='...')
+                    img.media-object(src='/assets/images/user2.png', alt='...')
                     .media-body
                       h4.media-heading Minjung Lee
                       .media-heading-sub  Area02 staff
@@ -319,13 +323,13 @@ block content
                   li.media
                     .media-status
                       span.label.label-sm.label-success new
-                    img.media-object(src='assets/images/user1.png', alt='...')
+                    img.media-object(src='/assets/images/user1.png', alt='...')
                     .media-body
                       h4.media-heading Haejin Park
                       .media-heading-sub  Area02 staff
                       .media-heading-small  Last seen 03:10 AM
                   li.media
-                    img.media-object(src='assets/images/user2.png', alt='...')
+                    img.media-object(src='/assets/images/user2.png', alt='...')
                     .media-body
                       h4.media-heading Younggil Park
                       .media-heading-sub  Area02 staff
@@ -333,12 +337,12 @@ block content
                   li.media
                     .media-status
                       span.badge.badge-success 7
-                    img.media-object(src='assets/images/user2.png', alt='...')
+                    img.media-object(src='/assets/images/user2.png', alt='...')
                     .media-body
                       h4.media-heading Manager Name
                       .media-heading-sub  Area03 staff
                   li.media
-                    img.media-object(src='assets/images/user1.png', alt='...')
+                    img.media-object(src='/assets/images/user1.png', alt='...')
                     .media-body
                       h4.media-heading Manager Name
                       .media-heading-sub  Area03 staff
@@ -350,63 +354,63 @@ block content
                       |  Back
                   .page-quick-sidebar-chat-user-messages
                     .post.out
-                      img.avatar(alt='', src='assets/images/user1.png')
+                      img.avatar(alt='', src='/assets/images/user1.png')
                       .message
                         span.arrow
                         a.name(href='javascript:;') Gildong Hong
                         span.datetime 20:15
                         span.body When could you send me the report ?
                     .post.in
-                      img.avatar(alt='', src='assets/images/user2.png')
+                      img.avatar(alt='', src='/assets/images/user2.png')
                       .message
                         span.arrow
                         a.name(href='javascript:;') Taehee Kim
                         span.datetime 20:15
                         span.body Its almost done. I will be sending it shortly
                     .post.out
-                      img.avatar(alt='', src='assets/images/user1.png')
+                      img.avatar(alt='', src='/assets/images/user1.png')
                       .message
                         span.arrow
                         a.name(href='javascript:;') Gildong Hong
                         span.datetime 20:15
                         span.body Alright. Thanks! :)
                     .post.in
-                      img.avatar(alt='', src='assets/images/user2.png')
+                      img.avatar(alt='', src='/assets/images/user2.png')
                       .message
                         span.arrow
                         a.name(href='javascript:;') Taehee Kim
                         span.datetime 20:16
                         span.body You are most welcome. Sorry for the delay.
                     .post.out
-                      img.avatar(alt='', src='assets/images/user1.png')
+                      img.avatar(alt='', src='/assets/images/user1.png')
                       .message
                         span.arrow
                         a.name(href='javascript:;') Gindong Hong
                         span.datetime 20:17
                         span.body No probs. Just take your time :)
                     .post.in
-                      img.avatar(alt='', src='assets/images/user2.png')
+                      img.avatar(alt='', src='/assets/images/user2.png')
                       .message
                         span.arrow
                         a.name(href='javascript:;') Taehee Kim
                         span.datetime 20:40
                         span.body Alright. I just emailed it to you.
                     .post.out
-                      img.avatar(alt='', src='assets/images/user1.png')
+                      img.avatar(alt='', src='/assets/images/user1.png')
                       .message
                         span.arrow
                         a.name(href='javascript:;') Gildong Hong
                         span.datetime 20:17
                         span.body Great! Thanks. Will check it right away.
                     .post.in
-                      img.avatar(alt='', src='assets/images/user2.png')
+                      img.avatar(alt='', src='/assets/images/user2.png')
                       .message
                         span.arrow
                         a.name(href='javascript:;') Taehee Kim
                         span.datetime 20:40
                         span.body Please let me know if you have any comment.
                     .post.out
-                      img.avatar(alt='', src='assets/images/user1.png')
+                      img.avatar(alt='', src='/assets/images/user1.png')
                       .message
                         span.arrow
                         a.name(href='javascript:;') Gildong Hong
