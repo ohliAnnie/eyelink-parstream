@@ -1,11 +1,14 @@
 function drawChart() {
-  var searchDate = $('#daterange').val()
+/*  var searchDate = $('#daterange').val()
   console.log('daterange : ' + searchDate);
 
   var ind = searchDate.indexOf(' - ');
   var sdate = searchDate.substring(0, ind);
   var edate = searchDate.substring(ind+3);
-  console.log('%s, %s', sdate, edate);
+  console.log('%s, %s', sdate, edate);*/
+  var sdate = moment().subtract(45, 'days').format('YYYY-MM-DD');
+  var edate = moment().subtract(40, 'days').format('YYYY-MM-DD');
+  console.log(sdate+', '+edate);
   $.ajax({
     url: "/reports/restapi/getTbRawDataByPeriod" ,
     dataType: "json",
@@ -436,7 +439,7 @@ var cnt = 0;
   eventBar
     .width(window.innerWidth*0.4)
     .height((window.innerWidth*0.4)*0.5)
-    .margins({left: 160, top: 15, right: 10, bottom: 25})
+    .margins({left: 140, top: 15, right: 10, bottom: 40})
     .brushOn(false)
     .clipPadding(10)
     .transitionDuration(500)
@@ -451,7 +454,7 @@ var cnt = 0;
     .mouseZoomable(true)
     .renderHorizontalGridLines(true)
     .x(d3.time.scale().domain([minDate, maxDate]))
-    .gap(gap)
+    .gap(gap/2)
     .round(d3.time.day.round)
     .xUnits(function(){return 10;})
     .elasticY(true)
@@ -472,7 +475,7 @@ var cnt = 0;
       .renderHorizontalGridLines(true)*/
       .width(window.innerWidth*0.4)
       .height((window.innerWidth*0.4)*0.5)
-       .margins({top: 30, right: 20, bottom: 30, left: 140})
+       .margins({top: 20, right: 20, bottom: 40, left: 140})
       .dimension(checkDim)
       .transitionDuration(500)
 //      .elasticY(true)

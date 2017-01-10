@@ -1,19 +1,21 @@
 extends ../layout-reports
-block style  
-  link(rel='stylesheet', href='/stylesheets/style.css')
+block style   
+  link(rel='stylesheet', type='text/css', href='/assets/annie/css/style_report_power.css')
 block scripts
   script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
   script(type='text/javascript', src='/assets/annie/js/dc.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
   script(type='text/javascript', src="/scripts/util.js")
-  script(src='/scripts/report_all.js')
+  script(src='/scripts/report_power.js')
+  script(src='/scripts/report_power_check.js')
+  script(src='/assets/annie/js/vue.min.js')
 block content
   main.layout-contents
     div.layout-contents-inner
       section
         header.page-title
-          h1.title Reports_All
+          h1.title Reports_Power
         fieldset.search-container
           legend search
           .right-content-view
@@ -38,12 +40,9 @@ block content
             button#btn_search.btn-submit.search(type='submit') SEARCH
             script.
               $(document).ready(function() {
-                console.log('check');
-                var start = moment().subtract(5, 'daterangeys');
-                console.log(start);
-                var end = moment();
-                
-                console.log(end);
+                drawCheckChart();
+                var start = moment().subtract(5, 'days');                
+                var end = moment();    
                 $('input[name="daterange"]').daterangepicker({
                     "autoApply": true,
                     startDate: start,
@@ -56,7 +55,7 @@ block content
                     });
 
                 // time series char를 그린다.
-                drawChart();
+                drawChart();                
 
                 $('#btn_search').click(function() {
                   drawChart();
@@ -69,21 +68,42 @@ block content
         ul.list-reports
           li
             div.chart
-              strong Event Count
+              strong Daily ActivePower Sum 
               br
-              #eventChart(style='margine:0 auto;')
+              #powerSum
           li
             div.chart
-              strong Event Type Count by Day
+              strong Weekly Amount of Active Power Min/Max/Avg
               br
-              #eventBar
+              #weekPlot
           li
             div.chart
-              strong Event Count by Day
+              strong Active Power by Time
               br
-              #checkLine
+              #timePlot
           li
             div.chart
-              strong Event Count by Node
+              strong Over Flow Voltage Value
               br
-              #nodeBar
+              #volLine
+        div.map-container(style='width:98%;height:440px;')
+          div.inner
+            #table
+              .panel.panel-card
+                  .panel-title
+                    h5.no-margin.m-b Click Line Show Chart
+                  .panel-body
+                    .panel-checkbox-xs.visible-xs-block.visible-sm-block                
+                      input#week0.click_checkbox(type='checkbox', name='week0', value='1', v-on='click:checkOpt', checked='true')
+                      text  이번주
+                      |  
+                      input#week1.click_checkbox(type='checkbox', name='week1', value='2', v-on='click:checkOpt')
+                      text  1주전
+                      |  
+                      input#week2.click_checkbox(type='checkbox', name='week2', value='3', v-on='click:checkOpt')
+                      text  2주전
+                      |  
+                      input#week3.click_checkbox(type='checkbox', name='week3', value='4', v-on='click:checkOpt', checked='true')
+                      text  3주전
+                    .col-xm-12.col-sm-12.col-md-10.col-xs-12
+                      #LINE(style='width:95%;height:350px;')

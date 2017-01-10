@@ -34,6 +34,10 @@ router.get('/power', function(req, res, next) {
   res.render('./reports/report_power', { title: 'Report_Power' });
 });
 
+router.get('/fault', function(req, res, next) {
+  res.render('./reports/fault_notification', { title: 'Report_Power' });
+});
+
 router.get('/view', function(req, res, next) {
   res.render('./design/reports', { title: 'Report_Power' });
 });
