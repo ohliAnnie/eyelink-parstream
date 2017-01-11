@@ -17,6 +17,7 @@ var intro = require('./routes/intro');
 var login = require('./routes/nodeLogin');
 var dashboard = require('./routes/nodeDashboard');
 var reports = require('./routes/nodeReports');
+var analysis = require('./routes/nodeAnalysis');
 var initapps = require('./routes/initApp');
 var socketapps = require('./routes/socketApp');
 
@@ -45,6 +46,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', login);
 app.use('/dashboard', dashboard);
 app.use('/reports', reports);
+app.use('/analysis', analysis);
 app.use('/intro', intro);
 
 

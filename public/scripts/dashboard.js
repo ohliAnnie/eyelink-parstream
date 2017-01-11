@@ -31,12 +31,12 @@ function displayCount() {
         //- } else {
         //-   pbill.attr('class','growth up');
         //- }
-        power.text(data.today_active_power);
-        ppower.text(data.active_power_percent + '%')
+        power.text(repVal(data.today_active_power));
+        ppower.text(repVal(data.active_power_percent) + '%')
         eventCount.text(data.today_event_cnt);
-        peventCount.text(data.event_cnt_percent + '%');
+        peventCount.text(repVal(data.event_cnt_percent) + '%');
         falutCount.text(data.today_event_fault_cnt);
-        pfalutCount.text(data.event_fault_cnt_percent + '%');
+        pfalutCount.text(repVal(data.event_fault_cnt_percent) + '%');
 
       } else {
         //- $("#errormsg").html(result.message);
@@ -47,6 +47,11 @@ function displayCount() {
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
   });
+}
+
+function repVal(str) {
+  str *= 1
+  return str.toFixed(2);
 }
 
 function drawMap() {
@@ -359,7 +364,7 @@ function drawChart() {
     });
 
     volumeChart
-      .width(600)
+      // .width(600)
       .height(60)
       .margins({top: 0, right: 50, bottom: 20, left: 40})
       .dimension(moveDays)

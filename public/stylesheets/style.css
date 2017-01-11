@@ -12,6 +12,12 @@ a {
   position: relative;
   overflow: hidden;
   text-align:center;
+  color: #999;
+  fill: #999;
+}
+
+.dc-chart .axis path, .axis line {
+    stroke: #ccc;
 }
 
 .toolTip {
