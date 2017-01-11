@@ -18,7 +18,7 @@ router.get('/main', function(req, res, next) {
   res.render('./reports/main', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
 });
 
-router.get('/d3', function(req, res, next) {
+router.get('/report_d3', function(req, res, next) {
   res.render('./reports/d3', { title: 'EyeLInk D3 Reports', mainmenu:mainmenu });
 });
 
