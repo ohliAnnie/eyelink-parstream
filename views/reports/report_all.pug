@@ -9,6 +9,27 @@ block script
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
   script(type='text/javascript', src="/scripts/util.js")
   script(src='/scripts/report_all.js')
+  script.
+    $(document).ready(function() {                          
+       var dateFormat = 'YYYY-MM-DD';
+      $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
+      $('#edate').val(moment().format(dateFormat));
+      // time series char를 그린다.
+        drawChart();
+        $('btn.blue').click(function() {          
+          drawChart();
+        });
+    });                      
+    jQuery(document).ready(function() {
+      console.log('jQuery');
+      Metronic.init(); // init metronic core componets
+      eyelinkLayout.init(); // init eyelinklayout
+      QuickSidebar.init(); // init quick sidebar
+      Layout.init(); // init layout
+      Demo.init(); // init index page
+      ComponentsPickers.init();
+      ComponentsDropdowns.init();
+    });
 block content
   .container-fluid
     .page-content
@@ -34,64 +55,29 @@ block content
                 a.fullscreen(href='javascript:;')
                 a.remove(href='javascript:;')
             .portlet-body.form
-              form.form-horizontal.form-bordered(action='#')
+               form.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
                   .form-group.last
                     label.control-label.col-md-1 Date Range
                     .col-md-4
-                      .input-group.input-large.date-picker.input-daterange(data-date='10/11/2012', data-date-format='mm/dd/yyyy')
-                            input.form-control(type='text', name='from')
-                            |  
-                            span.input-group-addon to
-                            |  
-                            input.form-control(type='text', name='to')
+                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
+                        input#sdate.form-control(type='text', name='from' value='')
+                        span.input-group-addon to
+                        input#edate.form-control(type='text', name='to' value='')
                     label.control-label.col-md-1 Select Area
                     .col-md-6.form-inline
                       select.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Area')
-                        option(value='')
+                        option(value='') Zone ID
                         option(value='') All Area
                         option(value='') AreaID1234
                         option(value='') AreaID5678
                       select.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Item')
-                        option(value='')
-                        option(value='') All Item
+                        option(value='') Node ID
+                        option(value='') Node ID
                         option(value='') Item1234
                         option(value='') Item5678
-                      button.btn.blue(type='submit')
-                        i.fa.fa-search
-                        |  Search
-                      script.
-                        $(document).ready(function() {                          
-                          var start = moment().subtract(5, 'days');
-                          var end = moment();
-                          $('input[name="daterange"]').daterangepicker({
-                            "autoApply": true,
-                            startDate: start,
-                            endDate: end,
-                            locale: {
-                              format: 'YYYY-MM-DD'
-                            }
-                          }, function(start, end, label) {
-                            console.log("New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')");
-                          });
-                          console.log('kk : '+$('#daterange').val());
-                          // time series char를 그린다.
-                            drawChart();
-                            $('btn.blue').click(function() {
-                              alter('check');
-                              drawChart();
-                            });
-                        });                      
-                        jQuery(document).ready(function() {
-                          console.log('jQuery');
-                          Metronic.init(); // init metronic core componets
-                          eyelinkLayout.init(); // init eyelinklayout
-                          QuickSidebar.init(); // init quick sidebar
-                          Layout.init(); // init layout
-                          Demo.init(); // init index page
-                          ComponentsPickers.init();
-                          ComponentsDropdowns.init();
-                        });
+                      button#btn_search.btn.blue
+                        i.fa.fa-search Search
       a(href='javascript:dc.filterAll(); dc.renderAll();') Reset All
       .row
         .col-md-6

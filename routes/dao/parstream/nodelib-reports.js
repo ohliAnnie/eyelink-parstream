@@ -38,20 +38,22 @@ var sqlList = {
 
   // Event Raw Data 조회
   "selectEventRawDataOld" :
-        "    select node_id, event_time, event_type, active_power, ampere,  "+
+        "    select b.zone_id, a.node_id, event_time, event_type, active_power, ampere,  "+
         "       als_level, dimming_level, "+
         "         noise_decibel, noise_frequency, "+
-        "         vibration_x, vibration_y, vibration_z, "+
-        "         (vibration_x + vibration_y + vibration_z) / 3 as vibration" +
-        "    from tb_node_raw"+
+        "         vibration_x, vibration_y, vibration_z, "+        
+        "         (vibration_x + vibration_y + vibration_z) / 3 as vibration, " +
+        "         b.gps_latitude, b.gps_longitude, b.gps_altitude "+
+        "    from tb_node_raw as a left outer join tb_node_info as b on a.node_id = b.node_id "+
         "  where event_time >= timestamp #START_TIMESTAMP# " +
         "    and event_time < timestamp #END_TIMESTAMP# ",
 
     // Power 조회
   "selectEventRawDataPower" :
-        "    select node_id, event_time, event_type, active_power, ampere,  "+
-        "     voltage, power_factor, reactive_power, apparent_power, amount_active_power "+
-        "    from tb_node_raw"+
+        "    select b.zone_id, a.node_id, event_time, event_type, active_power, ampere,  "+
+        "     voltage, power_factor, reactive_power, apparent_power, amount_active_power , "+
+        "         b.gps_latitude, b.gps_longitude, b.gps_altitude "+
+        "    from tb_node_raw as a left outer join tb_node_info as b on a.node_id = b.node_id "+
         "  where event_time >= timestamp #START_TIMESTAMP# " +
         "    and event_time < timestamp #END_TIMESTAMP# " +
         "    and event_type = 1 ",

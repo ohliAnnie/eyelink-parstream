@@ -1,13 +1,7 @@
 function drawChart() {
-/*  var searchDate = $('#daterange').val()
-  console.log('daterange : ' + searchDate);
 
-  var ind = searchDate.indexOf(' - ');
-  var sdate = searchDate.substring(0, ind);
-  var edate = searchDate.substring(ind+3);
-  console.log('%s, %s', sdate, edate);  */
-  var sdate = moment().subtract(45, 'days').format('YYYY-MM-DD');
-  var edate = moment().subtract(40, 'days').format('YYYY-MM-DD');
+  var sdate = $('#sdate').val();
+  var edate = $('#edate').val();
   $.ajax({
     url: "/reports/restapi/getTbRawDataByPeriodPower" ,
     dataType: "json",
@@ -56,7 +50,9 @@ function drawPower(data, sdate, edate) {
     d.hour = d3.time.hour(d.event_time);    
     d.active_power = parseFloat(d.active_power);
     d.amount_active_power = parseFloat(d.amount_active_power);
-    d.voltage = parseFloat(d.voltage);   
+    d.voltage = parseFloat(d.voltage); 
+       if(d.zone_id === 'ZONE-4')
+          d.zone_id = 'ZONE-04';
   });
 
 
