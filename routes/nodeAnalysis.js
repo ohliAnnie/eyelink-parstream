@@ -27,7 +27,7 @@ router.get('/restapi/getTbRawDataByPeriod', function(req, res, next) {
       START_TIMESTAMP: req.query.startDate + ' 00:00:00',
       END_TIMESTAMP: req.query.endDate + ' 23:59:59',
       FLAG : 'N'};
-  AnalysisProvider.selectSingleQueryByID("selectEventRawDataOld", in_data, function(err, out_data, params) {
+  analysisProvider.selectSingleQueryByID("selectEventRawDataOld", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data[0] === null) {
