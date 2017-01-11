@@ -1,25 +1,153 @@
 <?xml version="1.0"?>
 <queryList>
   <test>
-    <query id='test01'>
+    <query id='test01'><![CDATA[
       SELECT count(*) as cnt FROM tb_node_raw
-    </query>
-    <query id='test02'>
+     ]]></query>
+    <query id='test02'><![CDATA[
       SELECT event_time as cnt FROM tb_node_raw
-    </query>
+     ]]></query>
   </test>
   <dashboard>
-    <selectSuccessCount>
+    <query id='selectSuccessCount'><![CDATA[
       SELECT count(*) as cnt FROM tb_node_raw
-    </selectSuccessCount>
-    <selectDashboardSection1>
-      SELECT event_time, node_id as cnt
-      FROM tb_node_raw
-    </selectDashboardSection1>
+     ]]></query>
+    <query id='selectDashboardSection1'><![CDATA[
+      select today_active_power / 1000 * 85.9 as today_power_charge,
+          yesterday_active_power / 1000 * 85.9 as yesterday_power_charge,
+         today_active_power, yesterday_active_power, today_active_power/if(yesterday_active_power, yesterday_active_power, 1) * 100 - 100 as active_power_percent,
+            today_event_cnt, yesterday_event_cnt, today_event_cnt / if(yesterday_event_cnt, yesterday_event_cnt, 1) * 100 - 100 as event_cnt_percent,
+            today_event_fault_cnt, yesterday_event_fault_cnt, today_event_fault_cnt / if(yesterday_event_fault_cnt, yesterday_event_fault_cnt, 1) * 100 - 100 as event_fault_cnt_percent
+       from (
+         select sum(today_active_power) as today_active_power, sum(yesterday_active_power) as yesterday_active_power,
+                sum(today_event_cnt) as today_event_cnt, sum(yesterday_event_cnt) as yesterday_event_cnt,
+                sum(today_event_fault_cnt) as today_event_fault_cnt, sum(yesterday_event_fault_cnt) as yesterday_event_fault_cnt
+           from (
+               select sum(amount_active_power) as today_active_power, 0.0 as yesterday_active_power,
+                    count(*) as today_event_cnt, cast(0 as int64) as yesterday_event_cnt,
+                    sum(case event_type when 81 then 1 else 0 end) as today_event_fault_cnt,
+                    cast(0 as uint64) as yesterday_event_fault_cnt
+               from tb_node_raw
+              where event_year = date_part('YEAR', current_date())
+                and event_month = date_part('MONTH', current_date())
+                and event_day = date_part('DAY', current_date())
+             UNION
+             select 0.0 as today_active_power, sum(amount_active_power) as yesterday_active_power,
+                    cast(0 as int64) as today_event_cnt, count(*) as yesterday_event_cnt,
+                    cast(0 as uint64) as today_event_fault_cnt,
+                    sum(case event_type when 81 then 1 else 0 end) as yesterday_event_fault_cnt
+               from tb_node_raw
+              where event_year = date_part('YEAR', current_date()-1)
+                and event_month = date_part('MONTH', current_date()-1)
+                and event_day = date_part('DAY', current_date()-1)
+            ))
+     ]]></query>
+    <query id='selectEventRawDataOld'><![CDATA[
+      select b.zone_id, a.node_id, event_time, event_type, active_power, ampere, voltage,  power_factor,
+         reactive_power, apparent_power, amount_active_power,
+         als_level, dimming_level,
+           noise_decibel, noise_frequency,
+           b.gps_latitude, b.gps_longitude, b.gps_altitude,
+           vibration_x, vibration_y, vibration_z,
+           (vibration_x + vibration_y + vibration_z) / 3 as vibration
+      from tb_node_raw as a left outer join tb_node_info as b on a.node_id = b.node_id
+    where event_time >= timestamp #START_TIMESTAMP#
+      and event_time < timestamp #END_TIMESTAMP#
+    ]]></query>
+    <query id='selectEventRawData'><![CDATA[
+      select b.zone_id, a.node_id, event_time, event_type, active_power, ampere,
+         als_level, dimming_level,
+           noise_decibel, noise_frequency,
+           vibration_x, vibration_y, vibration_z,
+           b.gps_latitude, b.gps_longitude, b.gps_altitude,
+           (vibration_x + vibration_y + vibration_z) / 3 as vibration
+      from tb_node_raw as a left outer join tb_node_info as b on a.node_id = b.node_id
+    where event_year = date_part('YEAR', current_date())
+      and event_month = date_part('MONTH', current_date())
+      and event_day = date_part('DAY', current_date())
+    </query>
+    <query id='selectCountEventRawDataByToDay'><![CDATA[
+      select count(*) as cnt
+      from tb_node_raw
+    where event_year = date_part('YEAR', current_date())
+      and event_month = date_part('MONTH', current_date())
+      and event_day = date_part('DAY', current_date())
+    </query>
+    <query id='selectEventListForAlarm'><![CDATA[
+     select node_id, event_time, event_type, active_power, ampere,
+       als_level, dimming_level,
+         noise_decibel, noise_frequency,
+         vibration_x, vibration_y, vibration_z,
+         (vibration_x + vibration_y + vibration_z) / 3 as vibration
+    from tb_node_raw
+  where event_year = date_part('YEAR', current_date())
+    and event_month = date_part('MONTH', current_date())
+    and event_day = date_part('DAY', current_date())
+   order by event_time desc
+   limit 8 offset #last_pos#
+    ]]></query>
   </dashboard>
   <reports>
-    <selectEventRawData>
-      select node_id, event_time, event_type, active_power, ampere,
-    </selectEventRawData>
+    <query id='selectEventRawData'><![CDATA[
+    select node_id, event_time, event_type, active_power, ampere,
+       als_level, dimming_level,
+         noise_decibel, noise_frequency,
+   status_power_meter,
+         vibration_x, vibration_y, vibration_z
+    from tb_node_raw
+    where event_year=2016 and event_month=12
+    and event_day in (1,2,3,4,5,6,7)
+    and node_id in ('0001.00000007', '0002.00000022')
+     order by event_time
+     ]]></query>
+    <query id='testData'><![CDATA[
+   select event_time, ampere, voltage, power_factor, active_power,  reactive_power,  apparent_power
+    from tb_node_raw
+  where event_year = date_part('YEAR', current_date())
+    and event_month = date_part('MONTH', current_date())
+  and event_day = 11
+    and event_type = 1
+   order by event_time
+     ]]></query>
+    <query id='selectEventRawDataOld'><![CDATA[
+    select b.zone_id, a.node_id, event_time, event_type, active_power, ampere,
+       als_level, dimming_level,
+         noise_decibel, noise_frequency,
+         vibration_x, vibration_y, vibration_z,
+         (vibration_x + vibration_y + vibration_z) / 3 as vibration,
+         b.gps_latitude, b.gps_longitude, b.gps_altitude
+    from tb_node_raw as a left outer join tb_node_info as b on a.node_id = b.node_id
+  where event_time >= timestamp #START_TIMESTAMP#
+    and event_time < timestamp #END_TIMESTAMP#
+     ]]></query>
+    <query id='selectEventRawDataPower'><![CDATA[
+    select b.zone_id, a.node_id, event_time, event_type, active_power, ampere,
+     voltage, power_factor, reactive_power, apparent_power, amount_active_power ,
+         b.gps_latitude, b.gps_longitude, b.gps_altitude
+    from tb_node_raw as a left outer join tb_node_info as b on a.node_id = b.node_id
+  where event_time >= timestamp #START_TIMESTAMP#
+    and event_time < timestamp #END_TIMESTAMP#
+    and event_type = 1
+     ]]></query>
+    <query id='selectEventRawDataPowerAll'><![CDATA[
+   select event_year, event_month, event_day, avg(active_power) AS active_power
+      from tb_node_raw
+      where  event_type = 1
+         and event_time >= timestamp #START_TIMESTAMP#
+         and event_time < timestamp #END_TIMESTAMP#
+       group by event_year, event_month, event_day
+       order by event_year, event_month, event_day
+     ]]></query>
   </reports>
+  <analysis>
+    <query id='selectEventRawData'><![CDATA[
+      select node_id, event_time, event_type, active_power, ampere,
+     ]]></query>
+    <query id='selectEventRawData'><![CDATA[
+      select node_id, event_time, event_type, active_power, ampere,
+     ]]></query>
+    <query id='selectEventRawData'><![CDATA[
+      select node_id, event_time, event_type, active_power, ampere,
+     ]]></query>
+  </analysis>
 </queryList>

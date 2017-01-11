@@ -46,5 +46,18 @@ describe("Test", function(){
           done();
         });
     });
+    it('Daily Event, Error Count, Power ', function(done) {
+      var datas = {user_id: "user_id"};
+      request(svr)
+        .get("/dashboard/restapi/getDashboardSection1")
+        .send(datas)
+        .expect('Content-Type', /json/)
+        .expect(200, function(err, res) {
+          if (err) return done(err);
+          // console.log(res.body.rtnCode.code);
+          res.body.rtnCode.code.should.be.equal('0000');
+          done();
+        });
+    });
   });
 });

@@ -2,9 +2,9 @@ var CONSTS = require('./consts');
 var Utils = require('./util');
 var express = require('express');
 var router = express.Router();
-var ReportsProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-reports').ReportsProvider;
 
-var reportsProvider = new ReportsProvider();
+var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-db').QueryProvider;
+var queryProvider = new QueryProvider();
 
 var mainmenu = {dashboard:' ', reports:'open selected', timeseries:'', users:'', settings:''};
 
@@ -52,7 +52,7 @@ router.get('/index', function(req, res, next) {
 router.get('/restapi/getReportRawData', function(req, res, next) {
   console.log('reports/restapi/getReportRawData');
   var in_data = {MERGE:'Y'};
-  reportsProvider.selectSingleQueryByID("selectEventRawData", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID("reports","selectEventRawData", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -70,7 +70,7 @@ router.get('/restapi/getReportRawData', function(req, res, next) {
 router.get('/restapi/testData', function(req, res, next) {
   console.log('reports/restapi/testData');
   var in_data = {MERGE:'Y'};
-  reportsProvider.selectSingleQueryByID("testData", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID("reports","testData", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -89,7 +89,7 @@ router.get('/restapi/getTbRawDataByPeriod', function(req, res, next) {
       START_TIMESTAMP: req.query.startDate + ' 00:00:00',
       END_TIMESTAMP: req.query.endDate + ' 23:59:59',
       FLAG : 'N'};
-  reportsProvider.selectSingleQueryByID("selectEventRawDataOld", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID("reports","selectEventRawDataOld", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data[0] === null) {
@@ -112,7 +112,7 @@ router.get('/restapi/getTbRawDataByPeriodPower', function(req, res, next) {
       START_TIMESTAMP: req.query.startDate + ' 00:00:00',
       END_TIMESTAMP: req.query.endDate + ' 23:59:59',
       FLAG : 'N'};
-  reportsProvider.selectSingleQueryByID("selectEventRawDataPower", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID("reports","selectEventRawDataPower", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data[0] === null) {
@@ -135,7 +135,7 @@ router.get('/restapi/getTbRawDataByAllPower', function(req, res, next) {
       START_TIMESTAMP: req.query.startDate + ' 00:00:00',
       END_TIMESTAMP: req.query.endDate + ' 23:59:59',
       FLAG : 'N'};
-  reportsProvider.selectSingleQueryByID("selectEventRawDataPowerAll", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID("reports","selectEventRawDataPowerAll", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data[0] === null) {

@@ -2,9 +2,9 @@ var CONSTS = require('./consts');
 var Utils = require('./util');
 var express = require('express');
 var router = express.Router();
-var DashboardProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-dashboard').DashboardProvider;
 
-var dashboardProvider = new DashboardProvider();
+var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-db').QueryProvider;
+var queryProvider = new QueryProvider();
 
 var mainmenu = {dashboard:' open selected', reports:'', timeseries:'', users:'', settings:''};
 
@@ -28,7 +28,7 @@ router.get('/timeseries', function(req, res, next) {
 // test db query logic
 router.get('/restapi/get_successcount', function(req, res, next) {
   var in_data = {};
-  dashboardProvider.selectSingleQueryByID("selectSuccessCount", in_data, function(err, out_data) {
+  queryProvider.selectSingleQueryByID("dashboard", "selectSuccessCount", in_data, function(err, out_data) {
     console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -41,7 +41,7 @@ router.get('/restapi/get_successcount', function(req, res, next) {
 // query Dashboard Section 1
 router.get('/restapi/getDashboardSection1', function(req, res, next) {
   var in_data = {};
-  dashboardProvider.selectSingleQueryByID("selectDashboardSection1", in_data, function(err, out_data) {
+  queryProvider.selectSingleQueryByID("dashboard", "selectDashboardSection1", in_data, function(err, out_data) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -55,7 +55,7 @@ router.get('/restapi/getDashboardSection1', function(req, res, next) {
 // query RawData
 router.get('/restapi/getDashboardRawData', function(req, res, next) {
   var in_data = {MERGE:'Y'};
-  dashboardProvider.selectSingleQueryByID("selectEventRawData", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID("dashboard", "selectEventRawData", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data[0] === null) {
@@ -83,7 +83,7 @@ router.get('/restapi/getTbRawDataByPeriod', function(req, res, next) {
       START_TIMESTAMP: req.query.startDate + ' 00:00:00',
       END_TIMESTAMP: req.query.endDate + ' 23:59:59',
       FLAG : 'N'};
-  dashboardProvider.selectSingleQueryByID("selectEventRawDataOld", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID("dashboard", "selectEventRawDataOld", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data[0] === null) {
