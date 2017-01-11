@@ -312,7 +312,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
       }
 
       //inits chart
-      self.lineFunc = new generate(data, "#LINE", "linear",30);
+      self.lineFunc = new generate(data, "#LINEori", "linear",30);
     },
 
     displayMem: function () {
@@ -2094,7 +2094,7 @@ console.log(d);
       }
 
       //redraw the legend and chart
-      this.legendRedraw(self.selectCate, "#LINE", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
+      this.legendRedraw(self.selectCate, "#LINEori", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
     },
     legendRedraw: function (selectCate, id, legend, rect, legendSize, margin, height, width, color) {
       //update the scatter plot legend

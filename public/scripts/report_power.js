@@ -11,6 +11,7 @@ function drawChart() {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
         var data = result.rtnData;        
+        console.log(sdate+','+edate);
         drawPower(data, sdate, edate);
       } else {
         //- $("#errormsg").html(result.message);

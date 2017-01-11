@@ -6,27 +6,14 @@ function drawMarkerSelect2(ndx, data, mapMarkerChart, mapPieChart) {
   console.log('dimGeoGroup : %s', dimGeoGroup.size());
   // console.log($('#bubble-map .map'));
   mapMarkerChart
+      .width(window.innerWidth*0.35)
+      .height((window.innerWidth*0.4)*0.5)
       .dimension(dimGeo)
       .group(dimGeoGroup)
-      // .width(600)
-      // .height(400)
       .center([37.467271, 127.042861])
       .zoom(9)
       .cluster(true);
-  var zone = ndx.dimension(function(d) { return d.zone_id; });
-  var zoneGroup = zone.group().reduceCount();
-  console.log('zoneGroup : %s', zoneGroup.size());
-  mapPieChart
-      .dimension(zone)
-      .group(zoneGroup)
-      .radius(55)
-      // .width(150)
-      // .height(150)
-      .renderLabel(true)
-      .renderTitle(true)
-      .ordering(function (p) {
-        return -p.value;
-      });
+
   // dc.renderAll(groupname);
 }
 
@@ -61,7 +48,6 @@ function drawPower(data, sdate, edate) {
   var groupCount = dc.pieChart('#groupCount', markerName);
   var dataTable = dc.dataTable('.dataTable', markerName);
   var mapMarkerChart = dc_leaflet.markerChart("#bubble-map-map", markerName);
-  var mapPieChart = dc.pieChart('#bubble-map-pie', markerName);
 
   var minDate = new Date(sdate);  
   var maxDate = new Date(edate);
@@ -94,7 +80,7 @@ function drawPower(data, sdate, edate) {
   var nyx = crossfilter(data);
   var all = nyx.groupAll();
  
- drawMarkerSelect2(nyx, data, mapMarkerChart, mapPieChart);
+ drawMarkerSelect2(nyx, data, mapMarkerChart);
 
 // Dimension by today
   var todayDim = nyx.dimension(function (d) {  return d.today;   });

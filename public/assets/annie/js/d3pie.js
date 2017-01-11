@@ -40,13 +40,13 @@ var defaultSettings = {
 	header: {
 		title: {
 			text:     "",
-			color:    "#333333",
+			color:    "#000000",
 			fontSize: 18,
 			font:     "arial"
 		},
 		subtitle: {
 			text:     "",
-			color:    "#666666",
+			color:    "#000000",
 			fontSize: 14,
 			font:     "arial"
 		},
@@ -93,7 +93,7 @@ var defaultSettings = {
 			hideWhenLessThanPercentage: null
 		},
 		mainLabel: {
-			color: "#333333",
+			color: "#000000",
 			font: "arial",
 			fontSize: 10
 		},
@@ -104,7 +104,7 @@ var defaultSettings = {
 			decimalPlaces: 0
 		},
 		value: {
-			color: "#cccc44",
+			color: "#000000",
 			font: "arial",
 			fontSize: 10
 		},
@@ -470,7 +470,7 @@ var helpers = {
 
 	// for debugging
 	showPoint: function(svg, x, y) {
-		svg.append("circle").attr("cx", x).attr("cy", y).attr("r", 2).style("fill", "black");
+		svg.append("circle").attr("cx", x).attr("cy", y).attr("r", 2).style("fill", "#000000");
 	},
 
 	isFunction: function(functionToCheck) {
