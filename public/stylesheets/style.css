@@ -12,6 +12,8 @@ a {
   position: relative;
   overflow: hidden;
   text-align:center;
+  color: #666666;
+  fill: #666666;
 }
 
 .toolTip {

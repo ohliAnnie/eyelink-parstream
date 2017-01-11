@@ -241,6 +241,13 @@ html
                       a(href='/dashboard/livedata') Live Data
                     li
                       a(href='#') Requested task
+                li#menutimeseries.dropdown.dropdown-fw
+                  a(href='javascript:;') Time Series
+                  ul.dropdown-menu.dropdown-menu-fw
+                    li
+                      a(href='/dashboard/timeseries') Time Series
+                    //- li
+                      a(href='timeseries.html') Time Series Name
                 li#menureports.dropdown.dropdown-fw
                   a(href='javascript:;') Reports
                   ul.dropdown-menu.dropdown-menu-fw
@@ -252,13 +259,11 @@ html
                       a(href='/reports/fault') Fault
                     li
                       a(href='reports.html') Report Name
-                li#menutimeseries.dropdown.dropdown-fw
-                  a(href='javascript:;') Time Series
+                li#menuanalysis.dropdown.dropdown-fw
+                  a(href='javascript:;') Analysis
                   ul.dropdown-menu.dropdown-menu-fw
-                    li
-                      a(href='/dashboard/timeseries') Time Series
-                    //- li
-                      a(href='timeseries.html') Time Series Name
+                    li.active
+                      a(href='/analysis/clustering') Clustering
                 li#menuusers.dropdown.dropdown-fw
                   a(href='javascript:;') Users
                   ul.dropdown-menu.dropdown-menu-fw
