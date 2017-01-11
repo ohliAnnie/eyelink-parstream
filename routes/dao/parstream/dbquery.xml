@@ -53,6 +53,7 @@
       from tb_node_raw as a left outer join tb_node_info as b on a.node_id = b.node_id
     where event_time >= timestamp #START_TIMESTAMP#
       and event_time < timestamp #END_TIMESTAMP#
+    order by event_time
     ]]></query>
     <query id='selectEventRawData'><![CDATA[
       select b.zone_id, a.node_id, event_time, event_type, active_power, ampere,
