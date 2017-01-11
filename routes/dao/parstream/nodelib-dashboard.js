@@ -1,5 +1,4 @@
 var Utils = require('../../util');
-
 var parstream = require("./m2u-parstream")
 var opts = {
     host: 'm2u-parstream.eastus.cloudapp.azure.com',

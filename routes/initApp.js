@@ -1,9 +1,104 @@
 var CONSTS = require('./consts');
 require('date-utils');
-
+var fs = require('fs'),
+    xml2js = require('xml2js');
 
 var DashboardProvider = require('./dao/' + global.config.fetchData.database + '/'+ global.config.fetchData.method + '-dashboard').DashboardProvider;
 var dashboardProvider = new DashboardProvider();
+
+function loadQuery(callback) {
+  var parser = new xml2js.Parser();
+  console.log('initApps/loadQuery -> ' + __dirname + '/dao/' + global.config.fetchData.database + '/dbquery.xml')
+  fs.readFile(__dirname + '/dao/' + global.config.fetchData.database + '/dbquery.xml', function(err, data) {
+    parser.parseString(data, function (err, result) {
+    // console.log('initApps/loadQuery -> xml file');
+      // result = cleanXML(result);
+      result = JSON.stringify(result);
+      // console.log('initApps/loadQuery -> %j', result);
+      result = JSON.parse(result)
+      global.query = result;
+      // console.log('initApps/loadQuery : ' + result.dashboard[0]);
+      // console.log('Done');
+      callback();
+    });
+  });
+}
+
+var cleanXML = function(xml){
+
+    var keys = Object.keys(xml),
+        o = 0, k = keys.length,
+        node, value, singulars,
+        l = -1, i = -1, s = -1, e = -1,
+        isInt = /^-?\s*\d+$/,
+        isDig = /^(-?\s*\d*\.?\d*)$/,
+        radix = 10;
+
+    for(; o < k; ++o){
+        node = keys[o];
+
+        if(xml[node] instanceof Array && xml[node].length === 1){
+            xml[node] = xml[node][0];
+        }
+
+        if(xml[node] instanceof Object){
+            value = Object.keys(xml[node]);
+
+            if(value.length === 1){
+                l = node.length;
+
+                singulars = [
+                    node.substring(0, l - 1),
+                    node.substring(0, l - 3) + 'y'
+                ];
+
+                i = singulars.indexOf(value[0]);
+
+                if(i !== -1){
+                    xml[node] = xml[node][singulars[i]];
+                }
+            }
+        }
+
+        if(typeof(xml[node]) === 'object'){
+            xml[node] = cleanXML(xml[node]);
+        }
+
+        if(typeof(xml[node]) === 'string'){
+            value = xml[node].trim();
+
+            if(value.match(isDig)){
+                if(value.match(isInt)){
+                    if(Math.abs(parseInt(value, radix)) <= Number.MAX_SAFE_INTEGER){
+                        xml[node] = parseInt(value, radix);
+                    }
+                }else{
+                    l = value.length;
+
+                    if(l <= 15){
+                        xml[node] = parseFloat(value);
+                    }else{
+                        for(i = 0, s = -1, e = -1; i < l && e - s <= 15; ++i){
+                            if(value.charAt(i) > 0){
+                                if(s === -1){
+                                    s = i;
+                                }else{
+                                    e = i;
+                                }
+                            }
+                        }
+
+                        if(e - s <= 15){
+                            xml[node] = parseFloat(value);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return xml;
+};
 
 // 어제날짜까지의 Raw Data를 메모리에 적재 처리함.
 // TO-DO 1시간전까지 데이터 적재 로직 보완 필요함.
@@ -36,4 +131,5 @@ function loadData(callback) {
   }
 }
 
+module.exports.loadQuery = loadQuery;
 module.exports.loadData = loadData;

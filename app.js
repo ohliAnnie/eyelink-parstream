@@ -49,11 +49,13 @@ app.use('/reports', reports);
 app.use('/analysis', analysis);
 app.use('/intro', intro);
 
-
-// 지정된 기간의 Raw Data를 서버 시작시 메모리에 Loading
 global._rawDataByDay = {};
-if (config.loaddataonstartup.active === true)
-  initapps.loadData(function(in_params) {});
+// dbquery.xml 파일 내용을 loading
+initapps.loadQuery(function() {
+  // 지정된 기간의 Raw Data를 서버 시작시 메모리에 Loading
+  if (config.loaddataonstartup.active === true)
+    initapps.loadData(function(in_params) {});
+});
 
 // Client로 Data를 Push 하기위한 Socket 초기화.
 socketapps.initSocket(app, function() {});

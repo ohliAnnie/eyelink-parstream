@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<queryList>
+  <test>
+    <query id='test01'>
+      SELECT count(*) as cnt FROM tb_node_raw
+    </query>
+    <query id='test02'>
+      SELECT event_time as cnt FROM tb_node_raw
+    </query>
+  </test>
+  <dashboard>
+    <selectSuccessCount>
+      SELECT count(*) as cnt FROM tb_node_raw
+    </selectSuccessCount>
+    <selectDashboardSection1>
+      SELECT event_time, node_id as cnt
+      FROM tb_node_raw
+    </selectDashboardSection1>
+  </dashboard>
+  <reports>
+    <selectEventRawData>
+      select node_id, event_time, event_type, active_power, ampere,
+    </selectEventRawData>
+  </reports>
+</queryList>
