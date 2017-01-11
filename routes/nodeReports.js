@@ -18,8 +18,8 @@ router.get('/main', function(req, res, next) {
   res.render('./reports/main', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
 });
 
-router.get('/report_d3', function(req, res, next) {
-  res.render('./reports/d3', { title: 'EyeLInk D3 Reports', mainmenu:mainmenu });
+router.get('/d3', function(req, res, next) {
+  res.render('./reports/report_d3', { title: 'EyeLInk D3 Reports', mainmenu:mainmenu });
 });
 
 router.get('/test', function(req, res, next) {
@@ -35,15 +35,15 @@ router.get('/power', function(req, res, next) {
 });
 
 router.get('/fault', function(req, res, next) {
-  res.render('./reports/fault_notification', { title: 'Report_Power', mainmenu:mainmenu });
+  res.render('./reports/fault_notification', { title: 'Report_Fault', mainmenu:mainmenu });
 });
 
-router.get('/view', function(req, res, next) {
-  res.render('./design/reports', { title: 'Report_Power', mainmenu:mainmenu });
+router.get('/d3', function(req, res, next) {
+  res.render('./report_d3', { title: 'Report_d3', mainmenu:mainmenu });
 });
 
-router.get('/index', function(req, res, next) {
-  res.render('./design/index', { title: 'Report_Power', mainmenu:mainmenu });
+router.get('/live', function(req, res, next) {
+  res.render('./reports/report_live', { title: 'Report_Live', mainmenu:mainmenu });
 });
 
 
