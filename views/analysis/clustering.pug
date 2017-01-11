@@ -1,0 +1,194 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
+  link(rel='stylesheet', href='/assets/leaflet/dc.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+block script
+  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  script(type='text/javascript', src='/assets/annie/js/dc.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(type='text/javascript', src='/assets/leaflet/leaflet.js')
+  script(type='text/javascript', src='/assets/leaflet/leaflet.markercluster.js')
+  script(type='text/javascript', src='/assets/leaflet/dc.leaflet.js')
+  script(type='text/javascript', src='/socket.io/socket.io.js')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(type='text/javascript', src="/scripts/dashboard.js")
+  script.
+    $(document).ready(function(e) {
+
+    });
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Clustering
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Analysis
+          li.active Clustering
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Set date and area
+                span.caption-helper  Date range and select area
+            .portlet-body.form
+              form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .row
+                    .form-group.last
+                      label.control-label.col-md-1 Factor
+                      .col-md-4
+                        .btn-group.btn-group-devided(data-toggle='buttons')
+                          label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                            input#syncY.toggle(type='radio', name='options', checked='Y')
+                            | ActivePower
+                          label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                            input#syncN.toggle(type='radio', name='options')
+                            | Voltage
+                          label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                            input#syncN.toggle(type='radio', name='options')
+                            | Ampere
+                          label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                            input#syncN.toggle(type='radio', name='options')
+                            | Power Factor
+                      label.control-label.col-md-1 Date Range
+                      .col-md-3
+                        .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
+                          input#sdate.form-control(type='text', name='from' value='')
+                          span.input-group-addon to
+                          input#edate.form-control(type='text', name='to' value='')
+                      .col-md-1.form-inline
+                        button#btn_search.btn.blue
+                          i.fa.fa-search Run Analysis
+      .row
+        .col-md-2
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Clustering
+                span.caption-helper  Clustering
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-pencil
+                  |  Edit
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-plus
+                  |  Add
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:80px')
+                #directory-tree-chart
+        .col-md-4
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Total Pattern
+                span.caption-helper  Total Pattern
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-pencil
+                  |  Edit
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-plus
+                  |  Add
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart
+                #total-clustering-chart
+        .col-md-4
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Pattern by Node
+                span.caption-helper  Pattern by Node
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-pencil
+                  |  Edit
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-plus
+                  |  Add
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart
+                #node-clustering-chart
+        .col-md-2
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase History
+                span.caption-helper  History
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-pencil
+                  |  Edit
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-plus
+                  |  Add
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart
+                #node-clustering-chart
+      .row
+        .col-md-3
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-blue-sharp Power
+                span.caption-helper  Power
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              #power-trend-chart
+        .col-md-3
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze ALS/Dimming
+                span.caption-helper  ALS/Dimming
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              #als-trend-chart
+        .col-md-3
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Noise
+                span.caption-helper  Noise
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              #noise-trend-chart
+        .col-md-3
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Vibration
+                span.caption-helper  Vibration
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              #vibration-trend-chart
