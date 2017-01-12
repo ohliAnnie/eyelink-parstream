@@ -2067,7 +2067,7 @@ console.log(d);
         redraw(data, "#LineArea", sca.getOpt()['x'], sca.getOpt()['y'], sca.getOpt()['xAxis'], sca.getSvg()['svg'], sca.getSvg()['stat'], sca.getSvg()['path'], sca.getSvg()['line'], sca.getSvg()['points'], sca.getSvg()['legendColor'], sca.getOpt()['height'], sca.getOpt()['axisNum'], sca.getOpt()['drawBar']);
       }, 1000);
     },
-    checkOpt: function (e) {
+  /*  checkOpt: function (e) {
       var self = this;      
       //check the Scatter Choice and Refresh the charts
       var count = 0;
@@ -2181,7 +2181,7 @@ console.log(d);
       .exit()
       .remove();
     }
-  },
+  },*/
     compiled: function () {
       var self = this;
 
