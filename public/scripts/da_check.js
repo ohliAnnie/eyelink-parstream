@@ -3,7 +3,7 @@ function drawCheckChart() {
     d3.selectAll("svg").remove(); 
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
-    if ($('#factor0').is(':checked') === true) {
+  if ($('#factor0').is(':checked') === true) {
     var factor = $('#factor0').val();
   } else if ($('#factor1').is(':checked') === true) {
     var factor = $('#factor1').val();
@@ -28,16 +28,12 @@ function drawCheckChart() {
           var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
           d.event_time = df.parse(d.event_time);
          if(factor === 'ampere') {
-          console.log('ampere');
           set.push({ time:d.event_time, c0:d.c0_ampere, c1:d.c1_ampere, c2:d.c2_ampere, c3:d.c3_ampere});
          } else if(factor === 'voltage') {
-          console.log('voltage');
           set.push({ time:d.event_time, c0:d.c0_voltage, c1:d.c1_voltage, c2:d.c2_voltage, c3:d.c3_voltage});
         } else if(factor === 'active_power') {
-          console.log('active_power');
           set.push({ time:d.event_time, c0:d.c0_active_power, c1:d.c1_active_power, c2:d.c2_active_power, c3:d.c3_active_power});        
         } else if(factor === 'power_factor') {
-          console.log('power_factor');
           set.push({ time:d.event_time, c0:d.c0_power_factor, c1:d.c1_power_factor, c2:d.c2_power_factor, c3:d.c3_power_factor});
         }
         });

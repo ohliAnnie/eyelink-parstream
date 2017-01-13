@@ -9,6 +9,7 @@ block script
   script(type='text/javascript', src='/assets/annie/js/dc.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
   script(type='text/javascript', src="/scripts/util.js")
+  script(src='/scripts/da_tree.js')
   script(src='/scripts/da_check.js')
   script(src='/scripts/da_node.js')
   script.
@@ -20,13 +21,16 @@ block script
       $('#sdate').val('2016-12-01');
       $('#edate').val('2016-12-02');   
       // time series char를 그린다.
+        drawTree();
         drawCheckChart();
         drawChart();
         $('#btn_search').click(function() {
+         drawTree();
          drawCheckChart();
          drawChart();
         });
         $('#btn_factor').click(function() {
+         drawTree();
          drawCheckChart();
          drawChart();
         });
@@ -98,7 +102,7 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart(style='height:80px')
-                #directory-tree-chart
+                dirTree
         .col-md-6
           .portlet.light.bordered
             .portlet-title
