@@ -2066,12 +2066,13 @@ console.log(d);
 
         redraw(data, "#LineArea", sca.getOpt()['x'], sca.getOpt()['y'], sca.getOpt()['xAxis'], sca.getSvg()['svg'], sca.getSvg()['stat'], sca.getSvg()['path'], sca.getSvg()['line'], sca.getSvg()['points'], sca.getSvg()['legendColor'], sca.getOpt()['height'], sca.getOpt()['axisNum'], sca.getOpt()['drawBar']);
       }, 1000);
-    },
+    }
+},
   /* */
     compiled: function () {
       var self = this;
 
-      self.displayLine();
+//      self.displayLine();
       self.displayMem();
       self.displayNet();
       self.displayDisk();

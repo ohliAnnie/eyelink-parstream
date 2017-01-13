@@ -104,9 +104,9 @@
     <query id='testData'><![CDATA[
    select event_time, ampere, voltage, power_factor, active_power,  reactive_power,  apparent_power
     from tb_node_raw
-  where event_year = date_part('YEAR', current_date())
-    and event_month = date_part('MONTH', current_date())
-  and event_day = 11
+  where event_year = 2016
+    and event_month = 11
+  and event_day = 27
     and event_type = 1
    order by event_time
      ]]></query>

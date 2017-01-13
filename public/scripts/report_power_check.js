@@ -1,7 +1,7 @@
 function drawCheckChart() {  
-  var edate = moment().format('YYYY-MM-DD');
-  var wPoint = new Date(edate).getDay();  
-  var sdate = moment().subtract(21+wPoint, 'days').format('YYYY-MM-DD');      
+ var sdate = $('#sdate').val();
+  var edate = $('#edate').val();
+  var wPoint = new Date(edate).getDay();    
   console.log('%s, %s', sdate, edate);
   $.ajax({
     url: "/reports/restapi/getTbRawDataByAllPower" ,

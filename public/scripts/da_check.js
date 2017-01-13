@@ -1,17 +1,37 @@
 function drawCheckChart() {  
-  var edate = moment().format('YYYY-MM-DD');
-  var wPoint = new Date(edate).getDay();  
-  var sdate = moment().subtract(21+wPoint, 'days').format('YYYY-MM-DD');      
+  var sdate = $('#sdate').val();
+  var edate = $('#edate').val();
+  var factor = $('#factor').val();
+
   console.log('%s, %s', sdate, edate);
+  console.log(type);
   $.ajax({
-    url: "/analysis/restapi/getDaClusterMaster" ,
+    url: "/analysis/restapi/getDaClusterDetail" ,
     dataType: "json",
     type: "get",
     data: {startDate:sdate, endDate:edate},
     success: function(result) {     
       if (result.rtnCode.code == "0000") {
-        var data = result.rtnData;       
-        drawCheckPower(data, sdate, edate);
+        var data = result.rtnData;               
+        var set = [];
+        data.forEach(function(d){
+          var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
+          d.event_time = df.parse(d.event_time);
+         if(factor === 'ampere') {
+          console.log('ampere');
+          set.push({ time:d.event_time, c0:d.c0_ampere, c1:d.c1_ampere, c2:d.c2_ampere, c3:d.c3_ampere});
+         } else if(factor === 'voltage') {
+          console.log('voltage');
+          set.push({ time:d.event_time, c0:d.c0_voltage, c1:d.c1_voltage, c2:d.c2_voltage, c3:d.c3_voltage});
+        } else if(factor === 'active_power') {
+          console.log('active_power');
+          set.push({ time:d.event_time, c0:d.c0_active_power, c1:d.c1_active_power, c2:d.c2_active_power, c3:d.c3_active_power});        
+        } else if(factor === 'power_factor') {
+          console.log('power_factor');
+          set.push({ time:d.event_time, c0:d.c0_power_factor, c1:d.c1_power_factor, c2:d.c2_power_factor, c3:d.c3_power_factor});
+        }
+        });
+        drawCheckCluster(set, sdate, edate);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -23,35 +43,22 @@ function drawCheckChart() {
   });
 }
 
-function drawCheckPower(data, sdate, edate) {
-  var set = [];
-  // Data Setting
-  data.forEach(function(d) {                    
-    set.push({time:d.event_time, c0_voltage:d.c0_voltage, c1_voltage:d.c1_voltage, c2_voltage:d.c2_voltage, c3_voltage:d.c0_voltage,
-                            c0_ampere:d.c0_ampere, c1_ampere:d.c1_ampere, c2_ampere:d.c2_ampere, c3_ampere:d.c3_ampere                            
-     });      
-  });
-    
+function drawCheckCluster(data, sdate, edate, type) { 
+
   var demo = new Vue({
     el: '#table',
     data: {
       people_count: 200,
       lineCategory: ['c0', 'c1', 'c2', 'c3'],
-      selectCate: ['c0', 'c3'],
-/*      dataCategory: ['voltage', 'ampere', 'active_power', 'power_factor'],
-      selectData: ['voltage'],*/
+      selectCate: ['c0', 'c1', 'c2', 'c3'],      
       lineFunc: null
     },
     methods: {
       displayLine: function() {
         var self = this;
-        var input = 0;
-        var data = [];             
-        
-        for(var i=0; i < data.length; i++) {
-          data.push({})
-        }
-            //generation function
+        var input = 0;   
+
+       //generation function
       function generate(data, id, lineType, axisNum) {
         var margin = {top: 14, right: 20, bottom: 60, left: 40},
         width = $(id).width() - margin.left - margin.right, 
@@ -60,8 +67,9 @@ function drawCheckPower(data, sdate, edate) {
         var legendSize = 10,
          color = d3.scale.category20();
 
-        var x = d3.scale.ordinal().rangePoints([0, width]);
-        var y = d3.scale.linear().rangeRound([height, 0]);
+    var x = d3.time.scale().range([0, width]);
+
+    var y = d3.scale.linear().range([height, 0]);
 
         var ddata = (function() {
           var temp = {}, seriesArr = [];
@@ -77,11 +85,13 @@ function drawCheckPower(data, sdate, edate) {
             });
           });
 
+          console.log(temp);
           return seriesArr;
         })();
-
-        x.domain(weekly);
-        y.domain([0, max]);
+        x.domain(d3.extent(data, function(d) {
+          console.log(d.time);
+         return d.time; }));
+        y.domain([0, 250]);
 
         //data.length/10 is set for the garantte of timeseries's fitting effect in svg chart
         var xAxis = d3.svg.axis()
@@ -180,13 +190,13 @@ function drawCheckPower(data, sdate, edate) {
           })
            .text(function(d) {  
               if(d === 'c0')   {
-                var rename = "이번주";
+                var rename = "Cluster0";
               } else if(d === 'c1') {
-                var rename = "1주전";              
+                var rename = "Cluster1";              
               } else if(d === 'c2') {
-                var rename = "2주전"
+                var rename = "Cluster2"
               } else {
-                var rename = "3주전";
+                var rename = "Cluster3";
               }
                   return rename;          });
         
@@ -225,13 +235,13 @@ function drawCheckPower(data, sdate, edate) {
           var mainCate = (function() {
             if (d['num'] != 0){
               if(d['category'] === 'c0')   {
-                var rename = "이번주";
+                var rename = "Cluster0";
               } else if(d['category'] === 'c1') {
-                var rename = "1주전";              
+                var rename = "Cluster1";              
               } else if(d['category'] === 'c2') {
-                var rename = "2주전"
+                var rename = "Cluster2"
               } else {
-                var rename = "3주전";
+                var rename = "Cluster3";
               }            
               return rename + ' | ';
             } else
@@ -315,7 +325,7 @@ function drawCheckPower(data, sdate, edate) {
       }
 
       //inits chart
-      self.lineFunc = new generate(data, "#LINE", "linear",30);
+      self.lineFunc = new generate(data, "#Cluster", "linear",30);
     },
     checkOpt: function (e) {
       var self = this;      
@@ -344,7 +354,7 @@ function drawCheckPower(data, sdate, edate) {
       }
 
       //redraw the legend and chart
-      this.legendRedraw(self.selectCate, "#LINE", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
+      this.legendRedraw(self.selectCate, "#Cluster", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
     },
     legendRedraw: function (selectCate, id, legend, rect, legendSize, margin, height, width, color) {
       //update the scatter plot legend
@@ -373,13 +383,13 @@ function drawCheckPower(data, sdate, edate) {
         })
         .text(function(d) {  
           if(d === 'c0')   {
-            var rename = "이번주";
+            var rename = "Cluster0";
           } else if(d === 'c1') {
-            var rename = "1주전";              
+            var rename = "Cluster1";              
           } else if(d === 'c2') {
-            var rename = "2주전"
+            var rename = "Cluster2"
           } else {
-            var rename = "3주전";
+            var rename = "Cluster3";
           }
               return rename;          });
         
@@ -413,13 +423,13 @@ function drawCheckPower(data, sdate, edate) {
       })
      .text(function(d) {  
         if(d === 'c0')   {
-          var rename = "이번주";
+          var rename = "Cluster0";
         } else if(d === 'c1') {
-          var rename = "1주전";              
+          var rename = "Cluster1";              
         } else if(d === 'c2') {
-          var rename = "2주전"
+          var rename = "Cluster2"
         } else {
-          var rename = "3주전";
+          var rename = "Cluster3";
         }
             return rename;          });
         
@@ -454,9 +464,8 @@ function drawCheckPower(data, sdate, edate) {
       .remove();
     }
   },
-    compiled: function () {
-      var self = this;
-
+  compiled: function () {
+      var self = this;      
       self.displayLine();
   }
 });
