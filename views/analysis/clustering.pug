@@ -12,8 +12,7 @@ block script
       //- $('#edate').val(moment().format(dateFormat));
 
       $('#sdate').val('2016-12-01');
-      $('#edate').val('2016-12-02');
-
+      $('#edate').val('2016-12-02');   
       // time series char를 그린다.
         drawCheckChart();
         $('#btn_search').click(function() {
@@ -47,16 +46,16 @@ block content
                       .col-md-4
                         .btn-group.btn-group-devided(data-toggle='buttons')
                           label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
-                            input#syncY.toggle(type='radio', name='options', checked='Y')
+                            input#factor0.toggle(type='radio', name='options', value='active_power', checked='Y')
                             | ActivePower
                           label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
-                            input#syncN.toggle(type='radio', name='options')
+                            input#factor1.toggle(type='radio', name='options', value='voltage')
                             | Voltage
                           label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
-                            input#syncN.toggle(type='radio', name='options')
+                            input#factor2.toggle(type='radio', name='options', value='ampere')
                             | Ampere
                           label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
-                            input#syncN.toggle(type='radio', name='options')
+                            input#factor3.toggle(type='radio', name='options', value='power_factor')
                             | Power Factor
                       label.control-label.col-md-1 Date Range
                       .col-md-3
@@ -100,7 +99,24 @@ block content
                   |  Add
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
-              .chart
+              .chart(style='height:auto;')
+                #table
+                  .panel.panel-card
+                    .panel-body
+                      .col-xm-2.col-sm-2.col-md-2.panel-checkbox.hidden-xs.hidden-sm
+                        input#c0.click_checkbox(type='checkbox', name='ck0', value='1', v-on='click:checkOpt', checked='true')
+                        text  Cluster0
+                        br
+                        input#c1.click_checkbox(type='checkbox', name='c1', value='2', v-on='click:checkOpt', checked='true')
+                        text  Cluster1
+                        br
+                        input#c2.click_checkbox(type='checkbox', name='c2', value='3', v-on='click:checkOpt', checked='true')
+                        text  Cluster2
+                        br
+                        input#c3.click_checkbox(type='checkbox', name='c3', value='4', v-on='click:checkOpt', checked='true')
+                        text  Cluster3
+                      .col-xm-12.col-sm-12.col-md-10.col-xs-12
+                        #Cluster(style='width:95%;height:350px;')
                 #Cluster
         .col-md-4
           .portlet.light.bordered
