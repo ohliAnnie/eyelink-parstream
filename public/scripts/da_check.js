@@ -1,10 +1,20 @@
-function drawCheckChart() {  
+function drawCheckChart() { 
+
+    d3.selectAll("svg").remove(); 
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
-  var factor = $('#factor').val();
+    if ($('#factor0').is(':checked') === true) {
+    var factor = $('#factor0').val();
+  } else if ($('#factor1').is(':checked') === true) {
+    var factor = $('#factor1').val();
+  } else if ($('#factor2').is(':checked') === true) {
+    var factor = $('#factor2').val();
+  } else if ($('#factor3').is(':checked') === true) {
+    var factor = $('#factor3').val();
+  } 
 
   console.log('%s, %s', sdate, edate);
-  console.log(type);
+  console.log(factor);
   $.ajax({
     url: "/analysis/restapi/getDaClusterDetail" ,
     dataType: "json",
@@ -44,7 +54,6 @@ function drawCheckChart() {
 }
 
 function drawCheckCluster(data, sdate, edate, type) { 
-
   var demo = new Vue({
     el: '#table',
     data: {
@@ -84,12 +93,10 @@ function drawCheckCluster(data, sdate, edate, type) {
               temp[name].values.push({'category': name, 'time': d['time'], 'num': d[name]});
             });
           });
-
-          console.log(temp);
+          
           return seriesArr;
         })();
-        x.domain(d3.extent(data, function(d) {
-          console.log(d.time);
+        x.domain(d3.extent(data, function(d) {          
          return d.time; }));
         y.domain([0, 250]);
 
