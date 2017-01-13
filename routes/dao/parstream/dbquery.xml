@@ -152,6 +152,15 @@
             and event_time < timestamp #END_TIMESTAMP#
           order by event_time
      ]]></query>
+     <query id='selectClusterNodePower'><![CDATA[
+        select node_id, event_time, ampere, voltage, active_power, power_factor
+      from tb_node_raw
+      where  event_type = 1
+         and event_time >= timestamp #START_TIMESTAMP#
+         and event_time < timestamp #END_TIMESTAMP#     
+         and node_id in ('0002.0000001F', '0002.00000024', '0002.00000039')
+       order by event_time
+     ]]></query>
     <query id='selectEventRawData'><![CDATA[
       select node_id, event_time, event_type, active_power, ampere,
      ]]></query>

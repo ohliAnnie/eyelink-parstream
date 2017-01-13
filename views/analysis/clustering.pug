@@ -1,10 +1,16 @@
 extends ../layout-type01
 block style
+  link(rel='stylesheet', href='/assets/leaflet/dc.css')
   link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')
 block script
   script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
   script(src='/assets/annie/js/vue.min.js')  
+  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  script(type='text/javascript', src='/assets/annie/js/dc.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(type='text/javascript', src="/scripts/util.js")
   script(src='/scripts/da_check.js')
+  script(src='/scripts/da_node.js')
   script.
     $(document).ready(function(e) {
       var dateFormat = 'YYYY-MM-DD';
@@ -15,11 +21,14 @@ block script
       $('#edate').val('2016-12-02');   
       // time series char를 그린다.
         drawCheckChart();
+        drawChart();
         $('#btn_search').click(function() {
          drawCheckChart();
+         drawChart();
         });
         $('#btn_factor').click(function() {
          drawCheckChart();
+         drawChart();
         });
     });
 block content
@@ -122,8 +131,7 @@ block content
                         input#c3.click_checkbox(type='checkbox', name='c3', value='4', v-on='click:checkOpt', checked='true')
                         text  Cluster3
                       .col-xm-12.col-sm-12.col-md-10.col-xs-12
-                        #Cluster(style='width:95%;height:350px;')
-                #Cluster
+                        #Cluster(style='width:95%;height:350px;')                
         .col-md-4
           .portlet.light.bordered
             .portlet-title
@@ -139,8 +147,8 @@ block content
                   |  Add
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
-              .chart
-                #node-clustering-chart
+              .chart(style='height:auto;')
+                #nodeLine
       .row
         .col-md-3
           .portlet.light
