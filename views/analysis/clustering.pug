@@ -1,34 +1,24 @@
 extends ../layout-type01
 block style
-  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
-  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
-  link(rel='stylesheet', href='/assets/leaflet/dc.css')
-  link(rel='stylesheet', href='/stylesheets/style.css')
+  link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')
 block script
   script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
-  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
-  script(type='text/javascript', src='/assets/annie/js/dc.js')
-  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
-  script(type='text/javascript', src='/assets/leaflet/leaflet.js')
-  script(type='text/javascript', src='/assets/leaflet/leaflet.markercluster.js')
-  script(type='text/javascript', src='/assets/leaflet/dc.leaflet.js')
-  script(type='text/javascript', src='/socket.io/socket.io.js')
-  script(type='text/javascript', src="/scripts/util.js")
-  script(type='text/javascript', src="/scripts/dashboard.js")
+  script(src='/assets/annie/js/vue.min.js')  
+  script(src='/scripts/da_check.js')
   script.
     $(document).ready(function(e) {
       var dateFormat = 'YYYY-MM-DD';
       //- $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
       //- $('#edate').val(moment().format(dateFormat));
 
-      $('#sdate').val('16-12-01');
-      $('#edate').val('16-12-02');
-
+      $('#sdate').val('2016-12-01');
+      $('#edate').val('2016-12-02');
 
       // time series char를 그린다.
         drawCheckChart();
         $('#btn_search').click(function() {
          drawCheckChart();
+        });
     });
 block content
   .container-fluid
@@ -111,7 +101,7 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart
-                #total-clustering-chart
+                #Cluster
         .col-md-4
           .portlet.light.bordered
             .portlet-title

@@ -1,16 +1,24 @@
 function drawCheckChart() {  
-  var edate = moment().format('YYYY-MM-DD');
-  var wPoint = new Date(edate).getDay();  
-  var sdate = moment().subtract(21+wPoint, 'days').format('YYYY-MM-DD');      
+  var sdate = $('#sdate').val();
+  var edate = $('#edate').val();
   console.log('%s, %s', sdate, edate);
   $.ajax({
-    url: "/analysis/restapi/getDaClusterMaster" ,
+    url: "/analysis/restapi/getDaClusterDetail" ,
     dataType: "json",
     type: "get",
     data: {startDate:sdate, endDate:edate},
     success: function(result) {     
       if (result.rtnCode.code == "0000") {
         var data = result.rtnData;       
+        data.forEach(function(d){
+          time[index]  = d.event_time;
+          ampere[index] = [d.c0_ampere, d.c1_ampere, d.c2_ampere, d.c3_ampere];
+          voltage[index] = [d.c0_voltage, d.c1_voltage, d.c2_voltage, d.c3_voltage];
+          active_power[index] = [d.c0_active_power, d.c1_active_power, d.c2_active_power, d.c3_active_power];
+          power_factor[index++] = [d.c0_power_factor, d.c1_power_factor, d.c2_power_factor, d.c3_power_factor];
+        });
+        console.log(voltage);
+
         drawCheckPower(data, sdate, edate);
       } else {
         //- $("#errormsg").html(result.message);
@@ -23,21 +31,21 @@ function drawCheckChart() {
   });
 }
 
-function drawCheckPower(data, sdate, edate) {
-  var set = [];
-  // Data Setting
-  data.forEach(function(d) {                    
-    set.push({time:d.event_time, c0_voltage:d.c0_voltage, c1_voltage:d.c1_voltage, c2_voltage:d.c2_voltage, c3_voltage:d.c0_voltage,
-                            c0_ampere:d.c0_ampere, c1_ampere:d.c1_ampere, c2_ampere:d.c2_ampere, c3_ampere:d.c3_ampere                            
-     });      
-  });
-    
+function drawCheckPower(data, sdate, edate) { 
+  var ampere = new Array();
+  var voltage = new Array();
+  var active_power = new Array();
+  var power_factor = new Array();
+  var time = new Array();
+  var index = 0;
+
   var demo = new Vue({
     el: '#table',
     data: {
       people_count: 200,
       lineCategory: ['c0', 'c1', 'c2', 'c3'],
       selectCate: ['c0', 'c3'],
+      set: data,
 /*      dataCategory: ['voltage', 'ampere', 'active_power', 'power_factor'],
       selectData: ['voltage'],*/
       lineFunc: null
@@ -45,17 +53,18 @@ function drawCheckPower(data, sdate, edate) {
     methods: {
       displayLine: function() {
         var self = this;
-        var input = 0;
-        var data = [];             
-        
+        var input = 0;   
+        console.log('check : '+time[0]);
         for(var i=0; i < data.length; i++) {
-          data.push({})
+          data.push({ })
         }
             //generation function
       function generate(data, id, lineType, axisNum) {
         var margin = {top: 14, right: 20, bottom: 60, left: 40},
         width = $(id).width() - margin.left - margin.right, 
         height = $(id).height() - margin.top - margin.bottom;
+
+        console.log(set);
 
         var legendSize = 10,
          color = d3.scale.category20();
@@ -315,7 +324,7 @@ function drawCheckPower(data, sdate, edate) {
       }
 
       //inits chart
-      self.lineFunc = new generate(data, "#LINE", "linear",30);
+      self.lineFunc = new generate(data, "#Cluster", "linear",30);
     },
     checkOpt: function (e) {
       var self = this;      
@@ -344,7 +353,7 @@ function drawCheckPower(data, sdate, edate) {
       }
 
       //redraw the legend and chart
-      this.legendRedraw(self.selectCate, "#LINE", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
+      this.legendRedraw(self.selectCate, "#Cluster", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
     },
     legendRedraw: function (selectCate, id, legend, rect, legendSize, margin, height, width, color) {
       //update the scatter plot legend
@@ -455,8 +464,7 @@ function drawCheckPower(data, sdate, edate) {
     }
   },
     compiled: function () {
-      var self = this;
-
+      var self = this;      
       self.displayLine();
   }
 });
