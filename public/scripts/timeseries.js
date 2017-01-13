@@ -1,16 +1,6 @@
 function drawChart() {
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
-  if ($('#factor0').is(':checked') === true) {
-    var factor = 'active_power';
-  } else if ($('#factor1').is(':checked') === true) {
-    var factor = 'voltage';
-  } else if ($('#factor2').is(':checked') === true) {
-    var factor = 'ampere';
-  } else if ($('#factor3').is(':checked') === true) {
-    var factor = 'power_factor';
-  } 
-
   $.ajax({
     url: "/dashboard/restapi/getTbRawDataByPeriod" ,
     dataType: "json",
