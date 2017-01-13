@@ -8,7 +8,7 @@ var config = require('../config/config.json');
 global.config = config;
 global._rawDataByDay = {};
 var initapps = require('../routes/initApp');
-var queryParser = require('../routes/queryParser');
+var queryParser = require('../routes/dao/parstream/queryParser');
 require('date-utils');
 console.log('config : %j', config);
 
