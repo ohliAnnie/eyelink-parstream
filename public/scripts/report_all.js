@@ -437,7 +437,7 @@ var cnt = 0;
     .xUnits(function(){return 10;})
     .elasticY(true)
     .elasticX(true)
-    .centerBar(true)
+  //  .centerBar(true)
     .colors(d3.scale.ordinal().range(["#EDC951", "#CC333F", "#756bb1", "#31a354", "#fd8d3c", "#00A0B0", "#003399", "#FFB2F5"]))
     /*.renderLabel(true)*/;
     eventBar.legend(dc.legend());
