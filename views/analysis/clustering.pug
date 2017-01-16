@@ -1,38 +1,40 @@
 extends ../layout-type01
 block style
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
+  link(rel='stylesheet', href='/assets/leaflet/dc.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+  link(rel='stylesheet', href='/scripts/d3_timeseries.css')
   link(rel='stylesheet', href='/assets/leaflet/dc.css')
   link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')
 block script
-  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(type='text/javascript', src='/assets/leaflet/d3.js')
   script(src='/assets/annie/js/vue.min.js')  
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
   script(type='text/javascript', src='/assets/annie/js/dc.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
   script(type='text/javascript', src="/scripts/util.js")
-  script(src='/scripts/da_tree.js')
-  script(src='/scripts/da_check.js')
-  script(src='/scripts/da_node.js')
+  script(src='/scripts/analysis_clustering.js')  
+  script(type='text/javascript', src="/scripts/d3_timeseries.js")
   script.
     $(document).ready(function(e) {
       var dateFormat = 'YYYY-MM-DD';
-      //- $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
       //- $('#edate').val(moment().format(dateFormat));
-
+      //- $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
       $('#sdate').val('2016-12-01');
       $('#edate').val('2016-12-02');   
-      // time series char를 그린다.
-        drawTree();
+      // time series char를 그린다.    
+      var a = 'test';
         drawCheckChart();
         drawChart();
+        getNodeList();        
         $('#btn_search').click(function() {
-         drawTree();
-         drawCheckChart();
-         drawChart();
+         d3.selectAll("#nodeLine").remove(); 
+         drawCheckChart();  
         });
         $('#btn_factor').click(function() {
-         drawTree();
-         drawCheckChart();
-         drawChart();
+         d3.selectAll("svg").remove();          
+         drawCheckChart();         
         });
     });
 block content
@@ -53,6 +55,14 @@ block content
               .caption.font-dark
                 span.caption-subject.bold.uppercase.font-blue-sharp Set date and area
                 span.caption-helper  Date range and select area
+              .actions
+                .btn-group.btn-group-devided(data-toggle='buttons')
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                    input#syncY.toggle(type='radio', name='options', checked='Y')
+                    i.fa.fa-chain Sync
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                    input#syncN.toggle(type='radio', name='options')
+                    i.fa.fa-chain-broken Async
             .portlet-body.form
               form.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
@@ -86,24 +96,7 @@ block content
                         button#btn_search.btn.blue
                           i.fa.fa-search Run Analysis
       .row
-        .col-md-2
-          .portlet.light.bordered
-            .portlet-title
-              .caption.font-dark
-                span.caption-subject.bold.uppercase Clustering
-                span.caption-helper  Clustering
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-pencil
-                  |  Edit
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-plus
-                  |  Add
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
-            .portlet-body
-              .chart(style='height:80px')
-                dirTree
-        .col-md-6
+        .col-md-5
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
@@ -153,6 +146,59 @@ block content
             .portlet-body
               .chart(style='height:auto;')
                 #nodeLine
+        .col-md-3
+              .portlet.light.bordered.tasks-widget
+                .portlet-title
+                  .caption.caption-md.font-blue
+                    i.icon-calendar.font-blue
+                    |  
+                    span.caption-subject.theme-font.bold.uppercase Clustering                    
+                  .inputs
+                    .portlet-input.input-small.input-inline
+                      .input-icon.right
+                        i.icon-magnifier
+                        |  
+                        input.form-control.form-control-solid(type='text', placeholder='search...')
+                .portlet-body
+                   .table-scrollable.table-scrollable-borderless
+                    table.table.table-hover.table-light
+                      thead
+                      tr.uppercase
+                        th Cluster
+                        th  ID              
+                        th            
+                      tr
+                        td                        
+                          span.bold.theme-font Cluster0
+                        td
+                      tr    
+                        td                      
+                        td  
+                          a.primary-link(href="javascript:clickNode('0002.00000029'); d3") 0002.00000029
+                      tr 
+                        td
+                          span.bold.theme-font Cluster1                        
+                        td
+                      tr
+                        td                        
+                        td 
+                          a.primary-link(href="javascript:clickNode('0002.00000028')") 0002.00000028
+                      tr 
+                        td
+                          span.bold.theme-font Cluster2                       
+                        td
+                      tr
+                        td                        
+                        td 
+                          a.primary-link(href="javascript:clickNode('0002.0000003E')") 0002.0000003E
+                      tr 
+                        td
+                          span.bold.theme-font Cluster3                        
+                        td
+                      tr
+                        td                        
+                        td 
+                          a.primary-link(href="javascript:clickNode('0002.0000002C')") 0002.0000002C                       
       .row
         .col-md-3
           .portlet.light
@@ -166,8 +212,9 @@ block content
                 a.reload(href='javascript:;')
                 a.fullscreen(href='javascript:;')
                 a.remove(href='javascript:;')
-            .portlet-body
-              #power-trend-chart
+            .portlet-body(style='height:auto;')
+             .chart
+              #ts-chart01
         .col-md-3
           .portlet.light.bordered
             .portlet-title
@@ -181,7 +228,8 @@ block content
                 a.fullscreen(href='javascript:;')
                 a.remove(href='javascript:;')
             .portlet-body
-              #als-trend-chart
+              .chart
+                #ts-chart02
         .col-md-3
           .portlet.light.bordered
             .portlet-title
@@ -195,7 +243,8 @@ block content
                 a.fullscreen(href='javascript:;')
                 a.remove(href='javascript:;')
             .portlet-body
-              #noise-trend-chart
+              .chart
+                #ts-chart03
         .col-md-3
           .portlet.light.bordered
             .portlet-title
@@ -209,4 +258,5 @@ block content
                 a.fullscreen(href='javascript:;')
                 a.remove(href='javascript:;')
             .portlet-body
-              #vibration-trend-chart
+              .chart
+                #ts-chart04
