@@ -80,6 +80,7 @@ router.get('/restapi/getDashboardRawData', function(req, res, next) {
   });
 });
 
+// TO-DO Query 성능 개선 필요.
 // query RawData
 router.get('/restapi/getTbRawDataByPeriod', function(req, res, next) {
   console.log(req.query);
