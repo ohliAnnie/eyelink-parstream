@@ -567,9 +567,9 @@ function drawNode(data, sdate, edate, max) {
 
 }
 
-function getNodeList(sdate, edate) {
+function getNodeList(type) {
   var sdate = $('#sdate').val();
-  var edate = $('#edate').val();
+  var edate = $('#edate').val();  
   if ($('#factor0').is(':checked') === true) {
     var factor = $('#factor0').val();
   } else if ($('#factor1').is(':checked') === true) {
@@ -587,8 +587,26 @@ function getNodeList(sdate, edate) {
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
-        var nodeList = result.rtnData;
-        drawDirectory(factor, nodeList)
+        var node = result.rtnData;
+        var nodeList = [];
+        node.forEach(function(d) {   
+          if(factor === 'voltage') {
+            nodeList.push({ c0 : d.c0_voltage_node, c1 : d.c1_voltage_node, c2 : d.c2_voltage_node, c3 : d.c3_voltage_node })
+          } else if(factor === 'ampere') {
+            nodeList.push({ c0 : d.c0_ampere_node, c1 : d.c1_ampere_node, c2 : d.c2_ampere_node, c3 : d.c3_ampere_node })
+          } else if(factor === 'active_power') {
+            nodeList.push({ c0 : d.c0_active_power_node, c1 : d.c1_active_power_node, c2 : d.c2_active_power_node, c3 : d.c3_active_power_node })
+          } else if(factor === 'power_factor') {
+            nodeList.push({ c0 : d.c0_power_factor_node, c1 : d.c1_power_factor_node, c2 : d.c2_power_factor_node, c3 : d.c3_power_factor_node })
+          }
+        });
+        console.log(type);
+        if(type === 'main') {
+          drawDirectory(factor, nodeList);
+        } else if(type === 'c0' || type === 'c1' || type === 'c2' || type === 'c3'){
+
+          getClusterNode(factor, type, nodeList);
+        }
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -600,83 +618,133 @@ function getNodeList(sdate, edate) {
   });
 }
 
-function drawDirectory(factor, nodeList) {
+function drawDirectory(factor, nodeList) {  
+  var c0 = [], c1 = [], c2 = [], c3 = [];
 
-
-  var voltage = [], ampere = [], active_power = [], power_factor = [];
-  for(var i=0; i<4; i++) {
-    voltage[i] = new Array(), ampere[i] = new Array(), active_power[i] = new Array(), power_factor[i] = new Array();
-  }
-  nodeList.forEach(function(d) {
+  nodeList.forEach(function(d) {    
     var sb = new StringBuffer();
-
-    sb.append('<tr><td><span class="bold theme-fone"> Cluster0</span></td></tr>');
-    var a = d.c0_voltage_node.split(':');
-    console.log(a.length);
+    var script = "javascript:getNodeList('c0');";
+    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster0 </a></span></td><td></td></tr>');
+    var a = d.c0.split(':');
     for(var i=0; i < a.length; i++) {
-      sb.append('<tr><td>');
-      sb.append('<a class="primary-link" href="javascript:clickNode("'+ a[i] + '");">' + a[i] + '</a>');
+      sb.append('<tr><td></td><td>');
+      var script = "javascript:clickNode('"+a[i]+"');";
+      console.log(script);
+      sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
       sb.append('</td></tr>');
     }
-
+    var script = "javascript:getNodeList('c1');";
+    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster1 </a></span></td><td></td></tr>');
+    var a = d.c1.split(':');
+    for(var i=0; i < a.length; i++) {
+      sb.append('<tr><td></td><td>');
+      var script = "javascript:clickNode('"+a[i]+"');";
+      console.log(script);
+      sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
+      sb.append('</td></tr>');
+    }
+    var script = "javascript:getNodeList('c2');";
+    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster2 </a></span></td><td></td></tr>');
+    var a = d.c2.split(':');
+    for(var i=0; i < a.length; i++) {
+      sb.append('<tr><td></td><td>');
+      var script = "javascript:clickNode('"+a[i]+"');";
+      console.log(script);
+      sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
+      sb.append('</td></tr>');
+    }
+    var script = "javascript:getNodeList('c3');";
+    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster3 </a></span></td><td></td></tr>');
+    var a = d.c3.split(':');
+    for(var i=0; i < a.length; i++) {
+      sb.append('<tr><td></td><td>');
+      var script = "javascript:clickNode('"+a[i]+"');";
+      console.log(script);
+      sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
+      sb.append('</td></tr>');
+    }
     console.log('sb : %s', sb.toString());
     $('#tblClusterDir').append(sb.toString());
   });
-  //   // voltage
-  //   var a = d.c0_voltage_node.split(';');
-  //   for(var i=0; i < a.length; i++) {
-  //     console.log(voltage);
-  //     voltage[0][i] = a[i];    }
-  //   var a = d.c1_voltage_node.split(';');
-  //   for(var i=0; i < a.length; i++) {        voltage[1][i] = a[i];    }
-  //   var a = d.c2_voltage_node.split(';');
-  //   for(var i=0; i < a.length; i++) {        voltage[2][i] = a[i];    }
-  //   var a = d.c3_voltage_node.split(';');
-  //   for(var i=0; i < a.length; i++) {        voltage[3][i] = a[i];    }
-  //   // ampere
-  //   var a = d.c0_ampere_node.split(';');
-  //   for(var i=0; i < a.length; i++) {        ampere[0][i] = a[i];    }
-  //   var a = d.c1_ampere_node.split(';');
-  //   for(var i=0; i < a.length; i++) {        ampere[1][i] = a[i];    }
-  //   var a = d.c2_ampere_node.split(';');
-  //   for(var i=0; i < a.length; i++) {        ampere[2][i] = a[i];    }
-  //   var a = d.c3_ampere_node.split(';');
-  //   for(var i=0; i < a.length; i++) {        ampere[3][i] = a[i];    }
-  //   // active_power
-  //   var a = d.c0_active_power_node.split(';');
-  //   for(var i=0; i < a.length; i++) {      active_power[0][i] = a[i];    }
-  //   var a = d.c1_active_power_node.split(';');
-  //   for(var i=0; i < a.length; i++) {      active_power[1][i] = a[i];    }
-  //   var a = d.c2_active_power_node.split(';');
-  //   for(var i=0; i < a.length; i++) {      active_power[3][i] = a[i];    }
-  //   var a = d.c3_active_power_node.split(';');
-  //   for(var i=0; i < a.length; i++) {      active_power[3][i] = a[i];    }
-  //   // power_factor
-  //   var c0 = [], c1 = [], c2 = [], c3 = [];
-  //   var a = d.c0_power_factor_node.split(';');
-  //   for(var i=0; i < a.length; i++) {      power_factor[3][i] = a[i];   }
-  //   var a = d.c1_power_factor_node.split(';');
-  //   for(var i=0; i < a.length; i++) {      power_factor[3][i] = a[i];   }
-  //   var a = d.c2_power_factor_node.split(';');
-  //   for(var i=0; i < a.length; i++) {      power_factor[3][i] = a[i];    }
-  //   var a = d.c3_power_factor_node.split(';');
-  //   for(var i=0; i < a.length; i++) {      power_factor[3][i] = a[i];   }
-  // });
-  // var dirData = [];
-  // var index = 0;
-  // if(factor === 'voltage') {
-  //   dirData = voltage;
-  //   index = 0;
-  // } else if(factor === 'ampere') {
-  //   dirData = ampere;
-  //   index = 1;
-  // } else if(factor === 'active_power') {
-  //   dirData = active_power;
-  //   index = 2;
-  // } else if(factor ===  'power_factor') {
-  //   dirData = power_factor;
-  //   index = 3;
-  // }
+    
+
+}
+
+
+function getClusterNode(factor, type, node) {  
+  var list;
+  node.forEach(function(d) {   
+    if(type === 'c0') {
+      list = d.c0;
+    } else if(type === 'c1') {
+      list = d.c1;
+    } else if(type === 'c2') {
+      list = d.c2;
+    } else if(type === 'c3') {
+      list = d.c3;
+    }    
+  });
+  var a = list.split(':');
+  console.log(a);
+  var data = [];
+  for(var i=0; i<a.length; i++){
+    var ata = getNodePower(factor, a[i]);
+    console.log(ata);
+    console.log(a[i]);
+  }
+  console.log(data);
+}
+
+function getNodePower(factor, node){
+  var sdate = $('#sdate').val();
+  var edate = $('#edate').val();
+  var data = [];
+  $.ajax({
+    url: "/analysis/restapi/getClusterNodePower" ,
+    dataType: "json",
+    type: "get",
+    data: {startDate:sdate, endDate:edate, nodeId: node},
+    success: function(result) {
+      // console.log(result);
+      if (result.rtnCode.code == "0000") {
+        var data = result.rtnData;
+        var set = [];
+        var max = 0;       
+        data.forEach(function(d){
+          var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
+          d.event_time = df.parse(d.event_time);
+         if(factor === 'ampere') {
+          set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.ampere)});
+          if(d.ampere > max)
+            max = d.ampere;
+         } else if(factor === 'voltage') {
+          set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.voltage)});
+          if(d.voltage > max)
+            max = d.voltage;
+        } else if(factor === 'active_power') {
+          set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.active_power) });
+          if(d.active_power > max)
+            max = d.active_power;
+        } else if(factor === 'power_factor') {
+          set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.power_factor) });
+          if(d.power_factor > max)
+            max = d.power_factor;
+        }   
+        });
+        data = set
+          console.log(data);
+  return data;
+    
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
+
 }
 
 
@@ -693,8 +761,7 @@ function clickNode(nodeId) {
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
-        var data = result.rtnData;
-         console.log(data);
+        var data = result.rtnData;   
          drawTimeseries(data);
       } else {
         //- $("#errormsg").html(result.message);

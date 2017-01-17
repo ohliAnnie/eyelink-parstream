@@ -82,6 +82,7 @@ router.get('/restapi/getClusterNodePower', function(req, res, next) {
   var in_data = {
       START_TIMESTAMP: req.query.startDate + ' 00:00:00',
       END_TIMESTAMP: req.query.endDate + ' 23:59:59',
+      NODE: req.query.nodeId,
       FLAG : 'N'};
   queryProvider.selectSingleQueryByID("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
     // console.log(out_data);

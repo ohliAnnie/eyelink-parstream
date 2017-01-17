@@ -25,9 +25,8 @@ block script
       $('#edate').val('2016-12-02');
       // time series char를 그린다.
       var a = 'test';
-        drawCheckChart();
-        drawChart();
-        getNodeList();
+        drawCheckChart();       
+        getNodeList('main');
         $('#btn_search').click(function() {
          d3.selectAll("#nodeLine").remove();
          drawCheckChart();
@@ -147,56 +146,56 @@ block content
               .chart(style='height:auto;')
                 #nodeLine
         .col-md-3
-              .portlet.light.bordered.tasks-widget
-                .portlet-title
-                  .caption.caption-md.font-blue
-                    i.icon-calendar.font-blue
-                    span.caption-subject.theme-font.bold.uppercase Clustering
-                  .inputs
-                    .portlet-input.input-small.input-inline
-                      .input-icon.right
-                        i.icon-magnifier
-                        input.form-control.form-control-solid(type='text', placeholder='search...')
-                .portlet-body
-                   .table-scrollable.table-scrollable-borderless
-                    table#tblClusterDir.table.table-hover.table-light
-                      thead
-                      th.uppercase
-                        th Cluster
-                        th ID
-                        th
-                      //- tr
-                      //-   td
-                      //-     span.bold.theme-font Cluster0
-                      //-   td
-                      //- tr
-                      //-   td
-                      //-   td
-                      //-     a.primary-link(href="javascript:clickNode('0002.00000029'); d3") 0002.00000029
-                      //- tr
-                      //-   td
-                      //-     span.bold.theme-font Cluster1
-                      //-   td
-                      //- tr
-                      //-   td
-                      //-   td
-                      //-     a.primary-link(href="javascript:clickNode('0002.00000028')") 0002.00000028
-                      //- tr
-                      //-   td
-                      //-     span.bold.theme-font Cluster2
-                      //-   td
-                      //- tr
-                      //-   td
-                      //-   td
-                      //-     a.primary-link(href="javascript:clickNode('0002.0000003E')") 0002.0000003E
-                      //- tr
-                      //-   td
-                      //-     span.bold.theme-font Cluster3
-                      //-   td
-                      //- tr
-                      //-   td
-                      //-   td
-                      //-     a.primary-link(href="javascript:clickNode('0002.0000002C')") 0002.0000002C
+          .portlet.light.bordered.tasks-widget
+            .portlet-title
+              .caption.caption-md.font-blue
+                i.icon-calendar.font-blue
+                span.caption-subject.theme-font.bold.uppercase Clustering
+              .inputs
+                .portlet-input.input-small.input-inline
+                  .input-icon.right
+                    i.icon-magnifier
+                    input.form-control.form-control-solid(type='text', placeholder='search...')
+            .portlet-body
+              .scroller(style='height: 390px;', data-always-visible='1', data-rail-visible1='0', data-handle-color='#D7DCE2')
+               .table-scrollable.table-scrollable-borderless
+                table#tblClusterDir.table.table-hover.table-light
+                  thead
+                  tr.uppercase
+                    th Cluster
+                    th ID                        
+                  //- tr
+                  //-   td
+                  //-     span.bold.theme-font Cluster0
+                  //-   td
+                  //- tr
+                  //-   td
+                  //-   td
+                  //-     a.primary-link(href="javascript:clickNode('0002.00000029'); d3") 0002.00000029
+                  //- tr
+                  //-   td
+                  //-     span.bold.theme-font Cluster1
+                  //-   td
+                  //- tr
+                  //-   td
+                  //-   td
+                  //-     a.primary-link(href="javascript:clickNode('0002.00000028')") 0002.00000028
+                  //- tr
+                  //-   td
+                  //-     span.bold.theme-font Cluster2
+                  //-   td
+                  //- tr
+                  //-   td
+                  //-   td
+                  //-     a.primary-link(href="javascript:clickNode('0002.0000003E')") 0002.0000003E
+                  //- tr
+                  //-   td
+                  //-     span.bold.theme-font Cluster3
+                  //-   td
+                  //- tr
+                  //-   td
+                  //-   td
+                  //-     a.primary-link(href="javascript:clickNode('0002.0000002C')") 0002.0000002C
       .row
         .col-md-3
           .portlet.light
