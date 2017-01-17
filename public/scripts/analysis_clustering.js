@@ -601,69 +601,66 @@ function getNodeList(sdate, edate) {
 }
 
 function drawDirectory(factor, nodeList) {  
-  var voltage = [], ampere = [], active_power = [], power_factor = [];
-  for(var i=0; i<4; i++) {
-    voltage[i] = new Array(), ampere[i] = new Array(), active_power[i] = new Array(), power_factor[i] = new Array();
-  }
+  var c0 = [], c1 = [], c2 = [], c3 = [];
+
   nodeList.forEach(function(d) {    
+    console.log(d);
     // voltage 
-    var a = d.c0_voltage_node.split(';');
-    for(var i=0; i < a.length; i++) {      
-      console.log(voltage);
-      voltage[0][i] = a[i];    }
-    var a = d.c1_voltage_node.split(';');
-    for(var i=0; i < a.length; i++) {        voltage[1][i] = a[i];    }
-    var a = d.c2_voltage_node.split(';');
-    for(var i=0; i < a.length; i++) {        voltage[2][i] = a[i];    }
-    var a = d.c3_voltage_node.split(';');
-    for(var i=0; i < a.length; i++) {        voltage[3][i] = a[i];    }  
+    if(factor === 'voltage') {
+      var a = d.c0_voltage_node.split(':');
+      for(var i=0; i < a.length; i++) {        c0[i] = a[i];    }
+      var a = d.c1_voltage_node.split(':');
+      for(var i=0; i < a.length; i++) {        c1[i] = a[i];    }
+      var a = d.c2_voltage_node.split(':');
+      for(var i=0; i < a.length; i++) {        c2[i] = a[i];    }
+      var a = d.c3_voltage_node.split(':');
+      for(var i=0; i < a.length; i++) {        c3[i] = a[i];    }  
+   } else if(factor === 'ampere') {
     // ampere 
-    var a = d.c0_ampere_node.split(';');
-    for(var i=0; i < a.length; i++) {        ampere[0][i] = a[i];    }
-    var a = d.c1_ampere_node.split(';');
-    for(var i=0; i < a.length; i++) {        ampere[1][i] = a[i];    }
-    var a = d.c2_ampere_node.split(';');
-    for(var i=0; i < a.length; i++) {        ampere[2][i] = a[i];    }
-    var a = d.c3_ampere_node.split(';');
-    for(var i=0; i < a.length; i++) {        ampere[3][i] = a[i];    }    
+      var a = d.c0_ampere_node.split(':');
+      for(var i=0; i < a.length; i++) {        c0[i] = a[i];    }
+      var a = d.c1_ampere_node.split(':');
+      for(var i=0; i < a.length; i++) {        c1[i] = a[i];    }
+      var a = d.c2_ampere_node.split(':');
+      for(var i=0; i < a.length; i++) {        c2[i] = a[i];    }
+      var a = d.c3_ampere_node.split(':');
+      for(var i=0; i < a.length; i++) {        c3[i] = a[i];    }    
+    } else if(factor === 'active_power') {
     // active_power  
-    var a = d.c0_active_power_node.split(';');
-    for(var i=0; i < a.length; i++) {      active_power[0][i] = a[i];    }
-    var a = d.c1_active_power_node.split(';');
-    for(var i=0; i < a.length; i++) {      active_power[1][i] = a[i];    }
-    var a = d.c2_active_power_node.split(';');
-    for(var i=0; i < a.length; i++) {      active_power[3][i] = a[i];    }
-    var a = d.c3_active_power_node.split(';');
-    for(var i=0; i < a.length; i++) {      active_power[3][i] = a[i];    }
+      var a = d.c0_active_power_node.split(':');
+      for(var i=0; i < a.length; i++) {      c0[i] = a[i];    }
+      var a = d.c1_active_power_node.split(':');
+      for(var i=0; i < a.length; i++) {      c1[i] = a[i];    }
+      var a = d.c2_active_power_node.split(':');
+      for(var i=0; i < a.length; i++) {      c2[i] = a[i];    }
+      var a = d.c3_active_power_node.split(':');
+      for(var i=0; i < a.length; i++) {      c3[i] = a[i];    }
+    } else if(factor === 'power_factor') {
     // power_factor
-    var c0 = [], c1 = [], c2 = [], c3 = [];
-    var a = d.c0_power_factor_node.split(';');
-    for(var i=0; i < a.length; i++) {      power_factor[3][i] = a[i];   }
-    var a = d.c1_power_factor_node.split(';');
-    for(var i=0; i < a.length; i++) {      power_factor[3][i] = a[i];   }
-    var a = d.c2_power_factor_node.split(';');
-    for(var i=0; i < a.length; i++) {      power_factor[3][i] = a[i];    }
-    var a = d.c3_power_factor_node.split(';');
-    for(var i=0; i < a.length; i++) {      power_factor[3][i] = a[i];   }    
+      var a = d.c0_power_factor_node.split(':');
+      for(var i=0; i < a.length; i++) {      c0[i] = a[i];   }
+      var a = d.c1_power_factor_node.split(':');
+      for(var i=0; i < a.length; i++) {      c1[i] = a[i];   }
+      var a = d.c2_power_factor_node.split(':');
+      for(var i=0; i < a.length; i++) {      c2[i] = a[i];    }
+      var a = d.c3_power_factor_node.split(':');
+      for(var i=0; i < a.length; i++) {      c3[i] = a[i];   }    
+    }
   });
-  var dirData = [];
-  var index = 0;
-  if(factor === 'voltage') {
-    dirData = voltage;
-    index = 0;
-  } else if(factor === 'ampere') {
-    dirData = ampere;    
-    index = 1;
-  } else if(factor === 'active_power') {
-    dirData = active_power;
-    index = 2;
-  } else if(factor ===  'power_factor') {
-    dirData = power_factor;
-    index = 3;
-  } 
+
+  console.log(c0);
+  console.log(c1);
+  console.log(c2);
+  console.log(c3);
+  document.getElementById('dirC0').value = c0;
+  document.getElementById('dirC1').value = c1;
+  document.getElementById('dirC2').value = c2;
+  document.getElementById('dirC3').value = c3;
 }
 
-
+function test() {
+  return 'ok?';
+}
 function clickNode(nodeId) {  
 
   var sdate = $('#sdate').val();
