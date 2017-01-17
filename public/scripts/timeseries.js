@@ -32,8 +32,8 @@ function drawTimeseries(data) {
   data.forEach(function(d) {
     d.event_time = df.parse(d.event_time);
     d.ampere = d.ampere === undefined? 0:d.ampere;
-    console.log('als_level : ' + d.als_level);
-    console.log(d.als_level === '');
+    // console.log('als_level : ' + d.als_level);
+    // console.log(d.als_level === '');
     d.als_level = d.als_level === ''? 0:d.als_level;
     d.dimming_level = d.dimming_level === ''? 0:d.dimming_level;
     d.noise_frequency = d.noise_frequency === ''? 0:d.noise_frequency;

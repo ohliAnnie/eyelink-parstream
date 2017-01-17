@@ -81,7 +81,13 @@ html
     block script
     script.
       jQuery(document).ready(function() {
-        console.log('jQuery');
+        $('#menudashboard').addClass( '#{mainmenu.dashboard}');
+        $('#menureports').addClass( '#{mainmenu.reports}');
+        $('#menutimeseries').addClass( '#{mainmenu.timeseries}');
+        $('#menuanalysis').addClass( '#{mainmenu.analysis}');
+        $('#menuusers').addClass( '#{mainmenu.users}');
+        $('#menusettings').addClass( '#{mainmenu.settings}');
+
         Metronic.init(); // init metronic core componets
         eyelinkLayout.init(); // init eyelinklayout
         QuickSidebar.init(); // init quick sidebar
@@ -90,12 +96,6 @@ html
         ComponentsPickers.init();
         ComponentsDropdowns.init();
 
-        $('#menudashboard').addClass( '#{mainmenu.dashboard}');
-        $('#menureports').addClass( '#{mainmenu.reports}');
-        $('#menutimeseries').addClass( '#{mainmenu.timeseries}');
-        $('#menuanalysis').addClass( '#{mainmenu.analysis}');
-        $('#menuusers').addClass( '#{mainmenu.users}');
-        $('#menusettings').addClass( '#{mainmenu.settings}');
       });
   body.page-header-fixed.page-quick-sidebar-over-content
     .wrapper

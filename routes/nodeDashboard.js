@@ -40,7 +40,11 @@ router.get('/restapi/get_successcount', function(req, res, next) {
 
 // query Dashboard Section 1
 router.get('/restapi/getDashboardSection1', function(req, res, next) {
-  var in_data = {};
+  console.log(req.query);
+   var in_data = {
+      TODAY_TIMESTAMP: req.query.todate,
+      YESTERDAY_TIMESTAMP: req.query.yesterdate,
+      FLAG : 'N'};
   queryProvider.selectSingleQueryByID("dashboard", "selectDashboardSection1", in_data, function(err, out_data) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
@@ -76,6 +80,7 @@ router.get('/restapi/getDashboardRawData', function(req, res, next) {
   });
 });
 
+// TO-DO Query 성능 개선 필요.
 // query RawData
 router.get('/restapi/getTbRawDataByPeriod', function(req, res, next) {
   console.log(req.query);

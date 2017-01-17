@@ -1,4 +1,4 @@
-function drawCheckChart() { 
+function drawCheckChart() {
 
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
@@ -10,7 +10,7 @@ function drawCheckChart() {
     var factor = $('#factor2').val();
   } else if ($('#factor3').is(':checked') === true) {
     var factor = $('#factor3').val();
-  } 
+  }
 
   console.log('%s, %s', sdate, edate);
   console.log(factor);
@@ -19,9 +19,9 @@ function drawCheckChart() {
     dataType: "json",
     type: "get",
     data: {startDate:sdate, endDate:edate},
-    success: function(result) {     
+    success: function(result) {
       if (result.rtnCode.code == "0000") {
-        var data = result.rtnData;               
+        var data = result.rtnData;
         var set = [];
         data.forEach(function(d){
           var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
@@ -31,7 +31,7 @@ function drawCheckChart() {
          } else if(factor === 'voltage') {
           set.push({ time:d.event_time, c0:d.c0_voltage, c1:d.c1_voltage, c2:d.c2_voltage, c3:d.c3_voltage});
         } else if(factor === 'active_power') {
-          set.push({ time:d.event_time, c0:d.c0_active_power, c1:d.c1_active_power, c2:d.c2_active_power, c3:d.c3_active_power});        
+          set.push({ time:d.event_time, c0:d.c0_active_power, c1:d.c1_active_power, c2:d.c2_active_power, c3:d.c3_active_power});
         } else if(factor === 'power_factor') {
           set.push({ time:d.event_time, c0:d.c0_power_factor, c1:d.c1_power_factor, c2:d.c2_power_factor, c3:d.c3_power_factor});
         }
@@ -48,24 +48,24 @@ function drawCheckChart() {
   });
 }
 
-function drawCheckCluster(data, sdate, edate, type) { 
+function drawCheckCluster(data, sdate, edate, type) {
   var demo = new Vue({
     el: '#table',
     data: {
       people_count: 200,
       lineCategory: ['c0', 'c1', 'c2', 'c3'],
-      selectCate: ['c0', 'c1', 'c2', 'c3'],      
+      selectCate: ['c0', 'c1', 'c2', 'c3'],
       lineFunc: null
     },
     methods: {
       displayLine: function() {
         var self = this;
-        var input = 0;   
+        var input = 0;
 
        //generation function
       function generate(data, id, lineType, axisNum) {
         var margin = {top: 14, right: 20, bottom: 60, left: 40},
-        width = $(id).width() - margin.left - margin.right, 
+        width = $(id).width() - margin.left - margin.right,
         height = $(id).height() - margin.top - margin.bottom;
 
         var legendSize = 10,
@@ -88,10 +88,10 @@ function drawCheckCluster(data, sdate, edate, type) {
               temp[name].values.push({'category': name, 'time': d['time'], 'num': d[name]});
             });
           });
-          
+
           return seriesArr;
         })();
-        x.domain(d3.extent(data, function(d) {          
+        x.domain(d3.extent(data, function(d) {
          return d.time; }));
         y.domain([0, 250]);
 
@@ -108,11 +108,11 @@ function drawCheckCluster(data, sdate, edate, type) {
         .ticks(10)
         .tickSize(-width)
         .tickPadding([8])
-        .orient("left");            
+        .orient("left");
 
     // Define the div for the tooltip
-    var div = d3.select("body").append("div") 
-        .attr("class", "tip")       
+    var div = d3.select("body").append("div")
+        .attr("class", "tip")
         .style("opacity", 0);
 
 
@@ -139,18 +139,18 @@ function drawCheckCluster(data, sdate, edate, type) {
           .interpolate(lineType)
           .x(function(d) { return x(d['time']); })
           .y(function(d) { return y(d['num']); });
-       
+
         var path = svg.append("g")
             .attr("class", "click_path");
 
         path.selectAll(".click_line")
           .data(ddata)
           .enter()
-          .append("path")             
-          .attr("class", function (d) {        
+          .append("path")
+          .attr("class", function (d) {
             return "click_line click_line_" + d['category']; })
-          .attr("d", function(d) {            
-           return line(d['values']); })         
+          .attr("d", function(d) {
+           return line(d['values']); })
            .style("display", function (d) {
               //to check if the checkbox has been selected and decide whether to show it out
               //use display:none and display:inherit to control the display of scatter dots
@@ -190,18 +190,18 @@ function drawCheckCluster(data, sdate, edate, type) {
               return '.55em';
             }
           })
-           .text(function(d) {  
+           .text(function(d) {
               if(d === 'c0')   {
                 var rename = "Cluster0";
               } else if(d === 'c1') {
-                var rename = "Cluster1";              
+                var rename = "Cluster1";
               } else if(d === 'c2') {
                 var rename = "Cluster2"
               } else {
                 var rename = "Cluster3";
               }
                   return rename;          });
-        
+
 
           //draw the rect for legends
         var rect = svg.append('g')
@@ -233,29 +233,29 @@ function drawCheckCluster(data, sdate, edate, type) {
         .attr("r", "6px")
         .style("fill", "transparent")
         .on("mouseover", function (d) {
-        
+
           var mainCate = (function() {
             if (d['num'] != 0){
               if(d['category'] === 'c0')   {
                 var rename = "Cluster0";
               } else if(d['category'] === 'c1') {
-                var rename = "Cluster1";              
+                var rename = "Cluster1";
               } else if(d['category'] === 'c2') {
                 var rename = "Cluster2"
               } else {
                 var rename = "Cluster3";
-              }            
+              }
               return rename + ' | ';
             } else
               return '';
           })();
 
-            div.transition()    
-                .duration(200)    
-                .style("opacity", .9);    
-            div .html(' ' + mainCate + d['num'] + ' ')  
-                .style("left", (d3.event.pageX) + "px")   
-                .style("top", (d3.event.pageY - 28) + "px");  
+            div.transition()
+                .duration(200)
+                .style("opacity", .9);
+            div .html(' ' + mainCate + d['num'] + ' ')
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
 
               svg.append("g")
               .attr("class", "tipDot")
@@ -279,8 +279,8 @@ function drawCheckCluster(data, sdate, edate, type) {
             })
         .on("mouseout",  function (d) {
 
-            div.transition()    
-                .duration(500)    
+            div.transition()
+                .duration(500)
                 .style("opacity", 0);
 
           var currentX = $(this)[0]['cx']['animVal']['value'];
@@ -294,7 +294,7 @@ function drawCheckCluster(data, sdate, edate, type) {
           $.each(ret, function(index, val) {
             $(val).animate({
               opacity: "0"
-            }, 100);     
+            }, 100);
           });
 
           d3.selectAll('.tipDot').transition().duration(100).remove();
@@ -316,7 +316,7 @@ function drawCheckCluster(data, sdate, edate, type) {
         this.getSvg = function() {
           var svgD = new Object();
           svgD['svg'] = svg;
-          svgD['path'] = path;          
+          svgD['path'] = path;
           svgD['line'] = line;
           svgD['rect'] = rect;
           svgD['legend'] = legend;
@@ -330,7 +330,7 @@ function drawCheckCluster(data, sdate, edate, type) {
       self.lineFunc = new generate(data, "#Cluster", "linear",30);
     },
     checkOpt: function (e) {
-      var self = this;      
+      var self = this;
       //check the Scatter Choice and Refresh the charts
       var count = 0;
       for (var i=0; i < self.lineCategory.length; i++) {
@@ -383,18 +383,18 @@ function drawCheckCluster(data, sdate, edate, type) {
             return '.55em';
           }
         })
-        .text(function(d) {  
+        .text(function(d) {
           if(d === 'c0')   {
             var rename = "Cluster0";
           } else if(d === 'c1') {
-            var rename = "Cluster1";              
+            var rename = "Cluster1";
           } else if(d === 'c2') {
             var rename = "Cluster2"
           } else {
             var rename = "Cluster3";
           }
               return rename;          });
-        
+
 
       //create new legends
       var singLegend = legend.selectAll('.path_legend')
@@ -423,18 +423,18 @@ function drawCheckCluster(data, sdate, edate, type) {
           return '.55em';
         }
       })
-     .text(function(d) {  
+     .text(function(d) {
         if(d === 'c0')   {
           var rename = "Cluster0";
         } else if(d === 'c1') {
-          var rename = "Cluster1";              
+          var rename = "Cluster1";
         } else if(d === 'c2') {
           var rename = "Cluster2"
         } else {
           var rename = "Cluster3";
         }
             return rename;          });
-        
+
 
       //remove the old legends
       legend.selectAll('.path_legend')
@@ -467,7 +467,7 @@ function drawCheckCluster(data, sdate, edate, type) {
     }
   },
   compiled: function () {
-      var self = this;      
+      var self = this;
       self.displayLine();
   }
 });
@@ -484,7 +484,7 @@ function drawChart() {
     var factor = $('#factor2').val();
   } else if ($('#factor3').is(':checked') === true) {
     var factor = $('#factor3').val();
-  } 
+  }
   $.ajax({
     url: "/analysis/restapi/getClusterNodePower" ,
     dataType: "json",
@@ -493,7 +493,7 @@ function drawChart() {
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
-        var data = result.rtnData;        
+        var data = result.rtnData;
         var set = [];
         var max = 0;
         console.log(sdate+','+edate);
@@ -509,7 +509,7 @@ function drawChart() {
           if(d.voltage > max)
             max = d.voltage;
         } else if(factor === 'active_power') {
-          set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.active_power) });        
+          set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.active_power) });
           if(d.active_power > max)
             max = d.active_power;
         } else if(factor === 'power_factor') {
@@ -533,12 +533,12 @@ function drawChart() {
 function drawNode(data, sdate, edate, max) {
   var nodeLine = dc.seriesChart('#nodeLine');
 
-  var minDate = new Date(sdate);  
+  var minDate = new Date(sdate);
   var maxDate = new Date(edate);
 
   var nyx = crossfilter(data);
 
-  idDim = nyx.dimension(function(d) { return [d.id, d.time]; });  
+  idDim = nyx.dimension(function(d) { return [d.id, d.time]; });
   timeGroup = idDim.group().reduceSum(function(d) {  return d.value; });
 
   nodeLine
@@ -561,15 +561,15 @@ function drawNode(data, sdate, edate, max) {
       return "Id: " + d.key[0];})
     .keyAccessor(function(d) {return d.key[1];})
     .valueAccessor(function(d) {return d.value;})
-    .legend(dc.legend().x(window.innerWidth*0.1).y(0).itemHeight(13).gap(5).legendWidth(140).itemWidth(70));  
+    .legend(dc.legend().x(window.innerWidth*0.1).y(0).itemHeight(13).gap(5).legendWidth(140).itemWidth(70));
 
   dc.renderAll();
 
 }
 
-function getNodeList(sdate, edate) {
+function getNodeList(type) {
   var sdate = $('#sdate').val();
-  var edate = $('#edate').val();
+  var edate = $('#edate').val();  
   if ($('#factor0').is(':checked') === true) {
     var factor = $('#factor0').val();
   } else if ($('#factor1').is(':checked') === true) {
@@ -578,7 +578,7 @@ function getNodeList(sdate, edate) {
     var factor = $('#factor2').val();
   } else if ($('#factor3').is(':checked') === true) {
     var factor = $('#factor3').val();
-  } 
+  }
    $.ajax({
     url: "/analysis/restapi/getDaClusterMaster" ,
     dataType: "json",
@@ -587,8 +587,26 @@ function getNodeList(sdate, edate) {
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
-        var nodeList = result.rtnData;
-        drawDirectory(factor, nodeList)
+        var node = result.rtnData;
+        var nodeList = [];
+        node.forEach(function(d) {   
+          if(factor === 'voltage') {
+            nodeList.push({ c0 : d.c0_voltage_node, c1 : d.c1_voltage_node, c2 : d.c2_voltage_node, c3 : d.c3_voltage_node })
+          } else if(factor === 'ampere') {
+            nodeList.push({ c0 : d.c0_ampere_node, c1 : d.c1_ampere_node, c2 : d.c2_ampere_node, c3 : d.c3_ampere_node })
+          } else if(factor === 'active_power') {
+            nodeList.push({ c0 : d.c0_active_power_node, c1 : d.c1_active_power_node, c2 : d.c2_active_power_node, c3 : d.c3_active_power_node })
+          } else if(factor === 'power_factor') {
+            nodeList.push({ c0 : d.c0_power_factor_node, c1 : d.c1_power_factor_node, c2 : d.c2_power_factor_node, c3 : d.c3_power_factor_node })
+          }
+        });
+        console.log(type);
+        if(type === 'main') {
+          drawDirectory(factor, nodeList);
+        } else if(type === 'c0' || type === 'c1' || type === 'c2' || type === 'c3'){
+
+          getClusterNode(factor, type, nodeList);
+        }
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -604,64 +622,133 @@ function drawDirectory(factor, nodeList) {
   var c0 = [], c1 = [], c2 = [], c3 = [];
 
   nodeList.forEach(function(d) {    
-    console.log(d);
-    // voltage 
-    if(factor === 'voltage') {
-      var a = d.c0_voltage_node.split(':');
-      for(var i=0; i < a.length; i++) {        c0[i] = a[i];    }
-      var a = d.c1_voltage_node.split(':');
-      for(var i=0; i < a.length; i++) {        c1[i] = a[i];    }
-      var a = d.c2_voltage_node.split(':');
-      for(var i=0; i < a.length; i++) {        c2[i] = a[i];    }
-      var a = d.c3_voltage_node.split(':');
-      for(var i=0; i < a.length; i++) {        c3[i] = a[i];    }  
-   } else if(factor === 'ampere') {
-    // ampere 
-      var a = d.c0_ampere_node.split(':');
-      for(var i=0; i < a.length; i++) {        c0[i] = a[i];    }
-      var a = d.c1_ampere_node.split(':');
-      for(var i=0; i < a.length; i++) {        c1[i] = a[i];    }
-      var a = d.c2_ampere_node.split(':');
-      for(var i=0; i < a.length; i++) {        c2[i] = a[i];    }
-      var a = d.c3_ampere_node.split(':');
-      for(var i=0; i < a.length; i++) {        c3[i] = a[i];    }    
-    } else if(factor === 'active_power') {
-    // active_power  
-      var a = d.c0_active_power_node.split(':');
-      for(var i=0; i < a.length; i++) {      c0[i] = a[i];    }
-      var a = d.c1_active_power_node.split(':');
-      for(var i=0; i < a.length; i++) {      c1[i] = a[i];    }
-      var a = d.c2_active_power_node.split(':');
-      for(var i=0; i < a.length; i++) {      c2[i] = a[i];    }
-      var a = d.c3_active_power_node.split(':');
-      for(var i=0; i < a.length; i++) {      c3[i] = a[i];    }
-    } else if(factor === 'power_factor') {
-    // power_factor
-      var a = d.c0_power_factor_node.split(':');
-      for(var i=0; i < a.length; i++) {      c0[i] = a[i];   }
-      var a = d.c1_power_factor_node.split(':');
-      for(var i=0; i < a.length; i++) {      c1[i] = a[i];   }
-      var a = d.c2_power_factor_node.split(':');
-      for(var i=0; i < a.length; i++) {      c2[i] = a[i];    }
-      var a = d.c3_power_factor_node.split(':');
-      for(var i=0; i < a.length; i++) {      c3[i] = a[i];   }    
+    var sb = new StringBuffer();
+    var script = "javascript:getNodeList('c0');";
+    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster0 </a></span></td><td></td></tr>');
+    var a = d.c0.split(':');
+    for(var i=0; i < a.length; i++) {
+      sb.append('<tr><td></td><td>');
+      var script = "javascript:clickNode('"+a[i]+"');";
+      console.log(script);
+      sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
+      sb.append('</td></tr>');
+    }
+    var script = "javascript:getNodeList('c1');";
+    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster1 </a></span></td><td></td></tr>');
+    var a = d.c1.split(':');
+    for(var i=0; i < a.length; i++) {
+      sb.append('<tr><td></td><td>');
+      var script = "javascript:clickNode('"+a[i]+"');";
+      console.log(script);
+      sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
+      sb.append('</td></tr>');
+    }
+    var script = "javascript:getNodeList('c2');";
+    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster2 </a></span></td><td></td></tr>');
+    var a = d.c2.split(':');
+    for(var i=0; i < a.length; i++) {
+      sb.append('<tr><td></td><td>');
+      var script = "javascript:clickNode('"+a[i]+"');";
+      console.log(script);
+      sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
+      sb.append('</td></tr>');
+    }
+    var script = "javascript:getNodeList('c3');";
+    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster3 </a></span></td><td></td></tr>');
+    var a = d.c3.split(':');
+    for(var i=0; i < a.length; i++) {
+      sb.append('<tr><td></td><td>');
+      var script = "javascript:clickNode('"+a[i]+"');";
+      console.log(script);
+      sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
+      sb.append('</td></tr>');
+    }
+    console.log('sb : %s', sb.toString());
+    $('#tblClusterDir').append(sb.toString());
+  });
+    
+
+}
+
+
+function getClusterNode(factor, type, node) {  
+  var list;
+  node.forEach(function(d) {   
+    if(type === 'c0') {
+      list = d.c0;
+    } else if(type === 'c1') {
+      list = d.c1;
+    } else if(type === 'c2') {
+      list = d.c2;
+    } else if(type === 'c3') {
+      list = d.c3;
+    }    
+  });
+  var a = list.split(':');
+  console.log(a);
+  var data = [];
+  for(var i=0; i<a.length; i++){
+    var ata = getNodePower(factor, a[i]);
+    console.log(ata);
+    console.log(a[i]);
+  }
+  console.log(data);
+}
+
+function getNodePower(factor, node){
+  var sdate = $('#sdate').val();
+  var edate = $('#edate').val();
+  var data = [];
+  $.ajax({
+    url: "/analysis/restapi/getClusterNodePower" ,
+    dataType: "json",
+    type: "get",
+    data: {startDate:sdate, endDate:edate, nodeId: node},
+    success: function(result) {
+      // console.log(result);
+      if (result.rtnCode.code == "0000") {
+        var data = result.rtnData;
+        var set = [];
+        var max = 0;       
+        data.forEach(function(d){
+          var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
+          d.event_time = df.parse(d.event_time);
+         if(factor === 'ampere') {
+          set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.ampere)});
+          if(d.ampere > max)
+            max = d.ampere;
+         } else if(factor === 'voltage') {
+          set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.voltage)});
+          if(d.voltage > max)
+            max = d.voltage;
+        } else if(factor === 'active_power') {
+          set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.active_power) });
+          if(d.active_power > max)
+            max = d.active_power;
+        } else if(factor === 'power_factor') {
+          set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.power_factor) });
+          if(d.power_factor > max)
+            max = d.power_factor;
+        }   
+        });
+        data = set
+          console.log(data);
+  return data;
+    
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
   });
 
-  console.log(c0);
-  console.log(c1);
-  console.log(c2);
-  console.log(c3);
-  document.getElementById('dirC0').value = c0;
-  document.getElementById('dirC1').value = c1;
-  document.getElementById('dirC2').value = c2;
-  document.getElementById('dirC3').value = c3;
 }
 
-function test() {
-  return 'ok?';
-}
-function clickNode(nodeId) {  
+
+function clickNode(nodeId) {
 
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
@@ -674,8 +761,7 @@ function clickNode(nodeId) {
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
-        var data = result.rtnData;
-         console.log(data); 
+        var data = result.rtnData;   
          drawTimeseries(data);
       } else {
         //- $("#errormsg").html(result.message);
@@ -707,7 +793,7 @@ function drawTimeseries(data) {
   });
 
   // console.log(data);
-  
+
 
   var chartName = '#ts-chart01';
   chart01 = d3.timeseries()

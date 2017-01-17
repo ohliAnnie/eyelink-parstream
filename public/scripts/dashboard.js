@@ -1,5 +1,8 @@
 'use strict';
 function displayCount() {
+  var dateFormat = 'YYYY-MM-DD';
+  var tdate = moment().format(dateFormat);
+  var ydate = moment().subtract(1, 'days').format(dateFormat)
   // var bill = new Odometer({ el: $('#bill')[0], format: '(,ddd).dd' });
   // var pbill = new Odometer({ el: $('#pbill')[0], format: '(,ddd).dd' });
   // var power = new Odometer({ el: $('#power')[0], format: '(,ddd)' });
@@ -18,7 +21,7 @@ function displayCount() {
     url: "/dashboard/restapi/getDashboardSection1",
     dataType: "json",
     type: "GET",
-    data: '',
+    data: {todate:tdate, yesterdate:ydate},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
@@ -139,8 +142,8 @@ function drawMarkerSelect2(ndx, data, mapMarkerChart, mapPieChart) {
   mapMarkerChart
       .dimension(dimGeo)
       .group(dimGeoGroup)
-      // .width(600)
-      // .height(400)
+      // .width(500)
+      .height(300)
       .center([37.467271, 127.042861])
       .zoom(9)
       .cluster(true);
@@ -149,9 +152,9 @@ function drawMarkerSelect2(ndx, data, mapMarkerChart, mapPieChart) {
   mapPieChart
       .dimension(zone)
       .group(zoneGroup)
-      .radius(55)
-      // .width(150)
-      // .height(150)
+      .radius(70)
+      // .width(200)
+      .height(300)
       .renderLabel(true)
       .renderTitle(true)
       .ordering(function (p) {
