@@ -1,4 +1,4 @@
-function drawCheckChart() { 
+function drawCheckChart() {
 
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
@@ -10,7 +10,7 @@ function drawCheckChart() {
     var factor = $('#factor2').val();
   } else if ($('#factor3').is(':checked') === true) {
     var factor = $('#factor3').val();
-  } 
+  }
 
   console.log('%s, %s', sdate, edate);
   console.log(factor);
@@ -19,9 +19,9 @@ function drawCheckChart() {
     dataType: "json",
     type: "get",
     data: {startDate:sdate, endDate:edate},
-    success: function(result) {     
+    success: function(result) {
       if (result.rtnCode.code == "0000") {
-        var data = result.rtnData;               
+        var data = result.rtnData;
         var set = [];
         data.forEach(function(d){
           var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
@@ -31,7 +31,7 @@ function drawCheckChart() {
          } else if(factor === 'voltage') {
           set.push({ time:d.event_time, c0:d.c0_voltage, c1:d.c1_voltage, c2:d.c2_voltage, c3:d.c3_voltage});
         } else if(factor === 'active_power') {
-          set.push({ time:d.event_time, c0:d.c0_active_power, c1:d.c1_active_power, c2:d.c2_active_power, c3:d.c3_active_power});        
+          set.push({ time:d.event_time, c0:d.c0_active_power, c1:d.c1_active_power, c2:d.c2_active_power, c3:d.c3_active_power});
         } else if(factor === 'power_factor') {
           set.push({ time:d.event_time, c0:d.c0_power_factor, c1:d.c1_power_factor, c2:d.c2_power_factor, c3:d.c3_power_factor});
         }
@@ -48,24 +48,24 @@ function drawCheckChart() {
   });
 }
 
-function drawCheckCluster(data, sdate, edate, type) { 
+function drawCheckCluster(data, sdate, edate, type) {
   var demo = new Vue({
     el: '#table',
     data: {
       people_count: 200,
       lineCategory: ['c0', 'c1', 'c2', 'c3'],
-      selectCate: ['c0', 'c1', 'c2', 'c3'],      
+      selectCate: ['c0', 'c1', 'c2', 'c3'],
       lineFunc: null
     },
     methods: {
       displayLine: function() {
         var self = this;
-        var input = 0;   
+        var input = 0;
 
        //generation function
       function generate(data, id, lineType, axisNum) {
         var margin = {top: 14, right: 20, bottom: 60, left: 40},
-        width = $(id).width() - margin.left - margin.right, 
+        width = $(id).width() - margin.left - margin.right,
         height = $(id).height() - margin.top - margin.bottom;
 
         var legendSize = 10,
@@ -88,10 +88,10 @@ function drawCheckCluster(data, sdate, edate, type) {
               temp[name].values.push({'category': name, 'time': d['time'], 'num': d[name]});
             });
           });
-          
+
           return seriesArr;
         })();
-        x.domain(d3.extent(data, function(d) {          
+        x.domain(d3.extent(data, function(d) {
          return d.time; }));
         y.domain([0, 250]);
 
@@ -108,11 +108,11 @@ function drawCheckCluster(data, sdate, edate, type) {
         .ticks(10)
         .tickSize(-width)
         .tickPadding([8])
-        .orient("left");            
+        .orient("left");
 
     // Define the div for the tooltip
-    var div = d3.select("body").append("div") 
-        .attr("class", "tip")       
+    var div = d3.select("body").append("div")
+        .attr("class", "tip")
         .style("opacity", 0);
 
 
@@ -139,18 +139,18 @@ function drawCheckCluster(data, sdate, edate, type) {
           .interpolate(lineType)
           .x(function(d) { return x(d['time']); })
           .y(function(d) { return y(d['num']); });
-       
+
         var path = svg.append("g")
             .attr("class", "click_path");
 
         path.selectAll(".click_line")
           .data(ddata)
           .enter()
-          .append("path")             
-          .attr("class", function (d) {        
+          .append("path")
+          .attr("class", function (d) {
             return "click_line click_line_" + d['category']; })
-          .attr("d", function(d) {            
-           return line(d['values']); })         
+          .attr("d", function(d) {
+           return line(d['values']); })
            .style("display", function (d) {
               //to check if the checkbox has been selected and decide whether to show it out
               //use display:none and display:inherit to control the display of scatter dots
@@ -190,18 +190,18 @@ function drawCheckCluster(data, sdate, edate, type) {
               return '.55em';
             }
           })
-           .text(function(d) {  
+           .text(function(d) {
               if(d === 'c0')   {
                 var rename = "Cluster0";
               } else if(d === 'c1') {
-                var rename = "Cluster1";              
+                var rename = "Cluster1";
               } else if(d === 'c2') {
                 var rename = "Cluster2"
               } else {
                 var rename = "Cluster3";
               }
                   return rename;          });
-        
+
 
           //draw the rect for legends
         var rect = svg.append('g')
@@ -233,29 +233,29 @@ function drawCheckCluster(data, sdate, edate, type) {
         .attr("r", "6px")
         .style("fill", "transparent")
         .on("mouseover", function (d) {
-        
+
           var mainCate = (function() {
             if (d['num'] != 0){
               if(d['category'] === 'c0')   {
                 var rename = "Cluster0";
               } else if(d['category'] === 'c1') {
-                var rename = "Cluster1";              
+                var rename = "Cluster1";
               } else if(d['category'] === 'c2') {
                 var rename = "Cluster2"
               } else {
                 var rename = "Cluster3";
-              }            
+              }
               return rename + ' | ';
             } else
               return '';
           })();
 
-            div.transition()    
-                .duration(200)    
-                .style("opacity", .9);    
-            div .html(' ' + mainCate + d['num'] + ' ')  
-                .style("left", (d3.event.pageX) + "px")   
-                .style("top", (d3.event.pageY - 28) + "px");  
+            div.transition()
+                .duration(200)
+                .style("opacity", .9);
+            div .html(' ' + mainCate + d['num'] + ' ')
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
 
               svg.append("g")
               .attr("class", "tipDot")
@@ -279,8 +279,8 @@ function drawCheckCluster(data, sdate, edate, type) {
             })
         .on("mouseout",  function (d) {
 
-            div.transition()    
-                .duration(500)    
+            div.transition()
+                .duration(500)
                 .style("opacity", 0);
 
           var currentX = $(this)[0]['cx']['animVal']['value'];
@@ -294,7 +294,7 @@ function drawCheckCluster(data, sdate, edate, type) {
           $.each(ret, function(index, val) {
             $(val).animate({
               opacity: "0"
-            }, 100);     
+            }, 100);
           });
 
           d3.selectAll('.tipDot').transition().duration(100).remove();
@@ -316,7 +316,7 @@ function drawCheckCluster(data, sdate, edate, type) {
         this.getSvg = function() {
           var svgD = new Object();
           svgD['svg'] = svg;
-          svgD['path'] = path;          
+          svgD['path'] = path;
           svgD['line'] = line;
           svgD['rect'] = rect;
           svgD['legend'] = legend;
@@ -330,7 +330,7 @@ function drawCheckCluster(data, sdate, edate, type) {
       self.lineFunc = new generate(data, "#Cluster", "linear",30);
     },
     checkOpt: function (e) {
-      var self = this;      
+      var self = this;
       //check the Scatter Choice and Refresh the charts
       var count = 0;
       for (var i=0; i < self.lineCategory.length; i++) {
@@ -383,18 +383,18 @@ function drawCheckCluster(data, sdate, edate, type) {
             return '.55em';
           }
         })
-        .text(function(d) {  
+        .text(function(d) {
           if(d === 'c0')   {
             var rename = "Cluster0";
           } else if(d === 'c1') {
-            var rename = "Cluster1";              
+            var rename = "Cluster1";
           } else if(d === 'c2') {
             var rename = "Cluster2"
           } else {
             var rename = "Cluster3";
           }
               return rename;          });
-        
+
 
       //create new legends
       var singLegend = legend.selectAll('.path_legend')
@@ -423,18 +423,18 @@ function drawCheckCluster(data, sdate, edate, type) {
           return '.55em';
         }
       })
-     .text(function(d) {  
+     .text(function(d) {
         if(d === 'c0')   {
           var rename = "Cluster0";
         } else if(d === 'c1') {
-          var rename = "Cluster1";              
+          var rename = "Cluster1";
         } else if(d === 'c2') {
           var rename = "Cluster2"
         } else {
           var rename = "Cluster3";
         }
             return rename;          });
-        
+
 
       //remove the old legends
       legend.selectAll('.path_legend')
@@ -467,7 +467,7 @@ function drawCheckCluster(data, sdate, edate, type) {
     }
   },
   compiled: function () {
-      var self = this;      
+      var self = this;
       self.displayLine();
   }
 });
@@ -484,7 +484,7 @@ function drawChart() {
     var factor = $('#factor2').val();
   } else if ($('#factor3').is(':checked') === true) {
     var factor = $('#factor3').val();
-  } 
+  }
   $.ajax({
     url: "/analysis/restapi/getClusterNodePower" ,
     dataType: "json",
@@ -493,7 +493,7 @@ function drawChart() {
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
-        var data = result.rtnData;        
+        var data = result.rtnData;
         var set = [];
         var max = 0;
         console.log(sdate+','+edate);
@@ -509,7 +509,7 @@ function drawChart() {
           if(d.voltage > max)
             max = d.voltage;
         } else if(factor === 'active_power') {
-          set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.active_power) });        
+          set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.active_power) });
           if(d.active_power > max)
             max = d.active_power;
         } else if(factor === 'power_factor') {
@@ -533,12 +533,12 @@ function drawChart() {
 function drawNode(data, sdate, edate, max) {
   var nodeLine = dc.seriesChart('#nodeLine');
 
-  var minDate = new Date(sdate);  
+  var minDate = new Date(sdate);
   var maxDate = new Date(edate);
 
   var nyx = crossfilter(data);
 
-  idDim = nyx.dimension(function(d) { return [d.id, d.time]; });  
+  idDim = nyx.dimension(function(d) { return [d.id, d.time]; });
   timeGroup = idDim.group().reduceSum(function(d) {  return d.value; });
 
   nodeLine
@@ -561,7 +561,7 @@ function drawNode(data, sdate, edate, max) {
       return "Id: " + d.key[0];})
     .keyAccessor(function(d) {return d.key[1];})
     .valueAccessor(function(d) {return d.value;})
-    .legend(dc.legend().x(window.innerWidth*0.1).y(0).itemHeight(13).gap(5).legendWidth(140).itemWidth(70));  
+    .legend(dc.legend().x(window.innerWidth*0.1).y(0).itemHeight(13).gap(5).legendWidth(140).itemWidth(70));
 
   dc.renderAll();
 
@@ -578,7 +578,7 @@ function getNodeList(sdate, edate) {
     var factor = $('#factor2').val();
   } else if ($('#factor3').is(':checked') === true) {
     var factor = $('#factor3').val();
-  } 
+  }
    $.ajax({
     url: "/analysis/restapi/getDaClusterMaster" ,
     dataType: "json",
@@ -600,71 +600,87 @@ function getNodeList(sdate, edate) {
   });
 }
 
-function drawDirectory(factor, nodeList) {  
+function drawDirectory(factor, nodeList) {
+
+
   var voltage = [], ampere = [], active_power = [], power_factor = [];
   for(var i=0; i<4; i++) {
     voltage[i] = new Array(), ampere[i] = new Array(), active_power[i] = new Array(), power_factor[i] = new Array();
   }
-  nodeList.forEach(function(d) {    
-    // voltage 
-    var a = d.c0_voltage_node.split(';');
-    for(var i=0; i < a.length; i++) {      
-      console.log(voltage);
-      voltage[0][i] = a[i];    }
-    var a = d.c1_voltage_node.split(';');
-    for(var i=0; i < a.length; i++) {        voltage[1][i] = a[i];    }
-    var a = d.c2_voltage_node.split(';');
-    for(var i=0; i < a.length; i++) {        voltage[2][i] = a[i];    }
-    var a = d.c3_voltage_node.split(';');
-    for(var i=0; i < a.length; i++) {        voltage[3][i] = a[i];    }  
-    // ampere 
-    var a = d.c0_ampere_node.split(';');
-    for(var i=0; i < a.length; i++) {        ampere[0][i] = a[i];    }
-    var a = d.c1_ampere_node.split(';');
-    for(var i=0; i < a.length; i++) {        ampere[1][i] = a[i];    }
-    var a = d.c2_ampere_node.split(';');
-    for(var i=0; i < a.length; i++) {        ampere[2][i] = a[i];    }
-    var a = d.c3_ampere_node.split(';');
-    for(var i=0; i < a.length; i++) {        ampere[3][i] = a[i];    }    
-    // active_power  
-    var a = d.c0_active_power_node.split(';');
-    for(var i=0; i < a.length; i++) {      active_power[0][i] = a[i];    }
-    var a = d.c1_active_power_node.split(';');
-    for(var i=0; i < a.length; i++) {      active_power[1][i] = a[i];    }
-    var a = d.c2_active_power_node.split(';');
-    for(var i=0; i < a.length; i++) {      active_power[3][i] = a[i];    }
-    var a = d.c3_active_power_node.split(';');
-    for(var i=0; i < a.length; i++) {      active_power[3][i] = a[i];    }
-    // power_factor
-    var c0 = [], c1 = [], c2 = [], c3 = [];
-    var a = d.c0_power_factor_node.split(';');
-    for(var i=0; i < a.length; i++) {      power_factor[3][i] = a[i];   }
-    var a = d.c1_power_factor_node.split(';');
-    for(var i=0; i < a.length; i++) {      power_factor[3][i] = a[i];   }
-    var a = d.c2_power_factor_node.split(';');
-    for(var i=0; i < a.length; i++) {      power_factor[3][i] = a[i];    }
-    var a = d.c3_power_factor_node.split(';');
-    for(var i=0; i < a.length; i++) {      power_factor[3][i] = a[i];   }    
+  nodeList.forEach(function(d) {
+    var sb = new StringBuffer();
+
+    sb.append('<tr><td><span class="bold theme-fone"> Cluster0</span></td></tr>');
+    var a = d.c0_voltage_node.split(':');
+    console.log(a.length);
+    for(var i=0; i < a.length; i++) {
+      sb.append('<tr><td>');
+      sb.append('<a class="primary-link" href="javascript:clickNode("'+ a[i] + '");">' + a[i] + '</a>');
+      sb.append('</td></tr>');
+    }
+
+    console.log('sb : %s', sb.toString());
+    $('#tblClusterDir').append(sb.toString());
   });
-  var dirData = [];
-  var index = 0;
-  if(factor === 'voltage') {
-    dirData = voltage;
-    index = 0;
-  } else if(factor === 'ampere') {
-    dirData = ampere;    
-    index = 1;
-  } else if(factor === 'active_power') {
-    dirData = active_power;
-    index = 2;
-  } else if(factor ===  'power_factor') {
-    dirData = power_factor;
-    index = 3;
-  } 
+  //   // voltage
+  //   var a = d.c0_voltage_node.split(';');
+  //   for(var i=0; i < a.length; i++) {
+  //     console.log(voltage);
+  //     voltage[0][i] = a[i];    }
+  //   var a = d.c1_voltage_node.split(';');
+  //   for(var i=0; i < a.length; i++) {        voltage[1][i] = a[i];    }
+  //   var a = d.c2_voltage_node.split(';');
+  //   for(var i=0; i < a.length; i++) {        voltage[2][i] = a[i];    }
+  //   var a = d.c3_voltage_node.split(';');
+  //   for(var i=0; i < a.length; i++) {        voltage[3][i] = a[i];    }
+  //   // ampere
+  //   var a = d.c0_ampere_node.split(';');
+  //   for(var i=0; i < a.length; i++) {        ampere[0][i] = a[i];    }
+  //   var a = d.c1_ampere_node.split(';');
+  //   for(var i=0; i < a.length; i++) {        ampere[1][i] = a[i];    }
+  //   var a = d.c2_ampere_node.split(';');
+  //   for(var i=0; i < a.length; i++) {        ampere[2][i] = a[i];    }
+  //   var a = d.c3_ampere_node.split(';');
+  //   for(var i=0; i < a.length; i++) {        ampere[3][i] = a[i];    }
+  //   // active_power
+  //   var a = d.c0_active_power_node.split(';');
+  //   for(var i=0; i < a.length; i++) {      active_power[0][i] = a[i];    }
+  //   var a = d.c1_active_power_node.split(';');
+  //   for(var i=0; i < a.length; i++) {      active_power[1][i] = a[i];    }
+  //   var a = d.c2_active_power_node.split(';');
+  //   for(var i=0; i < a.length; i++) {      active_power[3][i] = a[i];    }
+  //   var a = d.c3_active_power_node.split(';');
+  //   for(var i=0; i < a.length; i++) {      active_power[3][i] = a[i];    }
+  //   // power_factor
+  //   var c0 = [], c1 = [], c2 = [], c3 = [];
+  //   var a = d.c0_power_factor_node.split(';');
+  //   for(var i=0; i < a.length; i++) {      power_factor[3][i] = a[i];   }
+  //   var a = d.c1_power_factor_node.split(';');
+  //   for(var i=0; i < a.length; i++) {      power_factor[3][i] = a[i];   }
+  //   var a = d.c2_power_factor_node.split(';');
+  //   for(var i=0; i < a.length; i++) {      power_factor[3][i] = a[i];    }
+  //   var a = d.c3_power_factor_node.split(';');
+  //   for(var i=0; i < a.length; i++) {      power_factor[3][i] = a[i];   }
+  // });
+  // var dirData = [];
+  // var index = 0;
+  // if(factor === 'voltage') {
+  //   dirData = voltage;
+  //   index = 0;
+  // } else if(factor === 'ampere') {
+  //   dirData = ampere;
+  //   index = 1;
+  // } else if(factor === 'active_power') {
+  //   dirData = active_power;
+  //   index = 2;
+  // } else if(factor ===  'power_factor') {
+  //   dirData = power_factor;
+  //   index = 3;
+  // }
 }
 
 
-function clickNode(nodeId) {  
+function clickNode(nodeId) {
 
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
@@ -678,7 +694,7 @@ function clickNode(nodeId) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
         var data = result.rtnData;
-         console.log(data); 
+         console.log(data);
          drawTimeseries(data);
       } else {
         //- $("#errormsg").html(result.message);
@@ -710,7 +726,7 @@ function drawTimeseries(data) {
   });
 
   // console.log(data);
-  
+
 
   var chartName = '#ts-chart01';
   chart01 = d3.timeseries()
