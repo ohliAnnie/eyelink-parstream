@@ -11,7 +11,7 @@ block script
   script(type='text/javascript', src='/assets/leaflet/d3.js')
   script(src='/assets/annie/js/vue.min.js')
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
-  script(type='text/javascript', src='/assets/annie/js/dc.js')
+  script(type='text/javascript', src='/assets/annie/js/dc_2_1.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
   script(type='text/javascript', src="/scripts/util.js")
   script(src='/scripts/analysis_clustering.js')
@@ -143,6 +143,7 @@ block content
                   |  Add
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
+              a(href='javascript:d3.select("#nodeLine").select("svg").remove();  nyx.remove();') Remove
               .chart(style='height:auto;')
                 #nodeLine
         .col-md-3
@@ -163,39 +164,7 @@ block content
                   thead
                   tr.uppercase
                     th Cluster
-                    th ID                        
-                  //- tr
-                  //-   td
-                  //-     span.bold.theme-font Cluster0
-                  //-   td
-                  //- tr
-                  //-   td
-                  //-   td
-                  //-     a.primary-link(href="javascript:clickNode('0002.00000029'); d3") 0002.00000029
-                  //- tr
-                  //-   td
-                  //-     span.bold.theme-font Cluster1
-                  //-   td
-                  //- tr
-                  //-   td
-                  //-   td
-                  //-     a.primary-link(href="javascript:clickNode('0002.00000028')") 0002.00000028
-                  //- tr
-                  //-   td
-                  //-     span.bold.theme-font Cluster2
-                  //-   td
-                  //- tr
-                  //-   td
-                  //-   td
-                  //-     a.primary-link(href="javascript:clickNode('0002.0000003E')") 0002.0000003E
-                  //- tr
-                  //-   td
-                  //-     span.bold.theme-font Cluster3
-                  //-   td
-                  //- tr
-                  //-   td
-                  //-   td
-                  //-     a.primary-link(href="javascript:clickNode('0002.0000002C')") 0002.0000002C
+                    th ID
       .row
         .col-md-3
           .portlet.light
