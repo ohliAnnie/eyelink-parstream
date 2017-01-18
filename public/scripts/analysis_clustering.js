@@ -517,7 +517,7 @@ function drawChart() {
           if(d.power_factor > max)
             max = d.power_factor;
         }
-        });
+        });      
         drawNode(set, sdate, edate, max);
       } else {
         //- $("#errormsg").html(result.message);
@@ -529,16 +529,26 @@ function drawChart() {
     }
   });
 }
+// reset the filter for a dimension
+var cnt = 0;
+function drawNode(data, max) {
+    console.log(++cnt);
 
-function drawNode(data, sdate, edate, max) {
+   /* d3.select("#nodeLine").select("svg").remove();*/
+/*  $("#nodeLine").remove()*/
+  
+  var sdate = $('#sdate').val();
+  var edate = $('#edate').val();
+
   var nodeLine = dc.seriesChart('#nodeLine');
+  d3.select("#nodeLine").select("svg").remove();
 
   var minDate = new Date(sdate);
   var maxDate = new Date(edate);
-
+  console.log(data.length);
+  console.log(max);
   var nyx = crossfilter(data);
-
-  idDim = nyx.dimension(function(d) { return [d.id, d.time]; });
+  idDim = nyx.dimension(function(d) { console.log(d.id);return [d.id, d.time]; });
   timeGroup = idDim.group().reduceSum(function(d) {  return d.value; });
 
   nodeLine
@@ -559,12 +569,13 @@ function drawNode(data, sdate, edate, max) {
     .mouseZoomable(true)
     .seriesAccessor(function(d) {
       return "Id: " + d.key[0];})
-    .keyAccessor(function(d) {return d.key[1];})
+    .keyAccessor(function(d) {
+      console.log(d.key[0]);
+      return d.key[1];})
     .valueAccessor(function(d) {return d.value;})
     .legend(dc.legend().x(window.innerWidth*0.1).y(0).itemHeight(13).gap(5).legendWidth(140).itemWidth(70));
 
   dc.renderAll();
-
 }
 
 function getNodeList(type) {
@@ -618,42 +629,61 @@ function getNodeList(type) {
   });
 }
 
-function drawDirectory(factor, nodeList) {  
-  var c0 = [], c1 = [], c2 = [], c3 = [];
+function drawDirectory(factor, nodeList) {    
 
-  nodeList.forEach(function(d) {    
+  nodeList.forEach(function(d) {  
+
     var sb = new StringBuffer();
-    var script = "javascript:getNodeList('c0');";
-    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster0 </a></span></td><td></td></tr>');
     var a = d.c0.split(':');
+    var clus = "'" + a[0] + "'";
+    for(var i=1; i<a.length; i++) {
+      clus += ",'"+a[i] +"'";
+    }
+    var script = "javascript:getNodePower("+clus+");";
+    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster0 </a></span></td><td></td></tr>');
+    
     for(var i=0; i < a.length; i++) {
       sb.append('<tr><td></td><td>');
-      var script = "javascript:clickNode('"+a[i]+"');";
+      var script = "javascript:clickNode("+a[i]+");";
       console.log(script);
       sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
       sb.append('</td></tr>');
     }
-    var script = "javascript:getNodeList('c1');";
-    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster1 </a></span></td><td></td></tr>');
     var a = d.c1.split(':');
+    var clus = "'" + a[0] + "'";
+    for(var i=1; i<a.length; i++) {
+      clus += ",'"+a[i] +"'";
+    }
+    var script = "javascript:getNodePower("+clus+");";        
+    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster1 </a></span></td><td></td></tr>');    
     for(var i=0; i < a.length; i++) {
       sb.append('<tr><td></td><td>');
-      var script = "javascript:clickNode('"+a[i]+"');";
+      var script = "javascript:clickNode("+a[i]+");";
       console.log(script);
       sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
       sb.append('</td></tr>');
     }
-    var script = "javascript:getNodeList('c2');";
+    var a = d.c2.split(':');
+    var clus = "'" + a[0] + "'";
+    for(var i=1; i<a.length; i++) {
+      clus += ",'"+a[i] +"'";
+    }
+    var script = "javascript:getNodePower("+clus+");";
     sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster2 </a></span></td><td></td></tr>');
     var a = d.c2.split(':');
     for(var i=0; i < a.length; i++) {
       sb.append('<tr><td></td><td>');
-      var script = "javascript:clickNode('"+a[i]+"');";
+      var script = "javascript:clickNode("+a[i]+");";
       console.log(script);
       sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
       sb.append('</td></tr>');
     }
-    var script = "javascript:getNodeList('c3');";
+    var a = d.c3.split(':');
+    var clus = "'" + a[0] + "'";
+    for(var i=1; i<a.length; i++) {
+      clus += ",'"+a[i] +"'";
+    }
+    var script = "javascript:getNodePower("+clus+");";
     sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster3 </a></span></td><td></td></tr>');
     var a = d.c3.split(':');
     for(var i=0; i < a.length; i++) {
@@ -695,9 +725,18 @@ function getClusterNode(factor, type, node) {
   console.log(data);
 }
 
-function getNodePower(factor, node){
+function getNodePower(node){
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
+  if ($('#factor0').is(':checked') === true) {
+    var factor = $('#factor0').val();
+  } else if ($('#factor1').is(':checked') === true) {
+    var factor = $('#factor1').val();
+  } else if ($('#factor2').is(':checked') === true) {
+    var factor = $('#factor2').val();
+  } else if ($('#factor3').is(':checked') === true) {
+    var factor = $('#factor3').val();
+  }
   var data = [];
   $.ajax({
     url: "/analysis/restapi/getClusterNodePower" ,
@@ -731,9 +770,7 @@ function getNodePower(factor, node){
             max = d.power_factor;
         }   
         });
-        data = set
-          console.log(data);
-  return data;
+        drawNode(set, max);
     
       } else {
         //- $("#errormsg").html(result.message);
