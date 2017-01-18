@@ -12,6 +12,11 @@
     <query id='selectSuccessCount'><![CDATA[
       SELECT count(*) as cnt FROM tb_node_raw
      ]]></query>
+    <query id='selectQueryInParams'><![CDATA[
+      SELECT node_id, count(*) as cnt
+        FROM tb_node_raw
+       where node_id in (#in_params#)
+     ]]></query>
     <query id='selectDashboardSection1'><![CDATA[
       select today_active_power / 1000 * 85.9 as today_power_charge,
           yesterday_active_power / 1000 * 85.9 as yesterday_power_charge,
@@ -157,7 +162,7 @@
       from tb_node_raw
       where  event_type = 1
          and event_time >= timestamp #START_TIMESTAMP#
-         and event_time < timestamp #END_TIMESTAMP#     
+         and event_time < timestamp #END_TIMESTAMP#
          and node_id = #NODE#
        order by event_time
      ]]></query>
@@ -167,7 +172,7 @@
          als_level, dimming_level,
          noise_decibel, noise_frequency,
          vibration_x, vibration_y, vibration_z,  (vibration_x + vibration_y + vibration_z) / 3 as vibration
-      from tb_node_raw 
+      from tb_node_raw
     where event_time >= timestamp #START_TIMESTAMP#
         and event_time < timestamp #END_TIMESTAMP#
         and node_id = #NODE#
