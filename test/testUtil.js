@@ -48,16 +48,19 @@ describe("Test", function(){
       done();
     })
 
-    it.only('replace SQL Paramter "in" phase ', function(done) {
+    it.only(' replace SQL Paramter in "in" phase ', function(done) {
       var sql = "SELECT * FROM A WHERE node_id in (##node_id##)";
       console.log("sql : %s ", sql);
 
-      var params = {node_id : 'AAAA', node_id: 'BBBB', node_id: 'CCCCC'};
+      var params = {node_id : ['AAAA', 'BBBB', 'CCCCC'],
+            node_type : [10, 20],
+            node_name : "aaa",
+            node_name2 : 10};
 
       console.log(params.node_id.length);
       sql = Utils.replaceSql(sql, params)
       console.log(sql);
-      sql.should.be.equal("SELECT * FROM A WHERE DATE >= '2016-12-12' AND ID = 'AAAA' AND NUM = 5");
+      sql.should.be.equal("SELECT * FROM A WHERE node_id in ('AAAA','BBBB','CCCCC')");
       done();
     })
   });
