@@ -26,7 +26,7 @@ block script
       // time series char를 그린다.
       var a = 'test';
         drawCheckChart();       
-        getNodeList('main');
+        getNodeList();
         $('#btn_search').click(function() {
          d3.selectAll("#nodeLine").remove();
          drawCheckChart();
@@ -110,7 +110,7 @@ block content
                   |  Add
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
-              .chart(style='height:auto;')
+              .chart(style='height:355px;')
                 #table
                   .panel.panel-card
                     .panel-body
@@ -127,7 +127,27 @@ block content
                         input#c3.click_checkbox(type='checkbox', name='c3', value='4', v-on='click:checkOpt', checked='true')
                         text  Cluster3
                       .col-xm-12.col-sm-12.col-md-10.col-xs-12
-                        #Cluster(style='width:95%;height:350px;')
+                        #Cluster(style='width:100%;height:345px;')
+        .col-md-3
+          .portlet.light.bordered.tasks-widget
+            .portlet-title
+              .caption.caption-md.font-blue
+                i.icon-calendar.font-blue
+                span.caption-subject.theme-font.bold.uppercase Clustering
+              .inputs
+                .portlet-input.input-small.input-inline
+                  .input-icon.right
+                    i.icon-magnifier
+                    input.form-control.form-control-solid(type='text', placeholder='search...')
+            .portlet-body
+                .scroller(style='height: 350px;', data-always-visible='1', data-rail-visible1='0', data-handle-color='#D7DCE2')
+                 .table-scrollable.table-scrollable-borderless
+                  table#tblClusterDir.table.table-hover.table-light
+                    thead
+                    tr.uppercase
+                      th Cluster
+                      th ID
+
         .col-md-4
           .portlet.light.bordered
             .portlet-title
@@ -143,28 +163,8 @@ block content
                   |  Add
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
-              a(href='javascript:d3.select("#nodeLine").select("svg").remove();  nyx.remove();') Remove
-              .chart(style='height:auto;')
-                #nodeLine
-        .col-md-3
-          .portlet.light.bordered.tasks-widget
-            .portlet-title
-              .caption.caption-md.font-blue
-                i.icon-calendar.font-blue
-                span.caption-subject.theme-font.bold.uppercase Clustering
-              .inputs
-                .portlet-input.input-small.input-inline
-                  .input-icon.right
-                    i.icon-magnifier
-                    input.form-control.form-control-solid(type='text', placeholder='search...')
-            .portlet-body
-              .scroller(style='height: 390px;', data-always-visible='1', data-rail-visible1='0', data-handle-color='#D7DCE2')
-               .table-scrollable.table-scrollable-borderless
-                table#tblClusterDir.table.table-hover.table-light
-                  thead
-                  tr.uppercase
-                    th Cluster
-                    th ID
+              .chart(style='height:350px;')
+                #nodeChart
       .row
         .col-md-3
           .portlet.light
