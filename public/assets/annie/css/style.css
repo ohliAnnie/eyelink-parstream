@@ -294,5 +294,18 @@ div.tip {
 }
 
 
+.legend {
+    font-size: 10px;
+    font-weight: bold;
+    text-anchor: middle;
+} 
+
+
+
+path {     
+    stroke-width: 1;
+    fill: none;
+}
+
 /*END: STYLESHEETS FOR VIS CHARTS*/
 
