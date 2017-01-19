@@ -4,6 +4,7 @@ var request = require("supertest");
 var expect = require("chai").expect;
 var svr = "http://localhost:5223";
 var http = require('http');
+// var smodule = require("../routes/nodeDashboard")
 
 describe("Test", function(){
   var cookie;
@@ -32,12 +33,10 @@ describe("Test", function(){
   describe("ParStream -> ", function() {
     // it('login', login());
 
-    // TO-DO 수행 결과 로깅 처리 로직 보완 필요함. by 배성한.
-    it('Search Data Dashboard ', function(done) {
+    it('Test Simple Query using http', function(done) {
       var datas = {user_id: "user_id"};
       request(svr)
         .get("/dashboard/restapi/get_successcount")
-        .send(datas)
         .expect('Content-Type', /json/)
         .expect(200, function(err, res) {
           if (err) return done(err);
@@ -46,11 +45,26 @@ describe("Test", function(){
           done();
         });
     });
-    it('Daily Event, Error Count, Power ', function(done) {
-      var datas = {user_id: "user_id"};
+
+    // it('Test Simple Query using require', function(done) {
+    //   var datas = {user_id: "user_id"};
+    //   request(svr)
+    //     .get("/dashboard/restapi/get_successcount")
+    //     .send(datas)
+    //     .expect('Content-Type', /json/)
+    //     .expect(200, function(err, res) {
+    //       if (err) return done(err);
+    //       // console.log(res.body.rtnCode.code);
+    //       res.body.rtnCode.code.should.be.equal('0000');
+    //       done();
+    //     });
+    // });
+
+    it('Test query params for "in" in query ', function(done) {
+      var datas = {nodeid: ["0002.00000023", "0001.00000019"]};
       request(svr)
-        .get("/dashboard/restapi/getDashboardSection1")
-        .send(datas)
+        .get("/dashboard/restapi/get_query_param")
+        .query(datas)
         .expect('Content-Type', /json/)
         .expect(200, function(err, res) {
           if (err) return done(err);

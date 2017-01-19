@@ -48,6 +48,24 @@ describe("Test", function(){
       done();
     })
 
+    it.only('replace SQL Paramter "in" phase ', function(done) {
+      var sql = "SELECT * FROM A WHERE node_id in (##node_id##)";
+      console.log("sql : %s ", sql);
+
+      var params = {node_id : 'AAAA', node_id: 'BBBB', node_id: 'CCCCC'};
+
+      console.log(params.node_id.length);
+      sql = Utils.replaceSql(sql, params)
+      console.log(sql);
+      sql.should.be.equal("SELECT * FROM A WHERE DATE >= '2016-12-12' AND ID = 'AAAA' AND NUM = 5");
+      done();
+    })
+  });
+
+
+  describe("Util -> ", function() {
+    // it('login', login());
+
     it('merge Data', function(done) {
       global._rawDataByDay = {
         '2016-12-11' : [{event_type:1, als_level:2}, {event_type:12, als_level:2}],
