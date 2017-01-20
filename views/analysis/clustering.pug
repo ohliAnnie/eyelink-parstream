@@ -26,14 +26,16 @@ block script
       // time series char를 그린다.
       var a = 'test';
         drawCheckChart();       
-        getNodeList();
-        $('#btn_search').click(function() {
-         d3.selectAll("#nodeLine").remove();
+        getNodeList();        
+        $('#btn_search').click(function() {        
+         d3.selectAll("svg").remove();
          drawCheckChart();
+         getNodeList();              
         });
         $('#btn_factor').click(function() {
          d3.selectAll("svg").remove();
          drawCheckChart();
+         getNodeList();
         });
     });
 block content

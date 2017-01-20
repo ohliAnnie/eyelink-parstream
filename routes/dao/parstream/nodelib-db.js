@@ -28,7 +28,7 @@ QueryProvider.prototype.selectSingleQueryByID = function (type, queryId, datas, 
 
       // SQL 내 파라메타를 변경해준다.
       var sSql = Utils.replaceSql(queryParser.getQuery(type, queryId), datas);
-      // console.log('nodelib-db/selectSingleQueryByID -> ' + sSql);
+      console.log('nodelib-db/selectSingleQueryByID -> ' + sSql);
 
       console.time('nodelib-db/selectSingleQueryByID -> ('+ queryId +') executeQuery');
       parstream.query(sSql, function(err, resultset) {

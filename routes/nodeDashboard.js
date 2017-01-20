@@ -38,6 +38,21 @@ router.get('/restapi/get_successcount', function(req, res, next) {
   });
 });
 
+// test db query logic
+router.get('/restapi/get_query_param', function(req, res, next) {
+  console.log(req.query);
+  var in_data = {};
+  queryProvider.selectSingleQueryByID("dashboard", "selectQueryInParams", in_data, function(err, out_data) {
+    console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    res.json({rtnCode: rtnCode, rtnData: out_data});
+  });
+});
+
+
 // query Dashboard Section 1
 router.get('/restapi/getDashboardSection1', function(req, res, next) {
   console.log(req.query);
