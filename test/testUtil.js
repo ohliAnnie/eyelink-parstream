@@ -48,7 +48,7 @@ describe("Test", function(){
       done();
     })
 
-    it.only(' replace SQL Paramter in "in" phase ', function(done) {
+    it(' replace SQL Paramter in "in" phase ', function(done) {
       var sql = "SELECT * FROM A WHERE node_id in (##node_id##)";
       console.log("sql : %s ", sql);
 
