@@ -518,8 +518,9 @@ function getNodeList(type) {
   });
 }
 
-function drawDirectory(factor, nodeList) {    
-
+function drawDirectory(factor, nodeList) { 
+  var seatvar = document.getElementsByClassName("tblClusterDir");           
+        console.log(seatvar);
   nodeList.forEach(function(d) {  
 
     var sb = new StringBuffer();
@@ -530,7 +531,6 @@ function drawDirectory(factor, nodeList) {
     for(var i=0; i < a.length; i++) {
       sb.append('<tr><td></td><td>');
       var script = "javascript:clickNode('"+a[i]+"');";
-      console.log(script);
       sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
       sb.append('</td></tr>');
     }
@@ -549,8 +549,7 @@ function drawDirectory(factor, nodeList) {
     var a = d.c2.split(':');
     for(var i=0; i < a.length; i++) {
       sb.append('<tr><td></td><td>');
-      var script = "javascript:clickNode('"+a[i]+"');";
-      console.log(script);
+      var script = "javascript:clickNode('"+a[i]+"');";      
       sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
       sb.append('</td></tr>');
     }
@@ -583,15 +582,14 @@ function getNodePower(nodeList){
   } else if ($('#factor3').is(':checked') === true) {
     var factor = $('#factor3').val();
   }
-  var a = nodeList.split(':');
-  var idCnt = a.length;
-  var node = "'" + a[0] + "'";
-  for(var i=1; i<a.length; i++) {
-    node += ",'"+a[i]+"'";
-  }
-  node = '"' + node + '"';  
+  var node = nodeList.split(':');
+  var idCnt = node.length;
+/*  var node = new Array();
+  for(var i=0; i<a.length; i++) {
+    node[i] = a[i];
+  }  */ 
   console.log(node);
-  $.ajax({
+   $.ajax({
     url: "/analysis/restapi/getClusterNodePower" ,
     dataType: "json",
     type: "get",
@@ -650,13 +648,10 @@ function drawNode(data, max, idCnt) {
   var edate = $('#edate').val();
 
   // Set the dimensions of the canvas / graph
-var margin = {top: 5, right: 20, bottom: 20, left: 40},
+var margin = {top: 5, right: 20, bottom: 20, left: 30},
     width = (window.innerWidth*0.3) - margin.left - margin.right,   
 
-    height = 300 - margin.top - margin.bottom - (20*(idCnt/(width/100)));
-
-// Parse the date / time
-var parseDate = d3.time.format("%b %Y").parse; 
+    height = 315 - margin.top - margin.bottom - (20*(idCnt/(width/100)));
 
 // Set the ranges
 var x = d3.time.scale().range([0, width]);
@@ -695,7 +690,7 @@ var svg = d3.select("#nodeChart")
         .key(function(d) {return d.id;})
         .entries(data);
 
-  var color = d3.scale.category10();
+  var color = d3.scale.category20();
 
     legendSpace = width/dataNest.length; // spacing for legend // ******
 
