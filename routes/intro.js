@@ -6,7 +6,8 @@ var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', 
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.redirect('/dashboard/');
+  // res.redirect('/dashboard/');
+  res.redirect('/login/');
 });
 
 module.exports = router;

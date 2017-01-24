@@ -14,10 +14,13 @@ console.log('config : %j', config);
 global.config = config;
 
 var intro = require('./routes/intro');
-var dashboard = require('./routes/dashboard');
-var reports = require('./routes/reports');
+var login = require('./routes/nodeLogin');
+var dashboard = require('./routes/nodeDashboard');
+var reports = require('./routes/nodeReports');
+var analysis = require('./routes/nodeAnalysis');
 var initapps = require('./routes/initApp');
 var socketapps = require('./routes/socketApp');
+var node = require('./routes/nodeCon');
 
 var app = express();
 
@@ -40,16 +43,21 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', intro);
+// app.use('/', intro);
+app.use('/', login);
 app.use('/dashboard', dashboard);
 app.use('/reports', reports);
+app.use('/analysis', analysis);
 app.use('/intro', intro);
+app.use('/node', node);
 
-
-// 지정된 기간의 Raw Data를 서버 시작시 메모리에 Loading
 global._rawDataByDay = {};
-if (config.loaddataonstartup.active === true)
-  initapps.loadData(function(in_params) {});
+// dbquery.xml 파일 내용을 loading
+initapps.loadQuery(function() {
+  // 지정된 기간의 Raw Data를 서버 시작시 메모리에 Loading
+  if (config.loaddataonstartup.active === true)
+    initapps.loadData(function(in_params) {});
+});
 
 // Client로 Data를 Push 하기위한 Socket 초기화.
 socketapps.initSocket(app, function() {});

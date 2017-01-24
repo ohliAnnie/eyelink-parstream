@@ -1,12 +1,7 @@
 function drawChart() {
-  var searchDate = $('#daterange').val()
-  console.log('daterange : ' + searchDate);
 
-  var ind = searchDate.indexOf(' - ');
-  var sdate = searchDate.substring(0, ind);
-  var edate = searchDate.substring(ind+3);
-  console.log('%s, %s', sdate, edate);  
-
+  var sdate = $('#sdate').val();
+  var edate = $('#edate').val();
   $.ajax({
     url: "/reports/restapi/getTbRawDataByPeriodPower" ,
     dataType: "json",
@@ -16,6 +11,7 @@ function drawChart() {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
         var data = result.rtnData;        
+        console.log(sdate+','+edate);
         drawPower(data, sdate, edate);
       } else {
         //- $("#errormsg").html(result.message);
@@ -31,7 +27,7 @@ function drawChart() {
 function drawPower(data, sdate, edate) {
   var powerSum = dc.barChart('#powerSum');
   var weekPlot = dc.boxPlot('#weekPlot');
-  var timePlot = dc.boxPlot('#timePlot');
+  var timeBar = dc.barChart('#timeBar');
   var volLine = dc.compositeChart('#volLine');
 
   var minDate = new Date(sdate);  
@@ -55,7 +51,9 @@ function drawPower(data, sdate, edate) {
     d.hour = d3.time.hour(d.event_time);    
     d.active_power = parseFloat(d.active_power);
     d.amount_active_power = parseFloat(d.amount_active_power);
-    d.voltage = parseFloat(d.voltage);   
+    d.voltage = parseFloat(d.voltage); 
+       if(d.zone_id === 'ZONE-4')
+          d.zone_id = 'ZONE-04';
   });
 
 
@@ -72,20 +70,6 @@ function drawPower(data, sdate, edate) {
   var weekDim = nyx.dimension(function(d) {  return d.week; });
   var weekPlotGroup = weekDim.group().reduce(
     function(p, v) {
-      p.push(v.amount_active_power);
-      return p;
-    }, function(p, v) {
-      p.splice(p.indexOf(v.amount_active_power), 1);
-      return p;
-    }, function() {
-      return [];
-    }  
-  );
-
-  // Dimension by hour
-  var timeDim = nyx.dimension(function(d) {    return d.time;  });
-  var timePlotGroup = timeDim.group().reduce(
-    function(p, v) {
       p.push(v.active_power);
       return p;
     }, function(p, v) {
@@ -94,6 +78,25 @@ function drawPower(data, sdate, edate) {
     }, function() {
       return [];
     }  
+  );
+
+  // Dimension by hour
+  var timeDim = nyx.dimension(function(d) {    
+    return d.time;  });
+  var timeBarGroup = timeDim.group().reduce(
+    function(p, v) {
+      p.cnt++;
+      p.sum += v.active_power;
+      p.avg = p.sum/p.cnt;
+      return p;
+    }, function(p, v) {
+      p.cnt--;
+      p.sum -= v.active_power;
+      p.avg = p.sum/p.cnt;
+      return p;
+    }, function() {
+     return { cnt:0, sum:0, avg:0 };
+    }
   );
 
 var hourDim = nyx.dimension(function(d) { return d.hour; });
@@ -129,36 +132,36 @@ powerSum
   .round(d3.time.days.round)
   .alwaysUseRounding(true)
   .renderHorizontalGridLines(true)
-  .xUnits(d3.time.days)
+  .xUnits(d3.time.days);
 
   weekPlot
     .width(window.innerWidth*0.4)
     .height((window.innerWidth*0.4)*0.5)
-    .margins({top: 10, right: 50, bottom: 30, left: 70})
+    .margins({top: 10, right: 50, bottom: 40, left: 70})
     .dimension(weekDim)
     .group(weekPlotGroup)
-      .y(d3.scale.linear().domain([0, 2000]))
+      .y(d3.scale.linear().domain([0, 200]))
       .x(d3.scale.ordinal().domain(week));
 
-  timePlot
+  timeBar
     .width(window.innerWidth*0.4)
     .height((window.innerWidth*0.4)*0.5)
-    .margins({top: 10, right: 50, bottom: 30, left: 50})
+    .margins({top: 10, right: 50, bottom: 40, left: 50})
     .dimension(timeDim)
-    .group(timePlotGroup)
-      .y(d3.scale.linear().domain([0, 500]))
-      .elasticX(true)
-      .title(function(d) {
-        console.log(d);
-        return "\n"+d.key+" : " + d.value;
-      });
-
+    .group(timeBarGroup)
+    .gap(8)
+    .x(d3.scale.linear().domain([0, 24]))
+    .y(d3.scale.linear().domain([0, 200]))
+    .alwaysUseRounding(true)
+    .renderHorizontalGridLines(true)  
+    .valueAccessor(function (d){  return d.value.avg;   })
+    .title(function(d) {    return "\nNumber of Povetry: " + d.key;    });
 
     var vol = 0;
   volLine
     .width(window.innerWidth*0.4)
     .height((window.innerWidth*0.4)*0.5)
-    .margins({top: 40, right: 20, bottom: 25, left: 40})
+    .margins({top: 40, right: 20, bottom: 40, left: 40})
     .transitionDuration(100)
     .dimension(hourDim)    
     .x(d3.time.scale().domain([minDate, maxDate ]))
@@ -175,7 +178,7 @@ powerSum
     .compose([
       dc.lineChart(volLine).group(volLineGroup, "voltage")
         .valueAccessor(function (d) {  return d.value.avg;  })
-        .colors('yellow'),
+        .colors('green'),
       dc.lineChart(volLine).group(volLineGroup, "Min")
         .valueAccessor(function (d) {  return 200;  })
         .colors('blue')

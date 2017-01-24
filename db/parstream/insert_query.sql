@@ -4,10 +4,17 @@ select date_part('YEAR', current_date()) as event_year,
       date_part('DAY', current_date()) as event_day,
       current_timestamp()+32400000 as measure_time,
       current_timestamp()+32400000 as event_time,
-      cast('0001.00000003' as VARSTRING) as node_id, event_type, voltage,
-      ampere,
-      power_factor,
- active_power,reactive_power,apparent_power,amount_active_power,als_level,dimming_level,vibration_x,vibration_y,vibration_z,vibration_max,noise_origin_decibel,noise_origin_frequency,noise_decibel,noise_frequency,
+      cast('0001.00000004' as VARSTRING) as node_id,
+      21 as event_type,
+      voltage, ampere, power_factor,
+      25 as active_power,reactive_power,apparent_power,amount_active_power,
+      5 as als_level,
+      20 as dimming_level,
+      125 as vibration_x,
+      128 as vibration_y,
+      130 as vibration_z,vibration_max,noise_origin_decibel,noise_origin_frequency,
+      20 as noise_decibel,
+      125 as noise_frequency,
       127.042861 as gps_longitude, 37.667271 as gps_latitude,
 gps_altitude, gps_satellite_count,status_als,status_gps,status_noise,status_vibration,status_power_meter,status_emergency_led_active,status_self_diagnostics_led_active,status_active_mode,status_led_on_off_type,reboot_time,event_remain,failfirmwareupdate
 from tb_node_raw
@@ -23,7 +30,8 @@ select date_part('YEAR', current_date()) as event_year,
       '0001.00000002' as node_id, event_type, voltage,
       ampere,
       power_factor,
- active_power,reactive_power,apparent_power,amount_active_power,als_level,dimming_level,vibration_x,vibration_y,vibration_z,vibration_max,noise_origin_decibel,noise_origin_frequency,noise_decibel,noise_frequency,
+      active_power,reactive_power,apparent_power,amount_active_power,
+      als_level,dimming_level,vibration_x,vibration_y,vibration_z,vibration_max,noise_origin_decibel,noise_origin_frequency,noise_decibel,noise_frequency,
       127.042861 as gps_longitude, 37.567271 as gps_latitude,
 gps_altitude, gps_satellite_count,status_als,status_gps,status_noise,status_vibration,status_power_meter,status_emergency_led_active,status_self_diagnostics_led_active,status_active_mode,status_led_on_off_type,reboot_time,event_remain,failfirmwareupdate
 from tb_node_raw
@@ -217,23 +225,10 @@ select a.zone_id, b.node_id, a.gps_longitude, a.gps_latitude, b.active_power
         left outer join tb_node_raw as b
         on a.node_id = b.node_id;
 
-select a.zone_id, b.node_id, a.gps_longitude, a.gps_latitude, b.active_power
+select zone_id, b.node_id, a.gps_longitude, a.gps_latitude, b.active_power
   from tb_node_info as a
         left outer join tb_node_raw as b
         on a.node_id = b.node_id
  where b.event_time > timestamp '2017-01-01 00:00:00';
-
-
-insert into tb_node_info
-select date_part('YEAR', current_date()) as node_year,
-      'ZONE-02' as zone_id,
-      '0001.00000005' as node_id,
-      37.667271 as gps_longitude,
-      127.142861 as gps_latitude,
-      0 as gps_altitude,
-      current_timestamp()- 32400000 as reg_date
-;
-
-
 
 

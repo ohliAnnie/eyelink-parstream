@@ -1,37 +1,45 @@
 'use strict';
 function displayCount() {
-  var bill = new Odometer({ el: $('#bill')[0], format: '(,ddd).dd' });
-  var pbill = new Odometer({ el: $('#pbill')[0], format: '(,ddd).dd' });
-  var power = new Odometer({ el: $('#power')[0], format: '(,ddd)' });
-  var ppower = new Odometer({ el: $('#ppower')[0], format: '(,ddd)' });
-  var eventCount = new Odometer({ el: $('#event-count')[0], format: '(,ddd)' });
-  var peventCount = new Odometer({ el: $('#pevent-count')[0], format: '(,ddd)' });
-  var falutCount = new Odometer({ el: $('#fault-count')[0], format: '(,ddd)' });
-  var pfalutCount = new Odometer({ el: $('#pfault-count')[0], format: '(,ddd)' });
+  var dateFormat = 'YYYY-MM-DD';
+  var tdate = moment().format(dateFormat);
+  var ydate = moment().subtract(1, 'days').format(dateFormat)
+  // var bill = new Odometer({ el: $('#bill')[0], format: '(,ddd).dd' });
+  // var pbill = new Odometer({ el: $('#pbill')[0], format: '(,ddd).dd' });
+  // var power = new Odometer({ el: $('#power')[0], format: '(,ddd)' });
+  // var ppower = new Odometer({ el: $('#ppower')[0], format: '(,ddd)' });
+  // var eventCount = new Odometer({ el: $('#event-count')[0], format: '(,ddd)' });
+  // var peventCount = new Odometer({ el: $('#pevent-count')[0], format: '(,ddd)' });
+  // var falutCount = new Odometer({ el: $('#fault-count')[0], format: '(,ddd)' });
+  // var pfalutCount = new Odometer({ el: $('#pfault-count')[0], format: '(,ddd)' });
+  var eventCount = $('#event-count');
+  var peventCount = $('#pevent-count');
+  var falutCount = $('#fault-count');
+  var pfalutCount = $('#pfault-count');
+  var power = $('#power');
+  var ppower = $('#ppower');
   $.ajax({
     url: "/dashboard/restapi/getDashboardSection1",
     dataType: "json",
     type: "GET",
-    data: '',
+    data: {todate:tdate, yesterdate:ydate},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
-        // TO-DO json data 수신 방식 점검 필요 by 배성한
         //- $("#successmsg").html(result.message);
         var data = result.rtnData[0];
-        bill.update(data.today_power_charge);
-        pbill.update(data.active_power_percent);
+        // bill.update(data.today_power_charge);
+        // pbill.update(data.active_power_percent);
         //- if (data.active_power_percent < 0) {
         //-   pbill.attr('class','growth down');
         //- } else {
         //-   pbill.attr('class','growth up');
         //- }
-        power.update(data.today_active_power);
-        ppower.update(data.active_power_percent)
-        eventCount.update(data.today_event_cnt);
-        peventCount.update(data.event_cnt_percent);
-        falutCount.update(data.today_event_fault_cnt);
-        pfalutCount.update(data.event_fault_cnt_percent);
+        power.text(repVal(data.today_active_power));
+        ppower.text(repVal(data.active_power_percent) + '%')
+        eventCount.text(data.today_event_cnt);
+        peventCount.text(repVal(data.event_cnt_percent) + '%');
+        falutCount.text(data.today_event_fault_cnt);
+        pfalutCount.text(repVal(data.event_fault_cnt_percent) + '%');
 
       } else {
         //- $("#errormsg").html(result.message);
@@ -42,6 +50,11 @@ function displayCount() {
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
   });
+}
+
+function repVal(str) {
+  str *= 1
+  return str.toFixed(2);
 }
 
 function drawMap() {
@@ -120,49 +133,49 @@ function drawMap() {
   }
 }
 
-function drawMarkerSelect2(xf, data) {
-  console.log(data);
-  // var xf = crossfilter(data);
-  var groupname = "marker-select";
-  var facilities = xf.dimension(function(d) { return d.geo; });
-  var facilitiesGroup = facilities.group().reduceCount();
-  console.log('facilitiesGroup : %s', facilitiesGroup.size());
+function drawMarkerSelect2(ndx, data, mapMarkerChart, mapPieChart) {
+  // console.log(data);
+  var dimGeo = ndx.dimension(function(d) { return d.geo; });
+  var dimGeoGroup = dimGeo.group().reduceCount();
+  console.log('dimGeoGroup : %s', dimGeoGroup.size());
   // console.log($('#bubble-map .map'));
-  dc_leaflet.markerChart("#bubble-map .map",groupname)
-      .dimension(facilities)
-      .group(facilitiesGroup)
-      .width(600)
-      .height(400)
+  mapMarkerChart
+      .dimension(dimGeo)
+      .group(dimGeoGroup)
+      // .width(500)
+      .height(300)
       .center([37.467271, 127.042861])
       .zoom(9)
       .cluster(true);
-  var types = xf.dimension(function(d) { return d.zone_id; });
-  var typesGroup = types.group().reduceCount();
-  dc.pieChart("#bubble-map .pie",groupname)
-      .dimension(types)
-      .group(typesGroup)
-      .width(150)
-      .height(150)
+  var zone = ndx.dimension(function(d) { return d.zone_id; });
+  var zoneGroup = zone.group().reduceCount();
+  mapPieChart
+      .dimension(zone)
+      .group(zoneGroup)
+      .radius(70)
+      // .width(200)
+      .height(300)
       .renderLabel(true)
       .renderTitle(true)
       .ordering(function (p) {
         return -p.value;
       });
-  dc.renderAll(groupname);
+  // dc.renderAll(groupname);
 }
 
 function drawChart() {
+  var markerName = "dashboardChart";
   // var barchart = dc.barChart('#bar-chart');
-  var volumeChart = dc.barChart('#volumn-chart');
-  var moveChart = dc.lineChart('#move-chart');
-  var plot01Chart = dc.boxPlot('#plot01-chart');
-  var plot02Chart = dc.boxPlot('#plot02-chart');
-  var plot03Chart = dc.boxPlot('#plot03-chart');
-  var plot_pieChart = dc.pieChart("#plot_pie-chart");
+  var volumeChart = dc.barChart('#volumn-chart', markerName);
+  var moveChart = dc.lineChart('#move-chart', markerName);
+  var plot01Chart = dc.boxPlot('#plot01-chart', markerName);
+  var plot02Chart = dc.boxPlot('#plot02-chart', markerName);
+  var plot03Chart = dc.boxPlot('#plot03-chart', markerName);
+  var plot_pieChart = dc.pieChart("#plot_pie-chart", markerName);
   // var fluctuationChart = dc.barChart('#fluctuation-chart');
-  var seriesChart = dc.seriesChart('#series-chart');
-  var markerChart = dc.seriesChart('#series-chart');
-  var pieChart = dc.pieChart('#bubble-map .pie');
+  var seriesChart = dc.seriesChart('#series-chart', markerName);
+  var mapMarkerChart = dc_leaflet.markerChart("#bubble-map-map", markerName);
+  var mapPieChart = dc.pieChart('#bubble-map-pie', markerName);
 
   d3.json("/dashboard/restapi/getDashboardRawData", function(err, out_data) {
     // if (err) throw Error(error);
@@ -189,7 +202,7 @@ function drawChart() {
     var cnt_event_type = 0,
         cnt_fault_type = 0;
     data.forEach(function (d) {
-      console.log(d);
+      // console.log(d);
       // console.log('date : ' + df.parse("2016-11-28"));
       d.dd = df.parse(d.event_time);
       d.month = d3.time.month(d.dd);
@@ -217,25 +230,9 @@ function drawChart() {
 
     // console.log(data);
 
-
     var ndx = crossfilter(data);
 
-    drawMarkerSelect2(ndx, data);
-
-    // var groupname = "marker-select";
-    // var facilities = ndx.dimension(function(d) { return d.geo; });
-    // var facilitiesGroup = facilities.group().reduceCount();
-    // console.log('facilitiesGroup : %s', facilitiesGroup.size());
-    // // console.log($('#bubble-map .map'));
-    // dc_leaflet.markerChart("#bubble-map .map",groupname)
-    //     .dimension(facilities)
-    //     .group(facilitiesGroup)
-    //     .width(600)
-    //     .height(400)
-    //     .center([37.467271, 127.042861])
-    //     .zoom(13)
-    //     .cluster(true);
-    // dc.renderAll(groupname);
+    drawMarkerSelect2(ndx, data, mapMarkerChart, mapPieChart);
 
     var moveDays = ndx.dimension(function (d) {
       return d.day;
@@ -370,7 +367,7 @@ function drawChart() {
     });
 
     volumeChart
-      .width(620)
+      // .width(600)
       .height(60)
       .margins({top: 0, right: 50, bottom: 20, left: 40})
       .dimension(moveDays)
@@ -384,8 +381,8 @@ function drawChart() {
 
     moveChart
       .renderArea(true)
-      .width(620)
-      .height(150)
+      // .width(620)
+      // .height(150)
       .transitionDuration(1000)
       .margins({top: 30, right: 50, bottom: 25, left: 40})
       .dimension(moveDays)
@@ -415,8 +412,8 @@ function drawChart() {
       });
 
     plot01Chart
-      .width(200)
-      .height(210)
+      // .width('100%')
+      // .height(210)
       .margins({top: 10, right: 50, bottom: 30, left: 50})
       .dimension(apDim)
       .group(apArrayGroup)
@@ -424,8 +421,8 @@ function drawChart() {
       .elasticX(true);
 
     plot02Chart
-      .width(200)
-      .height(210)
+      // .width(200)
+      // .height(210)
       .margins({top: 10, right: 50, bottom: 30, left: 50})
       .dimension(noiseDim)
       .group(noiseArrayGroup)
@@ -433,8 +430,8 @@ function drawChart() {
       .elasticX(true);
 
     plot03Chart
-      .width(200)
-      .height(210)
+      // .width(200)
+      // .height(210)
       .margins({top: 10, right: 50, bottom: 30, left: 50})
       .dimension(vibDim)
       .group(vibArrayGroup)
@@ -442,15 +439,15 @@ function drawChart() {
       .elasticX(true);
 
     plot_pieChart
-      .width(150)
-      .height(140)
+      // .width(150)
+      // .height(140)
       .radius(60)
       .dimension(nodeDim)
       .group(nodeGroup);
 
     seriesChart
-      .width(620)
-      .height(210)
+      // .width(620)
+      // .height(210)
       .chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
       .x(d3.scale.linear().domain([0,24]))
       .brushOn(false)
@@ -478,7 +475,8 @@ function drawChart() {
     seriesChart.yAxis().tickFormat(function(d) {return d;});
     seriesChart.margins().left += 40;
 
-    dc.renderAll();
+    // dc.renderAll();
+    dc.renderAll(markerName);
   });
 }
 
@@ -502,7 +500,7 @@ function processSocket() {
     drawChart();
 
     // draw Map
-    drawMap();
+    // drawMap();
   });
 
   // Event List 정보.

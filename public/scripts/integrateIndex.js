@@ -312,7 +312,7 @@ d3.json("/reports/restapi/testData", function(err, data) {
       }
 
       //inits chart
-      self.lineFunc = new generate(data, "#LINE", "linear",30);
+      self.lineFunc = new generate(data, "#LINEori", "linear",30);
     },
 
     displayMem: function () {
@@ -2066,126 +2066,13 @@ console.log(d);
 
         redraw(data, "#LineArea", sca.getOpt()['x'], sca.getOpt()['y'], sca.getOpt()['xAxis'], sca.getSvg()['svg'], sca.getSvg()['stat'], sca.getSvg()['path'], sca.getSvg()['line'], sca.getSvg()['points'], sca.getSvg()['legendColor'], sca.getOpt()['height'], sca.getOpt()['axisNum'], sca.getOpt()['drawBar']);
       }, 1000);
-    },
-    checkOpt: function (e) {
-      var self = this;      
-      //check the Scatter Choice and Refresh the charts
-      var count = 0;
-      for (var i=0; i < self.lineCategory.length; i++) {
-        if ($("#" + self.lineCategory[i]).prop("checked"))
-          count++;
-      }
-
-      //judge if the checked checkbox reach the max limitation
-      if (count>10) {
-        alert("NOTICE: The MAXIMUM selection should be TEN.");
-        e.target.checked = false;
-      }
-
-      self.selectCate = [];
-
-      for (var i=0; i<self.lineCategory.length; i++) {
-        if ($("#"+self.lineCategory[i]).prop("checked")) {
-          self.selectCate.push(self.lineCategory[i]);
-          d3.selectAll(".click_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'inherit');
-        }
-        else
-          d3.selectAll(".click_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'none');
-      }
-
-      //redraw the legend and chart
-      this.legendRedraw(self.selectCate, "#LINE", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
-    },
-    legendRedraw: function (selectCate, id, legend, rect, legendSize, margin, height, width, color) {
-      //update the scatter plot legend
-      legend.selectAll('.path_legend')
-      .data(selectCate)
-        // .transition()
-        // .duration(200)
-        .attr('transform', function(d, i) {
-          return 'translate(' + ((5 + (width-20) / 6) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
-        })
-
-        legend.selectAll('rect')
-        .data(selectCate)
-        .style('fill', function(d) {          return color(d);        });
-
-        legend.selectAll('text')
-        .data(selectCate)
-        .attr('x', legendSize*1.4)
-        .attr('y', legendSize/1.3)
-        .attr('font-size', function() {
-          if ($(id).width() > 415)
-            return '.9em';
-          else {
-            return '.55em';
-          }
-        })
-        .text(function(d) {          return d;        });
-
-      //create new legends
-      var singLegend = legend.selectAll('.path_legend')
-      .data(selectCate)
-      .enter()
-      .append('g')
-      .attr('class', 'path_legend')
-      .attr('transform', function(d, i) {
-        return 'translate(' + ((5 + (width-20) / 6) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
-      });
-
-      singLegend.append('rect')
-      .attr('width', legendSize)
-      .attr('height', legendSize)
-      .style('fill', function(d) {
-        return color(d);
-      });
-
-      singLegend.append('text')
-      .attr('x', legendSize*1.4)
-      .attr('y', legendSize/1.3)
-      .attr('font-size', function() {
-        if ($(id).width() > 415)
-          return '.9em';
-        else {
-          return '.55em';
-        }
-      })
-      .text(function(d) {        return d;      });
-
-      //remove the old legends
-      legend.selectAll('.path_legend')
-      .data(selectCate)
-      .exit()
-      .remove();
-
-      //redraw the rect around the legend
-      rect.selectAll('.legendRect')
-      .data(selectCate)
-      .attr('transform', function(d, i) {
-        return 'translate(' + ((5 + (width-20) / 6) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
-      });
-
-      rect.selectAll('.legendRect')
-      .data(selectCate)
-      .enter()
-      .append('rect')
-      .attr('class', 'legendRect')
-      .attr('width', (width - 20) / 6)
-      .attr('height', legendSize + 10)
-      .attr('transform', function(d, i) {
-        return 'translate(' + ((5 + (width-20) / 6) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
-      });
-
-      rect.selectAll('.legendRect')
-      .data(selectCate)
-      .exit()
-      .remove();
     }
-  },
+},
+  /* */
     compiled: function () {
       var self = this;
 
-      self.displayLine();
+//      self.displayLine();
       self.displayMem();
       self.displayNet();
       self.displayDisk();

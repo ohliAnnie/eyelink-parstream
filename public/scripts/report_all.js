@@ -1,11 +1,7 @@
 function drawChart() {
-  var searchDate = $('#daterange').val()
-  console.log('daterange : ' + searchDate);
-
-  var ind = searchDate.indexOf(' - ');
-  var sdate = searchDate.substring(0, ind);
-  var edate = searchDate.substring(ind+3);
-  console.log('%s, %s', sdate, edate);
+   var sdate = $('#sdate').val();
+  var edate = $('#edate').val();
+  console.log(sdate+', '+edate);
   $.ajax({
     url: "/reports/restapi/getTbRawDataByPeriod" ,
     dataType: "json",
@@ -59,24 +55,7 @@ function drawAll(data, sdate, edate) {
 
   // 데이터 가공
   var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
-  data.forEach(function(d) {    
-    var group = d.node_id.split('.');    
-    d.group_id = group[0];
-    var index = 0;
-    while(index <= group_id.length) {
-      if(group_id.length === 0) {
-        group_id[0] = d.group_id;
-        console.log(group_id);
-      }
-      if(group_id[index] === d.group_id) {
-        break;
-      }
-      if(index === (group_id.length)){
-        group_id[index] = d.group_id;
-        break;
-      }
-      index++;
-    }
+  data.forEach(function(d) {        
     d.event_time = df.parse(d.event_time);
     d.today = d3.time.day(d.event_time);
     d.month = d3.time.month(d.event_time);
@@ -114,6 +93,8 @@ function drawAll(data, sdate, edate) {
         d.event_name = 'REBOOT';
         break;       
       }
+       if(d.zone_id === 'ZONE-4')
+          d.zone_id = 'ZONE-04';
   });
 
   var eventName = ["POWER", "ALS", "VIBRATION", "NOISE", "GPS", "STREET LIGHT", "DL", "REBOOT"];
@@ -398,10 +379,10 @@ var cnt = 0;
   );
 
 // Dimension by Node_ID
-  var nodeDim = nyx.dimension(function(d) { 
+  var zoneDim = nyx.dimension(function(d) { 
     
-    return d.group_id; });
-  var nodeBarGroup = nodeDim.group().reduceCount(function(d) {
+    return d.zone_id; });
+  var nodeBarGroup = zoneDim.group().reduceCount(function(d) {
     return 1;
   });
 
@@ -436,7 +417,7 @@ var cnt = 0;
   eventBar
     .width(window.innerWidth*0.4)
     .height((window.innerWidth*0.4)*0.5)
-    .margins({left: 160, top: 15, right: 10, bottom: 25})
+    .margins({left: 140, top: 15, right: 10, bottom: 40})
     .brushOn(false)
     .clipPadding(10)
     .transitionDuration(500)
@@ -456,6 +437,7 @@ var cnt = 0;
     .xUnits(function(){return 10;})
     .elasticY(true)
     .elasticX(true)
+  //  .centerBar(true)
     .colors(d3.scale.ordinal().range(["#EDC951", "#CC333F", "#756bb1", "#31a354", "#fd8d3c", "#00A0B0", "#003399", "#FFB2F5"]))
     /*.renderLabel(true)*/;
     eventBar.legend(dc.legend());
@@ -472,7 +454,7 @@ var cnt = 0;
       .renderHorizontalGridLines(true)*/
       .width(window.innerWidth*0.4)
       .height((window.innerWidth*0.4)*0.5)
-       .margins({top: 30, right: 20, bottom: 30, left: 140})
+       .margins({top: 20, right: 20, bottom: 40, left: 140})
       .dimension(checkDim)
       .transitionDuration(500)
 //      .elasticY(true)
@@ -537,7 +519,7 @@ var cnt = 0;
     .height((window.innerWidth*0.4)*0.5)
     .margins({top: 15, right: 50, bottom: 40, left: 40})
     .transitionDuration(500)
-    .dimension(nodeDim)
+    .dimension(zoneDim)
     .group(nodeBarGroup)
     .elasticY(true)
     .brushOn(true)
@@ -547,6 +529,7 @@ var cnt = 0;
     .xUnits(dc.units.ordinal)     
     .alwaysUseRounding(true)
     .renderHorizontalGridLines(true)
+    .colors(d3.scale.ordinal().range(["#EDC951", "#CC333F", "#756bb1", "#31a354", "#fd8d3c", "#00A0B0", "#003399", "#FFB2F5"]));
 
     dc.renderAll();
 }

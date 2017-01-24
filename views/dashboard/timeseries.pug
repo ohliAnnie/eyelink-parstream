@@ -1,4 +1,4 @@
-extends ../layout-dashboard
+extends ../layout-type01
 
 block style
   link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
@@ -6,7 +6,7 @@ block style
   link(rel='stylesheet', href='/assets/leaflet/dc.css')
   link(rel='stylesheet', href='/stylesheets/style.css')
   link(rel='stylesheet', href='/scripts/d3_timeseries.css')
-block scripts
+block script
   script(type='text/javascript', src='/assets/leaflet/d3.js')
   //- script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
@@ -20,79 +20,129 @@ block scripts
   script(type='text/javascript', src="/scripts/util.js")
   script(type='text/javascript', src="/scripts/d3_timeseries.js")
   script(type='text/javascript', src="/scripts/timeseries.js")
+  script.
+    $(document).ready(function() {
+      var dateFormat = 'YYYY-MM-DD';
+      $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
+      $('#edate').val(moment().format(dateFormat));
+
+      // time series char를 그린다.
+      drawChart();
+
+      $('#btn_search').click(function() {
+        drawChart();
+      });
+
+    });
 block content
-  main.layout-contents
-    div.layout-contents-inner
-      section
-        header.page-title
-          h1.title Time Series
-        fieldset.search-container
-          legend search
-          .right-content-view
-            fieldset.segmented-control
-              legend Sync
-              ul.list
-                li
-                  input#syncY(type='radio', name='syncYN', checked='Y')
-                  label(for='syncY') Sync
-                li
-                  input#syncN(type='radio', name='syncYN')
-                  label(for='syncN') Async
-          .left-content-view
-            span.datepicker
-              input(type='text', name='daterange', id='daterange', value='')
-            select.select(name='', id='')
-              option(value='') Zone ID
-            select.select(name='', id='')
-              option(value='') Node ID
-            select.select(name='', id='')
-              option(value='') ALL
-            button#btn_search.btn-submit.search(type='submit') SEARCH
-            script.
-              $(document).ready(function() {
-                var start = moment().subtract(5, 'days');
-                var end = moment();
-                $('input[name="daterange"]').daterangepicker({
-                    "autoApply": true,
-                    startDate: start,
-                    endDate: end,
-                    locale: {
-                      format: 'YYYY-MM-DD'
-                    }
-                  }, function(start, end, label) {
-                    console.log("New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')");
-                    });
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Time Series
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Time Series
+          li.active Time Series
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Set date and area
+                span.caption-helper Date range and select area
+              .actions
+                .btn-group.btn-group-devided(data-toggle='buttons')
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                    input#syncY.toggle(type='radio', name='options', checked='Y')
+                    i.fa.fa-chain Sync
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                    input#syncN.toggle(type='radio', name='options')
+                    i.fa.fa-chain-broken Async
+            .portlet-body.form
+              form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group.last
+                    label.control-label.col-md-1 Date Range
+                    .col-md-4
+                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
+                        input#sdate.form-control(type='text', name='from' value='')
+                        span.input-group-addon to
+                        input#edate.form-control(type='text', name='to' value='')
+                    label.control-label.col-md-1 Select Area
+                    .col-md-6.form-inline
+                      select.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Area')
+                        option(value='') Zone ID
+                        option(value='') All Area
+                        option(value='') AreaID1234
+                        option(value='') AreaID5678
+                      select.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Item')
+                        option(value='') Node ID
+                        option(value='') Node ID
+                        option(value='') Item1234
+                        option(value='') Item5678
+                      button#btn_search.btn.blue
+                        i.fa.fa-search Search
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Active Power / Ampere
+                span.caption-helper Active Power / Ampere
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart#ts-chart01
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze ALS / Dimming Level
+                span.caption-helper ALS / Dimming Level
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart#ts-chart02
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Noise
+                span.caption-helper Noise
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart#ts-chart03
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Vibration
+                span.caption-helper Vibration
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart#ts-chart04
 
-                // time series char를 그린다.
-                drawChart();
 
-                $('#btn_search').click(function() {
-                  drawChart();
-                });
 
-              });
-        .grid-dashboard
-          .grid-item(style='height:330px')
-            .inner
-              div.chart(style='left:10px;')
-                #ts-chart01
-          .grid-item(style='height:330px')
-            .inner
-              strong.grid-item-title Event/Fault Counts
-              p.grid-item-desc The event/fault Counts in today/yesterday
-              div.chart(style='left:10px;')
-                #ts-chart02
-          .grid-item(style='height:330px')
-            .inner
-              strong.grid-item-title ACTIVE POWER / NOISE / VIBRATION
-              div.chart(style='left:10px;')
-                #ts-chart03
-          .grid-item(style='height:330px')
-            .inner
-              strong.grid-item-title LIVE DATA
-              div.chart(style='left:10px;')
-                #ts-chart04
-                //- img(src='assets/images/@temp/chart03.jpg', alt='')
-  //- div.loading
-  //-   span.txt
-  //-     i.spin Loading
+
