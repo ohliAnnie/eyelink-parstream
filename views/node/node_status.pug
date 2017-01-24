@@ -1,0 +1,464 @@
+doctype html
+html(lang='en', data-theme='${theme}')
+  head
+    meta(http-equiv='Expires', content='-1')
+    meta(http-equiv='Pragma', content='no-cache')
+    meta(http-equiv='Cache-Control', content='No-Cache')
+    meta(http-equiv='Content-Type', content='text/html; charset=UTF-8')
+    meta(http-equiv='Content-Script-Type', content='text/javascript')
+    meta(http-equiv='Content-Style-Type', content='text/css')
+    title NYX
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no')
+  body
+    form#contentsForm(name='contentsForm', method='post')
+      .layout-contents.padding
+        .layout-contents-inner
+          section
+            header.page-title
+              h1.title
+                spring:message(code='label.nodes')
+              p.count
+                spring:message(code='label.total')
+                  mark.node
+                    fmt:formatnumber(value='${nodeListSize}')
+            fieldset.search-container
+              legend
+                spring:message(code='label.searchCondition')
+              .right-content-view
+                label(for='') List view
+                |  
+                select#selPagingSize.select(name='selPagingSize', onchange='setPagingSize()')
+                  option(value='15', <c:if='', test="${pagingSize == '15'}") selected&gt;15
+                  option(value='30', <c:if='', test="${pagingSize == '30'}") selected&gt;30
+                  option(value='50', <c:if='', test="${pagingSize == '50'}") selected&gt;50
+                  option(value='100', <c:if='', test="${pagingSize == '100'}") selected&gt;100
+              .left-content-view
+                select#category.select(name='category')
+                  option(value='NODE_ID', <c:if='', test="${queryParam.category == 'NODE_ID'}")
+                    | selected&gt;
+                    spring:message(code='label.nodeId')
+                |  
+                select#nodeType.select(name='nodeType')
+                  option(value='')
+                    spring:message(code='label.nodeType')
+                  option(value='2', <c:if='', test='${queryParam.nodeType == 2}')
+                    | selected&gt;
+                    spring:message(code='label.basic')
+                  option(value='11', <c:if='', test='${queryParam.nodeType == 11}')
+                    | selected&gt;
+                    spring:message(code='label.wifi')
+                  option(value='15', <c:if='', test='${queryParam.nodeType == 15}')
+                    | selected&gt;
+                    spring:message(code='label.wifiGPS')
+                  option(value='19', <c:if='', test='${queryParam.nodeType == 19}')
+                    | selected&gt;
+                    spring:message(code='label.lora')
+                  option(value='23', <c:if='', test='${queryParam.nodeType == 23}')
+                    | selected&gt;
+                    spring:message(code='label.loraGPS')
+                |  
+                input#text(type='search', name='text', placeholder='Input Node ID', style='width: 232px;', value='${queryParam.text}', onkeydown='if(event.keyCode == 13) search();')
+                |  
+                button.btn-submit.search(type='button', onclick='search()')
+                  spring:message(code='label.search')
+            table.tbl-data-list
+              caption data list
+              colgroup
+                col(style='width: 3%;')
+                col(style='width: 3%;')
+                col
+                col
+                col
+                col
+                col
+                col
+              thead
+                tr
+                  th.c(scope='col')
+                    input#modify_check(type='checkbox', name='modify_check', ondblclick="checkAllOrNothing('contentsForm', true)", onclick="checkAllOrNothing('contentsForm', true)")
+                  th.c(scope='col')
+                    spring:message(code='label.no')
+                  c:choose
+                    c:when(test="${queryParam.sortingColumn == 'NODE_ID'}")
+                      c:if(test="${queryParam.orderBy == 'ASC'}")
+                        th(scope='col', style='cursor: pointer;')
+                          spring:message(code='label.nodeId')
+                            button.btn-sorting.desc(type='button', onclick="updateSorting('NODE_ID', 'DESC')")
+                      c:if(test="${queryParam.orderBy == 'DESC'}")
+                        th(scope='col', style='cursor: pointer;')
+                          spring:message(code='label.nodeId')
+                            button.btn-sorting.asc(type='button', onclick="updateSorting('NODE_ID', 'ASC')") sorting
+                    c:otherwise
+                      th(scope='col', style='cursor: pointer;')
+                        spring:message(code='label.nodeId')
+                          button.btn-sorting.desc(type='button', onclick="updateSorting('NODE_ID', 'DESC')") sorting
+                  th(scope='col')
+                    spring:message(code='label.groupId')
+                  th(scope='col')
+                    spring:message(code='label.nodeStatus')
+                      button.btn-status-detail(type='button', onclick='showAllEventChild(this);') view detail
+                  th(scope='col')
+                    spring:message(code='label.nodeType')
+                  th(scope='col')
+                    spring:message(code='label.firmwareVersion')
+                  th(scope='col')
+                    spring:message(code='label.newYN')
+              tbody
+                c:foreach(var='node', items='${nodeList}', varstatus='nodeListIndex')
+                  tr.c
+                    td.c
+                      input#checkNodeId.checkNodeId(type='checkbox', name='checkNodeId', value='${node.NODE_ID}')
+                    td.c ${nodeListIndex.index + queryParam.startNum}
+                    td
+                      a(href="javascript:fnDatailNode('${node.NODE_ID}')") ${node.NODE_ID}
+                    td ${node.GROUP_ID}
+                    td.more(id='${nodeListIndex.index + queryParam.startNum}', onclick='showEventChild(this);', style='cursor: pointer;')
+                      c:choose
+                        c:when(test='${node.STATUS_POWER_METER == 0}')
+                          em.status-icon.power.txt-none(value='${node.ACTIVE_POWER}', style='width:80px;')
+                            span
+                        c:otherwise
+                          em.status-icon.power.fault(value='${node.ACTIVE_POWER}', style='width:80px;')
+                            span
+                      c:choose
+                        c:when(test='${node.STATUS_VIBRATION == 0}')
+                          em.status-icon.vibration.txt-none(value='${node.VIBRATION}', style='width:80px;')
+                            span
+                        c:otherwise
+                          em.status-icon.vibration.fault(value='${node.VIBRATION}', style='width:80px;')
+                            span
+                      c:choose
+                        c:when(test='${node.STATUS_ALS == 0}')
+                          c:if(test='${node.ALS_LEVEL == 0}')
+                            em.status-icon.als.txt-none(value='${node.ALS_LEVEL}', style='width:80px;')
+                              span
+                          c:if(test='${node.ALS_LEVEL == 1}')
+                            em.status-icon.als.txt-none(value='${node.ALS_LEVEL}', style='width:80px;')
+                              span
+                          c:if(test='${node.ALS_LEVEL == 2}')
+                            em.status-icon.als.txt-none(value='${node.ALS_LEVEL}', style='width:80px;')
+                              span
+                          c:if(test='${node.ALS_LEVEL == 3}')
+                            em.status-icon.als.txt-none(value='${node.ALS_LEVEL}', style='width:80px;')
+                              span
+                          c:if(test='${node.ALS_LEVEL == 4}')
+                            em.status-icon.als.txt-none(value='${node.ALS_LEVEL}', style='width:80px;')
+                              span
+                          c:if(test='${node.ALS_LEVEL == 5}')
+                            em.status-icon.als.txt-none(value='${node.ALS_LEVEL}', style='width:80px;')
+                              span
+                          c:if(test='${node.ALS_LEVEL == 6}')
+                            em.status-icon.als.txt-none(value='${node.ALS_LEVEL}', style='width:80px;')
+                              span
+                          c:if(test='${node.ALS_LEVEL == 7}')
+                            em.status-icon.als.txt-none(value='${node.ALS_LEVEL}', style='width:80px;')
+                              span
+                        c:otherwise
+                          em.status-icon.als.fault(value='${node.ALS_LEVEL}', style='width:80px;')
+                            span
+                      c:choose
+                        c:when(test='${node.DIMMING_LEVEL == 0}')
+                          em.status-icon.dimming.fault(value='${node.DIMMING_LEVEL}', style='width:80px;')
+                            span
+                        c:otherwise
+                          em.status-icon.dimming.txt-none(value='${node.DIMMING_LEVEL}', style='width:80px;')
+                            span
+                      c:choose
+                        c:when(test='${node.STATUS_NOISE == 0}')
+                          em.status-icon.txt-none.decibel(value='${node.NOISE_DECIBEL}', style='width:80px;')
+                            span
+                          em.status-icon.txt-none.frequency(value='${node.NOISE_FREQUENCY}', style='width:80px;')
+                            span
+                        c:otherwise
+                          em.status-icon.decibel.fault(value='${node.NOISE_DECIBEL}', style='width:80px;')
+                            span
+                          em.status-icon.frequency.fault(value='${node.NOISE_FREQUENCY}', style='width:80px;')
+                            span
+                    td ${node.NODE_TYPE}
+                    td ${node.FIRMWARE_VERSION}
+                    td ${node.NODE_IS_NEW}
+                  tr.nodeChild.is-hidden(class='nodeId_${nodeListIndex.index + queryParam.startNum}')
+                    td(colspan='8')
+                      dl.info
+                        c:choose
+                          c:when(test='${node.STATUS_SELF_DIAGNOSTICS_LED_ACTIVE == 1}')
+                            dt.key
+                              spring:message(code='label.selfDiagnosisLED')  :
+                            dd.value
+                              spring:message(code='label.workSelf-diagnosis')
+                          c:otherwise
+                            dt.key
+                              spring:message(code='label.selfDiagnosisLED')  :
+                            dd.value
+                              spring:message(code='label.ignoreSelf-diagnosis')
+                        c:choose
+                          c:when(test='${node.STATUS_ACTIVE_MODE == 1}')
+                            dt.key
+                              spring:message(code='label.motionMode')  :
+                            dd.value
+                              spring:message(code='label.manual')
+                          c:otherwise
+                            dt.key
+                              spring:message(code='label.motionMode')  :
+                            dd.value
+                              spring:message(code='label.auto')
+                        c:choose
+                          c:when(test='${node.DIMMING_CONTROL_TYPE == 1}')
+                            dt.key
+                              spring:message(code='label.dimmingMode')  :
+                            dd.value
+                              spring:message(code='label.gpsTimeTable')
+                          c:otherwise
+                            dt.key
+                              spring:message(code='label.dimmingMode')  :
+                            dd.value
+                              spring:message(code='label.alsSensor')
+                      dl.info
+                        c:choose
+                          c:when(test='${node.STATUS_GPS == 0}')
+                            dt.key.status-icon.gps.txt-none
+                              spring:message(code='label.latitude')  :
+                            dd.value ${node.LATITUDE}
+                            dt.key
+                              spring:message(code='label.longitude')  :
+                            dd.value ${node.LONGITUDE}
+                            dt.key
+                              spring:message(code='label.altitude')  :
+                            dd.value ${node.ALTITUDE}
+                            dt.key
+                              spring:message(code='label.connectionSatelliteCount')  :
+                            dd.value ${node.SATELLITE_COUNT}
+                          c:otherwise
+                            dt.key.status-icon.gps.fault
+                              spring:message(code='label.latitude')  :
+                            dd.value ${node.LATITUDE}
+                            dt.key
+                              spring:message(code='label.longitude')  :
+                            dd.value ${node.LONGITUDE}
+                            dt.key
+                              spring:message(code='label.altitude')  :
+                            dd.value ${node.ALTITUDE}
+                            dt.key
+                              spring:message(code='label.connectionSatelliteCount')  :
+                            dd.value ${node.SATELLITE_COUNT}
+            |  
+            input#act(type='hidden', name='act', value='${param.act}')
+            |  
+            input#sortingColumn(type='hidden', name='sortingColumn', value='${queryParam.sortingColumn}')
+            |  
+            input#orderBy(type='hidden', name='orderBy', value='${queryParam.orderBy}')
+            |  
+            input#pageNum(type='hidden', name='pageNum', value='${pageNum}')
+            |  
+            input#pagingSize(type='hidden', name='pagingSize', value='${pagingSize}')
+            |  
+            input#nodeId(type='hidden', name='nodeId', value='${nodeId}')
+            |  
+            input#isNodeUpload(type='hidden', name='isNodeUpload')
+            |  
+            input#controlType(type='hidden', name='controlType')
+            |  
+            input#groupIds(type='hidden', name='groupIds')
+            .tbl-data-utils
+              .right-contents-view
+                p
+                  c:if(test="${userRole eq 'A01' || userRole eq 'A02'}")
+                    a#nodeDelete.btn-normal(href='javascript:;', onclick='javascript:fnDelete()')
+                      spring:message(code='label.deletion')
+                  a.btn-normal(href='javascript:;', onclick='javascript:fnInsert()')
+                    spring:message(code='label.registration')
+                  a.btn-normal(href='javascript:;', onclick='javascript:fnSet()')
+                    spring:message(code='label.setUp')
+                  a.btn-normal(href='javascript:;', onclick='javascript:fnFileUpload()')
+                    spring:message(code='label.import')
+                  a.btn-action(href='javascript:;', onclick='javascript:fnFileDownload()')
+                    spring:message(code='label.export')
+              #left-contents-view
+                #paginate_complex.tbl-data-list-navigation ${pagination}
+    form(name='popupForm', method='post', action='')
+      input(type='hidden', name='act')
+    script(type='text/javascript').
+      // 테이블 정렬
+      function updateSorting(pSortingItem, pSortingIndex) {
+      $('#pageNum').val(1); // 정렬시 1페이지로 초기화
+      $('#sortingColumn').val(pSortingItem);
+      $('#orderBy').val(pSortingIndex);
+      $('#act').val('nodeStatus');
+      $('#contentsForm').submit();
+      }
+      // NODE 상세조회 화면 이동
+      function fnDatailNode(nodeId) {
+      $('#nodeId').val(nodeId);
+      $('#isNodeUpload').val("N");
+      document.contentsForm.action = 'nodeStatusDetail.do';
+      document.contentsForm.submit();
+      }
+      // GROUP_ID 별 GROUP_ID
+      var groupIdMap = new Map();
+      var varGroupId;
+      // NODE 정보 삭제
+      function fnDelete() {
+      // 초기화
+      groupIdMap = new Map();
+      strGroupIds = "";
+      // var nodeIds = new Array();
+      var cnt = 0;
+      $(".checkNodeId:checked").each(function(idx, row) {
+      if (this.checked) {
+      // nodeIds[cnt] = this.value;
+      cnt++;
+      }
+      var record = $(row).parents("tr");
+      // 3번째 TD value
+      // GROUP_ID
+      // alert($(row).parents("tr").children(":eq(3)").text());
+      varGroupId = $(row).parents("tr").children(":eq(3)").text();
+      // alert(varGroupId + "   varGroupId.trim() == '' : " + (varGroupId.trim() == '') );
+      if (varGroupId.trim() != '') {
+      // Map 에 GROUP_ID, GROUP_ID 넣기
+      groupIdMap.put(varGroupId, varGroupId);
+      }
+      });
+      if (cnt == 0) {
+      $.alert({
+      icon: 'alert-nagative',
+      content: '<spring:message code="msg.noSelection.delete" />',
+      confirmButton: 'Cancel',
+      confirm: function(){
+      //console.log('cancel');
+      }
+      });
+      } else {
+      $.confirm({
+      icon: 'confirm',
+      content: cnt + ' <spring:message code="msg.confirm.delete" />',
+      confirmButton: 'OK',
+      cancelButton: 'Cancel',
+      cancel: function(){
+      //console.log('cancel');
+      },
+      confirm: function(){
+      // Map 을 String 으로 ex) "G_00001, G_00002,"
+      groupIdMap.forEach(mapToStringAdd);
+      $('#groupIds').val(strGroupIds);
+      document.contentsForm.action = 'deleteNode.do';
+      contentsForm.submit();
+      }
+      });
+      }
+      }
+      var strGroupIds = "";
+      // Map 을 String 형식으로
+      function mapToStringAdd(mapEntryItem) {
+      // alert('I will process this item: ' + mapEntryItem);
+      strGroupIds = strGroupIds + mapEntryItem + ",";
+      // alert(strGroupIds);
+      }
+      // NODE 등록
+      function fnInsert() {
+      document.contentsForm.isNodeUpload.value = 'Y';
+      document.contentsForm.action = 'nodeStatusDetail.do';
+      document.contentsForm.submit();
+      }
+      // NODE 상세조회 화면 이동
+      function fnSet() {
+      var nodeIds = new Array();
+      var cnt = 0;
+      $('input:checkbox[name="checkNodeId"]').each(function(){
+      if (this.checked) {
+      nodeIds[cnt] = this.value;
+      cnt++;
+      }
+      });
+      if (cnt == 0) {
+      $.alert({
+      icon: 'alert-nagative',
+      content: '<spring:message code="msg.noSelection.control" />',
+      confirmButton: 'Cancel',
+      confirm: function(){
+      console.log('cancel');
+      }
+      });
+      } else if (cnt > 1) {
+      //alert('<spring:message code="msg.singleSelection.setup" />');
+      $.alert({
+      icon: 'alert-nagative',
+      content: '<spring:message code="msg.singleSelection.setup" />',
+      confirmButton: 'Cancel',
+      confirm: function(){
+      console.log('cancel');
+      }
+      });
+      } else {
+      // NODE 설정화면 이동
+      fnDatailNode(nodeIds[0]);
+      }
+      }
+      var varWidth = 500;
+      var varHeight = 200;
+      var x = (screen.availWidth - varWidth) / 2;
+      var y = (screen.availHeight - varHeight) / 2;
+      var size = 'height=' + varHeight + 'px, width=' + varWidth + 'px, left=' + x + ', top=' + y;
+      // 이입하기 - 팝업
+      function fnFileUpload() {
+      var frmObj = document.popupForm;
+      window.open('', 'nodeFileUpDown', size);
+      // window,open()의 두번째 인수와 같아야 하며 필수
+      frmObj.target = 'nodeFileUpDown';
+      frmObj.action = 'nodeFileUploadPop.do';
+      frmObj.submit();
+      }
+      // 이출하기 - 팝업
+      function fnFileDownload() {
+      /*
+      var frmObj = document.popupForm;
+      window.open('', 'nodeFileUpDown', size);
+      // window,open()의 두번째 인수와 같아야 하며 필수
+      frmObj.target = 'nodeFileUpDown';
+      frmObj.action = 'nodeFileDownloadPop.do';
+      frmObj.submit();
+      */
+      document.contentsForm.action = 'excelExportNode.do';
+      document.contentsForm.submit();
+      }
+      // 초기화
+      function initCondition() {
+      $('#text').val('');
+      $('#nodeType').val('');
+      }
+      // 검색
+      function search() {
+      document.contentsForm.action = 'nodeStatus.do';
+      document.contentsForm.submit();
+      }
+      /*
+      * 더보기 버튼(+/-)의 클릭 이벤트
+      */
+      function showEventChild(_this) {
+      if (_this.className == "more") {
+      $(_this).addClass('on');
+      $(".nodeId_"+ _this.id).removeClass('is-hidden');
+      //$(".nodeChild_"+ _this.id).css('display','table-row');
+      } else {
+      $(_this).removeClass('on');
+      $(".nodeId_"+ _this.id).addClass('is-hidden');
+      //$(".nodeChild_"+ _this.id).css('display','none');
+      }
+      }
+      /*
+      * 모두 보기 버튼(+/-)의 클릭 이벤트
+      */
+      function showAllEventChild(_this) {
+      if (_this.className == "btn-status-detail") {
+      $(".btn-status-detail").addClass('on');
+      $(".more").addClass('on');
+      $('.nodeChild').removeClass('is-hidden');
+      //$(".nodeChild").css('display','table-row');
+      } else {
+      $(".btn-status-detail").removeClass('on');
+      $(".more").removeClass('on');
+      $('.nodeChild').addClass('is-hidden');
+      //$(".nodeChild").css('display','none');
+      }
+      }

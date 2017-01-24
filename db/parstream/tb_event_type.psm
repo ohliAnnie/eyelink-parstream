@@ -1,0 +1,66 @@
+CREATE TABLE tb_event_type
+(
+   event_year INT16          INDEX EQUAL CSV_COLUMN 0,
+   id INT8  INDEX EQUAL CSV_COLUMN 1,
+   event_type UINT64 COMPRESSION NONE SINGLE_VALUE CSV_COLUMN 2 SKIP FALSE,
+   event_name VARSTRING(50) COMPRESSION NONE MAPPING_FILE_GRANULARITY 256 SINGLE_VALUE CSV_COLUMN 3 SKIP FALSE,
+)
+PARTITION BY event_year
+DISTRIBUTE OVER event_year
+IMPORT_DIRECTORY_PATTERN '.*'
+IMPORT_FILE_PATTERN 'tb_event_type.*\.csv'
+ETL (select *  from csvfetch(tb_event_type));
+
+insert into tb_event_type
+select date_part('YEAR', current_date()) as event_year,
+      1 as id,
+      1 as event_type,
+      'PowerMeter' as event_name;
+
+insert into tb_event_type
+select date_part('YEAR', current_date()) as event_year,
+      1 as id,
+      11 as event_type,
+      'ALS' as event_name;
+
+insert into tb_event_type
+select date_part('YEAR', current_date()) as event_year,
+      1 as id,
+      17 as event_type,
+      'ALS Level' as event_name;
+
+insert into tb_event_type
+select date_part('YEAR', current_date()) as event_year,
+      1 as id,
+      21 as event_type,
+      'Vibration' as event_name;
+
+insert into tb_event_type
+select date_part('YEAR', current_date()) as event_year,
+      1 as id,
+      41 as event_type,
+      'Change GPS' as event_name;
+
+insert into tb_event_type
+select date_part('YEAR', current_date()) as event_year,
+      1 as id,
+      51 as event_type,
+      'Change Node State' as event_name;
+
+insert into tb_event_type
+select date_part('YEAR', current_date()) as event_year,
+      1 as id,
+      61 as event_type,
+      'Change Node Dimming' as event_name;
+
+insert into tb_event_type
+select date_part('YEAR', current_date()) as event_year,
+      1 as id,
+      81 as event_type,
+      'Fault' as event_name;
+
+insert into tb_event_type
+select date_part('YEAR', current_date()) as event_year,
+      1 as id,
+      99 as event_type,
+      'Reboot' as event_name;

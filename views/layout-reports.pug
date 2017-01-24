@@ -1,102 +1,107 @@
 doctype html
 html
-	head
-		title= title
-		meta(name="viewport", content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no")
-		link(rel='stylesheet', href='/stylesheets/style.css')
-		link(rel='stylesheet', href='/assets/styles/eyelink.css')
-		link(rel='stylesheet', href='/assets/styles/graph.css')
-		link(rel='stylesheet', type='text/css', href='/assets/annie/css/dc.css')
-		script(src="/assets/scripts/libs/moment.min.js")
-		script(src="/assets/scripts/libs/jquery-2.2.3.min.js")
-		script(src="/assets/scripts/libs/daterangepicker.custom.js")
-		script(src="/assets/scripts/libs/jquery-confirm.custom.js")
-		script(src="/assets/scripts/libs/jquery.magnific-popup.min.js")
-		script(src="/assets/scripts/libs/jquery.knob.min.js")
-		script(src="/assets/scripts/libs/tooltipster.bundle.min.js")
-		script(src="/assets/scripts/libs/jquery-clockpicker.min.js")
-		script(src="/assets/scripts/libs/odometer.min.js")
-		script(src="/assets/scripts/libs/jquery.cookie.js")
-		script(src="/assets/scripts/libs/bootstrap.min.js")
-		script(src="/assets/scripts/libs/bootstrap-select.min.js")
-		script(src="/assets/scripts/libs/bootstrap-slider-custom.js")
-		script(src="/assets/scripts/libs/d3.min.js")
-		script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
-		script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
-		script(type='text/javascript', src='/assets/annie/js/dc.js')
-		block scripts
-	body.page-analysis
-		aside.layout-header-utils
-			button.btn-menus(type="button") 메뉴 on/off
-			p.location
-			a(href="#") Analysis
-			a(href="#") Reports &nbsp;
-			ul.list-utils
-				li
-					a.user(href="#", class="user") username.kim
-				li
-					select.selectpicker
-						option(data-icon="en", selected) ENGLISH
-						option(data-icon="ko") KOREAN
-						option(data-icon="zh") CHINESE
-				li
-					a.help(href="#") HELP
-				li
-					button.logout(type="button") LOGOUT
-		nav.layout-sidemenu
-			a.btn-nyx-logo(href='./intro.html') NYX
-			ul.list-menus
-				li
-					a.menu.dashboard.has-submenus(href='/dashboard/') Dashboard
-					ul.list-sub-menus
-						li
-							a(href='./dashboard.html') Dashboard
-						li
-							a(href='./realtime_event.html') Realtime Event
-				li
-					a.menu.zoning.has-submenus(href='#') Zoning
-					ul.list-sub-menus
-						li
-							a(href='./zones.html') Zones
-						li
-							a(href='./zone_registration_01.html') Zone Registration
-				li
-					a.menu.node.has-submenus(href='#') Node
-					ul.list-sub-menus
-						li
-							a(href='./nodes.html') Nodes
-						li
-							a(href='./node_registration_01_als.html') Node Registration
-				li(data-state='is-selected')
-					a.menu.analysis.has-submenus(href='/reports/') Analysis
-					ul.list-sub-menus
-						li
-							a(href='./analysis_alarms.html') Alarms
-						li
-							a(href='./analysis_reports.html') Report
-						li
-							a(href='./analysis_asset.html') Asset Management
-				li
-					a.menu.user(href='./users.html') Users
-					ul.list-sub-menus
-					li
-						a(href='./users.html') Users
-				li
-					a.menu.preferences(href='./preferences.html') Preferences
-					ul.list-sub-menus
-						li
-							a(href='./preferences.html') Preferences
-		block content
-	footer
-		nav.footer-nav
-			div.row
-				ul.second-nav
-					li
-						a(href="/intl/corp") 설명
-					li
-						a(href="/intl/legal") 법적고지
-					li
-						a(href="/intl/contact") 연락처
-			div.row.bottom-section
-				div.copyright 저작권 2016 M2U Technology.
-					span.all-rihts 모든 권리 보유.
+  head
+    title= title
+    meta(name="viewport", content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no")
+    link(rel='stylesheet', type='text/css', href='/assets/annie/css/dc.css')
+    link(rel='stylesheet', type='text/css', href='/assets/annie/css/colorbrewer.css')
+    script(src="/assets/scripts/libs/moment.min.js")
+    script(src="/assets/scripts/libs/jquery-2.2.3.min.js")
+    script(src="/assets/scripts/libs/daterangepicker.custom.js")
+    script(src="/assets/scripts/libs/jquery-confirm.custom.js")
+    script(src="/assets/scripts/libs/jquery.magnific-popup.min.js")
+    script(src="/assets/scripts/libs/jquery.knob.min.js")
+    script(src="/assets/scripts/libs/tooltipster.bundle.min.js")
+    script(src="/assets/scripts/libs/jquery-clockpicker.min.js")
+    script(src="/assets/scripts/libs/odometer.min.js")
+    script(src="/assets/scripts/libs/jquery.cookie.js")
+    script(src="/assets/scripts/libs/bootstrap.min.js")
+    script(src="/assets/scripts/libs/bootstrap-select.min.js")
+    script(src="/assets/scripts/libs/bootstrap-slider-custom.js")
+    script(src="/assets/scripts/libs/d3.min.js")
+    script(src="/scripts/common.js")
+    block style
+    block scripts
+  body.page-analysis
+    aside.layout-header-utils
+      button.btn-menus(type="button") 메뉴 on/off
+      p.location
+        a(href="#") Analysis
+        a(href="#") Reports &nbsp;
+      ul.list-utils
+        li
+          a.user(href="#", class="user") username.kim
+        li
+          select.selectpicker
+            option(data-icon="en", selected) ENGLISH
+            option(data-icon="ko") KOREAN
+            option(data-icon="zh") CHINESE
+        li
+          a.help(href="#") HELP
+        li
+          button.logout(type="button") LOGOUT
+    nav.layout-sidemenu
+      a.btn-nyx-logo(href='./intro.html') NYX
+      ul.list-menus
+        li
+          a.menu.dashboard.has-submenus(href='/dashboard') Dashboard
+          ul.list-sub-menus
+            li
+              a(href='/dashboard/') Dashboard
+            li
+              a(href='/realtime_event/') Realtime Event
+        //- li
+        //-   a.menu.zoning.has-submenus(href='#') Zoning
+        //-   ul.list-sub-menus
+        //-     li
+        //-       a(href='./zones.html') Zones
+        //-     li
+        //-       a(href='./zone_registration_01.html') Zone Registration
+        //- li
+        //-   a.menu.node.has-submenus(href='#') Node
+        //-   ul.list-sub-menus
+        //-     li
+        //-       a(href='./nodes.html') Nodes
+        //-     li
+        //-       a(href='./node_registration_01_als.html') Node Registration
+        li(data-state='is-selected')
+          a.menu.analysis.has-submenus(href='/reports/') Analysis
+          ul.list-sub-menus
+            //- li
+            //-   a(href='./analysis_alarms.html') Alarms
+            li
+              a(href='/reports/') Report
+            li
+              a(href='/reports/d3') d3_Report
+            li
+              a(href='/reports/test') test
+            li
+              a(href='/reports/all') Report_All
+            li
+              a(href='/reports/power') Report_Power
+            //- li
+            //-   a(href='./analysis_asset.html') Asset Management
+        //- li
+        //-   a.menu.user(href='./users.html') Users
+        //-   ul.list-sub-menus
+        //-   li
+        //-     a(href='./users.html') Users
+        //- li
+        //-   a.menu.preferences(href='./preferences.html') Preferences
+        //-   ul.list-sub-menus
+        //-     li
+        //-       a(href='./preferences.html') Preferences
+    block content
+  //- footer
+  //-   nav.footer-nav
+  //-     div.row
+  //-       ul.second-nav
+  //-         li
+  //-           a(href="/intl/corp") 설명
+  //-         li
+  //-           a(href="/intl/legal") 법적고지
+  //-         li
+  //-           a(href="/intl/contact") 연락처
+  //-     div.row.bottom-section
+  //-       div.copyright 저작권 2016 M2U Technology.
+  //-         span.all-rihts 모든 권리 보유.

@@ -1,0 +1,129 @@
+
+
+.people-panel {
+  background-color: #00a0e9 !important;
+  color: #ffffff;
+}
+.people-panel h1 {
+  font-size: 10.5em;
+  font-weight: bold;
+  text-align: center;
+  padding-top: 20px;
+}
+
+.panel-title h5 {
+  padding-left: 10px;
+  margin-bottom: 0px;
+}
+
+.panel-body {
+  padding-top: 0px;
+}
+
+.panel-card {
+  box-shadow: 1px 0px 1px rgba(0, 0, 0, 0.25);
+  background-color: white;
+}
+
+.container h1 {
+/*     text-align: center; */
+}
+
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #f3f3f3;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-size: .7em;
+    color: #a0a0a0;
+}
+
+.click_line {
+    fill: none;        
+}
+
+
+.path_circle {
+    stroke-width: 2px;
+    opacity: 1;
+    fill: #41DB00;
+    stroke: white;
+}
+
+.legendRect {
+    stroke: #aaabb1;
+    stroke-width: 1px;
+    fill: none;
+}
+
+
+.click_checkbox text{
+    font-size: .3em;
+}
+
+/*STYLESHEETS FOR SENSOR DOCKER ISSUES*/
+.panel-checkbox {
+    background-color:#eaf8ff; 
+    top:14px; 
+    padding-left:15px; 
+    padding-right: 0px;
+    padding-top: 4px;
+    margin-bottom: 5px;
+    height:348px;
+    /*max-width: 10em;*/
+}
+.panel-checkbox text {
+    font-size: .8em;
+    fill: #000000;
+    margin-left: .5em;
+}
+.panel-checkbox p {
+    font-size: .8em;
+    fill: #000000;
+}
+.panel-checkbox input {
+    margin-top: 3px;
+    padding-top: 2px;
+}
+
+.panel-checkbox-xs {
+    background-color:#eaf8ff; 
+    margin-top: 10px;
+    margin-left: 24px;
+    margin-right: 10px; 
+    padding: 4px;
+    /*max-width: 10em;*/
+}
+.panel-checkbox-xs text {
+    font-size: .8em;
+    fill: #000000;
+    margin-left: .5em;
+}
+.panel-checkbox-xs p {
+    font-size: .8em;
+    fill: #000000;
+}
+.panel-checkbox-xs input {
+    margin-top: 2px;
+}
+
+.scatter_checkbox text{
+    font-size: .3em;
+}
+
+.tipDot {
+    stroke: black;
+    stroke-width: 0.5px;
+}
+
+
+.tipCountPoints {
+    stroke-width: 2px;
+    opacity: 1;
+    fill: #41DB00;
+    stroke: white;
+}

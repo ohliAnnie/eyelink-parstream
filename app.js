@@ -9,13 +9,21 @@ var session = require('express-session');
 var multer  = require('multer');
 var pug = require('pug');
 
-var routes = require('./routes/index');
-var dashboard = require('./routes/dashboard');
-var reports = require('./routes/reports');
+var config = require('./config/config.json');
+console.log('config : %j', config);
+global.config = config;
+
+var intro = require('./routes/intro');
+var login = require('./routes/nodeLogin');
+var dashboard = require('./routes/nodeDashboard');
+var reports = require('./routes/nodeReports');
+var analysis = require('./routes/nodeAnalysis');
+var initapps = require('./routes/initApp');
+var socketapps = require('./routes/socketApp');
+var node = require('./routes/nodeCon');
 
 var app = express();
 
-//app.engine('html', require('ejs').renderFile)
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -35,30 +43,45 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// app.use('/', intro);
+app.use('/', login);
 app.use('/dashboard', dashboard);
 app.use('/reports', reports);
-app.use('/routes', routes);
+app.use('/analysis', analysis);
+app.use('/intro', intro);
+app.use('/node', node);
+
+global._rawDataByDay = {};
+// dbquery.xml 파일 내용을 loading
+initapps.loadQuery(function() {
+  // 지정된 기간의 Raw Data를 서버 시작시 메모리에 Loading
+  if (config.loaddataonstartup.active === true)
+    initapps.loadData(function(in_params) {});
+});
+
+// Client로 Data를 Push 하기위한 Socket 초기화.
+socketapps.initSocket(app, function() {});
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
+// app.use(function(req, res, next) {
+//   var err = new Error('Not Found');
+//   err.status = 404;
+//   next(err);
+// });
 
 // error handlers
 
 // development error handler
 // will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
-  });
-}
+// if (app.get('env') === 'development') {
+//   app.use(function(err, req, res, next) {
+//     res.status(err.status || 500);
+//     res.render('error', {
+//       message: err.message,
+//       error: err
+//     });
+//   });
+// }
 
 // production error handler
 // no stacktraces leaked to user

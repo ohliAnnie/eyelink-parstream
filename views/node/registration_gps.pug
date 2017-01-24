@@ -1,0 +1,309 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    title EYELINK
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no')
+    link(rel='stylesheet', href='assets/styles/nyx.css')
+    script(src='assets/scripts/libs/jquery-2.2.3.min.js')
+    script(src='assets/scripts/libs/bootstrap.min.js')
+    script(src='assets/scripts/libs/moment.min.js')
+    script(src='assets/scripts/libs/daterangepicker.custom.js')
+    script(src='assets/scripts/libs/bootstrap-select.min.js')
+    script(src='assets/scripts/libs/jquery-confirm.custom.js')
+    script(src='assets/scripts/libs/jquery.magnific-popup.min.js')
+    script(src='assets/scripts/libs/jquery.knob.min.js')
+    script(src='assets/scripts/libs/tooltipster.bundle.min.js')
+    script(src='assets/scripts/libs/jquery-clockpicker.min.js')
+    script(src='assets/scripts/libs/odometer.min.js')
+    script(src='assets/scripts/libs/jquery.cookie.js')
+    script(src='assets/scripts/libs/bootstrap-slider-custom.js')
+    script(src='assets/scripts/common.js')
+    //if lt IE 9
+      script(src='assets/scripts/libs/html5shiv.min.js')
+  body.page-registration
+    aside.layout-header-utils
+      button.btn-menus(type='button') &#xBA54;&#xB274; on/off
+      p.location
+        a(href='#') Node
+        |  
+        a(href='#') Node Registration
+      ul.list-utils
+        li
+          a.user(href='#') username.kim
+        li
+          select.selectpicker
+            option(data-icon='en', selected='') ENGLISH
+            option(data-icon='ko') KOREAN
+            option(data-icon='zh') CHINESE
+        li
+          a.help(href='#') HELP
+        li
+          button.logout(type='button') LOGOUT
+    nav.layout-sidemenu
+      a.btn-nyx-logo(href='./intro.html') NYX
+      ul.list-menus
+        li
+          a.menu.dashboard.has-submenus(href='#') Dashboard
+          ul.list-sub-menus
+            li
+              a(href='./dashboard.html') Dashboard
+            li
+              a(href='./realtime_event.html') Realtime Event
+        li
+          a.menu.zoning.has-submenus(href='#') Zoning
+          ul.list-sub-menus
+            li
+              a(href='./zones.html') Zones
+            li
+              a(href='./zone_registration_01.html') Zone Registration
+        li(data-state='is-selected')
+          a.menu.node.has-submenus(href='#') Node
+          ul.list-sub-menus
+            li
+              a(href='./nodes.html') Nodes
+            li
+              a(href='./node_registration_01_als.html') Node Registration
+        li
+          a.menu.analysis.has-submenus(href='#') Analysis
+          ul.list-sub-menus
+            li
+              a(href='./analysis_alarms.html') Alarms
+            li
+              a(href='./analysis_reports.html') Report
+            li
+              a(href='./analysis_asset.html') Asset Management
+        li
+          a.menu.user(href='./users.html') Users
+          ul.list-sub-menus
+            li
+              a(href='./users.html') Users
+        li
+          a.menu.preferences(href='./preferences.html') Preferences
+          ul.list-sub-menus
+            li
+              a(href='./preferences.html') Preferences
+      ul.event-trigger
+        li
+          button.btn-trigger.red-alert(type='button') &#xC54C;&#xB78C; &#xC774;&#xBCA4;&#xD2B8; &#xBC1C;&#xC0DD;
+        li
+          button.btn-trigger.themes(type='button', data-theme='') &#xD14C;&#xB9C8; &#xB514;&#xD3F4;&#xD2B8;
+        li
+          button.btn-trigger.themes(type='button', data-theme='green') &#xD14C;&#xB9C8; &#xADF8;&#xB9B0;
+        li
+          button.btn-trigger.themes(type='button', data-theme='lightgray') &#xD14C;&#xB9C8; &#xB77C;&#xC774;&#xD2B8; &#xADF8;&#xB808;&#xC774;
+        li
+          button.btn-trigger.themes(type='button', data-theme='bluegreen') &#xD14C;&#xB9C8; &#xBE14;&#xB8E8; &#xADF8;&#xB9B0;
+      script.
+        $(document).ready(function(e) {
+        // event alarm
+        $('.btn-trigger.red-alert').on('click', function(e) {
+        $('aside.event-alarm-container').attr('data-state', 'red-alert');
+        $('aside.event-alarm-container').one('webkitAnimationEnd oanimationend msAnimationEnd animationend', function(e) {
+        $(this).attr('data-state', '');
+        });
+        });
+        // theme green
+        $('.btn-trigger.themes').on('click', function(e) {
+        var theme = $(this).attr('data-theme');
+        $('html').attr('data-theme', theme);
+        $.cookie('theme', theme);
+        });
+        });
+    main.layout-contents
+      .layout-contents-inner
+        .column.left
+          .inner
+            .map-container
+              fieldset.map-search
+                legend search
+                p.search-wrod
+                  input(type='text', id='', name='')
+                .search-detail
+                  button.btn-close(type='button') close
+                  fieldset.location
+                    legend location
+                    p.title LOCATION
+                    p.item
+                      select.select(name='', id='')
+                        option(value='') Korea, Republic of
+                    p.item
+                      select.select(name='', id='')
+                        option(value='') Busan
+                    |  
+                    input.btn-submit(type='submit', id='', name='', value='SEARCH')
+                  fieldset.zone-and-node
+                    legend Zone &amp; Node
+                    p.title ZONE AND NODE
+                    p.item
+                      select.select(name='', id='')
+                        option(value='') Zone ID
+                    p.item
+                      select.select(name='', id='')
+                        option(value='') G_00001
+                    |  
+                    input.btn-submit(type='submit', id='', name='', value='SEARCH')
+              .context-menu(style='top: 0px; left: 50%;')
+                ul.menus
+                  li
+                    a(href='#') Remove from the Zone
+                ul.menus
+                  li
+                    a(href='#') Configure node
+                  li
+                    a(href='#') Delete node
+                  li
+                    a(href='#') Node Operation Control
+                  li
+                    a(href='#') Create node reports
+                  li
+                    a(href='#') View alarms history
+                ul.menus
+                  li
+                    a.zoom-in(href='#') Zoom In
+                  li
+                    a.zoom-out(href='#') Zoom Out
+        .column.right
+          .inner
+            section.layout-forms
+              header.layout-forms-title
+                h1.title Node Registration
+              fieldset.layout-forms-contents
+                legend Node Registration Forms
+                .tabs
+                  a.is-selected(href='./node_registration_01_als.html') Node
+                  |  
+                  a(href='./node_registration_02_noise.html') Noise
+                  |  
+                  a(href='./node_registration_03_vibration.html') Vibration
+                  |  
+                  a(href='./node_registration_04_diagnostics.html') Node Diagnostics
+                  |  
+                  a(href='./node_registration_05_server.html') Server
+                .registration-detail
+                  fieldset.section.node
+                    legend Node
+                    table.tbl-setting-forms
+                      caption
+                      colgroup
+                        col(style='width: 136px;')
+                        col(style='width: auto;')
+                        col(style='width: 136px;')
+                        col(style='width: auto;')
+                      tbody
+                        tr
+                          th
+                            label(for='') Node ID
+                          td(colspan='3')
+                            input(type='text', id='', name='', style='width: 140px;')
+                        tr
+                          th
+                            label(for='') Zone Selct
+                          td
+                            select.select(name='', id='', style='width: 140px;')
+                              option(value='') G_0001
+                          th
+                            label(for='') Node Type
+                          td
+                            select.select(name='', id='', style='width: 100px;')
+                              option(value='') Basic
+                            |  
+                            button.btn-tooltip(type='button', title='Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do') &#xB3C4;&#xC6C0;&#xB9D0;
+                  fieldset.section
+                    legend Lamp On/Off Control
+                    p.select-lamp
+                      input#als.radio(type='radio', name='lamp')
+                      |  
+                      label(for='als') Ambient Light Sensor
+                      |  
+                      input#gps.radio(type='radio', name='lamp', checked='')
+                      |  
+                      label(for='gps') GPS/Time Table
+                    h2.sub-title Lamp On/Off Control
+                    table.tbl-setting-forms
+                      caption
+                      colgroup
+                        col(style='width: 136px;')
+                        col(style='width: auto;')
+                        col(style='width: 136px;')
+                        col(style='width: auto;')
+                      tbody
+                        tr
+                          th
+                            label(for='') Day Interval
+                          td
+                            select.select(name='', id='', style='width: 100px;')
+                              option(value='') 90
+                            |  sec
+                          th
+                            label(for='') Dimming Level
+                          td
+                            select.select(name='', id='', style='width: 100px;')
+                              option(value='') 80
+                            |  %
+                    table.tbl-time-setup
+                      caption
+                      colgroup
+                        col(style='width: 136px;')
+                        col(style='width: auto;')
+                        col(style='width: auto;')
+                      thead
+                        tr
+                          th
+                            a.time-setup(href='#') Time Setup
+                          th
+                            em.icon.sunrise SUNRISE
+                          th
+                            em.icon.sunset SUNSET
+                      tbody
+                        tr
+                          th
+                            label(for='') 1 Week
+                          td
+                            span.clockpicker
+                              input(type='text', value='', placeholder='07:10')
+                          td
+                            span.clockpicker
+                              input(type='text', value='', placeholder='07:10')
+                        tr
+                          th
+                            label(for='') 2 Week
+                          td
+                            span.clockpicker
+                              input(type='text', value='', placeholder='07:10')
+                          td
+                            span.clockpicker
+                              input(type='text', value='', placeholder='07:10')
+                        tr
+                          th
+                            label(for='') 3 Week
+                          td
+                            span.clockpicker
+                              input(type='text', value='', placeholder='07:10')
+                          td
+                            span.clockpicker
+                              input(type='text', value='', placeholder='07:10')
+                        tr
+                          th
+                            label(for='') 4 Week
+                          td
+                            span.clockpicker
+                              input(type='text', value='', placeholder='07:10')
+                          td
+                            span.clockpicker
+                              input(type='text', value='', placeholder='07:10')
+                        tr
+                          th
+                            label(for='') 5 Week
+                          td
+                            span.clockpicker
+                              input(type='text', value='', placeholder='07:10')
+                          td
+                            span.clockpicker
+                              input(type='text', value='', placeholder='07:10')
+                .layout-forms-footer
+                  p.btns
+                    a.btn-normal(href='#') Cancel
+                    |  
+                    a.btn-action(href='#') Save

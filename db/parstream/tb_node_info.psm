@@ -1,0 +1,58 @@
+CREATE TABLE tb_node_info
+(
+   node_year INT16          INDEX EQUAL CSV_COLUMN 0,
+   zone_id VARSTRING(50) COMPRESSION NONE MAPPING_FILE_GRANULARITY 256 SINGLE_VALUE CSV_COLUMN 1 SKIP FALSE,
+   node_id VARSTRING(13) COMPRESSION NONE MAPPING_FILE_GRANULARITY 256 SINGLE_VALUE CSV_COLUMN 2 SKIP FALSE,
+   reg_date TIMESTAMP  INDEX RANGE INDEX_GRANULARITY DAY,
+)
+PARTITION BY node_year
+DISTRIBUTE OVER node_year
+IMPORT_DIRECTORY_PATTERN '.*'
+IMPORT_FILE_PATTERN 'tb_node_info.*\.csv'
+ETL (select *  from csvfetch(tb_node_info));
+
+insert into tb_node_info
+select date_part('YEAR', current_date()) as node_year,
+      'ZONE-01' as zone_id,
+      '0001.00000001' as node_id,
+      37.467271 as gps_latitude,
+      127.042861 as gps_longitude,
+      0 as gps_altitude,
+      current_timestamp()- 32400000 as reg_date
+;
+insert into tb_node_info
+select date_part('YEAR', current_date()) as node_year,
+      'ZONE-01' as zone_id,
+      '0001.00000002' as node_id,
+      37.567271 as gps_latitude,
+      127.142861 as gps_longitude,
+      0 as gps_altitude,
+      current_timestamp()- 32400000 as reg_date
+;
+insert into tb_node_info
+select date_part('YEAR', current_date()) as node_year,
+      'ZONE-01' as zone_id,
+      '0001.00000003' as node_id,
+      37.667271 as gps_latitude,
+      127.142861 as gps_longitude,
+      0 as gps_altitude,
+      current_timestamp()- 32400000 as reg_date
+;
+insert into tb_node_info
+select date_part('YEAR', current_date()) as node_year,
+      'ZONE-02' as zone_id,
+      '0001.00000004' as node_id,
+      37.467271 as gps_latitude,
+      127.142861 as gps_longitude,
+      0 as gps_altitude,
+      current_timestamp()- 32400000 as reg_date
+;
+insert into tb_node_info
+select date_part('YEAR', current_date()) as node_year,
+      'ZONE-02' as zone_id,
+      '0001.00000005' as node_id,
+      37.567271 as gps_latitude,
+      127.152861 as gps_longitude,
+      0 as gps_altitude,
+      current_timestamp()- 32400000 as reg_date
+;

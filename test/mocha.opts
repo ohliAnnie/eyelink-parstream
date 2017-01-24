@@ -1,0 +1,5 @@
+--require should
+--require supertest
+--reporter list
+--timeout 20000
+--ui bdd

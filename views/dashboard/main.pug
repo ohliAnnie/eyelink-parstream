@@ -1,97 +1,206 @@
-extends ../layout-dashboard
-
+extends ../layout-type01
 block style
-	style.
-		svg#d3Pie {
-			width: 550px;
-			height: 370px;
-		}
-		svg#d3Pie.arc text {
-			font: 10px sans-serif;
-			text-anchor: middle;
-		}
-		svg#d3Pie.arc path {
-			stroke: #fff;
-		}
-		svg#myGraph1 {
-			width: 550px;
-			height: 370px;
-		}
-		svg#groupBar {
-			width: 550px;
-			height: 370px;
-			font: 10px sans-serif;
-		}
-		svg#groupBar.axis path, svg#groupBar.axis line {
-			fill: none;
-			stroke: #000;
-			shape-rendering: crispEdges;
-		}
-		svg#groupBar.bar {
-			fill: steelblue;
-		}
-		svg#groupBar.x.axis path {
-			display: none;
-		}
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
+  link(rel='stylesheet', href='/assets/leaflet/dc.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+block script
+  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  script(type='text/javascript', src='/assets/annie/js/dc.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(type='text/javascript', src='/assets/leaflet/leaflet.js')
+  script(type='text/javascript', src='/assets/leaflet/leaflet.markercluster.js')
+  script(type='text/javascript', src='/assets/leaflet/dc.leaflet.js')
+  script(type='text/javascript', src='/socket.io/socket.io.js')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(type='text/javascript', src="/scripts/dashboard.js")
+  script.
+    $(document).ready(function(e) {
+      // display Count 4 type.
+      displayCount();
 
-block scripts
-	script(src='/scripts/d3_pie.js')
+      // draw Chart
+      drawChart();
 
+      // draw Map
+      //- drawMap();
+
+      // process websocket
+      // FIXME 실행시 map Container 오류 발생함.
+      //- processSocket();
+    });
 block content
-	main.layout-contents.padding
-		div.layout-contents-inner
-			section
-				header.page-title
-					h1.title Reports
-					p.count Total
-						mark.report 836
-				fieldset.search-container
-					legend search
-						div.right-content-view
-							label(for='') List view
-								select.select(name='', id='')
-									option(value='') 15
-						div.left-content-view
-							span.datepicker
-								input(type='text', name='daterange', id='', value='')
-								select.select(name='', id='')
-									option(value='') Zone ID
-								select.select(name='', id='')
-									option(value='') Node ID
-								select.select(name='', id='')
-									option(value='') ALL
-							button.btn-submit.search(type='submit') SEARCH
-				script.
-					$(document).ready(function() {
-						var start = moment().subtract(29, 'days');
-						var end = moment();
-						$('input[name="daterange"]')
-							.daterangepicker(
-							{
-								"autoApply" : true,
-								startDate : start,
-								endDate : end,
-								locale : {
-									format : 'YYYY-MM-DD'
-								}
-							},
-							function(start, end, label) {
-								console.log("New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')");
-							});
-					});
-				div.map-container
-					div.inner map container
-				ul.list-reports
-					li
-						div.chart
-							svg#d3Pie
-					li
-						div.chart
-							svg#myGraph1
-							//- script(src='../assets/scripts/libs/sampleOS1.js')
-					li
-						div.chart
-							svg#groupBar
-							//- script(src='../assets/scripts/libs/groupBar.js')
-					li
-						div.chart chart
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Dashboard
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Dashboard
+          li.active Dashboard
+      .row
+        .col-lg-3.col-md-3.col-sm-6.col-xs-12
+          .dashboard-stat2
+            .display
+              .number
+                h3#mevent-count.font-blue-sharp 0
+                small TOTAL MONTHLY EVENT
+              .icon
+                i.icon-calendar
+            .progress-info
+              .progress
+                span.progress-bar.progress-bar-success.blue-sharp(style='width: 90%;')
+                  span.sr-only 76% progress
+              .status
+                .status-title  From the previous month
+                #pmevent-count.status-number  0%
+        .col-lg-3.col-md-3.col-sm-6.col-xs-12
+          .dashboard-stat2
+            .display
+              .number
+                h3#event-count.font-green-sharp 0
+                small Total Daily Event
+              .icon
+                i.icon-pie-chart
+            .progress-info
+              .progress
+                span.progress-bar.progress-bar-success.green-sharp(style='width: 85%;')
+                  span.sr-only 85% change
+              .status
+                .status-title  From the previous day
+                #pevent-count.status-number  0%
+        .col-lg-3.col-md-3.col-sm-6.col-xs-12
+          .dashboard-stat2
+            .display
+              .number
+                h3#fault-count.font-red-haze 0
+                small Daily Fault Event
+              .icon
+                i.icon-speedometer
+            .progress-info
+              .progress
+                span.progress-bar.progress-bar-success.red-haze(style='width: 45%;')
+                  span.sr-only 45% grow
+              .status
+                .status-title  From the previous day
+                #pfault-count.status-number  0%
+        .col-lg-3.col-md-3.col-sm-6.col-xs-12
+          .dashboard-stat2
+            .display
+              .number
+                h3#power.font-yellow-green 0
+                small Daily Active Power
+              .icon
+                i.icon-energy
+            .progress-info
+              .progress
+                span.progress-bar.progress-bar-success.yellow-green(style='width: 57%;')
+                  span.sr-only 57% change
+              .status
+                .status-title  From the previous day
+                #ppower.status-number  0%
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Event Trend
+                span.caption-helper  The event counts
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-pencil
+                  |  Edit
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-plus
+                  |  Add
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:80px')
+                #volumn-chart.chart_custom
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-blue-sharp Zone/Node Map
+                span.caption-helper  Zone/Node Map
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .row
+                .col-md-3
+                  #bubble-map-pie(style="width:100%; height:100%")
+                    //- div.pie
+                    //- div.map(style="width:300px; height:100px")
+                .col-md-9
+                  #bubble-map-map(style="width:100%; height:100%")
+                    //- div.pie
+                    //- div.map(style="width:300px; height:100px")
+              //- .chart
+              //-   div.map-container
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Event / Fault Count
+                span.caption-helper  Event / Fault Count
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart
+                #move-chart(style="width:100%; height:100%")
+      .row
+        .col-md-8
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase ACTIVE POWER / NOISE / VIBRATION
+                span.caption-helper  ACTIVE POWER / NOISE / VIBRATION
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-pencil
+                  |  Edit
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-plus
+                  |  Add
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .row
+                .col-md-3(style="height:300px")
+                  p Active Power
+                  #plot01-chart.chart(style="width:100%; height:90%")
+                .col-md-3(style="height:300px")
+                  p Noise
+                  #plot02-chart.chart(style="width:100%; height:90%")
+                .col-md-3(style="height:300px")
+                  p Vibration
+                  #plot03-chart.chart(style="width:100%; height:90%")
+                .col-md-3(style="height:300px")
+                  p Event Type
+                  #plot_pie-chart.chart(style="width:100%; height:90%")
+        .col-md-4
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze LiveData
+                span.caption-helper  Sensor Live Data
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart
+                #series-chart(style="width:100%; height:100%")
