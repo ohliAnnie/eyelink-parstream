@@ -136,30 +136,5 @@ router.get('/restapi/getNodeGeo', function(req, res, next) {
   res.json(out_data);
 });
 
-// query RawData for test
-router.get('/restapi/fruits', function(req, res, next) {
-  var in_data = ["user_id"];
-
-  var out_data = [
-    {"name": "apple", "cnt": 10},
-    {"name": "orange", "cnt": 15},
-    {"name": "banana", "cnt": 12},
-    {"name": "grapefruit", "cnt": 2},
-    {"name": "grapefruit", "cnt": 4},
-    {"name": "pomegranate", "cnt": 1},
-    {"name": "lime", "cnt": 12},
-    {"name": "grape", "cnt": 50}
-  ];
-
-    // console.log(out_data);
-    var rtnCode = CONSTS.getErrData('0000');
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');
-    }
-    res.json(out_data);
-
-});
-
-
 
 module.exports = router;
