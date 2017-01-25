@@ -21,6 +21,7 @@ var analysis = require('./routes/nodeAnalysis');
 var initapps = require('./routes/initApp');
 var socketapps = require('./routes/socketApp');
 var node = require('./routes/nodeCon');
+var management = require('./routes/nodeManagement');
 
 var app = express();
 
@@ -50,6 +51,7 @@ app.use('/reports', reports);
 app.use('/analysis', analysis);
 app.use('/intro', intro);
 app.use('/node', node);
+app.use('/management', management);
 
 global._rawDataByDay = {};
 // dbquery.xml 파일 내용을 loading
