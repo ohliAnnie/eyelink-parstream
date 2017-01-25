@@ -96,10 +96,6 @@ router.get('/restapi/getTbRawDataByPeriod', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     }
 
-    // MERGE = 'Y'이면 이전 날짜의 RawData를 합쳐준다.
-    if (params.MERGE === 'Y')
-      out_data = Utils.mergeLoadedData(out_data);
-
     console.log('reports/restapi/getTbRawDataByPeriod -> length : %s', out_data[0].length);
     res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });
@@ -119,10 +115,6 @@ router.get('/restapi/getTbRawDataByPeriodPower', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     }
 
-    // MERGE = 'Y'이면 이전 날짜의 RawData를 합쳐준다.
-    if (params.MERGE === 'Y')
-      out_data = Utils.mergeLoadedData(out_data);
-
     console.log('reports/restapi/getTbRawDataByPeriodPower -> length : %s', out_data[0].length);
     res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });
@@ -141,10 +133,6 @@ router.get('/restapi/getTbRawDataByAllPower', function(req, res, next) {
     if (out_data[0] === null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-
-    // MERGE = 'Y'이면 이전 날짜의 RawData를 합쳐준다.
-    if (params.MERGE === 'Y')
-      out_data = Utils.mergeLoadedData(out_data);
 
     console.log('reports/restapi/getTbRawDataByAllPower -> length : %s', out_data[0].length);
     res.json({rtnCode: rtnCode, rtnData: out_data[0]});

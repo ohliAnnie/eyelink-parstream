@@ -8,8 +8,16 @@ var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', 
 /* GET home page. */
 router.get('/nodes', function(req, res, next) {
   console.log('node');
-  // res.redirect('/dashboard/');
-  res.render('./node/nodes', { title: 'EyeLink for ParStream' });
+     var in_data = {};
+  queryProvider.selectSingleQueryByID("reports","selectNodeList", in_data, function(err, out_data, params) {
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data[0] === null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    console.log('node/restapi/getNodeList -> length : %s', out_data[0].length);
+  res.render('./node/nodes', { title: 'EyeLink for ParStream' , nodeData:out_data[0]});
+    });
 });
 
 router.get('/status', function(req, res, next) {
@@ -28,6 +36,20 @@ router.get('/gps', function(req, res, next) {
   console.log('node');
   // res.redirect('/dashboard/');
   res.render('./node/registration_gps', { title: 'EyeLink for ParStream' });
+});
+
+// query Report
+router.get('/restapi/getReportRawData', function(req, res, next) {
+  console.log('reports/restapi/getReportRawData');
+  var in_data = {MERGE:'Y'};
+  queryProvider.selectSingleQueryByID("node","selectEventRawData", in_data, function(err, out_data, params) {
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+  });
 });
 
 

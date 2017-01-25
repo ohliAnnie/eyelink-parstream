@@ -37,10 +37,6 @@ router.get('/restapi/getDaClusterDetail', function(req, res, next) {
     // console.log('typeof array : %s', (typeof out_data[0] !== 'undefined'));
     // console.log('typeof array : %s', (out_data[0] !== null));
 
-    // MERGE = 'Y'이면 이전 날짜의 RawData를 합쳐준다.
-    if (params.MERGE === 'Y')
-      out_data = Utils.mergeLoadedData(out_data);
-
     // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data);
     // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data[0]);
     console.log('analysis/restapi/getDaClusterDetail -> length : %s', out_data[0].length);
@@ -63,10 +59,6 @@ router.get('/restapi/getDaClusterMaster', function(req, res, next) {
 
     // console.log('typeof array : %s', (typeof out_data[0] !== 'undefined'));
     // console.log('typeof array : %s', (out_data[0] !== null));
-
-    // MERGE = 'Y'이면 이전 날짜의 RawData를 합쳐준다.
-    if (params.MERGE === 'Y')
-      out_data = Utils.mergeLoadedData(out_data);
 
     // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data);
     // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data[0]);
@@ -95,10 +87,6 @@ router.get('/restapi/getClusterNodePower', function(req, res, next) {
     // console.log('typeof array : %s', (typeof out_data[0] !== 'undefined'));
     // console.log('typeof array : %s', (out_data[0] !== null));
 
-    // MERGE = 'Y'이면 이전 날짜의 RawData를 합쳐준다.
-    if (params.MERGE === 'Y')
-      out_data = Utils.mergeLoadedData(out_data);
-
     // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data);
     // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data[0]);
     console.log('analysis/restapi/getClusterNodePower -> length : %s', out_data[0].length);
@@ -123,10 +111,6 @@ router.get('/restapi/getClusterRawData', function(req, res, next) {
 
     // console.log('typeof array : %s', (typeof out_data[0] !== 'undefined'));
     // console.log('typeof array : %s', (out_data[0] !== null));
-
-    // MERGE = 'Y'이면 이전 날짜의 RawData를 합쳐준다.
-    if (params.MERGE === 'Y')
-      out_data = Utils.mergeLoadedData(out_data);
 
     // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data);
     // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data[0]);
