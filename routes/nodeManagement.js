@@ -24,3 +24,4 @@ router.get('/timeseries', function(req, res, next) {
   res.render('./dashboard/timeseries', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
 });
 
+module.exports = router;
