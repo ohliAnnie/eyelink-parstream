@@ -121,7 +121,7 @@ router.get('/restapi/getClusterRawData', function(req, res, next) {
 
 // insert RawData
 router.post('/restapi/insertClusterRawData', function(req, res, next) {
-  console.log(req.body);
+  console.log('/restapi/insertClusterRawData : %j', req.body);
   // var in_data = {
   //     START_TIMESTAMP: req.query.startDate + ' 00:00:00',
   //     END_TIMESTAMP: req.query.endDate + ' 23:59:59',
