@@ -7,7 +7,7 @@ html(lang='en', data-theme='${theme}')
     meta(http-equiv='Content-Type', content='text/html; charset=UTF-8')
     meta(http-equiv='Content-Script-Type', content='text/javascript')
     meta(http-equiv='Content-Style-Type', content='text/css')
-    title NYX
+    title= title
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     meta(name='viewport', content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no')
   body
@@ -104,144 +104,18 @@ html(lang='en', data-theme='${theme}')
                     spring:message(code='label.firmwareVersion')
                   th(scope='col')
                     spring:message(code='label.newYN')
-              tbody
-                c:foreach(var='node', items='${nodeList}', varstatus='nodeListIndex')
+              tbody        
+                each node in nodeData
                   tr.c
                     td.c
                       input#checkNodeId.checkNodeId(type='checkbox', name='checkNodeId', value='${node.NODE_ID}')
-                    td.c ${nodeListIndex.index + queryParam.startNum}
+                    td.c #{node.node_id}
                     td
-                      a(href="javascript:fnDatailNode('${node.NODE_ID}')") ${node.NODE_ID}
-                    td ${node.GROUP_ID}
-                    td.more(id='${nodeListIndex.index + queryParam.startNum}', onclick='showEventChild(this);', style='cursor: pointer;')
-                      c:choose
-                        c:when(test='${node.STATUS_POWER_METER == 0}')
-                          em.status-icon.power.txt-none(value='${node.ACTIVE_POWER}', style='width:80px;')
-                            span
-                        c:otherwise
-                          em.status-icon.power.fault(value='${node.ACTIVE_POWER}', style='width:80px;')
-                            span
-                      c:choose
-                        c:when(test='${node.STATUS_VIBRATION == 0}')
-                          em.status-icon.vibration.txt-none(value='${node.VIBRATION}', style='width:80px;')
-                            span
-                        c:otherwise
-                          em.status-icon.vibration.fault(value='${node.VIBRATION}', style='width:80px;')
-                            span
-                      c:choose
-                        c:when(test='${node.STATUS_ALS == 0}')
-                          c:if(test='${node.ALS_LEVEL == 0}')
-                            em.status-icon.als.txt-none(value='${node.ALS_LEVEL}', style='width:80px;')
-                              span
-                          c:if(test='${node.ALS_LEVEL == 1}')
-                            em.status-icon.als.txt-none(value='${node.ALS_LEVEL}', style='width:80px;')
-                              span
-                          c:if(test='${node.ALS_LEVEL == 2}')
-                            em.status-icon.als.txt-none(value='${node.ALS_LEVEL}', style='width:80px;')
-                              span
-                          c:if(test='${node.ALS_LEVEL == 3}')
-                            em.status-icon.als.txt-none(value='${node.ALS_LEVEL}', style='width:80px;')
-                              span
-                          c:if(test='${node.ALS_LEVEL == 4}')
-                            em.status-icon.als.txt-none(value='${node.ALS_LEVEL}', style='width:80px;')
-                              span
-                          c:if(test='${node.ALS_LEVEL == 5}')
-                            em.status-icon.als.txt-none(value='${node.ALS_LEVEL}', style='width:80px;')
-                              span
-                          c:if(test='${node.ALS_LEVEL == 6}')
-                            em.status-icon.als.txt-none(value='${node.ALS_LEVEL}', style='width:80px;')
-                              span
-                          c:if(test='${node.ALS_LEVEL == 7}')
-                            em.status-icon.als.txt-none(value='${node.ALS_LEVEL}', style='width:80px;')
-                              span
-                        c:otherwise
-                          em.status-icon.als.fault(value='${node.ALS_LEVEL}', style='width:80px;')
-                            span
-                      c:choose
-                        c:when(test='${node.DIMMING_LEVEL == 0}')
-                          em.status-icon.dimming.fault(value='${node.DIMMING_LEVEL}', style='width:80px;')
-                            span
-                        c:otherwise
-                          em.status-icon.dimming.txt-none(value='${node.DIMMING_LEVEL}', style='width:80px;')
-                            span
-                      c:choose
-                        c:when(test='${node.STATUS_NOISE == 0}')
-                          em.status-icon.txt-none.decibel(value='${node.NOISE_DECIBEL}', style='width:80px;')
-                            span
-                          em.status-icon.txt-none.frequency(value='${node.NOISE_FREQUENCY}', style='width:80px;')
-                            span
-                        c:otherwise
-                          em.status-icon.decibel.fault(value='${node.NOISE_DECIBEL}', style='width:80px;')
-                            span
-                          em.status-icon.frequency.fault(value='${node.NOISE_FREQUENCY}', style='width:80px;')
-                            span
-                    td ${node.NODE_TYPE}
-                    td ${node.FIRMWARE_VERSION}
-                    td ${node.NODE_IS_NEW}
-                  tr.nodeChild.is-hidden(class='nodeId_${nodeListIndex.index + queryParam.startNum}')
-                    td(colspan='8')
-                      dl.info
-                        c:choose
-                          c:when(test='${node.STATUS_SELF_DIAGNOSTICS_LED_ACTIVE == 1}')
-                            dt.key
-                              spring:message(code='label.selfDiagnosisLED')  :
-                            dd.value
-                              spring:message(code='label.workSelf-diagnosis')
-                          c:otherwise
-                            dt.key
-                              spring:message(code='label.selfDiagnosisLED')  :
-                            dd.value
-                              spring:message(code='label.ignoreSelf-diagnosis')
-                        c:choose
-                          c:when(test='${node.STATUS_ACTIVE_MODE == 1}')
-                            dt.key
-                              spring:message(code='label.motionMode')  :
-                            dd.value
-                              spring:message(code='label.manual')
-                          c:otherwise
-                            dt.key
-                              spring:message(code='label.motionMode')  :
-                            dd.value
-                              spring:message(code='label.auto')
-                        c:choose
-                          c:when(test='${node.DIMMING_CONTROL_TYPE == 1}')
-                            dt.key
-                              spring:message(code='label.dimmingMode')  :
-                            dd.value
-                              spring:message(code='label.gpsTimeTable')
-                          c:otherwise
-                            dt.key
-                              spring:message(code='label.dimmingMode')  :
-                            dd.value
-                              spring:message(code='label.alsSensor')
-                      dl.info
-                        c:choose
-                          c:when(test='${node.STATUS_GPS == 0}')
-                            dt.key.status-icon.gps.txt-none
-                              spring:message(code='label.latitude')  :
-                            dd.value ${node.LATITUDE}
-                            dt.key
-                              spring:message(code='label.longitude')  :
-                            dd.value ${node.LONGITUDE}
-                            dt.key
-                              spring:message(code='label.altitude')  :
-                            dd.value ${node.ALTITUDE}
-                            dt.key
-                              spring:message(code='label.connectionSatelliteCount')  :
-                            dd.value ${node.SATELLITE_COUNT}
-                          c:otherwise
-                            dt.key.status-icon.gps.fault
-                              spring:message(code='label.latitude')  :
-                            dd.value ${node.LATITUDE}
-                            dt.key
-                              spring:message(code='label.longitude')  :
-                            dd.value ${node.LONGITUDE}
-                            dt.key
-                              spring:message(code='label.altitude')  :
-                            dd.value ${node.ALTITUDE}
-                            dt.key
-                              spring:message(code='label.connectionSatelliteCount')  :
-                            dd.value ${node.SATELLITE_COUNT}
+                      a(href="javascript:fnDatailNode('${node.node_id}')") #{node.node_id}
+                    td #{node.zone_id}                    
+                    td  #{node.gps_longitude}
+                    td  #{node.gps_latitude}
+                    td  #{node.gps_altitude}                 
             |  
             input#act(type='hidden', name='act', value='${param.act}')
             |  
