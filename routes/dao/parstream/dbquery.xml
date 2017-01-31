@@ -180,9 +180,9 @@
     ]]></query>
   </analysis>
   <node>
-    <query id='selectNodeList'><![CDATA
-      select * 
-      from tb_node_info      
-      ]]></query>
+     <query id= 'selectNodeList'><![CDATA[
+      select *
+      from tb_node_info    
+    ]]></query>    
   </node>
 </queryList>
