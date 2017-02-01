@@ -1,6 +1,7 @@
 var CONSTS = require('./consts');
 var Utils = require('./util');
 var express = require('express');
+var fs = require('fs');
 var router = express.Router();
 var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-db').QueryProvider;
 
@@ -121,7 +122,16 @@ router.get('/restapi/getClusterRawData', function(req, res, next) {
 
 // insert RawData
 router.post('/restapi/insertClusterRawData', function(req, res, next) {
-  console.log('/restapi/insertClusterRawData : %j', req.body);
+  console.log('/restapi/insertClusterRawData -> length : master - %d, detail - %d', req.body.tb_da_clustering_master.length, req.body.tb_da_clustering_detail.length);
+  // console.log('/restapi/insertClusterRawData -> master : %j', req.body.tb_da_clustering_master);
+
+  // TO-DO 일단 파일로 저장함. DB로 INSERT 로직 추가 구현 필요함.
+  var clustering_data = JSON.stringify(req.body);
+  console.log(clustering_data);
+  fs.writeFile('./insertClusterRawData.log', clustering_data, function(err) {
+    if(err) throw err;
+    console.log('File write completed');
+  });
   // var in_data = {
   //     START_TIMESTAMP: req.query.startDate + ' 00:00:00',
   //     END_TIMESTAMP: req.query.endDate + ' 23:59:59',

@@ -35,8 +35,8 @@ describe("Analysis -> ", function(){
 
     // 성공 건수 조회
     it('Post로 결과 저장', function(done) {
-      var datas = {cluster1: "node1:node2:node3",
-                    cluster2: "node4:node5"};
+      var datas = {tb_da_clustering_master: "node1:node2:node3",
+                    tb_da_clustering_detail: "node4:node5"};
       request(svr)
         .post("/analysis/restapi/insertClusterRawData")
         .send(datas)
