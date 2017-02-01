@@ -2,7 +2,7 @@ doctype html
 html
   head
     meta(charset='utf-8')
-    title Eyelink for ParStream
+    title= title
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     meta(content='width=device-width, initial-scale=1', name='viewport')
     meta(content='', name='description')
@@ -19,6 +19,48 @@ html
     link(href='assets/css/eyelink-layout.css', rel='stylesheet', type='text/css')
     link(href='assets/css/eyelink-custom.css', rel='stylesheet', type='text/css')
     link(rel='shortcut icon', href='assets/images/favicon.ico')
+    script(src='assets/scripts/libs/jquery.min.js', type='text/javascript')
+    script(src='assets/scripts/libs/jquery-migrate.min.js', type='text/javascript')
+    script(src='assets/scripts/libs/bootstrap.min.js', type='text/javascript')
+    script(src='assets/scripts/libs/jquery.blockui.min.js', type='text/javascript')
+    script(src='assets/scripts/libs/jquery.uniform.min.js', type='text/javascript')
+    script(src='assets/plugins/jquery.cokie.min.js', type='text/javascript')
+    script(src='assets/plugins/bootstrap-select/bootstrap-select.min.js', type='text/javascript')
+    script(src='assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js', type='text/javascript')
+    script(src='assets/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js', type='text/javascript')
+    script(src='assets/plugins/clockface/js/clockface.js', type='text/javascript')
+    script(src='assets/plugins/bootstrap-daterangepicker/moment.min.js', type='text/javascript')
+    script(src='assets/plugins/bootstrap-daterangepicker/daterangepicker.js', type='text/javascript')
+    script(src='assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js', type='text/javascript')
+    script(src='assets/plugins/jquery-validation/js/jquery.validate.min.js', type='text/javascript')
+    script(src='assets/plugins/backstretch/jquery.backstretch.min.js', type='text/javascript')
+    script(type='text/javascript', src='assets/plugins/select2/select2.min.js')
+    script(src='assets/scripts/eyelink-ui.js', type='text/javascript')
+    script(src='assets/scripts/eyelink-layout.js', type='text/javascript')
+    script(src='assets/scripts/page/layout.js', type='text/javascript')
+    script(src='assets/scripts/page/demo.js', type='text/javascript')
+    script(src='assets/scripts/page/login-soft.js', type='text/javascript')
+    script.
+      jQuery(document).ready(function() {
+        Metronic.init(); // init metronic core componets
+        eyelinkLayout.init(); // init eyelinklayout
+        Layout.init(); // init layout
+        Login.init();
+        Demo.init(); // init index page
+        $.backstretch([
+          "assets/images/bg/1.jpg",
+          "assets/images/bg/2.jpg",
+          "assets/images/bg/3.jpg",
+          "assets/images/bg/4.jpg"
+          ], {
+            fade: 1000,
+            duration: 8000
+          }          
+        ); 
+        if(error != null) {
+            alert(error);
+          }       
+      });
   body.login
     .logo
       a(href='dashboard.html')
@@ -66,42 +108,19 @@ html
             i.m-icon-swapleft Back
             button.btn.blue.pull-right(type='submit') Submit
             i.m-icon-swapright.m-icon-white
-      form.register-form(action='dashboard.html', method='post')
+      form.register-form(action='/', method='post')
         h3 Sign Up
-        p  Enter your personal details below:
-        .form-group
-          label.control-label.visible-ie8.visible-ie9 Full Name
+        p  Enter your account details below:
+         .form-group
+          label.control-label.visible-ie8.visible-ie9 User Name
           .input-icon
             i.fa.fa-font
-            input.form-control.placeholder-no-fix(type='text', placeholder='Full Name', name='fullname')
+            input.form-control.placeholder-no-fix(type='text', placeholder='Userl Name', name='username')
         .form-group
-          label.control-label.visible-ie8.visible-ie9 Email
-          .input-icon
-            i.fa.fa-envelope
-            input.form-control.placeholder-no-fix(type='text', placeholder='Email', name='email')
-        .form-group
-          label.control-label.visible-ie8.visible-ie9 Address
-          .input-icon
-            i.fa.fa-check
-            input.form-control.placeholder-no-fix(type='text', placeholder='Address', name='address')
-        .form-group
-          label.control-label.visible-ie8.visible-ie9 City/Town
-          .input-icon
-            i.fa.fa-location-arrow
-            input.form-control.placeholder-no-fix(type='text', placeholder='City/Town', name='city')
-        .form-group
-          label.control-label.visible-ie8.visible-ie9 Country
-          select#select2_sample4.select2.form-control(name='country')
-            option(value='')
-            option(value='AF') Afghanistan
-            option(value='AL') Albania
-            option(value='DZ') Algeria
-        p  Enter your account details below:
-        .form-group
-          label.control-label.visible-ie8.visible-ie9 Username
+          label.control-label.visible-ie8.visible-ie9 User ID
           .input-icon
             i.fa.fa-user
-            input.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='Username', name='username')
+            input.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='User ID', name='userid')
         .form-group
           label.control-label.visible-ie8.visible-ie9 Password
           .input-icon
@@ -112,7 +131,20 @@ html
           .controls
             .input-icon
               i.fa.fa-check
-              input.form-control.placeholder-no-fix(type='password', autocomplete='off', placeholder='Re-type Your Password', name='rpassword')
+              input.form-control.placeholder-no-fix(type='password', autocomplete='off', placeholder='Re-type Your Password', name='password')
+        .form-group
+          .input-icon
+            i.fa.fa-envelope
+            |  
+            input.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='Email', name='email')
+        .form-group
+          label.control-label.visible-ie8.visible-ie9 User Role
+          select#select2_sample4.select2.form-control(name='userrole')
+            option(value='') User Role
+            option(value='Super Manager') Super Manager
+            option(value='Zone Manager') Zone Manager
+            option(value='Asset Manager') Asset Manager
+            option(value='User') User
         .form-group
           label
             input(type='checkbox', name='tnc')
@@ -123,50 +155,12 @@ html
           #register_tnc_error
         .form-actions
           button#register-back-btn.btn(type='button')
-            i.m-icon-swapleft Back
+            i.m-icon-swapleft
           button#register-submit-btn.btn.blue.pull-right(type='submit') Sign Up
             i.m-icon-swapright.m-icon-white
     .copyright Copyright M2U Technology All rights reserved.
       br
       br
       a.btn.blue.btn-demo.red-haze(href='/dashboard') Demo View
-    script(src='assets/scripts/libs/jquery.min.js', type='text/javascript')
-    script(src='assets/scripts/libs/jquery-migrate.min.js', type='text/javascript')
-    script(src='assets/scripts/libs/bootstrap.min.js', type='text/javascript')
-    script(src='assets/scripts/libs/jquery.blockui.min.js', type='text/javascript')
-    script(src='assets/scripts/libs/jquery.uniform.min.js', type='text/javascript')
-    script(src='assets/plugins/jquery.cokie.min.js', type='text/javascript')
-    script(src='assets/plugins/bootstrap-select/bootstrap-select.min.js', type='text/javascript')
-    script(src='assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js', type='text/javascript')
-    script(src='assets/plugins/bootstrap-timepicker/js/bootstrap-timepicker.min.js', type='text/javascript')
-    script(src='assets/plugins/clockface/js/clockface.js', type='text/javascript')
-    script(src='assets/plugins/bootstrap-daterangepicker/moment.min.js', type='text/javascript')
-    script(src='assets/plugins/bootstrap-daterangepicker/daterangepicker.js', type='text/javascript')
-    script(src='assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js', type='text/javascript')
-    script(src='assets/plugins/jquery-validation/js/jquery.validate.min.js', type='text/javascript')
-    script(src='assets/plugins/backstretch/jquery.backstretch.min.js', type='text/javascript')
-    script(type='text/javascript', src='assets/plugins/select2/select2.min.js')
-    script(src='assets/scripts/eyelink-ui.js', type='text/javascript')
-    script(src='assets/scripts/eyelink-layout.js', type='text/javascript')
-    script(src='assets/scripts/page/layout.js', type='text/javascript')
-    script(src='assets/scripts/page/demo.js', type='text/javascript')
-    script(src='assets/scripts/page/login-soft.js', type='text/javascript')
-    script.
-      jQuery(document).ready(function() {
-        Metronic.init(); // init metronic core componets
-        eyelinkLayout.init(); // init eyelinklayout
-        Layout.init(); // init layout
-        Login.init();
-        Demo.init(); // init index page
-        $.backstretch([
-          "assets/images/bg/1.jpg",
-          "assets/images/bg/2.jpg",
-          "assets/images/bg/3.jpg",
-          "assets/images/bg/4.jpg"
-          ], {
-            fade: 1000,
-            duration: 8000
-          }
-        );
-      });
+
 

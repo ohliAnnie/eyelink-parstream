@@ -185,4 +185,18 @@
       from tb_node_info    
     ]]></query>    
   </node>
+  <user>
+      <query id= 'selectCheckJoin'><![CDATA[
+        select * from tb_user_info where user_id = #USERID#
+        ]]></query>
+      <query id= 'insertUser'><![CDATA[
+        insert into tb_user_info 
+         select  #USERID# as user_id,
+            #USERNAME# as user_name,
+            #PASSWORD# as user_pw,
+            #USERROLE# as user_role,
+            #EMAIL# as user_email,
+            current_timestamp()+32400000 as reg_date
+        ]]></query>
+  </user>
 </queryList>
