@@ -50,7 +50,7 @@ describe("Analysis -> ", function(){
         });
     });
     it.only('clustering_data.log 파일을 읽어서 Post로 결과 저장', function(done) {
-      fs.readFile('./clustering_data.log', 'utf8', function(err, datas) {
+      fs.readFile('./clustering_data.json', 'utf8', function(err, datas) {
         // the data is passed to the callback in the second argument
 
 
