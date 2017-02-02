@@ -1,0 +1,171 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
+  link(rel='stylesheet', href='/assets/leaflet/dc.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+  link(rel='stylesheet', href='/scripts/d3_timeseries.css')
+  link(rel='stylesheet', href='/assets/leaflet/dc.css')
+  link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')
+block script
+  script(type='text/javascript', src='/assets/leaflet/d3.js')
+  script(src='/assets/annie/js/vue.min.js')
+  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  script(type='text/javascript', src='/assets/annie/js/dc_2_1.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(src='/scripts/analysis_clustering.js')
+  script(src='/scripts/analysis_cluster_detail.js')
+  script.
+    $(document).ready(function(e) {
+      var dateFormat = 'YYYY-MM-DD';
+      //- $('#edate').val(moment().format(dateFormat));
+      //- $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
+      - $('#sdate').val('2016-12-01');
+      - $('#edate').val('2016-12-02');
+      // time series char를 그린다.
+        getMasterList();
+        drawCheckChart();               
+        $('#btn_search').click(function() {        
+         d3.selectAll("svg").remove();
+         drawCheckChart();         
+        });
+        $('#btn_factor').click(function() {
+         d3.selectAll("svg").remove();
+         drawCheckChart();         
+        });
+    });
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Clustering
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Analysis
+          li.active Clustering
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Set date and area
+                span.caption-helper  Date range and select area
+              .actions
+                .btn-group.btn-group-devided(data-toggle='buttons')
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                    input#syncY.toggle(type='radio', name='options', checked='Y')
+                    i.fa.fa-chain Sync
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                    input#syncN.toggle(type='radio', name='options')
+                    i.fa.fa-chain-broken Async
+            .portlet-body.form
+              form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .row
+                    .form-group.last
+                      label.control-label.col-md-1 Factor
+                      .col-md-4
+                        .btn-group.btn-group-devided(data-toggle='buttons')
+                          label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                            input#factor0.toggle(type='radio', name='options', value='active_power', checked='Y')
+                            | ActivePower
+                          label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                            input#factor1.toggle(type='radio', name='options', value='voltage')
+                            | Voltage
+                          label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                            input#factor2.toggle(type='radio', name='options', value='ampere')
+                            | Ampere
+                          label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                            input#factor3.toggle(type='radio', name='options', value='power_factor')
+                            | Power Factor
+                      .col-md-1.form-inline
+                        button#btn_factor.btn.blue
+                          i.fa.fa-search Change
+                      label.control-label.col-md-1 Date Range
+                      .col-md-3
+                        .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
+                          input#sdate.form-control(type='text', name='from' value='')
+                          span.input-group-addon to
+                          input#edate.form-control(type='text', name='to' value='')
+                      .col-md-1.form-inline
+                        button#btn_search.btn.blue
+                          i.fa.fa-search Run Analysis
+      .row
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption.caption-md.font-blue
+                i.icon-share.font-blue
+                |  
+                span.caption-subject.theme-font.bold.uppercase History
+              .actions
+                .btn-group
+                  a.btn.btn-sm.btn-default.dropdown-toggle(href='#', data-toggle='dropdown', data-hover='dropdown', data-close-others='true')
+                    | Filter By
+                    i.fa.fa-angle-down
+                  .dropdown-menu.hold-on-click.dropdown-checkboxes.pull-right
+                    label
+                      input(type='checkbox', checked='')
+                      |  Membership
+                    |  
+                    label
+                      input(type='checkbox')
+                      |  Customer Support
+                    |  
+                    label
+                      input(type='checkbox', checked='')
+                      |  HR
+                    |  
+                    label
+                      input(type='checkbox')
+                      |  System
+            .portlet-body
+              .scroller(style='height: 308px;', data-always-visible='1', data-rail-visible='0')
+                ul.feeds              
+                  li
+                    .col1
+                      .cont
+                        .cont-col1
+                          .label.label-sm.label-info
+                            i.fa.fa-check
+                        .cont-col2
+                          .desc
+                            | data
+                    .col2
+                      .date   min
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Total Pattern
+                span.caption-helper  Total Pattern
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-pencil
+                  |  Edit
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-plus
+                  |  Add
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:355px;')
+                #table
+                  .panel.panel-card
+                    .panel-body
+                      .col-xm-2.col-sm-2.col-md-2.panel-checkbox.hidden-xs.hidden-sm
+                        input#c0.click_checkbox(type='checkbox', name='ck0', value='1', v-on='click:checkOpt', checked='true')
+                        text  Cluster0
+                        br
+                        input#c1.click_checkbox(type='checkbox', name='c1', value='2', v-on='click:checkOpt', checked='true')
+                        text  Cluster1
+                        br
+                        input#c2.click_checkbox(type='checkbox', name='c2', value='3', v-on='click:checkOpt', checked='true')
+                        text  Cluster2
+                        br
+                        input#c3.click_checkbox(type='checkbox', name='c3', value='4', v-on='click:checkOpt', checked='true')
+                        text  Cluster3
+                      .col-xm-12.col-sm-12.col-md-10.col-xs-12
+                        #Cluster(style='width:100%;height:345px;')   

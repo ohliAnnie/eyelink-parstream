@@ -108,7 +108,7 @@ html(lang='en', data-theme='${theme}')
                 each node in nodeData
                   tr.c
                     td.c
-                      input#checkNodeId.checkNodeId(type='checkbox', name='checkNodeId', value='${node.NODE_ID}')
+                      input#checkNodeId.checkNodeId(type='checkbox', name='checkNodeId', value='#{node.node_id}')
                     td.c #{node.node_id}
                     td
                       a(href="javascript:fnDatailNode('${node.node_id}')") #{node.node_id}

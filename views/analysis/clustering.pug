@@ -24,7 +24,7 @@ block script
       $('#sdate').val('2016-12-01');
       $('#edate').val('2016-12-02');
       // time series char를 그린다.
-      var a = 'test';
+      
         drawCheckChart();       
         getNodeList();        
         $('#btn_search').click(function() {        
@@ -149,7 +149,6 @@ block content
                     tr.uppercase
                       th Cluster
                       th ID
-
         .col-md-4
           .portlet.light.bordered
             .portlet-title
@@ -228,3 +227,75 @@ block content
             .portlet-body
               .chart
                 #ts-chart04
+        .row
+          .col-md-6
+            .portlet.light.bordered
+              .portlet-title
+                .caption.caption-md.font-blue
+                  i.icon-share.font-blue
+                  |  
+                  span.caption-subject.theme-font.bold.uppercase History
+                .actions
+                  .btn-group
+                    a.btn.btn-sm.btn-default.dropdown-toggle(href='#', data-toggle='dropdown', data-hover='dropdown', data-close-others='true')
+                      | Filter By
+                      i.fa.fa-angle-down
+                    .dropdown-menu.hold-on-click.dropdown-checkboxes.pull-right
+                      label
+                        input(type='checkbox', checked='')
+                        |  Membership
+                      |  
+                      label
+                        input(type='checkbox')
+                        |  Customer Support
+                      |  
+                      label
+                        input(type='checkbox', checked='')
+                        |  HR
+                      |  
+                      label
+                        input(type='checkbox')
+                        |  System
+              .portlet-body
+                .scroller(style='height: 308px;', data-always-visible='1', data-rail-visible='0')
+                  ul.feeds
+                    each da in master
+                      li
+                        .col1
+                          .cont
+                            .cont-col1
+                              .label.label-sm.label-info
+                                i.fa.fa-check
+                            .cont-col2
+                              .desc
+                                | #{da.da_date} : [ #{da.start_date} - #{da.end_date} ]
+                        .col2
+                          .date  #{da.time_interval} min
+          .col-md-6
+            .portlet.light.bordered
+              .portlet-title.tabbable-line
+                .caption.caption-md.font-red-sunglo
+                  i.icon-globe.font-red-sunglo
+                  |  
+                  span.caption-subject.theme-font.bold.uppercase Detail
+                ul.nav.nav-tabs
+                  li.active
+                    a(href='#tab_1_1', data-toggle='tab') System
+                  li
+                    a(href='#tab_1_2', data-toggle='tab') Activities
+              .portlet-body
+                .tab-content
+                  #tab_1_1.tab-pane.active
+                    .scroller(style='height: 337px;', data-always-visible='1', data-rail-visible1='0', data-handle-color='#D7DCE2')
+                      ul.feeds
+                        each clus in detail                          
+                          li
+                            .col1
+                              .cont
+                                .cont-col1
+                                  .label.label-sm.label-info
+                                    i.fa.fa-bullhorn
+                                .cont-col2
+                                  .desc  voltage : #{clus.c0_voltage}, #{clus.c1_voltage}, #{clus.c2_voltage}, #{clus.c3_voltage} / ampere : #{clus.c0_ampere}, #{clus.c1_ampere}, #{clus.c2_ampere}, #{clus.c3_ampere} / active_power : #{clus.c0_active_power}, #{clus.c1_active_power}, #{clus.c2_active_power}, #{clus.c3_active_power} / power_factor : #{clus.c0_power_factor}, #{clus.c1_power_factor}, #{clus.c2_power_factor}, #{clus.c3_power_factor} / 
+                            .col2
+                              .date  #{clus.event_time}
