@@ -17,7 +17,7 @@ block script
   script(src='/scripts/analysis_clustering.js')
   script(src='/scripts/analysis_cluster_detail.js')
   script.
-    $(document).ready(function(e) {
+    $(document).ready(function(e) {   
       var dateFormat = 'YYYY-MM-DD';
       //- $('#edate').val(moment().format(dateFormat));
       //- $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
@@ -25,7 +25,7 @@ block script
       - $('#edate').val('2016-12-02');
       // time series char를 그린다.
         getMasterList();
-        drawCheckChart();               
+        drawCheckChart();        
         $('#btn_search').click(function() {        
          d3.selectAll("svg").remove();
          drawCheckChart();         
@@ -123,20 +123,19 @@ block content
                       input(type='checkbox')
                       |  System
             .portlet-body
-              .scroller(style='height: 308px;', data-always-visible='1', data-rail-visible='0')
-                #masterList
-                  ul.feeds              
-                    li
-                      .col1
-                        .cont
-                          .cont-col1
-                            .label.label-sm.label-info
-                              i.fa.fa-check
-                          .cont-col2
-                            .desc
-                              | data
-                      .col2
-                        .date   min
+              .scroller(style='height: 308px;', data-always-visible='1', data-rail-visible='0')                
+                ul#masterList.feeds              
+                  li
+                    .col1
+                      .cont
+                        .cont-col1
+                          .label.label-sm.label-info
+                            i.fa.fa-check
+                        .cont-col2
+                          .desc
+                            | data
+                    .col2
+                      .date   min
         .col-md-6
           .portlet.light.bordered
             .portlet-title

@@ -28,50 +28,15 @@ function drawMaster(master) {
   var seatvar = document.getElementsByClassName("masterList");           
         console.log(seatvar);
         console.log(master);
-  nodeList.forEach(function(d) {  
-
-    var sb = new StringBuffer();
-    var a = d.c0.split(':');
-    var script = "javascript:getNodePower('"+d.c0+"');";
-    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster0 </a></span></td><td></td></tr>');
-    
-    for(var i=0; i < a.length; i++) {
-      sb.append('<tr><td></td><td>');
-      var script = "javascript:clickNode('"+a[i]+"');";
-      sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
-      sb.append('</td></tr>');
-    }
-    var a = d.c1.split(':');
-    var script = "javascript:getNodePower('"+d.c1+"');";
-    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster1 </a></span></td><td></td></tr>');    
-    for(var i=0; i < a.length; i++) {
-      sb.append('<tr><td></td><td>');
-      var script = "javascript:clickNode('"+a[i]+"');";      
-      sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
-      sb.append('</td></tr>');
-    }
-    var a = d.c2.split(':');
-    var script = "javascript:getNodePower('"+d.c2+"');";
-    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster2 </a></span></td><td></td></tr>');
-    var a = d.c2.split(':');
-    for(var i=0; i < a.length; i++) {
-      sb.append('<tr><td></td><td>');
-      var script = "javascript:clickNode('"+a[i]+"');";      
-      sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
-      sb.append('</td></tr>');
-    }
-    var a = d.c3.split(':');
-    var script = "javascript:getNodePower('"+d.c0+"');";
-    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster3 </a></span></td><td></td></tr>');
-    var a = d.c3.split(':');
-    for(var i=0; i < a.length; i++) {
-      sb.append('<tr><td></td><td>');
-      var script = "javascript:clickNode('"+a[i]+"');";
-      sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
-      sb.append('</td></tr>');
-    }
+  master.forEach(function(d) {  
+    var sb = new StringBuffer();        
+    sb.append('<li><div class="col1"><div class="cont"><div class="cont-col1"> ');
+    sb.append('<div class="label label-sm label-info"> <i class="fa fa-bullhorn"></i> </div>');
+    sb.append('</div><div class="cont-col2"><div class="desc">');
+    sb.append('<a href="javascript:drawCheckChart();">'+d.da_date+'</a> : [ '+d.start_date+' - '+d.end_date+' ]</div></div></div></div>');
+    sb.append('<div class="col2"><div class="date">'+d.time_interval+'mins</div></div></li>');
     console.log('sb : %s', sb.toString());
-    $('#tblClusterDir').append(sb.toString());
+    $('#masterList').append(sb.toString());
   });
     
 
