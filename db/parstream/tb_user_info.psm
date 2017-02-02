@@ -1,0 +1,29 @@
+CREATE TABLE tb_user_info
+(		
+	user_id VARSTRING(20) COMPRESSION NONE MAPPING_FILE_GRANULARITY 256 ,
+	user_name VARSTRING(20) COMPRESSION NONE MAPPING_FILE_GRANULARITY 256 ,
+	user_pw VARSTRING(20) COMPRESSION NONE MAPPING_FILE_GRANULARITY 256 ,
+	user_role VARSTRING(15) COMPRESSION NONE MAPPING_FILE_GRANULARITY 256 ,
+	user_email VARSTRING(50) COMPRESSION NONE MAPPING_FILE_GRANULARITY 256, 
+	reg_date  TIMESTAMP  INDEX RANGE INDEX_GRANULARITY DAY,
+)
+PARTITION BY user_id
+DISTRIBUTE OVER user_id
+ORDER BY reg_date
+IMPORT_DIRECTORY_PATTERN '.*'
+IMPORT_FILE_PATTERN 'tb_user_info.*\.csv'
+ETL (select *  from csvfetch(tb_user_info));
+
+
+CREATE TABLE tb_user_info
+(		
+	user_id varchar(20) not null,
+	user_name varchar(20) not null,
+	user_pw varchar(20) not null,
+	user_role varchar(15) not null,
+	user_email varchar(30) ,
+	reg_date  TIMESTAMP  INDEX RANGE INDEX_GRANULARITY DAY not null,
+)
+IMPORT_DIRECTORY_PATTERN '.*'
+IMPORT_FILE_PATTERN 'tb_user_info.*\.csv'
+ETL (select *  from csvfetch(tb_user_info));

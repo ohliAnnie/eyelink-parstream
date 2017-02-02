@@ -1,5 +1,3 @@
-
-
 function replaceSql(sql, params) {
   // var params = {ID : 'AAAA', DATE: '2016-12-12', NUM: 5};
   for (var key in params) {
@@ -26,6 +24,9 @@ function replaceSql(sql, params) {
         tsql = tsql.substring(0, tsql.length-1);
         sql = sql.replace(re1, tsql);
       } else if (typeof params[key][0] === 'undefined') {
+        console.log('test');
+        console.log(key);
+        console.log(params[key][0]);
         throw new Error('Please check sql array params');
       }
     } else if (typeof params[key] === 'string') {
@@ -74,3 +75,4 @@ function mergeLoadedData(out_data) {
 module.exports.replaceSql = replaceSql;
 
 module.exports.mergeLoadedData = mergeLoadedData;
+  
