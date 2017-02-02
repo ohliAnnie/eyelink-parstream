@@ -25,7 +25,7 @@ function getMasterList() {
 }
 
 function drawMaster(master) { 
-  var seatvar = document.getElementsByClassName("tblClusterDir");           
+  var seatvar = document.getElementsByClassName("masterList");           
         console.log(seatvar);
         console.log(master);
   nodeList.forEach(function(d) {  
