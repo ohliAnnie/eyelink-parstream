@@ -146,6 +146,13 @@
      ]]></query>
   </reports>
   <analysis>
+     <query id='selectDaClusterMasterAll'><![CDATA[
+      select da_date, start_date, end_date, time_interval from tb_da_clustering_master        
+     ]]></query>
+    <query id='selectDaClusterDetailAll'><![CDATA[
+      select * from tb_da_clustering_detail      
+          order by event_time
+     ]]></query>
     <query id='selectDaClusterMaster'><![CDATA[
       select * from tb_da_clustering_master
         where start_date = timestamp #START_TIMESTAMP#
@@ -197,6 +204,14 @@
             #USERROLE# as user_role,
             #EMAIL# as user_email,
             current_timestamp()+32400000 as reg_date
+        ]]></query>
+        <query id= 'selectLogin'><![CDATA[
+        select max(reg_date) as reg_date from tb_user_info
+           where user_id =  #USERID#
+        ]]></query>
+        <query id= 'selectPassword'><![CDATA[
+        select user_pw from tb_user_info
+           where user_id = #USERID# and reg_date = #REGDATE#
         ]]></query>
   </user>
 </queryList>

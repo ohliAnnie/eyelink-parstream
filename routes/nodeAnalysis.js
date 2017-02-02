@@ -21,6 +21,32 @@ router.get('/clustering', function(req, res, next) {
   res.render('./analysis/clustering', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
 });
 
+router.get('/cluster_detail', function(req, res, next) {
+  console.log(_rawDataByDay);
+  res.render('./analysis/cluster_detail', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
+});
+/*router.get('/clustering', function(req, res, next) {
+   var in_data = {};
+  queryProvider.selectSingleQueryByID("analysis", "selectDaClusterMasterAll", in_data, function(err, out_data, params) {
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data[0] === null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    console.log(out_data[0]);    
+    var master = out_data[0];  
+    queryProvider.selectSingleQueryByID("analysis", "selectDaClusterDetailAll", in_data, function(err, out_data, params) {
+      var rtnCode = CONSTS.getErrData('0000');
+      if (out_data[0] === null) {
+        rtnCode = CONSTS.getErrData('0001');
+      }
+      console.log(out_data[0]);    
+      var detail = out_data[0];  
+      res.render('./analysis/clustering', { title: 'EyeLink for ParStream', mainmenu:mainmenu, master:master, detail:detail});
+    });
+  });
+});*/
+
 // query RawData
 router.get('/restapi/getDaClusterDetail', function(req, res, next) {
   console.log(req.query);
@@ -34,12 +60,6 @@ router.get('/restapi/getDaClusterDetail', function(req, res, next) {
     if (out_data[0] === null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-
-    // console.log('typeof array : %s', (typeof out_data[0] !== 'undefined'));
-    // console.log('typeof array : %s', (out_data[0] !== null));
-
-    // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data);
-    // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data[0]);
     console.log('analysis/restapi/getDaClusterDetail -> length : %s', out_data[0].length);
     res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });
@@ -57,17 +77,10 @@ router.get('/restapi/getDaClusterMaster', function(req, res, next) {
     if (out_data[0] === null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-
-    // console.log('typeof array : %s', (typeof out_data[0] !== 'undefined'));
-    // console.log('typeof array : %s', (out_data[0] !== null));
-
-    // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data);
-    // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data[0]);
     console.log('analysis/restapi/getDaClusterMaster -> length : %s', out_data[0].length);
     res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });
 });
-
 
 // query RawData
 router.get('/restapi/getClusterNodePower', function(req, res, next) {
