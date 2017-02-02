@@ -122,7 +122,8 @@ router.get('/restapi/getClusterRawData', function(req, res, next) {
 
 // insert RawData
 router.post('/restapi/insertClusterRawData', function(req, res, next) {
-  console.log('/restapi/insertClusterRawData -> body : %j', req.body);
+  // console.log('Limit file size: '+limit);
+  // console.log('/restapi/insertClusterRawData -> body : %j', req.body);
   console.log('/restapi/insertClusterRawData -> master : %j', req.body.tb_da_clustering_master);
   console.log('/restapi/insertClusterRawData -> detail : %j', req.body.tb_da_clustering_detail);
 
