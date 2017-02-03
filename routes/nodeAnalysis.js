@@ -154,7 +154,7 @@ router.post('/restapi/insertClusterRawData', function(req, res, next) {
   console.log('/restapi/insertClusterRawData -> master : %j', req.body.tb_da_clustering_master);
   console.log('/restapi/insertClusterRawData -> detail : %j', req.body.tb_da_clustering_detail);
 
-  req.body.tb_da_clustering_master.forEach(function(d) {
+ /* req.body.tb_da_clustering_master.forEach(function(d) {
     var in_data = {              
       DATIME : d.da_time, START : d.start_date+' 00:00:00.0',  END : d.end_date+' 23:59:59.0', TIMEINTERVAL : d.time_interval ,
       C0VOL : d.c0_voltage, C1VOL : d.c1_voltage, C2VOL : d.c2_voltage, C3VOL : d.c3_voltage,
@@ -165,6 +165,11 @@ router.post('/restapi/insertClusterRawData', function(req, res, next) {
     queryProvider.selectSingleQueryByID("analysis", "insertClusteringMaster", in_data, function(err, out_data, params) {       
     }); 
   });
+
+  req.body.tb_da_clustering_detail.forEach(function(d) {
+    console.log(d);
+  });*/
+
 
   req.body.tb_da_clustering_detail.forEach(function(d) {    
     var in_data = {              
