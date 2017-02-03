@@ -17,7 +17,7 @@ var chatUser1 = {'name':'Tom'};
 var chatUser2 = {'name':'Sally'};
 var chatUser3 = {'name':'Dana'};
 
-describe("Test", function(){
+describe("Socketio", function(){
   var cookie;
 
   before(function() {
@@ -41,11 +41,10 @@ describe("Test", function(){
 
   });
 
-  describe("Socketio -> ", function() {
+  describe("refreshData -> ", function() {
     // it('login', login());
 
-    // config/config.json 파일을 읽어서 값을 확인
-    it('connection', function(done) {
+    it('전송 및 수신 테스트', function(done) {
       var client1 = io.connect(socketURL, options);
 
       var count = 0;
@@ -63,6 +62,31 @@ describe("Test", function(){
         done();
       });
     })
+
+
+  });
+
+  describe("Python -> ", function() {
+
+    it('TO-DO Socket Data 전송', function(done) {
+      var client1 = io.connect(socketURL, options);
+
+      var count = 0;
+      client1.on('refreshData', function(data){
+        console.log(data);
+        data.count.should.equal(++count);
+        // if (data == 5)
+        //   done();
+
+        client1.emit('getEventListForAlarm', 0);
+      });
+
+      client1.on('sendEventListForAlarm', function(data) {
+        console.log(data);
+        done();
+      });
+    })
+
 
   });
 });
