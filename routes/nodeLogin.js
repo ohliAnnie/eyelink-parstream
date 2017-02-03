@@ -28,7 +28,7 @@ router.get('/login', function(req, res, next) {
     if (out_data[0] === null) {
       rtnCode = CONSTS.getErrData('0001');
       console.log('등록된 정보가 없어용')
-      res.render('/', { title: 'EyeLink for ParStream' });      
+      res.render('/', { title: 'EyeLink for ParStream', error: '등록된 ID가 아닙니다.' });      
     } else {
       var in_data = {              
         USERID: req.query.userid,                    
@@ -40,10 +40,10 @@ router.get('/login', function(req, res, next) {
         console.log('password : ' + out_data[0][0].user_pw);
         if(req.query.password === out_data[0][0].user_pw) {
           console.log('로그인 축축');
-          res.redirect('/dashboard/');
+          res.render('/dashboard', { title: 'EyeLink for ParStream' });      
         } else {
           console.log('비밀번호 틀렸돵');
-          res.redirect('/');
+          res.render('/', { title: 'EyeLink for ParStream', error: '잘못된 비밀번호 입니다.' });      
         }
       });
     } 
