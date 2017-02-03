@@ -11,7 +11,7 @@ var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   console.log('login');
-  // res.redirect('/dashboard/');
+  // res.redirect('/dashboard/');s
   res.render('./login/login', { title: 'EyeLink for ParStream' });
 });
 
@@ -55,9 +55,15 @@ router.post("/", function(req, res){
  var in_data = {              
       USERID: req.body.userid,        
   };
-  queryProvider.selectSingleQueryByID("user", "selectCheckJoin", in_data, function(err, out_data, params) {       
-    if (out_data[0] === null) {
-      console.log(req.body);
+  queryProvider.selectSingleQueryByID("user", "selectCheckJoin", in_data, function(err, out_data, params) {           
+    console.log(out_data[0][0]);
+    console.log(req.body.userid);
+    if (out_data[0][0] != null){
+      console.log(out_data[0]);
+      console.log('이미 있는 아이디닷');
+       res.redirect("/");
+    }  else  {
+      console.log('회원가입 축축');      
        var in_data = {              
             USERNAME: req.body.username,
             USERID: req.body.userid,        
@@ -65,15 +71,10 @@ router.post("/", function(req, res){
             EMAIL: req.body.email,  
             USERROLE: req.body.userrole,     
         };
-    console.log(in_data);
       queryProvider.selectSingleQueryByID("user", "insertUser", in_data, function(err, out_data, params) {    
         res.redirect("/");
       });
-    } else {
-      console.log('이미 있는 아이디닷');
-       res.render("/", { error : '이미 ID로 등록된 ID입니다.'})
-    }       
-   res.redirect("/");  
+    } 
   }); 
 });
 
