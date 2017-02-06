@@ -41,7 +41,24 @@ html
     script(src='assets/scripts/page/demo.js', type='text/javascript')
     script(src='assets/scripts/page/login-soft.js', type='text/javascript')
     script.
-      jQuery(document).ready(function() {
+      jQuery(document).ready(function() {        
+       var err = urlParams.error;
+       console.log(urlParams.error);
+       switch(err){
+        case "1" : 
+          alert("비밀번호를 잘못 입력하셨습니다.");
+          break;
+        case "2" :
+          alert("등록된 회원정보가 없습니다.");
+          break;
+        case "3" : 
+          alert("이미 등록된 아이디 입니다.");
+          break;
+        case "4" : 
+          alert("회원가입을 축하합니다~");
+          break;
+       }
+       
         Metronic.init(); // init metronic core componets
         eyelinkLayout.init(); // init eyelinklayout
         Layout.init(); // init layout
@@ -58,13 +75,21 @@ html
           }          
         );                 
       });
-  body.login
+    script.
+      var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
+        return paramPair.split(/=(.+)?/).slice(0, 2);
+      }).reduce(function(obj, pairArray) {
+        obj[pairArray[0]] = pairArray[1];
+        return obj;
+      }, {});
+  body.login    
     .logo
-      a(href='dashboard.html')
+      a(href='/dashboard')
         h1 EYELINK
     .menu-toggler.sidebar-toggler
     .content
-      form.login-form(action='/login', method='get')
+      #showAlert
+      form.login-form(action='/login', method='post')
         h3.form-title Login to your account
         .alert.alert-danger.display-hide
           button.close(data-close='alert')
@@ -93,7 +118,7 @@ html
           p
             | Don&apos;t have an account yet ?&nbsp;
             a#register-btn(href='javascript:;') Create an account
-      form.forget-form(action='dashboard.html', method='post')
+      form.forget-form(action='/dashboard', method='post')
         h3 Forget Password ?
         p  Enter your e-mail address below to reset your password.
         .form-group

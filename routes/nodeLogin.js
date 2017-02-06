@@ -16,36 +16,35 @@ router.get('/', function(req, res, next) {
 });
 
 // login
-router.get('/login', function(req, res, next) {    
-
+router.post('/login', function(req, res, next) {    
    var in_data = {              
-      USERID: req.query.userid,                    
+      USERID: req.body.userid,                    
    };
   console.log('login');  
    queryProvider.selectSingleQueryByID("user", "selectLogin", in_data, function(err, out_data, params) {
-    console.log(out_data);
+    console.log(out_data[0][0]);
     var rtnCode = CONSTS.getErrData('0000');
-    if (out_data[0] === null) {
-      rtnCode = CONSTS.getErrData('0001');
-      console.log('등록된 정보가 없어용')
-      res.render('/', { title: 'EyeLink for ParStream', error: '등록된 ID가 아닙니다.' });      
-    } else {
+    if (out_data[0][0] != undefined) {
+      console.log('tt');
       var in_data = {              
-        USERID: req.query.userid,                    
-        REGDATE: out_data[0][0].reg_date
+        USERID: req.body.userid,       
+        REGDATE :  out_data[0][0].reg_date
       };
       console.log(in_data);
       queryProvider.selectSingleQueryByID("user", "selectPassword", in_data, function(err, out_data, params) {
-        console.log(out_data);
-        console.log('password : ' + out_data[0][0].user_pw);
-        if(req.query.password === out_data[0][0].user_pw) {
-          console.log('로그인 축축');
-          res.render('/dashboard', { title: 'EyeLink for ParStream' });      
+        console.log('['+out_data[0][0]+']');    
+        if(req.body.password === out_data[0][0].user_pw) {
+          console.log('로그인 축축');          
+          res.redirect("/dashboard");
         } else {
           console.log('비밀번호 틀렸돵');
-          res.render('/', { title: 'EyeLink for ParStream', error: '잘못된 비밀번호 입니다.' });      
+          res.redirect("/?error=1");
         }
       });
+    } else {
+      rtnCode = CONSTS.getErrData('0001');
+      console.log('등록된 정보가 없어용');
+      res.redirect("/?error=2");     
     } 
   });  
 });
@@ -61,9 +60,9 @@ router.post("/", function(req, res){
     if (out_data[0][0] != null){
       console.log(out_data[0]);
       console.log('이미 있는 아이디닷');
-       res.redirect("/");
-    }  else  {
-      console.log('회원가입 축축');      
+      var err = "이미 등록된 아이디 입니다.";      
+       res.redirect("/?error=3");
+    }  else  {    
        var in_data = {              
             USERNAME: req.body.username,
             USERID: req.body.userid,        
@@ -71,8 +70,9 @@ router.post("/", function(req, res){
             EMAIL: req.body.email,  
             USERROLE: req.body.userrole,     
         };
-      queryProvider.selectSingleQueryByID("user", "insertUser", in_data, function(err, out_data, params) {    
-        res.redirect("/");
+      queryProvider.selectSingleQueryByID("user", "insertUser", in_data, function(err, out_data, params) {            
+        console.log('회원가입 축축');      
+        res.redirect("/?error=4");
       });
     } 
   }); 
