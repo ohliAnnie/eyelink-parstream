@@ -70,21 +70,27 @@ describe("Socketio", function(){
   describe("Python -> ", function() {
     it.only('TO-DO Socket Data 전송', function(done) {
 
-      var Dwarves = getConnection("Dwarves");
-      var Elves = getConnection("Elves");
-      var Hobbits = getConnection("Hobbits");
-      writeData(Dwarves, "More Axes");
-      writeData(Elves, "More Arrows");
-      writeData(Hobbits, "More Pipe Weed");
+      var datas = '{"start_date":"2017-02-01", "end_date":"2017-02-02", "interval":15}';
+      getConnection("Dwarves", function(socket) {
+        writeData(socket, datas, function() {
+          done();
+        });
+      });
+      // var Elves = getConnection("Elves");
+      // var Hobbits = getConnection("Hobbits");
+      // writeData(Elves, "More Arrows");
+      // writeData(Hobbits, "More Pipe Weed");
+      // data.count.should.equal(++count);
+      //done();
     })
 
 
   });
 });
 
-function getConnection(connName){
-  var pUrl = '192.168.10.27';
-  // var pUrl = 'localhost';
+function getConnection(connName, callback){
+  // var pUrl = '192.168.10.27';
+  var pUrl = 'localhost';
   var pPort = 50007;
   var client = net.connect({port: pPort, host:pUrl}, function() {
     console.log(connName + ' Connected: ');
@@ -108,18 +114,25 @@ function getConnection(connName){
     this.on('close', function() {
       console.log('Socket Closed');
     });
+    this.callback(client);
   });
-  return client;
+  // return client;
 }
 
-function writeData(socket, data){
+function writeData(socket, data, callback){
   var success = !socket.write(data);
+  console.log('success : ' + success);
   if (!success){
     (function(socket, data){
       socket.once('drain', function(){
-        writeData(socket, data);
+        console.log('drain');
+        writeData(socket, data, callback);
       });
     })(socket, data);
+  }
+
+  if (success) {
+    callback();
   }
 }
 
