@@ -231,5 +231,8 @@
         select user_pw from tb_user_info
            where user_id = #USERID# and reg_date = #REGDATE#
         ]]></query>
+        <query id= 'selectUserList'><![CDATA[
+        select * from tb_user_info           
+        ]]></query>
   </user>
 </queryList>

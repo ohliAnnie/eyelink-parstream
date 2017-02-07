@@ -44,21 +44,11 @@ html
       jQuery(document).ready(function() {        
        var err = urlParams.error;
        console.log(urlParams.error);
-       switch(err){
-        case "1" : 
+       if(err === "1") {
           alert("비밀번호를 잘못 입력하셨습니다.");
-          break;
-        case "2" :
+       } else if(err === "2") {
           alert("등록된 회원정보가 없습니다.");
-          break;
-        case "3" : 
-          alert("이미 등록된 아이디 입니다.");
-          break;
-        case "4" : 
-          alert("회원가입을 축하합니다~");
-          break;
-       }
-       
+       }       
         Metronic.init(); // init metronic core componets
         eyelinkLayout.init(); // init eyelinklayout
         Layout.init(); // init layout
@@ -113,11 +103,7 @@ html
           p
             | no worries, click
             a#forget-password(href='javascript:;') here
-            |  to reset your password.
-        .create-account
-          p
-            | Don&apos;t have an account yet ?&nbsp;
-            a#register-btn(href='javascript:;') Create an account
+            |  to reset your password. 
       form.forget-form(action='/dashboard', method='post')
         h3 Forget Password ?
         p  Enter your e-mail address below to reset your password.
@@ -129,56 +115,6 @@ html
           button#back-btn.btn(type='button')
             i.m-icon-swapleft Back
             button.btn.blue.pull-right(type='submit') Submit
-            i.m-icon-swapright.m-icon-white
-      form.register-form(action='/', method='post')
-        h3 Sign Up
-        p  Enter your account details below:
-         .form-group
-          label.control-label.visible-ie8.visible-ie9 User Name
-          .input-icon
-            i.fa.fa-font
-            input.form-control.placeholder-no-fix(type='text', placeholder='Userl Name', name='username')
-        .form-group
-          label.control-label.visible-ie8.visible-ie9 User ID
-          .input-icon
-            i.fa.fa-user
-            input.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='User ID', name='userid')
-        .form-group
-          label.control-label.visible-ie8.visible-ie9 Password
-          .input-icon
-            i.fa.fa-lock
-            input#register_password.form-control.placeholder-no-fix(type='password', autocomplete='off', placeholder='Password', name='password')
-        .form-group
-          label.control-label.visible-ie8.visible-ie9 Re-type Your Password
-          .controls
-            .input-icon
-              i.fa.fa-check
-              input.form-control.placeholder-no-fix(type='password', autocomplete='off', placeholder='Re-type Your Password', name='password')
-        .form-group
-          .input-icon
-            i.fa.fa-envelope
-            |  
-            input.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='Email', name='email')
-        .form-group
-          label.control-label.visible-ie8.visible-ie9 User Role
-          select#select2_sample4.select2.form-control(name='userrole')
-            option(value='') User Role
-            option(value='Super Manager') Super Manager
-            option(value='Zone Manager') Zone Manager
-            option(value='Asset Manager') Asset Manager
-            option(value='User') User
-        .form-group
-          label
-            input(type='checkbox', name='tnc')
-            |  I agree to the
-            a(href='javascript:;') Terms of Service
-            |  and
-            a(href='javascript:;') Privacy Policy
-          #register_tnc_error
-        .form-actions
-          button#register-back-btn.btn(type='button')
-            i.m-icon-swapleft
-          button#register-submit-btn.btn.blue.pull-right(type='submit') Sign Up
             i.m-icon-swapright.m-icon-white
     .copyright Copyright M2U Technology All rights reserved.
       br
