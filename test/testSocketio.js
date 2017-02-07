@@ -70,6 +70,7 @@ describe("Socketio", function(){
   describe("Python -> ", function() {
     it.only('TO-DO Socket Data 전송', function(done) {
 
+      // FIX-ME done() 처리 시점 재정의 필요함.
       var datas = '{"start_date":"2017-02-01", "end_date":"2017-02-02", "interval":15}';
       getConnection("Dwarves", function(socket) {
         writeData(socket, datas, function() {
