@@ -6,7 +6,7 @@ var router = express.Router();
 var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-db').QueryProvider;
 var queryProvider = new QueryProvider();
 
-var mainmenu = {dashboard:' ', reports:'open selected', timeseries:'', users:'', settings:''};
+var mainmenu = {dashboard:'', timeseries:'', reports:'open selected', analysis:'', management:'', settings:''};
 
 
 /* GET reports page. */
@@ -19,7 +19,7 @@ router.get('/main', function(req, res, next) {
 });
 
 router.get('/d3', function(req, res, next) {
-  res.render('./reports/report_d3', { title: 'EyeLInk D3 Reports', mainmenu:mainmenu });
+  res.render('./reports/report_d3', { title: 'EyeLink D3 Reports', mainmenu:mainmenu });
 });
 
 router.get('/test', function(req, res, next) {
