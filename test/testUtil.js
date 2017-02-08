@@ -9,7 +9,7 @@ require('date-utils');
 var CONSTS = require('../routes/consts');
 var Utils = require('../routes/util');
 
-describe("Test", function(){
+describe("Util.js", function(){
   var cookie;
 
   before(function() {
@@ -33,7 +33,7 @@ describe("Test", function(){
 
   });
 
-  describe("Util -> ", function() {
+  describe("SQL Query -> ", function() {
     // it('login', login());
 
     it('replace SQL Paramter', function(done) {
@@ -66,10 +66,10 @@ describe("Test", function(){
   });
 
 
-  describe("Util -> ", function() {
+  describe("Merge Data -> ", function() {
     // it('login', login());
 
-    it('merge Data', function(done) {
+    it('2 Data가 존재하는 경우', function(done) {
       global._rawDataByDay = {
         '2016-12-11' : [{event_type:1, als_level:2}, {event_type:12, als_level:2}],
         '2016-12-10' : [{event_type:12, als_level:2}]};
@@ -87,7 +87,7 @@ describe("Test", function(){
       out_data[0].length.should.be.equal(6);
       done();
     })
-    it('merge Data : query no data found', function(done) {
+    it('Query로 조회한 데이터가 존재하지 않는 경우', function(done) {
       global._rawDataByDay = {
         '2016-12-11' : [{event_type:1, als_level:2}, {event_type:12, als_level:2}],
         '2016-12-10' : [{event_type:12, als_level:2}]};
@@ -101,6 +101,17 @@ describe("Test", function(){
       Utils.mergeLoadedData(out_data);
       console.log(out_data[0]);
       out_data[0].length.should.be.equal(6);
+      done();
+    })
+  });
+
+  describe("Random -> ", function() {
+    // it('login', login());
+
+    it('난수 발생', function(done) {
+      var num = Utils.generateRandom(0, 100);
+      console.log(num);
+      should.exist(num);
       done();
     })
   });
