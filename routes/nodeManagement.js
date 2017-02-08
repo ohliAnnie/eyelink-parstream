@@ -20,7 +20,7 @@ router.get('/timeseries', function(req, res, next) {
   res.render('./dashboard/timeseries', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
 });
 
-router.get('/user', function(req, res, next) {
+router.get('/users', function(req, res, next) {
   // console.log(_rawDataByDay);
   var in_data = {};
    queryProvider.selectSingleQueryByID("user", "selectUserList", in_data, function(err, out_data, params) {
@@ -28,42 +28,89 @@ router.get('/user', function(req, res, next) {
       if (out_data[0] === null) {
         rtnCode = CONSTS.getErrData('0001');
       }
-      console.log(out_data[0]);    
-      var users = out_data[0];      
+      console.log(out_data[0]);
+      var users = out_data[0];
       res.render('./management/user_list', { title: 'EyeLink for ParStream', mainmenu:mainmenu, users:users });
-   });  
+   });
 });
 
 router.get('/sign_up', function(req, res, next) {
   res.render('./management/sign_up', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
 });
 
-// create
-router.post('/sign_up', function(req, res) {
-  var in_data = {              
-    USERID: req.body.userid,        
+
+// 한 사용자 정보 조회
+router.get('/users/:id', function(req, res) {
+   res.render('./management/sign_up', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
+});
+
+// 사용자 정보 수정
+router.put('/edit_user/:id', function(req, res) {
+   var in_data = {
+    USERID: id,
   };
-  queryProvider.selectSingleQueryByID("user", "selectCheckJoin", in_data, function(err, out_data, params) {           
+  queryProvider.selectSingleQueryByID("user", "selectUserById", in_data, function(err, out_data) {
+    if (err) console.log(err);
+    else {
+      var msg = CONSTS.getErrData(out_data);
+      console.log(msg);      
+    }
+    var user = out_data[0];
+   res.render('./management/edit_user', { title: 'EyeLink for ParStream', mainmenu:mainmenu, user:user });
+ });
+});
+
+// 사용자 정보 삭제
+router.delete('/delete_user/:id', function(req, res) {
+    var in_data = {
+      USERNAME: req.body.username,
+      USERID: req.body.userid,
+      PASSWORD: req.body.password[0],
+      EMAIL: req.body.email,
+      USERROLE: 'delete',
+    };
+    queryProvider.insertQueryByID("user", "insertUser", in_data, function(err, out_data) {
+      if (err) console.log(err);
+      else {
+        var msg = CONSTS.getErrData(out_data);
+        console.log(msg);
+        res.redirect("./sign_up?msg=" + msg.code);
+      }
+    });
+   res.render('./management/delete_user', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
+});
+
+// 사용자 신규 등록
+router.post('/users/:id', function(req, res) {
+  var in_data = {
+    USERID: req.body.userid,
+  };
+  console.log(in_data);
+  queryProvider.selectSingleQueryByID("user", "selectCheckJoin", in_data, function(err, out_data, params) {
     console.log(out_data[0][0]);
     console.log(req.body.userid);
     if (out_data[0][0] != null){
-      console.log('이미 있는 아이디닷');
-      var err = "이미 등록된 아이디 입니다.";      
-      res.redirect("./sign_up?msg=3");
-    }  else  {    
-      var in_data = {              
+      var err = CONSTS.getErrData('E005');
+      console.log(err);
+      res.redirect("./sign_up?msg=" + err.code);
+    }  else  {
+      var in_data = {
         USERNAME: req.body.username,
-        USERID: req.body.userid,        
+        USERID: req.body.userid,
         PASSWORD: req.body.password[0],
-        EMAIL: req.body.email,  
-        USERROLE: req.body.userrole,     
-      };  
-      queryProvider.selectSingleQueryByID("user", "insertUser", in_data, function(err, out_data, params) {            
-        console.log('회원가입 축축');  
-        res.redirect("./sign_up?msg=4");
-      });       
-    } 
-  }); 
-}); 
+        EMAIL: req.body.email,
+        USERROLE: req.body.userrole,
+      };
+      queryProvider.insertQueryByID("user", "insertUser", in_data, function(err, out_data) {
+        if (err) console.log(err);
+        else {
+          var msg = CONSTS.getErrData(out_data);
+          console.log(msg);
+          res.redirect("./sign_up?msg=" + msg.code);
+        }
+      });
+    }
+  });
+});
 
 module.exports = router;

@@ -72,7 +72,12 @@ function mergeLoadedData(out_data) {
 
 }
 
+function generateRandom (min, max) {
+  var ranNum = Math.floor(Math.random()*(max-min+1)) + min;
+  return ranNum;
+}
+
 module.exports.replaceSql = replaceSql;
 
 module.exports.mergeLoadedData = mergeLoadedData;
-  
+module.exports.generateRandom = generateRandom;

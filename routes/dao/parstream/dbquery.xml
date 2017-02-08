@@ -147,18 +147,18 @@
   </reports>
   <analysis>
      <query id='selectDaClusterMasterAll'><![CDATA[
-      select da_date, start_date, end_date, time_interval from tb_da_clustering_master        
+      select da_date, start_date, end_date, time_interval from tb_da_clustering_master
         order by da_date
      ]]></query>
     <query id='selectDaClusterDetailAll'><![CDATA[
-      select * from tb_da_clustering_detail      
+      select * from tb_da_clustering_detail
           order by event_time
      ]]></query>
     <query id='selectDaClusterMaster'><![CDATA[
       select * from tb_da_clustering_master
         where start_date = timestamp #START_TIMESTAMP#
             and end_date = timestamp #END_TIMESTAMP#
-        order by da_date    
+        order by da_date
      ]]></query>
     <query id='selectDaClusterDetail'><![CDATA[
       select * from tb_da_clustering_detail
@@ -207,16 +207,17 @@
   <node>
      <query id= 'selectNodeList'><![CDATA[
       select *
-      from tb_node_info    
-    ]]></query>    
+      from tb_node_info
+    ]]></query>
   </node>
   <user>
       <query id= 'selectCheckJoin'><![CDATA[
         select * from tb_user_info where user_id = #USERID#
         ]]></query>
       <query id= 'insertUser'><![CDATA[
-        insert into tb_user_info 
-         select  #USERID# as user_id,
+        insert into tb_user_info
+         select date_part('YEAR', current_date()) as data_year,
+            #USERID# as user_id,
             #USERNAME# as user_name,
             #PASSWORD# as user_pw,
             #USERROLE# as user_role,
@@ -232,7 +233,10 @@
            where user_id = #USERID# and reg_date = #REGDATE#
         ]]></query>
         <query id= 'selectUserList'><![CDATA[
-        select * from tb_user_info           
+        select * from tb_user_info
         ]]></query>
   </user>
+        <query id= 'selectUserList'><![CDATA[
+        select * from tb_user_info where user_id = #USERID#
+        ]]></query>
 </queryList>

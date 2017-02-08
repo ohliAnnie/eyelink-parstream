@@ -45,7 +45,7 @@ block content
                       td
                         input.checkboxes(type='checkbox', value='1')
                       td
-                        a(href='#') #{user.user_id}
+                        a(href='/users/'+user.user_id) #{user.user_id}
                       td  #{user.user_name}
                       td  #{user.user_email}                        
                       td                                                     
@@ -59,7 +59,7 @@ block content
                           span.label.label-sm.label-default #{user.user_role}       
                       td  #{user.reg_date}
                       td
-                        a.btn.default.btn-xs.balck(href='add_user.html')
+                        a.btn.default.btn-xs.balck(href='/edit_user/'+user.user_id)
                           i.fa.fa-edit
                           |  Edit
                         a.btn.default.btn-xs.balck(href='javascript:;')
