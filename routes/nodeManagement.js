@@ -38,7 +38,6 @@ router.get('/sign_up', function(req, res, next) {
   res.render('./management/sign_up', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
 });
 
-var joinCnt = 0;
 // create
 router.post('/sign_up', function(req, res) {
   var in_data = {              
@@ -50,25 +49,19 @@ router.post('/sign_up', function(req, res) {
     if (out_data[0][0] != null){
       console.log('이미 있는 아이디닷');
       var err = "이미 등록된 아이디 입니다.";      
-       res.redirect("./sign_up?msg=3");
+      res.redirect("./sign_up?msg=3");
     }  else  {    
-     if(joinCnt == 0){
-      console.log('joinCnt : '+joinCnt);
-       var in_data = {              
-            USERNAME: req.body.username,
-            USERID: req.body.userid,        
-            PASSWORD: req.body.password[0],
-            EMAIL: req.body.email,  
-            USERROLE: req.body.userrole,     
-        };
-        joinCnt++;
-        console.log('joinCnt : '+joinCnt);
-        queryProvider.selectSingleQueryByID("user", "insertUser", in_data, function(err, out_data, params) {            
-
-          console.log('회원가입 축축');  
-          res.redirect("./sign_up?msg=4");
-        });       
-       //res.render('./management/users', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
+      var in_data = {              
+        USERNAME: req.body.username,
+        USERID: req.body.userid,        
+        PASSWORD: req.body.password[0],
+        EMAIL: req.body.email,  
+        USERROLE: req.body.userrole,     
+      };  
+      queryProvider.selectSingleQueryByID("user", "insertUser", in_data, function(err, out_data, params) {            
+        console.log('회원가입 축축');  
+        res.redirect("./sign_up?msg=4");
+      });       
     } 
   }); 
 }); 
