@@ -7,7 +7,7 @@ var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ c
 
 var queryProvider = new QueryProvider();
 
-var mainmenu = {dashboard:'', reports:'', timeseries:'', analysis: 'open selected', users:'', settings:''};
+var mainmenu = {dashboard:'', reports:'', timeseries:'', analysis: 'open selected', management:'', users:'', settings:''};
 
 
 /* GET reports page. */
