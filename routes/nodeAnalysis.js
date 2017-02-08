@@ -25,6 +25,11 @@ router.get('/cluster_detail', function(req, res, next) {
   console.log(_rawDataByDay);
   res.render('./analysis/cluster_detail', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
 });
+
+router.get('/common_pop', function(req, res, next) {
+  console.log(_rawDataByDay);
+  res.render('./analysis/common_popup', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
+});
 /*router.get('/clustering', function(req, res, next) {
    var in_data = {};
   queryProvider.selectSingleQueryByID("analysis", "selectDaClusterMasterAll", in_data, function(err, out_data, params) {
