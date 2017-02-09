@@ -45,13 +45,39 @@ router.get('/users/:id', function(req, res) {
 });
 
 // 사용자 정보 수정
-router.put('/users/:id', function(req, res) {
-   res.render('./management/sign_up', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
+router.put('/edit_user/:id', function(req, res) {
+   var in_data = {
+    USERID: id,
+  };
+  queryProvider.selectSingleQueryByID("user", "selectUserById", in_data, function(err, out_data) {
+    if (err) console.log(err);
+    else {
+      var msg = CONSTS.getErrData(out_data);
+      console.log(msg);      
+    }
+    var user = out_data[0];
+   res.render('./management/edit_user', { title: 'EyeLink for ParStream', mainmenu:mainmenu, user:user });
+ });
 });
 
 // 사용자 정보 삭제
-router.delete('/users/:id', function(req, res) {
-   res.render('./management/sign_up', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
+router.delete('/delete_user/:id', function(req, res) {
+    var in_data = {
+      USERNAME: req.body.username,
+      USERID: req.body.userid,
+      PASSWORD: req.body.password[0],
+      EMAIL: req.body.email,
+      USERROLE: 'delete',
+    };
+    queryProvider.insertQueryByID("user", "insertUser", in_data, function(err, out_data) {
+      if (err) console.log(err);
+      else {
+        var msg = CONSTS.getErrData(out_data);
+        console.log(msg);
+        res.redirect("./sign_up?msg=" + msg.code);
+      }
+    });
+   res.render('./management/delete_user', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
 });
 
 // 사용자 신규 등록

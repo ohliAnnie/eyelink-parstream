@@ -236,4 +236,7 @@
         select * from tb_user_info
         ]]></query>
   </user>
+        <query id= 'selectUserList'><![CDATA[
+        select * from tb_user_info where user_id = #USERID#
+        ]]></query>
 </queryList>

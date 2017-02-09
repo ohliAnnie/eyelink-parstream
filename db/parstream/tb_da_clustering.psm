@@ -1,4 +1,4 @@
-drop table tb_da_clustering_master;
+   drop table tb_da_clustering_master;
 drop table tb_da_clustering_detail;
 
 create table tb_da_clustering_master

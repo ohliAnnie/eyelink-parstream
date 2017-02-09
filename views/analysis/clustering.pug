@@ -121,19 +121,15 @@ block content
                       input(type='checkbox')
                       |  System
             .portlet-body
-              .scroller(style='height: 355px;', data-always-visible='1', data-rail-visible='0')                
-                ul#masterList.feeds              
-                  li
-                    .col1
-                      .cont
-                        .cont-col1
-                          .label.label-sm.label-info
-                            i.fa.fa-check
-                        .cont-col2
-                          .desc
-                            | DA Date : [ Start Date - End Date ]
-                    .col2
-                      .date  Interval
+              .scroller(style='height: 355px;', data-always-visible='1', data-rail-visible='0') 
+                table#masterList.table.table-striped.table-hover
+                  thead
+                    tr
+                      th  DA Date
+                      th  Start Date - End Date
+                      th  Interval
+                      th  
+                  tbody                          
         .col-md-7
           .portlet.light.bordered
             .portlet-title

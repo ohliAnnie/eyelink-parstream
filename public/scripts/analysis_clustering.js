@@ -43,17 +43,18 @@ function drawMaster(master) {
     console.log(seatvar);
     console.log(master);
   master.forEach(function(d) {  
-    var sb = new StringBuffer();        
-    sb.append('<li><div class="col1"><div class="cont"><div class="cont-col1"> ');
-    sb.append('<div class="label label-sm label-info"> <i class="fa fa-bullhorn"></i> </div>');    
-    sb.append('</div><div class="cont-col2"><div class="desc">');
+    var sb = new StringBuffer();            
+    sb.append('<tr><td>');
     var sdate = d.start_date.split(' ');
     var edate = d.end_date.split(' ');
     var script= "d3.selectAll('svg').remove();drawCheckChart("+"'"+sdate[0]+"','"+edate[0]+"'";
     console.log(script);
     sb.append('<a href="javascript:'+script+');">');
-    sb.append(d.da_date+'</a> : [ '+sdate[0]+' - '+edate[0]+' ]</div></div></div></div>');
-    sb.append('<div class="col2"><div class="date">'+d.time_interval+'mins</div></div></li>');
+    sb.append(d.da_date+'</a></td><td> '+sdate[0]+' - '+edate[0]+' </td>');
+    sb.append('<td>'+d.time_interval+'mins</td>');    
+    sb.append('<td><a href="#" onclick="javascript_:window.open(');
+    var script = "'common_pop', 'pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=800,height=540,top=50,left=50'";
+    sb.append(script+');" class="btn default"> Detail </a></td></tr>')  
     console.log('sb : %s', sb.toString());
     $('#masterList').append(sb.toString());
   });
