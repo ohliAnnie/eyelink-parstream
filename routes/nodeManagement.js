@@ -57,6 +57,26 @@ router.get('/edit_user/:id', function(req, res) {
    });
 });
 
+// 사용자 업데이트
+router.post('/update', function(req, res) {
+  var in_data = {
+        USERNAME: req.body.username,
+        USERID: req.body.userid,
+        PASSWORD: req.body.password,
+        EMAIL: req.body.email,
+        USERROLE: req.body.userrole,
+  };
+  queryProvider.insertQueryByID("user", "insertUpdateUser", in_data, function(err, out_data) {
+    if (err) { console.log(err);
+    } else {
+      var msg = CONSTS.getErrData(out_data);
+      console.log(msg);      
+    }
+  });
+  res.redirect("./users");
+});
+
+
 // 사용자 정보 삭제
 /*router.delete('/delete_user/:id', function(req, res) {*/
 router.post('/delete_user/:id', function(req, res) {  
@@ -76,7 +96,11 @@ router.post('/delete_user/:id', function(req, res) {
 // 사용자 신규 등록
 router.post('/users', function(req, res) {
   var in_data = {
+    USERNAME: req.body.username,
     USERID: req.body.userid,
+    PASSWORD: req.body.password[0],
+    EMAIL: req.body.email,
+    USERROLE: req.body.userrole,
   };
   console.log(in_data);
   queryProvider.selectSingleQueryByID("user", "selectCheckJoin", in_data, function(err, out_data, params) {
