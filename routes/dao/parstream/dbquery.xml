@@ -189,7 +189,9 @@
     ]]></query>
     <query id= 'insertClusteringDetail'><![CDATA[
         insert into tb_da_clustering_detail
-         select  timestamp #DATIME# as da_date, timestamp #EVENTTIME# as event_time,
+         select  date_part('YEAR', current_date()) as data_year
+                timestamp #DATIME# as da_date, 
+                timestamp #EVENTTIME# as event_time,
                     #C0VOL# as c0_voltage, #C1VOL# as c1_voltage, #C2VOL# as c2_voltage, #C3VOL# as c3_voltage,
                     #C0AMP# as c0_ampere, #C1AMP# as c1_ampere, #C2AMP# as c2_ampere, #C3AMP# as c3_ampere,
                     #C0ACT# as c0_active_power, #C1ACT# as c1_active_power, #C2ACT# as c2_active_power, #C3ACT# as c3_active_power,
@@ -197,7 +199,8 @@
       ]]></query>
     <query id= 'insertClusteringMaster'><![CDATA[
         insert into tb_da_clustering_master
-         select  timestamp #DATIME# as da_date, timestamp #START# as start_date, timestamp #END# as end_date, #TIMEINTERVAL# as time_interval,
+         select date_part('YEAR', current_date()) as data_year
+            timestamp #DATIME# as da_date, timestamp #START# as start_date, timestamp #END# as end_date, #TIMEINTERVAL# as time_interval,
                     #C0VOL# as c0_voltage_node, #C1VOL# as c1_voltage_node, #C2VOL# as c2_voltage_node, #C3VOL# as c3_voltage_node,
                     #C0AMP# as c0_ampere_node, #C1AMP# as c1_ampere_node, #C2AMP# as c2_ampere_node, #C3AMP# as c3_ampere_node,
                     #C0ACT# as c0_active_power_node, #C1ACT# as c1_active_power_node, #C2ACT# as c2_active_power_node, #C3ACT# as c3_active_power_node,
