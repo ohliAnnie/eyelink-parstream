@@ -15,6 +15,7 @@ QueryProvider = function() {
 // 단건에 대해서 Query를 수행한다.
 QueryProvider.prototype.selectSingleQueryByID = function (type, queryId, datas, callback) {
   var vTimeStamp = Date.now();
+  console.log('queryId : '+queryId);
   console.time('nodelib-db/selectSingleQueryByID -> '+ queryId +' total ');
   console.log('nodelib-db/selectSingleQueryByID -> (%s) queryID', queryId)
 

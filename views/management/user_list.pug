@@ -26,7 +26,7 @@ block content
               .tools
                 button.btn.btn-default(type='button') Delete
                 |  
-                button.btn.btn-default.blue(type='button', onclick="location.href='add_user.html'") Add
+                button.btn.btn-default.blue(type='button', onclick="location.href='./sign_up'") Add
             .portlet-body
               table#sample_2.table.table-striped.table-bordered.table-hover
                 thead
@@ -44,8 +44,7 @@ block content
                     tr.odd.gradeX
                       td
                         input.checkboxes(type='checkbox', value='1')
-                      td
-                        a(href='/users/'+user.user_id) #{user.user_id}
+                      td  #{user.user_id}
                       td  #{user.user_name}
                       td  #{user.user_email}                        
                       td                                                     
@@ -59,16 +58,16 @@ block content
                           span.label.label-sm.label-default #{user.user_role}       
                       td  #{user.reg_date}
                       td
-                        a.btn.default.btn-xs.balck(href='/edit_user/'+user.user_id)
+                        a.btn.default.btn-xs.balck(href='./edit_user/'+user.user_id)
                           i.fa.fa-edit
                           |  Edit
-                        a.btn.default.btn-xs.balck(href='javascript:;')
+                        a.btn.default.btn-xs.balck(href='./delete_user/'+user.user_id)
                           i.fa.fa-trash-o
                           |  Delete  
             .portlet-footer
               button.btn.btn-default(type='button') Delete
               |  
-              button.btn.btn-default.blue(type='button', onclick="location.href='add_user.html'") Add
+              button.btn.btn-default.blue(type='button', onclick="location.href='./sign_up'") Add
     a.page-quick-sidebar-toggler(href='javascript:;')
       i.icon-login
     .page-quick-sidebar-wrapper

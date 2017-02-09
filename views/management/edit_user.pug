@@ -8,7 +8,7 @@ block content
     .container-fluid
       .page-content
         .breadcrumbs
-          h1 Add User
+          h1 Edit User
           ol.breadcrumb
             li
               a(href='#') Home
@@ -31,37 +31,30 @@ block content
               .portlet-body.from
                 form.form-horizontal.form-bordered(action='#')
                   .form-body
-                    .form-group
-                      label.control-label.col-md-3 User ID
-                      .col-md-9
-                        input.form-control.form-control-inline.input-large(size='16', type='text', value='', placeholder='userid')
-                        |  
-                        a.btn.btn-info(data-toggle='modal', href='#basic') Check ID
-                        span.tooltips.font-blue(data-container='body', data-placement='top', data-original-title='영문과 숫자 혹은 특수문자 혼용, 최소 9자리 이상 ')
-                          i.icon-question
-                    .form-group
-                      label.control-label.col-md-3 Name
-                      .col-md-9
-                        input.form-control.form-control-inline.input-large(size='16', type='text', value='David Choi', placeholder='Username')
-                    .form-group
-                      label.control-label.col-md-3 Password
-                      .col-md-9
-                        input.form-control.form-control-inline.input-large(size='16', type='text', value='', placeholder='password')
-                    .form-group
-                      label.control-label.col-md-3 Try it again
-                      .col-md-9
-                        input.form-control.form-control-inline.input-large(size='16', type='text', value='', placeholder='Try it again')
-                    .form-group.last
-                      label.control-label.col-md-3 Select Role
-                      .col-md-9
-                        select.bs-select.form-control.input-large(data-show-subtext='true')
-                          option Select
-                          option  User
-                          option  Asset manager
-                          option Zone manager
-                          option Super manager
-                        span.tooltips.font-blue(data-container='body', data-placement='top', data-original-title='Lorem ipsum dolor sit amet, consectetur adipisicing elit')
-                          i.icon-question
+                    each user in users
+                      .form-group
+                        label.control-label.col-md-3 User ID
+                        .col-md-9
+                          input.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_id, placeholder='userid')
+                      .form-group
+                        label.control-label.col-md-3 Name
+                        .col-md-9
+                          input.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_name, placeholder='Username')
+                      .form-group
+                        label.control-label.col-md-3 Password
+                        .col-md-9
+                          input.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_pw, placeholder='password') 
+                      .form-group.last
+                        label.control-label.col-md-3 Select Role
+                        .col-md-9
+                          select.bs-select.form-control.input-large(data-show-subtext='true')
+                            option #{user.user_role}
+                            option  User
+                            option  Asset manager
+                            option Zone manager
+                            option Super manager
+                          span.tooltips.font-blue(data-container='body', data-placement='top', data-original-title='Lorem ipsum dolor sit amet, consectetur adipisicing elit')
+                            i.icon-question
                 #basic.modal.fade(tabindex='-1', role='basic', aria-hidden='true')
                   .modal-dialog
                     .modal-content
