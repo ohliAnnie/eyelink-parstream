@@ -66,6 +66,7 @@ function drawMaster(master) {
   var seatvar = document.getElementsByClassName("masterList");
     console.log(seatvar);
     console.log(master);
+  $('#masterList').empty();
   master.forEach(function(d) {
     var sb = new StringBuffer();
     sb.append('<tr><td>');
@@ -74,10 +75,10 @@ function drawMaster(master) {
     var script= "d3.selectAll('svg').remove();drawCheckChart("+"'"+sdate[0]+"','"+edate[0]+"'";
     console.log(script);
     sb.append('<a href="javascript:'+script+');">');
-    sb.append(d.da_date+'</a></td><td> '+sdate[0]+' - '+edate[0]+' </td>');
+    sb.append(d.da_date+'</a></td><td> '+sdate[0]+' ~ '+edate[0]+' </td>');
     sb.append('<td>'+d.time_interval+'mins</td>');
     sb.append('<td><a href="#" onclick="javascript_:window.open(');
-    var script = "'common_pop', 'pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=800,height=540,top=50,left=50'";
+    var script = "'clustering_pop', 'pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=800,height=540,top=50,left=50'";
     sb.append(script+');" class="btn default"> Detail </a></td></tr>')
     console.log('sb : %s', sb.toString());
     $('#masterList').append(sb.toString());

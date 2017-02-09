@@ -2,6 +2,7 @@ var CONSTS = require('./consts');
 var Utils = require('./util');
 var express = require('express');
 var fs = require('fs');
+var net = require('net');
 var router = express.Router();
 var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-db').QueryProvider;
 
@@ -26,9 +27,9 @@ router.get('/cluster_detail', function(req, res, next) {
   res.render('./analysis/cluster_detail', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
 });
 
-router.get('/common_pop', function(req, res, next) {
+router.get('/clustering_pop', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./analysis/common_popup', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
+  res.render('./analysis/clustering_popup', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
 });
 /*router.get('/clustering', function(req, res, next) {
    var in_data = {};
@@ -38,15 +39,15 @@ router.get('/common_pop', function(req, res, next) {
     if (out_data[0] === null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-    console.log(out_data[0]);    
-    var master = out_data[0];  
+    console.log(out_data[0]);
+    var master = out_data[0];
     queryProvider.selectSingleQueryByID("analysis", "selectDaClusterDetailAll", in_data, function(err, out_data, params) {
       var rtnCode = CONSTS.getErrData('0000');
       if (out_data[0] === null) {
         rtnCode = CONSTS.getErrData('0001');
       }
-      console.log(out_data[0]);    
-      var detail = out_data[0];  
+      console.log(out_data[0]);
+      var detail = out_data[0];
       res.render('./analysis/clustering', { title: 'EyeLink for ParStream', mainmenu:mainmenu, master:master, detail:detail});
     });
   });
@@ -152,6 +153,23 @@ router.get('/restapi/getClusterRawData', function(req, res, next) {
   });
 });
 
+// run analysis
+router.post('/restapi/runAnalysis', function(req, res, next) {
+  console.log(req.query);
+  var in_data = {"start_date": req.body.startDate,
+                "end_date": req.body.endDate,
+                "time_interval": 15};
+  in_data = JSON.stringify(in_data, null, 4);
+  console.log(in_data);
+  // FIX-ME Socket Connection Close 처리 로직 보완 필요함.
+  getConnectionToDA("DataAnalysis", function(socket) {
+    writeDataToDA(socket, in_data, function() {
+      var rtnCode = CONSTS.getErrData('0000');
+      res.json({rtnCode: rtnCode, rtnData: ''});
+    });
+  });
+});
+
 // insert RawData
 router.post('/restapi/insertClusterRawData', function(req, res, next) {
   // console.log('Limit file size: '+limit);
@@ -160,15 +178,15 @@ router.post('/restapi/insertClusterRawData', function(req, res, next) {
   console.log('/restapi/insertClusterRawData -> detail : %j', req.body.tb_da_clustering_detail);
 
   req.body.tb_da_clustering_master.forEach(function(d) {
-    var in_data = {              
+    var in_data = {
       DATIME : d.da_time, START : d.start_date+' 00:00:00.0',  END : d.end_date+' 23:59:59.0', TIMEINTERVAL : d.time_interval ,
       C0VOL : d.c0_voltage, C1VOL : d.c1_voltage, C2VOL : d.c2_voltage, C3VOL : d.c3_voltage,
       C0AMP : d.c0_ampere, C1AMP : d.c1_ampere, C2AMP : d.c2_ampere, C3AMP : d.c3_ampere,
       C0ACT : d.c0_active_power, C1ACT : d.c1_active_power, C2ACT : d.c2_active_power, C3ACT : d.c3_active_power,
       C0POW : d.c0_power_factor, C1POW : d.c1_power_factor, C2POW : d.c2_power_factor, C3POW : d.c3_power_factor,
      };
-    queryProvider.selectSingleQueryByID("analysis", "insertClusteringMaster", in_data, function(err, out_data, params) {       
-    }); 
+    queryProvider.selectSingleQueryByID("analysis", "insertClusteringMaster", in_data, function(err, out_data, params) {
+    });
   });
 
   req.body.tb_da_clustering_detail.forEach(function(d) {
@@ -176,16 +194,16 @@ router.post('/restapi/insertClusterRawData', function(req, res, next) {
   });
 
 
-  req.body.tb_da_clustering_detail.forEach(function(d) {    
-    var in_data = {              
-      DATIME : d.da_time, EVENTTIME : d.event_time, 
+  req.body.tb_da_clustering_detail.forEach(function(d) {
+    var in_data = {
+      DATIME : d.da_time, EVENTTIME : d.event_time,
       C0VOL : d.c0_voltage, C1VOL : d.c1_voltage, C2VOL : d.c2_voltage, C3VOL : d.c3_voltage,
       C0AMP : d.c0_ampere, C1AMP : d.c1_ampere, C2AMP : d.c2_ampere, C3AMP : d.c3_ampere,
       C0ACT : d.c0_active_power, C1ACT : d.c1_active_power, C2ACT : d.c2_active_power, C3ACT : d.c3_active_power,
       C0POW : d.c0_power_factor, C1POW : d.c1_power_factor, C2POW : d.c2_power_factor, C3POW : d.c3_power_factor,
      };
-    queryProvider.selectSingleQueryByID("analysis", "insertClusteringDetail", in_data, function(err, out_data, params) {       
-    }); 
+    queryProvider.selectSingleQueryByID("analysis", "insertClusteringDetail", in_data, function(err, out_data, params) {
+    });
   });
 
   // TO-DO 일단 파일로 저장함. DB로 INSERT 로직 추가 구현 필요함.
@@ -212,6 +230,57 @@ router.post('/restapi/insertClusterRawData', function(req, res, next) {
     res.json({rtnCode: rtnCode, rtnData: ''});
   // });
 });
+
+
+function getConnectionToDA(connName, callback){
+  var pUrl = '192.168.10.27';
+  // var pUrl = 'm2u-da.eastus.cloudapp.azure.com';
+  // var pUrl = 'localhost';
+  var pPort = 5225;
+  var client = net.connect({port: pPort, host:pUrl}, function() {
+    console.log(connName + ' Connected: ');
+    console.log('   local = %s:%s', this.localAddress, this.localPort);
+    console.log('   remote = %s:%s', this.remoteAddress, this.remotePort);
+    this.setTimeout(500);
+    this.setEncoding('utf8');
+    this.on('data', function(data) {
+      console.log(connName + " From Server: " + data.toString());
+      this.end();
+    });
+    this.on('end', function() {
+      console.log(connName + ' Client disconnected');
+    });
+    this.on('error', function(err) {
+      console.log('Socket Error: ', JSON.stringify(err));
+    });
+    this.on('timeout', function() {
+      console.log('Socket Timed Out');
+    });
+    this.on('close', function() {
+      console.log('Socket Closed');
+    });
+    callback(client);
+  });
+  // return client;
+}
+
+function writeDataToDA(socket, data, callback){
+  var success = !socket.write(data);
+  console.log('success : ' + success);
+  if (!success){
+    (function(socket, data){
+      socket.once('drain', function(){
+        console.log('drain');
+        writeData(socket, data, callback);
+      });
+    })(socket, data);
+  }
+
+  if (success) {
+    callback();
+  }
+}
+
 
 
 module.exports = router;
