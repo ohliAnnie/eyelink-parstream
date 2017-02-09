@@ -224,7 +224,17 @@
             #EMAIL# as user_email,
             current_timestamp()+32400000 as reg_date
         ]]></query>
-        <query id= 'selectLogin'><![CDATA[
+        <query id= 'insertDeleteUser'><![CDATA[
+        insert into tb_user_info
+         select date_part('YEAR', current_date()) as data_year,
+            #USERID# as user_id,
+            'delete' as user_name,
+            'delete' as user_pw,
+            'delete' as user_role,
+            'delete' as user_email,
+            current_timestamp()+32400000 as reg_date
+        ]]></query>
+        <query id= 'selectMaxRegDate'><![CDATA[
         select max(reg_date) as reg_date from tb_user_info
            where user_id =  #USERID#
         ]]></query>
@@ -235,8 +245,8 @@
         <query id= 'selectUserList'><![CDATA[
         select * from tb_user_info
         ]]></query>
-  </user>
-        <query id= 'selectUserList'><![CDATA[
-        select * from tb_user_info where user_id = #USERID#
+        <query id= 'selectEditUser'><![CDATA[
+        select * from tb_user_info where user_id = #USERID# order by reg_date desc LIMIT 1;
         ]]></query>
+  </user>
 </queryList>
