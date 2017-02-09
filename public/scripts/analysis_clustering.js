@@ -1,17 +1,41 @@
+function runAnalysis() {
+  var sdate = $('#sdate').val();
+  var edate = $('#edate').val();
+  // TO-DO message config로 처리함.
+  if (confirm("분석에 시간이 걸릴수 있어 Background로 작업이 수행됩니다.\n 진행하시겠습니까? ")) {
+    $.ajax({
+        url: "/analysis/restapi/runAnalysis" ,
+        dataType: "json",
+        type: "post",
+        data: {startDate:sdate, endDate:edate},
+        success: function(result) {
+          if (result.rtnCode.code == "0000") {
+            var master = result.rtnData;
+            console.log(master);
+          }
+        },
+        error: function(req, status, err) {
+          $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+        }
+      });
+  }
+}
+
+
 function getMasterList() {
   var sdate = $('#sdate').val();
-  var edate = $('#edate').val();  
+  var edate = $('#edate').val();
  if(sdate === '' && edate === '') {
   $.ajax({
       url: "/analysis/restapi/getDaClusterMasterAll" ,
       dataType: "json",
-      type: "get",      
+      type: "get",
       success: function(result) {
         if (result.rtnCode.code == "0000") {
           var master = result.rtnData;
           console.log(master);
           drawMaster(master);
-        } 
+        }
       },
       error: function(req, status, err) {
         $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
@@ -29,7 +53,7 @@ function getMasterList() {
           var master = result.rtnData;
           console.log(master);
           drawMaster(master);
-        } 
+        }
       },
       error: function(req, status, err) {
         $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
@@ -38,12 +62,12 @@ function getMasterList() {
  }
 }
 
-function drawMaster(master) { 
-  var seatvar = document.getElementsByClassName("masterList");           
+function drawMaster(master) {
+  var seatvar = document.getElementsByClassName("masterList");
     console.log(seatvar);
     console.log(master);
-  master.forEach(function(d) {  
-    var sb = new StringBuffer();            
+  master.forEach(function(d) {
+    var sb = new StringBuffer();
     sb.append('<tr><td>');
     var sdate = d.start_date.split(' ');
     var edate = d.end_date.split(' ');
@@ -51,10 +75,10 @@ function drawMaster(master) {
     console.log(script);
     sb.append('<a href="javascript:'+script+');">');
     sb.append(d.da_date+'</a></td><td> '+sdate[0]+' - '+edate[0]+' </td>');
-    sb.append('<td>'+d.time_interval+'mins</td>');    
+    sb.append('<td>'+d.time_interval+'mins</td>');
     sb.append('<td><a href="#" onclick="javascript_:window.open(');
     var script = "'common_pop', 'pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=800,height=540,top=50,left=50'";
-    sb.append(script+');" class="btn default"> Detail </a></td></tr>')  
+    sb.append(script+');" class="btn default"> Detail </a></td></tr>')
     console.log('sb : %s', sb.toString());
     $('#masterList').append(sb.toString());
   });

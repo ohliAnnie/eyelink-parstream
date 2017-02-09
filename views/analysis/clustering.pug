@@ -13,25 +13,30 @@ block script
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
   script(type='text/javascript', src='/assets/annie/js/dc_2_1.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
-  script(type='text/javascript', src="/scripts/util.js")  
+  script(type='text/javascript', src="/scripts/util.js")
   script(src='/scripts/analysis_clustering.js')
   script.
-    $(document).ready(function(e) {   
+    $(document).ready(function(e) {
       var dateFormat = 'YYYY-MM-DD';
       //- $('#edate').val(moment().format(dateFormat));
       //- $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
       //- $('#sdate').val('2016-12-01');
       //- $('#edate').val('2016-12-02');
       // time series char를 그린다.
-        getMasterList();        
-        $('#btn_search').click(function() {        
-         d3.selectAll("svg").remove();
-         getMasterList();                   
-        });
-        $('#btn_factor').click(function() {
-         d3.selectAll("svg").remove();         
-         getMasterList();
-        });
+      getMasterList();
+      $('#btn_search').click(function() {
+        d3.selectAll("svg").remove();
+        getMasterList();
+      });
+      $('#btn_runanalysis').click(function() {
+        runAnalysis();
+        //- d3.selectAll("svg").remove();
+        //- getMasterList();
+      });
+      $('#btn_factor').click(function() {
+        d3.selectAll("svg").remove();
+        getMasterList();
+      });
     });
 block content
   .container-fluid
@@ -79,9 +84,6 @@ block content
                           label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
                             input#factor3.toggle(type='radio', name='options', value='power_factor')
                             | Power Factor
-                      .col-md-1.form-inline
-                        button#btn_factor.btn.blue
-                          i.fa.fa-search Change
                       label.control-label.col-md-1 Date Range
                       .col-md-3
                         .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
@@ -90,14 +92,16 @@ block content
                           input#edate.form-control(type='text', name='to' value='')
                       .col-md-1.form-inline
                         button#btn_search.btn.blue
+                          i.fa.fa-search Search
+                      .col-md-1.form-inline
+                        button#btn_runanalysis.btn.blue
                           i.fa.fa-search Run Analysis
       .row
         .col-md-5
           .portlet.light.bordered
             .portlet-title
               .caption.caption-md.font-blue
-                i.icon-share.font-blue
-                |  
+                i.icon-share.font-dark
                 span.caption-subject.theme-font.bold.uppercase History
               .actions
                 .btn-group
@@ -108,28 +112,25 @@ block content
                     label
                       input(type='checkbox', checked='')
                       |  Membership
-                    |  
                     label
                       input(type='checkbox')
                       |  Customer Support
-                    |  
                     label
                       input(type='checkbox', checked='')
                       |  HR
-                    |  
                     label
                       input(type='checkbox')
                       |  System
             .portlet-body
-              .scroller(style='height: 355px;', data-always-visible='1', data-rail-visible='0') 
+              .scroller(style='height: 355px;', data-always-visible='1', data-rail-visible='0')
                 table#masterList.table.table-striped.table-hover
                   thead
                     tr
                       th  DA Date
                       th  Start Date - End Date
                       th  Interval
-                      th  
-                  tbody                          
+                      th
+                  tbody
         .col-md-7
           .portlet.light.bordered
             .portlet-title
@@ -162,4 +163,4 @@ block content
                         input#c3.click_checkbox(type='checkbox', name='c3', value='4', v-on='click:checkOpt', checked='true')
                         text  Cluster3
                       .col-xm-12.col-sm-12.col-md-10.col-xs-12
-                        #Cluster(style='width:100%;height:345px;')   
+                        #Cluster(style='width:100%;height:345px;')

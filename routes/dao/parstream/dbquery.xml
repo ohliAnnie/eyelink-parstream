@@ -71,7 +71,7 @@
     where event_year = date_part('YEAR', current_date())
       and event_month = date_part('MONTH', current_date())
       and event_day = date_part('DAY', current_date())
-    </query>
+    ]]></query>
     <query id='selectCountEventRawDataByToDay'><![CDATA[
       select count(*) as cnt
       from tb_node_raw
