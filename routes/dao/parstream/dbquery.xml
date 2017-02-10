@@ -246,10 +246,10 @@
            where user_id = #USERID# and reg_date = #REGDATE#
         ]]></query>
         <query id= 'selectUserList'><![CDATA[
-        select * from tb_user_info order by user_id
+        select * from tb_user_info order by user_id, reg_date desc
         ]]></query>
         <query id= 'selectEditUser'><![CDATA[
-        select * from tb_user_info where user_id = #USERID# order by reg_date desc LIMIT 1;
+        select * from tb_user_info where user_id = #USERID# order by reg_date desc LIMIT 1
         ]]></query>
         <query id= 'insertUpdateUser'><![CDATA[
         insert into tb_user_info
