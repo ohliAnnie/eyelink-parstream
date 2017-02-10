@@ -49,7 +49,7 @@ describe("Analysis -> ", function(){
           done();
         });
     });
-    it.only('clustering_data.log 파일을 읽어서 Post로 결과 저장', function(done) {
+    it('clustering_data.log 파일을 읽어서 Post로 결과 저장', function(done) {
       fs.readFile('./clustering_data.json', 'utf8', function(err, datas) {
         // the data is passed to the callback in the second argument
 
@@ -73,6 +73,27 @@ describe("Analysis -> ", function(){
             done();
           });
       });
+
+    });
+  });
+
+  describe("Analysis ", function() {
+
+    it.only('DA 서버에 분석 실행', function(done) {
+      var datas = {"startDate": "2017-01-01",
+                  "endDate" : "2017-01-02"};
+      console.log(datas);
+      // var datas = JSON.parse(datas);
+      request(svr)
+        .post("/analysis/restapi/runAnalysis")
+        .send(datas)
+        .expect('Content-Type', /json/)
+        .expect(200, function(err, res) {
+          if (err) return done(err);
+          // console.log(res.body.rtnCode.code);
+          res.body.rtnCode.code.should.be.equal('0000');
+          done();
+        });
 
     });
   });

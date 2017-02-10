@@ -71,7 +71,7 @@
     where event_year = date_part('YEAR', current_date())
       and event_month = date_part('MONTH', current_date())
       and event_day = date_part('DAY', current_date())
-    </query>
+    ]]></query>
     <query id='selectCountEventRawDataByToDay'><![CDATA[
       select count(*) as cnt
       from tb_node_raw
@@ -156,15 +156,17 @@
      ]]></query>
     <query id='selectDaClusterMaster'><![CDATA[
       select * from tb_da_clustering_master
-        where start_date = timestamp #START_TIMESTAMP#
-            and end_date = timestamp #END_TIMESTAMP#
-        order by da_date
+        where da_date >= timestamp #START_TIMESTAMP#
+            and da_date <= timestamp #END_TIMESTAMP#
+        order by da_date desc
+     ]]></query>
+    <query id='selectDaClusterMasterByDadate'><![CDATA[
+      select * from tb_da_clustering_master
+        where da_date = #DADATE#        
      ]]></query>
     <query id='selectDaClusterDetail'><![CDATA[
       select * from tb_da_clustering_detail
-        where event_time >= timestamp #START_TIMESTAMP#
-            and event_time < timestamp #END_TIMESTAMP#
-          order by event_time
+        where da_date = #DADATE# order by event_time
      ]]></query>
      <query id='selectClusterNodePower'><![CDATA[
         select node_id, event_time, ampere, voltage, active_power, power_factor
@@ -190,7 +192,7 @@
     <query id= 'insertClusteringDetail'><![CDATA[
         insert into tb_da_clustering_detail
          select  date_part('YEAR', current_date()) as data_year,
-                timestamp #DATIME# as da_date, 
+                timestamp #DATIME# as da_date,
                 timestamp #EVENTTIME# as event_time,
                     #C0VOL# as c0_voltage, #C1VOL# as c1_voltage, #C2VOL# as c2_voltage, #C3VOL# as c3_voltage,
                     #C0AMP# as c0_ampere, #C1AMP# as c1_ampere, #C2AMP# as c2_ampere, #C3AMP# as c3_ampere,

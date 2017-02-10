@@ -68,10 +68,10 @@ describe("Socketio", function(){
   });
 
   describe("Python -> ", function() {
-    it.only('TO-DO Socket Data 전송', function(done) {
+    it.only('TO-DO Socket Data 전송 (test 모듈 내에서 connection 처리함)', function(done) {
 
       // FIX-ME done() 처리 시점 재정의 필요함.
-      var datas = '{"start_date":"2017-02-01", "end_date":"2017-02-02", "interval":15}';
+      var datas = '{"start_date":"2017-02-01", "end_date":"2017-02-02", "time_interval":15}';
       getConnection("Dwarves", function(socket) {
         writeData(socket, datas, function() {
           done();
@@ -84,15 +84,13 @@ describe("Socketio", function(){
       // data.count.should.equal(++count);
       //done();
     })
-
-
   });
 });
 
 function getConnection(connName, callback){
   // var pUrl = '192.168.10.27';
   var pUrl = 'localhost';
-  var pPort = 50007;
+  var pPort = 5225;
   var client = net.connect({port: pPort, host:pUrl}, function() {
     console.log(connName + ' Connected: ');
     console.log('   local = %s:%s', this.localAddress, this.localPort);
@@ -115,7 +113,7 @@ function getConnection(connName, callback){
     this.on('close', function() {
       console.log('Socket Closed');
     });
-    this.callback(client);
+    callback(client);
   });
   // return client;
 }
@@ -127,7 +125,7 @@ function writeData(socket, data, callback){
     (function(socket, data){
       socket.once('drain', function(){
         console.log('drain');
-        writeData(socket, data, callback);
+        writeData(socket, data);
       });
     })(socket, data);
   }
