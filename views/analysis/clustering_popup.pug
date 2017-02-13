@@ -62,6 +62,11 @@ html
       QuickSidebar.init(); // init quick sidebar
       Layout.init(); // init layout
       Tasks.initDashboardWidget(); // init tash dashboard widget      
+       $('input[type="radio"]').on('click change', function(e) {
+          d3.selectAll("svg").remove();
+          drawCheckChart();
+          getNodeList();
+      });
     });
   body.body-popup
     .wrapper
@@ -70,16 +75,18 @@ html
         .content-popup
           .popup-tit-box
             h1 Clustering
-            .popup-tit
-              a.btn.blue(data-toggle='modal', href='#') Close
           .row(style='display:')
+            .popup-tit.col-md-1
+              a.btn.blue(data-toggle='modal', href='#') Close
             label.control-label.col-md-1 Date Range
-            .col-md-9
-              input#sdate.form-control(type='text', name='from' value='')
-              input#edate.form-control(type='text', name='to' value='')
-          .row
-            label.control-label.col-md-1 Factor
-              .col-md-11
+            .col-md-4               
+              .input-group.input-large.date-picker.input-daterange
+                input#sdate.form-control(type='text' name='from' value=''  readonly)
+                span.input-group-addon to
+                input#edate.form-control(type='text' name='to' value='' readonly)
+            .form-group
+              label.control-label.col-md-1 Factor
+              .col-md-5
                 .btn-group.btn-group-devided(data-toggle='buttons')
                   label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
                     input#factor0.toggle(type='radio', name='options', value='active_power', checked='Y')
@@ -93,127 +100,89 @@ html
                   label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
                     input#factor3.toggle(type='radio', name='options', value='power_factor')
                     | Power Factor
-                .col-md-1.form-inline
-                  button#btn_search.btn.blue(type='button', onclick='javascript:d3.selectAll("svg").remove();drawCheckChart();') Draw
-        .col-md-5
-          .portlet.light.bordered
-            .portlet-title
-              .caption.font-dark
-                span.caption-subject.bold.uppercase Total Pattern
-                span.caption-helper  Total Pattern
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-pencil
-                  |  Edit
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-plus
-                  |  Add
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
-            .portlet-body
-              .chart(style='height:355px;')
-                #table
-                  .panel.panel-card
-                    .panel-body
-                      .col-xm-2.col-sm-2.col-md-2.panel-checkbox.hidden-xs.hidden-sm
-                        input#c0.click_checkbox(type='checkbox', name='ck0', value='1', v-on='click:checkOpt', checked='true')
-                        text  Cluster0
-                        br
-                        input#c1.click_checkbox(type='checkbox', name='c1', value='2', v-on='click:checkOpt', checked='true')
-                        text  Cluster1
-                        br
-                        input#c2.click_checkbox(type='checkbox', name='c2', value='3', v-on='click:checkOpt', checked='true')
-                        text  Cluster2
-                        br
-                        input#c3.click_checkbox(type='checkbox', name='c3', value='4', v-on='click:checkOpt', checked='true')
-                        text  Cluster3
-                      .col-xm-12.col-sm-12.col-md-10.col-xs-12
-                        #Cluster(style='width:100%;height:345px;')
-        .col-md-3
-          .portlet.light.bordered.tasks-widget
-            .portlet-title
-              .caption.caption-md.font-blue
-                i.icon-calendar.font-blue
-                span.caption-subject.theme-font.bold.uppercase Clustering
-              .inputs
-                .portlet-input.input-small.input-inline
-                  .input-icon.right
-                    i.icon-magnifier
-                    input.form-control.form-control-solid(type='text', placeholder='search...')
-            .portlet-body
-                .scroller(style='height: 350px;', data-always-visible='1', data-rail-visible1='0', data-handle-color='#D7DCE2')
-                 .table-scrollable.table-scrollable-borderless
-                  table#tblClusterDir.table.table-hover.table-light
-                    thead
-                    tr.uppercase
-                      th Cluster
-                      th ID
-        .col-md-4
-          .portlet.light.bordered
-            .portlet-title
-              .caption.font-dark
-                span.caption-subject.bold.uppercase Pattern by Node
-                span.caption-helper  Pattern by Node
-            .portlet-body
-              .chart(style='height:350px;')
-                #nodeChart
-      .row
-        .col-md-3
-          .portlet.light
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-blue-sharp Power
-                span.caption-helper  Power
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body(style='height:auto;')
-             .chart
-              #ts-chart01
-        .col-md-3
-          .portlet.light.bordered
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-green-haze ALS/Dimming
-                span.caption-helper  ALS/Dimming
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body
-              .chart
-                #ts-chart02
-        .col-md-3
-          .portlet.light.bordered
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-green-haze Noise
-                span.caption-helper  Noise
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body
-              .chart
-                #ts-chart03
-        .col-md-3
-          .portlet.light.bordered
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-green-haze Vibration
-                span.caption-helper  Vibration
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body
-              .chart
-                #ts-chart04
+        .row
+          .col-md-5
+            .portlet.light.bordered(style='height:430px;')
+              .portlet-title
+                .caption.font-dark
+                  span.caption-subject.bold.uppercase Total Pattern
+                  span.caption-helper  Total Pattern
+                .portlet-body
+                  .chart(style='height:355px;')
+                    #table
+                      .panel.panel-card
+                        .panel-body
+                          .col-xm-2.col-sm-2.col-md-2.panel-checkbox.hidden-xs.hidden-sm
+                            input#c0.click_checkbox(type='checkbox', name='ck0', value='1', v-on='click:checkOpt', checked='true')
+                            text  Cluster0
+                            br
+                            input#c1.click_checkbox(type='checkbox', name='c1', value='2', v-on='click:checkOpt', checked='true')
+                            text  Cluster1
+                            br
+                            input#c2.click_checkbox(type='checkbox', name='c2', value='3', v-on='click:checkOpt', checked='true')
+                            text  Cluster2
+                            br
+                            input#c3.click_checkbox(type='checkbox', name='c3', value='4', v-on='click:checkOpt', checked='true')
+                            text  Cluster3
+                          .col-xm-12.col-sm-12.col-md-10.col-xs-12
+                            #Cluster(style='width:100%;height:345px;')
+          .col-md-3
+            .portlet.light.bordered.tasks-widget(style='height:430px;')
+              .portlet-title
+                .caption.caption-md.font-blue
+                  i.icon-calendar.font-blue
+                  span.caption-subject.theme-font.bold.uppercase Clustering
+              .portlet-body
+                  .scroller(style='height: 345px;', data-always-visible='1', data-rail-visible1='0', data-handle-color='#D7DCE2')
+                   .table-scrollable.table-scrollable-borderless
+                    table#tblClusterDir.table.table-hover.table-light
+                      thead
+                      tr.uppercase
+                        th Cluster
+                        th ID
+          .col-md-4
+            .portlet.light.bordered(style='height:430px;')
+              .portlet-title
+                .caption.font-dark
+                  span.caption-subject.bold.uppercase Pattern by Node
+                  span.caption-helper  Pattern by Node
+              .portlet-body
+                .chart(style='height:350px;')
+                  #nodeChart
+        .row
+          .col-md-3
+            .portlet.light(style='height:370px;')
+              .portlet-title
+                .caption
+                  span.caption-subject.bold.uppercase.font-blue-sharp Power
+                  span.caption-helper  Power      
+              .portlet-body(style='height:auto;')
+               .chart
+                #ts-chart01
+          .col-md-3
+            .portlet.light.bordered(style='height:370px;')
+              .portlet-title
+                .caption
+                  span.caption-subject.bold.uppercase.font-green-haze ALS/Dimming
+                  span.caption-helper  ALS/Dimming
+              .portlet-body
+                .chart
+                  #ts-chart02
+          .col-md-3
+            .portlet.light.bordered(style='height:370px;')
+              .portlet-title
+                .caption
+                  span.caption-subject.bold.uppercase.font-green-haze Noise
+                  span.caption-helper  Noise
+              .portlet-body
+                .chart
+                  #ts-chart03
+          .col-md-3
+            .portlet.light.bordered(style='height:370px;')
+              .portlet-title
+                .caption
+                  span.caption-subject.bold.uppercase.font-green-haze Vibration
+                  span.caption-helper  Vibration
+              .portlet-body
+                .chart
+                  #ts-chart04
