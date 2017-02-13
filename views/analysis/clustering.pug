@@ -114,31 +114,13 @@ block content
                       button#btn_runanalysis.btn.blue Run Analysis
       .row
         .col-md-5
-          .portlet.light.bordered
+          .portlet.light.bordered(style='height: 500px;')
             .portlet-title
               .caption.caption-md.font-blue
                 i.icon-share.font-dark
-                span.caption-subject.theme-font.bold.uppercase History
-              .actions
-                .btn-group
-                  a.btn.btn-sm.btn-default.dropdown-toggle(href='#', data-toggle='dropdown', data-hover='dropdown', data-close-others='true')
-                    | Filter By
-                    i.fa.fa-angle-down
-                  .dropdown-menu.hold-on-click.dropdown-checkboxes.pull-right
-                    label
-                      input(type='checkbox', checked='')
-                      |  Membership
-                    label
-                      input(type='checkbox')
-                      |  Customer Support
-                    label
-                      input(type='checkbox', checked='')
-                      |  HR
-                    label
-                      input(type='checkbox')
-                      |  System
+                span.caption-subject.theme-font.bold.uppercase History             
             .portlet-body
-              .scroller(style='height: 355px;', data-always-visible='1', data-rail-visible='0')
+              .scroller(style='height: 450px;', data-always-visible='1', data-rail-visible='0')
                 table#masterList.table.table-striped.table-hover
                   thead
                     tr
@@ -149,19 +131,11 @@ block content
                       th
                   tbody
         .col-md-7
-          .portlet.light.bordered
+          .portlet.light.bordered(style='height: 500px;')
             .portlet-title
               .caption.font-dark
                 span.caption-subject.bold.uppercase Total Pattern
                 span.caption-helper  Total Pattern
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-pencil
-                  |  Edit
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-plus
-                  |  Add
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .form-group.last
               label.control-label.col-md-2 Factor
               .col-md-10

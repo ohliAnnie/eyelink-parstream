@@ -76,7 +76,7 @@ function drawMaster(master) {
     sb.append('<td>'+d.time_interval+'mins</td>');
     sb.append('<td><a href="#" onclick="javascript_:window.open(');
     var script = "'clustering_pop?dadate="+d.da_date+"&start="+sdate[0]+"&end="+edate[0]+"', 'pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=1000,height=540,top=50,left=50'";
-    sb.append(script+');" class="btn default"> Detail </a></td></tr>')
+    sb.append(script+');" class="btn red"> Detail </a></td></tr>')
     console.log('sb : %s', sb.toString());
     $('#masterList').append(sb.toString());
   });
@@ -105,7 +105,7 @@ function drawCheckChart(factor, daDate) {
           set.push({ time:d.event_time, c0:d.c0_power_factor, c1:d.c1_power_factor, c2:d.c2_power_factor, c3:d.c3_power_factor});
         }
         });
-        drawCheckCluster(set, daDate);
+        drawCheckCluster(set, daDate, factor);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -117,7 +117,7 @@ function drawCheckChart(factor, daDate) {
   });
 }
 
-function drawCheckCluster(data, dadate) {
+function drawCheckCluster(data, dadate, factor) {
   var demo = new Vue({
     el: '#table',
     data: {
@@ -162,7 +162,17 @@ function drawCheckCluster(data, dadate) {
         })();
         x.domain(d3.extent(data, function(d) {
          return d.time; }));
-        y.domain([0, 250]);
+        if(factor === 'active_power') {
+           y.domain([0, 180]);
+        } else if(factor === 'ampere') {
+           y.domain([0, 240]);
+        } else if(factor === 'voltage') {
+           y.domain([180, 240]);
+        } else if(factor === 'power_factor') {
+           y.domain([0, 2]);
+        }
+
+       
 
         //data.length/10 is set for the garantte of timeseries's fitting effect in svg chart
         var xAxis = d3.svg.axis()
