@@ -27,10 +27,10 @@ router.get('/users', function(req, res, next) {
       var rtnCode = CONSTS.getErrData('0000');
       if (out_data[0] === null) {
         rtnCode = CONSTS.getErrData('0001');
-      }
-      console.log(out_data[0]);
+      }      
       var users = out_data[0];
-      res.render('./management/user_list', { title: 'EyeLink for ParStream', mainmenu:mainmenu, users:users });
+      console.log(mainmenu);
+      res.render('./management/user_list', { title: 'EyeLink User List', mainmenu:mainmenu, users:users });
    });
 });
 

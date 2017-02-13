@@ -5,7 +5,6 @@ block style
   link(rel='stylesheet', href='/assets/leaflet/dc.css')
   link(rel='stylesheet', href='/stylesheets/style.css')
   link(rel='stylesheet', href='/scripts/d3_timeseries.css')
-  link(rel='stylesheet', href='/assets/leaflet/dc.css')
   link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')
 block script
   script(type='text/javascript', src='/assets/leaflet/d3.js')
@@ -19,6 +18,7 @@ block script
     $(document).ready(function(e) {
       var dateFormat = 'YYYY-MM-DD';
       var dateFormat = 'YYYY-MM-DD';
+      var daDate = '';
       $('#sdate').val(moment().format(dateFormat));
       $('#edate').val(moment().format(dateFormat));
       //- $('#edate').val(moment().format(dateFormat));
@@ -40,7 +40,45 @@ block script
         d3.selectAll("svg").remove();
         getMasterList();
       });
-    });
+
+      $('input[type="radio"]').on('click change', function(e) {
+        if ($('#factor0').is(':checked') === true) {
+          var factor = $('#factor0').val();
+        } else if ($('#factor1').is(':checked') === true) {
+          var factor = $('#factor1').val();
+        } else if ($('#factor2').is(':checked') === true) {
+          var factor = $('#factor2').val();
+        } else if ($('#factor3').is(':checked') === true) {
+          var factor = $('#factor3').val();
+        }
+        var daDate = $('#daDate').val();
+        console.log(daDate+ ' ' + factor);
+        if(daDate != ''){
+          d3.selectAll("svg").remove();
+          drawCheckChart(factor, daDate);
+        }
+      });
+
+      clickfunc = function(link) {
+        var daDate = link.innerText || link.textContent;        
+        $('#daDate').val(daDate);
+        console.log('2' + $('#daDate').val())
+        if ($('#factor0').is(':checked') === true) {
+          var factor = $('#factor0').val();
+        } else if ($('#factor1').is(':checked') === true) {
+          var factor = $('#factor1').val();
+        } else if ($('#factor2').is(':checked') === true) {
+          var factor = $('#factor2').val();
+        } else if ($('#factor3').is(':checked') === true) {
+          var factor = $('#factor3').val();
+        }
+        console.log(factor + ' ' + daDate)
+          d3.selectAll("svg").remove();
+          drawCheckChart(factor, daDate);
+      };  
+
+    });   
+
 block content
   .container-fluid
     .page-content
@@ -63,16 +101,16 @@ block content
               form.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
                   .row
-                    label.control-label.col-md-1 Date Range
-                    .col-md-4
-                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
+                    label.control-label.col-md-2 Date Range
+                    .col-md-5
+                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', dat.a-date-format='yyyy-mm-dd')
                         input#sdate.form-control(type='text', name='from' value='')
                         span.input-group-addon to
                         input#edate.form-control(type='text', name='to' value='')
-                    .col-md-1.form-inline
+                    .col-md-2.form-inline
                       button#btn_search.btn.blue
                         i.fa.fa-search Search
-                    .col-md-1.form-inline
+                    .col-md-2.form-inline
                       button#btn_runanalysis.btn.blue Run Analysis
       .row
         .col-md-5
@@ -125,25 +163,24 @@ block content
                   |  Add
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .form-group.last
-              label.control-label.col-md-1 Factor
-              .col-md-8
+              label.control-label.col-md-2 Factor
+              .col-md-10
                 .btn-group.btn-group-devided(data-toggle='buttons')
-                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm.active
                     input#factor0.toggle(type='radio', name='options', value='active_power', checked='Y')
                     | ActivePower
-                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
                     input#factor1.toggle(type='radio', name='options', value='voltage')
                     | Voltage
-                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
                     input#factor2.toggle(type='radio', name='options', value='ampere')
                     | Ampere
-                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
                     input#factor3.toggle(type='radio', name='options', value='power_factor')
-                    | Power Factor                 
-              .col-md-1.form-inline
-                button#btn_search.btn.blue(type='button', onclick='javascript:d3.selectAll("svg").remove();drawCheckChart();') Draw
+                    | Power Factor                    
             .portlet-body
               .chart(style='height:355px;')
+                input#daDate(type='hidden', name='hidden', value='')
                 #table
                   .panel.panel-card
                     .panel-body
