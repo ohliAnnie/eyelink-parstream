@@ -1,32 +1,79 @@
 extends ../layout-type01
 block style
   link(rel='stylesheet', type='text/css', href='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
-block script  
+block script
   script(type='text/javascript', src='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
   script(src='/assets/scripts/page/table-managed.js')
   script.
-    jQuery(document).ready(function() {
-     var msg = urlParams.msg;
-     console.log(urlParams.msg);
-     if(msg === "3") {
-      alert("이미 등록된 아이디 입니다.");
-     } else if(msg === "4") {
-      alert("회원가입을 축하합니다~");
-     }
-    Metronic.init(); // init metronic core componets
-    eyelinkLayout.init(); // init eyelinklayout
-    Layout.init(); // init layout    
-    Demo.init(); // init index page
-    $.backstretch([
-      "assets/images/bg/1.jpg",
-      "assets/images/bg/2.jpg",
-      "assets/images/bg/3.jpg",
-      "assets/images/bg/4.jpg"
-      ], {
-        fade: 1000,
-        duration: 8000
-     });                      
-   });
+    $(document).ready(function() {
+
+      $("#register-submit-btn").click(function() {
+        if ($("#userid").val() == "") {
+          $("#userid").focus();
+          $("#register_tnc_error").html("User ID를 입력하세요.");
+          $("#register_tnc_error").show();
+          return false;
+        }
+        if ($("#username").val() == "") {
+          $("#username").focus();
+          $("#register_tnc_error").html("User Name를 입력하세요.");
+          $("#register_tnc_error").show();
+          return false;
+        }
+
+        // TODO 메시지 공통 영역으로
+        if (confirm("등록 하시겠습니까? ")) {
+          var userid = $("#userid").val();
+          $.ajax({
+            url: "/management/users/" + userid,
+            dataType: "json",
+            type: "POST",
+            data:$('#create_account').serialize(),
+            success: function(result) {
+              if (result.code == "0000") {
+                //- location.href = "/homeB";
+              } else {
+                $("#errormsg").html(result.message);
+              }
+            },
+            error: function(req, status, err) {
+              //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+              $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+            }
+          });
+        }
+      });
+
+      $("#userid").keydown(function() {
+        $("#register_tnc_error").html("");
+        $("#register_tnc_error").hide();
+      });
+      $("#username").keydown(function() {
+        $("#register_tnc_error").html("");
+        $("#register_tnc_error").hide();
+      });
+
+      var msg = urlParams.msg;
+      console.log(urlParams.msg);
+      if(msg === "3") {
+        alert("이미 등록된 아이디 입니다.");
+      } else if(msg === "4") {
+        alert("회원가입을 축하합니다~");
+      }
+      Metronic.init(); // init metronic core componets
+      eyelinkLayout.init(); // init eyelinklayout
+      Layout.init(); // init layout
+      Demo.init(); // init index page
+      $.backstretch([
+        "assets/images/bg/1.jpg",
+        "assets/images/bg/2.jpg",
+        "assets/images/bg/3.jpg",
+        "assets/images/bg/4.jpg"
+        ], {
+          fade: 1000,
+          duration: 8000
+      });
+    });
   script.
     var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
       return paramPair.split(/=(.+)?/).slice(0, 2);
@@ -51,21 +98,20 @@ block content
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Sign Up
-                |  
                 span.caption-helper Total 8 Users
             .portlet-body
-              form.register-form(action='/management/users', method='post')   
+              form#create_account.register-form(onsubmit="return false;")
                 p Enter your account details below:
                   .form-group
                     label.control-label.visible-ie8.visible-ie9 User Name
                     .input-icon
                       i.fa.fa-font
-                      input.form-control.placeholder-no-fix(type='text', placeholder='Userl Name', name='username')
+                      input#username.form-control.placeholder-no-fix(type='text', placeholder='User Name', name='username')
                   .form-group
                     label.control-label.visible-ie8.visible-ie9 User ID
                     .input-icon
                       i.fa.fa-user
-                      input.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='User ID', name='userid')
+                      input#userid.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='User ID', name='userid')
                   .form-group
                     label.control-label.visible-ie8.visible-ie9 Password
                     .input-icon
@@ -80,11 +126,10 @@ block content
                   .form-group
                     .input-icon
                       i.fa.fa-envelope
-                      |  
                       input.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='Email', name='email')
                   .form-group
                     label.control-label.visible-ie8.visible-ie9 User Role
-                    select#select2_sample4.select2.form-control(name='userrole')
+                    select#userrole.select2.form-control(name='userrole')
                       option(value='') User Role
                       option(value='Super Manager') Super Manager
                       option(value='Zone Manager') Zone Manager
@@ -101,357 +146,9 @@ block content
                   .form-actions
                     button#register-back-btn.btn(type='button' onclick="location.href='./users'")
                       i.m-icon-swapleft
-                    button#register-submit-btn.btn.blue.pull-right(type='submit') Sign Up
+                    button#register-submit-btn.btn.blue.pull-right Sign Up
                       i.m-icon-swapright.m-icon-white
-            .portlet-footer              
-    a.page-quick-sidebar-toggler(href='javascript:;')
-      i.icon-login
-    .page-quick-sidebar-wrapper
-      .page-quick-sidebar
-        .nav-justified
-          ul.nav.nav-tabs.nav-justified
-            li.active
-              a(href='#quick_sidebar_tab_2', data-toggle='tab')
-                | Alerts 
-                span.badge.badge-success 7
-            li
-              a(href='#quick_sidebar_tab_1', data-toggle='tab')
-                | Users 
-                span.badge.badge-danger 2
-            li.dropdown
-              a.dropdown-toggle(href='javascript:;', data-toggle='dropdown')
-                | More
-                i.fa.fa-angle-down
-              ul.dropdown-menu.pull-right(role='menu')
-                li
-                  a(href='#quick_sidebar_tab_3', data-toggle='tab')
-                    i.fa.fa-bell
-                    |  Alerts
-                li
-                  a(href='#quick_sidebar_tab_3', data-toggle='tab')
-                    i.fa.fa-bookmark
-                    |  Notifications
-                li
-                  a(href='#quick_sidebar_tab_3', data-toggle='tab')
-                    i.fa.fa-comments
-                    |  Activities
-                li.divider
-                li
-                  a(href='#quick_sidebar_tab_3', data-toggle='tab')
-                    i.fa.fa-cog
-                    |  Settings
-          .tab-content
-            #quick_sidebar_tab_2.tab-pane.active.page-quick-sidebar-alerts
-              .page-quick-sidebar-alerts-list
-                h3.list-heading General
-                ul.feeds.list-items
-                  li
-                    .col1
-                      .cont
-                        .cont-col1
-                          .label.label-sm.label-info
-                            i.fa.fa-bullhorn
-                        .cont-col2
-                          .desc
-                            | New request received with 
-                            span.label.label-sm.label-danger Number: DR23923
-                    .col2
-                      .date  30 mins
-                  li
-                    .col1
-                      .cont
-                        .cont-col1
-                          .label.label-sm.label-success
-                            i.fa.fa-user
-                        .cont-col2
-                          .desc  You have 5 pending membership that requires a quick review.
-                    .col2
-                      .date  24 mins
-                  li
-                    .col1
-                      .cont
-                        .cont-col1
-                          .label.label-sm.label-danger
-                            i.fa.fa-bell-o
-                        .cont-col2
-                          .desc
-                            | Web server hardware needs to be upgraded. 
-                            span.label.label-sm.label-warning Overdue
-                    .col2
-                      .date  2 hours
-                  li
-                    a(href='javascript:;')
-                      .col1
-                        .cont
-                          .cont-col1
-                            .label.label-sm.label-default
-                              i.fa.fa-briefcase
-                          .cont-col2
-                            .desc  Report for year 2016 has been released.
-                      .col2
-                        .date  20 mins
-                h3.list-heading System
-                ul.feeds.list-items
-                  li
-                    .col1
-                      .cont
-                        .cont-col1
-                          .label.label-sm.label-info
-                            i.fa.fa-bullhorn
-                        .cont-col2
-                          .desc
-                            | New request received with 
-                            span.label.label-sm.label-success Number: DR23923
-                    .col2
-                      .date  30 mins
-                  li
-                    .col1
-                      .cont
-                        .cont-col1
-                          .label.label-sm.label-success
-                            i.fa.fa-user
-                        .cont-col2
-                          .desc  You have 5 pending membership that requires a quick review.
-                    .col2
-                      .date  24 mins
-                  li
-                    .col1
-                      .cont
-                        .cont-col1
-                          .label.label-sm.label-warning
-                            i.fa.fa-bell-o
-                        .cont-col2
-                          .desc
-                            | Web server hardware needs to be upgraded. 
-                            span.label.label-sm.label-default Overdue
-                    .col2
-                      .date  2 hours
-                  li
-                    a(href='javascript:;')
-                      .col1
-                        .cont
-                          .cont-col1
-                            .label.label-sm.label-info
-                              i.fa.fa-briefcase
-                          .cont-col2
-                            .desc  Report for year 2016 has been released.
-                      .col2
-                        .date  20 mins
-            #quick_sidebar_tab_1.tab-pane.active.page-quick-sidebar-chat
-              .page-quick-sidebar-chat-users(data-rail-color='#ddd', data-wrapper-class='page-quick-sidebar-list')
-                h3.list-heading Staff
-                ul.media-list.list-items
-                  li.media
-                    .media-status
-                      span.badge.badge-success 8
-                    |  
-                    img.media-object(src='/assets/images/user1.png', alt='...')
-                    .media-body
-                      h4.media-heading Gildong Hong
-                      .media-heading-sub  Area01 staff
-                  li.media
-                    img.media-object(src='/assets/images/user2.png', alt='...')
-                    .media-body
-                      h4.media-heading Minsick Kim
-                      .media-heading-sub  Area01 staff
-                  li.media
-                    .media-status
-                      span.badge.badge-danger 3
-                    |  
-                    img.media-object(src='/assets/images/user1.png', alt='...')
-                    .media-body
-                      h4.media-heading Sungsu Jung
-                      .media-heading-sub  Area01 staff
-                  li.media
-                    img.media-object(src='/assets/images/user1.png', alt='...')
-                    .media-body
-                      h4.media-heading Goungmin Kim
-                      .media-heading-sub  Area01 staff
-                h3.list-heading Manager
-                ul.media-list.list-items
-                  li.media
-                    .media-status
-                      span.badge.badge-warning 2
-                    |  
-                    img.media-object(src='/assets/images/user2.png', alt='...')
-                    .media-body
-                      h4.media-heading Minjung Lee
-                      .media-heading-sub  Area02 staff
-                      .media-heading-small  Last seen 03:10 AM
-                  li.media
-                    .media-status
-                      span.label.label-sm.label-success new
-                    |  
-                    img.media-object(src='/assets/images/user1.png', alt='...')
-                    .media-body
-                      h4.media-heading Haejin Park
-                      .media-heading-sub  Area02 staff
-                      .media-heading-small  Last seen 03:10 AM
-                  li.media
-                    img.media-object(src='/assets/images/user2.png', alt='...')
-                    .media-body
-                      h4.media-heading Younggil Park
-                      .media-heading-sub  Area02 staff
-                      .media-heading-small  Last seen 13:10 PM
-                  li.media
-                    .media-status
-                      span.badge.badge-success 7
-                    |  
-                    img.media-object(src='/assets/images/user2.png', alt='...')
-                    .media-body
-                      h4.media-heading Manager Name
-                      .media-heading-sub  Area03 staff
-                  li.media
-                    img.media-object(src='/assets/images/user1.png', alt='...')
-                    .media-body
-                      h4.media-heading Manager Name
-                      .media-heading-sub  Area03 staff
-              .page-quick-sidebar-item
-                .page-quick-sidebar-chat-user
-                  .page-quick-sidebar-nav
-                    a.page-quick-sidebar-back-to-list(href='javascript:;')
-                      i.icon-arrow-left
-                      |  Back
-                  .page-quick-sidebar-chat-user-messages
-                    .post.out
-                      img.avatar(alt='', src='/assets/images/user1.png')
-                      .message
-                        span.arrow
-                        |  
-                        a.name(href='javascript:;') Gildong Hong
-                        |  
-                        span.datetime 20:15
-                        |  
-                        span.body When could you send me the report ?
-                    .post.in
-                      img.avatar(alt='', src='/assets/images/user2.png')
-                      .message
-                        span.arrow
-                        |  
-                        a.name(href='javascript:;') Taehee Kim
-                        |  
-                        span.datetime 20:15
-                        |  
-                        span.body Its almost done. I will be sending it shortly
-                    .post.out
-                      img.avatar(alt='', src='/assets/images/user1.png')
-                      .message
-                        span.arrow
-                        |  
-                        a.name(href='javascript:;') Gildong Hong
-                        |  
-                        span.datetime 20:15
-                        |  
-                        span.body Alright. Thanks! :)
-                    .post.in
-                      img.avatar(alt='', src='/assets/images/user2.png')
-                      .message
-                        span.arrow
-                        |  
-                        a.name(href='javascript:;') Taehee Kim
-                        |  
-                        span.datetime 20:16
-                        |  
-                        span.body You are most welcome. Sorry for the delay.
-                    .post.out
-                      img.avatar(alt='', src='/assets/images/user1.png')
-                      .message
-                        span.arrow
-                        |  
-                        a.name(href='javascript:;') Gindong Hong
-                        |  
-                        span.datetime 20:17
-                        |  
-                        span.body No probs. Just take your time :)
-                    .post.in
-                      img.avatar(alt='', src='/assets/images/user2.png')
-                      .message
-                        span.arrow
-                        |  
-                        a.name(href='javascript:;') Taehee Kim
-                        |  
-                        span.datetime 20:40
-                        |  
-                        span.body Alright. I just emailed it to you.
-                    .post.out
-                      img.avatar(alt='', src='/assets/images/user1.png')
-                      .message
-                        span.arrow
-                        |  
-                        a.name(href='javascript:;') Gildong Hong
-                        |  
-                        span.datetime 20:17
-                        |  
-                        span.body Great! Thanks. Will check it right away.
-                    .post.in
-                      img.avatar(alt='', src='/assets/images/user2.png')
-                      .message
-                        span.arrow
-                        |  
-                        a.name(href='javascript:;') Taehee Kim
-                        |  
-                        span.datetime 20:40
-                        |  
-                        span.body Please let me know if you have any comment.
-                    .post.out
-                      img.avatar(alt='', src='/assets/images/user1.png')
-                      .message
-                        span.arrow
-                        |  
-                        a.name(href='javascript:;') Gildong Hong
-                        |  
-                        span.datetime 20:17
-                        |  
-                        span.body Sure. I will check and buzz you if anything needs to be corrected.
-                  .page-quick-sidebar-chat-user-form
-                    .input-group
-                      input.form-control(type='text', placeholder='Type a message here...')
-                      .input-group-btn
-                        button.btn.blue(type='button')
-                          i.icon-paper-clip
-            #quick_sidebar_tab_3.tab-pane.page-quick-sidebar-settings
-              .page-quick-sidebar-settings-list
-                h3.list-heading General Settings
-                ul.list-items.borderless
-                  li
-                    | Enable Notifications 
-                    input.make-switch(type='checkbox', checked='', data-size='small', data-on-color='success', data-on-text='ON', data-off-color='default', data-off-text='OFF')
-                  li
-                    | Allow Tracking 
-                    input.make-switch(type='checkbox', data-size='small', data-on-color='info', data-on-text='ON', data-off-color='default', data-off-text='OFF')
-                  li
-                    | Log Errors 
-                    input.make-switch(type='checkbox', checked='', data-size='small', data-on-color='danger', data-on-text='ON', data-off-color='default', data-off-text='OFF')
-                  li
-                    | Auto Sumbit Issues 
-                    input.make-switch(type='checkbox', data-size='small', data-on-color='warning', data-on-text='ON', data-off-color='default', data-off-text='OFF')
-                  li
-                    | Enable SMS Alerts 
-                    input.make-switch(type='checkbox', checked='', data-size='small', data-on-color='success', data-on-text='ON', data-off-color='default', data-off-text='OFF')
-                h3.list-heading System Settings
-                ul.list-items.borderless
-                  li
-                    | Security Level 
-                    select.form-control.input-inline.input-sm.input-small
-                      option(value='1') Normal
-                      option(value='2', selected='') Medium
-                      option(value='e') High
-                  li
-                    | Failed Email Attempts 
-                    input.form-control.input-inline.input-sm.input-small(value='5')
-                  li
-                    | Secondary SMTP Port 
-                    input.form-control.input-inline.input-sm.input-small(value='3560')
-                  li
-                    | Notify On System Error 
-                    input.make-switch(type='checkbox', checked='', data-size='small', data-on-color='danger', data-on-text='ON', data-off-color='default', data-off-text='OFF')
-                  li
-                    | Notify On SMTP Error 
-                    input.make-switch(type='checkbox', checked='', data-size='small', data-on-color='warning', data-on-text='ON', data-off-color='default', data-off-text='OFF')
-                .inner-content
-                  button.btn.btn-success
-                    i.icon-settings
-                    |  Save Changes
+            .portlet-footer
     p.copyright Copyright M2U Technology All rights reserved.
   a.go2top(href='#index')
     i.icon-arrow-up

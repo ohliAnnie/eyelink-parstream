@@ -8,18 +8,6 @@ var queryProvider = new QueryProvider();
 
 var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis:'', management: 'open selected', settings:''};
 
-
-/* GET reports page. */
-router.get('/', function(req, res, next) {
-  // console.log(_rawDataByDay);
-  res.render('./dashboard/main', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
-});
-
-router.get('/timeseries', function(req, res, next) {
-  // console.log(_rawDataByDay);
-  res.render('./dashboard/timeseries', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
-});
-
 router.get('/users', function(req, res, next) {
   // console.log(_rawDataByDay);
   var in_data = {};
@@ -27,7 +15,7 @@ router.get('/users', function(req, res, next) {
       var rtnCode = CONSTS.getErrData('0000');
       if (out_data[0] === null) {
         rtnCode = CONSTS.getErrData('0001');
-      }      
+      }
       var users = out_data[0];
       console.log(mainmenu);
       res.render('./management/user_list', { title: 'EyeLink User List', mainmenu:mainmenu, users:users });
@@ -40,7 +28,7 @@ router.get('/sign_up', function(req, res, next) {
 
 
 // 사용자 신규 등록
-router.post('/users', function(req, res) {
+router.post('/users/:id', function(req, res) {
   var in_data = {
     USERNAME: req.body.username,
     USERID: req.body.userid,
@@ -63,6 +51,7 @@ router.post('/users', function(req, res) {
         PASSWORD: req.body.password[0],
         EMAIL: req.body.email,
         USERROLE: req.body.userrole,
+        FLAG : 'C'
       };
       queryProvider.insertQueryByID("user", "insertUser", in_data, function(err, out_data) {
         if (err) { console.log(err);
@@ -128,7 +117,7 @@ router.post('/update_user', function(req, res) {
     if (err) { console.log(err);
     } else {
       var msg = CONSTS.getErrData(out_data);
-      console.log(msg);      
+      console.log(msg);
     }
   });
   res.redirect("./"+req.body.userid);
@@ -137,16 +126,16 @@ router.post('/update_user', function(req, res) {
 
 // 사용자 정보 삭제
 /*router.delete('/delete_user/:id', function(req, res) {*/
-router.get('/delete_user/:id', function(req, res) {  
+router.get('/delete_user/:id', function(req, res) {
   var in_data = {
     USERID: req.params.id,
   };
   queryProvider.insertQueryByID("user", "insertDeleteUser", in_data, function(err, out_data) {
-    if(err){ console.log(err); 
+    if(err){ console.log(err);
     } else {
       var msg = CONSTS.getErrData(out_data);
-      console.log(msg);      
-    } 
+      console.log(msg);
+    }
   });
      res.redirect("/management/users");
 });

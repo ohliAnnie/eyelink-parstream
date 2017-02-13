@@ -162,7 +162,7 @@
      ]]></query>
     <query id='selectDaClusterMasterByDadate'><![CDATA[
       select * from tb_da_clustering_master
-        where da_date = #DADATE#        
+        where da_date = #DADATE#
      ]]></query>
     <query id='selectDaClusterDetail'><![CDATA[
       select * from tb_da_clustering_detail
@@ -227,6 +227,7 @@
             #PASSWORD# as user_pw,
             #USERROLE# as user_role,
             #EMAIL# as user_email,
+            #FLAG# as flag,
             current_timestamp()+32400000 as reg_date
         ]]></query>
         <query id= 'insertDeleteUser'><![CDATA[
@@ -248,7 +249,13 @@
            where user_id = #USERID# and reg_date = #REGDATE#
         ]]></query>
         <query id= 'selectUserList'><![CDATA[
-        select * from tb_user_info order by user_id, reg_date desc
+        select a.user_id, b.user_name, b.reg_date
+          from (select user_id, max(reg_date) max_reg_date
+                  from tb_user_info
+                  group by user_id
+                ) as a left outer join tb_user_info as b on a.max_reg_date = b.reg_date
+          where flag in ('C', 'U')
+          order by a.user_id, b.reg_date desc
         ]]></query>
         <query id= 'selectEditUser'><![CDATA[
         select * from tb_user_info where user_id = #USERID# order by reg_date desc LIMIT 1
