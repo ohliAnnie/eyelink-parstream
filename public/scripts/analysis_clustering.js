@@ -69,10 +69,10 @@ function drawMaster(master) {
   $('#masterList').empty();
   master.forEach(function(d) {
     var sb = new StringBuffer();
-    sb.append('<tr><td><input type="radio" name="dadate" value="'+d.da_date+'"/></td><td>');
+    sb.append('<tr><td>');
     var sdate = d.start_date.split(' ');
     var edate = d.end_date.split(' ');
-    sb.append(d.da_date+'</td><td> '+sdate[0]+' ~ '+edate[0]+' </td>');
+    sb.append('<a href="#" onclick="clickfunc(this)">' + d.da_date+'</td><td> '+sdate[0]+' ~ '+edate[0]+' </td>');
     sb.append('<td>'+d.time_interval+'mins</td>');
     sb.append('<td><a href="#" onclick="javascript_:window.open(');
     var script = "'clustering_pop?dadate="+d.da_date+"&start="+sdate[0]+"&end="+edate[0]+"', 'pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=1000,height=540,top=50,left=50'";
@@ -82,24 +82,12 @@ function drawMaster(master) {
   });
 }
 
-function drawCheckChart() {  
-  if ($('#factor0').is(':checked') === true) {
-    var factor = $('#factor0').val();
-  } else if ($('#factor1').is(':checked') === true) {
-    var factor = $('#factor1').val();
-  } else if ($('#factor2').is(':checked') === true) {
-    var factor = $('#factor2').val();
-  } else if ($('#factor3').is(':checked') === true) {
-    var factor = $('#factor3').val();
-  }
-  console.log($("input:radio[name=dadate]:checked").val());
-  var dadate = $('input:radio[name=dadate]:checked').val();
-  console.log(dadate);
+function drawCheckChart(factor, daDate) {  
   $.ajax({
     url: "/analysis/restapi/getDaClusterDetail" ,
     dataType: "json",
     type: "get",
-    data: {daDate : dadate},
+    data: {daDate : daDate},
     success: function(result) {
       if (result.rtnCode.code == "0000") {
         var data = result.rtnData;
@@ -117,7 +105,7 @@ function drawCheckChart() {
           set.push({ time:d.event_time, c0:d.c0_power_factor, c1:d.c1_power_factor, c2:d.c2_power_factor, c3:d.c3_power_factor});
         }
         });
-        drawCheckCluster(set, dadate);
+        drawCheckCluster(set, daDate);
       } else {
         //- $("#errormsg").html(result.message);
       }
