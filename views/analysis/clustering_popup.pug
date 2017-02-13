@@ -20,6 +20,13 @@ html
     link(href='/assets/css/eyelink-layout.css', rel='stylesheet', type='text/css')
     link(href='/assets/css/eyelink-custom.css', rel='stylesheet', type='text/css')
     link(rel='shortcut icon', href='/assets/images/favicon.ico')
+    link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+    link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
+    link(rel='stylesheet', href='/assets/leaflet/dc.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/scripts/d3_timeseries.css')
+    link(rel='stylesheet', href='/assets/leaflet/dc.css')
+    link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')      
     script(src='/assets/scripts/libs/jquery.min.js', type='text/javascript')
     script(src='/assets/scripts/libs/jquery-migrate.min.js', type='text/javascript')
     script(src='/assets/scripts/libs/bootstrap.min.js', type='text/javascript')
@@ -28,16 +35,6 @@ html
     script(src='/assets/scripts/libs/jquery.blockui.min.js', type='text/javascript')
     script(src='/assets/scripts/libs/jquery.uniform.min.js', type='text/javascript')
     script(src='/assets/scripts/libs/bootstrap-switch.min.js', type='text/javascript')
-    script(src='/assets/plugins/charts/amcharts/amstockcharts/amstock.js', type='text/javascript')
-    script(src='/assets/plugins/charts/charts-amcharts.js', type='text/javascript')
-    script(src='/assets/plugins/charts/amcharts/amcharts/amcharts.js', type='text/javascript')
-    script(src='/assets/plugins/charts/amcharts/amcharts/serial.js', type='text/javascript')
-    script(src='/assets/plugins/charts/amcharts/amcharts/themes/light.js', type='text/javascript')
-    script(src='/assets/plugins/charts/amcharts/ammap/ammap.js', type='text/javascript')
-    script(src='/assets/plugins/charts/amcharts/ammap/maps/js/worldLow.js', type='text/javascript')
-    script(src='/assets/plugins/charts/morris/morris.min.js', type='text/javascript')
-    script(src='/assets/plugins/charts/morris/raphael-min.js', type='text/javascript')
-    script(src='/assets/plugins/charts/jquery.sparkline.min.js', type='text/javascript')
     script(src='/assets/scripts/eyelink-ui.js', type='text/javascript')
     script(src='/assets/scripts/eyelink-layout.js', type='text/javascript')
     script(src='/assets/scripts/eyelink-quick-sidebar.js', type='text/javascript')
@@ -50,25 +47,22 @@ html
     script(type='text/javascript', src='/assets/annie/js/dc_2_1.js')
     script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
     script(type='text/javascript', src="/scripts/util.js")
-    script(src='/scripts/analysis_cluster_detail.js')
+    script(src='/scripts/analysis_clustering_pop.js')
     script(type='text/javascript', src="/scripts/d3_timeseries.js")
-    script.
-      jQuery(document).ready(function() {
-        var sdate = $(opener.document).find("#sdate").val();
-        var edate = $(opener.document).find("#edate").val()
-        $('#sdate').val(sdate);
-        $('#edate').val(edate);
-        drawCheckChart();
-        getNodeList();
-        Metronic.init(); // init metronic core componets
-        eyelinkLayout.init(); // init layout
-        QuickSidebar.init(); // init quick sidebar
-        Layout.init(); // init layout
-        Index.init(); // init index page
-        Tasks.initDashboardWidget(); // init tash dashboard widget
-        ChartsAmcharts.init();
-      });
-
+  script.
+    jQuery(document).ready(function() {
+      var sdate = urlParams.start;
+      var edate = urlParams.end;
+      $('#sdate').val(sdate);
+      $('#edate').val(edate);
+      drawCheckChart();
+      getNodeList();
+      Metronic.init(); // init metronic core componets
+      eyelinkLayout.init(); // init layout
+      QuickSidebar.init(); // init quick sidebar
+      Layout.init(); // init layout
+      Tasks.initDashboardWidget(); // init tash dashboard widget      
+    });
   body.body-popup
     .wrapper
       header.page-header
@@ -79,8 +73,28 @@ html
             .popup-tit
               a.btn.blue(data-toggle='modal', href='#') Close
           .row(style='display:')
-            input#sdate.form-control(type='text', name='from' value='')
-            input#edate.form-control(type='text', name='to' value='')
+            label.control-label.col-md-1 Date Range
+            .col-md-9
+              input#sdate.form-control(type='text', name='from' value='')
+              input#edate.form-control(type='text', name='to' value='')
+          .row
+            label.control-label.col-md-1 Factor
+              .col-md-11
+                .btn-group.btn-group-devided(data-toggle='buttons')
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                    input#factor0.toggle(type='radio', name='options', value='active_power', checked='Y')
+                    | ActivePower
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                    input#factor1.toggle(type='radio', name='options', value='voltage')
+                    | Voltage
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                    input#factor2.toggle(type='radio', name='options', value='ampere')
+                    | Ampere
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                    input#factor3.toggle(type='radio', name='options', value='power_factor')
+                    | Power Factor
+                .col-md-1.form-inline
+                  button#btn_search.btn.blue(type='button', onclick='javascript:d3.selectAll("svg").remove();drawCheckChart();') Draw
         .col-md-5
           .portlet.light.bordered
             .portlet-title
@@ -139,14 +153,6 @@ html
               .caption.font-dark
                 span.caption-subject.bold.uppercase Pattern by Node
                 span.caption-helper  Pattern by Node
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-pencil
-                  |  Edit
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-plus
-                  |  Add
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart(style='height:350px;')
                 #nodeChart

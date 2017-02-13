@@ -54,7 +54,7 @@ block content
                 |  
                 span.caption-helper Total 8 Users
             .portlet-body
-              form.register-form(action='/users/'+userid, method='post')   
+              form.register-form(action='/management/users', method='post')   
                 p Enter your account details below:
                   .form-group
                     label.control-label.visible-ie8.visible-ie9 User Name
@@ -99,7 +99,7 @@ block content
                       a(href='javascript:;') Privacy Policy
                     #register_tnc_error
                   .form-actions
-                    button#register-back-btn.btn(type='button')
+                    button#register-back-btn.btn(type='button' onclick="location.href='./users'")
                       i.m-icon-swapleft
                     button#register-submit-btn.btn.blue.pull-right(type='submit') Sign Up
                       i.m-icon-swapright.m-icon-white

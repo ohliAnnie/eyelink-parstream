@@ -8,7 +8,7 @@ var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ c
 
 var queryProvider = new QueryProvider();
 
-var mainmenu = {dashboard:'', reports:'', timeseries:'', analysis: 'open selected', management:'', users:'', settings:''};
+var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis: 'open selected', management:'', settings:''};
 
 
 /* GET reports page. */
@@ -57,8 +57,7 @@ router.get('/clustering_pop', function(req, res, next) {
 router.get('/restapi/getDaClusterDetail', function(req, res, next) {
   console.log(req.query);
   var in_data = {
-      START_TIMESTAMP: req.query.startDate + ' 00:00:00',
-      END_TIMESTAMP: req.query.endDate + ' 23:59:59',
+      DADATE : req.query.daDate,
       FLAG : 'N'};
   queryProvider.selectSingleQueryByID("analysis", "selectDaClusterDetail", in_data, function(err, out_data, params) {
     // console.log(out_data);
@@ -78,6 +77,22 @@ router.get('/restapi/getDaClusterMaster', function(req, res, next) {
       END_TIMESTAMP: req.query.endDate + ' 23:59:59',
       FLAG : 'N'};
   queryProvider.selectSingleQueryByID("analysis", "selectDaClusterMaster", in_data, function(err, out_data, params) {
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data[0] === null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    console.log('analysis/restapi/getDaClusterMaster -> length : %s', out_data[0].length);
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+  });
+});
+
+router.get('/restapi/getDaClusterMasterByDadate', function(req, res, next) {
+  console.log(req.query);
+  var in_data = {
+      DADATE: req.query.daDate,
+      FLAG : 'N'};
+  queryProvider.selectSingleQueryByID("analysis", "selectDaClusterMasterByDadate", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data[0] === null) {

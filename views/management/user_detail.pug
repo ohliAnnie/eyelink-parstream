@@ -8,7 +8,7 @@ block content
     .container-fluid
       .page-content
         .breadcrumbs
-          h1 Edit User
+          h1 Detail User
           ol.breadcrumb
             li
               a(href='#') Home
@@ -16,7 +16,7 @@ block content
               a(href='#') Management
             li
               a(href='user_list.html') Users
-            li.active Add User
+            li.active Detailt User
         .row
           .col-md-12
             .portlet.light
@@ -29,42 +29,46 @@ block content
                   a.reload(href='javascript:;')
                   a.remove(href='javascript:;')
               .portlet-body.from
-                form.form-horizontal.form-bordered(action='/management/update_user', method='post')
+                form.form-horizontal.form-bordered(action='#')
                   .form-body
                     each user in users
                       .form-group
                         label.control-label.col-md-3 User ID
                         .col-md-9
-                          span #{user.user_id}         
-                          input(type='hidden', name='userid', value=user.user_id)                 
+                          span #{user.user_id}                       
                       .form-group
                         label.control-label.col-md-3 Name
                         .col-md-9
-                          input.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_name, placeholder='Username', name='username')
+                          span #{user.user_name}
                       .form-group
                         label.control-label.col-md-3 Password
                         .col-md-9
-                          input.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_pw, placeholder='password', name='password') 
-                      .form-group
-                        label.control-label.col-md-3 Email
-                        .col-md-9
-                          input.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_email, placeholder='email', name='email') 
+                          span #{user.user_pw}
                       .form-group.last
-                        label.control-label.col-md-3 Select Role
-                        .col-md-9
-                          select.bs-select.form-control.input-large(data-show-subtext='true', name='userrole')
-                            option #{user.user_role}
-                            option  User
-                            option  Asset Manager
-                            option Zone Manager
-                            option Super Manager
-                          span.tooltips.font-blue(data-container='body', data-placement='top', data-original-title='Lorem ipsum dolor sit amet, consectetur adipisicing elit')
-                            i.icon-question            
-                      .form-actions
-                        button.btn.btn-default(type='button', onclick="location.href='/management/users'") Cancel
+                        label.control-label.col-md-3 Role
+                        .col-md-9                         
+                          if user.user_role === 'Super Manager'
+                            span.label.label-sm.label-danger #{user.user_role}
+                          else if user.user_role === 'Zone Manager'
+                            span.label.label-sm.label-primary #{user.user_role}
+                          else if user.user_role === 'Asset Manager'
+                            span.label.label-sm.label-info #{user.user_role}
+                          else if user.user_role === 'User'
+                            span.label.label-sm.label-default #{user.user_role}       
+                  .modal-dialog
+                    .modal-content
+                      .modal-header
+                        button.close(type='button', data-dismiss='modal', aria-hidden='true')
+                        h4.modal-title.font-blue Check ID
+                      .modal-body  &#xC0AC;&#xC6A9;&#xD560; &#xC218; &#xC788;&#xB294; &#xC544;&#xC774;&#xB514;&#xC785;&#xB2C8;&#xB2E4;.
+                      .modal-footer
+                        button.btn.default(type='button', data-dismiss='modal') Close
                         |  
-                        button.btn.btn-default.blue(type='submit') Save
+                        button.btn.blue(type='button', data-dismiss='modal') Confirm
               .portlet-footer
+                button.btn.btn-default(type='button', onclick="location.href='/management/users'") Cancel
+                |  
+                button.btn.btn-default.blue(type='button', onclick="location.href='/management/edit_user'") Save
       a.page-quick-sidebar-toggler(href='javascript:;')
         i.icon-login
       .page-quick-sidebar-wrapper

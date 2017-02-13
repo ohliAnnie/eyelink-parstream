@@ -21,7 +21,6 @@ block script
       var dateFormat = 'YYYY-MM-DD';
       $('#sdate').val(moment().format(dateFormat));
       $('#edate').val(moment().format(dateFormat));
-
       //- $('#edate').val(moment().format(dateFormat));
       //- $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
       //- $('#sdate').val('2016-12-01');
@@ -64,34 +63,17 @@ block content
               form.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
                   .row
-                    .form-group.last
-                      label.control-label.col-md-1 Factor
-                      .col-md-4
-                        .btn-group.btn-group-devided(data-toggle='buttons')
-                          label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
-                            input#factor0.toggle(type='radio', name='options', value='active_power', checked='Y')
-                            | ActivePower
-                          label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
-                            input#factor1.toggle(type='radio', name='options', value='voltage')
-                            | Voltage
-                          label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
-                            input#factor2.toggle(type='radio', name='options', value='ampere')
-                            | Ampere
-                          label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
-                            input#factor3.toggle(type='radio', name='options', value='power_factor')
-                            | Power Factor
-                      label.control-label.col-md-1 Date Range
-                      .col-md-3
-                        .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
-                          input#sdate.form-control(type='text', name='from' value='')
-                          span.input-group-addon to
-                          input#edate.form-control(type='text', name='to' value='')
-                      .col-md-1.form-inline
-                        button#btn_search.btn.blue
-                          i.fa.fa-search Search
-                      .col-md-1.form-inline
-                        button#btn_runanalysis.btn.blue
-                          i.fa.fa-search Run Analysis
+                    label.control-label.col-md-1 Date Range
+                    .col-md-4
+                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
+                        input#sdate.form-control(type='text', name='from' value='')
+                        span.input-group-addon to
+                        input#edate.form-control(type='text', name='to' value='')
+                    .col-md-1.form-inline
+                      button#btn_search.btn.blue
+                        i.fa.fa-search Search
+                    .col-md-1.form-inline
+                      button#btn_runanalysis.btn.blue Run Analysis
       .row
         .col-md-5
           .portlet.light.bordered
@@ -122,6 +104,7 @@ block content
                 table#masterList.table.table-striped.table-hover
                   thead
                     tr
+                      th
                       th  DA Date
                       th  Start Date - End Date
                       th  Interval
@@ -141,6 +124,24 @@ block content
                   i.fa.fa-plus
                   |  Add
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .form-group.last
+              label.control-label.col-md-1 Factor
+              .col-md-8
+                .btn-group.btn-group-devided(data-toggle='buttons')
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                    input#factor0.toggle(type='radio', name='options', value='active_power', checked='Y')
+                    | ActivePower
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                    input#factor1.toggle(type='radio', name='options', value='voltage')
+                    | Voltage
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                    input#factor2.toggle(type='radio', name='options', value='ampere')
+                    | Ampere
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                    input#factor3.toggle(type='radio', name='options', value='power_factor')
+                    | Power Factor                 
+              .col-md-1.form-inline
+                button#btn_search.btn.blue(type='button', onclick='javascript:d3.selectAll("svg").remove();drawCheckChart();') Draw
             .portlet-body
               .chart(style='height:355px;')
                 #table

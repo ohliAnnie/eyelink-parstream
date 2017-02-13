@@ -2,8 +2,20 @@ extends ../layout-type01
 block style
   link(rel='stylesheet', type='text/css', href='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
 block script  
+  script(type='text/javascript', src='/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
   script(type='text/javascript', src='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
   script(src='/assets/scripts/page/table-managed.js')
+  script.
+    jQuery(document).ready(function() {
+      Metronic.init(); // init metronic core componets
+      eyelinkLayout.init(); // init eyelinklayout
+      QuickSidebar.init(); // init quick sidebar
+      Layout.init(); // init layout
+      Demo.init(); // init index page
+      ComponentsPickers.init();
+      TableManaged.init();
+      ComponentsDropdowns.init();
+    });
 block content
   .container-fluid
     .page-content
@@ -24,15 +36,11 @@ block content
                 |  
                 span.caption-helper Total 8 Users
               .tools
-                button.btn.btn-default(type='button') Delete
-                |  
                 button.btn.btn-default.blue(type='button', onclick="location.href='./sign_up'") Add
             .portlet-body
               table#sample_2.table.table-striped.table-bordered.table-hover
                 thead
                   tr
-                    th.table-checkbox
-                      input.group-checkable(type='checkbox', data-set='#sample_1 .checkboxes')
                     th  User ID
                     th  Name
                     th  Email
@@ -41,32 +49,29 @@ block content
                     th  Edit &amp; Delete
                 tbody
                   each user in users
-                    tr.odd.gradeX
-                      td
-                        input.checkboxes(type='checkbox', value='1')
-                      td  #{user.user_id}
-                      td  #{user.user_name}
-                      td  #{user.user_email}                        
-                      td                                                     
-                        if user.user_role === 'Super Manager'
-                          span.label.label-sm.label-danger #{user.user_role}
-                        else if user.user_role === 'Zone Manager'
-                          span.label.label-sm.label-primary #{user.user_role}
-                        else if user.user_role === 'Asset Manager'
-                          span.label.label-sm.label-info #{user.user_role}   
-                        else if user.user_role === 'User'
-                          span.label.label-sm.label-default #{user.user_role}       
-                      td  #{user.reg_date}
-                      td
-                        a.btn.default.btn-xs.balck(href='./edit_user/'+user.user_id)
-                          i.fa.fa-edit
-                          |  Edit
-                        a.btn.default.btn-xs.balck(href='./delete_user/'+user.user_id)
-                          i.fa.fa-trash-o
-                          |  Delete  
+                    if user.user_name != 'delete'
+                      tr.odd.gradeX
+                        td  #{user.user_id}
+                        td  #{user.user_name}
+                        td  #{user.user_email}                        
+                        td                                                     
+                          if user.user_role === 'Super Manager'
+                            span.label.label-sm.label-danger #{user.user_role}
+                          else if user.user_role === 'Zone Manager'
+                            span.label.label-sm.label-primary #{user.user_role}
+                          else if user.user_role === 'Asset Manager'
+                            span.label.label-sm.label-info #{user.user_role}   
+                          else if user.user_role === 'User'
+                            span.label.label-sm.label-default #{user.user_role}       
+                        td  #{user.reg_date}
+                        td
+                          a.btn.default.btn-xs.balck(href='./edit_user/'+user.user_id)
+                            i.fa.fa-edit
+                            |  Edit
+                          a.btn.default.btn-xs.balck(href='./delete_user/'+user.user_id)
+                            i.fa.fa-trash-o
+                            |  Delete  
             .portlet-footer
-              button.btn.btn-default(type='button') Delete
-              |  
               button.btn.btn-default.blue(type='button', onclick="location.href='./sign_up'") Add
     a.page-quick-sidebar-toggler(href='javascript:;')
       i.icon-login
