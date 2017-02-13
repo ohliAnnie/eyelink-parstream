@@ -544,8 +544,8 @@ function drawDirectory(nodeList) {
   var seatvar = document.getElementsByClassName("tblClusterDir");           
         console.log(seatvar);
         console.log(nodeList);
+  $('#tblClusterDir').empty();
   nodeList.forEach(function(d) {  
-
     var sb = new StringBuffer();
     var a = d.c0.split(':');
     var script = "javascript:getNodePower('"+d.c0+"');";
