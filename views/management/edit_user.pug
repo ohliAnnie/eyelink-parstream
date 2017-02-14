@@ -1,6 +1,55 @@
 extends ../layout-type01
 block style
 block script
+  script.
+    $(document).ready(function() {
+      $("#register-submit-btn").click(function() {
+        if ($("#username").val() == "") {
+          $("#username").focus();
+          $("#register_tnc_error").html("User Name를 입력하세요.");
+          $("#register_tnc_error").show();
+          return false;
+        }
+        if ($("#register_password").val() == "") {
+          $("#register_password").focus();
+          $("#register_tnc_error").html("Password 를 입력하세요.");
+          $("#register_tnc_error").show();
+          return false;
+        } else if ($("#register_password").val() != $("#register_password_1").val()) {
+          $("#register_password").focus();
+          $("#register_tnc_error").html("Password가 다릅니다. 다시 입력하세요.");
+          $("#register_tnc_error").show();
+          return false;
+        }
+
+        // TODO 메시지 공통 영역으로
+        if (confirm("저장 하시겠습니까? ")) {
+          var userid = $("#userid").val();
+          $.ajax({
+            url: "/management/users/" + userid,
+            dataType: "json",
+            type: "PUT",
+            data:$('#update_account').serialize(),
+            success: function(result) {
+              alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+              if (result.rtnCode.code == "D002") {
+                location.href = "/management/users";
+              }
+            },
+            error: function(req, status, err) {
+
+              //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+              $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+            }
+          });
+        }
+      });
+
+      $("#username").keydown(function() {
+        $("#register_tnc_error").html("");
+        $("#register_tnc_error").hide();
+      });
+    });
 block content
     .container-fluid
       .page-content
@@ -20,47 +69,49 @@ block content
               .portlet-title
                 .caption
                   span.caption-subject.bold.uppercase.font-green-haze User Information
-                  |  
                   span.caption-helper Lorem ipsum dolor sit amet
                 .tools
                   a.reload(href='javascript:;')
                   a.remove(href='javascript:;')
               .portlet-body.from
-                form.form-horizontal.form-bordered(action='/management/update_user', method='post')
+                form#update_account.form-horizontal.form-bordered(onsubmit="return false;")
                   .form-body
-                    each user in users
                       .form-group
                         label.control-label.col-md-3 User ID
                         .col-md-9
-                          span #{user.user_id}         
-                          input(type='hidden', name='userid', value=user.user_id)                 
+                          span #{user.user_id}
+                          input#userid(type='hidden', name='userid', value=user.user_id)
                       .form-group
                         label.control-label.col-md-3 Name
                         .col-md-9
-                          input.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_name, placeholder='Username', name='username')
+                          input#username.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_name, placeholder='Username', name='username')
                       .form-group
                         label.control-label.col-md-3 Password
                         .col-md-9
-                          input.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_pw, placeholder='password', name='password') 
+                          input#password.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_pw, placeholder='password', name='password')
+                      .form-group
+                        label.control-label.col-md-3 Re-type Your Password
+                        .col-md-9
+                          input#password_1.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_pw, placeholder='password', name='password_1')
                       .form-group
                         label.control-label.col-md-3 Email
                         .col-md-9
-                          input.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_email, placeholder='email', name='email') 
+                          input#email.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_email, placeholder='email', name='email')
                       .form-group.last
                         label.control-label.col-md-3 Select Role
                         .col-md-9
-                          select.bs-select.form-control.input-large(data-show-subtext='true', name='userrole')
+                          select#userrole.bs-select.form-control.input-large(data-show-subtext='true', name='userrole')
                             option #{user.user_role}
                             option  User
                             option  Asset Manager
                             option Zone Manager
                             option Super Manager
                           span.tooltips.font-blue(data-container='body', data-placement='top', data-original-title='Lorem ipsum dolor sit amet, consectetur adipisicing elit')
-                            i.icon-question            
+                            i.icon-question
+                      #register_tnc_error
                       .form-actions
                         button.btn.btn-default(type='button', onclick="location.href='/management/users'") Cancel
-                        |  
-                        button.btn.btn-default.blue(type='submit') Save
+                        button#register-submit-btn.btn.btn-default.blue Save
               .portlet-footer
       p.copyright Copyright M2U Technology All rights reserved.
       a.go2top(href='#index')

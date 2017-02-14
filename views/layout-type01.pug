@@ -82,11 +82,12 @@ html
     script.
       jQuery(document).ready(function() {
         $('#menudashboard').addClass( '#{mainmenu.dashboard}');
+        $('#menureports').addClass( '#{mainmenu.reports}');
         $('#menutimeseries').addClass( '#{mainmenu.timeseries}');
-        $('#menureports').addClass( '#{mainmenu.reports}');        
         $('#menuanalysis').addClass( '#{mainmenu.analysis}');
         $('#menumanagement').addClass( '#{mainmenu.management}');
         $('#menusettings').addClass( '#{mainmenu.settings}');
+
         Metronic.init(); // init metronic core componets
         eyelinkLayout.init(); // init eyelinklayout
         QuickSidebar.init(); // init quick sidebar
@@ -244,7 +245,9 @@ html
                   a(href='javascript:;') Time Series
                   ul.dropdown-menu.dropdown-menu-fw
                     li
-                      a(href='/dashboard/timeseries') Time Series 
+                      a(href='/dashboard/timeseries') Time Series
+                    //- li
+                      a(href='timeseries.html') Time Series Name
                 li#menureports.dropdown.dropdown-fw
                   a(href='javascript:;') Reports
                   ul.dropdown-menu.dropdown-menu-fw
@@ -257,7 +260,7 @@ html
                     li
                       a(href='/reports/d3') d3
                     li
-                      a(href='/reports/live') Live                
+                      a(href='/reports/live') Live
                 li#menuanalysis.dropdown.dropdown-fw
                   a(href='javascript:;') Analysis
                   ul.dropdown-menu.dropdown-menu-fw

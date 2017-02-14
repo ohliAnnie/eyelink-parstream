@@ -8,6 +8,7 @@ CREATE TABLE tb_user_info
   user_pw VARSTRING(20) COMPRESSION NONE MAPPING_FILE_GRANULARITY 256 ,
   user_role VARSTRING(15) COMPRESSION NONE MAPPING_FILE_GRANULARITY 256 ,
   user_email VARSTRING(50) COMPRESSION NONE MAPPING_FILE_GRANULARITY 256,
+  flag VARSTRING(1) COMPRESSION HASH64 INDEX EQUAL,
   reg_date  TIMESTAMP  INDEX RANGE INDEX_GRANULARITY DAY,
 )
 PARTITION BY data_year
@@ -24,6 +25,7 @@ insert into tb_user_info
             'admin' as user_pw,
             'Super Manager' as user_role,
             'admin@com' as user_email,
+            'C' as flag,
             current_timestamp()+32400000 as reg_date;
 
 insert into tb_user_info
@@ -33,4 +35,5 @@ select date_part('YEAR', current_date()) as data_year,
             'guest' as user_pw,
             'Guest' as user_role,
             'guest@m2u.com' as user_email,
+            'C' as flag,
             current_timestamp()+32400000 as reg_date;
