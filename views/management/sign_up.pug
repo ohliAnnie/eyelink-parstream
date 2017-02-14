@@ -31,6 +31,12 @@ block script
           $("#register_tnc_error").show();
           return false;
         }
+        if ($("#register_email").val() == "") {
+          $("#register_email").focus();
+          $("#register_tnc_error").html("Email을 입력하세요.");
+          $("#register_tnc_error").show();
+          return false;
+        }
 
         // TODO 메시지 공통 영역으로
         if (confirm("등록 하시겠습니까? ")) {
@@ -109,56 +115,58 @@ block content
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Sign Up
-                span.caption-helper Total 8 Users
+                span.caption-helper  Membership registration
             .portlet-body
-              form#create_account.register-form(onsubmit="return false;")
-                p Enter your account details below:
+              form#create_account.form-horizontal.register-form(onsubmit="return false;")
+                .form-body                
                   .form-group
-                    label.control-label.visible-ie8.visible-ie9 User Name
-                    .input-icon
-                      i.fa.fa-font
-                      input#username.form-control.placeholder-no-fix(type='text', placeholder='User Name', name='username')
-                  .form-group
-                    label.control-label.visible-ie8.visible-ie9 User ID
-                    .input-icon
-                      i.fa.fa-user
-                      input#userid.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='User ID', name='userid')
-                  .form-group
-                    label.control-label.visible-ie8.visible-ie9 Password
-                    .input-icon
-                      i.fa.fa-lock
-                      input#register_password.form-control.placeholder-no-fix(type='password', autocomplete='off', placeholder='Password', name='password')
-                  .form-group
-                    label.control-label.visible-ie8.visible-ie9 Re-type Your Password
-                    .controls
+                    label.control-label.col-md-4 User ID
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 User ID
                       .input-icon
-                        i.fa.fa-check
-                        input#register_password_1.form-control.placeholder-no-fix(type='password', autocomplete='off', placeholder='Re-type Your Password', name='password')
+                        i.fa.fa-user
+                        input#userid.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='User ID', name='userid')
                   .form-group
-                    .input-icon
-                      i.fa.fa-envelope
-                      input.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='Email', name='email')
+                    label.control-label.col-md-4 Name
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 User Name
+                      .input-icon
+                        i.fa.fa-font
+                        input#username.form-control.placeholder-no-fix(type='text', placeholder='User Name', name='username')
                   .form-group
-                    label.control-label.visible-ie8.visible-ie9 User Role
-                    select#userrole.select2.form-control(name='userrole')
-                      option(value='') User Role
-                      option(value='Super Manager') Super Manager
-                      option(value='Zone Manager') Zone Manager
-                      option(value='Asset Manager') Asset Manager
-                      option(value='User') User
+                    label.control-label.col-md-4 Password
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Password
+                      .input-icon
+                        i.fa.fa-lock
+                        input#register_password.form-control.placeholder-no-fix(type='password', autocomplete='off', placeholder='Password', name='password')
                   .form-group
-                    label
-                      input(type='checkbox', name='tnc')
-                      |  I agree to the
-                      a(href='javascript:;') Terms of Service
-                      |  and
-                      a(href='javascript:;') Privacy Policy
-                    #register_tnc_error
-                  .form-actions
-                    button#register-back-btn.btn(type='button' onclick="location.href='./users'")
+                    label.control-label.col-md-4 Re-type Your Password
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Re-type Your Password
+                      .controls
+                        .input-icon
+                          i.fa.fa-check
+                          input#register_password_1.form-control.placeholder-no-fix(type='password', autocomplete='off', placeholder='Re-type Your Password', name='password')
+                  .form-group
+                    label.control-label.col-md-4 Email
+                    .col-md-3
+                      .input-icon
+                        i.fa.fa-envelope
+                        input.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='Email', name='email')
+                  .form-group
+                    label.control-label.col-md-4 Select Role
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 User Role
+                      select#userrole.select2.form-control(name='userrole')
+                        option(value='User') User
+                        option(value='Super Manager') Super Manager
+                        option(value='Zone Manager') Zone Manager
+                        option(value='Asset Manager') Asset Manager                      
+                  .form-actions                    
+                    button#register-back-btn.btn.pull(type='button' onclick="location.href='/management/users'")
                       i.m-icon-swapleft
-                    button#register-submit-btn.btn.blue.pull-right Sign Up
-                      i.m-icon-swapright.m-icon-white
+                    button#register-submit-btn.btn.blue.pull-right Sign Up                      
             .portlet-footer
     p.copyright Copyright M2U Technology All rights reserved.
   a.go2top(href='#index')

@@ -1,13 +1,13 @@
 function runAnalysis() {
   var sdate = $('#sdate').val();
-  var edate = $('#edate').val();
+  var edate = $('#edate').val();  
   // TO-DO message config로 처리함.
   if (confirm("분석에 시간이 걸릴수 있어 Background로 작업이 수행됩니다.\n 진행하시겠습니까? ")) {
     $.ajax({
         url: "/analysis/restapi/runAnalysis" ,
         dataType: "json",
         type: "post",
-        data: {startDate:sdate, endDate:edate},
+        data: { startDate:sdate, endDate:edate  },
         success: function(result) {
           if (result.rtnCode.code == "0000") {
             var master = result.rtnData;
@@ -22,7 +22,7 @@ function runAnalysis() {
 }
 
 
-function getMasterList() {
+function getMasterList(interval) {
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
  if(sdate === '' && edate === '') {
@@ -42,15 +42,15 @@ function getMasterList() {
       }
     });
  } else {
-   console.log('%s, %s', sdate, edate);
+   console.log('%s, %s, %s', sdate, edate, interval);
    $.ajax({
       url: "/analysis/restapi/getDaClusterMaster" ,
       dataType: "json",
       type: "get",
-      data: {startDate:sdate, endDate:edate},
+      data: { startDate:sdate, endDate:edate, interval:interval },
       success: function(result) {
         if (result.rtnCode.code == "0000") {
-          var master = result.rtnData;
+          var master = result.rtnData;          
           console.log(master);
           drawMaster(master);
         }
@@ -77,7 +77,6 @@ function drawMaster(master) {
     sb.append('<td><a href="#" onclick="javascript_:window.open(');
     var script = "'clustering_pop?dadate="+d.da_date+"&start="+sdate[0]+"&end="+edate[0]+"', 'pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=1000,height=540,top=50,left=50'";
     sb.append(script+');" class="btn red"> Detail </a></td></tr>')
-    console.log('sb : %s', sb.toString());
     $('#masterList').append(sb.toString());
   });
 }
