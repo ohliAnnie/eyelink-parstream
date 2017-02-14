@@ -77,16 +77,16 @@ html
             h1 Clustering
           .row(style='display:')
             .popup-tit.col-md-1
-              a.btn.blue(data-toggle='modal', href='#') Close
+              a.btn.blue(data-toggle='modal', href='javascript:self.opener = self;window.close();') Close
             label.control-label.col-md-1 Date Range
-            .col-md-4               
+            .col-md-5               
               .input-group.input-large.date-picker.input-daterange
-                input#sdate.form-control(type='text' name='from' value=''  readonly)
+                input#sdate.form-control(type='text' name='from' value='' style = 'text-align:center;' readonly)
                 span.input-group-addon to
-                input#edate.form-control(type='text' name='to' value='' readonly)
+                input#edate.form-control(type='text' name='to' value='' style = 'text-align:center;'  readonly)
             .form-group
-              label.control-label.col-md-1 Factor
-              .col-md-5
+              label.control-label.col-md-1(style='color: silver') Factor
+              .col-md-4
                 .btn-group.btn-group-devided(data-toggle='buttons')
                   label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
                     input#factor0.toggle(type='radio', name='options', value='active_power', checked='Y')

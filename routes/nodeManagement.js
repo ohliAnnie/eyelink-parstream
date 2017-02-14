@@ -6,7 +6,7 @@ var router = express.Router();
 var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-db').QueryProvider;
 var queryProvider = new QueryProvider();
 
-var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis:'', management: 'open selected', settings:''};
+var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis:'', management:'open selected', settings:''};
 
 
 /* GET reports page. */
