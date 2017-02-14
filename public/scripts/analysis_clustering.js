@@ -133,7 +133,7 @@ function drawCheckCluster(data, dadate, factor) {
 
    //generation function
   function generate(data, id, lineType, axisNum) {
-    var margin = {top: 14, right: 20, bottom: 60, left: 40},
+    var margin = {top: 14, right: 10, bottom: 60, left: 30},
     width = $(id).width() - margin.left - margin.right,
     height = $(id).height() - margin.top - margin.bottom;
 
@@ -169,10 +169,8 @@ function drawCheckCluster(data, dadate, factor) {
         } else if(factor === 'voltage') {
            y.domain([180, 240]);
         } else if(factor === 'power_factor') {
-           y.domain([0, 2]);
+           y.domain([0, 1.5]);
         }
-
-       
 
         //data.length/10 is set for the garantte of timeseries's fitting effect in svg chart
         var xAxis = d3.svg.axis()
@@ -193,7 +191,6 @@ function drawCheckCluster(data, dadate, factor) {
     var div = d3.select("body").append("div")
         .attr("class", "tip")
         .style("opacity", 0);
-
 
         d3.select('#svg-path').remove();
 
@@ -251,7 +248,7 @@ function drawCheckCluster(data, dadate, factor) {
            .append('g')
            .attr('class', 'path_legend')
            .attr('transform', function(d, i) {
-            return 'translate(' + ((5 + (width-20) / 6) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
+            return 'translate(' + ((5 + (width-20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
           });
 
            singLegend.append('g:rect')
@@ -281,8 +278,7 @@ function drawCheckCluster(data, dadate, factor) {
               }
                   return rename;          });
 
-
-          //draw the rect for legends
+         //draw the rect for legends
         var rect = svg.append('g')
         .attr("class", 'legendOuter');
 
@@ -291,10 +287,10 @@ function drawCheckCluster(data, dadate, factor) {
         .enter()
         .append('rect')
         .attr('class', 'legendRect')
-        .attr('width', (width - 20) / 6)
+        .attr('width', (width - 20) / 4)
         .attr('height', legendSize + 10)
         .attr('transform', function(d, i) {
-          return 'translate(' + (i * (5 + (width-20) / 6)) + ',' + (height + margin.bottom - legendSize - 20) + ')';
+          return 'translate(' + (i * (5 + (width-20) / 4)) + ',' + (height + margin.bottom - legendSize - 20) + ')';
         });
 
       var points = svg.selectAll(".seriesPoints")
@@ -474,7 +470,6 @@ function drawCheckCluster(data, dadate, factor) {
           }
               return rename;          });
 
-
       //create new legends
       var singLegend = legend.selectAll('.path_legend')
       .data(selectCate)
@@ -513,7 +508,6 @@ function drawCheckCluster(data, dadate, factor) {
           var rename = "Cluster3";
         }
             return rename;          });
-
 
       //remove the old legends
       legend.selectAll('.path_legend')
