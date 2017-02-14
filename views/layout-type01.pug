@@ -85,7 +85,7 @@ html
         $('#menureports').addClass( '#{mainmenu.reports}');
         $('#menutimeseries').addClass( '#{mainmenu.timeseries}');
         $('#menuanalysis').addClass( '#{mainmenu.analysis}');
-        $('#menuusers').addClass( '#{mainmenu.users}');
+        $('#management').addClass( '#{mainmenu.management}');
         $('#menusettings').addClass( '#{mainmenu.settings}');
 
         Metronic.init(); // init metronic core componets
@@ -260,13 +260,13 @@ html
                     li
                       a(href='/reports/d3') d3
                     li
-                      a(href='/reports/live') Live                
+                      a(href='/reports/live') Live
                 li#menuanalysis.dropdown.dropdown-fw
                   a(href='javascript:;') Analysis
                   ul.dropdown-menu.dropdown-menu-fw
                     li.active
                       a(href='/analysis/clustering') Clustering
-                li#menuusers.dropdown.dropdown-fw
+                li#management.dropdown.dropdown-fw
                   a(href='javascript:;') Management
                   ul.dropdown-menu.dropdown-menu-fw
                     li.active
