@@ -20,6 +20,17 @@ block script
           $("#register_tnc_error").show();
           return false;
         }
+        if ($("#register_password").val() == "") {
+          $("#register_password").focus();
+          $("#register_tnc_error").html("Password 를 입력하세요.");
+          $("#register_tnc_error").show();
+          return false;
+        } else if ($("#register_password").val() != $("#register_password_1").val()) {
+          $("#register_password").focus();
+          $("#register_tnc_error").html("Password가 다릅니다. 다시 입력하세요.");
+          $("#register_tnc_error").show();
+          return false;
+        }
 
         // TODO 메시지 공통 영역으로
         if (confirm("등록 하시겠습니까? ")) {
@@ -30,13 +41,13 @@ block script
             type: "POST",
             data:$('#create_account').serialize(),
             success: function(result) {
-              if (result.code == "0000") {
-                //- location.href = "/homeB";
-              } else {
-                $("#errormsg").html(result.message);
+              alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+              if (result.rtnCode.code == "D001") {
+                location.href = "/management/users";
               }
             },
             error: function(req, status, err) {
+
               //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
               $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
             }
@@ -122,7 +133,7 @@ block content
                     .controls
                       .input-icon
                         i.fa.fa-check
-                        input.form-control.placeholder-no-fix(type='password', autocomplete='off', placeholder='Re-type Your Password', name='password')
+                        input#register_password_1.form-control.placeholder-no-fix(type='password', autocomplete='off', placeholder='Re-type Your Password', name='password')
                   .form-group
                     .input-icon
                       i.fa.fa-envelope

@@ -238,6 +238,7 @@
             'delete' as user_pw,
             'delete' as user_role,
             'delete' as user_email,
+            #FLAG# as flag,
             current_timestamp()+32400000 as reg_date
         ]]></query>
         <query id= 'selectMaxRegDate'><![CDATA[
@@ -249,7 +250,7 @@
            where user_id = #USERID# and reg_date = #REGDATE#
         ]]></query>
         <query id= 'selectUserList'><![CDATA[
-        select a.user_id, b.user_name, b.reg_date
+        select a.user_id, b.user_name, b.user_email, b.user_role, b.reg_date
           from (select user_id, max(reg_date) max_reg_date
                   from tb_user_info
                   group by user_id

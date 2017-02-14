@@ -41,9 +41,9 @@ router.post('/users/:id', function(req, res) {
     console.log(out_data[0][0]);
     console.log(req.body.userid);
     if (out_data[0][0] != null){
-      var err = CONSTS.getErrData('E005');
-      console.log(err);
-      res.redirect("./sign_up?msg=" + err.code);
+      var rtnCode = CONSTS.getErrData('E005');
+      console.log(rtnCode);
+      res.json({rtnCode: rtnCode});
     }  else  {
       var in_data = {
         USERNAME: req.body.username,
@@ -54,37 +54,18 @@ router.post('/users/:id', function(req, res) {
         FLAG : 'C'
       };
       queryProvider.insertQueryByID("user", "insertUser", in_data, function(err, out_data) {
+        var rtnCode = CONSTS.getErrData(out_data);
         if (err) { console.log(err);
-          var msg = CONSTS.getErrData(out_data);
-          console.log(msg);
-          res.redirect("./sign_up?msg=" + msg.code);
-        } else {
-          res.redirect("./users");
+          rtnCode = CONSTS.getErrData(out_data);
+          console.log(rtnCode);
         }
+        res.json({rtnCode: rtnCode});
       });
     }
   });
 });
 
-router.get('/:id', function(req, res) {
- // console.log(_rawDataByDay);
-  var in_data = {
-    USERID: req.params.id,
-  };
-   queryProvider.selectSingleQueryByID("user", "selectEditUser", in_data, function(err, out_data, params) {
-      var rtnCode = CONSTS.getErrData('0000');
-      if (out_data[0] === null) {
-        rtnCode = CONSTS.getErrData('0001');
-      }
-      console.log(out_data[0]);
-      var users = out_data[0];
-      res.render('./management/user_detail', { title: 'EyeLink for ParStream', mainmenu:mainmenu, users });
-  });
-});
-
-// 사용자 정보 수정
-//router.put('/edit_user/:id', function(req, res) {
-router.get('/edit_user/:id', function(req, res) {
+router.get('/users/:id', function(req, res) {
   console.log(req.params.id);
    var in_data = {
     USERID: req.params.id,
@@ -99,46 +80,47 @@ router.get('/edit_user/:id', function(req, res) {
         res.redirect("./edit_user?msg=" + msg.code);
       }
       console.log(out_data[0]);
-      var users = out_data[0];
-    res.render('./management/edit_user', { title: 'EyeLink for ParStream', mainmenu:mainmenu, users:users });
+      var user = out_data[0][0];
+    res.render('./management/edit_user',
+      { title: 'EyeLink for ParStream',
+        mainmenu:mainmenu,
+        user:user });
    });
 });
 
-// 사용자 업데이트
-router.post('/update_user', function(req, res) {
+// 사용자 정보 수정
+router.put('/users/:id', function(req, res) {
   var in_data = {
     USERNAME: req.body.username,
     USERID: req.body.userid,
     PASSWORD: req.body.password,
     EMAIL: req.body.email,
     USERROLE: req.body.userrole,
+    FLAG : 'U'
   };
   queryProvider.insertQueryByID("user", "insertUser", in_data, function(err, out_data) {
+    if (out_data === 'D001') out_data = 'D002';
+    var rtnCode = CONSTS.getErrData(out_data);
     if (err) { console.log(err);
-    } else {
-      var msg = CONSTS.getErrData(out_data);
-      console.log(msg);
     }
+    res.json({rtnCode: rtnCode});
   });
-  res.redirect("./"+req.body.userid);
 });
 
 
 // 사용자 정보 삭제
-/*router.delete('/delete_user/:id', function(req, res) {*/
-router.get('/delete_user/:id', function(req, res) {
+router.delete('/users/:id', function(req, res) {
   var in_data = {
     USERID: req.params.id,
+    FLAG : 'D'
   };
   queryProvider.insertQueryByID("user", "insertDeleteUser", in_data, function(err, out_data) {
+    if (out_data === 'D001') out_data = 'D003';
+    var rtnCode = CONSTS.getErrData(out_data);
     if(err){ console.log(err);
-    } else {
-      var msg = CONSTS.getErrData(out_data);
-      console.log(msg);
     }
+    res.json({rtnCode: rtnCode});
   });
-     res.redirect("/management/users");
 });
-
 
 module.exports = router;

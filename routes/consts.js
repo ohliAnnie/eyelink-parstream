@@ -24,6 +24,8 @@ define("ERROR_CODE", {
 	"E004": "이미지 파일이 아닙니다.",
 	"E005": "동일한 id가 이미 존재합니다.",
 	"D001": "등록되었습니다.",
+	"D002": "수정되었습니다.",
+	"D003": "삭제되었습니다.",
 	"ER_DUP_ENTRY": "Duplicate entry for key 'PRIMARY'!!!",
 	"ER_BAD_NULL_ERROR": "Column 'user_id' cannot be null",
 });
