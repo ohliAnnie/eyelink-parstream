@@ -70,19 +70,19 @@ block content
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze User List
-                span.caption-helper Total 8 Users
+                span.caption-helper  Detail information about users
               .tools
                 button.btn.btn-default.blue(type='button', onclick="location.href='./users/addUser'") Add
             .portlet-body.form
-              table#sample_2.table.table-striped.table-bordered.table-hover
+              table#sample_2.table.table-striped.table-bordered.table-hover(style='text-align:center;')
                 thead
                   tr
-                    th  User ID
-                    th  Name
-                    th  Email
-                    th  Role
-                    th  Reg Date
-                    th  Edit &amp; Delete
+                    th(style='text-align:center;')  User ID
+                    th(style='text-align:center;')  Name
+                    th(style='text-align:center;')  Email
+                    th(style='text-align:center;')  Role
+                    th(style='text-align:center;')  Reg Date
+                    th(style='text-align:center;')  Edit &amp; Delete
                 tbody
                   each user in users
                     tr.odd.gradeX
@@ -106,6 +106,4 @@ block content
                           |  Edit
                         a.btn.default.btn-xs.balck(flag='deleteUser', userid=''+ user.user_id)
                           i.fa.fa-trash-o
-                          |  Delete
-            .portlet-footer
-              button.btn.btn-default.blue(type='button', onclick="location.href='./sign_up'") Add
+                          |  Delete          

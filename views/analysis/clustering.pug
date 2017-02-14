@@ -24,10 +24,12 @@ block script
       //- $('#edate').val(moment().format(dateFormat));
       //- $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
       // time series char를 그린다.
-      getMasterList();
+      var interval = $("select[name=interval]").val();
+      getMasterList(interval);
       $('#btn_search').click(function() {
+        var interval = $("select[name=interval]").val();
         d3.selectAll("svg").remove();
-        getMasterList();
+        getMasterList(interval);
       });
       $('#btn_runanalysis').click(function() {
         runAnalysis();
@@ -96,16 +98,24 @@ block content
                 .form-body
                   .row
                     label.control-label.col-md-2 Date Range
-                    .col-md-5
+                    .col-md-3
                       .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
                         input#sdate.form-control(type='text', name='from' value='')
                         span.input-group-addon to
                         input#edate.form-control(type='text', name='to' value='')
+                    label.control-label.col-md-1 Time Interval
+                    .col-md-2.form-inline
+                      select.form-control.input-small.select2me.form-md-line-input(name='interval')
+                        option(value=15) 15min
+                        option(value=30) 30min
+                        option(value=60) 60min
+                        option(value=180) 3hour
+                        option(value=360) 6hour
                     .col-md-2.form-inline
                       button#btn_search.btn.blue
-                        i.fa.fa-search Search
-                    .col-md-2.form-inline
-                      button#btn_runanalysis.btn.blue Run Analysis
+                        i.fa.fa-search  Search
+                    .col-md-2.form-inline                      
+                        button#btn_runanalysis.btn.blue Run Analysis
       .row
         .col-md-5
           .portlet.light.bordered(style='height: 520px;')
@@ -113,6 +123,7 @@ block content
               .caption.caption-md.font-blue
                 i.icon-share.font-dark
                 span.caption-subject.theme-font.bold.uppercase History             
+                span.caption-helper  Run analysis list
             .portlet-body
               .scroller(style='height: 430px;', data-always-visible='1', data-rail-visible='0')
                 table#masterList.table.table-hover.table-light
@@ -128,8 +139,8 @@ block content
           .portlet.light.bordered(style='height: 520px;')
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase Total Pattern
-                span.caption-helper  Total Pattern
+                span.caption-subject.bold.uppercase Clustering Chart
+                span.caption-helper  Cluster chart by Factor
             .form-group.last
               label.control-label.col-md-2 Factor
               .col-md-10
