@@ -82,12 +82,11 @@ html
     script.
       jQuery(document).ready(function() {
         $('#menudashboard').addClass( '#{mainmenu.dashboard}');
-        $('#menureports').addClass( '#{mainmenu.reports}');
         $('#menutimeseries').addClass( '#{mainmenu.timeseries}');
+        $('#menureports').addClass( '#{mainmenu.reports}');        
         $('#menuanalysis').addClass( '#{mainmenu.analysis}');
-        $('#menuusers').addClass( '#{mainmenu.users}');
+        $('#menumanagement').addClass( '#{mainmenu.management}');
         $('#menusettings').addClass( '#{mainmenu.settings}');
-
         Metronic.init(); // init metronic core componets
         eyelinkLayout.init(); // init eyelinklayout
         QuickSidebar.init(); // init quick sidebar

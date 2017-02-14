@@ -23,8 +23,6 @@ block script
       $('#edate').val(moment().format(dateFormat));
       //- $('#edate').val(moment().format(dateFormat));
       //- $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
-      //- $('#sdate').val('2016-12-01');
-      //- $('#edate').val('2016-12-02');
       // time series char를 그린다.
       getMasterList();
       $('#btn_search').click(function() {
@@ -40,7 +38,6 @@ block script
         d3.selectAll("svg").remove();
         getMasterList();
       });
-
       $('input[type="radio"]').on('click change', function(e) {
         if ($('#factor0').is(':checked') === true) {
           var factor = $('#factor0').val();
@@ -58,7 +55,6 @@ block script
           drawCheckChart(factor, daDate);
         }
       });
-
       clickfunc = function(link) {
         var daDate = link.innerText || link.textContent;        
         $('#daDate').val(daDate);
@@ -76,9 +72,7 @@ block script
           d3.selectAll("svg").remove();
           drawCheckChart(factor, daDate);
       };  
-
     });   
-
 block content
   .container-fluid
     .page-content
@@ -103,7 +97,7 @@ block content
                   .row
                     label.control-label.col-md-2 Date Range
                     .col-md-5
-                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', dat.a-date-format='yyyy-mm-dd')
+                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
                         input#sdate.form-control(type='text', name='from' value='')
                         span.input-group-addon to
                         input#edate.form-control(type='text', name='to' value='')
@@ -114,13 +108,13 @@ block content
                       button#btn_runanalysis.btn.blue Run Analysis
       .row
         .col-md-5
-          .portlet.light.bordered(style='height: 500px;')
+          .portlet.light.bordered(style='height: 520px;')
             .portlet-title
               .caption.caption-md.font-blue
                 i.icon-share.font-dark
                 span.caption-subject.theme-font.bold.uppercase History             
             .portlet-body
-              .scroller(style='height: 450px;', data-always-visible='1', data-rail-visible='0')
+              .scroller(style='height: 430px;', data-always-visible='1', data-rail-visible='0')
                 table#masterList.table.table-hover.table-light
                   thead
                     tr
@@ -131,7 +125,7 @@ block content
                       th
                   tbody
         .col-md-7
-          .portlet.light.bordered(style='height: 500px;')
+          .portlet.light.bordered(style='height: 520px;')
             .portlet-title
               .caption.font-dark
                 span.caption-subject.bold.uppercase Total Pattern
@@ -153,7 +147,7 @@ block content
                     input#factor3.toggle(type='radio', name='options', value='power_factor')
                     | Power Factor                    
             .portlet-body
-              .chart(style='height:355px;')
+              .chart(style='height:445px;')
                 input#daDate(type='hidden', name='hidden', value='')
                 #table
                   .panel.panel-card
@@ -171,4 +165,4 @@ block content
                         input#c3.click_checkbox(type='checkbox', name='c3', value='4', v-on='click:checkOpt', checked='true')
                         text  Cluster3
                       .col-xm-12.col-sm-12.col-md-10.col-xs-12
-                        #Cluster(style='width:100%;height:345px;')
+                        #Cluster(style='width:100%;height:395px;')

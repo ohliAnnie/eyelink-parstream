@@ -219,7 +219,6 @@ function drawCheckCluster(data, dadate, factor) {
               }
                   return rename;          });
 
-
           //draw the rect for legends
         var rect = svg.append('g')
         .attr("class", 'legendOuter');
@@ -315,7 +314,6 @@ function drawCheckCluster(data, dadate, factor) {
           });
 
           d3.selectAll('.tipDot').transition().duration(100).remove();
-
         });
 
        this.getOpt = function() {
@@ -667,21 +665,19 @@ function getNodePower(nodeList){
 }
 
 function drawNode(data, max, idCnt) {
-    console.log(idCnt);
-    console.log(max);
+  console.log(idCnt);
+  console.log(max);
 
+  for(var i = 0; i <= data.length; i++) {
+    d3.select("#nodeChart").select("svg").remove();
+  }
 
-    for(var i = 0; i <= data.length; i++) {
-      d3.select("#nodeChart").select("svg").remove();
-    }
-
-  var sdate = $('#sdate').val();
-  var edate = $('#edate').val();
+var sdate = $('#sdate').val();
+var edate = $('#edate').val();
 
   // Set the dimensions of the canvas / graph
 var margin = {top: 5, right: 20, bottom: 20, left: 30},
     width = (window.innerWidth*0.3) - margin.left - margin.right,   
-
     height = 315 - margin.top - margin.bottom - (20*(idCnt/(width/100)));
 
 // Set the ranges
@@ -691,7 +687,6 @@ var y = d3.scale.linear().range([height, 0]);
 // Define the axes
 var xAxis = d3.svg.axis().scale(x)
     .orient("bottom").ticks(5);
-
 var yAxis = d3.svg.axis().scale(y)
     .orient("left").ticks(5);
 
@@ -709,6 +704,16 @@ var svg = d3.select("#nodeChart")
     .append("g")
         .attr("transform", 
               "translate(" + margin.left + "," + margin.top + ")");
+
+      svg.append("g")
+          .attr("class", "x axis")
+          .attr("id", "line-x-axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+
+      svg.append("g")
+          .attr("class", "y axis")
+          .call(yAxis);
 
 
     // Scale the range of the data

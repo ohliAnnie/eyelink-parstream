@@ -38,7 +38,6 @@ router.get('/sign_up', function(req, res, next) {
   res.render('./management/sign_up', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
 });
 
-
 // 사용자 신규 등록
 router.post('/users', function(req, res) {
   var in_data = {

@@ -172,8 +172,6 @@ function drawCheckCluster(data, dadate, factor) {
            y.domain([0, 1.5]);
         }
 
-       
-
         //data.length/10 is set for the garantte of timeseries's fitting effect in svg chart
         var xAxis = d3.svg.axis()
         .scale(x)
@@ -193,7 +191,6 @@ function drawCheckCluster(data, dadate, factor) {
     var div = d3.select("body").append("div")
         .attr("class", "tip")
         .style("opacity", 0);
-
 
         d3.select('#svg-path').remove();
 
@@ -281,8 +278,7 @@ function drawCheckCluster(data, dadate, factor) {
               }
                   return rename;          });
 
-
-          //draw the rect for legends
+         //draw the rect for legends
         var rect = svg.append('g')
         .attr("class", 'legendOuter');
 
@@ -474,7 +470,6 @@ function drawCheckCluster(data, dadate, factor) {
           }
               return rename;          });
 
-
       //create new legends
       var singLegend = legend.selectAll('.path_legend')
       .data(selectCate)
@@ -513,7 +508,6 @@ function drawCheckCluster(data, dadate, factor) {
           var rename = "Cluster3";
         }
             return rename;          });
-
 
       //remove the old legends
       legend.selectAll('.path_legend')
