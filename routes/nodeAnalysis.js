@@ -252,10 +252,10 @@ router.post('/restapi/insertClusterRawData', function(req, res, next) {
 
 
 function getConnectionToDA(connName, callback){
-  var pUrl = '192.168.10.27';
+  var pUrl = global.config.analysis.host;
+  var pPort = global.config.analysis.port;
   // var pUrl = 'm2u-da.eastus.cloudapp.azure.com';
   // var pUrl = 'localhost';
-  var pPort = 5225;
   var client = net.connect({port: pPort, host:pUrl}, function() {
     console.log(connName + ' Connected: ');
     console.log('   local = %s:%s', this.localAddress, this.localPort);
