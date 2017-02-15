@@ -619,6 +619,7 @@ function getNodePower(nodeList){
             max = d.power_factor;
         }   
         });
+        console.log(set);
         console.log(idCnt);
         drawNode(set, max, idCnt);
     
@@ -665,7 +666,9 @@ var yAxis = d3.svg.axis().scale(y)
 // Define the line
 var priceline = d3.svg.line()
     .x(function(d) { return x(d.time); })
-    .y(function(d) { return y(d.value); });
+    .y(function(d) { 
+
+      return y(d.value); });
     
     
 // Adds the svg canvas

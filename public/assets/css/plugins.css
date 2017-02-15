@@ -1114,6 +1114,10 @@ Datatables Plugin(in v1.3)
 .dataTable .table-checkbox {
   width: 8px !important;
 }
+.dataTable th.table-checkbox {
+  width: 12px !important;
+  background: none !important;
+}
 
 @media (max-width: 768px) {
   .dataTables_wrapper .dataTables_length .form-control,
@@ -2568,3 +2572,10 @@ AngularJS UI-select
 .minicolors-swatch {
   border: 0;
 }
+
+/***jquery-multi-select***/
+.ms-container{width:420px !important;}
+.ms-container .ms-selectable li.ms-elem-selectable,
+.ms-container .ms-selection li.ms-elem-selection{padding:4px 10px !important;}
+.ms-tit {display:inline-block; width:230px; padding-bottom:5px;}
+.ms-tit-selection {display:inline-block; width:190px; padding-bottom:5px;}

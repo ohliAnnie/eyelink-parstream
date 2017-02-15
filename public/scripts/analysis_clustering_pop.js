@@ -108,7 +108,7 @@ function drawCheckCluster(data, dadate, factor) {
         } else if(factor === 'ampere') {
            y.domain([0, 240]);
         } else if(factor === 'voltage') {
-           y.domain([180, 240]);
+           y.domain([0, 240]);
         } else if(factor === 'power_factor') {
            y.domain([0, 1.5]);
         }
@@ -546,12 +546,15 @@ function drawDirectory(nodeList) {
   } else if ($('#factor3').is(':checked') === true) {
     var factor = $('#factor3').val();
   }
-  var seatvar = document.getElementsByClassName("tblClusterDir");           
-        console.log(seatvar);
-        console.log(nodeList);
+  var seatvar = document.getElementsByClassName("tblClusterDir");                   
+  var cnt = 0;
   $('#tblClusterDir').empty();
   nodeList.forEach(function(d) {  
     var sb = new StringBuffer();
+    if(cnt == 0) {
+      sb.append('<tr><th>Cluster</th><th>Node_id</th></tr>');
+      cnt++;
+   }
     var a = d.c0.split(':');
     var script = "javascript:getNodePower('"+d.c0+"');";
     sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster0 </a></span></td><td></td></tr>');
@@ -711,9 +714,9 @@ var svg = d3.select("#nodeChart")
           .attr("transform", "translate(0," + height + ")")
           .call(xAxis);
 
-      svg.append("g")
+/*      svg.append("g")
           .attr("class", "y axis")
-          .call(yAxis);
+          .call(yAxis);*/
 
 
     // Scale the range of the data

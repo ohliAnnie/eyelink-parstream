@@ -21,6 +21,21 @@ block script
           $("#register_tnc_error").show();
           return false;
         }
+        if ($("#email").val() == "") {
+          $("#email").focus();
+          $("#register_tnc_error").html("Email을 입력하세요.");
+          $("#register_tnc_error").show();
+          return false;
+        } else {
+          var a = $("#email").val().split('@');
+          console.log(a);
+          if (a[1] == null) {
+            $("#email").focus();
+            $("#register_tnc_error").html("Email주소를 정확히 입력하세요");
+            $("#register_tnc_error").show();
+            return false;
+          }
+        }
 
         // TODO 메시지 공통 영역으로
         if (confirm("저장 하시겠습니까? ")) {
@@ -62,55 +77,54 @@ block content
               a(href='#') Management
             li
               a(href='user_list.html') Users
-            li.active Add User
+            li.active Edit User
         .row
           .col-md-12
             .portlet.light
               .portlet-title
                 .caption
                   span.caption-subject.bold.uppercase.font-green-haze User Information
-                  span.caption-helper Lorem ipsum dolor sit amet
-                .tools
-                  a.reload(href='javascript:;')
-                  a.remove(href='javascript:;')
+                  span.caption-helper  Update user information
               .portlet-body.from
                 form#update_account.form-horizontal.form-bordered(onsubmit="return false;")
                   .form-body
                       .form-group
-                        label.control-label.col-md-3 User ID
-                        .col-md-9
+                        label.control-label.col-md-5 User ID
+                        .col-md-3
                           span #{user.user_id}
                           input#userid(type='hidden', name='userid', value=user.user_id)
                       .form-group
-                        label.control-label.col-md-3 Name
-                        .col-md-9
+                        label.control-label.col-md-5 Name
+                        .col-md-3
                           input#username.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_name, placeholder='Username', name='username')
                       .form-group
-                        label.control-label.col-md-3 Password
-                        .col-md-9
+                        label.control-label.col-md-5 Password
+                        .col-md-3
                           input#password.form-control.form-control-inline.input-large(size='16', type='password', value=user.user_pw, placeholder='password', name='password')
                       .form-group
-                        label.control-label.col-md-3 Re-type Your Password
-                        .col-md-9
+                        label.control-label.col-md-5 Re-type Your Password
+                        .col-md-3
                           input#password_1.form-control.form-control-inline.input-large(size='16', type='password', value=user.user_pw, placeholder='password', name='password_1')
                       .form-group
-                        label.control-label.col-md-3 Email
-                        .col-md-9
+                        label.control-label.col-md-5 Email
+                        .col-md-3
                           input#email.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_email, placeholder='email', name='email')
-                      .form-group.last
-                        label.control-label.col-md-3 Select Role
-                        .col-md-9
+                      .form-group
+                        label.control-label.col-md-5 Select Role
+                        .col-md-3
                           select#userrole.bs-select.form-control.input-large(data-show-subtext='true', name='userrole')
                             option #{user.user_role}
                             option  User
                             option  Asset Manager
                             option Zone Manager
                             option Super Manager
-                          span.tooltips.font-blue(data-container='body', data-placement='top', data-original-title='Lorem ipsum dolor sit amet, consectetur adipisicing elit')
-                      #register_tnc_error
-                      .form-actions
-                        button.btn.btn-default(type='button', onclick="location.href='/management/users'") Cancel
-                        button#register-submit-btn.btn.btn-default.blue Save
+                          span.tooltips.font-blue(data-container='body', data-placement='top', data-original-title='Lorem ipsum dolor sit amet, consectetur adipisicing elit')              
+                      .form-group
+                        #register_tnc_error(style='text-align:center;')
+                        .col-md-10
+                          button#register-submit-btn.btn.btn-default.blue.pull-right Save
+                        .col-md-2
+                          button.btn.btn-default(type='button', onclick="location.href='/management/users'") Cancel               
               .portlet-footer
       p.copyright Copyright M2U Technology All rights reserved.
       a.go2top(href='#index')
