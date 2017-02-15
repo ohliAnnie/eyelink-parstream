@@ -76,7 +76,7 @@ router.get('/restapi/getDaClusterMaster', function(req, res, next) {
   var in_data = {
       START_TIMESTAMP: req.query.startDate + ' 00:00:00',
       END_TIMESTAMP: req.query.endDate + ' 23:59:59',
-      INTERVAL: req.query.interval,
+      INTERVAL: parseInt(req.query.interval),
       FLAG : 'N'};
       console.log('indata');
 console.log(in_data);
