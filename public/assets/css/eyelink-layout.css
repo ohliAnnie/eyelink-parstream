@@ -68,20 +68,20 @@
   border-radius: 0;
   position: relative;
   padding-right: 42px;
-  color: #4b5761;
+  color: #ccc;
   background: #2a3239;
 }
 .page-header .navbar .search .form-control:-moz-placeholder {
-  color: #4b5761;
+  color: #999;
 }
 .page-header .navbar .search .form-control::-moz-placeholder {
-  color: #4b5761;
+  color: #999;
 }
 .page-header .navbar .search .form-control:-ms-input-placeholder {
-  color: #4b5761;
+  color: #999;
 }
 .page-header .navbar .search .form-control::-webkit-input-placeholder {
-  color: #4b5761;
+  color: #999;
 }
 .page-header .navbar .search .btn {
   padding: 0;
@@ -90,7 +90,7 @@
   top: 9px;
   right: 15px;
   position: absolute;
-  color: #4b5761;
+  color: #999;
 }
 .page-header .navbar .topbar-actions {
   position: absolute;
@@ -111,7 +111,7 @@
 }
 .page-header .navbar .topbar-actions .btn-group-notification .btn {
   top: 6px;
-  padding: 5px 8px !important;
+  padding: 5px 55px 5px 5px !important;
   width: 35px;
   height: 35px;
 }
@@ -160,7 +160,7 @@
   font-size: 13px;
   font-weight: 300;
   text-align: right;
-  color: #009dc7;
+  color: #2a91ea;
   text-transform: lowercase;
 }
 .page-header .navbar .topbar-actions .btn-group-notification .dropdown-menu-list > li {
@@ -182,7 +182,7 @@
   background: #21282e;
 }
 .page-header .navbar .topbar-actions .btn-group-notification .dropdown-menu-list > li > a {
-  color: #606e7a;
+  color: #bbb;
   overflow: hidden;
 }
 .page-header .navbar .topbar-actions .btn-group-notification .dropdown-menu-list > li > a .details {
@@ -205,7 +205,7 @@
 }
 .page-header .navbar .topbar-actions .btn-group-add {
   position: relative;
-  margin: 0 30px 0 15px;
+  margin: 0 10px;
 }
 .page-header .navbar .topbar-actions .btn-group-add:after {
   top: 11px;
@@ -214,7 +214,7 @@
   right: -17.5px;
   border-width: 25px;
   position: absolute;
-  border-color: #3e4952;
+  border: none;
   border-top-style: solid;
 }
 .page-header .navbar .topbar-actions .btn-group-add .btn {
@@ -236,7 +236,7 @@
   line-height: 0.9;
 }
 .page-header .navbar .topbar-actions .btn-group-user .btn {
-  top: 6px;
+  top: 5px;
   padding: 0;
   position: relative;
   line-height: normal;
@@ -250,11 +250,11 @@
   height: 35px;
 }
 .page-header .navbar .topbar-actions .btn-group-user .btn > span {
-  padding: 9px;
+  padding: 9px 5px;
   line-height: 1.4;
   display: inline-block;
   vertical-align: middle;
-  color: #218deb;
+  color: #bbb;
   text-transform: uppercase;
 }
 .page-header .navbar .topbar-actions .btn-group-user .btn > i {
@@ -266,8 +266,8 @@
 }
 .page-header .navbar .navbar-nav > li > a {
   color: rgba(255,255,255, .5);
-  font-size: 16px;
-  padding: 22px 40px;
+  font-size: 15px;
+  padding: 17px 40px;
   background: #3b4751;
 }
 .page-header .navbar .navbar-nav > li:hover > a {
@@ -306,7 +306,7 @@
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-  padding: 30px 15px 30px 30px;
+  padding: 20px 15px 20px 30px;
   font-family: "Open Sans", sans-serif;
 }
 .page-header .navbar .navbar-nav .dropdown-menu > li > a:focus, .page-header .navbar .navbar-nav .dropdown-menu > li > a:hover {
@@ -1155,7 +1155,7 @@ Quick Sidebar Content
   background-color: #3d4a55;
 }
 .page-quick-sidebar-wrapper .page-quick-sidebar .list-heading {
-  color: #6c8296;
+  color: #bbb;
 }
 .page-quick-sidebar-wrapper .page-quick-sidebar .list-items {
   margin: 0;
@@ -1400,7 +1400,7 @@ body {
   /* 991px */
   .page-content {
     margin-top: -4px;
-    padding-top: 105px;
+    padding-top: 80px;
     position: relative;
     -webkit-border-top-right-radius: 2px;
     -moz-border-top-right-radius: 2px;
@@ -1427,7 +1427,7 @@ body {
 ----------------------------------------------------*/
 .breadcrumbs {
   overflow: hidden;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   padding-right: 6px;
 }
 .breadcrumbs h1 {
@@ -1438,8 +1438,8 @@ body {
   line-height: 1.4;
   margin-right: 20px;
   text-transform: uppercase;
-  color: #2a3239;
-  font-family: 'Oswald', sans-serif;
+  color: #000;
+
 }
 .breadcrumbs .breadcrumb {
   margin: 0;
@@ -1464,10 +1464,10 @@ body {
 }
 .breadcrumbs .breadcrumb > li > a:hover {
   text-decoration: none;
-  color: #009dc7;
+  color: #2a91ea;
 }
 .breadcrumbs .breadcrumb li.active {
-  color: #009dc7;
+  color: #2a91ea;
   text-transform: uppercase;
 }
 

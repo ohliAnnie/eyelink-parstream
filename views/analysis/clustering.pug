@@ -92,8 +92,7 @@ block content
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase.font-blue-sharp Set date and area
-                span.caption-helper  Date range and select area
+                span.caption-subject.bold.uppercase.font-blue-sharp Set date and Time interval
             .portlet-body.form
               form.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
@@ -104,7 +103,7 @@ block content
                         input#sdate.form-control(type='text', name='from' value='')
                         span.input-group-addon to
                         input#edate.form-control(type='text', name='to' value='')
-                    label.control-label.col-md-1 Interval
+                    label.control-label.col-md-2 Interval
                     .col-md-2.form-inline
                       select.form-control.input-small.select2me.form-md-line-input(name='interval')
                         option(value='all') All
@@ -113,7 +112,7 @@ block content
                         option(value=60) 60min
                         option(value=180) 3hour
                         option(value=360) 6hour
-                    .col-md-2.form-inline
+                    .col-md-1.form-inline
                       button#btn_search.btn.blue
                         i.fa.fa-search  Search
                     .col-md-2.form-inline                      
@@ -122,27 +121,18 @@ block content
         .col-md-5
           .portlet.light.bordered(style='height: 520px;')
             .portlet-title
-              .caption.caption-md.font-blue
-                i.icon-share.font-dark
-                span.caption-subject.theme-font.bold.uppercase History             
+              .caption.font-dark
+                span.caption-subject.bold.uppercase History             
                 span.caption-helper  Run analysis list
             .portlet-body
               .scroller(style='height: 430px;', data-always-visible='1', data-rail-visible='0')
                 table#masterList.table.table-hover.table-light
-                  thead
-                    tr
-                      th
-                      th  DA Date
-                      th  Start Date - End Date
-                      th  Interval
-                      th
-                  tbody
         .col-md-7
           .portlet.light.bordered(style='height: 520px;')
             .portlet-title
               .caption.font-dark
                 span.caption-subject.bold.uppercase Clustering Chart
-                span.caption-helper  Cluster chart by Factor
+                span.caption-helper  by Factor
             .form-group.last
               label.control-label.col-md-2 Factor
               .col-md-10

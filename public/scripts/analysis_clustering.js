@@ -67,13 +67,17 @@ function drawMaster(master) {
   var seatvar = document.getElementsByClassName("masterList");
     console.log(seatvar);
     console.log(master);
+    var cnt = 0
   $('#masterList').empty();
-  master.forEach(function(d) {
+  master.forEach(function(d) {   
     var sb = new StringBuffer();
-    sb.append('<tr><td>');
+    if(cnt == 0) {
+      sb.append('<tr><th>DA Date</th><th>Start Date-End Date</th><th>Interval</th><th></th></tr>');
+      cnt++;
+   }
     var sdate = d.start_date.split(' ');
     var edate = d.end_date.split(' ');
-    sb.append('<a href="#" onclick="clickfunc(this)">' + d.da_date+'</td><td> '+sdate[0]+' ~ '+edate[0]+' </td>');
+    sb.append('<tr><td><a href="#" onclick="clickfunc(this)">' + d.da_date+'</td><td> '+sdate[0]+' ~ '+edate[0]+' </td>');
     sb.append('<td>'+d.time_interval+'mins</td>');
     sb.append('<td><a href="#" onclick="javascript_:window.open(');
     var script = "'clustering_pop?dadate="+d.da_date+"&start="+sdate[0]+"&end="+edate[0]+"', 'pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=1000,height=540,top=50,left=50'";
@@ -167,7 +171,7 @@ function drawCheckCluster(data, dadate, factor) {
         } else if(factor === 'ampere') {
            y.domain([0, 240]);
         } else if(factor === 'voltage') {
-           y.domain([180, 240]);
+           y.domain([0, 240]);
         } else if(factor === 'power_factor') {
            y.domain([0, 1.5]);
         }
