@@ -32,7 +32,8 @@ block script
         getMasterList(interval);
       });
       $('#btn_runanalysis').click(function() {
-        runAnalysis();
+        var interval = $("select[name=interval]").val();
+        runAnalysis(interval);
         //- d3.selectAll("svg").remove();
         //- getMasterList();
       });

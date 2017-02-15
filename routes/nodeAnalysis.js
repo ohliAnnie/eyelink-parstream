@@ -180,7 +180,7 @@ router.post('/restapi/runAnalysis', function(req, res, next) {
   console.log(req.query);
   var in_data = {"start_date": req.body.startDate,
                 "end_date": req.body.endDate,
-                "time_interval": parseInt(req.query.interval)};
+                "time_interval": parseInt(req.body.interval)};
   in_data = JSON.stringify(in_data, null, 4);
   console.log(in_data);
   // FIX-ME Socket Connection Close 처리 로직 보완 필요함.
