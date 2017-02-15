@@ -103,9 +103,10 @@ block content
                         input#sdate.form-control(type='text', name='from' value='')
                         span.input-group-addon to
                         input#edate.form-control(type='text', name='to' value='')
-                    label.control-label.col-md-1 Time Interval
+                    label.control-label.col-md-1 Interval
                     .col-md-2.form-inline
                       select.form-control.input-small.select2me.form-md-line-input(name='interval')
+                        option(value='all') All
                         option(value=15) 15min
                         option(value=30) 30min
                         option(value=60) 60min

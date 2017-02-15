@@ -78,9 +78,12 @@ router.get('/restapi/getDaClusterMaster', function(req, res, next) {
       END_TIMESTAMP: req.query.endDate + ' 23:59:59',
       INTERVAL: parseInt(req.query.interval),
       FLAG : 'N'};
-      console.log('indata');
-console.log(in_data);
-  queryProvider.selectSingleQueryByID("analysis", "selectDaClusterMaster", in_data, function(err, out_data, params) {
+  if(req.query.interval === 'all')  {
+    var sql = "selectDaClusterMasterAll";
+  } else {
+    var sql = "selectDaClusterMaster";
+  }
+  queryProvider.selectSingleQueryByID("analysis", sql, in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data[0] === null) {
@@ -177,7 +180,7 @@ router.post('/restapi/runAnalysis', function(req, res, next) {
   console.log(req.query);
   var in_data = {"start_date": req.body.startDate,
                 "end_date": req.body.endDate,
-                "time_interval": 15};
+                "time_interval": parseInt(req.query.interval)};
   in_data = JSON.stringify(in_data, null, 4);
   console.log(in_data);
   // FIX-ME Socket Connection Close 처리 로직 보완 필요함.
