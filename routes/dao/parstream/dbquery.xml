@@ -148,6 +148,8 @@
   <analysis>
      <query id='selectDaClusterMasterAll'><![CDATA[
       select da_date, start_date, end_date, time_interval from tb_da_clustering_master
+        where da_date >= timestamp #START_TIMESTAMP#
+            and da_date <= timestamp #END_TIMESTAMP#
         order by da_date
      ]]></query>
     <query id='selectDaClusterDetailAll'><![CDATA[
