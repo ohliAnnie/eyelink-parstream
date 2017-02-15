@@ -11,15 +11,15 @@ var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis:'', management
 router.get('/users', function(req, res, next) {
   // console.log(_rawDataByDay);
   var in_data = {};
-   queryProvider.selectSingleQueryByID("user", "selectUserList", in_data, function(err, out_data, params) {
-      var rtnCode = CONSTS.getErrData('0000');
-      if (out_data[0] === null) {
-        rtnCode = CONSTS.getErrData('0001');
-      }
-      var users = out_data[0];
-      console.log(mainmenu);
-      res.render('./management/user_list', { title: 'EyeLink User List', mainmenu:mainmenu, users:users });
-   });
+  queryProvider.selectSingleQueryByID("user", "selectUserList", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data[0] === null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    var users = out_data[0];
+    console.log(mainmenu);
+    res.render('./management/user_list', { title: 'EyeLink User List', mainmenu:mainmenu, users:users });
+  });
 });
 
 router.get('/users/:id', function(req, res) {

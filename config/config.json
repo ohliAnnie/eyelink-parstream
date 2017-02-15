@@ -14,5 +14,10 @@
 		"database" : "parstream",
 		"#method" : "jdbc",
 		"method" : "nodelib"
+	},
+	"analysis": {
+		"#host" : "localhost",
+		"host" : "m2u-da.eastus.cloudapp.azure.com",
+		"port" : 5225
 	}
 }
