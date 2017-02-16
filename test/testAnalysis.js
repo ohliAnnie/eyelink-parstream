@@ -81,7 +81,8 @@ describe("Analysis -> ", function(){
 
     it.only('DA 서버에 분석 실행', function(done) {
       var datas = {"startDate": "2017-01-01",
-                  "endDate" : "2017-01-02"};
+                  "endDate" : "2017-01-02",
+                  "interval" : "15"};
       console.log(datas);
       // var datas = JSON.parse(datas);
       request(svr)
