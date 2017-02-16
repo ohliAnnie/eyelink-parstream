@@ -620,7 +620,6 @@ function getNodePower(nodeList){
   var dadate = aa[0] + ' ' + aa[1];
   var start = urlParams.start;
   var end = urlParams.end;
-  console.log(node);
    $.ajax({
     url: "/analysis/restapi/getClusterNodePower" ,
     dataType: "json",
@@ -638,22 +637,23 @@ function getNodePower(nodeList){
          if(factor === 'ampere') {
           set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.ampere)});
           if(d.ampere > max)
-            max = d.ampere;
+            max = parseFloat(d.ampere);
          } else if(factor === 'voltage') {
           set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.voltage)});
           if(d.voltage > max)
-            max = d.voltage;
+            max = parseFloat(d.voltage);
         } else if(factor === 'active_power') {
           set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.active_power) });
-          if(d.active_power > max)
-            max = d.active_power;
+          if(d.active_power > max) {            
+            max = parseFloat(d.active_power);
+          }
         } else if(factor === 'power_factor') {
           set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.power_factor) });
           if(d.power_factor > max)
-            max = d.power_factor;
+            max =  parseFloat(d.power_factor);
         }   
         });
-        console.log(idCnt);
+        console.log(max);
         drawNode(set, max, idCnt);
     
       } else {
@@ -667,9 +667,8 @@ function getNodePower(nodeList){
   });
 }
 
-function drawNode(data, max, idCnt) {
-  console.log(idCnt);
-  console.log(max);
+function drawNode(data, maxValue, idCnt) {  
+  var max = parseInt(maxValue) + 5;  
 
   for(var i = 0; i <= data.length; i++) {
     d3.select("#nodeChart").select("svg").remove();
@@ -708,17 +707,6 @@ var svg = d3.select("#nodeChart")
         .attr("transform", 
               "translate(" + margin.left + "," + margin.top + ")");
 
-      svg.append("g")
-          .attr("class", "x axis")
-          .attr("id", "line-x-axis")
-          .attr("transform", "translate(0," + height + ")")
-          .call(xAxis);
-
-/*      svg.append("g")
-          .attr("class", "y axis")
-          .call(yAxis);*/
-
-
     // Scale the range of the data
     x.domain(d3.extent(data, function(d) {
          return d.time; }));
@@ -734,8 +722,7 @@ var svg = d3.select("#nodeChart")
     legendSpace = width/dataNest.length; // spacing for legend // ******
 
     // Loop through each symbol / key
-    dataNest.forEach(function(d,i) {                           // ******
-
+    dataNest.forEach(function(d,i) {                           // ******      
         svg.append("path")
             .attr("class", "line")
             .style("stroke", function() { // Add the colours dynamically
