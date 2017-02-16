@@ -80,7 +80,7 @@ function drawMaster(master) {
     sb.append('<tr><td><a href="#" onclick="clickfunc(this)">' + d.da_date+'</td><td> '+sdate[0]+' ~ '+edate[0]+' </td>');
     sb.append('<td>'+d.time_interval+'mins</td>');
     sb.append('<td><a href="#" onclick="javascript_:window.open(');
-    var script = "'clustering_pop?dadate="+d.da_date+"&start="+sdate[0]+"&end="+edate[0]+"', 'pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=1000,height=540,top=50,left=50'";
+    var script = "'clustering_pop?dadate="+d.da_date+"&start="+sdate[0]+"&end="+edate[0]+"', 'pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=1200,height=640,top=50,left=50'";
     sb.append(script+');" class="btn red"> Detail </a></td></tr>')
     $('#masterList').append(sb.toString());
   });
@@ -167,7 +167,7 @@ function drawCheckCluster(data, dadate, factor) {
         x.domain(d3.extent(data, function(d) {
          return d.time; }));
         if(factor === 'active_power') {
-           y.domain([0, 180]);
+           y.domain([0, 200]);
         } else if(factor === 'ampere') {
            y.domain([0, 240]);
         } else if(factor === 'voltage') {

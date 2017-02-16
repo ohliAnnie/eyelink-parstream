@@ -39,7 +39,6 @@ block script
       });
       $('#btn_factor').click(function() {
         d3.selectAll("svg").remove();
-        getMasterList();
       });
       $('input[type="radio"]').on('click change', function(e) {
         if ($('#factor0').is(':checked') === true) {
@@ -83,7 +82,7 @@ block content
         h1 Clustering
         ol.breadcrumb
           li
-            a(href='#') Home
+            a(href='/dashboard') Home
           li
             a(href='#') Analysis
           li.active Clustering

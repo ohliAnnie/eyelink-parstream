@@ -1,10 +1,7 @@
 extends ../layout-type01
 block style
-  link(rel='stylesheet', type='text/css', href='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
 block script
-  script(type='text/javascript', src='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
-  script(src='/assets/scripts/page/table-managed.js')
-  script.
+ script.
     $(document).ready(function() {
 
       $("#register-submit-btn").click(function() {
@@ -60,9 +57,8 @@ block script
               if (result.rtnCode.code == "D001") {
                 location.href = "/management/users";
               }
-            },
+             },
             error: function(req, status, err) {
-
               //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
               $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
             }
@@ -77,36 +73,8 @@ block script
       $("#username").keydown(function() {
         $("#register_tnc_error").html("");
         $("#register_tnc_error").hide();
-      });
-
-      var msg = urlParams.msg;
-      console.log(urlParams.msg);
-      if(msg === "3") {
-        alert("이미 등록된 아이디 입니다.");
-      } else if(msg === "4") {
-        alert("회원가입을 축하합니다~");
-      }
-      Metronic.init(); // init metronic core componets
-      eyelinkLayout.init(); // init eyelinklayout
-      Layout.init(); // init layout
-      Demo.init(); // init index page
-      $.backstretch([
-        "assets/images/bg/1.jpg",
-        "assets/images/bg/2.jpg",
-        "assets/images/bg/3.jpg",
-        "assets/images/bg/4.jpg"
-        ], {
-          fade: 1000,
-          duration: 8000
-      });
+      });     
     });
-  script.
-    var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
-      return paramPair.split(/=(.+)?/).slice(0, 2);
-    }).reduce(function(obj, pairArray) {
-      obj[pairArray[0]] = pairArray[1];
-      return obj;
-    }, {});
 block content
   .container-fluid
     .page-content
@@ -118,7 +86,7 @@ block content
           li
             a(href='#') Management
           li
-            a(href='user_list.html') Users            
+            a(href='/management/users') Users            
           li.active Sign up
       .row
         .col-md-12
@@ -182,5 +150,5 @@ block content
                       button.btn.btn-default(type='button', onclick="location.href='/management/users'") Cancel                    
             .portlet-footer
     p.copyright Copyright M2U Technology All rights reserved.
-  a.go2top(href='#index')
-    i.icon-arrow-up
+    a.go2top(href='#index')
+      i.icon-arrow-up

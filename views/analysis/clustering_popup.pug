@@ -81,13 +81,13 @@ html
                     .form-body
                       .row
                         label.control-label.col-md-1 Period
-                        .col-md-4               
+                        .col-md-4         
                           .input-group.input-large.date-picker.input-daterange
-                            input#sdate.form-control(type='text' name='from' value='' style = 'text-align:center;' readonly)
-                            span.input-group-addon to
-                            input#edate.form-control(type='text' name='to' value='' style = 'text-align:center;'  readonly)
+                            input#sdate.form-control(type='text' name='from' value='' style = 'text-align:center; width: 115px;' readonly)
+                            input.form-control(type='text' name='period' value='to' style = 'text-align:center; width: 40px;' readonly)
+                            input#edate.form-control(type='text' name='to' value='' style = 'text-align:center; width: 115px;'  readonly)
                         label.control-label.col-md-1 Factor
-                        .col-md-4
+                        .col-md-5
                           .btn-group.btn-group-devided(data-toggle='buttons')
                             label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
                               input#factor0.toggle(type='radio', name='options', value='active_power', checked='Y')
@@ -102,7 +102,7 @@ html
                               input#factor3.toggle(type='radio', name='options', value='power_factor')
                               | Power Factor
                         .popup-tit.col-md-1
-                          a.btn.blue(data-toggle='modal', href='javascript:self.opener = self;window.close();') Close
+                          a.btn.blue.pull-left(data-toggle='modal', href='javascript:self.opener = self;window.close();') Close
           .row
             .col-md-5
               .portlet.light.bordered(style='height:445px;')

@@ -66,66 +66,66 @@ block script
       });
     });
 block content
-    .container-fluid
-      .page-content
-        .breadcrumbs
-          h1 Edit User
-          ol.breadcrumb
-            li
-              a(href='#') Home
-            li
-              a(href='#') Management
-            li
-              a(href='user_list.html') Users
-            li.active Edit User
-        .row
-          .col-md-12
-            .portlet.light
-              .portlet-title
-                .caption
-                  span.caption-subject.bold.uppercase.font-green-haze User Information
-                  span.caption-helper  Update user information
-              .portlet-body.from
-                form#update_account.form-horizontal.form-bordered(onsubmit="return false;")
-                  .form-body
-                      .form-group
-                        label.control-label.col-md-5 User ID
-                        .col-md-3
-                          span #{user.user_id}
-                          input#userid(type='hidden', name='userid', value=user.user_id)
-                      .form-group
-                        label.control-label.col-md-5 Name
-                        .col-md-3
-                          input#username.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_name, placeholder='Username', name='username')
-                      .form-group
-                        label.control-label.col-md-5 Password
-                        .col-md-3
-                          input#password.form-control.form-control-inline.input-large(size='16', type='password', value=user.user_pw, placeholder='password', name='password')
-                      .form-group
-                        label.control-label.col-md-5 Re-type Your Password
-                        .col-md-3
-                          input#password_1.form-control.form-control-inline.input-large(size='16', type='password', value=user.user_pw, placeholder='password', name='password_1')
-                      .form-group
-                        label.control-label.col-md-5 Email
-                        .col-md-3
-                          input#email.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_email, placeholder='email', name='email')
-                      .form-group
-                        label.control-label.col-md-5 Select Role
-                        .col-md-3
-                          select#userrole.bs-select.form-control.input-large(data-show-subtext='true', name='userrole')
-                            option #{user.user_role}
-                            option  User
-                            option  Asset Manager
-                            option Zone Manager
-                            option Super Manager
-                          span.tooltips.font-blue(data-container='body', data-placement='top', data-original-title='Lorem ipsum dolor sit amet, consectetur adipisicing elit')              
-                      .form-group
-                        #register_tnc_error(style='text-align:center;')
-                        .col-md-10
-                          button#register-submit-btn.btn.btn-default.blue.pull-right Save
-                        .col-md-2
-                          button.btn.btn-default(type='button', onclick="location.href='/management/users'") Cancel               
-              .portlet-footer
-      p.copyright Copyright M2U Technology All rights reserved.
-      a.go2top(href='#index')
-        i.icon-arrow-up
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Edit User
+        ol.breadcrumb
+          li
+            a(href='/dashboard') Home
+          li
+            a(href='#') Management
+          li
+            a(href='/management/users') Users
+          li.active Edit User
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze User Information
+                span.caption-helper  Update user information
+            .portlet-body.from
+              form#update_account.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group
+                    label.control-label.col-md-5 User ID
+                    .col-md-3
+                      span #{user.user_id}
+                      input#userid(type='hidden', name='userid', value=user.user_id)
+                  .form-group
+                    label.control-label.col-md-5 Name
+                    .col-md-3
+                      input#username.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_name, placeholder='Username', name='username')
+                  .form-group
+                    label.control-label.col-md-5 Password
+                    .col-md-3
+                      input#register_password.form-control.form-control-inline.input-large(size='16', type='password', value=user.user_pw, placeholder='password', name='password')
+                  .form-group
+                    label.control-label.col-md-5 Re-type Your Password
+                    .col-md-3
+                      input#register_password_1.form-control.form-control-inline.input-large(size='16', type='password', value=user.user_pw, placeholder='password', name='password_1')
+                  .form-group
+                    label.control-label.col-md-5 Email
+                    .col-md-3
+                      input#email.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_email, placeholder='email', name='email')
+                  .form-group
+                    label.control-label.col-md-5 Select Role
+                    .col-md-3
+                      select#userrole.bs-select.form-control.input-large(data-show-subtext='true', name='userrole')
+                        option #{user.user_role}
+                        option  User
+                        option  Asset Manager
+                        option Zone Manager
+                        option Super Manager
+                      span.tooltips.font-blue(data-container='body', data-placement='top', data-original-title='Lorem ipsum dolor sit amet, consectetur adipisicing elit')
+                  .form-group
+                    #register_tnc_error(style='text-align:center;')
+                    .col-md-10
+                      button#register-submit-btn.btn.btn-default.blue.pull-right Save
+                    .col-md-2
+                      button.btn.btn-default(type='button', onclick="location.href='/management/users'") Cancel               
+            .portlet-footer
+    p.copyright Copyright M2U Technology All rights reserved.
+    a.go2top(href='#index')
+      i.icon-arrow-up

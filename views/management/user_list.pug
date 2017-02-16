@@ -72,7 +72,7 @@ block content
                 span.caption-subject.bold.uppercase.font-green-haze User List
                 span.caption-helper  Detail information about users
               .tools
-                button.btn.btn-default.blue(type='button', onclick="location.href='./users/addUser'") Add
+                button.btn.btn-default.blue(type='button', onclick="location.href='/management/users/addUser'") Add
             .portlet-body.form
               table#sample_2.table.table-striped.table-bordered.table-hover(style='text-align:center;')
                 thead
@@ -101,7 +101,7 @@ block content
                           span.label.label-sm.label-default #{user.user_role}
                       td  #{user.reg_date}
                       td
-                        a.btn.default.btn-xs.balck(href='./users/'+user.user_id)
+                        a.btn.default.btn-xs.balck(href='/management/users/'+user.user_id)
                           i.fa.fa-edit
                           |  Edit
                         a.btn.default.btn-xs.balck(flag='deleteUser', userid=''+ user.user_id)
