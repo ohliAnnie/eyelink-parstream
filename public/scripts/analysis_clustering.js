@@ -167,7 +167,7 @@ function drawCheckCluster(data, dadate, factor) {
         x.domain(d3.extent(data, function(d) {
          return d.time; }));
         if(factor === 'active_power') {
-           y.domain([0, 180]);
+           y.domain([0, 200]);
         } else if(factor === 'ampere') {
            y.domain([0, 240]);
         } else if(factor === 'voltage') {
