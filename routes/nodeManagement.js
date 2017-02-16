@@ -26,7 +26,9 @@ router.get('/users/:id', function(req, res) {
   console.log(req.params.id);
   // 신규 등록
   if (req.params.id === 'addUser') {
-    res.render('./management/sign_up', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
+    var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis:'', management:'open selected', settings:''};
+    console.log(mainmenu);
+    res.render('./management/sign_up', { title: 'EyeLink for Sign-up', mainmenu:mainmenu });
   } else { // 기존 사용자 정보 변경
     var in_data = {
       USERID: req.params.id,
