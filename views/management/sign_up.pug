@@ -6,7 +6,6 @@ block script
   script(src='/assets/scripts/page/table-managed.js')
   script.
     $(document).ready(function() {
-
       $("#register-submit-btn").click(function() {
         if ($("#userid").val() == "") {
           $("#userid").focus();
@@ -86,10 +85,7 @@ block script
       } else if(msg === "4") {
         alert("회원가입을 축하합니다~");
       }
-      Metronic.init(); // init metronic core componets
-      eyelinkLayout.init(); // init eyelinklayout
-      Layout.init(); // init layout
-      Demo.init(); // init index page
+
       $.backstretch([
         "assets/images/bg/1.jpg",
         "assets/images/bg/2.jpg",
@@ -118,7 +114,7 @@ block content
           li
             a(href='#') Management
           li
-            a(href='user_list.html') Users            
+            a(href='./') Users            
           li.active Sign up
       .row
         .col-md-12
