@@ -31,6 +31,11 @@ router.get('/clustering_pop', function(req, res, next) {
   console.log(_rawDataByDay);
   res.render('./analysis/clustering_popup', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
 });
+
+router.get('/runalaysis', function(req, res, next) {
+  console.log(_rawDataByDay);
+  res.render('./analysis/runanalysis', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
+});
 /*router.get('/clustering', function(req, res, next) {
    var in_data = {};
   queryProvider.selectSingleQueryByID("analysis", "selectDaClusterMasterAll", in_data, function(err, out_data, params) {
@@ -175,6 +180,7 @@ router.get('/restapi/getClusterRawData', function(req, res, next) {
   });
 });
 
+
 // run analysis
 router.post('/restapi/runAnalysis', function(req, res, next) {
   console.log(req.query);
@@ -194,10 +200,10 @@ router.post('/restapi/runAnalysis', function(req, res, next) {
 
 // insert RawData
 router.post('/restapi/insertClusterRawData', function(req, res, next) {
-  // console.log('Limit file size: '+limit);
+  console.log('/restapi/insertClusterRawData start ');
   // console.log('/restapi/insertClusterRawData -> body : %j', req.body);
-  console.log('/restapi/insertClusterRawData -> master : %j', req.body.tb_da_clustering_master);
-  console.log('/restapi/insertClusterRawData -> detail : %j', req.body.tb_da_clustering_detail);
+  // console.log('/restapi/insertClusterRawData -> master : %j', req.body.tb_da_clustering_master);
+  // console.log('/restapi/insertClusterRawData -> detail : %j', req.body.tb_da_clustering_detail);
 
   req.body.tb_da_clustering_master.forEach(function(d) {
     var in_data = {
@@ -207,13 +213,14 @@ router.post('/restapi/insertClusterRawData', function(req, res, next) {
       C0ACT : d.c0_active_power, C1ACT : d.c1_active_power, C2ACT : d.c2_active_power, C3ACT : d.c3_active_power,
       C0POW : d.c0_power_factor, C1POW : d.c1_power_factor, C2POW : d.c2_power_factor, C3POW : d.c3_power_factor,
      };
-    queryProvider.selectSingleQueryByID("analysis", "insertClusteringMaster", in_data, function(err, out_data, params) {
+    queryProvider.insertQueryByID("analysis", "insertClusteringMaster", in_data, function(err, out_data) {
+      console.log('/restapi/insertClusterRawData -> insertClusteringMaster result : %s ', out_data);
     });
   });
 
-  req.body.tb_da_clustering_detail.forEach(function(d) {
-    console.log(d);
-  });
+  // req.body.tb_da_clustering_detail.forEach(function(d) {
+  //   console.log(d);
+  // });
 
 
   req.body.tb_da_clustering_detail.forEach(function(d) {
@@ -224,14 +231,15 @@ router.post('/restapi/insertClusterRawData', function(req, res, next) {
       C0ACT : d.c0_active_power, C1ACT : d.c1_active_power, C2ACT : d.c2_active_power, C3ACT : d.c3_active_power,
       C0POW : d.c0_power_factor, C1POW : d.c1_power_factor, C2POW : d.c2_power_factor, C3POW : d.c3_power_factor,
      };
-    queryProvider.selectSingleQueryByID("analysis", "insertClusteringDetail", in_data, function(err, out_data, params) {
+    queryProvider.insertQueryByID("analysis", "insertClusteringDetail", in_data, function(err, out_data) {
+      console.log('/restapi/insertClusterRawData -> insertClusteringDetail result : %s ', out_data);
     });
   });
 
   // TO-DO 일단 파일로 저장함. DB로 INSERT 로직 추가 구현 필요함.
   // var clustering_data = req.body;
   // var clustering_data = JSON.parse(req.body);
-  var clustering_data = JSON.stringify(req.body, null, 4);
+  // var clustering_data = JSON.stringify(req.body, null, 4);
   // console.log(clustering_data);
 /*  fs.writeFile('./insertClusterRawData.log', clustering_data, function(err) {
     if(err) throw err;

@@ -31,12 +31,6 @@ block script
         d3.selectAll("svg").remove();
         getMasterList(interval);
       });
-      $('#btn_runanalysis').click(function() {
-        var interval = $("select[name=interval]").val();
-        runAnalysis(interval);
-        //- d3.selectAll("svg").remove();
-        //- getMasterList();
-      });
       $('#btn_factor').click(function() {
         d3.selectAll("svg").remove();
       });
@@ -58,7 +52,7 @@ block script
         }
       });
       clickfunc = function(link) {
-        var daDate = link.innerText || link.textContent;        
+        var daDate = link.innerText || link.textContent;
         $('#daDate').val(daDate);
         console.log('2' + $('#daDate').val())
         if ($('#factor0').is(':checked') === true) {
@@ -73,8 +67,8 @@ block script
         console.log(factor + ' ' + daDate)
           d3.selectAll("svg").remove();
           drawCheckChart(factor, daDate);
-      };  
-    });   
+      };
+    });
 block content
   .container-fluid
     .page-content
@@ -114,14 +108,12 @@ block content
                     .col-md-1.form-inline
                       button#btn_search.btn.blue
                         i.fa.fa-search  Search
-                    .col-md-2.form-inline                      
-                        button#btn_runanalysis.btn.blue Run Analysis
       .row
         .col-md-5
           .portlet.light.bordered(style='height: 520px;')
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase History             
+                span.caption-subject.bold.uppercase History
                 span.caption-helper  Run analysis list
             .portlet-body
               .scroller(style='height: 430px;', data-always-visible='1', data-rail-visible='0')
@@ -147,7 +139,7 @@ block content
                     | Ampere
                   label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
                     input#factor3.toggle(type='radio', name='options', value='power_factor')
-                    | Power Factor                    
+                    | Power Factor
             .portlet-body
               .chart(style='height:445px;')
                 input#daDate(type='hidden', name='hidden', value='')

@@ -1,0 +1,74 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
+  link(rel='stylesheet', href='/assets/leaflet/dc.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+  link(rel='stylesheet', href='/scripts/d3_timeseries.css')
+  link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')
+block script
+  script(type='text/javascript', src='/assets/leaflet/d3.js')
+  script(src='/assets/annie/js/vue.min.js')
+  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  script(type='text/javascript', src='/assets/annie/js/dc_2_1.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(src='/scripts/analysis_clustering.js')
+  script.
+    $(document).ready(function(e) {
+      var dateFormat = 'YYYY-MM-DD';
+      var dateFormat = 'YYYY-MM-DD';
+      var daDate = '';
+      $('#sdate').val(moment().format(dateFormat));
+      $('#edate').val(moment().format(dateFormat));
+      $('#btn_runanalysis').click(function() {
+        var interval = $("select[name=interval]").val();
+        runAnalysis(interval);
+      });
+    });
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Run Analysis
+        ol.breadcrumb
+          li
+            a(href='/dashboard') Home
+          li
+            a(href='#') Analysis
+          li.active Run Analysis
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Set analysis period and Time interval
+            .portlet-body(style="padding-top: 50px; padding-bottom: 150px")
+              form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group
+                    label.control-label.col-md-5 Date Range
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Date Range
+                      .input-icon
+                        .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
+                          input#sdate.form-control(type='text', name='from' value='')
+                          span.input-group-addon to
+                          input#edate.form-control(type='text', name='to' value='')
+                  .form-group
+                    label.control-label.col-md-5 Interval
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Interval
+                      .input-icon
+                        select.form-control.input-small.select2me.form-md-line-input(name='interval')
+                          option(value=15) 15min
+                          option(value=30) 30min
+                          option(value=60) 60min
+                          option(value=180) 3hour
+                          option(value=360) 6hour
+                  .form-group(style="height: 50px")
+                  .form-group
+                    #register_tnc_error(style='text-align:center;')
+                    .col-md-10
+                    .col-md-2
+                      button#btn_runanalysis.btn.blue Run Analysis
