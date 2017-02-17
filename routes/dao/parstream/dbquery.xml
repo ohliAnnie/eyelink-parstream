@@ -219,6 +219,9 @@
     ]]></query>
   </node>
   <user>
+      <query id= 'selectLogin'><![CDATA[
+      select * from tb_user_info where user_id = #USERID# order by reg_date desc limit 1
+        ]]></query>
       <query id= 'selectCheckJoin'><![CDATA[
         select * from tb_user_info where user_id = #USERID#
         ]]></query>

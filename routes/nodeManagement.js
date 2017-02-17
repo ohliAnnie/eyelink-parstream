@@ -26,8 +26,7 @@ router.get('/users/:id', function(req, res) {
   console.log(req.params.id);
   // 신규 등록
   if (req.params.id === 'addUser') {
-    var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis:'', management:'open selected', settings:''};
-    console.log(mainmenu);
+    // console.log(mainmenu);
     res.render('./management/sign_up', { title: 'EyeLink for Sign-up', mainmenu:mainmenu });
   } else { // 기존 사용자 정보 변경
     var in_data = {
@@ -35,15 +34,15 @@ router.get('/users/:id', function(req, res) {
     };
     queryProvider.selectSingleQueryByID("user", "selectEditUser", in_data, function(err, out_data, params) {
       console.log('db : '+out_data[0]);
-        var rtnCode = CONSTS.getErrData('0000');
-        if (out_data[0] === null) {
-          rtnCode = CONSTS.getErrData('0001');
-          var msg = CONSTS.getErrData(out_data);
-          console.log(msg);
-          res.redirect("./edit_user?msg=" + msg.code);
-        }
-        console.log(out_data[0]);
-        var user = out_data[0][0];
+      var rtnCode = CONSTS.getErrData('0000');
+      // if (out_data[0] === null) {
+      //   rtnCode = CONSTS.getErrData('0001');
+      //   var msg = CONSTS.getErrData(out_data);
+      //   console.log(msg);
+      //   res.redirect("./edit_user?msg=" + msg.code);
+      // }
+      console.log(out_data[0]);
+      var user = out_data[0][0];
       res.render('./management/edit_user',
         { title: 'EyeLink for ParStream',
           mainmenu:mainmenu,
