@@ -106,7 +106,7 @@ function drawCheckCluster(data, dadate, factor) {
        if(factor === 'active_power') {
            y.domain([0, 200]);
         } else if(factor === 'ampere') {
-           y.domain([0, 240]);
+           y.domain([0, 1]);
         } else if(factor === 'voltage') {
            y.domain([0, 240]);
         } else if(factor === 'power_factor') {
