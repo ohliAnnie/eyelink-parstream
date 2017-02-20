@@ -26,11 +26,6 @@ router.get('/users/:id', function(req, res) {
   console.log(req.params.id);
   // 신규 등록
   if (req.params.id === 'addUser') {
-<<<<<<< HEAD
-    console.log(mainmenu);
-=======
-    // console.log(mainmenu);
->>>>>>> ef8d7b2d393b38623b1802b3d67622e4dec34a69
     res.render('./management/sign_up', { title: 'EyeLink for Sign-up', mainmenu:mainmenu });
   } else { // 기존 사용자 정보 변경
     var in_data = {
