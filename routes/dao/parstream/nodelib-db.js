@@ -95,5 +95,4 @@ QueryProvider.prototype.insertQueryByID = function (type, queryId, datas, callba
   });
 };
 
-
 exports.QueryProvider = QueryProvider;

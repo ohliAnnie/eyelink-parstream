@@ -74,7 +74,7 @@ Parstream.createClient = function createClient(options) {
   var self = new Client()
 
   options = options || {}
-  // console.log(options);
+  console.log(options);
   self.host = options.host || '127.0.0.1'
   self.port = options.port || 9042
 
@@ -91,6 +91,7 @@ Client.prototype.connect = function connect(cb) {
   // console.log(self)
   self.socket = net.createConnection(self.port, self.host)
   self.socket.on('connect', function() {
+    console.log('Client connected')
     self.socket.setEncoding('utf8')
 
     var data = ''
