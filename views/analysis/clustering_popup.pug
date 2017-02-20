@@ -48,8 +48,10 @@ html
       jQuery(document).ready(function() {
         var sdate = urlParams.start;
         var edate = urlParams.end;
+        var interval = urlParams.interval;
         $('#sdate').val(sdate);
         $('#edate').val(edate);
+        $('#interval').val(interval);
         drawCheckChart();
         getNodeList();
         Metronic.init(); // init metronic core componets
@@ -69,25 +71,40 @@ html
       .container-fluid
         .content-popup
           .popup-tit-box
-            h1 Cluster Detail
+            .row
+              .col-md-11
+                h1 Cluster Detail
+              .col-md-1
+                a.btn.blue.pull-left(data-toggle='modal', href='javascript:self.opener = self;window.close();') Close
           .row
             .col-md-12
               .portlet.light.bordered
                 .portlet-title
                   .caption.font-dark
                     span.caption-subject.bold.uppercase.font-blue-sharp Period and Factor
+                  .actions
+                    .btn-group.btn-group-devided(data-toggle='buttons')
+                      label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                        input#syncY.toggle(type='radio', name='options', checked='Y')
+                        i.fa.fa-chain Sync
+                      label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                        input#syncN.toggle(type='radio', name='options')
+                        i.fa.fa-chain-broken Async
                 .portlet-body.form          
                   form.form-horizontal.form-bordered(onsubmit="return false;")
                     .form-body
                       .row
                         label.control-label.col-md-1 Period
-                        .col-md-4         
+                        .col-md-3        
                           .input-group.input-large.date-picker.input-daterange
-                            input#sdate.form-control(type='text' name='from' value='' style = 'text-align:center; width: 115px;' readonly)
-                            input.form-control(type='text' name='period' value='to' style = 'text-align:center; width: 40px;' readonly)
-                            input#edate.form-control(type='text' name='to' value='' style = 'text-align:center; width: 115px;'  readonly)
+                            input#sdate.form-control(type='text' name='from' value='' style = 'text-align:center; width: 110px;' readonly)
+                            input.form-control(type='text' name='period' value='to' style = 'text-align:center; width: 37px;' readonly)
+                            input#edate.form-control(type='text' name='to' value='' style = 'text-align:center; width: 110px;'  readonly)
+                        label.control-label.col-md-1 Interval
+                        .col-md-2
+                          input#interval.form-control(type='text' name='interval' value='' style = 'text-align:center; width: 100px;'  readonly)                              
                         label.control-label.col-md-1 Factor
-                        .col-md-5
+                        .col-md-4
                           .btn-group.btn-group-devided(data-toggle='buttons')
                             label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
                               input#factor0.toggle(type='radio', name='options', value='active_power', checked='Y')
@@ -100,16 +117,14 @@ html
                               | Ampere
                             label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
                               input#factor3.toggle(type='radio', name='options', value='power_factor')
-                              | Power Factor
-                        .popup-tit.col-md-1
-                          a.btn.blue.pull-left(data-toggle='modal', href='javascript:self.opener = self;window.close();') Close
+                              | Power Factor                       
           .row
             .col-md-5
               .portlet.light.bordered(style='height:445px;')
                 .portlet-title
                   .caption.font-dark
                     span.caption-subject.bold.uppercase Clustering chart
-                    span.caption-helper  by Factor
+                    span.caption-helper  by Analytic data
                   .portlet-body
                     .chart(style='height:385px;')
                       #table
@@ -144,7 +159,7 @@ html
                 .portlet-title
                   .caption.font-dark
                     span.caption-subject.bold.uppercase Cluster Chart                    
-                    span.caption-helper  by Nodes
+                    span.caption-helper  by Nodes real data
                 .portlet-body
                   .chart(style='height:350px;')
                     #nodeChart
@@ -154,6 +169,7 @@ html
                 .portlet-title
                   .caption
                     span.caption-subject.bold.uppercase.font-blue-sharp Power  
+                    span.caption-helper  by Node real data
                 .portlet-body(style='height:auto;')
                  .chart
                   #ts-chart01
@@ -162,6 +178,7 @@ html
                 .portlet-title
                   .caption
                     span.caption-subject.bold.uppercase.font-green-haze ALS/Dimming
+                    span.caption-helper  by Node real data
                 .portlet-body
                   .chart
                     #ts-chart02
@@ -170,6 +187,7 @@ html
                 .portlet-title
                   .caption
                     span.caption-subject.bold.uppercase.font-green-haze Noise
+                    span.caption-helper  by Node real data
                 .portlet-body
                   .chart
                     #ts-chart03
@@ -178,6 +196,7 @@ html
                 .portlet-title
                   .caption
                     span.caption-subject.bold.uppercase.font-green-haze Vibration
+                    span.caption-helper  by Node real data
                 .portlet-body
                   .chart
                     #ts-chart04
