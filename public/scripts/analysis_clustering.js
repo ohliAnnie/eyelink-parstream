@@ -82,7 +82,7 @@ function drawMaster(master) {
     sb.append('<td>'+interval+'</td>');
     sb.append('<td><a href="#" onclick="javascript_:window.open(');
     var d = d.da_date.split(' ')
-    var script = "'clusteringPop?dadate="+d[0]+"&datime="+d[1]+"&interval="+interval+"&start="+sdate[0]+"&end="+edate[0]+"', 'pop', 'menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50'";
+    var script = "'clusteringPop?dadate="+d[0]+"&datime="+d[1]+"&interval="+interval+"&start="+sdate[0]+"&end="+edate[0]+"', '', 'menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50'";
     sb.append(script+');" class="btn red"> Detail </a></td></tr>')
     console.log(sb.toString());
     $('#masterList').append(sb.toString());
