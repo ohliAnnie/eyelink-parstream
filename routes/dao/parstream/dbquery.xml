@@ -150,7 +150,7 @@
       select da_date, start_date, end_date, time_interval from tb_da_clustering_master
         where da_date >= timestamp #START_TIMESTAMP#
             and da_date <= timestamp #END_TIMESTAMP#
-        order by da_date
+        order by da_date desc
      ]]></query>
     <query id='selectDaClusterDetailAll'><![CDATA[
       select * from tb_da_clustering_detail
@@ -219,6 +219,9 @@
     ]]></query>
   </node>
   <user>
+      <query id= 'selectLogin'><![CDATA[
+      select * from tb_user_info where user_id = #USERID# order by reg_date desc limit 1
+        ]]></query>
       <query id= 'selectCheckJoin'><![CDATA[
         select * from tb_user_info where user_id = #USERID#
         ]]></query>
