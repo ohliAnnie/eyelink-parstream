@@ -505,7 +505,6 @@ function getNodeList(type) {
     type: "get",
     data: {daDate : dadate},
     success: function(result) {
-      // console.log(result);
       if (result.rtnCode.code == "0000") {
         var node = result.rtnData;
         var nodeList = [];
@@ -581,7 +580,7 @@ function drawDirectory(nodeList) {
       sb.append('</td></tr>');
     }
     var a = d.c3.split(':');
-    var script = "javascript:getNodePower('"+d.c0+"');";
+    var script = "javascript:getNodePower('"+d.c3+"');";
     sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster3 </a></span></td><td></td></tr>');
     var a = d.c3.split(':');
     for(var i=0; i < a.length; i++) {
@@ -590,7 +589,6 @@ function drawDirectory(nodeList) {
       sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
       sb.append('</td></tr>');
     }
-//    console.log('sb : %s', sb.toString());
     $('#tblClusterDir').append(sb.toString());
   });
     
@@ -619,7 +617,6 @@ function getNodePower(nodeList){
     type: "get",
     data: {startDate:start, endDate:end, nodeId: node},
     success: function(result) {
-      // console.log(result);
       if (result.rtnCode.code == "0000") {
         var data = result.rtnData;
         var set = [];
@@ -646,9 +643,7 @@ function getNodePower(nodeList){
             max =  parseFloat(d.power_factor);
         }   
         });
-        console.log(max);
         drawNode(set, max, idCnt);
-    
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -768,7 +763,6 @@ function clickNode(nodeId) {
     type: "get",
     data: {startDate:sdate, endDate:edate, node:nodeId},
     success: function(result) {
-      // console.log(result);
       if (result.rtnCode.code == "0000") {
         var data = result.rtnData;   
          drawTimeseries(data);
@@ -801,9 +795,6 @@ function drawTimeseries(data) {
     d.vibration_z = d.vibration_z === ''? 0 : d.vibration_z;
   });
 
-  // console.log(data);
-
-
   var chartName = '#ts-chart01';
   chart01 = d3.timeseries()
     .addSerie(data,{x:'event_time',y:'active_power'},{interpolate:'linear'})
@@ -815,7 +806,6 @@ function drawTimeseries(data) {
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);
 
-    // console.log(chart01);
   chart01(chartName);
 
   var chartName = '#ts-chart02';
