@@ -20,9 +20,7 @@ function drawCheckChart() {
   } else if ($('#factor3').is(':checked') === true) {
     var factor = $('#factor3').val();
   }   
-var a = urlParams.dadate;
-var aa = a.split('%20');
-var dadate = aa[0] + ' ' + aa[1];
+var dadate = urlParams.dadate + ' ' + urlParams.datime;
 console.log(dadate); 
   $.ajax({
     url: "/analysis/restapi/getDaClusterDetail" ,
@@ -106,7 +104,7 @@ function drawCheckCluster(data, dadate, factor) {
        if(factor === 'active_power') {
            y.domain([0, 200]);
         } else if(factor === 'ampere') {
-           y.domain([0, 240]);
+           y.domain([0, 1]);
         } else if(factor === 'voltage') {
            y.domain([0, 240]);
         } else if(factor === 'power_factor') {
@@ -499,10 +497,8 @@ function getNodeList(type) {
     var factor = $('#factor2').val();
   } else if ($('#factor3').is(':checked') === true) {
     var factor = $('#factor3').val();
-  }
-  var a = urlParams.dadate;
-  var aa = a.split('%20');
-  var dadate = aa[0] + ' ' + aa[1];
+  }  
+  var dadate = urlParams.dadate + ' ' + urlParams.datime;
    $.ajax({
     url: "/analysis/restapi/getDaClusterMasterByDadate" ,
     dataType: "json",
@@ -615,9 +611,6 @@ function getNodePower(nodeList){
   }
   var node = nodeList.split(':');
   var idCnt = node.length;
-  var a = urlParams.dadate;
-  var aa = a.split('%20');
-  var dadate = aa[0] + ' ' + aa[1];
   var start = urlParams.start;
   var end = urlParams.end;
    $.ajax({

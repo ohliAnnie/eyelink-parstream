@@ -78,9 +78,17 @@ function drawMaster(master) {
     var sdate = d.start_date.split(' ');
     var edate = d.end_date.split(' ');
     sb.append('<tr><td><a href="#" onclick="clickfunc(this)">' + d.da_date+'</td><td> '+sdate[0]+' ~ '+edate[0]+' </td>');
-    sb.append('<td>'+d.time_interval+'mins</td>');
+    if (d.time_interval == 180) {
+      var interval = '3hours';
+    } else if (d.time_interval == 360) {
+      var interval = '6hours';
+    } else {
+      var interval = d.time_interval + 'mins';
+    }
+    sb.append('<td>'+interval+'</td>');
     sb.append('<td><a href="#" onclick="javascript_:window.open(');
-    var script = "'clustering_pop?dadate="+d.da_date+"&start="+sdate[0]+"&end="+edate[0]+"', 'pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=1200,height=640,top=50,left=50'";
+    var d = d.da_date.split(' ')
+    var script = "'clusteringPop?dadate="+d[0]+"&datime="+d[1]+"&start="+sdate[0]+"&end="+edate[0]+"', 'pop', 'menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50'";
     sb.append(script+');" class="btn red"> Detail </a></td></tr>')
     $('#masterList').append(sb.toString());
   });
@@ -169,7 +177,7 @@ function drawCheckCluster(data, dadate, factor) {
         if(factor === 'active_power') {
            y.domain([0, 200]);
         } else if(factor === 'ampere') {
-           y.domain([0, 240]);
+           y.domain([0, 1]);
         } else if(factor === 'voltage') {
            y.domain([0, 240]);
         } else if(factor === 'power_factor') {

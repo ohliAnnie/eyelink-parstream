@@ -27,7 +27,7 @@ router.get('/cluster_detail', function(req, res, next) {
   res.render('./analysis/cluster_detail', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
 });
 
-router.get('/clustering_pop', function(req, res, next) {
+router.get('/clusteringPop', function(req, res, next) {
   console.log(_rawDataByDay);
   res.render('./analysis/clustering_popup', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
 });
