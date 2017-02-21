@@ -82,14 +82,6 @@ html
                 .portlet-title
                   .caption.font-dark
                     span.caption-subject.bold.uppercase.font-blue-sharp Period and Factor
-                  .actions
-                    .btn-group.btn-group-devided(data-toggle='buttons')
-                      label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
-                        input#syncY.toggle(type='radio', name='options', checked='Y')
-                        i.fa.fa-chain Sync
-                      label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
-                        input#syncN.toggle(type='radio', name='options')
-                        i.fa.fa-chain-broken Async
                 .portlet-body.form          
                   form.form-horizontal.form-bordered(onsubmit="return false;")
                     .form-body
@@ -97,9 +89,9 @@ html
                         label.control-label.col-md-1 Period
                         .col-md-3        
                           .input-group.input-large.date-picker.input-daterange
-                            input#sdate.form-control(type='text' name='from' value='' style = 'text-align:center; width: 110px;' readonly)
-                            input.form-control(type='text' name='period' value='to' style = 'text-align:center; width: 37px;' readonly)
-                            input#edate.form-control(type='text' name='to' value='' style = 'text-align:center; width: 110px;'  readonly)
+                            input#sdate.form-control(type='text' name='from' value='' style = 'text-align:center; width: 120px;' readonly)
+                            input.form-control(type='text' name='period' value='to' style = 'text-align:center; width: 40px;' readonly)
+                            input#edate.form-control(type='text' name='to' value='' style = 'text-align:center; width: 120px;'  readonly)
                         label.control-label.col-md-1 Interval
                         .col-md-2
                           input#interval.form-control(type='text' name='interval' value='' style = 'text-align:center; width: 100px;'  readonly)                              
@@ -117,7 +109,7 @@ html
                               | Ampere
                             label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
                               input#factor3.toggle(type='radio', name='options', value='power_factor')
-                              | Power Factor                       
+                              | PowerFactor                       
           .row
             .col-md-5
               .portlet.light.bordered(style='height:445px;')
@@ -131,7 +123,7 @@ html
                         .panel.panel-card
                           .panel-body
                             .col-xm-2.col-sm-2.col-md-2.panel-checkbox.hidden-xs.hidden-sm
-                              input#c0.click_checkbox(type='checkbox', name='ck0', value='1', v-on='click:checkOpt', checked='true')
+                              input#c0.click_checkbox(type='checkbox', name='c0', value='1', v-on='click:checkOpt', checked='true')
                               text  Cluster0
                               br
                               input#c1.click_checkbox(type='checkbox', name='c1', value='2', v-on='click:checkOpt', checked='true')
@@ -200,3 +192,13 @@ html
                 .portlet-body
                   .chart
                     #ts-chart04
+          .row           
+            .col-md-1  
+            .col-md-2
+              .btn-group.btn-group-devided(data-toggle='buttons')
+                label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                  input#syncY.toggle(type='radio', name='options', checked='Y')
+                  i.fa.fa-chain Sync
+                label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                  input#syncN.toggle(type='radio', name='options')
+                  i.fa.fa-chain-broken Async

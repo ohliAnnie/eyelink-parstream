@@ -43,7 +43,7 @@ console.log(dadate);
         } else if(factor === 'power_factor') {
           set.push({ time:d.event_time, c0:d.c0_power_factor, c1:d.c1_power_factor, c2:d.c2_power_factor, c3:d.c3_power_factor});
         }
-        });
+        });        
         drawCheckCluster(set, dadate, factor);
       } else {
         //- $("#errormsg").html(result.message);
@@ -57,12 +57,23 @@ console.log(dadate);
 }
 
 function drawCheckCluster(data, dadate, factor) {
+  var cate = new Array();
+  var idx = 0;
+  if($('input[name="c0"]').prop('checked')) 
+    cate[idx++] = 'c0';
+  if($('input[name="c1"]').prop('checked'))
+    cate[idx++] = 'c1';
+  if($('input[name="c2"]').prop('checked'))
+    cate[idx++] = 'c2';
+  if($('input[name="c3"]').prop('checked'))
+    cate[idx++] = 'c3';  
+
   var demo = new Vue({
     el: '#table',
     data: {
       people_count: 200,
       lineCategory: ['c0', 'c1', 'c2', 'c3'],
-      selectCate: ['c0', 'c1', 'c2', 'c3'],
+      selectCate: cate,
       lineFunc: null
     },
     methods: {
@@ -79,23 +90,23 @@ function drawCheckCluster(data, dadate, factor) {
         var legendSize = 10,
          color = d3.scale.category20();
 
-    var x = d3.time.scale().range([0, width]);
+        var x = d3.time.scale().range([0, width]);
 
-    var y = d3.scale.linear().range([height, 0]);
+        var y = d3.scale.linear().range([height, 0]);
 
         var ddata = (function() {
           var temp = {}, seriesArr = [];
 
-          self.lineCategory.forEach(function (name) {
-            temp[name] = {category: name, values:[]};
-            seriesArr.push(temp[name]);
-          });
+        self.lineCategory.forEach(function (name) {
+          temp[name] = {category: name, values:[]};
+          seriesArr.push(temp[name]);
+        });
 
-          data.forEach(function (d) {
-            self.lineCategory.map(function (name) {
-              temp[name].values.push({'category': name, 'time': d['time'], 'num': d[name]});
-            });
+        data.forEach(function (d) {
+          self.lineCategory.map(function (name) {
+            temp[name].values.push({'category': name, 'time': d['time'], 'num': d[name]});
           });
+        });
 
           return seriesArr;
         })();
@@ -165,7 +176,7 @@ function drawCheckCluster(data, dadate, factor) {
           .attr("class", function (d) {
             return "click_line click_line_" + d['category']; })
           .attr("d", function(d) {
-           return line(d['values']); })
+            return line(d['values']); })
            .style("display", function (d) {
               //to check if the checkbox has been selected and decide whether to show it out
               //use display:none and display:inherit to control the display of scatter dots
@@ -178,7 +189,7 @@ function drawCheckCluster(data, dadate, factor) {
 
            d3.selectAll('.click_legend').remove();
 
-           var legend = svg.append('g')
+         var legend = svg.append('g')
            .attr('class', 'click_legend');
 
           var singLegend = legend.selectAll('.path_legend')
@@ -372,13 +383,14 @@ function drawCheckCluster(data, dadate, factor) {
       this.legendRedraw(self.selectCate, "#Cluster", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
     },
     legendRedraw: function (selectCate, id, legend, rect, legendSize, margin, height, width, color) {
+
       //update the scatter plot legend
       legend.selectAll('.path_legend')
       .data(selectCate)
         // .transition()
         // .duration(200)
         .attr('transform', function(d, i) {
-          return 'translate(' + ((5 + (width-20) / 6) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
+          return 'translate(' + ((5 + (width-20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
         })
 
         legend.selectAll('rect')
@@ -416,7 +428,7 @@ function drawCheckCluster(data, dadate, factor) {
       .append('g')
       .attr('class', 'path_legend')
       .attr('transform', function(d, i) {
-        return 'translate(' + ((5 + (width-20) / 6) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
+        return 'translate(' + ((5 + (width-20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
       });
 
       singLegend.append('rect')
@@ -445,21 +457,21 @@ function drawCheckCluster(data, dadate, factor) {
           var rename = "Cluster2"
         } else {
           var rename = "Cluster3";
-        }
-            return rename;          });
+        }         
+          return rename;          });
 
 
-      //remove the old legends
-      legend.selectAll('.path_legend')
-      .data(selectCate)
-      .exit()
-      .remove();
+        //remove the old legends
+        legend.selectAll('.path_legend')
+        .data(selectCate)
+        .exit()
+        .remove();
 
       //redraw the rect around the legend
       rect.selectAll('.legendRect')
       .data(selectCate)
       .attr('transform', function(d, i) {
-        return 'translate(' + ((5 + (width-20) / 6) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
+        return 'translate(' + ((5 + (width-20) / 4) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
       });
 
       rect.selectAll('.legendRect')
@@ -467,10 +479,10 @@ function drawCheckCluster(data, dadate, factor) {
       .enter()
       .append('rect')
       .attr('class', 'legendRect')
-      .attr('width', (width - 20) / 6)
+      .attr('width', (width - 20) / 4)
       .attr('height', legendSize + 10)
       .attr('transform', function(d, i) {
-        return 'translate(' + ((5 + (width-20) / 6) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
+        return 'translate(' + ((5 + (width-20) / 4) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
       });
 
       rect.selectAll('.legendRect')
@@ -481,7 +493,7 @@ function drawCheckCluster(data, dadate, factor) {
   },
   compiled: function () {
       var self = this;
-      self.displayLine();
+      self.displayLine();      
   }
 });
 }
