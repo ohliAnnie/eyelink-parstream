@@ -16,6 +16,10 @@ block script
   script(src='/scripts/analysis_clustering.js')
   script.
     $(document).ready(function(e) {
+      console.log($('input[name="c0"]').prop('checked'));
+      console.log($('input[name="c1"]').prop('checked'));
+      console.log($('input[name="c2"]').prop('checked'));
+      console.log($('input[name="c3"]').prop('checked'));
       var dateFormat = 'YYYY-MM-DD';
       var dateFormat = 'YYYY-MM-DD';
       var daDate = '';
@@ -139,7 +143,7 @@ block content
                     | Ampere
                   label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
                     input#factor3.toggle(type='radio', name='options', value='power_factor')
-                    | Power Factor
+                    | PowerFactor
             .portlet-body
               .chart(style='height:445px;')
                 input#daDate(type='hidden', name='hidden', value='')
@@ -147,7 +151,7 @@ block content
                   .panel.panel-card
                     .panel-body
                       .col-xm-2.col-sm-2.col-md-2.panel-checkbox.hidden-xs.hidden-sm
-                        input#c0.click_checkbox(type='checkbox', name='ck0', value='1', v-on='click:checkOpt', checked='true')
+                        input#c0.click_checkbox(type='checkbox', name='c0', value='1', v-on='click:checkOpt', checked='true')
                         text  Cluster0
                         br
                         input#c1.click_checkbox(type='checkbox', name='c1', value='2', v-on='click:checkOpt', checked='true')

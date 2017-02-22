@@ -4,19 +4,19 @@ function runAnalysis(interval) {
   // TO-DO message config로 처리함.
   if (confirm("분석에 시간이 걸릴수 있어 Background로 작업이 수행됩니다.\n 진행하시겠습니까? ")) {
     $.ajax({
-        url: "/analysis/restapi/runAnalysis" ,
-        dataType: "json",
-        type: "post",
-        data: { startDate:sdate, endDate:edate , interval:interval },
-        success: function(result) {
-          if (result.rtnCode.code == "0000") {
-            var master = result.rtnData;        
-          }
-        },
-        error: function(req, status, err) {
-          $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+      url: "/analysis/restapi/runAnalysis" ,
+      dataType: "json",
+      type: "post",
+      data: { startDate:sdate, endDate:edate , interval:interval },
+      success: function(result) {
+        if (result.rtnCode.code == "0000") {
+          var master = result.rtnData;        
         }
-      });
+      },
+      error: function(req, status, err) {
+        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+      }
+    });
   }
 }
 
@@ -24,8 +24,8 @@ function runAnalysis(interval) {
 function getMasterList(interval) {
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
- if(sdate === '' && edate === '') {
-  $.ajax({
+  if(sdate === '' && edate === '') {
+    $.ajax({
       url: "/analysis/restapi/getDaClusterMasterAll" ,
       dataType: "json",
       type: "get",
@@ -39,36 +39,36 @@ function getMasterList(interval) {
         $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
       }
     });
- } else {
+  } else {
    console.log('%s, %s, %s', sdate, edate, interval);
    $.ajax({
-      url: "/analysis/restapi/getDaClusterMaster" ,
-      dataType: "json",
-      type: "get",
-      data: { startDate:sdate, endDate:edate, interval:interval },
-      success: function(result) {
-        if (result.rtnCode.code == "0000") {
-          var master = result.rtnData;          
-          drawMaster(master);
-        }
-      },
-      error: function(req, status, err) {
-        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    url: "/analysis/restapi/getDaClusterMaster" ,
+    dataType: "json",
+    type: "get",
+    data: { startDate:sdate, endDate:edate, interval:interval },
+    success: function(result) {
+      if (result.rtnCode.code == "0000") {
+        var master = result.rtnData;          
+        drawMaster(master);
       }
-    });
+    },
+    error: function(req, status, err) {
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
  }
 }
 
 function drawMaster(master) {
   var seatvar = document.getElementsByClassName("masterList");
-    var cnt = 0
+  var cnt = 0
   $('#masterList').empty();
   master.forEach(function(d) {   
     var sb = new StringBuffer();
     if(cnt == 0) {
       sb.append('<tr><th>DA Date</th><th>Start Date-End Date</th><th>Interval</th><th></th></tr>');
       cnt++;
-   }
+    }
     var sdate = d.start_date.split(' ');
     var edate = d.end_date.split(' ');
     sb.append('<tr><td><a href="#" onclick="clickfunc(this)">' + d.da_date+'</td><td> '+sdate[0]+' ~ '+edate[0]+' </td>');
@@ -84,7 +84,7 @@ function drawMaster(master) {
     var d = d.da_date.split(' ')
     var script = "'clusteringPop?dadate="+d[0]+"&datime="+d[1]+"&interval="+interval+"&start="+sdate[0]+"&end="+edate[0]+"', '', 'menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50'";
     sb.append(script+');" class="btn red"> Detail </a></td></tr>')
-    console.log(sb.toString());
+    
     $('#masterList').append(sb.toString());
   });
 }
@@ -102,15 +102,15 @@ function drawCheckChart(factor, daDate) {
         data.forEach(function(d){
           var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
           d.event_time = df.parse(d.event_time);
-         if(factor === 'ampere') {
-          set.push({ time:d.event_time, c0:d.c0_ampere, c1:d.c1_ampere, c2:d.c2_ampere, c3:d.c3_ampere});
-         } else if(factor === 'voltage') {
-          set.push({ time:d.event_time, c0:d.c0_voltage, c1:d.c1_voltage, c2:d.c2_voltage, c3:d.c3_voltage});
-        } else if(factor === 'active_power') {
-          set.push({ time:d.event_time, c0:d.c0_active_power, c1:d.c1_active_power, c2:d.c2_active_power, c3:d.c3_active_power});
-        } else if(factor === 'power_factor') {
-          set.push({ time:d.event_time, c0:d.c0_power_factor, c1:d.c1_power_factor, c2:d.c2_power_factor, c3:d.c3_power_factor});
-        }
+          if(factor === 'ampere') {
+            set.push({ time:d.event_time, c0:d.c0_ampere, c1:d.c1_ampere, c2:d.c2_ampere, c3:d.c3_ampere});
+          } else if(factor === 'voltage') {
+            set.push({ time:d.event_time, c0:d.c0_voltage, c1:d.c1_voltage, c2:d.c2_voltage, c3:d.c3_voltage});
+          } else if(factor === 'active_power') {
+            set.push({ time:d.event_time, c0:d.c0_active_power, c1:d.c1_active_power, c2:d.c2_active_power, c3:d.c3_active_power});
+          } else if(factor === 'power_factor') {
+            set.push({ time:d.event_time, c0:d.c0_power_factor, c1:d.c1_power_factor, c2:d.c2_power_factor, c3:d.c3_power_factor});
+          }
         });
         drawCheckCluster(set, daDate, factor);
       } else {
@@ -124,13 +124,25 @@ function drawCheckChart(factor, daDate) {
   });
 }
 
+var cntCheck = 0;
 function drawCheckCluster(data, dadate, factor) {
+  console.log('count : ' + ++cntCheck);
+  var cate = new Array();
+  var idx = 0;
+  if($('input[name="c0"]').prop('checked')) 
+    cate[idx++] = 'c0';
+  if($('input[name="c1"]').prop('checked'))
+    cate[idx++] = 'c1';
+  if($('input[name="c2"]').prop('checked'))
+    cate[idx++] = 'c2';
+  if($('input[name="c3"]').prop('checked'))
+    cate[idx++] = 'c3';    
   var demo = new Vue({
     el: '#table',
     data: {
       people_count: 200,
       lineCategory: ['c0', 'c1', 'c2', 'c3'],
-      selectCate: ['c0', 'c1', 'c2', 'c3'],
+      selectCate: cate,
       lineFunc: null
     },
     methods: {
@@ -139,45 +151,45 @@ function drawCheckCluster(data, dadate, factor) {
         var input = 0;
 
    //generation function
-  function generate(data, id, lineType, axisNum) {
+   function generate(data, id, lineType, axisNum) {
     var margin = {top: 14, right: 10, bottom: 60, left: 30},
     width = $(id).width() - margin.left - margin.right,
     height = $(id).height() - margin.top - margin.bottom;
 
     var legendSize = 10,
-     color = d3.scale.category20();
+    color = d3.scale.category20();
 
     var x = d3.time.scale().range([0, width]);
 
     var y = d3.scale.linear().range([height, 0]);
 
-        var ddata = (function() {
-          var temp = {}, seriesArr = [];
+    var ddata = (function() {
+      var temp = {}, seriesArr = [];
 
-          self.lineCategory.forEach(function (name) {
-            temp[name] = {category: name, values:[]};
-            seriesArr.push(temp[name]);
-          });
+      self.lineCategory.forEach(function (name) {
+        temp[name] = {category: name, values:[]};
+        seriesArr.push(temp[name]);
+      });
 
-          data.forEach(function (d) {
-            self.lineCategory.map(function (name) {
-              temp[name].values.push({'category': name, 'time': d['time'], 'num': d[name]});
-            });
-          });
+      data.forEach(function (d) {
+        self.lineCategory.map(function (name) {
+          temp[name].values.push({'category': name, 'time': d['time'], 'num': d[name]});
+        });
+      });
 
-          return seriesArr;
-        })();
-        x.domain(d3.extent(data, function(d) {
-         return d.time; }));
-        if(factor === 'active_power') {
-           y.domain([0, 200]);
-        } else if(factor === 'ampere') {
-           y.domain([0, 1]);
-        } else if(factor === 'voltage') {
-           y.domain([0, 240]);
-        } else if(factor === 'power_factor') {
-           y.domain([0, 1.5]);
-        }
+      return seriesArr;
+    })();
+    x.domain(d3.extent(data, function(d) {
+     return d.time; }));
+    if(factor === 'active_power') {
+     y.domain([0, 200]);
+   } else if(factor === 'ampere') {
+     y.domain([0, 1]);
+   } else if(factor === 'voltage') {
+     y.domain([0, 240]);
+   } else if(factor === 'power_factor') {
+     y.domain([0, 1.5]);
+   }
 
         //data.length/10 is set for the garantte of timeseries's fitting effect in svg chart
         var xAxis = d3.svg.axis()
@@ -196,45 +208,45 @@ function drawCheckCluster(data, dadate, factor) {
 
     // Define the div for the tooltip
     var div = d3.select("body").append("div")
-        .attr("class", "tip")
-        .style("opacity", 0);
+    .attr("class", "tip")
+    .style("opacity", 0);
 
-        d3.select('#svg-path').remove();
+    d3.select('#svg-path').remove();
 
-        var svg = d3.select(id).append("svg")
-            .attr("id", "#svg-path")
-            .attr("width", width + margin.right + margin.left)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var svg = d3.select(id).append("svg")
+    .attr("id", "#svg-path")
+    .attr("width", width + margin.right + margin.left)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("id", "line-x-axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis);
+    svg.append("g")
+    .attr("class", "x axis")
+    .attr("id", "line-x-axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
 
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis);
+    svg.append("g")
+    .attr("class", "y axis")
+    .call(yAxis);
 
-       var line = d3.svg.line()
-          .interpolate(lineType)
-          .x(function(d) { return x(d['time']); })
-          .y(function(d) { return y(d['num']); });
+    var line = d3.svg.line()
+    .interpolate(lineType)
+    .x(function(d) { return x(d['time']); })
+    .y(function(d) { return y(d['num']); });
 
-        var path = svg.append("g")
-            .attr("class", "click_path");
+    var path = svg.append("g")
+    .attr("class", "click_path");
 
-        path.selectAll(".click_line")
-          .data(ddata)
-          .enter()
-          .append("path")
-          .attr("class", function (d) {
-            return "click_line click_line_" + d['category']; })
-          .attr("d", function(d) {
-           return line(d['values']); })
-           .style("display", function (d) {
+    path.selectAll(".click_line")
+    .data(ddata)
+    .enter()
+    .append("path")
+    .attr("class", function (d) {
+      return "click_line click_line_" + d['category']; })
+    .attr("d", function(d) {
+     return line(d['values']); })
+    .style("display", function (d) {
               //to check if the checkbox has been selected and decide whether to show it out
               //use display:none and display:inherit to control the display of scatter dots
               if ($("#"+d['category']).prop("checked"))
@@ -242,79 +254,81 @@ function drawCheckCluster(data, dadate, factor) {
               else
                 return 'none';
             })
-          .attr("stroke",function (d) { return color(d['category']); });
+    .attr("stroke",function (d) { return color(d['category']); });
 
-           d3.selectAll('.click_legend').remove();
+    d3.selectAll('.click_legend').remove();
+    if(cntCheck > 1) {
+       d3.selectAll('.path_legend').remove();
+    };
+    var legend = svg.append('g')
+    .attr('class', 'click_legend');
 
-           var legend = svg.append('g')
-           .attr('class', 'click_legend');
+    var singLegend = legend.selectAll('.path_legend')
+    .data(self.selectCate)
+    .enter()
+    .append('g')
+    .attr('class', 'path_legend')
+    .attr('transform', function(d, i) {
+      return 'translate(' + ((5 + (width-20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
+    });
 
-          var singLegend = legend.selectAll('.path_legend')
-           .data(self.selectCate)
-           .enter()
-           .append('g')
-           .attr('class', 'path_legend')
-           .attr('transform', function(d, i) {
-            return 'translate(' + ((5 + (width-20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
-          });
+    singLegend.append('g:rect')
+    .attr('width', legendSize)
+    .attr('height', legendSize)
+    .style('fill', function(d) {            return color(d);          });
 
-           singLegend.append('g:rect')
-           .attr('width', legendSize)
-           .attr('height', legendSize)
-           .style('fill', function(d) {            return color(d);          });
-
-           singLegend.append('g:text')
-           .attr('x', legendSize*1.4)
-           .attr('y', legendSize/1.3)
-           .attr('font-size', function() {
-            if ($(id).width() > 415)
-              return '.9em';
-            else {
-              return '.55em';
-            }
-          })
-           .text(function(d) {
-              if(d === 'c0')   {
-                var rename = "Cluster0";
-              } else if(d === 'c1') {
-                var rename = "Cluster1";
-              } else if(d === 'c2') {
-                var rename = "Cluster2"
-              } else {
-                var rename = "Cluster3";
-              }
-                  return rename;          });
+    singLegend.append('g:text')
+    .attr('x', legendSize*1.4)
+    .attr('y', legendSize/1.3)
+    .attr('font-size', function() {
+      if ($(id).width() > 415)
+        return '.9em';
+      else {
+        return '.55em';
+      }
+    })
+    .text(function(d) {
+      if(d === 'c0')   {
+        var rename = "Cluster0";
+      } else if(d === 'c1') {
+        var rename = "Cluster1";
+      } else if(d === 'c2') {
+        var rename = "Cluster2"
+      } else {
+        var rename = "Cluster3";
+      }
+      return rename;          });
 
          //draw the rect for legends
-        var rect = svg.append('g')
-        .attr("class", 'legendOuter');
+         var rect = svg.append('g')
+         .attr("class", 'legendOuter');
 
-        rect.selectAll('.legendRect')
-        .data(self.selectCate)
-        .enter()
-        .append('rect')
-        .attr('class', 'legendRect')
-        .attr('width', (width - 20) / 4)
-        .attr('height', legendSize + 10)
-        .attr('transform', function(d, i) {
+         rect.selectAll('.legendRect')
+         .data(self.selectCate)
+         .enter()
+         .append('rect')
+         .attr('class', 'legendRect')
+         .attr('width', (width - 20) / 4)
+         .attr('height', legendSize + 10)
+         .attr('transform', function(d, i) {
           return 'translate(' + (i * (5 + (width-20) / 4)) + ',' + (height + margin.bottom - legendSize - 20) + ')';
         });
 
-      var points = svg.selectAll(".seriesPoints")
-        .data(ddata)
-        .enter().append("g")
-        .attr("class", "seriesPoints");
+         var points = svg.selectAll(".seriesPoints")
+         .data(ddata)
+         .enter().append("g")
+         .attr("class", "seriesPoints");
 
-        points.selectAll(".tipNetPoints")
-        .data(function (d) { return d['values']; })
-        .enter().append("circle")
-        .attr("class", "tipNetPoints")
-        .attr("cx", function (d) { return x(d['time']); })
-        .attr("cy", function (d) { return y(d['num']); })
-        .text(function (d) { return d['num']; })
-        .attr("r", "6px")
-        .style("fill", "transparent")
-        .on("mouseover", function (d) {
+         points.selectAll(".tipNetPoints")
+         .data(function (d) { return d['values']; })
+         .enter().append("circle")
+         .attr("class", "tipNetPoints")
+         .attr("cx", function (d) { return x(d['time']); })
+         .attr("cy", function (d) { return y(d['num']); })
+         .text(function (d) { return d['num']; })
+         .attr("r", "6px")
+         .style("fill", "transparent")
+         .on("mouseover", function (d) {
 
           var mainCate = (function() {
             if (d['num'] != 0){
@@ -329,41 +343,41 @@ function drawCheckCluster(data, dadate, factor) {
               }
               return rename + ' | ';
             } else
-              return '';
+            return '';
           })();
 
-            div.transition()
-                .duration(200)
-                .style("opacity", .9);
-            div .html(' ' + mainCate + d['num'] + ' ')
-                .style("left", (d3.event.pageX) + "px")
-                .style("top", (d3.event.pageY - 28) + "px");
+          div.transition()
+          .duration(200)
+          .style("opacity", .9);
+          div .html(' ' + mainCate + d['num'] + ' ')
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
 
-              svg.append("g")
-              .attr("class", "tipDot")
-              .append("line")
-              .attr("class", "tipDot")
-              .transition()
-              .duration(50)
-              .attr("x1", $(this)[0]['cx']['animVal']['value'])
-              .attr("x2", $(this)[0]['cx']['animVal']['value'])
-              .attr("y2", height);
+          svg.append("g")
+          .attr("class", "tipDot")
+          .append("line")
+          .attr("class", "tipDot")
+          .transition()
+          .duration(50)
+          .attr("x1", $(this)[0]['cx']['animVal']['value'])
+          .attr("x2", $(this)[0]['cx']['animVal']['value'])
+          .attr("y2", height);
 
-              svg.append("polyline")
-              .attr("class", "tipDot")
-              .style("fill", "white")
-              .attr("points", ($(this)[0]['cx']['animVal']['value']-3.5)+","+(0-2.5)+","+$(this)[0]['cx']['animVal']['value']+","+(0+6)+","+($(this)[0]['cx']['animVal']['value']+3.5)+","+(0-2.5));
+          svg.append("polyline")
+          .attr("class", "tipDot")
+          .style("fill", "white")
+          .attr("points", ($(this)[0]['cx']['animVal']['value']-3.5)+","+(0-2.5)+","+$(this)[0]['cx']['animVal']['value']+","+(0+6)+","+($(this)[0]['cx']['animVal']['value']+3.5)+","+(0-2.5));
 
-              svg.append("polyline")
-              .attr("class", "tipDot")
-              .style("fill", "white")
-              .attr("points", ($(this)[0]['cx']['animVal']['value']-3.5)+","+(y(0)+2.5)+","+$(this)[0]['cx']['animVal']['value']+","+(y(0)-6)+","+($(this)[0]['cx']['animVal']['value']+3.5)+","+(y(0)+2.5));
-            })
-        .on("mouseout",  function (d) {
+          svg.append("polyline")
+          .attr("class", "tipDot")
+          .style("fill", "white")
+          .attr("points", ($(this)[0]['cx']['animVal']['value']-3.5)+","+(y(0)+2.5)+","+$(this)[0]['cx']['animVal']['value']+","+(y(0)-6)+","+($(this)[0]['cx']['animVal']['value']+3.5)+","+(y(0)+2.5));
+        })
+         .on("mouseout",  function (d) {
 
-            div.transition()
-                .duration(500)
-                .style("opacity", 0);
+          div.transition()
+          .duration(500)
+          .style("opacity", 0);
 
           var currentX = $(this)[0]['cx']['animVal']['value'];
 
@@ -383,7 +397,7 @@ function drawCheckCluster(data, dadate, factor) {
 
         });
 
-       this.getOpt = function() {
+         this.getOpt = function() {
           var axisOpt = new Object();
           axisOpt['x'] = x;
           axisOpt['y'] = y;
@@ -447,7 +461,7 @@ function drawCheckCluster(data, dadate, factor) {
         // .transition()
         // .duration(200)
         .attr('transform', function(d, i) {
-          return 'translate(' + ((5 + (width-20) / 6) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
+          return 'translate(' + ((5 + (width-20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
         })
 
         legend.selectAll('rect')
@@ -475,7 +489,7 @@ function drawCheckCluster(data, dadate, factor) {
           } else {
             var rename = "Cluster3";
           }
-              return rename;          });
+          return rename;          });
 
       //create new legends
       var singLegend = legend.selectAll('.path_legend')
@@ -484,7 +498,7 @@ function drawCheckCluster(data, dadate, factor) {
       .append('g')
       .attr('class', 'path_legend')
       .attr('transform', function(d, i) {
-        return 'translate(' + ((5 + (width-20) / 6) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
+        return 'translate(' + ((5 + (width-20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
       });
 
       singLegend.append('rect')
@@ -504,7 +518,7 @@ function drawCheckCluster(data, dadate, factor) {
           return '.55em';
         }
       })
-     .text(function(d) {
+      .text(function(d) {
         if(d === 'c0')   {
           var rename = "Cluster0";
         } else if(d === 'c1') {
@@ -514,7 +528,7 @@ function drawCheckCluster(data, dadate, factor) {
         } else {
           var rename = "Cluster3";
         }
-            return rename;          });
+        return rename;          });
 
       //remove the old legends
       legend.selectAll('.path_legend')
@@ -526,7 +540,7 @@ function drawCheckCluster(data, dadate, factor) {
       rect.selectAll('.legendRect')
       .data(selectCate)
       .attr('transform', function(d, i) {
-        return 'translate(' + ((5 + (width-20) / 6) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
+        return 'translate(' + ((5 + (width-20) / 4) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
       });
 
       rect.selectAll('.legendRect')
@@ -534,10 +548,10 @@ function drawCheckCluster(data, dadate, factor) {
       .enter()
       .append('rect')
       .attr('class', 'legendRect')
-      .attr('width', (width - 20) / 6)
+      .attr('width', (width - 20) / 4)
       .attr('height', legendSize + 10)
       .attr('transform', function(d, i) {
-        return 'translate(' + ((5 + (width-20) / 6) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
+        return 'translate(' + ((5 + (width-20) / 4) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
       });
 
       rect.selectAll('.legendRect')
@@ -547,8 +561,8 @@ function drawCheckCluster(data, dadate, factor) {
     }
   },
   compiled: function () {
-      var self = this;
-      self.displayLine();
+    var self = this;
+    self.displayLine();
   }
 });
 }
