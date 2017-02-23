@@ -41,7 +41,7 @@ describe("Loop Sync Test", function(){
       for (var i = 0; i < 3; i++) {
         console.log(i)
       }
-      console.log('ended!!!')
+      console.log('Loop, no callback ended!!!')
       done();
 
     });
@@ -52,7 +52,17 @@ describe("Loop Sync Test", function(){
           console.log(i);
         });
       }
-      console.log('ended!!!')
+      console.log('Loop + callback ended!!!')
+      done();
+    });
+
+    it('Loop + callback with IIFE ', function(done) {
+      for (var i = 0; i < 3; i++) {
+        reserve(function() {
+          console.log(i);
+        });
+      }
+      console.log('Loop + callback with IIFE ended!!!')
       done();
     });
 
@@ -60,7 +70,7 @@ describe("Loop Sync Test", function(){
       for (var i = 0; i < 3; i++) {
         makeReserve(i);
       }
-      console.log('ended!!!')
+      console.log('Loop + callback, local variable ended!!!')
       done();
     });
 
@@ -179,7 +189,7 @@ describe("ASync Module Test", function(){
     });
 
     it('for loop + waterfall + sleep', function(done) {
-      for (var i=0; i<3; i++) {
+      for (var i=0; i<2; i++) {
         var d = new Date();
         console.log('time : %s', d.toFormat('YYYY-MM-DD HH24:MI:SS'))
         async.waterfall([
@@ -200,7 +210,7 @@ describe("ASync Module Test", function(){
         ], function (err, result) {
             console.log('last : err - %s, result - %s', err, result);
            // result에는 '끝'이 담겨 온다.
-           sleep.sleep(10)
+           sleep.sleep(1)
         });
 
       }

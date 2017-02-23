@@ -1,0 +1,16 @@
+{
+  "stop":"N",
+  "nodeid" : ["0001.00000001", "0001.00000002", "0001.00000003","0001.00000004", "0002.00000035"],
+  "schedule" : {
+    "event" : "00 */15 * * * *",
+    "power" : "00 00 * * * *"
+    },
+  "#schedule" : {
+    "event" : "*/10 * * * * *",
+    "power" : "*/15 * * * * *"
+    },
+  "database" : {
+    "host" : "m2u-parstream.eastus.cloudapp.azure.com",
+    "port" : 9042
+  }
+}
