@@ -19,6 +19,7 @@ describe("Simulator -> ", function() {
       });
 
   });
+
   it('Power Data : 비주기 이벤트 데이터(ALS, Noise, Vibraton, GPS) 발생 ', function(done) {
 
     async.waterfall([
