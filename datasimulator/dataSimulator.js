@@ -54,7 +54,9 @@ DataSimulator.process = function process(sFileName, isEvent) {
           if (!connectedDB) {
             parstream.connect(function(err) {
               if (err) {
-                callback(err, '');
+                console.log(err);
+                console.log('db not connected!!')
+                return callback(err, '');
               }
               console.log('db connected!!')
               callback(null, '')
