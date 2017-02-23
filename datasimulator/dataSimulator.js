@@ -17,7 +17,16 @@ var opts = {
 }
 console.log(opts);
 
+var connectedDB = false;
 var parstream = require("../routes/dao/parstream/m2u-parstream").createClient(opts);
+// parstream.connect(function(err) {
+//   if (err) {
+//     console.log('init connect error!!!!');
+//   } else {
+//     connectedDB = true;
+//     console.log('init connected!!!!');
+//   }
+// });
 
 DataSimulator.process = function process(sFileName, isEvent) {
   console.log('fileName : %s', sFileName);
@@ -40,16 +49,37 @@ DataSimulator.process = function process(sFileName, isEvent) {
     console.log('to insert node : %d',  insertNode.length);
 
     if (insertNode.length > 0) {
-      parstream.connect(function(err) {
-        if (err) {
-          console.log('connected error');
-        } else {
-          console.log('connected')
+      async.waterfall([
+        function(callback) {
+          if (!connectedDB) {
+            parstream.connect(function(err) {
+              if (err) {
+                callback(err, '');
+              }
+              console.log('db connected!!')
+              callback(null, '')
+            });
+          } else {
+            console.log('skip connect')
+            callback(null, '')
+          }
+
+        }], function (err, result) {
           for(var cd=0; cd<insertNode.length ; cd++) {
               processingData(csv_data, insertNode[cd], cd, insertNode.length);
           }
-        }
-      });
+        });
+
+      // parstream.connect(function(err) {
+      //   if (err) {
+      //     console.log('connected error');
+      //   } else {
+      //     console.log('connected')
+      //     for(var cd=0; cd<insertNode.length ; cd++) {
+      //         processingData(csv_data, insertNode[cd], cd, insertNode.length);
+      //     }
+      //   }
+      // });
     }
     //
   });
@@ -67,16 +97,16 @@ function processingData(csv_data, node_id, flag_s, flag_max) {
   // source 데이터에서 random으로 데이터를 읽어서 처리함.
   var idx = Utils.generateRandom(1, datalen);
   var d = new Date();
-  console.log('time : %s', d.toFormat('YYYY-MM-DD HH24:MI:SS'))
+  // console.log('time : %s', d.toFormat('YYYY-MM-DD HH24:MI:SS'))
   async.waterfall([
     function(callback){
       flag_s++
-      console.log('seq : %d', flag_s);
+      // console.log('seq : %d', flag_s);
       var out_data = makeJsonData(csv_data[idx], node_id)
       callback(null, out_data, '');
     },
     function(jsonData, arg2, callback){
-      console.log('second : %s, %s, %s', jsonData.node_id, jsonData.event_time, jsonData.event_type);
+      console.log('%d : %s, %s, %s', flag_s, jsonData.node_id, jsonData.event_time, jsonData.event_type);
       var sql = makeQuery(jsonData);
       callback(null, sql);
     },
@@ -97,7 +127,7 @@ function processingData(csv_data, node_id, flag_s, flag_max) {
       console.log('last : err - %s, flag : %d, %d', err, flag_s, flag_max);
       // insert 완료시 db connection close
       if (flag_s === flag_max) {
-        // parstream.close();
+        parstream.close();
         console.log("Data Simulator Finished!!!!");
       }
   });

@@ -91,7 +91,7 @@ Client.prototype.connect = function connect(cb) {
   // console.log(self)
   self.socket = net.createConnection(self.port, self.host)
   self.socket.on('connect', function() {
-    console.log('Client connected')
+    // console.log('Client connected')
     self.socket.setEncoding('utf8')
 
     var data = ''

@@ -7,7 +7,7 @@ var async = require("async");
 
 describe("Simulator -> ", function() {
 
-  it.only('Power Data : 주기성 데이터 발생 ', function(done) {
+  it('Power Data : 주기성 데이터 발생 ', function(done) {
      async.waterfall([
       function(callback) {
         // FIXME callback 처리가 없어 timeout 오류 발생함.
