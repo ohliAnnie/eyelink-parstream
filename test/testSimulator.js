@@ -4,6 +4,7 @@ var request = require("supertest");
 var expect = require("chai").expect;
 require('date-utils');
 var async = require("async");
+var ds = require('../dataSimulator/dataSimulator');
 
 describe("Simulator -> ", function() {
 
@@ -11,7 +12,7 @@ describe("Simulator -> ", function() {
      async.waterfall([
       function(callback) {
         // FIXME callback 처리가 없어 timeout 오류 발생함.
-        require('../dataSimulator/dataSimulator').process('tb_node_raw_simul.csv', false);
+        ds.process('tb_node_raw_simul.csv', false);
         callback(null);
       }], function (err, result) {
         console.log('done')
@@ -24,7 +25,7 @@ describe("Simulator -> ", function() {
 
     async.waterfall([
       function(callback) {
-        require('../dataSimulator/dataSimulator').process('tb_node_raw_event_simul.csv', true);
+        ds.process('tb_node_raw_event_simul.csv', true);
         callback(null);
       }], function (err, result) {
         // done();

@@ -15,10 +15,8 @@ var opts = {
     port: simulconfig.database.port || 9042,
     size: 5,
 }
-console.log(opts);
+// console.log(opts);
 
-var connectedDB = false;
-var parstream = require("../routes/dao/parstream/m2u-parstream").createClient(opts);
 // parstream.connect(function(err) {
 //   if (err) {
 //     console.log('init connect error!!!!');
@@ -51,24 +49,22 @@ DataSimulator.process = function process(sFileName, isEvent) {
     if (insertNode.length > 0) {
       async.waterfall([
         function(callback) {
-          if (!connectedDB) {
-            parstream.connect(function(err) {
-              if (err) {
-                console.log(err);
-                console.log('db not connected!!')
-                return callback(err, '');
-              }
-              console.log('db connected!!')
-              callback(null, '')
-            });
-          } else {
-            console.log('skip connect')
-            callback(null, '')
+          var parstream = require("../routes/dao/parstream/m2u-parstream").createClient(opts);
+          parstream.connect(function(err) {
+            if (err) {
+              console.log(err);
+              console.log('db not connected!!')
+              return callback(err, '');
+            }
+            console.log('db connected!!')
+            callback(null, parstream, '')
+          });
+        }], function (err, parstream, result) {
+          if (err) {
+            return callback(err);
           }
-
-        }], function (err, result) {
           for(var cd=0; cd<insertNode.length ; cd++) {
-              processingData(csv_data, insertNode[cd], cd, insertNode.length);
+              processingData(parstream, csv_data, insertNode[cd], cd, insertNode.length);
           }
         });
 
@@ -93,7 +89,7 @@ function parseJson() {
   return simulconfig;
 }
 
-function processingData(csv_data, node_id, flag_s, flag_max) {
+function processingData(parstream, csv_data, node_id, flag_s, flag_max) {
   var close_cnt  = 0;
   var datalen = csv_data.length;
   // source 데이터에서 random으로 데이터를 읽어서 처리함.
