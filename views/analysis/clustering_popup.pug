@@ -13,6 +13,7 @@ html
     link(href='/assets/css/bootstrap.min.css', rel='stylesheet', type='text/css')
     link(href='/assets/css/uniform.default.css', rel='stylesheet', type='text/css')
     link(href='/assets/css/bootstrap-switch.min.css', rel='stylesheet', type='text/css')
+      
     link(href='/assets/plugins/morris.css', rel='stylesheet', type='text/css')
     link(href='/assets/plugins/tasks.css', rel='stylesheet', type='text/css')
     link#style_components(href='/assets/css/eyelink-components.css', rel='stylesheet', type='text/css')
@@ -44,6 +45,7 @@ html
     script(type='text/javascript', src="/scripts/util.js")
     script(src='/scripts/analysis_clustering_pop.js')
     script(type='text/javascript', src="/scripts/d3_timeseries.js")
+    script(type='text/javascript', src="/scripts/timeseries.js")
     script.
       jQuery(document).ready(function() {
         var sdate = urlParams.start;
@@ -155,6 +157,16 @@ html
                 .portlet-body
                   .chart(style='height:350px;')
                     #nodeChart
+          .row                       
+            .col-md-2
+              .actions
+                .btn-group.btn-group-devided(data-toggle='buttons')
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                    input#syncY.toggle(type='radio', name='options', checked='Y')
+                    i.fa.fa-chain Sync
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                    input#syncN.toggle(type='radio', name='options')
+                    i.fa.fa-chain-broken Async
           .row
             .col-md-3
               .portlet.light(style='height:370px;')
@@ -192,13 +204,3 @@ html
                 .portlet-body
                   .chart
                     #ts-chart04
-          .row           
-            .col-md-1  
-            .col-md-2
-              .btn-group.btn-group-devided(data-toggle='buttons')
-                label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
-                  input#syncY.toggle(type='radio', name='sync', checked='Y')
-                  i.fa.fa-chain Sync
-                label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
-                  input#syncN.toggle(type='radio', name='snyc')
-                  i.fa.fa-chain-broken Async
