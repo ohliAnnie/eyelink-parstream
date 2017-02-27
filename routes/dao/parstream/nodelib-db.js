@@ -34,7 +34,7 @@ QueryProvider.prototype.selectSingleQueryByID = function (type, queryId, datas, 
       console.time('nodelib-db/selectSingleQueryByID -> ('+ queryId +') executeQuery');
       parstream.query(sSql, function(err, resultset) {
         console.timeEnd('nodelib-db/selectSingleQueryByID -> ('+ queryId +') executeQuery');
-        console.log('nodelib-db/selectSingleQueryByID -> resultset : %j', resultset);
+        // console.log('nodelib-db/selectSingleQueryByID -> resultset : %j', resultset);
 
         // console.log(err);
         // occur error

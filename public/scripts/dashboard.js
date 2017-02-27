@@ -11,6 +11,8 @@ function displayCount() {
   // var peventCount = new Odometer({ el: $('#pevent-count')[0], format: '(,ddd)' });
   // var falutCount = new Odometer({ el: $('#fault-count')[0], format: '(,ddd)' });
   // var pfalutCount = new Odometer({ el: $('#pfault-count')[0], format: '(,ddd)' });
+  var meventCount = $('#mevent-count');
+  var pmeventCount = $('#pmevent-count');
   var eventCount = $('#event-count');
   var peventCount = $('#pevent-count');
   var falutCount = $('#fault-count');
@@ -34,6 +36,8 @@ function displayCount() {
         //- } else {
         //-   pbill.attr('class','growth up');
         //- }
+        meventCount.text(repVal(data.thismonth_event_cnt));
+        pmeventCount.text(repVal(data.month_event_cnt_percent) + '%');
         power.text(repVal(data.today_active_power));
         ppower.text(repVal(data.active_power_percent) + '%')
         eventCount.text(data.today_event_cnt);
