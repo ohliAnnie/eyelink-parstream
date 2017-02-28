@@ -62,9 +62,13 @@ html
         Layout.init(); // init layout
         Tasks.initDashboardWidget(); // init tash dashboard widget      
          $('input[type="radio"]').on('click change', function(e) {
+         
+          if(e.target.value === 'ampere' || e.target.value === 'active_power' || e.target.value === 'voltage' || e.target.value === 'power_factor') {
+           console.log(e.target.value);
             d3.selectAll("svg").remove();
             drawCheckChart();
             getNodeList();
+          }
         });
       });
   body.body-popup
