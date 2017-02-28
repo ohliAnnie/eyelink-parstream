@@ -131,5 +131,8 @@ function loadData(callback) {
   }
 }
 
+// TO-DO 날짜 변경시 메모리 적재/삭제 기능 추가 기능 구현.
+
+
 module.exports.loadQuery = loadQuery;
 module.exports.loadData = loadData;

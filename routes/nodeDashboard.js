@@ -9,7 +9,6 @@ var queryProvider = new QueryProvider();
 
 var mainmenu = {dashboard:'open selected', timeseries:'', reports:'', analysis:'', management:'', settings:''};
 
-
 /* GET reports page. */
 router.get('/', function(req, res, next) {
   // console.log(_rawDataByDay);

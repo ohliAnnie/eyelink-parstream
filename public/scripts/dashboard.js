@@ -29,13 +29,7 @@ function displayCount() {
       if (result.rtnCode.code == "0000") {
         //- $("#successmsg").html(result.message);
         var data = result.rtnData[0];
-        // bill.update(data.today_power_charge);
-        // pbill.update(data.active_power_percent);
-        //- if (data.active_power_percent < 0) {
-        //-   pbill.attr('class','growth down');
-        //- } else {
-        //-   pbill.attr('class','growth up');
-        //- }
+
         meventCount.text(repVal(data.thismonth_event_cnt));
         pmeventCount.text(repVal(data.month_event_cnt_percent) + '%');
         power.text(repVal(data.today_active_power));
