@@ -111,7 +111,7 @@ function drawCheckChart(factor, daDate) {
           } else if(factor === 'power_factor') {
             set.push({ time:d.event_time, c0:d.c0_power_factor, c1:d.c1_power_factor, c2:d.c2_power_factor, c3:d.c3_power_factor});
           }
-        });
+        });        
         drawCheckCluster(set, daDate, factor);
       } else {
         //- $("#errormsg").html(result.message);
@@ -124,9 +124,7 @@ function drawCheckChart(factor, daDate) {
   });
 }
 
-var cntCheck = 0;
 function drawCheckCluster(data, dadate, factor) {
-  console.log('count : ' + ++cntCheck);
   var cate = new Array();
   var idx = 0;
   if($('input[name="c0"]').prop('checked')) 
@@ -257,9 +255,7 @@ function drawCheckCluster(data, dadate, factor) {
     .attr("stroke",function (d) { return color(d['category']); });
 
     d3.selectAll('.click_legend').remove();
-    if(cntCheck > 1) {
-       d3.selectAll('.path_legend').remove();
-    };
+
     var legend = svg.append('g')
     .attr('class', 'click_legend');
 
@@ -441,9 +437,8 @@ function drawCheckCluster(data, dadate, factor) {
       }
 
       self.selectCate = [];
-
       for (var i=0; i<self.lineCategory.length; i++) {
-        if ($("#"+self.lineCategory[i]).prop("checked")) {
+        if ($("#"+self.lineCategory[i]).prop("checked")) {          
           self.selectCate.push(self.lineCategory[i]);
           d3.selectAll(".click_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'inherit');
         }
@@ -455,6 +450,7 @@ function drawCheckCluster(data, dadate, factor) {
       this.legendRedraw(self.selectCate, "#Cluster", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
     },
     legendRedraw: function (selectCate, id, legend, rect, legendSize, margin, height, width, color) {
+
       //update the scatter plot legend
       legend.selectAll('.path_legend')
       .data(selectCate)
@@ -540,6 +536,8 @@ function drawCheckCluster(data, dadate, factor) {
       rect.selectAll('.legendRect')
       .data(selectCate)
       .attr('transform', function(d, i) {
+        console.log(d);
+        console.log(i);
         return 'translate(' + ((5 + (width-20) / 4) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
       });
 
