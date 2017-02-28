@@ -9,17 +9,12 @@ block style
 block script
   script(type='text/javascript', src='/assets/leaflet/d3.js')
   script(src='/assets/annie/js/vue.min.js')
-  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
-  script(type='text/javascript', src='/assets/annie/js/dc_2_1.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
   script(type='text/javascript', src="/scripts/util.js")
   script(src='/scripts/analysis_clustering.js')
   script.
     $(document).ready(function(e) {
       console.log($('input[name="c0"]').prop('checked'));
-      console.log($('input[name="c1"]').prop('checked'));
-      console.log($('input[name="c2"]').prop('checked'));
-      console.log($('input[name="c3"]').prop('checked'));
       var dateFormat = 'YYYY-MM-DD';
       var dateFormat = 'YYYY-MM-DD';
       var daDate = '';
@@ -48,8 +43,7 @@ block script
         } else if ($('#factor3').is(':checked') === true) {
           var factor = $('#factor3').val();
         }
-        var daDate = $('#daDate').val();
-        console.log(daDate+ ' ' + factor);
+        var daDate = $('#daDate').val();       
         if(daDate != ''){
           d3.selectAll("svg").remove();
           drawCheckChart(factor, daDate);
@@ -68,8 +62,9 @@ block script
         } else if ($('#factor3').is(':checked') === true) {
           var factor = $('#factor3').val();
         }
-        console.log(factor + ' ' + daDate)
+        console.log(factor + ' ' + daDate);
           d3.selectAll("svg").remove();
+          d3.select("#Cluster").remove();
           drawCheckChart(factor, daDate);
       };
     });
