@@ -148,26 +148,26 @@ function drawCheckCluster(data, dadate, factor) {
         var self = this;
         var input = 0;
 
-   //generation function
-   function generate(data, id, lineType, axisNum) {
-    var margin = {top: 14, right: 10, bottom: 60, left: 30},
-    width = $(id).width() - margin.left - margin.right,
-    height = $(id).height() - margin.top - margin.bottom;
+     //generation function
+     function generate(data, id, lineType, axisNum) {
+      var margin = {top: 14, right: 10, bottom: 60, left: 30},
+      width = $(id).width() - margin.left - margin.right,
+      height = $(id).height() - margin.top - margin.bottom;
 
-    var legendSize = 10,
-    color = d3.scale.category20();
+      var legendSize = 10,
+      color = d3.scale.category20();
 
-    var x = d3.time.scale().range([0, width]);
+      var x = d3.time.scale().range([0, width]);
 
-    var y = d3.scale.linear().range([height, 0]);
+      var y = d3.scale.linear().range([height, 0]);
 
-    var ddata = (function() {
-      var temp = {}, seriesArr = [];
+      var ddata = (function() {
+        var temp = {}, seriesArr = [];
 
-      self.lineCategory.forEach(function (name) {
-        temp[name] = {category: name, values:[]};
-        seriesArr.push(temp[name]);
-      });
+        self.lineCategory.forEach(function (name) {
+          temp[name] = {category: name, values:[]};
+          seriesArr.push(temp[name]);
+        });
 
       data.forEach(function (d) {
         self.lineCategory.map(function (name) {
@@ -180,14 +180,14 @@ function drawCheckCluster(data, dadate, factor) {
     x.domain(d3.extent(data, function(d) {
      return d.time; }));
     if(factor === 'active_power') {
-     y.domain([0, 200]);
-   } else if(factor === 'ampere') {
-     y.domain([0, 1]);
-   } else if(factor === 'voltage') {
-     y.domain([0, 240]);
-   } else if(factor === 'power_factor') {
-     y.domain([0, 1.5]);
-   }
+       y.domain([0, 200]);
+     } else if(factor === 'ampere') {
+       y.domain([0, 1]);
+     } else if(factor === 'voltage') {
+       y.domain([0, 240]);
+     } else if(factor === 'power_factor') {
+       y.domain([0, 1.5]);
+     }
 
         //data.length/10 is set for the garantte of timeseries's fitting effect in svg chart
         var xAxis = d3.svg.axis()
@@ -450,12 +450,13 @@ function drawCheckCluster(data, dadate, factor) {
       this.legendRedraw(self.selectCate, "#Cluster", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
     },
     legendRedraw: function (selectCate, id, legend, rect, legendSize, margin, height, width, color) {
-
+      console.log(legend);
+      console.log(rect);
       //update the scatter plot legend
       legend.selectAll('.path_legend')
       .data(selectCate)
-        // .transition()
-        // .duration(200)
+       .transition()
+       .duration(200)
         .attr('transform', function(d, i) {
           return 'translate(' + ((5 + (width-20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
         })
@@ -536,8 +537,6 @@ function drawCheckCluster(data, dadate, factor) {
       rect.selectAll('.legendRect')
       .data(selectCate)
       .attr('transform', function(d, i) {
-        console.log(d);
-        console.log(i);
         return 'translate(' + ((5 + (width-20) / 4) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
       });
 

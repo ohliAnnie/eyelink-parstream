@@ -63,8 +63,8 @@ html
          $('input[type="radio"]').on('click change', function(e) {
          
           if(e.target.value === 'ampere' || e.target.value === 'active_power' || e.target.value === 'voltage' || e.target.value === 'power_factor') {
-           console.log(e.target.value);
-            d3.selectAll("svg").remove();
+           console.log(e.target.value);         
+           
             drawCheckChart();
             getNodeList();
           }
@@ -117,13 +117,13 @@ html
                               | PowerFactor                       
           .row
             .col-md-5
-              .portlet.light.bordered(style='height:445px;')
+              .portlet.light.bordered(style='height:900px;')
                 .portlet-title
                   .caption.font-dark
                     span.caption-subject.bold.uppercase Clustering chart
                     span.caption-helper  by Analytic data
                   .portlet-body
-                    .chart(style='height:400px;')
+                    .chart(style='height:900px;')
                       #table
                         .panel.panel-card
                           .panel-body

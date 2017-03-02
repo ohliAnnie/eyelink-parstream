@@ -21,7 +21,6 @@ function drawCheckChart() {
     var factor = $('#factor3').val();
   }   
 var dadate = urlParams.dadate + ' ' + urlParams.datime;
-console.log(dadate); 
   $.ajax({
     url: "/analysis/restapi/getDaClusterDetail" ,
     dataType: "json",
@@ -87,6 +86,7 @@ function drawCheckCluster(data, dadate, factor) {
         width = $(id).width() - margin.left - margin.right,
         height = $(id).height() - margin.top - margin.bottom;
 
+        console.log(width + ', '+ height);
         var legendSize = 10,
          color = d3.scale.category20();
 
@@ -107,11 +107,12 @@ function drawCheckCluster(data, dadate, factor) {
             temp[name].values.push({'category': name, 'time': d['time'], 'num': d[name]});
           });
         });
-
           return seriesArr;
         })();
         x.domain(d3.extent(data, function(d) {
-         return d.time; }));
+         return d.time; }));        $('#interval').val(interval);
+        drawCheckChart();
+
        if(factor === 'active_power') {
            y.domain([0, 200]);
         } else if(factor === 'ampere') {
@@ -151,6 +152,7 @@ function drawCheckCluster(data, dadate, factor) {
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+    
         svg.append("g")
             .attr("class", "x axis")
             .attr("id", "line-x-axis")
@@ -379,10 +381,86 @@ function drawCheckCluster(data, dadate, factor) {
           d3.selectAll(".click_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'none');
       }
 
+      d3.selectAll('rect').remove();
+      d3.selectAll('.click_legend').remove();
+  
+      var svg =  self.lineFunc.getSvg()['svg'];
+      var legendSize = self.lineFunc.getOpt()['legendSize'];
+      var margin = self.lineFunc.getOpt()['margin'];
+      var height = self.lineFunc.getOpt()['height'];
+      var width = self.lineFunc.getOpt()['width'];       
+      var color = self.lineFunc.getSvg()['color'];
+      var id = "#Cluster";
+
+        var legend = svg.append('g')
+           .attr('class', 'click_legend');
+
+          var singLegend = legend.selectAll('.path_legend')
+           .data(self.selectCate)
+           .enter()
+           .append('g')
+           .attr('class', 'path_legend')
+           .attr('transform', function(d, i) {
+            return 'translate(' + ((5 + (width-20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
+          });
+
+           singLegend.append('g:rect')
+           .attr('width', legendSize)
+           .attr('height', legendSize)
+           .style('fill', function(d) {            return color(d);          });
+
+           singLegend.append('g:text')
+           .attr('x', legendSize*1.4)
+           .attr('y', legendSize/1.3)
+           .attr('font-size', function() {
+            if ($(id).width() > 415)
+              return '.9em';
+            else {
+              return '.55em';
+            }
+          })
+           .text(function(d) {
+              if(d === 'c0')   {
+                var rename = "Cluster0";
+              } else if(d === 'c1') {
+                var rename = "Cluster1";
+              } else if(d === 'c2') {
+                var rename = "Cluster2"
+              } else {
+                var rename = "Cluster3";
+              }
+                  return rename;          });
+
+          //draw the rect for legends
+        var rect = svg.append('g')
+        .attr("class", 'legendOuter');
+
+        rect.selectAll('.legendRect')
+        .data(self.selectCate)
+        .enter()
+        .append('rect')
+        .attr('class', 'legendRect')
+        .attr('width', (width - 20) / 4)
+        .attr('height', legendSize + 10)
+        .attr('transform', function(d, i) {
+          return 'translate(' + (i * (5 + (width-20) / 4)) + ',' + (height + margin.bottom - legendSize - 20) + ')';
+        });
       //redraw the legend and chart
-      this.legendRedraw(self.selectCate, "#Cluster", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
+      //this.legendRedraw(self.selectCate, "#Cluster", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
     },
     legendRedraw: function (selectCate, id, legend, rect, legendSize, margin, height, width, color) {
+      console.log(rect);
+      console.log(color);
+/*      var selectCate = self.selectCate;
+      var id = "#Cluster";
+      var legend = self.lineFunc.getSvg()['legend'];
+      var rect = self.lineFunc.getSvg()['rect'];
+      var legendSize = self.lineFunc.getOpt()['legendSize'];
+      var margin = self.lineFunc.getOpt()['margin'];
+      var height = self.lineFunc.getOpt()['height'];
+      var width = self.lineFunc.getOpt()['width'];      
+      var color = self.lineFunc.getSvg()['color'];
+      console.log(rect);*/
 
       //update the scatter plot legend
       legend.selectAll('.path_legend')
