@@ -19,12 +19,13 @@
      ]]></query>
     <query id='selectDashboardSection1'><![CDATA[
       select
-          thismonth_event_cnt, lastmonth_event_cnt, thismonth_event_cnt / if(lastmonth_event_cnt, lastmonth_event_cnt, 1) * 100 - 100 as month_event_cnt_percent,
+          thismonth_event_cnt, lastmonth_event_cnt,
+          thismonth_event_cnt / if(lastmonth_event_cnt, lastmonth_event_cnt, 1) * 100 as month_event_cnt_percent,
           today_active_power / 1000 * 85.9 as today_power_charge,
           yesterday_active_power / 1000 * 85.9 as yesterday_power_charge,
-          today_active_power, yesterday_active_power, today_active_power/if(yesterday_active_power, yesterday_active_power, 1) * 100 - 100 as active_power_percent,
-          today_event_cnt, yesterday_event_cnt, today_event_cnt / if(yesterday_event_cnt, yesterday_event_cnt, 1) * 100 - 100 as event_cnt_percent,
-          today_event_fault_cnt, yesterday_event_fault_cnt, today_event_fault_cnt / if(yesterday_event_fault_cnt, yesterday_event_fault_cnt, 1) * 100 - 100 as event_fault_cnt_percent
+          today_active_power, yesterday_active_power, today_active_power/if(yesterday_active_power, yesterday_active_power, 1) * 100 as active_power_percent,
+          today_event_cnt, yesterday_event_cnt, today_event_cnt / if(yesterday_event_cnt, yesterday_event_cnt, 1) * 100  as event_cnt_percent,
+          today_event_fault_cnt, yesterday_event_fault_cnt, today_event_fault_cnt / if(yesterday_event_fault_cnt, yesterday_event_fault_cnt, 1) * 100  as event_fault_cnt_percent
        from (
             select *
               from (

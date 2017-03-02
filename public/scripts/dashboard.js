@@ -11,14 +11,6 @@ function displayCount() {
   // var peventCount = new Odometer({ el: $('#pevent-count')[0], format: '(,ddd)' });
   // var falutCount = new Odometer({ el: $('#fault-count')[0], format: '(,ddd)' });
   // var pfalutCount = new Odometer({ el: $('#pfault-count')[0], format: '(,ddd)' });
-  var meventCount = $('#mevent-count');
-  var pmeventCount = $('#pmevent-count');
-  var eventCount = $('#event-count');
-  var peventCount = $('#pevent-count');
-  var falutCount = $('#fault-count');
-  var pfalutCount = $('#pfault-count');
-  var power = $('#power');
-  var ppower = $('#ppower');
   $.ajax({
     url: "/dashboard/restapi/getDashboardSection1",
     dataType: "json",
@@ -30,15 +22,14 @@ function displayCount() {
         //- $("#successmsg").html(result.message);
         var data = result.rtnData[0];
 
-        meventCount.text(repVal(data.thismonth_event_cnt));
-        pmeventCount.text(repVal(data.month_event_cnt_percent) + '%');
-        power.text(repVal(data.today_active_power));
-        ppower.text(repVal(data.active_power_percent) + '%')
-        eventCount.text(data.today_event_cnt);
-        peventCount.text(repVal(data.event_cnt_percent) + '%');
-        falutCount.text(data.today_event_fault_cnt);
-        pfalutCount.text(repVal(data.event_fault_cnt_percent) + '%');
-
+        $('#mevent-count').text(repVal(data.thismonth_event_cnt));
+        setStatus($('#mevent_status'), data.month_event_cnt_percent, 'month', data.lastmonth_event_cnt);
+        $('#event-count').text(data.today_event_cnt);
+        setStatus($('#event_status'), data.event_cnt_percent, 'day', data.yesterday_event_cnt);
+        $('#fault-count').text(data.today_event_fault_cnt);
+        setStatus($('#fault_status'), data.event_fault_cnt_percent, 'day', data.yesterday_event_fault_cnt);
+        $('#power').text(repVal(data.today_active_power));
+        setStatus($('#power_status'), data.active_power_percent, 'day', repVal(data.yesterday_active_power));
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -48,6 +39,13 @@ function displayCount() {
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
   });
+}
+
+function setStatus(obj, percent, msg, cnt) {
+  // $('#mevent_status > .status > .status-number')
+  obj.children('.progress').children('.progress-bar').css('width', percent + '%');
+  obj.children('.status').children('.status-title').text('From the previous ' + msg + ' (' + cnt + ')');
+  obj.children('.status').children('.status-number').text(repVal(percent) + '%');
 }
 
 function repVal(str) {
