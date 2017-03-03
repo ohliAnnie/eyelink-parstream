@@ -189,15 +189,15 @@ function drawCheckCluster(data, dadate, factor) {
        y.domain([0, 1.5]);
      }
 
-        //data.length/10 is set for the garantte of timeseries's fitting effect in svg chart
-        var xAxis = d3.svg.axis()
+      //data.length/10 is set for the garantte of timeseries's fitting effect in svg chart
+      var xAxis = d3.svg.axis()
         .scale(x)
         .ticks(7)
         .tickSize(-height)
         .tickPadding([7])
         .orient("bottom");
 
-        var yAxis = d3.svg.axis()
+      var yAxis = d3.svg.axis()
         .scale(y)
         .ticks(10)
         .tickSize(-width)
@@ -319,6 +319,7 @@ function drawCheckCluster(data, dadate, factor) {
          .data(function (d) { return d['values']; })
          .enter().append("circle")
          .attr("class", "tipNetPoints")
+         .attr("class", function(d) { return "tipNetPoints_"+d['category']; })
          .attr("cx", function (d) { return x(d['time']); })
          .attr("cy", function (d) { return y(d['num']); })
          .text(function (d) { return d['num']; })
@@ -441,9 +442,11 @@ function drawCheckCluster(data, dadate, factor) {
         if ($("#"+self.lineCategory[i]).prop("checked")) {          
           self.selectCate.push(self.lineCategory[i]);
           d3.selectAll(".click_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'inherit');
-        }
-        else
+          d3.selectAll(".tipNetPoints_"+self.lineCategory[i]).transition().duration(300).style("display", 'inherit');
+        } else {
           d3.selectAll(".click_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'none');
+          d3.selectAll(".tipNetPoints_"+self.lineCategory[i]).transition().duration(300).style("display", 'none');
+        }          
       }
 
       //redraw the legend and chart
