@@ -1,13 +1,8 @@
  var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
-
         return paramPair.split(/=(.+)?/).slice(0, 2);
-
     }).reduce(function(obj, pairArray) {
-
         obj[pairArray[0]] = pairArray[1];
-
         return obj;
-
     }, {});
 
 function drawCheckChart() {  
@@ -86,7 +81,6 @@ function drawCheckCluster(data, dadate, factor) {
         width = $(id).width() - margin.left - margin.right,
         height = $(id).height() - margin.top - margin.bottom;
 
-        console.log(width + ', '+ height);
         var legendSize = 10,
          color = d3.scale.category20();
 
@@ -111,7 +105,6 @@ function drawCheckCluster(data, dadate, factor) {
         })();
         x.domain(d3.extent(data, function(d) {
          return d.time; }));        $('#interval').val(interval);
-        drawCheckChart();
 
        if(factor === 'active_power') {
            y.domain([0, 200]);
@@ -137,13 +130,14 @@ function drawCheckCluster(data, dadate, factor) {
         .tickPadding([8])
         .orient("left");
 
+
+
     // Define the div for the tooltip
     var div = d3.select("body").append("div")
         .attr("class", "tip")
         .style("opacity", 0);
 
-
-        d3.select('#svg-path').remove();
+        d3.selectAll('#svg-path').remove();
 
         var svg = d3.select(id).append("svg")
             .attr("id", "#svg-path")
@@ -199,6 +193,7 @@ function drawCheckCluster(data, dadate, factor) {
            .enter()
            .append('g')
            .attr('class', 'path_legend')
+           .attr('class', function(d) { return 'path_legend_'+d['category']; })
            .attr('transform', function(d, i) {
             return 'translate(' + ((5 + (width-20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
           });
@@ -254,6 +249,7 @@ function drawCheckCluster(data, dadate, factor) {
         .data(function (d) { return d['values']; })
         .enter().append("circle")
         .attr("class", "tipNetPoints")
+        .attr("class", function(d) { return "tipNetPoints_"+d['category']; })
         .attr("cx", function (d) { return x(d['time']); })
         .attr("cy", function (d) { return y(d['num']); })
         .text(function (d) { return d['num']; })
@@ -376,12 +372,15 @@ function drawCheckCluster(data, dadate, factor) {
         if ($("#"+self.lineCategory[i]).prop("checked")) {
           self.selectCate.push(self.lineCategory[i]);
           d3.selectAll(".click_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'inherit');
+          d3.selectAll(".tipNetPoints_"+self.lineCategory[i]).transition().duration(300).style("display", 'inherit');
         }
-        else
+        else {
           d3.selectAll(".click_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'none');
+          d3.selectAll(".tipNetPoints_"+self.lineCategory[i]).transition().duration(300).style("display", 'none');
+        }     
       }
 
-      d3.selectAll('rect').remove();
+ /*     d3.selectAll('rect').remove();
       d3.selectAll('.click_legend').remove();
   
       var svg =  self.lineFunc.getSvg()['svg'];
@@ -444,29 +443,18 @@ function drawCheckCluster(data, dadate, factor) {
         .attr('height', legendSize + 10)
         .attr('transform', function(d, i) {
           return 'translate(' + (i * (5 + (width-20) / 4)) + ',' + (height + margin.bottom - legendSize - 20) + ')';
-        });
+        });*/
       //redraw the legend and chart
-      //this.legendRedraw(self.selectCate, "#Cluster", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
+      this.legendRedraw(self.selectCate, "#Cluster", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
     },
     legendRedraw: function (selectCate, id, legend, rect, legendSize, margin, height, width, color) {
+      console.log(legend);
       console.log(rect);
-      console.log(color);
-/*      var selectCate = self.selectCate;
-      var id = "#Cluster";
-      var legend = self.lineFunc.getSvg()['legend'];
-      var rect = self.lineFunc.getSvg()['rect'];
-      var legendSize = self.lineFunc.getOpt()['legendSize'];
-      var margin = self.lineFunc.getOpt()['margin'];
-      var height = self.lineFunc.getOpt()['height'];
-      var width = self.lineFunc.getOpt()['width'];      
-      var color = self.lineFunc.getSvg()['color'];
-      console.log(rect);*/
-
       //update the scatter plot legend
       legend.selectAll('.path_legend')
       .data(selectCate)
-        // .transition()
-        // .duration(200)
+       .transition()
+       .duration(200)
         .attr('transform', function(d, i) {
           return 'translate(' + ((5 + (width-20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
         })
@@ -496,8 +484,7 @@ function drawCheckCluster(data, dadate, factor) {
           } else {
             var rename = "Cluster3";
           }
-              return rename;          });
-
+          return rename;          });
 
       //create new legends
       var singLegend = legend.selectAll('.path_legend')
@@ -526,7 +513,7 @@ function drawCheckCluster(data, dadate, factor) {
           return '.55em';
         }
       })
-     .text(function(d) {
+      .text(function(d) {
         if(d === 'c0')   {
           var rename = "Cluster0";
         } else if(d === 'c1') {
@@ -535,15 +522,14 @@ function drawCheckCluster(data, dadate, factor) {
           var rename = "Cluster2"
         } else {
           var rename = "Cluster3";
-        }         
-          return rename;          });
+        }
+        return rename;          });
 
-
-        //remove the old legends
-        legend.selectAll('.path_legend')
-        .data(selectCate)
-        .exit()
-        .remove();
+      //remove the old legends
+      legend.selectAll('.path_legend')
+      .data(selectCate)
+      .exit()
+      .remove();
 
       //redraw the rect around the legend
       rect.selectAll('.legendRect')
