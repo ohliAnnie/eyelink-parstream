@@ -380,84 +380,21 @@ function drawCheckCluster(data, dadate, factor) {
         }     
       }
 
- /*     d3.selectAll('rect').remove();
-      d3.selectAll('.click_legend').remove();
-  
-      var svg =  self.lineFunc.getSvg()['svg'];
-      var legendSize = self.lineFunc.getOpt()['legendSize'];
-      var margin = self.lineFunc.getOpt()['margin'];
-      var height = self.lineFunc.getOpt()['height'];
-      var width = self.lineFunc.getOpt()['width'];       
-      var color = self.lineFunc.getSvg()['color'];
-      var id = "#Cluster";
-
-        var legend = svg.append('g')
-           .attr('class', 'click_legend');
-
-          var singLegend = legend.selectAll('.path_legend')
-           .data(self.selectCate)
-           .enter()
-           .append('g')
-           .attr('class', 'path_legend')
-           .attr('transform', function(d, i) {
-            return 'translate(' + ((5 + (width-20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
-          });
-
-           singLegend.append('g:rect')
-           .attr('width', legendSize)
-           .attr('height', legendSize)
-           .style('fill', function(d) {            return color(d);          });
-
-           singLegend.append('g:text')
-           .attr('x', legendSize*1.4)
-           .attr('y', legendSize/1.3)
-           .attr('font-size', function() {
-            if ($(id).width() > 415)
-              return '.9em';
-            else {
-              return '.55em';
-            }
-          })
-           .text(function(d) {
-              if(d === 'c0')   {
-                var rename = "Cluster0";
-              } else if(d === 'c1') {
-                var rename = "Cluster1";
-              } else if(d === 'c2') {
-                var rename = "Cluster2"
-              } else {
-                var rename = "Cluster3";
-              }
-                  return rename;          });
-
-          //draw the rect for legends
-        var rect = svg.append('g')
-        .attr("class", 'legendOuter');
-
-        rect.selectAll('.legendRect')
-        .data(self.selectCate)
-        .enter()
-        .append('rect')
-        .attr('class', 'legendRect')
-        .attr('width', (width - 20) / 4)
-        .attr('height', legendSize + 10)
-        .attr('transform', function(d, i) {
-          return 'translate(' + (i * (5 + (width-20) / 4)) + ',' + (height + margin.bottom - legendSize - 20) + ')';
-        });*/
       //redraw the legend and chart
       this.legendRedraw(self.selectCate, "#Cluster", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
     },
     legendRedraw: function (selectCate, id, legend, rect, legendSize, margin, height, width, color) {
-      console.log(legend);
       console.log(rect);
+      console.log(color);
+
       //update the scatter plot legend
       legend.selectAll('.path_legend')
       .data(selectCate)
-       .transition()
-       .duration(200)
+        .transition()
+        .duration(200)
         .attr('transform', function(d, i) {
           return 'translate(' + ((5 + (width-20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
-        })
+        });
 
         legend.selectAll('rect')
         .data(selectCate)
@@ -484,7 +421,7 @@ function drawCheckCluster(data, dadate, factor) {
           } else {
             var rename = "Cluster3";
           }
-          return rename;          });
+              return rename;          });
 
       //create new legends
       var singLegend = legend.selectAll('.path_legend')
@@ -513,7 +450,7 @@ function drawCheckCluster(data, dadate, factor) {
           return '.55em';
         }
       })
-      .text(function(d) {
+     .text(function(d) {
         if(d === 'c0')   {
           var rename = "Cluster0";
         } else if(d === 'c1') {
@@ -522,14 +459,14 @@ function drawCheckCluster(data, dadate, factor) {
           var rename = "Cluster2"
         } else {
           var rename = "Cluster3";
-        }
-        return rename;          });
+        }         
+          return rename;          });
 
-      //remove the old legends
-      legend.selectAll('.path_legend')
-      .data(selectCate)
-      .exit()
-      .remove();
+        //remove the old legends
+        legend.selectAll('.path_legend')
+        .data(selectCate)
+        .exit()
+        .remove();
 
       //redraw the rect around the legend
       rect.selectAll('.legendRect')

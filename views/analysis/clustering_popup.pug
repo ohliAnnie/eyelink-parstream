@@ -64,8 +64,8 @@ html
            
             if(e.target.value === 'ampere' || e.target.value === 'active_power' || e.target.value === 'voltage' || e.target.value === 'power_factor') {
              console.log(e.target.value);
-              //d3.selectAll("svg").remove();
-              d3.selectAll("rect").remove();
+              d3.selectAll("svg").remove();
+              //d3.selectAll("rect").remove();
               drawCheckChart();
               getNodeList();
             }
