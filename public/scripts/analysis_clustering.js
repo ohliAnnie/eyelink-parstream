@@ -391,7 +391,6 @@ function drawCheckCluster(data, dadate, factor) {
           });
 
           d3.selectAll('.tipDot').transition().duration(100).remove();
-
         });
 
          this.getOpt = function() {
@@ -453,8 +452,7 @@ function drawCheckCluster(data, dadate, factor) {
       this.legendRedraw(self.selectCate, "#Cluster", self.lineFunc.getSvg()['legend'], self.lineFunc.getSvg()['rect'], self.lineFunc.getOpt()['legendSize'], self.lineFunc.getOpt()['margin'], self.lineFunc.getOpt()['height'], self.lineFunc.getOpt()['width'], self.lineFunc.getSvg()['color']);
     },
     legendRedraw: function (selectCate, id, legend, rect, legendSize, margin, height, width, color) {
-      console.log(legend);
-      console.log(rect);
+
       //update the scatter plot legend
       legend.selectAll('.path_legend')
       .data(selectCate)
