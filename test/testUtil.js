@@ -114,5 +114,63 @@ describe("Util.js", function(){
       should.exist(num);
       done();
     })
+
+    it.only('Hex to Binary', function(done) {
+      var num = hex2bin('1000');
+      console.log(num);
+      should.exist(num);
+      done();
+    })
+
+    it.only('Hex to Binary2', function(done) {
+      var num = 'b637eb9146e84cb79f6d981ac9463de1'.hex2bin();
+      console.log(num);
+      console.log(num.bin2hex());
+      should.exist(num);
+      done();
+    })
   });
 });
+
+
+function hex2bin(hex)
+{
+    var bytes = [], str;
+    for(var i=0; i< hex.length-1; i+=2)
+        bytes.push(parseInt(hex.substr(i, 2), 16));
+    return String.fromCharCode.apply(String, bytes);
+}
+
+String.prototype.hex2bin = function ()
+{
+  var i = 0, l = this.length - 1, bytes = []
+
+  for (i; i < l; i += 2)
+  {
+    bytes.push(parseInt(this.substr(i, 2), 16))
+  }
+
+  return String.fromCharCode.apply(String, bytes)
+
+}
+
+String.prototype.bin2hex = function ()
+{
+
+  var i = 0, l = this.length, chr, hex = ''
+
+  for (i; i < l; ++i)
+  {
+
+    chr = this.charCodeAt(i).toString(16)
+
+    hex += chr.length < 2 ? '0' + chr : chr
+
+  }
+
+  return hex
+
+}
+
+// alert('b637eb9146e84cb79f6d981ac9463de1'.hex2bin().bin2hex())
+
