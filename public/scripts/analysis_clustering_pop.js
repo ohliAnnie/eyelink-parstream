@@ -616,6 +616,7 @@ function getNodePower(nodeList){
   var idCnt = node.length;
   var start = urlParams.start;
   var end = urlParams.end;
+  var last, start;
    $.ajax({
     url: "/analysis/restapi/getClusterNodePower" ,
     dataType: "json",
@@ -626,6 +627,7 @@ function getNodePower(nodeList){
         var data = result.rtnData;
         var set = [];
         var max = 0;       
+        var cnt = 0;
         data.forEach(function(d){
           var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
           d.event_time = df.parse(d.event_time);
@@ -647,8 +649,13 @@ function getNodePower(nodeList){
           if(d.power_factor > max)
             max =  parseFloat(d.power_factor);
         }   
+          var format = d3.time.format("%Y-%m-%d");
+          last = format(d.event_time);
+          if(cnt++ === 0) {
+           start= format(d.event_time);
+          }
         });
-        drawNode(set, max, idCnt);
+        drawNode(set, max, idCnt, last, start);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -660,15 +667,15 @@ function getNodePower(nodeList){
   });
 }
 
-function drawNode(data, maxValue, idCnt) {  
+function drawNode(data, maxValue, idCnt, last, start) {    
   var max = parseInt(maxValue) + 5;  
 
   for(var i = 0; i <= data.length; i++) {
     d3.select("#nodeChart").select("svg").remove();
   }
 
-var sdate = $('#sdate').val();
-var edate = $('#edate').val();
+var sdate = start;
+var edate = last;
 
   // Set the dimensions of the canvas / graph
 var margin = {top: 5, right: 20, bottom: 20, left: 30},
