@@ -1,0 +1,210 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    title= title
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(content='width=device-width, initial-scale=1', name='viewport')
+    meta(content='', name='description')
+    meta(content='', name='author')
+    link(href='http://fonts.googleapis.com/css?family=Open+Sans:400,300', rel='stylesheet', type='text/css')
+    link(href='/assets/fonts/font-awesome/css/font-awesome.min.css', rel='stylesheet', type='text/css')
+    link(href='/assets/fonts/simple-line-icons/simple-line-icons.min.css', rel='stylesheet', type='text/css')
+    link(href='/assets/css/bootstrap.min.css', rel='stylesheet', type='text/css')
+    link(href='/assets/css/uniform.default.css', rel='stylesheet', type='text/css')
+    link(href='/assets/css/bootstrap-switch.min.css', rel='stylesheet', type='text/css')
+      
+    link(href='/assets/plugins/morris.css', rel='stylesheet', type='text/css')
+    link(href='/assets/plugins/tasks.css', rel='stylesheet', type='text/css')
+    link#style_components(href='/assets/css/eyelink-components.css', rel='stylesheet', type='text/css')
+    link(href='/assets/css/plugins.css', rel='stylesheet', type='text/css')
+    link(href='/assets/css/eyelink-layout.css', rel='stylesheet', type='text/css')
+    link(href='/assets/css/eyelink-custom.css', rel='stylesheet', type='text/css')
+    link(rel='shortcut icon', href='/assets/images/favicon.ico')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/scripts/d3_timeseries.css')    
+    link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')      
+    script(src='/assets/scripts/libs/jquery.min.js', type='text/javascript')
+    script(src='/assets/scripts/libs/jquery-migrate.min.js', type='text/javascript')
+    script(src='/assets/scripts/libs/bootstrap.min.js', type='text/javascript')
+    script(src='/assets/scripts/libs/bootstrap-hover-dropdown.min.js', type='text/javascript')
+    script(src='/assets/scripts/libs/jquery.slimscroll.min.js', type='text/javascript')
+    script(src='/assets/scripts/libs/jquery.blockui.min.js', type='text/javascript')
+    script(src='/assets/scripts/libs/jquery.uniform.min.js', type='text/javascript')
+    script(src='/assets/scripts/libs/bootstrap-switch.min.js', type='text/javascript')
+    script(src='/assets/scripts/eyelink-ui.js', type='text/javascript')
+    script(src='/assets/scripts/eyelink-layout.js', type='text/javascript')
+    script(src='/assets/scripts/eyelink-quick-sidebar.js', type='text/javascript')
+    script(src='/assets/scripts/page/sample-data.js', type='text/javascript')
+    script(src='/assets/plugins/tasks.js', type='text/javascript')
+    script(src='/assets/scripts/page/layout.js', type='text/javascript')
+    script(type='text/javascript', src='/assets/leaflet/d3.js')
+    script(src='/assets/annie/js/vue.min.js')
+    script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+    script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+    script(type='text/javascript', src="/scripts/util.js")
+    script(src='/scripts/analysis_clustering_pop.js')
+    script(type='text/javascript', src="/scripts/d3_timeseries.js")    
+    script.
+      jQuery(document).ready(function() {
+          var sdate = urlParams.start;
+          var edate = urlParams.end;
+          var interval = urlParams.interval;
+          $('#sdate').val(sdate);
+          $('#edate').val(edate);
+          $('#interval').val(interval);
+          drawCheckChart();
+          getNodeList();
+          Metronic.init(); // init metronic core componets
+          eyelinkLayout.init(); // init layout
+          QuickSidebar.init(); // init quick sidebar
+          Layout.init(); // init layout
+          Tasks.initDashboardWidget(); // init tash dashboard widget      
+           $('input[type="radio"]').on('click change', function(e) {
+           
+            if(e.target.value === 'ampere' || e.target.value === 'active_power' || e.target.value === 'voltage' || e.target.value === 'power_factor') {
+             console.log(e.target.value);
+              d3.selectAll("svg").remove();
+              //d3.selectAll("rect").remove();
+              drawCheckChart();
+              getNodeList();
+            }
+        });
+      });
+  body.body-popup
+    .wrapper
+      header.page-header
+      .container-fluid
+        .content-popup
+          .popup-tit-box
+            .row
+              .col-md-11
+                h1 Cluster Detail
+              .col-md-1
+                a.btn.blue.pull-left(data-toggle='modal', href='javascript:self.opener = self;window.close();') Close
+          .row
+            .col-md-12
+              .portlet.light.bordered
+                .portlet-title
+                  .caption.font-dark
+                    span.caption-subject.bold.uppercase.font-blue-sharp Period and Factor
+                .portlet-body.form          
+                  form.form-horizontal.form-bordered(onsubmit="return false;")
+                    .form-body
+                      .row
+                        label.control-label.col-md-1 Period
+                        .col-md-3        
+                          .input-group.input-large.date-picker.input-daterange
+                            input#sdate.form-control(type='text' name='from' value='' style = 'text-align:center; width: 120px;' readonly)
+                            input.form-control(type='text' name='period' value='to' style = 'text-align:center; width: 40px;' readonly)
+                            input#edate.form-control(type='text' name='to' value='' style = 'text-align:center; width: 120px;'  readonly)
+                        label.control-label.col-md-1 Interval
+                        .col-md-2
+                          input#interval.form-control(type='text' name='interval' value='' style = 'text-align:center; width: 100px;'  readonly)                              
+                        label.control-label.col-md-1 Factor
+                        .col-md-4
+                          .btn-group.btn-group-devided(data-toggle='buttons')
+                            label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                              input#factor0.toggle(type='radio', name='options', value='active_power', checked='Y')
+                              | ActivePower
+                            label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                              input#factor1.toggle(type='radio', name='options', value='voltage')
+                              | Voltage
+                            label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                              input#factor2.toggle(type='radio', name='options', value='ampere')
+                              | Ampere
+                            label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                              input#factor3.toggle(type='radio', name='options', value='power_factor')
+                              | PowerFactor                       
+          .row
+            .col-md-5
+              .portlet.light.bordered(style='height:450px;')
+                .portlet-title
+                  .caption.font-dark
+                    span.caption-subject.bold.uppercase Clustering chart
+                    span.caption-helper  by Analytic data
+                  .portlet-body
+                    .chart(style='height:900px;')
+                      #table
+                        .panel.panel-card
+                          .panel-body
+                            .col-xm-2.col-sm-2.col-md-2.panel-checkbox.hidden-xs.hidden-sm
+                              input#c0.click_checkbox(type='checkbox', name='c0', value='1', v-on='click:checkOpt', checked='true')
+                              text  Cluster0
+                              br
+                              input#c1.click_checkbox(type='checkbox', name='c1', value='2', v-on='click:checkOpt', checked='true')
+                              text  Cluster1
+                              br
+                              input#c2.click_checkbox(type='checkbox', name='c2', value='3', v-on='click:checkOpt', checked='true')
+                              text  Cluster2
+                              br
+                              input#c3.click_checkbox(type='checkbox', name='c3', value='4', v-on='click:checkOpt', checked='true')
+                              text  Cluster3
+                            .col-xm-12.col-sm-12.col-md-10.col-xs-12
+                              #Cluster(style='width:100%;height:370px;')
+            .col-md-3
+              .portlet.light.bordered.tasks-widget(style='height:445px;')
+                .portlet-title
+                  .caption.font-dark
+                    span.caption-subject.theme-font.bold.uppercase Clustering
+                .portlet-body
+                    .scroller(style='height: 345px;', data-always-visible='1', data-rail-visible1='0', data-handle-color='#D7DCE2')
+                     .table-scrollable.table-scrollable-borderless
+                      table#tblClusterDir.table.table-hover.table-light
+                        thead   
+            .col-md-4
+              .portlet.light.bordered(style='height:445px;')
+                .portlet-title
+                  .caption.font-dark
+                    span.caption-subject.bold.uppercase Cluster Chart                    
+                    span.caption-helper  by Nodes real data
+                .portlet-body
+                  .chart(style='height:350px;')
+                    #nodeChart
+          .row                       
+            .col-md-2
+              .actions
+                .btn-group.btn-group-devided(data-toggle='buttons')
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                    input#syncY.toggle(type='radio', name='options', checked='Y')
+                    i.fa.fa-chain Sync
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                    input#syncN.toggle(type='radio', name='options')
+                    i.fa.fa-chain-broken Async
+          .row
+            .col-md-3
+              .portlet.light(style='height:370px;')
+                .portlet-title
+                  .caption
+                    span.caption-subject.bold.uppercase.font-blue-sharp Power  
+                    span.caption-helper  by Node real data
+                .portlet-body(style='height:auto;')
+                 .chart
+                  #ts-chart01
+            .col-md-3
+              .portlet.light.bordered(style='height:370px;')
+                .portlet-title
+                  .caption
+                    span.caption-subject.bold.uppercase.font-green-haze ALS/Dimming
+                    span.caption-helper  by Node real data
+                .portlet-body
+                  .chart
+                    #ts-chart02
+            .col-md-3
+              .portlet.light.bordered(style='height:370px;')
+                .portlet-title
+                  .caption
+                    span.caption-subject.bold.uppercase.font-green-haze Noise
+                    span.caption-helper  by Node real data
+                .portlet-body
+                  .chart
+                    #ts-chart03
+            .col-md-3
+              .portlet.light.bordered(style='height:370px;')
+                .portlet-title
+                  .caption
+                    span.caption-subject.bold.uppercase.font-green-haze Vibration
+                    span.caption-helper  by Node real data
+                .portlet-body
+                  .chart
+                    #ts-chart04

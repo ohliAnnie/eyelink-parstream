@@ -5,8 +5,8 @@
 	"username": "root",
 	"password": "foot",
 	"loaddataonstartup": {
-		"active": true,
-		"loading_day": 6,
+		"active": false,
+		"loading_day": 0,
 		"loading_time": 1
 	},
 	"queryposition": 100,
@@ -14,5 +14,10 @@
 		"database" : "parstream",
 		"#method" : "jdbc",
 		"method" : "nodelib"
+	},
+	"analysis": {
+		"#host" : "localhost",
+		"host" : "m2u-da.eastus.cloudapp.azure.com",
+		"port" : 5225
 	}
 }

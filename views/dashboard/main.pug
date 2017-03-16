@@ -50,13 +50,13 @@ block content
                 small TOTAL MONTHLY EVENT
               .icon
                 i.icon-calendar
-            .progress-info
+            #mevent_status.progress-info
               .progress
                 span.progress-bar.progress-bar-success.blue-sharp(style='width: 90%;')
                   span.sr-only 76% progress
               .status
                 .status-title  From the previous month
-                #pmevent-count.status-number  0%
+                .status-number  0%
         .col-lg-3.col-md-3.col-sm-6.col-xs-12
           .dashboard-stat2
             .display
@@ -65,13 +65,13 @@ block content
                 small Total Daily Event
               .icon
                 i.icon-pie-chart
-            .progress-info
+            #event_status.progress-info
               .progress
                 span.progress-bar.progress-bar-success.green-sharp(style='width: 85%;')
                   span.sr-only 85% change
               .status
                 .status-title  From the previous day
-                #pevent-count.status-number  0%
+                .status-number  0%
         .col-lg-3.col-md-3.col-sm-6.col-xs-12
           .dashboard-stat2
             .display
@@ -80,13 +80,13 @@ block content
                 small Daily Fault Event
               .icon
                 i.icon-speedometer
-            .progress-info
+            #fault_status.progress-info
               .progress
                 span.progress-bar.progress-bar-success.red-haze(style='width: 45%;')
                   span.sr-only 45% grow
               .status
                 .status-title  From the previous day
-                #pfault-count.status-number  0%
+                .status-number  0%
         .col-lg-3.col-md-3.col-sm-6.col-xs-12
           .dashboard-stat2
             .display
@@ -95,13 +95,13 @@ block content
                 small Daily Active Power
               .icon
                 i.icon-energy
-            .progress-info
+            #power_status.progress-info
               .progress
                 span.progress-bar.progress-bar-success.yellow-green(style='width: 57%;')
                   span.sr-only 57% change
               .status
                 .status-title  From the previous day
-                #ppower.status-number  0%
+                .status-number  0%
       .row
         .col-md-12
           .portlet.light.bordered

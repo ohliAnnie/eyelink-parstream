@@ -1,7 +1,7 @@
 var socketio = require('socket.io');
 var CONSTS = require('./consts');
-var DashboardProvider = require('./dao/' + global.config.fetchData.database + '/'+ global.config.fetchData.method + '-dashboard').DashboardProvider;
-var dashboardProvider = new DashboardProvider();
+var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-db').QueryProvider;
+var queryProvider = new QueryProvider();
 
 function initSocket(app, callback) {
   app.io = socketio();
@@ -13,7 +13,7 @@ function initSocket(app, callback) {
 
       // 오늘일자의 데이터에 대해서 Query를 수행한다.
       var in_data = {count:count, recordCount:recordCount};
-      dashboardProvider.selectSingleQueryByID("selectCountEventRawDataByToDay", in_data, function(err, out_data, params) {
+      queryProvider.selectSingleQueryByID("selectCountEventRawDataByToDay", in_data, function(err, out_data, params) {
         // console.log(out_data);
         var rtnCode = CONSTS.getErrData('0000');
         if (out_data == null) {
@@ -41,7 +41,7 @@ function initSocket(app, callback) {
       console.log('socketApp/initSocket -> getEventListForAlarm : data : %s', data);
       // DB Query
       var in_data = {last_pos:data};
-      dashboardProvider.selectSingleQueryByID("selectEventListForAlarm", in_data, function(err, out_data, params) {
+      queryProvider.selectSingleQueryByID("selectEventListForAlarm", in_data, function(err, out_data, params) {
         console.log('socketApp/initSocket -> getEventListForAlarm -> out_data : %j', out_data[0]);
         var rtnCode = CONSTS.getErrData('0000');
         if (out_data == null) {

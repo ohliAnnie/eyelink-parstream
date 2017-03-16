@@ -22,8 +22,10 @@ define("ERROR_CODE", {
 	"E002": "비밀번호가 틀립니다.",
 	"E003": "Upload할 파일이 없습니다.",
 	"E004": "이미지 파일이 아닙니다.",
-	"D001": "동일한 #1 #2가 이미 존재합니다.",
-	"D002": "DB에 접속할 수 없습니다. 시스템관리자에게 연락하세요.",
+	"E005": "동일한 id가 이미 존재합니다.",
+	"D001": "등록되었습니다.",
+	"D002": "수정되었습니다.",
+	"D003": "삭제되었습니다.",
 	"ER_DUP_ENTRY": "Duplicate entry for key 'PRIMARY'!!!",
 	"ER_BAD_NULL_ERROR": "Column 'user_id' cannot be null",
 });

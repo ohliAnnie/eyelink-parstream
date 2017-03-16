@@ -1,6 +1,6 @@
 /* Set default body */
 body {
-  color: #333333;
+  color: #2a2a2a;
   font-family: "Open Sans", sans-serif;
   padding: 0px !important;
   margin: 0px !important;
@@ -2571,7 +2571,7 @@ Customized Bootstrap Close Icon
 ***/
 .close {
   display: inline-block;
-  margin-top: 0px;
+  margin-top: 7px;
   margin-right: 0px;
   width: 9px;
   height: 9px;
@@ -2610,7 +2610,7 @@ Dropdown Menu
   margin: 10px  0px 0px 0px;
   box-shadow: 0px 3px rgba(102, 102, 102, 0.1);
   border: 1px solid #eee;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", sans-serif;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   -ms-border-radius: 4px;
@@ -2893,7 +2893,7 @@ Dropdown Checkboxes
 }
 .dropdown-menu-v2 > li > a {
   clear: both;
-  color: #606e7a;
+  color: #bbb;
   display: block;
   font-weight: 600;
   padding: 8px 20px;
@@ -3335,6 +3335,7 @@ Forms
   -o-border-radius: 4px;
   border-radius: 4px;
 }
+.form-control-inline {display:inline-block !important;}
 .form-control:focus {
   border-color: #999;
   outline: 0;
@@ -3761,6 +3762,7 @@ Customized Bootstrap Labels
 ***/
 .label {
   text-shadow: none !important;
+  font-weight: normal !important;
   font-size: 13px;
   padding: 3px 6px 3px 6px;
   color: #fff;
@@ -4178,10 +4180,14 @@ Customized Bootstrap Modal
   z-index: 10060;
 }
 .modal .modal-header {
-  border-bottom: 1px solid #EFEFEF;
+  border-bottom: 1px solid #EFEFEF; 
+  border-radius: 5px 5px 0px 0px;
 }
 .modal .modal-header h3 {
-  font-weight: 300;
+  font-weight: 300; 
+}
+.modal .modal-header i {
+  font-size:2em; vertical-align:middle; padding:10px 5px 10px 0;
 }
 .modal .modal-header .close {
   margin-top: 0px !important;
@@ -7683,6 +7689,7 @@ Blue Stell
 .portlet.blue-steel {
   background-color: #4B77BE;
 }
+.portlet > .portlet-footer {border-top:1px solid #eaeaea; margin-top:10px; padding-top:15px; text-align:right;}
 
 .portlet.solid.blue-steel > .portlet-title,
 .portlet.solid.blue-steel > .portlet-body {
@@ -14037,3 +14044,43 @@ Transparent Button
   background: transparent;
   color: #888;
 }
+
+/* status icon */
+.status-icon {font-size: .875rem;  display: inline-block; margin-right: 10px; color: #fff; }
+.status-icon:before {display: inline-block; margin-top: -4px; margin-right: 5px;  content: ''; vertical-align: middle; }
+.status-icon:after { content: attr(value); }
+.status-icon span { display: inline-block; margin-right: 5px; }
+.status-icon.als:before {width: 21px; height: 19px;  background-image: url(../images/sprites.png); background-position: -173px -114px; }
+.status-icon.als.fault:before {width: 21px; height: 19px;  background-image: url(../images/sprites.png); background-position: -146px -114px; }
+.status-icon.decibel:before {width: 21px; height: 19px;  background-image: url(../images/sprites.png); background-position: -146px -89px; }
+.status-icon.decibel.fault:before {width: 21px; height: 19px;  background-image: url(../images/sprites.png); background-position: -68px -167px; }
+.status-icon.frequency:before {width: 21px; height: 19px;  background-image: url(../images/sprites.png); background-position: -149px -167px; }
+.status-icon.frequency.fault:before {width: 21px; height: 19px;  background-image: url(../images/sprites.png); background-position: -176px -167px; }
+.status-icon.vibration:before {width: 21px; height: 19px;  background-image: url(../images/sprites.png); background-position: -208px -140px; }
+.status-icon.vibration.fault:before {width: 21px; height: 19px;  background-image: url(../images/sprites.png); background-position: -173px -89px; }
+.status-icon.power:before {width: 21px; height: 19px;  background-image: url(../images/sprites.png); background-position: -230px -167px; }
+.status-icon.power.fault:before {width: 21px; height: 19px;  background-image: url(../images/sprites.png); background-position: -235px -140px; }
+.status-icon.dimming:before {width: 21px; height: 19px;  background-image: url(../images/sprites.png); background-position: -95px -169px; }
+.status-icon.dimming.fault:before {width: 21px; height: 19px;  background-image: url(../images/sprites.png); background-position: -122px -169px; }
+.status-icon.gps:before {width: 21px; height: 19px;  background-image: url(../images/sprites.png); background-position: -203px -167px; }
+.status-icon.gps.fault:before {width: 21px; height: 19px;  background-image: url(../images/sprites.png); background-position: -235px -89px; }
+.status-icon.time:before { content: ''; text-indent: 0; }
+.status-icon.time:before {font-size: .750rem;  margin-top: -3px; margin-left: 2px; }
+.status-icon.fault { color: #ee6333 !important; }
+.status-icon.txt-none { color: #25c4af; font-size:12px; }
+.status-icon.txt-none span { display: none; }
+
+/* status text */
+.status-txt {font-size: .875rem; line-height: 28px; position: relative;  display: inline-block; box-sizing: border-box; min-width: 127px; height: 26px; margin-left: -13px; padding: 0 13px; color: #fff; border-radius: 2px; background-color: #c19f02; }
+.status-txt:after { content: ''; text-indent: 0; }
+.status-txt:after {line-height: 26px; position: absolute; top: 0; right: 11px;  display: block; height: 100%; vertical-align: middle; }
+.status-txt.error { background-color: #e23648; }
+.status-txt.error:after { content: ''; text-indent: 0; }
+.status-txt.error:after { font-size: .750rem; }
+
+/* Common Popup */
+.body-popup{ background-color: #e9ecf3 !important; padding-top: 15px !important;}
+.content-popup { min-height: 500px;}
+.popup-tit-box { overflow: hidden;  margin-bottom: 20px;  padding-right: 6px;}
+.popup-tit-box h1 {  margin: 0;  float: left;  font-size: 22px;  font-weight: 500;  line-height: 1.4;  margin-right: 20px;  color: #000;}
+.popup-tit {  margin: 0;  padding: 0;  text-align: right;  background: inherit;}
