@@ -85,8 +85,12 @@ html
         $('#menureports').addClass( '#{mainmenu.reports}');
         $('#menutimeseries').addClass( '#{mainmenu.timeseries}');
         $('#menuanalysis').addClass( '#{mainmenu.analysis}');
-        $('#menuusers').addClass( '#{mainmenu.users}');
+        $('#menumanagement').addClass( '#{mainmenu.management}');
         $('#menusettings').addClass( '#{mainmenu.settings}');
+
+        $('#btn_logout').click(function() {
+          location.href = "/logout";
+        });
 
         Metronic.init(); // init metronic core componets
         eyelinkLayout.init(); // init eyelinklayout
@@ -109,7 +113,7 @@ html
                   span.icon-bar
                   span.icon-bar
                   span.icon-bar
-              a#index.page-logo(href='/dashboard')
+              a#index.page-logo(href='/')
                 h1 EYELINK
               form.search(action='', method='GET')
                 input.form-control(type='name', name='query', placeholder='Search...')
@@ -228,7 +232,7 @@ html
                     li.divider
                     li
                       a(href='index.html') Log Out
-                button.quick-sidebar-toggler(type='button', data-toggle='collapse')
+                button#btn_logout.quick-sidebar-toggler(type='button', data-toggle='collapse')
                   span.sr-only Toggle Quick Sidebar
                   i.icon-logout
             .nav-collapse.collapse.navbar-collapse.navbar-responsive-collapse
@@ -262,20 +266,18 @@ html
                       a(href='/reports/d3') d3
                     li
                       a(href='/reports/live') Live
-                    li
-                      a(href='reports.html') Report Name
                 li#menuanalysis.dropdown.dropdown-fw
                   a(href='javascript:;') Analysis
                   ul.dropdown-menu.dropdown-menu-fw
                     li.active
                       a(href='/analysis/clustering') Clustering
-                li#menuusers.dropdown.dropdown-fw
-                  a(href='javascript:;') Users
+                    li
+                      a(href='/analysis/runalaysis') Run Analysis
+                li#menumanagement.dropdown.dropdown-fw
+                  a(href='javascript:;') Management
                   ul.dropdown-menu.dropdown-menu-fw
-                    li
-                      a(href='#') Users Menu
-                    li
-                      a(href='#') Users Menu
+                    li.active
+                      a(href='/management/users') Users
                 li#menusettings.dropdown.dropdown-fw
                   a(href='javascript:;') Settings
                   ul.dropdown-menu.dropdown-menu-fw
@@ -283,4 +285,4 @@ html
                       a(href='#') Preferences
                     li
                       a(href='#') Configuration
-    block content
+      block content

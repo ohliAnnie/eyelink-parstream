@@ -21,6 +21,8 @@ var analysis = require('./routes/nodeAnalysis');
 var initapps = require('./routes/initApp');
 var socketapps = require('./routes/socketApp');
 var node = require('./routes/nodeCon');
+var management = require('./routes/nodeManagement');
+var simulator = require('./routes/nodeSimulator');
 
 var app = express();
 
@@ -32,8 +34,8 @@ app.use(cors());
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(multer());
 app.use(cookieParser());
 app.use(session({
@@ -50,6 +52,8 @@ app.use('/reports', reports);
 app.use('/analysis', analysis);
 app.use('/intro', intro);
 app.use('/node', node);
+app.use('/management', management);
+app.use('/simulator', simulator);
 
 global._rawDataByDay = {};
 // dbquery.xml 파일 내용을 loading

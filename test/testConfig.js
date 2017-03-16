@@ -41,20 +41,21 @@ describe("Test", function(){
 
       config.productname.should.be.equal("EyeLink for ParStream");
       config.loaddataonstartup.active.should.be.equal(true);
+      config.analysis.port.should.be.equal(5225);
       // config.queryposition.should.be.equal(0);
       done();
     })
 
     // write config.queryposition config/config.json
-    it('check validation', function(done) {
-      config.queryposition = 100;
-      config = JSON.stringify(config,null,'\t');
-      fs.writeFileSync('./config/config.json', config,function(err) {
-        if(err) return console.error(err);
-        cconsole.log('config : %j', config);
-        config.queryposition.should.be.equal(100);
-      })
-      done();
-    })
+    // it('check validation', function(done) {
+    //   config.queryposition = 100;
+    //   config = JSON.stringify(config,null,'\t');
+    //   fs.writeFileSync('./config/config.json', config,function(err) {
+    //     if(err) return console.error(err);
+    //     cconsole.log('config : %j', config);
+    //     config.queryposition.should.be.equal(100);
+    //   })
+    //   done();
+    // })
   });
 });

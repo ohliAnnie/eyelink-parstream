@@ -91,6 +91,7 @@ Client.prototype.connect = function connect(cb) {
   // console.log(self)
   self.socket = net.createConnection(self.port, self.host)
   self.socket.on('connect', function() {
+    // console.log('Client connected')
     self.socket.setEncoding('utf8')
 
     var data = ''
@@ -155,6 +156,10 @@ Client.prototype.query = function(query, cb) {
       // console.log('parsteam query data : %j', data);
 
       // console.time('csvToJson2')
+      // SQL Error 발생한 경우
+      if (data.indexOf('#ERROR-') === 0) {
+        return cb(data);
+      }
       data = csvToJson2(data);
       // console.log('csvtojson2 : %j', data);
       // console.timeEnd('csvToJson2')
@@ -177,36 +182,31 @@ function csvToJson(csv) {
 
 function csvToJson2(data) {
   var json = [];
-  // SQL Error 발생한 경우
-  if (data.indexOf('#ERROR-') === 0) {
-    json = {'error': data};
-  } else {
-    // Split on row
-    data = data.split("\n");
+  // Split on row
+  data = data.split("\n");
 
-    // Get first row for column headers
-    headers = data.shift().split(";");
+  // Get first row for column headers
+  headers = data.shift().split(";");
 
-    // heaer의 첫번째 값에서  #을 제거
-    // parstream sample ex) #event_time;node_id\n2016-11-16 00:32:28.000;\"0001.00000002\"
-    headers[0] = headers[0].substring(1);
+  // heaer의 첫번째 값에서  #을 제거
+  // parstream sample ex) #event_time;node_id\n2016-11-16 00:32:28.000;\"0001.00000002\"
+  headers[0] = headers[0].substring(1);
 
-    data.forEach(function(d){
-        // Loop through each row
-        tmp = {}
-        row = d.split(";")
-        for(var i = 0; i < headers.length; i++){
-          // console.log('%s, %d, %s', row[i], row[i].indexOf("\""), (row[i].indexOf("\"") > -1) ? row[i].substring(1, row[i].length-1) : row[i]);
-          // varchar 값 \"0001.00000002\" 에 대한 처리.
-          tmp[headers[i]] = ((row[i].indexOf("\"") === 0) ? row[i].substring(1, row[i].length-1) : row[i]);
-        }
-        // Add object to list
-        json.push(tmp);
-    });
+  data.forEach(function(d){
+      // Loop through each row
+      tmp = {}
+      row = d.split(";")
+      for(var i = 0; i < headers.length; i++){
+        // console.log('%s, %d, %s', row[i], row[i].indexOf("\""), (row[i].indexOf("\"") > -1) ? row[i].substring(1, row[i].length-1) : row[i]);
+        // varchar 값 \"0001.00000002\" 에 대한 처리.
+        tmp[headers[i]] = ((row[i].indexOf("\"") === 0) ? row[i].substring(1, row[i].length-1) : row[i]);
+      }
+      // Add object to list
+      json.push(tmp);
+  });
 
-    // Json 구조를 jdbc return 구조와 동일하게 구성한다.
-    json = {'rows':json};
-  }
+  // Json 구조를 jdbc return 구조와 동일하게 구성한다.
+  json = {'rows':json};
 
   return json;
 }

@@ -33,9 +33,8 @@ describe("Test", function(){
   describe("Dashboard -> ", function() {
     // it('login', login());
 
-    // 성공 건수 조회
-    it('Search get_successcount', function(done) {
-      var datas = {user_id: "user_id"};
+    it('성공 건수 조회', function(done) {
+      var datas = {};
       request(svr)
         .get("/dashboard/restapi/get_successcount")
         .send(datas)
@@ -48,8 +47,7 @@ describe("Test", function(){
         });
     });
 
-    // Dashboard 내 전력량, 금액, 이벤트 발생건수, 오류 발생건수, 전일 대비 값 조회
-    it('Search Dashboard Section1', function(done) {
+    it('전력량, 금액, 이벤트 발생건수, 오류 발생건수, 전일 대비 값 조회', function(done) {
       var datas = {todate:'2017-01-12', yesterdate:'2017-01-11'};
       request(svr)
         .get("/dashboard/restapi/getDashboardSection1?todate=" + datas.todate + "&yesterdate=" + datas.yesterdate)
@@ -66,9 +64,8 @@ describe("Test", function(){
         });
     });
 
-    // Raw Data 조회
-    it('Search Data RawData for DC Chart ', function(done) {
-      var datas = {user_id: "user_id"};
+    it('날짜별 Event Trend 출력 리스트 조회 ', function(done) {
+      var datas = {};
       request(svr)
         .get("/dashboard/restapi/getDashboardRawData")
         .send(datas)
@@ -78,6 +75,23 @@ describe("Test", function(){
           // console.log(res.body);
           console.log('testDashboard -> rtnData length : %s', res.body.rtnData.length);
           res.body.rtnCode.code.should.be.equal('0000');
+          res.body.rtnData.length.should.be.above(0);
+          done();
+        });
+    });
+
+    it('조회 기간내 Event Trend 출력 리스트 조회 ', function(done) {
+      var datas = {from:'2017-02-25', to:'2017-02-27'};
+      request(svr)
+        .get("/dashboard/restapi/getTbRawDataByPeriod?startDate=" + datas.from + "&endDate=" + datas.to)
+        .send(datas)
+        .expect('Content-Type', /json/)
+        .expect(200, function(err, res) {
+          if (err) return done(err);
+          // console.log(res.body);
+          console.log('testDashboard -> rtnData length : %s', res.body.rtnData.length);
+          res.body.rtnCode.code.should.be.equal('0000');
+          res.body.rtnData.length.should.be.above(0);
           done();
         });
     });

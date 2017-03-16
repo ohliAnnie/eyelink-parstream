@@ -1,0 +1,39 @@
+drop table tb_user_info;
+
+CREATE TABLE tb_user_info
+(
+	data_year INT16          INDEX EQUAL CSV_COLUMN 0,
+  user_id VARSTRING(20) COMPRESSION NONE MAPPING_FILE_GRANULARITY 256 ,
+  user_name VARSTRING(20) COMPRESSION NONE MAPPING_FILE_GRANULARITY 256 ,
+  user_pw VARSTRING(20) COMPRESSION NONE MAPPING_FILE_GRANULARITY 256 ,
+  user_role VARSTRING(15) COMPRESSION NONE MAPPING_FILE_GRANULARITY 256 ,
+  user_email VARSTRING(50) COMPRESSION NONE MAPPING_FILE_GRANULARITY 256,
+  flag VARSTRING(1) COMPRESSION HASH64 INDEX EQUAL,
+  reg_date  TIMESTAMP  INDEX RANGE INDEX_GRANULARITY DAY,
+)
+PARTITION BY data_year
+DISTRIBUTE OVER data_year
+ORDER BY data_year
+IMPORT_DIRECTORY_PATTERN '.*'
+IMPORT_FILE_PATTERN 'tb_user_info.*\.csv'
+ETL (select *  from csvfetch(tb_user_info));
+
+insert into tb_user_info
+  select date_part('YEAR', current_date()) as data_year,
+          'admin' as user_id,
+            'admin' as user_name,
+            'admin' as user_pw,
+            'Super Manager' as user_role,
+            'admin@com' as user_email,
+            'C' as flag,
+            current_timestamp()+32400000 as reg_date;
+
+insert into tb_user_info
+select date_part('YEAR', current_date()) as data_year,
+         'guest' as user_id,
+            'guest' as user_name,
+            'guest' as user_pw,
+            'Guest' as user_role,
+            'guest@m2u.com' as user_email,
+            'C' as flag,
+            current_timestamp()+32400000 as reg_date;

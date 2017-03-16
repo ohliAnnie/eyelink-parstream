@@ -51,13 +51,13 @@ describe("Test", function(){
       console.log('getDateFromFormat : %s', d.toFormat('2016-12-06', 'yyyy-mm-dd'));
 
       expect('2016-12-06').to.equal(d.toFormat('2016-12-06', 'YYYY-MM-DD'));
-      expect('Jan').to.equal(d.addMonths(1).toFormat('MMM'));
-      expect('02').to.equal(d.addMonths(1).toFormat('MM'));
+      expect('Mar').to.equal(d.addMonths(1).toFormat('MMM'));
+      expect('04').to.equal(d.addMonths(1).toFormat('MM'));
       console.log('today : %s', Date.today());
 
       d = new Date();
       console.log('toYMD : %s', d.toYMD());
-      console.log('today : %s', d.toFormat('YYYY-MM-DD HH:MI:SS'));
+      console.log('today : %s', d.toFormat('YYYY-MM-DD HH24:MI:SS'));
       // expect('08').to.equal(d.addDays(1).toFormat('DD'));
       // expect('09').to.equal(d.addDays(1).toFormat('DD'));
       // expect('08').to.equal(d.removeDays(1).toFormat('DD'));
@@ -67,7 +67,7 @@ describe("Test", function(){
       console.log('----- Javascript Date');
       console.log('now : %s', Date.now());
       console.log('getFullYear : %s', d.getFullYear());
-      console.log('getMonth(0-11) : %s', d.getMonth()+1);
+      console.log('getMonth(1-12) : %s', d.getMonth()+1);
       console.log('getDate(1-31) : ' + d.getDate());
       console.log('getHours(0-23) : ' + d.getHours());
       console.log('getMinutes(0-59) : ' + d.getMinutes());

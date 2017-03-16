@@ -15,6 +15,7 @@ QueryProvider = function() {
 // 단건에 대해서 Query를 수행한다.
 QueryProvider.prototype.selectSingleQueryByID = function (type, queryId, datas, callback) {
   var vTimeStamp = Date.now();
+  console.log('queryId : '+queryId);
   console.time('nodelib-db/selectSingleQueryByID -> '+ queryId +' total ');
   console.log('nodelib-db/selectSingleQueryByID -> (%s) queryID', queryId)
 
@@ -52,6 +53,41 @@ QueryProvider.prototype.selectSingleQueryByID = function (type, queryId, datas, 
           parstream.close();
           callback(err, [resultset.rows], datas);
         }
+        // parstream.close(function () {
+        // })
+      });
+    }
+  });
+};
+
+// Insert Query를 수행한다.
+QueryProvider.prototype.insertQueryByID = function (type, queryId, datas, callback) {
+  var vTimeStamp = Date.now();
+  console.time('nodelib-db/insertQueryByID -> '+ queryId +' total ');
+  console.log('nodelib-db/insertQueryByID -> (%s) queryID', queryId)
+
+  // no pool method
+  var parstream = require("./m2u-parstream").createClient(opts);
+
+  parstream.connect(function(err) {
+    if (err) {
+      callback(err);
+    } else {
+
+      // SQL 내 파라메타를 변경해준다.
+      var sSql = Utils.replaceSql(queryParser.getQuery(type, queryId), datas);
+      console.log('nodelib-db/insertQueryByID -> ' + sSql);
+
+      console.time('nodelib-db/insertQueryByID -> ('+ queryId +') executeQuery');
+      parstream.query(sSql, function(err) {
+        if (err) {
+          callback(err);
+        }
+        console.timeEnd('nodelib-db/insertQueryByID -> ('+ queryId +') executeQuery');
+
+        console.log(err);
+        parstream.close();
+        callback(err, 'D001');
         // parstream.close(function () {
         // })
       });
