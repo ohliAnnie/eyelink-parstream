@@ -45,7 +45,7 @@ block script
         }
         var daDate = $('#daDate').val();       
         if(daDate != ''){
-          d3.selectAll(".path_legend").remove();
+          d3.selectAll("svg").remove();
           drawCheckChart(factor, daDate);
         }
       });
