@@ -268,12 +268,12 @@ function drawCheckCluster(data, dadate, factor) {
       return 'translate(' + ((5 + (width-20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
     });
 
-    singLegend.append('g:rect')
+    singLegend.append('rect')
     .attr('width', legendSize)
     .attr('height', legendSize)
     .style('fill', function(d) {            return color(d);          });
 
-    singLegend.append('g:text')
+    singLegend.append('text')
     .attr('x', legendSize*1.4)
     .attr('y', legendSize/1.3)
     .attr('font-size', function() {
