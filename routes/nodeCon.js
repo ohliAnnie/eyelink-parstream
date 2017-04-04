@@ -2,7 +2,7 @@ var CONSTS = require('./consts');
 var express = require('express');
 var router = express.Router();
 
-var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-db').QueryProvider;
+var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
 var queryProvider = new QueryProvider();
 
 var mainmenu = {home: 'is-selected', info: '', job: '', staff: '', consult: '', event: ''};
@@ -31,7 +31,7 @@ router.get('/status', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     }
     console.log(out_data[0]);
-  res.render('./node/node_status', { title: 'EyeLink for ParStream' , nodeData:out_data[0]});  
+  res.render('./node/node_status', { title: 'EyeLink for ParStream' , nodeData:out_data[0]});
      });
 });
 

@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www",
-    "test": "mocha $(find ./test -name '*.spec.js') --recursive -w"
+    "test": "mocha $(find ./test -name '*.elasticsearch.spec.js') --recursive -w"
   },
   "loglevel": "debug",
   "dependencies": {

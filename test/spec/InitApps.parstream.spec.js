@@ -4,15 +4,15 @@ var request = require("supertest");
 var expect = require("chai").expect;
 var svr = "http://localhost:5223";
 var http = require('http');
-var config = require('../config/config.json');
+var config = require('../../config/config.json');
 global.config = config;
 global._rawDataByDay = {};
-var initapps = require('../routes/initApp');
-var queryParser = require('../routes/dao/parstream/queryParser');
+var initapps = require('../../routes/initApp');
+var queryParser = require('../../routes/dao/parstream/queryParser');
 require('date-utils');
 console.log('config : %j', config);
 
-describe("Test", function(){
+describe("InitApp", function(){
   var cookie;
 
   before(function() {
@@ -36,9 +36,13 @@ describe("Test", function(){
 
   });
 
-  describe("InitApp -> ", function() {
+  describe("ParStream -> ", function() {
     // 서버 시작시 초기 7일간의 데이터 적재 모듈 테스트
     it('LoadQuery : 서버 시작시 Query Loading 테스트 ', function(done) {
+      global.config.fetchData = {
+        database : 'parstream',
+        method : 'nodelib-db'
+      };
       initapps.loadQuery(function() {
         var query1 = '';
         console.log('testInitApps -> global.query : %s', global.query.queryList.test[0].query[0].$.id);
@@ -52,7 +56,8 @@ describe("Test", function(){
       });
     });
 
-    it('LoadData : 서버 시작시 초기 7일간의 데이터 적재 모듈 테스트 ', function(done) {
+    it('LoadData : 서버 시작시 초기 7일간의 데이터 메모리 적재 모듈 테스트 ', function(done) {
+      _rawDataByDay = {};
       initapps.loadData(function(params) {
         var sDate = params['LOAD_DATE'];
         // console.log('testInitApps -> date : %s', sDate);

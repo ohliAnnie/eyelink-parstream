@@ -1,7 +1,7 @@
 var CONSTS = require('./consts');
 var express = require('express');
 var router = express.Router();
-var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-db').QueryProvider;
+var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
 
 var queryProvider = new QueryProvider();
 

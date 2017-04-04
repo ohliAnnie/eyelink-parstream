@@ -5,15 +5,17 @@
 	"username": "root",
 	"password": "foot",
 	"loaddataonstartup": {
-		"active": false,
-		"loading_day": 0,
+		"active": true,
+		"loading_day": 5,
 		"loading_time": 1
 	},
 	"queryposition": 100,
 	"fetchData": {
 		"database" : "parstream",
 		"#method" : "jdbc",
-		"method" : "nodelib"
+		"method" : "nodelib-db",
+		"#database" : "elasticsearch",
+		"#method" : "nodelib-es"
 	},
 	"analysis": {
 		"#host" : "localhost",

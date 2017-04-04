@@ -3,8 +3,8 @@ require('date-utils');
 var fs = require('fs'),
     xml2js = require('xml2js');
 
-var DashboardProvider = require('./dao/' + global.config.fetchData.database + '/'+ global.config.fetchData.method + '-dashboard').DashboardProvider;
-var dashboardProvider = new DashboardProvider();
+var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
+var queryProvider = new QueryProvider();
 
 function loadQuery(callback) {
   var parser = new xml2js.Parser();
@@ -118,7 +118,7 @@ function loadData(callback) {
       START_TIMESTAMP: vDate + ' 00:00:00',
       END_TIMESTAMP: vDate + ' 23:59:59',
       FLAG : flag};
-    dashboardProvider.selectSingleQueryByID("selectEventRawDataOld", in_data, function(err, out_data, params) {
+    queryProvider.selectSingleQueryByID("dashboard", "selectEventRawDataOld", in_data, function(err, out_data, params) {
       // console.log(out_data);
       _rawDataByDay[params.LOAD_DATE] = out_data[0];
       try {
