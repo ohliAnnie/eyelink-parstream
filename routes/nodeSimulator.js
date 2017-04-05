@@ -16,7 +16,7 @@ router.get('/restapi/getNodeEventDataList', function(req, res, next) {
     }
     var users = out_data[0];
     console.log(mainmenu);
-    res.render('./management/user_list', { title: 'EyeLink User List', mainmenu:mainmenu, users:users });
+    res.render('./management/user_list', { title: global.config.productname, mainmenu:mainmenu, users:users });
   });
 });
 

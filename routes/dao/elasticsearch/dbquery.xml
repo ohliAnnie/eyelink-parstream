@@ -59,5 +59,27 @@
       }
     }
     ]]></query>
+    <query id='selectEventRawData'><![CDATA[
+    {
+      "index": "corecode-2016-08",
+      "type": "corecode",
+      "body": {
+        "size" : -1,
+        "_source" : ["node_id", "event_time", "event_type"],
+        "query": {
+          "bool": {
+            "filter" : {
+              "range" : {
+                "event_time" : {
+                  "gte" : "2016-11-21",
+                  "lte" : "2016-11-22"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    ]]></query>
   </dashboard>
 </queryList>

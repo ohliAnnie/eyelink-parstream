@@ -11,15 +11,15 @@ var mainmenu = {dashboard:'', timeseries:'', reports:'open selected', analysis:'
 
 /* GET reports page. */
 router.get('/', function(req, res, next) {
-  res.render('./reports/report_all', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
+  res.render('./reports/report_all', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/main', function(req, res, next) {
-  res.render('./reports/main', { title: 'EyeLink for ParStream', mainmenu:mainmenu });
+  res.render('./reports/main', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/d3', function(req, res, next) {
-  res.render('./reports/report_d3', { title: 'EyeLink D3 Reports', mainmenu:mainmenu });
+  res.render('./reports/report_d3', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/test', function(req, res, next) {
@@ -27,15 +27,15 @@ router.get('/test', function(req, res, next) {
 });
 
 router.get('/all', function(req, res, next) {
-  res.render('./reports/report_all', { title: 'Report_All', mainmenu:mainmenu });
+  res.render('./reports/report_all', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/power', function(req, res, next) {
-  res.render('./reports/report_power', { title: 'Report_Power', mainmenu:mainmenu });
+  res.render('./reports/report_power', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/fault', function(req, res, next) {
-  res.render('./reports/fault_notification', { title: 'Report_Fault', mainmenu:mainmenu });
+  res.render('./reports/fault_notification', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/d3', function(req, res, next) {
@@ -43,7 +43,7 @@ router.get('/d3', function(req, res, next) {
 });
 
 router.get('/live', function(req, res, next) {
-  res.render('./reports/report_live', { title: 'Report_Live', mainmenu:mainmenu });
+  res.render('./reports/report_live', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 

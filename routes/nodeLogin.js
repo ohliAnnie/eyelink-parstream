@@ -12,12 +12,12 @@ var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis:'', management
 router.get('/', function(req, res, next) {
   console.log('login');
   // res.redirect('/dashboard/');s
-  res.render('./login/login', { title: 'EyeLink for ParStream' });
+  res.render('./login/login', { title: global.config.productname});
 });
 router.get('/login', function(req, res, next) {
   console.log('login');
   // res.redirect('/dashboard/');s
-  res.render('./login/login', { title: 'EyeLink for ParStream' });
+  res.render('./login/login', { title: global.config.productname});
 });
 
 router.get('/logout', function(req, res, next) {

@@ -83,6 +83,7 @@ describe('ElasticSearch, ', function () {
       })
     });
 
+    // elasticsearch update api는 정상 동작하지 않음.
     // it('id : 1 doc 수정', function (done) {
     //   var in_qparam = {q : 'bbb'};
     //   queryProvider.updateDocForTest(function(err, datas) {
@@ -97,30 +98,10 @@ describe('ElasticSearch, ', function () {
       var in_qparam = {q : 'bbb'};
       queryProvider.deleteDocForTest(function(err, datas) {
         if (err) { throw err; }
-        // console.log(count);
-        // expect(count).be.above(0);
         done();
       })
     });
 
   })
 
-
-  // it('should return the statusCode 200', function () {
-  //   req.params.name = 'Chris';
-  //   users.show(req, res);
-  //   res.statusCode.should.be.equal(200);
-  // });
-
-  // it('should return the statusCode 400 if no name', function () {
-  //   delete req.params.name;
-  //   users.show(req, res);
-  //   res.statusCode.should.be.equal(400);
-  // });
-
-  // it('should return a user', function () {
-  //   req.params.name = 'Chris';
-  //   users.show(req, res);
-  //   JSON.parse(res._getData()).should.be.instanceOf(Object).and.have.a.property('name');
-  // });
 });

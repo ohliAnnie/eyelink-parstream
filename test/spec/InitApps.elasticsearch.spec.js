@@ -39,7 +39,7 @@ describe("InitApp", function(){
 
   describe("ElasticSearch -> ", function() {
     var initapps = require('../../routes/initApp');
-    var queryParser = require('../../routes/dao/parstream/queryParser');
+    var queryParser = require('../../routes/dao//queryParser');
 
     // 서버 시작시 초기 7일간의 데이터 적재 모듈 테스트
     it('LoadQuery : 서버 시작시 Query Loading 테스트 ', function(done) {

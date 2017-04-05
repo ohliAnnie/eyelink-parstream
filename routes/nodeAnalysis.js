@@ -14,27 +14,27 @@ var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis: 'open selecte
 /* GET reports page. */
 router.get('/', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./analysis/clustering', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
+  res.render('./analysis/clustering', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/clustering', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./analysis/clustering', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
+  res.render('./analysis/clustering', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/cluster_detail', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./analysis/cluster_detail', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
+  res.render('./analysis/cluster_detail', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/clusteringPop', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./analysis/clustering_popup', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
+  res.render('./analysis/clustering_popup', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/runalaysis', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./analysis/runanalysis', { title: 'EyeLink for ParStream', mainmenu:mainmenu});
+  res.render('./analysis/runanalysis', { title: global.config.productname, mainmenu:mainmenu});
 });
 /*router.get('/clustering', function(req, res, next) {
    var in_data = {};
