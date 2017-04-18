@@ -1,0 +1,135 @@
+extends ../layout-type01
+block style
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')  
+  link(rel='stylesheet', href='/stylesheets/style.css')
+  style.
+      body {
+      font-family: helvetica, sans-serif;
+      font-size: 14px;
+      }
+      #cy {
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 999;
+      }
+      h1 {
+      opacity: 0.5;
+      font-size: 1em;
+      }
+block script  
+  script(src='/assets/annie/js/vue.min.js')  
+  script(type='text/javascript', src="/scripts/util.js")  
+  script(src='/assets/service/js/cytospace.min.js')
+    script.
+      document.addEventListener('DOMContentLoaded', function(){
+      var cy = window.cy = cytospace({
+      container: document.getElementById('cy'),
+      boxSelectionEnabled: false,
+      autounselectify: true,
+      layout: {
+      name: 'grid',
+      cols: 4,
+      sort: function( a, b ){
+      if( a.id() < b.id() ){
+      return -1;
+      } else if( a.id() > b.id() ){
+      return 1;
+      } else {
+      return 0;
+      }
+      }
+      },
+      style: [
+      {
+      selector: 'node',
+      style: {
+      'height': 40,
+      'width': 40,
+      'background-color': '#333',
+      'label': 'data(type)',
+      'text-valign': 'center',
+      'text-halign': 'left'
+      }
+      },
+      {
+      selector: 'edge',
+      style: {
+      'width': 3,
+      'opacity': 0.666,
+      'line-color': '#888'
+      }
+      },
+      {
+      selector: 'edge.bezier',
+      style: {
+      'curve-style': 'bezier',
+      'control-point-step-size': 40
+      }
+      },
+      {
+      selector: 'edge.unbundled-bezier',
+      style: {
+      'curve-style': 'unbundled-bezier',
+      'control-point-distances': 120,
+      'control-point-weights': 0.1
+      }
+      },
+      {
+      selector: 'edge.multi-unbundled-bezier',
+      style: {
+      'curve-style': 'unbundled-bezier',
+      'control-point-distances': '40 -40',
+      'control-point-weights': '0.25 0.75'
+      }
+      },
+      {
+      selector: 'edge.haystack',
+      style: {
+      'curve-style': 'haystack',
+      'haystack-radius': 0.5
+      }
+      },
+      {
+      selector: 'edge.segments',
+      style: {
+      'curve-style': 'segments',
+      'segment-distances': '40 -40',
+      'segment-weights': '0.25 0.75'
+      }
+      }
+      ],
+      elements: [
+      { data: { id: 'n01', type: 'bezier' } },
+      { data: { id: 'n02' } },
+      { data: { id: 'e01', source: 'n01', target: 'n02' }, classes: 'bezier' },
+      { data: { id: 'e02', source: 'n01', target: 'n02' }, classes: 'bezier' },
+      { data: { id: 'e03', source: 'n02', target: 'n01' }, classes: 'bezier' },
+      { data: { id: 'n03', type: 'unbundled-bezier' } },
+      { data: { id: 'n04' } },
+      { data: { id: 'e04', source: 'n03', target: 'n04' }, classes: 'unbundled-bezier' },
+      { data: { id: 'n05', type: 'unbundled-bezier (multiple)' } },
+      { data: { id: 'n06' } },
+      { data: { id: 'e05', source: 'n05', target: 'n06' }, classes: 'multi-unbundled-bezier' },
+      { data: { id: 'n07', type: 'haystack' } },
+      { data: { id: 'n08' } },
+      { data: { id: 'e06', source: 'n08', target: 'n07' }, classes: 'haystack' },
+      { data: { id: 'e07', source: 'n08', target: 'n07' }, classes: 'haystack' },
+      { data: { id: 'e08', source: 'n08', target: 'n07' }, classes: 'haystack' },
+      { data: { id: 'e09', source: 'n08', target: 'n07' }, classes: 'haystack' },
+      { data: { id: 'n09', type: 'segments' } },
+      { data: { id: 'n10' } },
+      { data: { id: 'e10', source: 'n09', target: 'n10' }, classes: 'segments' },
+      ]
+      });
+      });
+block content
+  .container-fluid
+    .page-content
+      .row
+        .col-md-12
+          .portlet.light.bordered(style='height:500px;')
+            #cy
