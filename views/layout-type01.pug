@@ -87,6 +87,7 @@ html
         $('#menuanalysis').addClass( '#{mainmenu.analysis}');
         $('#menumanagement').addClass( '#{mainmenu.management}');
         $('#menusettings').addClass( '#{mainmenu.settings}');
+        $('#menusample').addClass( '#{mainmenu.sample}');
 
         $('#btn_logout').click(function() {
           location.href = "/logout";
@@ -285,4 +286,19 @@ html
                       a(href='#') Preferences
                     li
                       a(href='#') Configuration
+                li#menusample.dropdown.dropdown-fw
+                  a(href='javascript:;') Sample
+                  ul.dropdown-menu.dropdown-menu-fw
+                    li
+                      a(href='/sample/serverMap') serverMap
+                    li
+                      a(href='/sample/cytoscape01') cytoscape01
+                    li
+                      a(href='/sample/cytoscape02') cytoscape02
+                    li
+                      a(href='/sample/cytoscape03') cytoscape03
+                    li
+                      a(href='/sample/cytoscape04') cytoscape04
+                    li
+                      a(href='/sample/cytoscape05') cytoscape05
       block content
