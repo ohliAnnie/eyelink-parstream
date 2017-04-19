@@ -3,7 +3,7 @@ var Utils = require('./util');
 var express = require('express');
 var router = express.Router();
 
-var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method + '-db').QueryProvider;
+var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
 var queryProvider = new QueryProvider();
 
 var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis:'', management:'open selected', settings:''};
@@ -18,7 +18,7 @@ router.get('/users', function(req, res, next) {
     }
     var users = out_data[0];
     console.log(mainmenu);
-    res.render('./management/user_list', { title: 'EyeLink User List', mainmenu:mainmenu, users:users });
+    res.render('./management/user_list', { title: global.config.productname, mainmenu:mainmenu, users:users });
   });
 });
 
@@ -26,7 +26,7 @@ router.get('/users/:id', function(req, res) {
   console.log(req.params.id);
   // 신규 등록
   if (req.params.id === 'addUser') {
-    res.render('./management/sign_up', { title: 'EyeLink for Sign-up', mainmenu:mainmenu });
+    res.render('./management/sign_up', { title: global.config.productname, mainmenu:mainmenu });
   } else { // 기존 사용자 정보 변경
     var in_data = {
       USERID: req.params.id,

@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<queryList>
+  <test>
+    <query id='test01'><![CDATA[
+      {q : 'aaa'}
+     ]]></query>
+    <query id='test02'><![CDATA[
+      {q : 'bbb'}
+     ]]></query>
+  </test>
+  <dashboard>
+    <query id='selectSuccessCount'><![CDATA[
+    {
+      index: 'corecode-2016-08',
+      type: 'corecode',
+      body: {
+        query: {
+          match: {
+            node_id : '0001.00000001'
+          }
+        }
+      }
+    }
+     ]]></query>
+    <query id='selectQueryInParams'><![CDATA[
+    {
+      index: 'corecode-2016-08',
+      type: 'corecode',
+      body: {
+        query: {
+          match: {
+            node_id : '#NODE_ID#'
+          }
+        }
+      }
+    }
+     ]]></query>
+      <!-- select b.zone_id, a.node_id, event_time, event_type, active_power, ampere, voltage,  power_factor,
+         reactive_power, apparent_power, amount_active_power,
+         als_level, dimming_level,
+           noise_decibel, noise_frequency,
+           b.gps_latitude, b.gps_longitude, b.gps_altitude,
+           vibration_x, vibration_y, vibration_z,
+           (vibration_x + vibration_y + vibration_z) / 3 as vibration
+      from tb_node_raw as a left outer join tb_node_info as b on a.node_id = b.node_id
+    where event_time >= timestamp #START_TIMESTAMP#
+      and event_time < timestamp #END_TIMESTAMP#
+    order by event_time -->
+    <query id='selectEventRawDataOld'><![CDATA[
+    {
+      index: 'corecode-2016-08',
+      type: 'corecode',
+      body: {
+        query: {
+          match: {
+            node_id : '#NODE_ID#'
+          }
+        }
+      }
+    }
+    ]]></query>
+    <query id='selectEventRawData'><![CDATA[
+    {
+      "index": "corecode-2016-08",
+      "type": "corecode",
+      "body": {
+        "size" : -1,
+        "_source" : ["node_id", "event_time", "event_type"],
+        "query": {
+          "bool": {
+            "filter" : {
+              "range" : {
+                "event_time" : {
+                  "gte" : "2016-11-21",
+                  "lte" : "2016-11-22"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    ]]></query>
+  </dashboard>
+</queryList>

@@ -1,6 +1,6 @@
 var Utils = require('../../util');
 var parstream = require("./m2u-parstream")
-var queryParser = require('./queryParser');
+var queryParser = require('../queryParser');
 var opts = {
     host: 'm2u-parstream.eastus.cloudapp.azure.com',
     // host: 'm2u-da.eastus.cloudapp.azure.com',
@@ -34,7 +34,7 @@ QueryProvider.prototype.selectSingleQueryByID = function (type, queryId, datas, 
       console.time('nodelib-db/selectSingleQueryByID -> ('+ queryId +') executeQuery');
       parstream.query(sSql, function(err, resultset) {
         console.timeEnd('nodelib-db/selectSingleQueryByID -> ('+ queryId +') executeQuery');
-        console.log('nodelib-db/selectSingleQueryByID -> resultset : %j', resultset);
+        // console.log('nodelib-db/selectSingleQueryByID -> resultset : %j', resultset);
 
         // console.log(err);
         // occur error
@@ -94,6 +94,5 @@ QueryProvider.prototype.insertQueryByID = function (type, queryId, datas, callba
     }
   });
 };
-
 
 exports.QueryProvider = QueryProvider;

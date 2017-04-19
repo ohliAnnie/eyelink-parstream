@@ -18,34 +18,42 @@
        where node_id in (#in_params#)
      ]]></query>
     <query id='selectDashboardSection1'><![CDATA[
-      select today_active_power / 1000 * 85.9 as today_power_charge,
+      select
+          thismonth_event_cnt, lastmonth_event_cnt,
+          thismonth_event_cnt / if(lastmonth_event_cnt, lastmonth_event_cnt, 1) * 100 as month_event_cnt_percent,
+          today_active_power / 1000 * 85.9 as today_power_charge,
           yesterday_active_power / 1000 * 85.9 as yesterday_power_charge,
-         today_active_power, yesterday_active_power, today_active_power/if(yesterday_active_power, yesterday_active_power, 1) * 100 - 100 as active_power_percent,
-            today_event_cnt, yesterday_event_cnt, today_event_cnt / if(yesterday_event_cnt, yesterday_event_cnt, 1) * 100 - 100 as event_cnt_percent,
-            today_event_fault_cnt, yesterday_event_fault_cnt, today_event_fault_cnt / if(yesterday_event_fault_cnt, yesterday_event_fault_cnt, selectClusterNodePower1) * 100 - 100 as event_fault_cnt_percent
+          today_active_power, yesterday_active_power, today_active_power/if(yesterday_active_power, yesterday_active_power, 1) * 100 as active_power_percent,
+          today_event_cnt, yesterday_event_cnt, today_event_cnt / if(yesterday_event_cnt, yesterday_event_cnt, 1) * 100  as event_cnt_percent,
+          today_event_fault_cnt, yesterday_event_fault_cnt, today_event_fault_cnt / if(yesterday_event_fault_cnt, yesterday_event_fault_cnt, 1) * 100  as event_fault_cnt_percent
        from (
-         select sum(today_active_power) as today_active_power, sum(yesterday_active_power) as yesterday_active_power,
-                sum(today_event_cnt) as today_event_cnt, sum(yesterday_event_cnt) as yesterday_event_cnt,
-                sum(today_event_fault_cnt) as today_event_fault_cnt, sum(yesterday_event_fault_cnt) as yesterday_event_fault_cnt
-           from (
-               select sum(amount_active_power) as today_active_power, 0.0 as yesterday_active_power,
-                    count(*) as today_event_cnt, cast(0 as int64) as yesterday_event_cnt,
-                    sum(case event_type when 81 then 1 else 0 end) as today_event_fault_cnt,
-                    cast(0 as uint64) as yesterday_event_fault_cnt
-               from tb_node_raw
-              where event_year = date_part('YEAR', current_date())
-                and event_month = date_part('MONTH', current_date())
-                and event_day = date_part('DAY', current_date())
-             UNION
-             select 0.0 as today_active_power, sum(amount_active_power) as yesterday_active_power,
-                    cast(0 as int64) as today_event_cnt, count(*) as yesterday_event_cnt,
-                    cast(0 as uint64) as today_event_fault_cnt,
-                    sum(case event_type when 81 then 1 else 0 end) as yesterday_event_fault_cnt
-               from tb_node_raw
-              where event_year = date_part('YEAR', current_date()-1)
-                and event_month = date_part('MONTH', current_date()-1)
-                and event_day = date_part('DAY', current_date()-1)
-            ))
+            select *
+              from (
+                    select *
+                      from (select *
+                                 from (select sum(amount_active_power) as today_active_power,
+                                            count(*) as today_event_cnt,
+                                            sum(case event_type when 81 then 1 else 0 end) as today_event_fault_cnt
+                                       from tb_node_raw
+                                      where event_time >= date_trunc('DAY', current_timestamp())) as aa,
+                                       (select sum(amount_active_power) as yesterday_active_power,
+                                            count(*) as yesterday_event_cnt,
+
+                                            sum(case event_type when 81 then 1 else 0 end) as yesterday_event_fault_cnt
+                                       from tb_node_raw
+                                      where event_time < cast(date_trunc('DAY', current_date()) as timestamp)
+                                        and event_time >= cast(date_trunc('DAY', current_date()-1) as timestamp))) as bb,
+                           (select sum(amount_active_power) as thismonth_active_power,
+                                count(*) as thismonth_event_cnt,
+                                sum(case event_type when 81 then 1 else 0 end) as thismonth_event_fault_cnt
+                           from tb_node_raw
+                          where event_time >= cast(date_trunc('MONTH', current_date()) as timestamp ))) as cc,
+                       (select sum(amount_active_power) as lastmonth_active_power,
+                            count(*) as lastmonth_event_cnt,
+                            sum(case event_type when 81 then 1 else 0 end) as lastmonth_event_fault_cnt
+                       from tb_node_raw
+                      where event_time < cast(date_trunc('MONTH', current_date()) as timestamp )
+                        and event_time >= cast(date_trunc('MONTH', date_trunc('MONTH', current_date())-1) as timestamp )) as dd)
      ]]></query>
     <query id='selectEventRawDataOld'><![CDATA[
       select b.zone_id, a.node_id, event_time, event_type, active_power, ampere, voltage,  power_factor,
@@ -278,4 +286,52 @@
             current_timestamp()+32400000 as reg_date
         ]]></query>
   </user>
+  <test>
+    <query id='selectNodeEventDataList'><![CDATA[
+      SELECT count(*) as cnt FROM tb_node_raw
+     ]]></query>
+    <query id='insertNodeEventData'><![CDATA[
+      insert into tb_node_raw
+      select date_part('YEAR', current_date()) as event_year,
+            date_part('MONTH', current_date()) as event_month,
+            date_part('DAY', current_date()) as event_day,
+            current_timestamp()+32400000 as measure_time,
+            current_timestamp()+32400000 as event_time,
+            #node_id# as node_id,
+            #event_type# as event_type,
+            #voltage# as voltage,
+            #ampere# as ampere,
+            #power_factor# as power_factor,
+            #active_power# as active_power,
+            #reactive_power# as reactive_power,
+            #apparent_power# as apparent_power,
+            #amount_active_power# as amount_active_power,
+            #als_level# as als_level,
+            #dimming_level# as dimming_level,
+            #vibration_x# as vibration_x,
+            #vibration_y# as vibration_y,
+            #vibration_z# as vibration_z,
+            #vibration_max# as vibration_max,
+            #noise_origin_decibel# as noise_origin_decibel,
+            #noise_origin_frequency# as noise_origin_frequency,
+            #noise_decibel# as noise_decibel,
+            #noise_frequency# as noise_frequency,
+            #gps_longitude# as gps_longitude,
+            #gps_latitude# as gps_latitude,
+            #gps_altitude# as gps_altitude,
+            #gps_satellite_count# as gps_satellite_count,
+            #status_als# as status_als,
+            #status_gps# as status_gps,
+            #status_noise# as status_noise,
+            #status_vibration# as status_vibration,
+            #status_power_meter# as status_power_meter,
+            #status_emergency_led_active# as status_emergency_led_active,
+            #status_self_diagnostics_led_active# as status_self_diagnostics_led_active,
+            #status_active_mode# as status_active_mode,
+            #status_led_on_off_type# as status_led_on_off_type,
+            #reboot_time# as reboot_time,
+            #event_remain# as event_remain,
+            #failfirmwareupdate# as failfirmwareupdate
+     ]]></query>
+  </test>
 </queryList>
