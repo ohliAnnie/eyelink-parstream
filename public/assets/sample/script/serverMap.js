@@ -1,76 +1,58 @@
 $(function(){ // on dom ready
+var elesJson = {
+  nodes: [
+    { data: { id: 'user', foo: 10, bar: 5, baz: 5 } },
+    { data: { id: 'app', foo: 10, bar: 5, baz: 3 } }
+  ], 
+
+  edges: [
+     { data: { id: 'eb', weight: 10, source: 'user', target: 'app' } },
+    
+  ]
+};
 
 var cy = cytoscape({
   container: document.getElementById('cy'),
-  
-  layout: {
-    name: 'cose',
-    padding: 10,
-    randomize: true
-  },
-  
-  style: cytoscape.stylesheet()
+
+   style: cytoscape.stylesheet()
     .selector('node')
-      .css({
-        'shape': 'data(faveShape)',
-        'width': 'mapData(weight, 40, 80, 20, 60)',
-        'content': 'data(name)',
-        'text-valign': 'center',
-        'text-outline-width': 2,
-        'text-outline-color': 'data(faveColor)',
-        'background-color': 'data(faveColor)',
-        'color': '#fff'
-      })
-    .selector(':selected')
-      .css({
+      .css({        
+        'background-color': '#6272A3',
+        'shape': 'rectangle',
+        'width': 'mapData(foo, 0, 10, 40, 50)',
+        'height': 'mapData(bar, 0, 10, 10, 70)',
+        'content': 'data(id)',
+        'background-fit': 'cover',
+         'border-color': '#000',
         'border-width': 3,
-        'border-color': '#333'
+        'border-opacity': 0.5
       })
     .selector('edge')
       .css({
         'curve-style': 'bezier',
-        'opacity': 0.666,
-        'width': 'mapData(strength, 70, 100, 2, 6)',
+        'width': 4,
+        'line-color': '#B1C1F2',
+        'target-arrow-color': '#B1C1F2',
         'target-arrow-shape': 'triangle',
-        'source-arrow-shape': 'circle',
-        'line-color': 'data(faveColor)',
-        'source-arrow-color': 'data(faveColor)',
-        'target-arrow-color': 'data(faveColor)'
+        'opacity': 0.8
       })
-    .selector('edge.questionable')
+    .selector(':selected')
       .css({
-        'line-style': 'dotted',
-        'target-arrow-shape': 'diamond'
-      })
-    .selector('.faded')
-      .css({
-        'opacity': 0.25,
-        'text-opacity': 0
+        'background-color': 'black',
+        'line-color': 'blue',
+        'target-arrow-color': 'blue',
+        'source-arrow-color': 'black',
+        'opacity': 1
       }),
+
+  elements: elesJson,
   
-  elements: {
-    nodes: [
-      { data: { id: 'j', name: 'Jerry', weight: 65, faveColor: '#6FB1FC', faveShape: 'triangle' } },
-      { data: { id: 'e', name: 'Elaine', weight: 45, faveColor: '#EDA1ED', faveShape: 'ellipse' } },
-      { data: { id: 'k', name: 'Kramer', weight: 75, faveColor: '#86B342', faveShape: 'octagon' } },
-      { data: { id: 'g', name: 'George', weight: 70, faveColor: '#F5A45D', faveShape: 'rectangle' } }
-    ],
-    edges: [
-      { data: { source: 'j', target: 'e', faveColor: '#6FB1FC', strength: 90 } },
-      { data: { source: 'j', target: 'k', faveColor: '#6FB1FC', strength: 70 } },
-      { data: { source: 'j', target: 'g', faveColor: '#6FB1FC', strength: 80 } },
-     
-      { data: { source: 'e', target: 'j', faveColor: '#EDA1ED', strength: 95 } },
-      { data: { source: 'e', target: 'k', faveColor: '#EDA1ED', strength: 60 }, classes: 'questionable' },
-      
-      { data: { source: 'k', target: 'j', faveColor: '#86B342', strength: 100 } },
-      { data: { source: 'k', target: 'e', faveColor: '#86B342', strength: 100 } },
-      { data: { source: 'k', target: 'g', faveColor: '#86B342', strength: 100 } },
-      
-      { data: { source: 'g', target: 'j', faveColor: '#F5A45D', strength: 90 } }
-    ]
+  layout: {
+    name: 'breadthfirst',
+    directed: true,
+    padding: 10
   },
-  
+
   ready: function(){
     window.cy = this;
     
