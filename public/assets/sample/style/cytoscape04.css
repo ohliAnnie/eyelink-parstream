@@ -3,9 +3,20 @@ body {
 }
 
 #cy {
-  height: 100%;
+  height: 50%;
   width: 100%;
   position: absolute;
   left: 0;
   top: 0;
+  background-color: #FAEDEF;
+}
+
+#cy2 {
+  height: 50%;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  background-color: #EDF1FA;
+  border-top: 1px solid #ccc;
 }
