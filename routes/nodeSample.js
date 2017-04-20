@@ -14,6 +14,10 @@ router.get('/serverMap', function(req, res, next) {
   res.render('./sample/serverMap', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
 
+router.get('/serverMap2', function(req, res, next) {
+  res.render('./sample/serverMap2', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+});
+
 router.get('/cytoscape01', function(req, res, next) {
   res.render('./sample/cytoscape01', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
@@ -32,6 +36,14 @@ router.get('/cytoscape04', function(req, res, next) {
 
 router.get('/cytoscape05', function(req, res, next) {
   res.render('./sample/cytoscape05', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+});
+  
+router.get('/cytoscape06', function(req, res, next) {
+  res.render('./sample/cytoscape06', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+});
+
+router.get('/cytoscape07', function(req, res, next) {
+  res.render('./sample/cytoscape07', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
   
 module.exports = router;

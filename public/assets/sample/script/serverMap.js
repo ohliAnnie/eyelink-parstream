@@ -1,14 +1,14 @@
 $(function(){ // on dom ready
 var elesJson = {
   nodes: [
-    { data: { id: 'user', foo: 10, bar: 5, baz: 5 } },
-    { data: { id: 'app', foo: 10, bar: 5, baz: 3 } }
+    { data: { id: 'user', foo: 0, bar: 0, baz: 10 }, position: {x: 000, y:100}  },
+    { data: { id: 'app', foo: 1, bar: 10, baz: 0 }, position: {x: 100, y:100}  }
   ], 
 
   edges: [
-     { data: { id: 'eb', weight: 10, source: 'user', target: 'app' } },
-    
-  ]
+     { data: { id: 'ua', name : 15, weight: 10, source: 'user', target: 'app' }},
+     { data: { id: 'aa', name : 1, weight: 10, source: 'app', target: 'app' } },
+  ]  
 };
 
 var cy = cytoscape({
@@ -16,16 +16,17 @@ var cy = cytoscape({
 
    style: cytoscape.stylesheet()
     .selector('node')
-      .css({        
-        'background-color': '#6272A3',
-        'shape': 'rectangle',
-        'width': 'mapData(foo, 0, 10, 40, 50)',
-        'height': 'mapData(bar, 0, 10, 10, 70)',
+      .css({
+        'width': '60px',
+        'height': '60px',
         'content': 'data(id)',
-        'background-fit': 'cover',
-         'border-color': '#000',
-        'border-width': 3,
-        'border-opacity': 0.5
+        'pie-size': '80%',
+        'pie-1-background-color': '#E8747C',
+        'pie-1-background-size': 'mapData(foo, 0, 10, 0, 100)',
+        'pie-2-background-color': '#74E883',
+        'pie-2-background-size': 'mapData(bar, 0, 10, 0, 100)',
+        'pie-3-background-color': 'white',
+        'pie-3-background-size': 'mapData(baz, 0, 10, 0, 100)'
       })
     .selector('edge')
       .css({
@@ -34,6 +35,7 @@ var cy = cytoscape({
         'line-color': '#B1C1F2',
         'target-arrow-color': '#B1C1F2',
         'target-arrow-shape': 'triangle',
+         'content': 'data(name)',
         'opacity': 0.8
       })
     .selector(':selected')
@@ -58,6 +60,6 @@ var cy = cytoscape({
     
     // giddy up
   }
-});
-
+}); 
+ 
 }); // on dom ready
