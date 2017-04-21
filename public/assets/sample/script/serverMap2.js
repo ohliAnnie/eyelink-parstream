@@ -3,8 +3,6 @@ document.addEventListener('DOMContentLoaded', function(){
         var cy = window.cy = cytoscape({
           container: document.getElementById('cy'),
 
-          
-
           layout: {
             name: 'grid',
             cols: 4,
@@ -16,7 +14,9 @@ document.addEventListener('DOMContentLoaded', function(){
               } else {
                 return 0;
               }
-            }
+            },
+            padding: 10,
+            randomize: true
           },
 
           style: [
@@ -42,12 +42,15 @@ document.addEventListener('DOMContentLoaded', function(){
             {
               selector: 'edge',
               style: {
+                'curve-style': 'bezier',
                 'width': 3,
                 'opacity': 0.666,
                 'line-color': '#888',
                 'label': 'data(cnt)',
                 'text-valign': 'top',
                 'text-halign': 'center',
+                'text-outline-width': 4,
+                'text-outline-color': 'white',
                 'target-arrow-color': 'blue',
                 'target-arrow-shape': 'triangle',                
               }
@@ -59,8 +62,9 @@ document.addEventListener('DOMContentLoaded', function(){
                 'line-color': 'blue',
                 'target-arrow-color': 'blue',
                 'source-arrow-color': 'purple',
-                'opacity': 1
-
+                'opacity': 1,
+                'text-outline-width': 2,
+                'text-outline-color': 'yellow'
               }
             },
             {
@@ -73,11 +77,14 @@ document.addEventListener('DOMContentLoaded', function(){
           ],
 
           elements: [
-            { data: { id:1, name: 'user', foo: 0, bar: 0, baz: 10 } },
-            { data: { id:2, name: 'app' , foo: 1, bar: 10, baz:  0} },
-            
-            { data: { id: 'e01', cnt: '35', source: 1, target: 2 }, classes: 'bezier' },           
-            { data: { id: 'e02', cnt : '1', source: 2, target: 2 }, classes: 'bezier' },           
+            { data: { id:'a', name: 'user', foo: 0, bar: 0, baz: 10 } },
+            { data: { id:'b', name: 'app' , foo: 1, bar: 10, baz:  0} },
+            { data: { id:'c', name: 'page' , foo: 0, bar: 10, baz:  0} },
+            { data: { id:'d', name: 'page' , foo: 4, bar: 10, baz:  0} },
+            { data: { id: 'e01', weight: 1,cnt: '35', source: 'a', target: 'b' } },           
+            { data: { id: 'e02', weight: 2,cnt : '1', source: 'b', target: 'b' } },           
+            { data: { id: 'e03', weight: 3,cnt : '1', source: 'b', target: 'c' } },           
+            { data: { id: 'e04', weight: 4,cnt : '4', source: 'b', target: 'd' } },           
           ]
         });
         cy.navigator ({
