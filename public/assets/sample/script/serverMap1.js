@@ -1,30 +1,31 @@
 $(function(){ // on dom ready
 var elesJson = {
   nodes: [
-    { data: { id: 'a1', name: 'USER' } },
-    { data: { id: 'a2', name: 'USER' } },
-    { data: { id: 'b1', name: 'FRONT-WEB' } },
-    { data: { id: 'b2', name: 'BACKEND-WEB' } },
-    { data: { id: 'b3', name: 'BACKEND-API' } },
-    { data: { id: 'c1', name: 'MEMCACHED' } },
-    { data: { id: 'c2', name: 'pinpoint' } },
-    { data: { id: 'c3', name: 'MySQL' } },
-    { data: { id: 'c4', name: 'ff31ddb85e9b4318c02e5e50a4315c27' } },
-    { data: { id: 'c5', name: 'search.naver.com\t156\nsection.blog.naver.com\t136' }, classes: 'multiline-manual' },
-  ], 
-
+    { data: { id: 'n1', name : 'USER', img: '../assets/images/user1.png' } },
+    { data: { id: 'n2', name : 'USER', img: '../assets/images/user2.png' } },
+    { data: { id: 'n3', name : 'FRONT-WEB', img: '../assets/sample/tomcat0.png' } },
+    { data: { id: 'n4', name : 'BACKEND-WEB', img: '../assets/sample/tomcat3.png' } },
+    { data: { id: 'n5', name : 'BACKEND-API', img: '../assets/sample/tomcat1.png' } },
+    { data: { id: 'n6', name : 'MEMCACHED', img: '../assets/sample/memcached.png' } },
+    { data: { id: 'n7', name : 'XXX:YYY:ZZZ', img: '../assets/sample/cloud.png' } },
+    { data: { id: 'n8', name : 'URL\t2740\nURL:XXX\t1974\nURL:AAA\t1370\n765', img: '../assets/sample/cloud.png' } },
+    { data: { id: 'n9', name : 'pinpoint', img: '../assets/sample/pinpoint.png' } },
+    { data: { id: 'n10', name : 'MySQL', img: '../assets/sample/mysql.png' } },
+    { data: { id: 'n11', name : 'ARCUS', img: '../assets/sample/arcus.png' } },      ],
   edges: [
-     { data: { id: 'a1b1', count : 1048, source: 'a1', target: 'b1' } },
-     { data: { id: 'b1c1', count : 468, source: 'b1', target: 'c1' } },
-     { data: { id: 'b1e1', count : 1063, source: 'b1', target: 'c5' } },
-     { data: { id: 'b1b3', count : 71, source: 'b1', target: 'b3' } },
-     { data: { id: 'b1b2', count : 76, source: 'b1', target: 'b2' } },
-     { data: { id: 'a2b2' , count : 23, source: 'a2', target: 'b2' } },
-     { data: { id: 'b3c2', count : 87, source: 'b3', target: 'c2' } },
-     { data: { id: 'b3c3', count : 79, source: 'b3', target: 'c3' } },
-     { data: { id: 'b2b3', count : 9, source: 'b2', target: 'b3' } },
-     { data: { id: 'b2c3', count : 99, source: 'b2', target: 'c3' } },
-     { data: { id: 'b2d1', count : 228, source: 'b2', target: 'c4' } },
+     { data: { id: 'n1n3', count : 8459, source: 'n1', target: 'n3' } },
+     { data: { id: 'n3n6', count : 5922, source: 'n3', target: 'n6' } },
+     { data: { id: 'n3n7', count : 709, source: 'n3', target: 'n7' } },
+     { data: { id: 'n3n8', count : 6849, source: 'n3', target: 'n8' } },
+     { data: { id: 'n3n5', count : 661, source: 'n3', target: 'n5' } },
+     { data: { id: 'n5n9', count : 861, source: 'n5', target: 'n9' } },
+     { data: { id: 'n5n10', count : 854, source: 'n5', target: 'n10' } },
+     { data: { id: 'n3n4', count : 760, source: 'n3', target: 'n4' } },
+     { data: { id: 'n2n4', count : 1525, source: 'n2', target: 'n4' } },
+     { data: { id: 'n4n7', count : 205, source: 'n4', target: 'n7' } },
+     { data: { id: 'n4n5', count : 194, source: 'n4', target: 'n5' } },
+     { data: { id: 'n4n10', count : 2285, source: 'n4', target: 'n10' } },
+     { data: { id: 'n4n11', count : 2280, source: 'n4', target: 'n11' } },     
   ]  
 };
 
@@ -44,7 +45,9 @@ var cy = cytoscape({
         'text-outline-width': 2,
         'text-outline-color': 'white',          
         'shape': 'rectangle',   
-        'text-valign': 'bottom',   })
+        'text-valign': 'bottom', 
+        'text-wrap' : 'wrap' ,
+        'background-image': 'data(img)', })
     .selector('edge')
       .css({
         'curve-style': 'bezier',
@@ -55,7 +58,8 @@ var cy = cytoscape({
         'text-outline-width': 5,
         'text-outline-color': 'white',
         'content': 'data(count)',
-        'opacity': 0.8
+        'opacity': 0.8,
+        
       })
     .selector(':selected')
       .css({
