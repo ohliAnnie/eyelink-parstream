@@ -6,8 +6,8 @@ body {
   width: 99%;
   height: 80%;
   position: relative;
-  left: 1;
-  top: 1;
+  left: 1px;
+  top: 0px;
   z-index: 999;
   background: #fff;
 }
@@ -16,8 +16,8 @@ body {
   border: 1px solid #000;
   background: #fff;
   z-index: 99999;
-  width: 450px;
-  height: 200px;
+  width: 400px;
+  height: 180px;
   bottom: 25px;
   right: 15px;
   overflow: hidden;
