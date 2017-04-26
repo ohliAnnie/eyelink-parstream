@@ -18,6 +18,10 @@ router.get('/serverMap2', function(req, res, next) {
   res.render('./sample/serverMap2', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
 
+router.get('/serverMap3', function(req, res, next) {
+  res.render('./sample/serverMap3', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+});
+
 router.get('/cytoscape01', function(req, res, next) {
   res.render('./sample/cytoscape01', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
