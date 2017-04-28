@@ -102,6 +102,58 @@ var cy = cytoscape({
     // giddy up
   }
 }); 
+
+cy.on('tap', 'node', function( e ){
+  var nodes = e.target;
+  var tapped = nodes;
+  var food = [];
+  
+  nodes.addClass('eater');
+  
+  for(;;){
+    var connectedEdges = nodes.connectedEdges(function(el){
+      return !el.target().anySame( nodes );
+    });
+    
+    var connectedNodes = connectedEdges.targets();
+    
+    Array.prototype.push.apply( food, connectedNodes );
+    
+    nodes = connectedNodes;
+    
+    if( nodes.empty() ){ break; }
+  }
+        
+  var delay = 0;
+  var duration = 500;
+  for( var i = food.length - 1; i >= 0; i-- ){ (function(){
+    var thisFood = food[i];
+    var eater = thisFood.connectedEdges(function(el){
+      return el.target().same(thisFood);
+    }).source();
+            
+    thisFood.delay( delay, function(){
+      eater.addClass('eating');
+    } ).animate({
+      position: eater.position(),
+      css: {
+        'width': 10,
+        'height': 10,
+        'border-width': 0,
+        'opacity': 0
+      }
+    }, {
+      duration: duration,
+      complete: function(){
+        thisFood.remove();
+      }
+    });
+    
+    delay += duration;
+  })(); } // for
+  
+}); // on tap
+
 var defaults = {
     container: document.getElementById('cynav')
   , viewLiveFramerate: 0 // set false to update graph pan only on drag end; set 0 to do it instantly; set a number (frames per second) to update not more than N times per second

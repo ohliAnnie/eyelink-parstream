@@ -371,7 +371,7 @@ SOFTWARE.
       if( opts.hide.cyViewport ){
         cy.on('viewport', debounce(function(){
           qtipApi.hide();
-        }, viewportDebounceRateebounceRate, { leading: true }) );
+        }, viewportDebounceRate, { leading: true }) );
       }
 
       return this; // chainability
@@ -407,3 +407,4 @@ SOFTWARE.
   typeof jQuery !== 'undefined' ? jQuery : null,
   typeof cytoscape !== 'undefined' ? cytoscape : null
 );
+

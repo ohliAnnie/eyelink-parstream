@@ -13,19 +13,19 @@ var elesJson = {
     { data: { id: 'n10', name : 'MySQL', img: '../assets/sample/mysql.png' } },
     { data: { id: 'n11', name : 'ARCUS', img: '../assets/sample/arcus.png' } },      ],
   edges: [
-     { data: { id: 'n1n3', count : 8459, source: 'n1', target: 'n3' } },
-     { data: { id: 'n3n6', count : 5922, source: 'n3', target: 'n6' } },
-     { data: { id: 'n3n7', count : 709, source: 'n3', target: 'n7' } },
-     { data: { id: 'n3n8', count : 6849, source: 'n3', target: 'n8' } },
-     { data: { id: 'n3n5', count : 661, source: 'n3', target: 'n5' } },
-     { data: { id: 'n5n9', count : 861, source: 'n5', target: 'n9' } },
-     { data: { id: 'n5n10', count : 854, source: 'n5', target: 'n10' } },
-     { data: { id: 'n3n4', count : 760, source: 'n3', target: 'n4' } },
-     { data: { id: 'n2n4', count : 1525, source: 'n2', target: 'n4' } },
-     { data: { id: 'n4n7', count : 205, source: 'n4', target: 'n7' } },
-     { data: { id: 'n4n5', count : 194, source: 'n4', target: 'n5' } },
-     { data: { id: 'n4n10', count : 2285, source: 'n4', target: 'n10' } },
-     { data: { id: 'n4n11', count : 2280, source: 'n4', target: 'n11' } },     
+     { data: { count : 8459, source: 'n1', target: 'n3' } },
+     { data: { count : 5922, source: 'n3', target: 'n6' } },
+     { data: { count : 709, source: 'n3', target: 'n7' } },
+     { data: { count : 6849, source: 'n3', target: 'n8' } },
+     { data: { count : 661, source: 'n3', target: 'n5' } },
+     { data: { count : 861, source: 'n5', target: 'n9' } },
+     { data: { count : 854, source: 'n5', target: 'n10' } },
+     { data: { count : 760, source: 'n3', target: 'n4' } },
+     { data: { count : 1525, source: 'n2', target: 'n4' } },
+     { data: { count : 205, source: 'n4', target: 'n7' } },
+     { data: { count : 194, source: 'n4', target: 'n5' } },
+     { data: { count : 2285, source: 'n4', target: 'n10' } },
+     { data: { count : 2280, source: 'n4', target: 'n11' } },     
   ]  
 };
 
@@ -106,6 +106,42 @@ var cy = cytoscape({
     // giddy up
   }
 }); 
+
+cy.elements().qtip({
+  content: function(){    
+  
+    return 'id : ' + this.id() + '  / name : ' + this.data('name') },
+  position: {
+    my: 'top center',
+    at: 'bottom center'
+  },
+  style: {
+    classes: 'qtip-bootstrap',
+    tip: {
+      width: 16,
+      height: 8
+    }
+  }
+});
+// call on core
+cy.qtip({
+  content: 'Example qTip on core bg',
+  position: {
+    my: 'top center',
+    at: 'bottom center'
+  },
+  show: {
+    cyBgOnly: true
+  },
+  style: {
+    classes: 'qtip-bootstrap',
+    tip: {
+      width: 16,
+      height: 8
+    }
+  }
+});
+
 var defaults = {
     container: document.getElementById('cynav')
   , viewLiveFramerate: 0 // set false to update graph pan only on drag end; set 0 to do it instantly; set a number (frames per second) to update not more than N times per second
@@ -116,4 +152,5 @@ var defaults = {
   , rerenderDelay: 100 // ms to throttle rerender updates to the panzoom for performance
 };
  var nav = cy.navigator ( defaults );
+
 }); // on dom ready
