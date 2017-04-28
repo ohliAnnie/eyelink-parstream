@@ -556,7 +556,7 @@ function drawDirectory(nodeList) {
       cnt++;
    }
     var a = d.c0.split(':');
-    var script = "javascript:getNodePower('"+d.c0+"');";
+    var script = "javascript:getNodePower('"+d.c0+"',"+a.length+");";
     sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster0 </a></span></td><td></td></tr>');
     
     for(var i=0; i < a.length; i++) {
@@ -566,7 +566,7 @@ function drawDirectory(nodeList) {
       sb.append('</td></tr>');
     }
     var a = d.c1.split(':');
-    var script = "javascript:getNodePower('"+d.c1+"');";
+    var script = "javascript:getNodePower('"+d.c1+"',"+a.length+");";
     sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster1 </a></span></td><td></td></tr>');    
     for(var i=0; i < a.length; i++) {
       sb.append('<tr><td></td><td>');
@@ -575,7 +575,7 @@ function drawDirectory(nodeList) {
       sb.append('</td></tr>');
     }
     var a = d.c2.split(':');
-    var script = "javascript:getNodePower('"+d.c2+"');";
+    var script = "javascript:getNodePower('"+d.c2+"',"+a.length+");";
     sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster2 </a></span></td><td></td></tr>');
     var a = d.c2.split(':');
     for(var i=0; i < a.length; i++) {
@@ -584,8 +584,9 @@ function drawDirectory(nodeList) {
       sb.append('<a class="primary-link" href="'+script+'">' + a[i] + '</a>');
       sb.append('</td></tr>');
     }
-    var a = d.c3.split(':');
-    var script = "javascript:getNodePower('"+d.c3+"');";
+    var a = d.c3.split(':');    
+    var script = "javascript:getNodePower('"+d.c3+"',"+a.length+");";
+    console.log(script);
     sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster3 </a></span></td><td></td></tr>');
     var a = d.c3.split(':');
     for(var i=0; i < a.length; i++) {
@@ -600,7 +601,7 @@ function drawDirectory(nodeList) {
 
 }
 
-function getNodePower(nodeList){
+function getNodePower(nodeList, len){  
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
   if ($('#factor0').is(':checked') === true) {
@@ -654,8 +655,8 @@ function getNodePower(nodeList){
           if(cnt++ === 0) {
            start= format(d.event_time);
           }
-        });
-        drawNode(set, max, idCnt, last, start);
+        });        
+        drawNode(set, max, idCnt, last, start, len);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -666,14 +667,14 @@ function getNodePower(nodeList){
     }
   });
 }
-
-function drawNode(data, maxValue, idCnt, last, start) {    
+var oldL = 0;
+function drawNode(data, maxValue, idCnt, last, start, len) {    
+  console.log(oldL);
   var max = parseInt(maxValue) + 5;  
-
-  for(var i = 0; i <= data.length; i++) {
+  for(var i = 0; i <= oldL; i++) {
     d3.select("#nodeChart").select("svg").remove();
   }
-
+  oldL = len;
 var sdate = start;
 var edate = last;
 
