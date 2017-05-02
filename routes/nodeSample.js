@@ -26,28 +26,17 @@ router.get('/serverMap3', function(req, res, next) {
   res.render('./sample/serverMap3', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
 
-router.get('/cytoscape01', function(req, res, next) {
-  res.render('./sample/cytoscape01', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+router.get('/bsc01', function(req, res, next) {
+  res.render('./sample/bsc01', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
 
-router.get('/cytoscape03', function(req, res, next) {
-  res.render('./sample/cytoscape03', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+router.get('/bsc02', function(req, res, next) {
+  res.render('./sample/bsc02', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
 
-router.get('/cytoscape04', function(req, res, next) {
-  res.render('./sample/cytoscape04', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+router.get('/bsc03', function(req, res, next) {
+  res.render('./sample/bsc03', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
 
-router.get('/cytoscape05', function(req, res, next) {
-  res.render('./sample/cytoscape05', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
-});
-  
-router.get('/cytoscape06', function(req, res, next) {
-  res.render('./sample/cytoscape06', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
-});
-
-router.get('/cytoscape07', function(req, res, next) {
-  res.render('./sample/cytoscape07', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
-});
   
 module.exports = router;
