@@ -53,7 +53,7 @@ function drawScatter(getData) {
       sXLabel : '(time)',
       sYLabel : '(ms)',
       htGuideLine : {
-        'nLineWidth' : 1,
+        'nLineWidth' :1,
         'aLineDash' : [2, 5],
         'nGlobalAlpha' : 0.2
       },
