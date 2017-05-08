@@ -48,7 +48,7 @@ $(function(){
   });
         var data = [];
         for(var i=date.getTime() - 86400000; i<date.getTime() - 69120000; i+=173){
-          console.log(i);
+          
           data.push({
             x : i,
             y : Math.round(_.random(0, 10000) / _.random(1, 1000)),
