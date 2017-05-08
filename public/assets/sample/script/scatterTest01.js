@@ -55,6 +55,7 @@ $(function(){
             type : _.random(0,100) < 80 ? 'Success' : (_.random(0,100) < 80 ? 'Failed' : (_.random(0,100) < 80 ? 'Warning' : 'Others'))
           });
         }
+        console.log(data);
         oScatterChart.setBubbles(data);
         oScatterChart.redrawBubbles();
         setTimeout(function(){

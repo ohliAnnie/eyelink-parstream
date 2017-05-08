@@ -13,6 +13,10 @@ router.get('/', function(req, res, next) {
   res.render('./sample/serverMap', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
 
+router.get('/samplePage', function(req, res, next) {
+  res.render('./sample/samplePage', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+});
+
 router.get('/serverMap', function(req, res, next) {
   res.render('./sample/serverMap', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
@@ -23,10 +27,6 @@ router.get('/serverMap1', function(req, res, next) {
 
 router.get('/serverMap2', function(req, res, next) {
   res.render('./sample/serverMap2', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
-});
-
-router.get('/serverMap3', function(req, res, next) {
-  res.render('./sample/serverMap3', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
 
 router.get('/scatter01', function(req, res, next) {
@@ -44,6 +44,10 @@ router.get('/scatterTest02', function(req, res, next) {
 
 router.get('/scatterTest03', function(req, res, next) {
   res.render('./sample/scatterTest03', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+});
+
+router.get('/summary', function(req, res, next) {
+  res.render('./sample/summary', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
 
 // query Report
