@@ -9,7 +9,7 @@ var elesJson = {
     { data: { id: 'n6', name : 'MEMCACHED', img: '../assets/sample/memcached.png' } },
     { data: { id: 'n7', name : 'XXX:YYY:ZZZ', img: '../assets/sample/cloud.png' } },
     { data: { id: 'n8', name : 'URL\t2740\nURL:XXX\t1974\nURL:AAA\t1370\n765', img: '../assets/sample/cloud.png' } },
-    { data: { id: 'n9', name : 'pinpoint', img: '../assets/sample/pinpoint.png' } },
+    
     { data: { id: 'n10', name : 'MySQL', img: '../assets/sample/mysql.png' } },
     { data: { id: 'n11', name : 'ARCUS', img: '../assets/sample/arcus.png' } },      ],
   edges: [
@@ -18,7 +18,7 @@ var elesJson = {
      { data: { count : 709, source: 'n3', target: 'n7' } },
      { data: { count : 6849, source: 'n3', target: 'n8' } },
      { data: { count : 661, source: 'n3', target: 'n5' } },
-     { data: { count : 861, source: 'n5', target: 'n9' } },
+     
      { data: { count : 854, source: 'n5', target: 'n10' } },
      { data: { count : 760, source: 'n3', target: 'n4' } },
      { data: { count : 1525, source: 'n2', target: 'n4' } },
