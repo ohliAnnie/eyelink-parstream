@@ -1,26 +1,69 @@
-function summary() {
-  var chart = dc.barChart("#test");
-  var load = dc.barChart("#load");
-
+$(function(){ 
   var date = new Date();
   var data = [];
-  var minDate = new Date(date.getTime() - 20880001);
-  var maxDate = new Date(date.getTime())+7200000;
-  console.log(minDate);
-  console.log(maxDate);
   for(var i=date.getTime() - 17280001; i<date.getTime(); i+=173){
-    var num = Math.round((Math.random() * 10000)/(Math.random() * 1000 + 1));    
-
+    var num = Math.round(_.random(0, 10000) / _.random(1, 1000));          
     data.push({
-      x : i,
-       y : num,
+      x : i,            
+      y : num,
       date : new Date(i),
-      hour : d3.time.hour(new Date(i)),     
+      hour : d3.time.hour(new Date(i)),            
+      type : _.random(0,100) < 80 ? 'Success' : (_.random(0,100) < 80 ? 'Failed' : (_.random(0,100) < 80 ? 'Warning' : 'Others')),            
       term : num < 1000 ? '1s' : (num < 3000 ? '3s' : (num < 5000 ? '5s' : (num < 7000 ? 'Slow' : 'Error'))),
       index : num < 1000 ? 0 : (num < 3000 ? 1 : (num < 5000 ? 2 : (num < 7000 ? 3 : 4)))
     });
+  }    
+  if(Modernizr.canvas){
+    doBigScatterChart();
   }
+  var oScatterChart;
+  function doBigScatterChart(){
+    oScatterChart = new BigScatterChart({
+      sContainerId : 'chart1',
+      nWidth : window.innerWidth*0.2,
+      nHeight : 300,
+      nXMin: date.getTime() - 17280001, nXMax: date.getTime(),
+      nYMin: 0, nYMax: 10000,
+      nZMin: 0, nZMax: 5,
+      nBubbleSize: 3,
+      nDefaultRadius : 3,
+      htTypeAndColor : {
+        'Success' : '#b6da54', // type name : color
+        'Warning' : '#fcc666',
+        'Failed' : '#fd7865',
+        'Others' : '#55c7c7'
+      },
+      sXLabel : '(time)',
+      sYLabel : '(ms)',
+      htGuideLine : {
+        'nLineWidth' : 1,
+        'aLineDash' : [2, 5],
+        'nGlobalAlpha' : 0.2
+      },
+      sXLabel : '',
+      nPaddingRight : 5,
+      fOnSelect : function(htPosition, htXY){
+        console.log('fOnSelect', htPosition, htXY);
+        console.time('fOnSelect');
+        var aData = this.getDataByXY(htXY.nXFrom, htXY.nXTo, htXY.nYFrom, htXY.nYTo);
+        console.timeEnd('fOnSelect');
+        console.log('adata length', aData.length);
+        //alert('Selected data count : ' + aData.length);
+      }
+    }); 
+      oScatterChart.addBubbleAndDraw(data);    
+  }
+   summary(data);
+});
 
+function summary(data) {
+  var chart = dc.barChart("#test");
+  var load = dc.barChart("#load");
+
+  var date = new Date();  
+  var minDate = new Date(date.getTime() - 20880001);
+  var maxDate = new Date(date.getTime())+7200000;  
+  
   console.log(data);
   var nyx = crossfilter(data);
   var all = nyx.groupAll();
@@ -48,9 +91,9 @@ function summary() {
   
 var term = ['1s', '3s', '5s', 'Slow', 'Error'];
 chart
-    .width(window.innerWidth*0.6)
-    .height(480)    
-    .margins({top: 30, right: 50, bottom: 40, left: 50})
+    .width(window.innerWidth*0.2)
+    .height(300)    
+    .margins({top: 20, right: 20, bottom: 20, left: 50})
     .brushOn(false)    
     .dimension(termDim)
     .group(BarGroup)
@@ -73,9 +116,9 @@ chart
   }
 
   load
-    .width(window.innerWidth*0.6)
-    .height(470)
-    .margins({left: 140, top: 30, right: 10, bottom: 40})
+    .width(window.innerWidth*0.2)
+    .height(300)
+    .margins({left: 140, top: 20, right: 10, bottom: 30})
     .brushOn(false)
     .transitionDuration(500)
     .clipPadding(10)
