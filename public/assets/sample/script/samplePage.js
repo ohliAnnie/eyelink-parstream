@@ -29,6 +29,7 @@ $(function(){
       nYMin: 0, nYMax: 10000,
       nZMin: 0, nZMax: 5,
       nBubbleSize: 3,
+      nPaddingTop : 50,
       nDefaultRadius : 3,
       htTypeAndColor : {
         'Success' : '#b6da54', // type name : color
@@ -68,7 +69,7 @@ function summary(data) {
 
   var date = new Date();  
   var minDate = new Date(date.getTime() - 17280001); 
-  var maxDate = new Date(date.getTime() + 3600000);  
+  var maxDate = new Date(date.getTime() + 1800000);  
   var gap = (maxDate-minDate)/(24 * 60 * 60 * 1000);
 
   var nyx = crossfilter(data);
@@ -124,7 +125,7 @@ chart
   load
     .width(window.innerWidth*0.2)
     .height(300)
-    .margins({left: 100, top: 20, right: 10, bottom: 50})
+    .margins({left: 90, top: 10, right: 10, bottom: 40})
     .brushOn(false)
     .transitionDuration(500)
     .clipPadding(10)
