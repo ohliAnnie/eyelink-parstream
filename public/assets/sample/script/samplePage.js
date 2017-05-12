@@ -125,7 +125,7 @@ chart
   load
     .width(window.innerWidth*0.2)
     .height(300)
-    .margins({left: 100, top: 10, right: 10, bottom: 40})
+    .margins({left: 90, top: 10, right: 10, bottom: 40})
     .brushOn(false)
     .transitionDuration(500)
     .clipPadding(10)
