@@ -33,22 +33,30 @@ router.get('/scatter01', function(req, res, next) {
   res.render('./sample/scatter01', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
 
+router.get('/scatter02', function(req, res, next) {
+  res.render('./sample/scatter02', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+});
+
+router.get('/scatter03', function(req, res, next) {
+  res.render('./sample/scatter03', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+});
 
 router.get('/scatterTest01', function(req, res, next) {
   res.render('./sample/scatterTest01', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
 
-router.get('/scatterTest02', function(req, res, next) {
-  res.render('./sample/scatterTest02', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
-});
-
-router.get('/scatterTest03', function(req, res, next) {
-  res.render('./sample/scatterTest03', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
-});
-
 router.get('/summary', function(req, res, next) {
   res.render('./sample/summary', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
+
+router.get('/sankey01', function(req, res, next) {
+  res.render('./sample/sankey01', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+});
+
+router.get('/sankey02', function(req, res, next) {
+  res.render('./sample/sankey02', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+});
+
 
 // query Report
 router.get('/restapi/scatterPower', function(req, res, next) {
