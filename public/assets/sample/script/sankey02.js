@@ -1,11 +1,15 @@
 $(function(){
   var colors = {
-            'environment':         '#edbd00',
-            'social':              '#367d85',
-            'animals':             '#97ba4c',
-            'health':              '#f5662b',
-            'research_ingredient': '#3f3e47',
-            'fallback':            '#9f9fa3'
+            'login': '#61DBF0',
+            'home':              '#f5662b',
+            'launcher':         '#FAED7D',
+            'edit':              '#367d85',
+            'diagram':             '#AB6CFF',
+            'gallery':             '#97ba4c',
+            'timeline': '#3f3e47',
+            'fallback':            '#9f9fa3',
+            'status' : '#1F50B5',
+            'manager' : '#FFBB00',
           };
       d3.json("/assets/sample/data/splunk.json", function(error, json) {
         console.log(json);

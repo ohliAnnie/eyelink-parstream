@@ -1,5 +1,6 @@
 $(function(){
   var colors = {
+            'login': '#61DBF0',
             'environment':         '#edbd00',
             'social':              '#367d85',
             'animals':             '#97ba4c',
