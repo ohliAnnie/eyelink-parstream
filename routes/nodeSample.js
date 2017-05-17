@@ -57,6 +57,9 @@ router.get('/sankey02', function(req, res, next) {
   res.render('./sample/sankey02', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
 
+router.get('/sankey03', function(req, res, next) {
+  res.render('./sample/sankey03', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+});
 
 // query Report
 router.get('/restapi/scatterPower', function(req, res, next) {
