@@ -1,17 +1,23 @@
 $(function(){
   var colors = {
             'login': '#61DBF0',
-            'home':              '#f5662b',
-            'launcher':         '#FAED7D',
-            'edit':              '#367d85',
-            'diagram':             '#AB6CFF',
-            'gallery':             '#97ba4c',
-            'timeline': '#3f3e47',
-            'fallback':            '#9f9fa3',
-            'status' : '#1F50B5',
-            'manager' : '#FFBB00',
+            'home':              '#f5662b',            
+            'dgallery':             '#97ba4c',
+            'igallery':              '#367d85',
+            'admin':         '#FAED7D',            
+            'test':             '#AB6CFF',
+            'dapp': '#DB0000',
+            'iapp':            '#FF5E00',
+            'dsearch' :'#FFBB00',
+            'isearch' : '#1D8B15',
+            'launcher' : '#1F50B5',
+            'dashboard' : '#050099',
+            'timelinea' : '#D941C5',
+            'timelineg' : '#D9418C',
+            'changepw' : '#8041D9',
+            'edit' : '#FFD9EC'
           };
-      d3.json("/assets/sample/data/splunk.json", function(error, json) {
+      d3.json("/assets/sample/data/sankey2.json", function(error, json) {
         console.log(json);
         var chart = d3.select("#chart").append("svg").chart("Sankey.Path");
         chart
