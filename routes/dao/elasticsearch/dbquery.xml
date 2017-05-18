@@ -82,4 +82,70 @@
     }
     ]]></query>
   </dashboard>
+  <analysis>
+     <query id='selectDaClusterMasterAll'><![CDATA[
+        {
+          "index" : "",
+          "type" : "",
+          "body" : {
+            "size" : -1,
+            "_source" : ["da_date", "start_date", "end_date", "time_interval"],
+            "query" : {
+              "bool" : {
+                "filter" : {
+                  "range" : {
+                    "da_date" : {
+                      "gte" : '#START_TIMESTAMP#',
+                      "lte" : '#END_TIMESTAMP#'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+     ]]></query>
+     <query id='selectDaClusterDetailAll'><![CDATA[
+        {
+          "index" : "",
+          "type" : "",
+          "body" : {
+            "size" : -1,            
+            "sort" : [ 
+              { "event_time" : "asc" }
+            ],
+            "query" : { "match_all" : { }     },
+            "bool" : {
+                "filter" : {
+                  "range" : {
+                    "da_date" : {
+                      "gte" : '#START_TIMESTAMP#',
+                      "lte" : '#END_TIMESTAMP#'
+                    }
+                  }
+                }
+              }
+             }
+          }
+     ]]></query>
+     <query id='selectDaClusterMaster'><![CDATA[
+      select * from tb_da_clustering_master
+        where da_date >= timestamp #START_TIMESTAMP#
+            and da_date <= timestamp #END_TIMESTAMP#
+            and time_interval = #INTERVAL#
+        order by da_date desc
+        {
+          "index" : "",
+          "type" : "",
+          "body" : {
+            "size" : -1,            
+            "sort" : [ 
+              { "da_date" : "desc" }
+            ],
+            "query" : { "match_all" : { }
+                }
+             }
+          } 
+     ]]></query>
+  </analysis>
 </queryList>
