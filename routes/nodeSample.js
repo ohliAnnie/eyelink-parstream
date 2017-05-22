@@ -62,15 +62,47 @@ router.get('/sankey03', function(req, res, next) {
 });
 
 // query Report
-router.get('/restapi/scatterPower', function(req, res, next) {
-  console.log('sample/restapi/scatterPower');
+router.get('/restapi/selectJiraAccess', function(req, res, next) {
+  console.log('sample/restapi/selectJiraAccess');
   var in_data = {};
-  queryProvider.selectSingleQueryByID("sample","scatterPower", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID2("sample","selectJiraAccess", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }
+        console.log('test');
+        console.log(out_data[0]);
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+  });
+});
+
+// query Report
+router.get('/restapi/selectJiraAccReq', function(req, res, next) {
+  console.log('sample/restapi/selectJiraAccReq');
+  var in_data = {};
+  queryProvider.selectSingleQueryByID2("sample","selectJiraAccReq", in_data, function(err, out_data, params) {
+    // console.log(out_datsa);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+        console.log('test');
+        console.log(out_data[0]);
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+  });
+});
+
+router.get('/restapi/test', function(req, res, next) {
+  console.log('sample/restapi/test');
+  var in_data = {};
+  queryProvider.selectSingleQueryByID("sample","test", in_data, function(err, out_data, params) {
+    // console.log(out_datsa);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+
     res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });
 
