@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <queryList>
+<!--  
   <test>
     <query id='test01'><![CDATA[
       {q : 'aaa'}
@@ -34,7 +35,7 @@
         }
       }
     }
-     ]]></query>
+     ]]></query>-->
       <!-- select b.zone_id, a.node_id, event_time, event_type, active_power, ampere, voltage,  power_factor,
          reactive_power, apparent_power, amount_active_power,
          als_level, dimming_level,
@@ -46,6 +47,7 @@
     where event_time >= timestamp #START_TIMESTAMP#
       and event_time < timestamp #END_TIMESTAMP#
     order by event_time -->
+<!--    
     <query id='selectEventRawDataOld'><![CDATA[
     {
       index: 'corecode-2016-08',
@@ -82,6 +84,8 @@
     }
     ]]></query>
   </dashboard>
+-->
+  <!--
   <analysis>
      <query id='selectDaClusterMasterAll'><![CDATA[
         {
@@ -129,11 +133,6 @@
           }
      ]]></query>
      <query id='selectDaClusterMaster'><![CDATA[
-      select * from tb_da_clustering_master
-        where da_date >= timestamp #START_TIMESTAMP#
-            and da_date <= timestamp #END_TIMESTAMP#
-            and time_interval = #INTERVAL#
-        order by da_date desc
         {
           "index" : "",
           "type" : "",
@@ -147,5 +146,38 @@
              }
           } 
      ]]></query>
-  </analysis>
+     <query id='selectDaClusterMasterByDadate'><![CDATA[
+      select * from tb_da_clustering_master
+        where da_date = #DADATE#
+     ]]></query>
+  </analysis>-->
+  <sample>
+    <query id='selectJiraAccess'><![CDATA[
+      {
+        "index" : "filebeat_jira_access-2017.05.21",
+        "type" : "access",                    
+        "body" : {                          
+          "query" : { "match_all" : { }
+              }
+           }
+        } 
+  ]]></query>
+  <query id='selectJiraAccReq'><![CDATA[
+      {
+        "index" : "filebeat_jira_access-2017.05.22",
+        "type" : "access",     
+        "size"   : 0,
+        "_source" : ["request"],
+        "body" : {          
+          "query" : { "match_all" : { }
+              }
+           }
+        } 
+  ]]></query>
+  <query id='test'><![CDATA[
+      {
+        q:'aaa'
+        } 
+  ]]></query>
+</sample>
 </queryList>
