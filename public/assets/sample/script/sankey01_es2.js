@@ -13,35 +13,38 @@ $(function(){
           };
       /*  d3.json("/assets/sample/data/test.json", function(error, json) {          */
      d3.json("/sample/restapi/selectJiraAccReq", function(error, data) {        
-         var temp = {}, links = {},req={};
+         var temp = {}, node={}, nodes = {}, line = {},req={}, user = {}, last = {};
         var cnt = 0;
-     
+        var reqCnt = 0, userCnt = 0, nodeCnt = 0;
+        var reqLen = 0, lineLen = 0;
+        var nodeNo = 0;
+        var userList = [];
        data.rtnData.forEach(function(d) {
         var a = d._source.request.split('?');   
         var name = a[0];
-        var count = {};
-        if(temp[d._source.auth] == null) {
-          count[name] = { count : 1}
-          temp[d._source.auth] = {name: d._source.auth, values:[], count:0, links:[], cnt : count };                   
+        var count = {};        
+        if(req[a[0]] == null) {          
+          req[a[0]] = { no : reqCnt++, cnt : 1};
         } else {
-          if(temp[d._source.auth].cnt[name] == null){
-            count[name] = { count : 1 }
-            temp[d._source.auth].cnt = count;
-          } else {
-            temp[d._source.auth].cnt[name].count++;
-            console.log(temp[d._source.auth].cnt[name].count);
-          }
-
+          req[a[0]].cnt++;
         }
-        
-          temp[d._source.auth].values.push({'name' : a[0], 'id' : d._source.auth+'_'+cnt, 'no' : cnt++ });          
-          console.log(temp[d._source.auth].count);
-          if(temp[d._source.auth].count > 0){
-            temp[d._source.auth].links.push({ 'source' : cnt-1, 'target' : cnt, 'value' : 0.01 });
-          }
-          temp[d._source.auth].count++;
-          console.log(temp);
-        });       
+        if(line[d._source.auth] == null) {
+          userList[userCnt++] = d._source.auth;
+          line[d._source.auth] = { link:[] };          
+        } else if(last[d._source.auth] != req[a[0]].no){
+          line[d._source.auth].link.push({ id: last[d._source.auth]+'-'+req[a[0]].no, from: last[d._source.auth] , to:req[a[0]].no, cnt: 1 });
+        }
+        last[d._source.auth] = req[a[0]].no;
+        if(node[d._source.auth+'_'+req[a[0]].no] ==null){
+          node[d._source.auth+'_'+req[a[0]].no] ={};
+          nodes[nodeCnt++] = { name : a[0], id : d._source.auth+'_'+req[a[0]].no, no : nodeNo++};          
+        }
+       });       
+       console.log(userList);
+       console.log(req);
+       console.log(line);
+       console.log(nodes);
+     
 /*       var nodes = temp
         console.log(nodes);
         console.log(links);

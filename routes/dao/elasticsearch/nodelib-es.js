@@ -121,7 +121,8 @@ QueryProvider.prototype.selectSingleQueryByID2 = function (type, queryId, datas,
   client.search(
     sQueryString
   ).then(function (resp) {
-      var hits = resp.hits.hits;
+      //console.log(resp.hits);
+      var hits = resp.hits.hits;      
       console.log('nodelib-es/selectSingleQueryByID -> total : %d', resp.hits.total);
       cb(null, hits);
   }, function (err) {
