@@ -17,7 +17,7 @@ $(function(){
             'changepw' : '#8041D9',
             'edit' : '#FFD9EC'
           };
-      d3.json("/assets/sample/data/sankey.json", function(error, json) {
+      d3.json("/assets/sample/data/sankey3.json", function(error, json) {
         console.log(json);
         var chart = d3.select("#chart").append("svg").chart("Sankey.Path");
         chart
