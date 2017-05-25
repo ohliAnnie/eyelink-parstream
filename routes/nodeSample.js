@@ -71,9 +71,7 @@ router.get('/restapi/selectJiraAccess', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-        console.log('test');
-        console.log(out_data[0]);
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+    res.json({rtnCode: rtnCode, rtnData: out_data});
   });
 });
 
@@ -87,9 +85,7 @@ router.get('/restapi/selectJiraAccReq', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-        console.log('test');
-        console.log(out_data[0]);
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+    res.json({rtnCode: rtnCode, rtnData: out_data});
   });
 });
 
