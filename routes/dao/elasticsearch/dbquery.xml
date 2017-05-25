@@ -154,7 +154,7 @@
   <sample>
     <query id='selectJiraAccess'><![CDATA[
       {
-        "index" : "filebeat_jira_access-2017.05.21",
+        "index" : "filebeat_jira_access-2017.05.24",
         "type" : "access",                    
         "body" : {       
           "size"   : 9999,                   
@@ -165,11 +165,11 @@
   ]]></query>
   <query id='selectJiraAccReq'><![CDATA[
       {
-        "index" : "filebeat_jira_access-2017.05.21",
+        "index" : "filebeat_jira_access-2017.05.24",
         "type" : "access",       
         "body" : {
-          "size"   : 10,
-          "_source" : ["request", "auth"],
+          "size"   : 200,
+          "_source" : ["request", "clientip", "auth"],
           "query" : { "match_all" : { } }
         }
       } 
