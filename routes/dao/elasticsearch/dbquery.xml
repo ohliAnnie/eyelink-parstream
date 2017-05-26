@@ -168,12 +168,24 @@
         "index" : "filebeat_jira_access-2017.05.24",
         "type" : "access",       
         "body" : {
-          "size"   : 200,
+          "size"   : <2></2>0,
           "_source" : ["request", "clientip", "auth"],
           "query" : { "match_all" : { } }
         }
       } 
   ]]></query>
+  <query id='selectJiraAccScatter'><![CDATA[
+      {
+        "index" : "filebeat_jira_access-2017.05.24",
+        "type" : "access",                    
+        "body" : {       
+          "size"   : 9999, 
+          "_source" : ["timestamp", "response", "offset"],
+          "query" : { "match_all" : { }
+              }
+           }
+        } 
+  ]]></query>  
   <query id='test'><![CDATA[
       {
         q:'aaa'
