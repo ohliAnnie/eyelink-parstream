@@ -1,19 +1,11 @@
 $(function(){
-  var colors = {    
-           'sunghan.bae': '#61DBF0',
-            'hyeyoung.lee':              '#f5662b',
-            'undefined':         '#FAED7D',
-            'edit':              '#367d85',
-            'diagram':             '#AB6CFF',
-            'gallery':             '#97ba4c',
-            'timeline': '#3f3e47',
-            'fallback':            '#9f9fa3',
-            'status' : '#1F50B5',
-            'manager' : '#FFBB00'
-          };
+  
       /*  d3.json("/assets/sample/data/test.json", function(error, json) {          */
      d3.json("/sample/restapi/selectJiraAccJson", function(error, data) {                 
+      var colors = data.color;
+      console.log(color);
       console.log(data.rtnData);
+
       /*var json = JSON.parse(data.rtnData); 
       console.log(json);*/
         var chart = d3.select("#chart").append("svg").chart("Sankey.Path");

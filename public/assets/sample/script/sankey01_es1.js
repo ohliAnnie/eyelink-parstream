@@ -1,19 +1,10 @@
 $(function(){
-  var colors = {    
-           'aa': '#61DBF0',
-            'bb':              '#f5662b',
-            'cc':         '#FAED7D',
-            'dd':              '#367d85',
-            'ee':             '#AB6CFF',
-            '5_':             '#97ba4c',
-            '6_': '#3f3e47',
-            '7_':            '#9f9fa3',
-            '8_' : '#1F50B5',
-            '9_' : '#FFBB00'
-          };
+  
       /*  d3.json("/assets/sample/data/test.json", function(error, json) {          */
-     d3.json("/sample/restapi/selectJiraAccJson", function(error, data) {                 
+     d3.json("/sample/restapi/selectJiraAccId", function(error, data) {                 
       console.log(data.rtnData);
+      console.log(data.id);
+      var colors = data.id;
       /*var json = JSON.parse(data.rtnData); 
       console.log(json);*/
         var chart = d3.select("#chart").append("svg").chart("Sankey.Path");
@@ -32,6 +23,9 @@ $(function(){
           .draw(data.rtnData);
         function label(node) {
           return node.name.replace(/\s*\(.*?\)$/, '');
+        }
+        function linklabel(link) {
+          return link.source.replace(/\s*\(.*?\)$/, '');
         }
         function color(node, depth) {
           var id = node.id.replace(/(_score)?(_\d+)?$/, '');
