@@ -175,11 +175,11 @@
   ]]></query>
   <query id='selectJiraAccScatter'><![CDATA[
       {
-        "index" : "filebeat_jira_access-2017.05.26",
+        "index" : "filebeat_access",
         "type" : "access",                    
         "body" : {       
           "size"   : 9999, 
-          "_source" : ["timestamp", "response", "offset", bytes"],
+          "_source" : ["timestamp", "response", "responsetime"],
           "query" : { "match_all" : { }    }
            }
         } 
@@ -237,10 +237,10 @@
               "must" : [      { "match_all": {} }        ],
                "filter" : [
                 { "term" : { "event_type": "1" } },
-                { "terms" : { "node_id": [##NODE##] } },
+                { "terms" : { "node_id": [#NODE#] } },
                 {"range" : { "event_time" :
-                  { "gte" : timestamp #START_TIMESTAMP#,
-                      "lt" : timestamp #END_TIMESTAMP# }
+                  { "gte" : timestamp ##START_TIMESTAMP##,
+                      "lt" : timestamp ##END_TIMESTAMP## }
                     }
                   } 
                 ]

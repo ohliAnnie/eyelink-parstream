@@ -131,13 +131,24 @@ router.get('/restapi/getDaClusterMasterAll', function(req, res, next) {
 
 // query RawData
 router.get('/restapi/getClusterNodePower', function(req, res, next) {
-  console.log(req.query);
+/*  console.log(req.query);
   console.log(req.query.nodeId[0]);
   var in_data = {
       START_TIMESTAMP: req.query.startDate + ' 00:00:00',
       END_TIMESTAMP: req.query.endDate + ' 23:59:59',
       NODE: req.query.nodeId,
-      FLAG : 'N'};
+      FLAG : 'N'};*/
+    var start = "2016-12-29T16:15:41.000Z";
+    var end = "2016-12-30T16:15:41.000Z";
+    var node = '"0001.00000013", "0002.0000002E", "0001.00000011", "0002.0000003F"';
+
+  var in_data = {
+
+    START_TIMESTAMP : start,
+    END_TIMESTAMP : end,
+    NODE : node
+  }
+  console.log()
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
