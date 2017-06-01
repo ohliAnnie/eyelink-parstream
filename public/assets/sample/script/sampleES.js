@@ -35,7 +35,7 @@ $(function(){
   function doBigScatterChart(){
     oScatterChart = new BigScatterChart({
       sContainerId : 'chart1',
-      nWidth : window.innerWidth*0.2,
+      nWidth : window.innerWidth*0.18,
       nHeight : 300,
       nXMin: start, nXMax: end,
       nYMin: 0, nYMax: 10000,
