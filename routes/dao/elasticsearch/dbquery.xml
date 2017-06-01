@@ -157,7 +157,7 @@
         "type" : "access",                    
         "body" : {       
           "size"   : 9999, 
-          "sort" : { "timestamp" : { "order" : "asc" }},
+          "sort" : { "@timestamp" : { "order" : "asc" }},
           "query" : { "match_all" : { }
               }
            }
@@ -168,8 +168,8 @@
         "index" : "filebeat_jira_access-2017.05.24",
         "type" : "access",       
         "body" : {
-          "size"   : 0,
-          "sort" : { "timestamp" : { "order" : "asc" }},
+          "size"   : 9999,
+          "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["request", "clientip", "auth"],
           "query" : { "match_all" : { } }
         }
@@ -180,8 +180,8 @@
         "index" : "filebeat_jira_access-2017.06.01",
         "type" : "access",                    
         "body" : {       
-          "size"   : 99999, 
-          "sort" : { "timestamp" : { "order" : "asc" }},
+          "size"   : 9999, 
+          "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "response", "responsetime"],
           "query" : { "match_all" : { }    }
            }
