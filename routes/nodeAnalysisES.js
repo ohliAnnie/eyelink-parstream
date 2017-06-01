@@ -134,13 +134,13 @@ router.get('/restapi/getClusterNodePower', function(req, res, next) {
 /*  console.log(req.query);
   console.log(req.query.nodeId[0]);
   var in_data = {
-      START_TIMESTAMP: req.query.startDate + ' 00:00:00',
-      END_TIMESTAMP: req.query.endDate + ' 23:59:59',
+      START_TIMESTAMP: req.query.startDate + 'T00:00:00.000Z',
+      END_TIMESTAMP: req.query.endDate + 'T23:59:59.000Z',
       NODE: req.query.nodeId,
       FLAG : 'N'};*/
     var start = "2016-12-29T16:15:41.000Z";
     var end = "2016-12-30T16:15:41.000Z";
-    var node = '"0001.00000013", "0002.0000002E", "0001.00000011", "0002.0000003F"';
+    var node = ["0001.00000013", "0002.0000002E", "0001.00000011", "0002.0000003F"];
 
   var in_data = {
 
@@ -169,8 +169,8 @@ router.get('/restapi/getClusterNodePower', function(req, res, next) {
 // query RawData
 router.get('/restapi/getClusterNodePowerTest', function(req, res, next) {  
   var in_data = {
-      START_TIMESTAMP: "2016-11-30" + ' 00:00:00',
-      END_TIMESTAMP: "2016-12-03" + ' 23:59:59',      
+      START_TIMESTAMP: "2016-11-30" + 'T00:00:00.000Z',
+      END_TIMESTAMP: "2016-12-03" + 'T23:59:59.000Z',      
       FLAG : 'N'};
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePowerTest", in_data, function(err, out_data, params) {
     // console.log(out_data);
@@ -194,8 +194,8 @@ router.get('/restapi/getClusterNodePowerTest', function(req, res, next) {
 router.get('/restapi/getClusterRawData', function(req, res, next) {
   console.log(req.query);
   var in_data = {
-      START_TIMESTAMP: req.query.startDate + ' 00:00:00',
-      END_TIMESTAMP: req.query.endDate + ' 23:59:59',
+      START_TIMESTAMP: req.query.startDate + 'T00:00:00.000Z',
+      END_TIMESTAMP: req.query.endDate + 'T23:59:59.000Z',
       NODE: req.query.node,
       FLAG : 'N'};
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawData", in_data, function(err, out_data, params) {
