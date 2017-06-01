@@ -35,7 +35,7 @@ $(function(){
   function doBigScatterChart(){
     oScatterChart = new BigScatterChart({
       sContainerId : 'chart1',
-      nWidth : window.innerWidth*0.2,
+      nWidth : window.innerWidth*0.18,
       nHeight : 300,
       nXMin: start, nXMax: end,
       nYMin: 0, nYMax: 10000,
@@ -148,10 +148,10 @@ chart
     .renderHorizontalGridLines(true)
     .x(d3.time.scale().domain([minDate, maxDate]))
     .round(d3.time.hour.round)
-    .xUnits(function(){return 8;})
+    .xUnits(function(){return 20;})
     .elasticY(true)
     .centerBar(true)
-  
+ //   .gap(gap)
     .colors(d3.scale.ordinal().range(["#EDC951",  "#31a354", "#00A0B0", "#FFB2F5" , "#CC333F"]));
     load.legend(dc.legend());
     dc.override(load, 'legendables', function() {

@@ -156,7 +156,8 @@
         "index" : "filebeat_jira_access-2017.05.24",
         "type" : "access",                    
         "body" : {       
-          "size"   : 9999,                   
+          "size"   : 9999, 
+          "sort" : { "@timestamp" : { "order" : "asc" }},
           "query" : { "match_all" : { }
               }
            }
@@ -167,7 +168,8 @@
         "index" : "filebeat_jira_access-2017.05.24",
         "type" : "access",       
         "body" : {
-          "size"   : 0,
+          "size"   : 9999,
+          "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["request", "clientip", "auth"],
           "query" : { "match_all" : { } }
         }
@@ -175,10 +177,11 @@
   ]]></query>
   <query id='selectJiraAccScatter'><![CDATA[
       {
-        "index" : "filebeat_access",
+        "index" : "filebeat_jira_access-2017.06.01",
         "type" : "access",                    
         "body" : {       
           "size"   : 9999, 
+          "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "response", "responsetime"],
           "query" : { "match_all" : { }    }
            }
@@ -236,11 +239,11 @@
             "bool" : {
               "must" : [      { "match_all": {} }        ],
                "filter" : [
-                { "term" : { "event_type": "1" } },
-                { "terms" : { "node_id": [#NODE#] } },
+                { "term" : { "event_type": "1" } },   
+                { "terms" : { "node_id": [##NODE##] } },             
                 {"range" : { "event_time" :
-                  { "gte" : timestamp ##START_TIMESTAMP##,
-                      "lt" : timestamp ##END_TIMESTAMP## }
+                  { "gte" : #START_TIMESTAMP#,
+                      "lt" : #END_TIMESTAMP# }
                     }
                   } 
                 ]
@@ -291,8 +294,8 @@
             "filter" : [
               { "term" : { "node_id": [##NODE##] }  },
               { "range" : { "event_time" :
-                    { "gte" : timestamp #START_TIMESTAMP#,
-                       "lt" : timestamp "END_TIMESTAMP" }
+                    { "gte" : #START_TIMESTAMP#,
+                       "lt" : #END_TIMESTAMP#" }
                }
               } 
             ]

@@ -48,6 +48,28 @@ describe("Util.js", function(){
       done();
     })
 
+    it.only('replace ES SQL Paramter', function(done) {
+      var sql = '{ "index" : "corecode-2017-05", "type" : "corecode", "body" : {  "size" : 9999, '
+                      + ' "sort" : { "event_time" : { "order" : "asc" }},'
+                      + ' "_source" : ["node_id", "event_time", "ampere", "voltage", "active_power", "power_factor", "event_type"],'
+                      + ' "query" : { "bool" : { "must" : [  { "match_all": {} }  ], '
+                      + ' "filter" : [ { "term" : { "event_type": "1" } }, { "terms" : { "node_id": [##NODE##] } }, '
+                        + ' {"range" : { "event_time" : { "gte" : #START#,      "lt" :  #END# } } } ] } } } }';
+      console.log("sql : %s ", sql);
+
+      var params = { START : "2016-12-29T16:15:41.000Z", END: "2016-12-30T16:15:41.000Z", NODE: ["0001.00000013", "0002.0000002E", "0001.00000011", "0002.0000003F"]};
+
+      sql = Utils.replaceSql2(sql, params)
+      console.log(sql);
+      sql.should.be.equal('"index" : "corecode-2017-05", "type" : "corecode", "body" : {  "size" : 9999, '
+                      + ' "sort" : { "event_time" : { "order" : "asc" }},'
+                      + ' "_source" : ["node_id", "event_time", "ampere", "voltage", "active_power", "power_factor", "event_type"],'
+                      + ' "query" : { "bool" : { "must" : [  { "match_all": {} }  ], '
+                      + ' "filter" : [ { "term" : { "event_type": "1" } }, { "terms" : { "node_id": [##NODE##] } }, '
+                        + ' {"range" : { "event_time" : { "gte" : #START#,      "lt" :  #END# } } } ] } } } }');
+      done();
+    })
+
     it(' replace SQL Paramter in "in" phase ', function(done) {
       var sql = "SELECT * FROM A WHERE node_id in (##node_id##)";
       console.log("sql : %s ", sql);
@@ -115,14 +137,14 @@ describe("Util.js", function(){
       done();
     })
 
-    it.only('Hex to Binary', function(done) {
+    it('Hex to Binary', function(done) {
       var num = hex2bin('1000');
       console.log(num);
       should.exist(num);
       done();
     })
 
-    it.only('Hex to Binary2', function(done) {
+    it('Hex to Binary2', function(done) {
       var num = 'b637eb9146e84cb79f6d981ac9463de1'.hex2bin();
       console.log(num);
       console.log(num.bin2hex());
