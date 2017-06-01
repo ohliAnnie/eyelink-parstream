@@ -53,7 +53,7 @@ QueryProvider.prototype.selectSingleQueryByID = function (type, queryId, datas, 
   console.log('nodelib-es/selectSingleQueryByID -> (%s) queryID', queryId);
 
   var qString = {
-    index: 'corecode-2016-08',
+    index: 'corecode-2017-05',
     type: 'corecode',
     body: {
       query: {

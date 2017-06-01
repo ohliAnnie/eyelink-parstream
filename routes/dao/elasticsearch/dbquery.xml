@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <queryList>
-<!--  
   <test>
     <query id='test01'><![CDATA[
       {q : 'aaa'}
@@ -12,7 +11,7 @@
   <dashboard>
     <query id='selectSuccessCount'><![CDATA[
     {
-      index: 'corecode-2016-08',
+      index: 'corecode-2017-05',
       type: 'corecode',
       body: {
         query: {
@@ -25,7 +24,7 @@
      ]]></query>
     <query id='selectQueryInParams'><![CDATA[
     {
-      index: 'corecode-2016-08',
+      index: 'corecode-2017-05',
       type: 'corecode',
       body: {
         query: {
@@ -35,7 +34,7 @@
         }
       }
     }
-     ]]></query>-->
+     ]]></query>
       <!-- select b.zone_id, a.node_id, event_time, event_type, active_power, ampere, voltage,  power_factor,
          reactive_power, apparent_power, amount_active_power,
          als_level, dimming_level,
@@ -46,11 +45,10 @@
       from tb_node_raw as a left outer join tb_node_info as b on a.node_id = b.node_id
     where event_time >= timestamp #START_TIMESTAMP#
       and event_time < timestamp #END_TIMESTAMP#
-    order by event_time -->
-<!--    
+    order by event_time -->    
     <query id='selectEventRawDataOld'><![CDATA[
     {
-      index: 'corecode-2016-08',
+      index: 'corecode-2017-05',
       type: 'corecode',
       body: {
         query: {
@@ -63,7 +61,7 @@
     ]]></query>
     <query id='selectEventRawData'><![CDATA[
     {
-      "index": "corecode-2016-08",
+      "index": "corecode-2017-05",
       "type": "corecode",
       "body": {
         "size" : -1,
@@ -84,7 +82,8 @@
     }
     ]]></query>
   </dashboard>
--->
+  <reports>    
+  </reports>
   <!--
   <analysis>
      <query id='selectDaClusterMasterAll'><![CDATA[
@@ -168,7 +167,7 @@
         "index" : "filebeat_jira_access-2017.05.24",
         "type" : "access",       
         "body" : {
-          "size"   : <2></2>0,
+          "size"   : 0,
           "_source" : ["request", "clientip", "auth"],
           "query" : { "match_all" : { } }
         }
@@ -176,20 +175,149 @@
   ]]></query>
   <query id='selectJiraAccScatter'><![CDATA[
       {
-        "index" : "filebeat_jira_access-2017.05.24",
+        "index" : "filebeat_access",
         "type" : "access",                    
         "body" : {       
           "size"   : 9999, 
-          "_source" : ["timestamp", "response", "offset"],
-          "query" : { "match_all" : { }
-              }
+          "_source" : ["timestamp", "response", "responsetime"],
+          "query" : { "match_all" : { }    }
            }
         } 
   ]]></query>  
-  <query id='test'><![CDATA[
-      {
-        q:'aaa'
-        } 
-  ]]></query>
 </sample>
+<analysis>
+  <query id='selectDaClusterMasterAll'><![CDATA[
+       {
+        "index" : "corecode-2017-05",
+        "type" : "corecode",                    
+        "body" : {       
+          "size"   : 9999,           
+          "query" : { "match_all" : { }    }
+        } 
+     ]]></query>
+    <query id='selectDaClusterDetailAll'><![CDATA[
+       {
+        "index" : "corecode-2017-05",
+        "type" : "corecode",                    
+        "body" : {       
+          "size"   : 9999,           
+          "query" : { "match_all" : { }    }
+        } 
+     ]]></query>
+    <query id='selectDaClusterMaster'><![CDATA[
+      {
+        "index" : "corecode-2017-05",
+        "type" : "corecode",                    
+        "body" : {       
+          "size"   : 9999,           
+          "query" : { "match_all" : { }    }
+        } 
+     ]]></query>
+    <query id='selectDaClusterMasterByDadate'><![CDATA[      
+    ]]></query>
+    <query id='selectDaClusterDetail'><![CDATA[
+     {
+        "index" : "corecode-2017-05",
+        "type" : "corecode",                    
+        "body" : {       
+          "size"   : 9999,           
+          "query" : { "match_all" : { }    }
+        } 
+     ]]></query>     
+     <query id='selectClusterNodePower'><![CDATA[
+     {
+        "index" : "corecode-2017-05",
+        "type" : "corecode",              
+        "body" : {       
+          "size" : 9999, 
+          "sort" : { "event_time" : { "order" : "asc" }},
+          "_source" : ["node_id", "event_time", "ampere", "voltage", "active_power", "power_factor", "event_type"],
+          "query" : { 
+            "bool" : {
+              "must" : [      { "match_all": {} }        ],
+               "filter" : [
+                { "term" : { "event_type": "1" } },
+                { "terms" : { "node_id": [#NODE#] } },
+                {"range" : { "event_time" :
+                  { "gte" : timestamp ##START_TIMESTAMP##,
+                      "lt" : timestamp ##END_TIMESTAMP## }
+                    }
+                  } 
+                ]
+              }
+            }
+          }
+        } 
+     ]]></query>
+   <query id='selectClusterNodePowerTest'><![CDATA[
+     {
+        "index" : "corecode-2017-05",
+        "type" : "corecode",              
+        "body" : {       
+          "size" : 9999, 
+          "sort" : { "event_time" : { "order" : "asc" }},
+          "_source" : ["node_id", "event_time", "ampere", "voltage", "active_power", "power_factor", "event_type"],
+          "query" : { 
+            "bool" : {
+              "must" : [      { "match_all": {} }        ],
+               "filter" : [
+                { "term" : { "event_type": "1" } },
+                {"range" : { "event_time" :
+                  { "gte" : "2016-12-29T16:15:41.000Z",
+                      "lt" : "2016-12-30T16:15:41.000Z" }
+                    }
+                  } 
+                ]
+              }
+            }
+          }
+        } 
+     ]]></query>
+<!--  (vibration_x + vibration_y + vibration_z) / 3 as vibration 없음 -->
+    <query id='selectClusterRawData'><![CDATA[
+     {
+        "index" : "corecode-2017-05",
+        "type" : "corecode",              
+        "body" : {       
+        "size" : 9999, 
+        "sort" : { "event_time" : { "order" : "asc" }},
+        "_source" : ["node_id", "event_time", "event_type", "active_power", 
+              "ampere", "amount_active_power", "als_level", "dimming_level", 
+              "noise_decibel", "noise_frequency",
+              "vibration_x", "vibration_y", "vibration_z"],
+        "query" : { 
+          "bool" : {
+            "must" : [   { "match_all": {} }  ],
+            "filter" : [
+              { "term" : { "node_id": [##NODE##] }  },
+              { "range" : { "event_time" :
+                    { "gte" : timestamp #START_TIMESTAMP#,
+                       "lt" : timestamp "END_TIMESTAMP" }
+               }
+              } 
+            ]
+          }
+         }
+        }
+      } 
+    ]]></query>
+    <query id= 'insertClusteringDetail'><![CDATA[
+      {
+        "index" : "corecode-2017-05",
+        "type" : "corecode",                    
+        "body" : {       
+          "size"   : 9999,           
+          "query" : { "match_all" : { }    }
+        } 
+      ]]></query>
+    <query id= 'insertClusteringMaster'><![CDATA[
+     {
+        "index" : "corecode-2017-05",
+        "type" : "corecode",                    
+        "body" : {       
+          "size"   : 9999,           
+          "query" : { "match_all" : { }    }
+        } 
+      ]]></query>  
+</analysis>
 </queryList>
