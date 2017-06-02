@@ -4,11 +4,17 @@ $(function(){
 
   d3.json("/sample/restapi/selectJiraAccScatter", function(error, json) { 
     var data = [];
-    var start=new Date().getTime(), end=new Date(1990-1-1).getTime();
+    var start=new Date().getTime(), end=new Date(1990,0,0,0,0,0).getTime();
     json.rtnData.forEach(function(d){  
         
-      var a = d._source.timestamp.split(':');            
-      var date = new Date(a[0]+' '+a[1]+':'+a[2]+':'+a[3]);
+      var a = d._source.timestamp.split(':');
+      var b = a[0].split('/');
+      var c = a[3].split(' ');
+      var mon = {'Jan' : 1, 'Feb' : 2, 'Mar' : 3, 'Apr' : 4, 'May' : 5, 'Jun' : 6, 'Jul' : 7, 'Aug' : 8, 'Sep' : 9, 'Oct' : 10, 'Nov' : 11, 'Dec' : 12 };
+      console.log(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]);
+      var date = new Date(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]);
+      console.log(date);
+      console.log(date.getTime());
       if(date.getTime() < start){
         start = date.getTime();            
       } else if(date > end){
@@ -71,8 +77,7 @@ $(function(){
    summary(data, start, end);
   });
 });
-function summary(data, start, end) {
-  console.log(data) ;
+function summary(data, start, end) {  
   var chart = dc.barChart("#test");
   var load = dc.barChart("#load");
  
