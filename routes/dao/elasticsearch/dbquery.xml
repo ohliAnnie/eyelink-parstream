@@ -187,7 +187,55 @@
            }
         } 
   ]]></query>  
+  <query id='selectScatterSection'><![CDATA[
+      {
+        "index" : "filebeat_jira_access-2017.06.01",
+        "type" : "access",                    
+        "body" : {       
+          "size"   : 9999, 
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["timestamp", "response", "responsetime"],
+          "query" : { "match_all" : { }  
+            "bool" : {
+              "must" : [      { "match_all": {} }        ],
+               "filter" : [
+                { "range" : { "responsetime" : 
+                  { "gte" : #MIN#,
+                     "lt" : #MAX#    } 
+                  }
+                },
+                { "range" : { "timestamp" :
+                  { "gte" : "2016-12-29T16:15:41.000Z",
+                      "lt" : "2016-12-30T16:15:41.000Z" }
+                    }
+                  } 
+                ]
+              }
+            }
+           }
+        } 
+  ]]></query>  
 </sample>
+"index" : "corecode-2017-05",
+        "type" : "corecode",              
+        "body" : {       
+          "size" : 9999, 
+          "sort" : { "event_time" : { "order" : "asc" }},
+          "_source" : ["node_id", "event_time", "ampere", "voltage", "active_power", "power_factor", "event_type"],
+          "query" : { 
+            "bool" : {
+              "must" : [      { "match_all": {} }        ],
+               "filter" : [
+                { "term" : { "event_type": "1" } },
+                {"range" : { "event_time" :
+                  { "gte" : "2016-12-29T16:15:41.000Z",
+                      "lt" : "2016-12-30T16:15:41.000Z" }
+                    }
+                  } 
+                ]
+              }
+            }
+          }
 <analysis>
   <query id='selectDaClusterMasterAll'><![CDATA[
        {
