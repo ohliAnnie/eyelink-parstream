@@ -2,13 +2,16 @@ $(function(){
   var date = new Date();
   var timeformat = d3.time.format('%m-%d %H:%M');
 
-  d3.json("/sample/restapi/selectJiraAccScatter", function(error, json) { 
+  d3.json("/sample/restapi/selectScatterSection", function(error, json) { 
     var data = [];
-    var start=new Date().getTime(), end=new Date(1990-1-1).getTime();
+    var start=new Date().getTime(), end=new Date(1990,0,0,0,0,0).getTime();
     json.rtnData.forEach(function(d){  
         
-      var a = d._source.timestamp.split(':');            
-      var date = new Date(a[0]+' '+a[1]+':'+a[2]+':'+a[3]);
+      var a = d._source.timestamp.split(':');
+      var b = a[0].split('/');
+      var c = a[3].split(' ');
+      var mon = {'Jan' : 1, 'Feb' : 2, 'Mar' : 3, 'Apr' : 4, 'May' : 5, 'Jun' : 6, 'Jul' : 7, 'Aug' : 8, 'Sep' : 9, 'Oct' : 10, 'Nov' : 11, 'Dec' : 12 };
+      var date = new Date(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]);      
       if(date.getTime() < start){
         start = date.getTime();            
       } else if(date > end){
@@ -61,8 +64,10 @@ $(function(){
         console.log('fOnSelect', htPosition, htXY);
         console.time('fOnSelect');
         var aData = this.getDataByXY(htXY.nXFrom, htXY.nXTo, htXY.nYFrom, htXY.nYTo);
+        var link = './sampleES_detail?start='+htXY.nXFrom+'&end='+htXY.nXTo+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;
         console.timeEnd('fOnSelect');
         console.log('adata length', aData.length);
+        window.open(link, "_blank");
         //alert('Selected data count : ' + aData.length);
       }
     }); 
@@ -71,8 +76,9 @@ $(function(){
    summary(data, start, end);
   });
 });
-function summary(data, start, end) {
-  console.log(data) ;
+
+
+function summary(data, start, end) {  
   var chart = dc.barChart("#test");
   var load = dc.barChart("#load");
  
@@ -137,8 +143,7 @@ chart
     .clipPadding(10)
     .title(function(d) {
       for(var i=0; i<term.length; i++) {
-        if(this.layer == term[i])         
-          console.log(term[i] + ' : ' + d.value[i]);
+        if(this.layer == term[i])                   
           return this.layer + ' : ' + d.value[i];
       }
     })      

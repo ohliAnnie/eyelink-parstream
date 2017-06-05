@@ -5,6 +5,7 @@ $(function(){
   var data = [];
   for(var i=date.getTime() - 17280001; i<date.getTime(); i+=173){
     var num = Math.round(_.random(0, 10000) / _.random(1, 1000));          
+    console.log(i);
     data.push({
       x : i,            
       y : num,
