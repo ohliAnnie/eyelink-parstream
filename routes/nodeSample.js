@@ -279,13 +279,11 @@ router.get('/restapi/selectJiraAccScatter', function(req, res, next) {
 
 // query Report
 router.get('/restapi/selectScatterSection', function(req, res, next) {
-  console.log('sample/restapi/selectScatterSection');
+  console.log('sample/restapi/selectScatterSection');  
   var s = new Date(parseInt(req.query.start)).toString().split(' ');
 var e = new Date(parseInt(req.query.end)).toString().split(' ');
 var start = s[3]+'/'+s[1]+'/'+s[2]+':'+s[4]+' +0000';
-var end = e[3]+'/'+e[1]+'/'+e[2]+':'+e[4]+' +0000';
-  console.log(start);
-  console.log(end);
+var end = e[3]+'/'+e[1]+'/'+e[2]+':'+e[4]+' +0000';  
   var in_data = {
     START : start,
     END : end,
@@ -297,8 +295,7 @@ var end = e[3]+'/'+e[1]+'/'+e[2]+':'+e[4]+' +0000';
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    }
-    console.log(out_data);
+    }    
     res.json({rtnCode: rtnCode, rtnData: out_data });
   });
 });

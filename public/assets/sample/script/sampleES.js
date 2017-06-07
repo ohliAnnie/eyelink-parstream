@@ -2,7 +2,7 @@ $(function(){
   var date = new Date();
   var timeformat = d3.time.format('%m-%d %H:%M');
 
-  d3.json("/sample/restapi/selectScatterSection", function(error, json) { 
+  d3.json("/sample/restapi/selectJiraAccScatter", function(error, json) { 
     var data = [];
     var start=new Date().getTime(), end=new Date(1990,0,0,0,0,0).getTime();
     json.rtnData.forEach(function(d){  

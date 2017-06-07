@@ -23,6 +23,7 @@ html
     link(rel='stylesheet', href='/stylesheets/style.css')
     link(rel='stylesheet', href='/scripts/d3_timeseries.css')    
     link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')      
+    link(rel='stylesheet', type='text/css', href='/assets/sample/style/sampleES_detail.css')      
     script(src='/assets/scripts/libs/jquery.min.js', type='text/javascript')
     script(src='/assets/scripts/libs/jquery-migrate.min.js', type='text/javascript')
     script(src='/assets/scripts/libs/bootstrap.min.js', type='text/javascript')
@@ -55,3 +56,23 @@ html
       .container-fluid
         .content-popup
           .popup-tit-box           
+           .row
+             .col-md-12
+                h1 EyeLink
+          .row
+            .col-md-12
+              .portlet.light.bordered(style='height: 520px;')
+                .portlet-title
+                  .caption.font-dark
+                    span.caption-subject.bold.uppercase Scatter Detail
+                    span.caption-helper   by Selected
+                .portlet-body
+                  .scroller(style='height: 430px;', data-always-visible='1', data-rail-visible='0')
+                    table#List.table.table-hover.table-light
+                      thread
+                        tr.uppercase
+                          th(width = "12%") Start Time
+                          th(width = "67%") Path
+                          th(width = "7%") Res.(ms)
+                          th(width = "7%") Response
+                          th Client IP
