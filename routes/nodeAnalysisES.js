@@ -197,7 +197,7 @@ router.get('/restapi/getClusterNodePowerTest', function(req, res, next) {
 router.get('/restapi/getClusterRawData', function(req, res, next) {
   console.log(req.query);
     var start = "2016-12-29T16:15:41.000Z";
-    var end = "2016-12-30T16:15:41.000Z";
+    var end = "2017-01-30T16:15:41.000Z";
     var node = ["0001.00000013", "0002.0000002E", "0001.00000011", "0002.0000003F"];
 
   var in_data = {
@@ -213,7 +213,7 @@ router.get('/restapi/getClusterRawData', function(req, res, next) {
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawData", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
-    if (out_data[0] === null) {
+    if (out_data === null) {
       rtnCode = CONSTS.getErrData('0001');
     }
 
@@ -222,12 +222,11 @@ router.get('/restapi/getClusterRawData', function(req, res, next) {
 
     // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data);
     // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data[0]);
-    console.log('analysis/restapi/getClusterRawData -> length : %s', out_data[0].length);
+    console.log('analysis/restapi/getClusterRawData -> length : %s', out_data.length);
 
     var data = [];    
-    out_data[0].forEach(function(d){      
-      d._source.vibration = (d._source.vibration_x+d._source.vibration_y+d._source.vibration_z)/3;
-      console.log(d._source);      
+    out_data.forEach(function(d){      
+      d._source.vibration = (parseFloat(d._source.vibration_x)+parseFloat(d._source.vibration_y)+parseFloat(d._source.vibration_z))/3;
       data.push(d._source);
     });    
     res.json({rtnCode: rtnCode, rtnData: data});
