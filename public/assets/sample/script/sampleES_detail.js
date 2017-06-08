@@ -26,20 +26,24 @@ console.log(urlParams);
   });
 
 function drawScatterList(data) {
-  var seatvar = document.getElementsByClassName("List");
+  var seatvar = document.getElementsByClassName("sample_2");
   var cnt = 0;
+  $('#sample_2').empty();
   console.log(data);  
   data.forEach(function(d){
     var sb = new StringBuffer();
-    if(cnt == 0){
-      //sb.append('<tr><th>Start Time</th><th>Path</th><th>Res.(ms)</th><th>Response</th><th>Client IP</th></tr>');
-      cnt++;
+    if(cnt == 0){      
+      sb.append('<tbody>');
     }
+    cnt++;
     var t = d._source.timestamp.split(' ');
     var r = d._source.request.split('?');
-    sb.append('<tr><td>'+t[0]+'</td><td>'+r[0]+'</td><td>'+d._source.responsetime+
-      '</td><td>'+d._source.response+'</td><td>'+d._source.clientip+'</td></tr>');
-    $('#List').append(sb.toString());
+    sb.append('<tr><td class="col-xs-2">'+t[0]+'</td><td class="col-xs-6">'+r[0]+'</td><td class="col-xs-1">'+d._source.responsetime+
+      '</td><td class="col-xs-1">'+d._source.response+'</td><td class="col-xs-2">'+d._source.clientip+'</td></tr>');
+    if(cnt == data.length) {
+      sb.append('</tbody>')
+    }
+    $('#sample_2').append(sb.toString());
   });
   
 }

@@ -20,10 +20,10 @@ html
     link(href='/assets/css/eyelink-layout.css', rel='stylesheet', type='text/css')
     link(href='/assets/css/eyelink-custom.css', rel='stylesheet', type='text/css')
     link(rel='shortcut icon', href='/assets/images/favicon.ico')
-    link(rel='stylesheet', href='/stylesheets/style.css')
-    link(rel='stylesheet', href='/scripts/d3_timeseries.css')    
+    link(rel='stylesheet', href='/stylesheets/style.css')    
     link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')      
     link(rel='stylesheet', type='text/css', href='/assets/sample/style/sampleES_detail.css')      
+    link(rel='stylesheet', type='text/css', href='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
     script(src='/assets/scripts/libs/jquery.min.js', type='text/javascript')
     script(src='/assets/scripts/libs/jquery-migrate.min.js', type='text/javascript')
     script(src='/assets/scripts/libs/bootstrap.min.js', type='text/javascript')
@@ -41,15 +41,28 @@ html
     script(type='text/javascript', src='/assets/leaflet/d3.js')
     script(src='/assets/annie/js/vue.min.js')    
     script(type='text/javascript', src="/scripts/util.js")
-    script(src='/assets/sample/script/sampleES_detail.js') 
+    script(type='text/javascript', src='/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+    script(type='text/javascript', src='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
+    script(src='/assets/scripts/page/table-managed.js')     
+    script(src='/assets/scripts/eyelink-ui.js', type='text/javascript')
+    script(src='/assets/scripts/eyelink-layout.js', type='text/javascript')
+    script(src='/assets/scripts/eyelink-quick-sidebar.js', type='text/javascript')
+    script(src='/assets/scripts/page/layout.js', type='text/javascript')
+    script(src='/assets/scripts/page/demo.js', type='text/javascript')
+    script(src='/assets/scripts/page/components-pickers.js', type='text/javascript')
+    script(src='/assets/scripts/page/components-dropdowns.js', type='text/javascript')    
     script.
       jQuery(document).ready(function() {  
           Metronic.init(); // init metronic core componets
           eyelinkLayout.init(); // init layout
           QuickSidebar.init(); // init quick sidebar
           Layout.init(); // init layout
-          Tasks.initDashboardWidget(); // init tash dashboard widget                 
+          Demo.init(); // init index page
+          ComponentsPickers.init();
+          TableManaged.init();
+          ComponentsDropdowns.init();
       });
+block content
   body.body-popup
     .wrapper
       header.page-header
@@ -61,18 +74,21 @@ html
                 h1 EyeLink
           .row
             .col-md-12
-              .portlet.light.bordered(style='height: 520px;')
-                .portlet-title
-                  .caption.font-dark
-                    span.caption-subject.bold.uppercase Scatter Detail
-                    span.caption-helper   by Selected
-                .portlet-body
-                  .scroller(style='height: 430px;', data-always-visible='1', data-rail-visible='0')
-                    table#List.table.table-hover.table-light
-                      thread
-                        tr.uppercase
-                          th(width = "12%") Start Time
-                          th(width = "67%") Path
-                          th(width = "7%") Res.(ms)
-                          th(width = "7%") Response
+              .portlet.light.bordered(style='height: 550px;')                
+                .portlet-body.form                                 
+                  table#sample_2.table.table-striped.table-bordered.table-hover(style='text-align:center;')
+                      thead
+                        tr
+                          th Start Time
+                          th Path
+                          th Res.(ms)
+                          th Response
                           th Client IP
+                      tbody
+                        each data in list
+                          tr.odd.gradeX
+                            td #{data.timestamp}
+                            td #{data.request}
+                            td #{data.responsetime}
+                            td #{data.response}
+                            td #{data.clientip}
