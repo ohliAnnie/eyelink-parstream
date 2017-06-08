@@ -13,9 +13,8 @@ console.log(urlParams);
     type: "get",    
     data: { start : urlParams.start, end : urlParams.end, min : urlParams.min, max : urlParams.max },
     success: function(result) {
-      if (result.rtnCode.code == "0000") {        
-        //console.log(rtnData);
-      //  drawScatterList(rtnDate);
+      if (result.rtnCode.code == "0000") {                
+        drawScatterList(result.rtnData);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -26,3 +25,25 @@ console.log(urlParams);
     }
   });
 
+function drawScatterList(data) {
+  var seatvar = document.getElementsByClassName("sample_2");
+  var cnt = 0;
+  $('#sample_2').empty();
+  console.log(data);  
+  data.forEach(function(d){
+    var sb = new StringBuffer();
+    if(cnt == 0){      
+      sb.append('<tbody>');
+    }
+    cnt++;
+    var t = d._source.timestamp.split(' ');
+    var r = d._source.request.split('?');
+    sb.append('<tr><td class="col-xs-2">'+t[0]+'</td><td class="col-xs-6">'+r[0]+'</td><td class="col-xs-1">'+d._source.responsetime+
+      '</td><td class="col-xs-1">'+d._source.response+'</td><td class="col-xs-2">'+d._source.clientip+'</td></tr>');
+    if(cnt == data.length) {
+      sb.append('</tbody>')
+    }
+    $('#sample_2').append(sb.toString());
+  });
+  
+}

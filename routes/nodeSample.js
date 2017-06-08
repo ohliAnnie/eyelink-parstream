@@ -22,7 +22,32 @@ router.get('/sampleES', function(req, res, next) {
 });
 
 router.get('/sampleES_detail', function(req, res, next) {
-  res.render('./sample/sampleES_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+  var s = new Date(parseInt(req.query.start)).toString().split(' ');
+  var e = new Date(parseInt(req.query.end)).toString().split(' ');
+  var start = s[3]+'/'+s[1]+'/'+s[2]+':'+s[4]+' +0000';
+  var end = e[3]+'/'+e[1]+'/'+e[2]+':'+e[4]+' +0000';  
+  var in_data = {
+    START : start,
+    END : end,
+    MIN : parseInt(req.query.min),
+    MAX : parseInt(req.query.max)  
+  };
+  queryProvider.selectSingleQueryByID2("sample","selectScatterSection", in_data, function(err, out_data, params) {
+    // console.log(out_datsa);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } 
+    var data = [];
+    out_data.forEach(function(d) {
+      var t = d._source.timestamp.split(' ');
+      var r = d._source.request.split('?');
+      d._source.timestamp = t[0];
+      d._source.request = r[0];
+      data.push(d._source);
+    });       
+    res.render('./sample/sampleES_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list: data });
+  });  
 });
 
 router.get('/serverMap', function(req, res, next) {
@@ -279,13 +304,11 @@ router.get('/restapi/selectJiraAccScatter', function(req, res, next) {
 
 // query Report
 router.get('/restapi/selectScatterSection', function(req, res, next) {
-  console.log('sample/restapi/selectScatterSection');
+  console.log('sample/restapi/selectScatterSection');  
   var s = new Date(parseInt(req.query.start)).toString().split(' ');
-var e = new Date(parseInt(req.query.end)).toString().split(' ');
-var start = s[3]+'/'+s[1]+'/'+s[2]+':'+s[4]+' +0000';
-var end = e[3]+'/'+e[1]+'/'+e[2]+':'+e[4]+' +0000';
-  console.log(start);
-  console.log(end);
+  var e = new Date(parseInt(req.query.end)).toString().split(' ');
+  var start = s[3]+'/'+s[1]+'/'+s[2]+':'+s[4]+' +0000';
+  var end = e[3]+'/'+e[1]+'/'+e[2]+':'+e[4]+' +0000';  
   var in_data = {
     START : start,
     END : end,
@@ -297,8 +320,7 @@ var end = e[3]+'/'+e[1]+'/'+e[2]+':'+e[4]+' +0000';
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    }
-    console.log(out_data);
+    }    
     res.json({rtnCode: rtnCode, rtnData: out_data });
   });
 });
