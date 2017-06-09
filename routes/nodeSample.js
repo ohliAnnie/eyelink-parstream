@@ -1,4 +1,4 @@
-var CONSTS = require('./consts');
+ var CONSTS = require('./consts');
 var Utils = require('./util');
 var express = require('express');
 var router = express.Router();
@@ -39,10 +39,16 @@ router.get('/sampleES_detail', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     } 
     var data = [];
+    var cnt = 0;
     out_data.forEach(function(d) {
-      var t = d._source.timestamp.split(' ');
-      var r = d._source.request.split('?');
-      d._source.timestamp = t[0];
+      d._source.no = ++cnt;
+      var a = d._source.timestamp.split(':');
+      var b = a[0].split('/');
+      var c = a[3].split(' ');
+      var mon = {'Jan' : 1, 'Feb' : 2, 'Mar' : 3, 'Apr' : 4, 'May' : 5, 'Jun' : 6, 'Jul' : 7, 'Aug' : 8, 'Sep' : 9, 'Oct' : 10, 'Nov' : 11, 'Dec' : 12 };
+      //d._source.timestamp = new Date(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]);
+      d._source.timestamp = b[1]+'-'+b[0]+' '+a[1]+':'+a[2]+':'+c[0];
+      var r = d._source.request.split('?');      
       d._source.request = r[0];
       data.push(d._source);
     });       
