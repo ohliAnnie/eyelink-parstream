@@ -1,6 +1,9 @@
 {
 	"#comment": "Customer module configs",
 	"productname": "EyeLink",
+	"#pcode": "EFSL",
+	"pcode": "EFSM",
+	"#pcode": "EFMM",
 	"version": "1.0",
 	"username": "root",
 	"password": "foot",

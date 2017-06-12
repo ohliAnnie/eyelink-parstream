@@ -15,7 +15,7 @@ global.config = config;
 
 var intro = require('./routes/intro');
 var login = require('./routes/nodeLogin');
-var dashboard = require('./routes/nodeDashboard');
+var dashboard = require('./routes/nodeDashboard' + global.config.pcode);
 var reports = require('./routes/nodeReports');
 var analysis = require('./routes/nodeAnalysisES');
 var initapps = require('./routes/initApp');
