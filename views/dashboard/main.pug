@@ -4,6 +4,8 @@ block style
   link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
   link(rel='stylesheet', href='/assets/leaflet/dc.css')
   link(rel='stylesheet', href='/stylesheets/style.css')
+  link(type='text/css', rel='stylesheet', href='/assets/sample/style/bigscatterchart.css') 
+  link(href='/assets/sample/style/dashboard_main.css', rel='stylesheet')
 block script
   script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
@@ -14,14 +16,25 @@ block script
   script(type='text/javascript', src='/assets/leaflet/dc.leaflet.js')
   script(type='text/javascript', src='/socket.io/socket.io.js')
   script(type='text/javascript', src="/scripts/util.js")
-  script(type='text/javascript', src="/scripts/dashboard.js")
+  script(type='text/javascript', src="/scripts/dashboard_es.js")
+  script(src='/assets/sample/js/cytoscape.min.js')  
+  script(src='/assets/sample/js/dagre.min.js')
+  script(src='/assets/sample/js/cytoscape-dagre.js')   
+  script(type='text/javascript', src='/assets/sample/js/modernizr.js')
+  script(type='text/javascript', src='/assets/sample/js/underscore-min.js') 
+  script(type='text/javascript', src='/assets/sample/js/jquery.Class.js')
+  script(type='text/javascript', src='/assets/sample/js/jquery.dragToSelect.js')
+  script(type='text/javascript', src='/assets/sample/js/jquery.BigScatterChart.js') 
+  script(src='/assets/sample/js/sankey.js')
+  script(src='/assets/sample/js/d3.chart.min.js')
+  script(src='/assets/sample/js/d3.chart.sankey.min.js')  
   script.
     $(document).ready(function(e) {
       // display Count 4 type.
-      displayCount();
+    //  displayCount();
 
       // draw Chart
-      drawChart();
+     // drawChart();
 
       // draw Map
       //- drawMap();
@@ -125,8 +138,8 @@ block content
           .portlet.light
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-blue-sharp Zone/Node Map
-                span.caption-helper  Zone/Node Map
+                span.caption-subject.bold.uppercase.font-blue-sharp Server Map
+                span.caption-helper  Server Map
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -135,22 +148,14 @@ block content
                 a.remove(href='javascript:;')
             .portlet-body
               .row
-                .col-md-3
-                  #bubble-map-pie(style="width:100%; height:100%")
-                    //- div.pie
-                    //- div.map(style="width:300px; height:100px")
-                .col-md-9
-                  #bubble-map-map(style="width:100%; height:100%")
-                    //- div.pie
-                    //- div.map(style="width:300px; height:100px")
-              //- .chart
-              //-   div.map-container
+                .chart
+                  #cy
         .col-md-6
           .portlet.light.bordered
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Event / Fault Count
-                span.caption-helper  Event / Fault Count
+                span.caption-subject.bold.uppercase.font-green-haze Summary Chart
+                span.caption-helper  Response
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -158,14 +163,19 @@ block content
                 a.fullscreen(href='javascript:;')
                 a.remove(href='javascript:;')
             .portlet-body
-              .chart
-                #move-chart(style="width:100%; height:100%")
+              .row
+                .col-md-6(style="height:300px")
+                  p Time
+                  #test
+                .col-md-6(style="height:300px")
+                  p Load
+                  #load
       .row
         .col-md-8
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase ACTIVE POWER / NOISE / VIBRATION
+                span.caption-subject.bold.uppercase Sankey Chart                
                 span.caption-helper  ACTIVE POWER / NOISE / VIBRATION
               .actions
                 a.btn.btn-default.btn-sm(href='#')
@@ -177,24 +187,19 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .row
-                .col-md-3(style="height:300px")
+                .col-md-6(style="height:300px")
                   p Active Power
-                  #plot01-chart.chart(style="width:100%; height:90%")
-                .col-md-3(style="height:300px")
+                  #chart(style="width:100%; height:90%")
+                .col-md-6(style="height:300px")
                   p Noise
-                  #plot02-chart.chart(style="width:100%; height:90%")
-                .col-md-3(style="height:300px")
-                  p Vibration
-                  #plot03-chart.chart(style="width:100%; height:90%")
-                .col-md-3(style="height:300px")
-                  p Event Type
-                  #plot_pie-chart.chart(style="width:100%; height:90%")
+                  #chart2(style="width:100%; height:90%")
+               
         .col-md-4
           .portlet.light.bordered
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze LiveData
-                span.caption-helper  Sensor Live Data
+                span.caption-subject.bold.uppercase.font-green-haze Scatter Chart
+                span.caption-helper  Access Log Response Data
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -203,4 +208,4 @@ block content
                 a.remove(href='javascript:;')
             .portlet-body
               .chart
-                #series-chart(style="width:100%; height:100%")
+                #chart1(style="width:100%; height:100%")

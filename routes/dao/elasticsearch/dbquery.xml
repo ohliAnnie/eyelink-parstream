@@ -81,6 +81,30 @@
       }
     }
     ]]></query>
+  <query id='selectJiraAccId'><![CDATA[
+      {
+        "index" : "filebeat_jira_access-2017.06.01",
+        "type" : "access",       
+        "body" : {
+          "size"   : 20,
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["request", "clientip", "auth"],
+          "query" : { "match_all" : { } }
+        }
+      } 
+  ]]></query>
+   <query id='selectJiraAccReq'><![CDATA[
+      {
+        "index" : "filebeat_jira_access-2017.06.01",
+        "type" : "access",       
+        "body" : {
+          "size"   : 20,
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["request", "clientip", "auth"],
+          "query" : { "match_all" : { } }
+        }
+      } 
+  ]]></query>
   </dashboard>
   <reports>    
   </reports>

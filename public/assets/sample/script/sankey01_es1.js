@@ -24,9 +24,7 @@ $(function(){
         function label(node) {
           return node.name.replace(/\s*\(.*?\)$/, '');
         }
-        function linklabel(link) {
-          return link.source.replace(/\s*\(.*?\)$/, '');
-        }
+        
         function color(node, depth) {
           var id = node.id.replace(/(_score)?(_\d+)?$/, '');
           if (colors[id]) {
