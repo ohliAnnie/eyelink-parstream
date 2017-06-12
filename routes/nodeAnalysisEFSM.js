@@ -130,15 +130,12 @@ router.get('/restapi/getDaClusterMasterAll', function(req, res, next) {
 });
 
 // query RawData
-router.get('/restapi/getClusterNodePower', function(req, res, next) {
-/*  console.log(req.query);
-  console.log(req.query.nodeId[0]);
+router.get('/restapi/getClusterNodePower', function(req, res, next) { 
   var in_data = {
       START_TIMESTAMP: req.query.startDate + 'T00:00:00.000Z',
       END_TIMESTAMP: req.query.endDate + 'T23:59:59.000Z',
-      NODE: req.query.nodeId,
-      FLAG : 'N'};*/
-    var start = "2016-12-29T16:15:41.000Z";
+      NODE: req.query.nodeId.split(',')      };
+      /*    var start = "2016-12-29T16:15:41.000Z";
     var end = "2016-12-30T16:15:41.000Z";
     var node = ["0001.00000013", "0002.0000002E", "0001.00000011", "0002.0000003F"];
 
@@ -146,7 +143,7 @@ router.get('/restapi/getClusterNodePower', function(req, res, next) {
     START_TIMESTAMP : start,
     END_TIMESTAMP : end,
     NODE : node
-  }  
+  }  */
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
@@ -162,7 +159,7 @@ router.get('/restapi/getClusterNodePower', function(req, res, next) {
     console.log('analysis/restapi/getClusterNodePower -> length : %s', out_data.length);
     var data = [];    
     out_data.forEach(function(d){      
-      console.log(d._source);      
+           
       data.push(d._source);
     });    
     res.json({rtnCode: rtnCode, rtnData: data});
