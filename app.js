@@ -17,7 +17,7 @@ var intro = require('./routes/intro');
 var login = require('./routes/nodeLogin');
 var dashboard = require('./routes/nodeDashboard' + global.config.pcode);
 var reports = require('./routes/nodeReports');
-var analysis = require('./routes/nodeAnalysisES');
+var analysis = require('./routes/nodeAnalysis' + global.config.pcode);
 var initapps = require('./routes/initApp');
 var socketapps = require('./routes/socketApp');
 var node = require('./routes/nodeCon');
@@ -25,7 +25,7 @@ var management = require('./routes/nodeManagement');
 var sample = require('./routes/nodeSample');
 var simulator = require('./routes/nodeSimulator');
 // for ES Test
-var dashboardes = require('./routes/nodeDashboardES');
+var dashboardes = require('./routes/nodeDashboard' + global.config.pcode);
 
 var app = express();
 
