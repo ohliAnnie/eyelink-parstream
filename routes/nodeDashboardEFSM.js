@@ -13,6 +13,9 @@ router.get('/', function(req, res, next) {
   mainmenu.dashboard = ' open selected';
   mainmenu.timeseries = '';
   res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu});
+ 
+  
+  
 });
 
 router.get('/trenddata', function(req, res, next) {
@@ -54,7 +57,11 @@ router.get('/restapi/getDashboardRawData', function(req, res, next) {
 
 router.get('/restapi/selectJiraAccId', function(req, res, next) {
   console.log('sample/restapi/selectJiraAccReqDash');
-  var in_data = {};
+  var date = new Date().toString().split(' ');
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  var in_data = {
+    today: "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+"."+date[2]
+  };
   queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccId", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');
@@ -138,12 +145,10 @@ router.get('/restapi/selectJiraAccId', function(req, res, next) {
 router.get('/restapi/selectJiraAccJson', function(req, res, next) {
   console.log('dashboard/restapi/selectJiraAccJson');
   var date = new Date().toString().split(' ');
-  console.log(date);
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var in_data = {
-    today: date[3]+'-'+mon[date[1]]+'-'+date[2]
-  };
-  console.log(in_data);  
+    today: "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+"."+date[2]    
+  };  
   queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccReq", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');
@@ -217,7 +222,123 @@ router.get('/restapi/selectJiraAccJson', function(req, res, next) {
      var text = JSON.stringify(json);    
     res.json({rtnCode: rtnCode, rtnData: json, color : id});
   });
+});
 
+router.get('/restapi/selectJiraAccScatter', function(req, res, next) {
+  console.log('dashboard/restapi/selectJiraAccScatter');
+  var date = new Date().toString().split(' ');
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  var in_data = {
+    today: "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+"."+date[2]    
+  };  
+  queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccScatter", in_data, function(err, out_data, params) {
+    // console.log(out_datsa);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
+router.get('/scatter_detail', function(req, res, next) {
+  var s = new Date(parseInt(req.query.start)).toString().split(' ');
+  var e = new Date(parseInt(req.query.end)).toString().split(' ');
+  var start = s[3]+'/'+s[1]+'/'+s[2]+':'+s[4]+' +0000';
+  var end = e[3]+'/'+e[1]+'/'+e[2]+':'+e[4]+' +0000';  
+  var date = new Date().toString().split(' ');
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  var in_data = {
+    today: "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+"."+date[2]   ,
+    START : start,
+    END : end,
+    MIN : parseInt(req.query.min),
+    MAX : parseInt(req.query.max)  
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","selectScatterSection", in_data, function(err, out_data, params) {
+    // console.log(out_datsa);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } 
+    var data = [];
+    var cnt = 0;
+    out_data.forEach(function(d) {
+      d._source.no = ++cnt;
+      var a = d._source.timestamp.split(':');
+      var b = a[0].split('/');
+      var c = a[3].split(' ');
+      var mon = {'Jan' : 1, 'Feb' : 2, 'Mar' : 3, 'Apr' : 4, 'May' : 5, 'Jun' : 6, 'Jul' : 7, 'Aug' : 8, 'Sep' : 9, 'Oct' : 10, 'Nov' : 11, 'Dec' : 12 };
+      //d._source.timestamp = new Date(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]);
+      d._source.timestamp = b[1]+'-'+b[0]+' '+a[1]+':'+a[2]+':'+c[0];
+      var r = d._source.request.split('?');      
+      d._source.request = r[0];
+      data.push(d._source);
+    });       
+    res.render('./sample/sampleES_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list: data });
+  });  
+});
+
+
+router.get('/restapi/selectScatterSection', function(req, res, next) {
+  console.log('dashboard/restapi/selectScatterSection');  
+  var s = new Date(parseInt(req.query.start)).toString().split(' ');
+  var e = new Date(parseInt(req.query.end)).toString().split(' ');
+  var start = s[3]+'/'+s[1]+'/'+s[2]+':'+s[4]+' +0000';
+  var end = e[3]+'/'+e[1]+'/'+e[2]+':'+e[4]+' +0000';  
+  var date = new Date().toString().split(' ');
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  var in_data = {
+    today: "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+"."+date[2] ,
+    START : start,
+    END : end,
+    MIN : parseInt(req.query.min),
+    MAX : parseInt(req.query.max)  
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","selectScatterSection", in_data, function(err, out_data, params) {
+    // console.log(out_datsa);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }    
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
+router.get('/restapi/countAccJira', function(req, res, next) {
+  console.log('dashboard/restapi/countAccJira');    
+  var date = new Date().toString().split(' ');
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  var in_data = {
+    today: "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+"."+date[2] ,
+  
+  };
+  queryProvider.selectSingleQueryCount("dashboard","countAccJira", in_data, function(err, out_data, params) {
+    // console.log(out_datsa);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }    
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
+router.get('/restapi/countAccJiraMonth', function(req, res, next) {
+  console.log('dashboard/restapi/countAccJiraMonth');    
+  var date = new Date().toString().split(' ');
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  var in_data = {
+    today: "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+".*"
+  
+  };
+  queryProvider.selectSingleQueryCount("dashboard","countAccJira", in_data, function(err, out_data, params) {
+    // console.log(out_datsa);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }    
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
 });
 
 // ###########################################################

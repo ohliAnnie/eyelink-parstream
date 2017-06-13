@@ -74,7 +74,6 @@ var cy = cytoscape({
       .selector('#a1')
       .css({
         'background-image': '../assets/images/user1.png'
-
       })
       .selector('#a2')
       .css({
@@ -110,11 +109,10 @@ var cy = cytoscape({
   var timeformat = d3.time.format('%m-%d %H:%M');
   var cnt = 0;
 
-  d3.json("/sample/restapi/selectJiraAccScatter", function(error, json) { 
+  d3.json("/dashboard/restapi/selectJiraAccScatter", function(error, json) { 
     var data = [];
     var start=new Date().getTime(), end=new Date(1990,0,0,0,0,0).getTime();
-    json.rtnData.forEach(function(d){  
-        
+    json.rtnData.forEach(function(d){          
       var a = d._source.timestamp.split(':');
       var b = a[0].split('/');
       var c = a[3].split(' ');
@@ -131,7 +129,7 @@ var cy = cytoscape({
         y : d._source.responsetime,
         date : date,
         hour : d3.time.hour(date),
-        type : d._source.response < 300? 'Success' : (d._source.response < 400 ? 'Redirection' : 'Error' ),
+        type : d._source.response >= 400? 'Error' : (d._source.responsetime >= 300 ? 'Redirection' : 'Success'), 
         term : d._source.response >= 400? 'Error' : (d._source.responsetime < 1000 ? '1s' : (d._source.responsetime < 3000 ? '3s' : (d._source.responsetime < 5000 ? '5s' : 'Slow'))),
         index : d._source.response >= 400? 4 : (d._source.responsetime < 1000 ? 0 : (d._source.responsetime < 3000 ? 1 : (d._source.responsetime < 5000 ? 2 : 3)))
 
@@ -172,17 +170,20 @@ var cy = cytoscape({
         console.log('fOnSelect', htPosition, htXY);
         console.time('fOnSelect');
         var aData = this.getDataByXY(htXY.nXFrom, htXY.nXTo, htXY.nYFrom, htXY.nYTo);
-        var link = './sampleES_detail?start='+htXY.nXFrom+'&end='+htXY.nXTo+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;
+        var link = './scatter_detail?start='+htXY.nXFrom+'&end='+htXY.nXTo+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;
         console.timeEnd('fOnSelect');
         console.log('adata length', aData.length);
         window.open(link, "EyeLink Service LIst", "menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50");
         d3.select("#test").select("svg").remove();
         d3.select("#load").select("svg").remove();
+        var s = new Date(htXY.nXFrom).toString().split(' ');
+        var date = new Date().toString().split(' ');
+        var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
         $.ajax({
-          url: "/sample/restapi/selectScatterSection" ,
+          url: "/dashboard/restapi/selectScatterSection" ,
           dataType: "json",
           type: "get",
-          data: {start:htXY.nXFrom, end:htXY.nXTo, min:htXY.nYFrom, max:htXY.nYTo},
+          data: {       today : "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+"."+date[2] , start:htXY.nXFrom, end:htXY.nXTo, min:htXY.nYFrom, max:htXY.nYTo},
           success: function(result) {
             if (result.rtnCode.code == "0000") {            
             var dataS = [];
@@ -203,11 +204,12 @@ var cy = cytoscape({
                 y : d._source.responsetime,
                 date : date,
                 hour : d3.time.hour(date),
-                type : d._source.response < 300? 'Success' : (d._source.response < 400 ? 'Redirection' : 'Error' ),
+                type : d._source.response >= 400? 'Error' : (d._source.responsetime >= 300 ? 'Redirection' : 'Success'),                
                 term : d._source.response >= 400? 'Error' : (d._source.responsetime < 1000 ? '1s' : (d._source.responsetime < 3000 ? '3s' : (d._source.responsetime < 5000 ? '5s' : 'Slow'))),
                 index : d._source.response >= 400? 4 : (d._source.responsetime < 1000 ? 0 : (d._source.responsetime < 3000 ? 1 : (d._source.responsetime < 5000 ? 2 : 3)))
               });
              });
+            console.log(dataS);
              summary(dataS, startS, endS);
           } else {
             //- $("#errormsg").html(result.message);
@@ -227,78 +229,7 @@ var cy = cytoscape({
    if(cnt++ == 0) {
     summary(data, start, end);
   }  
-
   });
-  d3.json("/dashboard/restapi/selectJiraAccId", function(error, data) {                 
-      console.log(data.rtnData);
-      var colors = data.id;
-      /*var json = JSON.parse(data.rtnData); 
-      console.log(json);*/
-        var chart = d3.select("#chart").append("svg").chart("Sankey.Path");
-       chart
-          .name(label)
-          .colorNodes(function(name, node) {
-            return color(node, 1) || colors.fallback;
-          })
-          .colorLinks(function(link) {
-            return color(link.source, 4) || color(link.target, 1) || colors.fallback;
-          })
-          .nodeWidth(15)
-          .nodePadding(10)
-          .spread(true)
-          .iterations(0)
-          .draw(data.rtnData);
-        function label(node) {
-          return node.name.replace(/\s*\(.*?\)$/, '');
-        }
-        
-        function color(node, depth) {
-          var id = node.id.replace(/(_score)?(_\d+)?$/, '');
-          if (colors[id]) {
-            return colors[id];
-          } else if (depth > 0 && node.targetLinks && node.targetLinks.length == 1) {
-            return color(node.targetLinks[0].source, depth-1);
-          } else {
-            return null;
-          }
-        }
-      });
-d3.json("/dashboard/restapi/selectJiraAccJson", function(error, data) {                 
-      var colors = data.color;
-      console.log(color);
-      console.log(data.rtnData);
-
-      /*var json = JSON.parse(data.rtnData); 
-      console.log(json);*/
-        var chart = d3.select("#chart2").append("svg").chart("Sankey.Path");
-       chart
-          .name(label)
-          .colorNodes(function(name, node) {
-            return color(node, 1) || colors.fallback;
-          })
-          .colorLinks(function(link) {
-            return color(link.source, 4) || color(link.target, 1) || colors.fallback;
-          })
-          .nodeWidth(15)
-          .nodePadding(10)
-          .spread(true)
-          .iterations(0)
-          .draw(data.rtnData);
-        function label(node) {
-          return node.name.replace(/\s*\(.*?\)$/, '');
-        }
-        function color(node, depth) {
-          var id = node.id.replace(/(_score)?(_\d+)?$/, '');
-          if (colors[id]) {
-            return colors[id];
-          } else if (depth > 0 && node.targetLinks && node.targetLinks.length == 1) {
-            return color(node.targetLinks[0].source, depth-1);
-          } else {
-            return null;
-          }
-        }
-      });
-
 }); // on dom ready
 function summary(data, start, end) {  
   var chart = dc.barChart("#test");
@@ -337,7 +268,7 @@ function summary(data, start, end) {
   
 var term = ['1s', '3s', '5s', 'Slow', 'Error'];
 chart
-    .width(window.innerWidth*0.2)
+    .width(window.innerWidth*0.42)
     .height(300)    
     .margins({left: 40, top: 5, right: 10, bottom: 40})
     .brushOn(false)    
@@ -357,7 +288,7 @@ chart
 
 
   load
-    .width(window.innerWidth*0.2)
+    .width(window.innerWidth*0.58)
     .height(300)
     .margins({left: 60, top: 10, right: 10, bottom: 40})
     .brushOn(false)
@@ -395,4 +326,61 @@ chart
       };
   }
  dc.renderAll();
+}
+
+function displayCount() {  
+  var todayCnt = 0, monthCnt = 0;
+    $.ajax({
+    url: "/dashboard/restapi/countAccJiraMonth",
+    dataType: "json",
+    type: "GET",    
+    success: function(result) {
+      // console.log(result);
+      if (result.rtnCode.code == "0000") {
+        //- $("#successmsg").html(result.message);
+        monthCnt = result.rtnData;
+        $('#mevent-count').text(result.rtnData);
+        setStatus($('#mevent_status'), monthCnt/monthCnt*100, 'day', 0);        
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
+  $.ajax({
+    url: "/dashboard/restapi/countAccJira",
+    dataType: "json",
+    type: "GET",    
+    success: function(result) {
+      // console.log(result);
+      if (result.rtnCode.code == "0000") {
+        //- $("#successmsg").html(result.message);
+        todayCnt = result.rtnData;
+
+        $('#event-count').text(result.rtnData);
+        setStatus($('#event_status'), todayCnt/monthCnt * 100, 'day', 0);        
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
+}
+
+function setStatus(obj, percent, msg, cnt) {
+  // $('#mevent_status > .status > .status-number')
+  obj.children('.progress').children('.progress-bar').css('width', percent + '%');
+  obj.children('.status').children('.status-title').text('From the previous ' + msg + ' (' + cnt + ')');
+  obj.children('.status').children('.status-number').text(repVal(percent) + '%');
+}
+
+function repVal(str) {
+  str *= 1
+  return str.toFixed(2);
 }

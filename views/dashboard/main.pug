@@ -24,14 +24,11 @@ block script
   script(type='text/javascript', src='/assets/sample/js/underscore-min.js') 
   script(type='text/javascript', src='/assets/sample/js/jquery.Class.js')
   script(type='text/javascript', src='/assets/sample/js/jquery.dragToSelect.js')
-  script(type='text/javascript', src='/assets/sample/js/jquery.BigScatterChart.js') 
-  script(src='/assets/sample/js/sankey.js')
-  script(src='/assets/sample/js/d3.chart.min.js')
-  script(src='/assets/sample/js/d3.chart.sankey.min.js')  
+  script(type='text/javascript', src='/assets/sample/js/jquery.BigScatterChart.js')   
   script.
     $(document).ready(function(e) {
       // display Count 4 type.
-    //  displayCount();
+     displayCount();
 
       // draw Chart
      // drawChart();
@@ -155,7 +152,7 @@ block content
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Summary Chart
-                span.caption-helper  Response
+                span.caption-helper  Response Time
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -164,19 +161,17 @@ block content
                 a.remove(href='javascript:;')
             .portlet-body
               .row
-                .col-md-6(style="height:300px")
-                  p Time
-                  #test
-                .col-md-6(style="height:300px")
-                  p Load
-                  #load
+                .col-md-12(style="height:300px")                 
+                  #test(style="width:100%;")
+
+                  
       .row
         .col-md-8
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase Sankey Chart                
-                span.caption-helper  Path/User
+                span.caption-subject.bold.uppercase Summary Chart                
+                span.caption-helper  Load
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-pencil
@@ -187,12 +182,9 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .row
-                .col-md-6(style="height:300px")
-                  p by Path
-                  #chart(style="width:100%; height:90%")
-                .col-md-6(style="height:300px")
-                  p by User
-                  #chart2(style="width:100%; height:90%")
+                .col-md-12(style="height:300px")                  
+                  #load(style="width:100%;")
+                
                
         .col-md-4
           .portlet.light.bordered
