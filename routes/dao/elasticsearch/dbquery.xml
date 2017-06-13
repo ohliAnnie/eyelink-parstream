@@ -83,7 +83,7 @@
     ]]></query>
   <query id='selectJiraAccId'><![CDATA[
       {
-        "index" : "filebeat_jira_access-2017.06.01",
+        "index" : #today#,
         "type" : "access",       
         "body" : {
           "size"   : 20,
@@ -95,7 +95,7 @@
   ]]></query>
    <query id='selectJiraAccReq'><![CDATA[
       {
-        "index" : "filebeat_jira_access-2017.06.01",
+        "index" : #today#,
         "type" : "access",       
         "body" : {
           "size"   : 20,
@@ -104,6 +104,61 @@
           "query" : { "match_all" : { } }
         }
       } 
+  ]]></query>
+  <query id='selectJiraAccScatter'><![CDATA[
+      {
+        "index" : #today#,
+        "type" : "access",                    
+        "body" : {       
+          "size"   : 9999, 
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["timestamp", "response", "responsetime"],
+          "query" : { "match_all" : { }    }
+           }
+        } 
+  ]]></query>
+  <query id='selectScatterSection'><![CDATA[
+      {
+        "index" : #today#,
+        "type" : "access",                    
+        "body" : {       
+          "size"   : 9999, 
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
+          "query" : { 
+            "bool" : {
+              "must" : [      { "match_all": {} }        ],
+              "filter" : [
+                {
+                  "bool" : {
+                    "should" : [
+                      { "range" : 
+                        { "responsetime" : 
+                          { "gte" : #MIN#,
+                            "lt" : #MAX#  } 
+                        }
+                      },
+                      { "range" : 
+                        { "timestamp" :
+                          { "gte" : #START#,
+                            "lt" : #END# }
+                        }
+                      }
+                    ]
+                  }                    
+                }              
+              ]
+            }
+          }
+        } 
+      }
+  ]]></query>
+    <query id='countAccJira'><![CDATA[
+      {
+        "index" : #today#,
+        "type" : "access",                    
+        "body" : {  }               
+       } 
   ]]></query>
   </dashboard>
   <reports>    

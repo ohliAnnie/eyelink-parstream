@@ -193,7 +193,7 @@ router.get('/restapi/getClusterNodePowerTest', function(req, res, next) {
 // query RawData
 router.get('/restapi/getClusterRawData', function(req, res, next) {
   console.log(req.query);
-    var start = "2016-12-29T16:15:41.000Z";
+    /*var start = "2016-12-29T16:15:41.000Z";
     var end = "2017-01-30T16:15:41.000Z";
     var node = ["0001.00000013", "0002.0000002E", "0001.00000011", "0002.0000003F"];
 
@@ -201,12 +201,12 @@ router.get('/restapi/getClusterRawData', function(req, res, next) {
     START_TIMESTAMP : start,
     END_TIMESTAMP : end,
     NODE : node
-  }    
-/*  var in_data = {
+  } */   
+  var in_data = {
       START_TIMESTAMP: req.query.startDate + 'T00:00:00.000Z',
       END_TIMESTAMP: req.query.endDate + 'T23:59:59.000Z',
-      NODE: req.query.node,
-      FLAG : 'N'};*/
+      NODE: req.query.nodeId.split(','),
+      FLAG : 'N'};
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawData", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
