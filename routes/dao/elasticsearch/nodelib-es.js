@@ -44,6 +44,23 @@ QueryProvider.prototype.selectQueryString = function (qString, cb) {
   });
 }
 
+// 단순 QueryString을 이용한 Query 실행
+// ex) {q : aaa} : aaa 값을 포함하는 모든 Document 조
+QueryProvider.prototype.selectQueryStringCount = function (qString, cb) {
+  var vTimeStamp = Date.now();
+  // console.log('nodelib-es/selectQueryString -> (%j)', qString);
+
+  client.count(
+    qString
+  ).then(function (body) {
+    var count = body.count;
+    // console.log(body)
+    cb(null, body, count);
+  }, function (error) {
+    console.trace(error.message);
+    cb(error.message);
+  });
+}
 
 // query.xml에 정의된 query를 이용한 query수행
 QueryProvider.prototype.selectSingleQueryByID = function (type, queryId, datas, cb) {
@@ -128,6 +145,51 @@ QueryProvider.prototype.selectSingleQueryByID2 = function (type, queryId, datas,
   }, function (err) {
       console.trace(err.message);
       cb(error.message);
+  });
+
+}
+
+// query.xml에 정의된 query를 이용한 query수행
+QueryProvider.prototype.selectSingleQueryCount = function (type, queryId, datas, cb) {
+  var vTimeStamp = Date.now();
+  console.log('queryId : '+queryId);
+  console.time('nodelib-es/selectSingleQueryCount -> '+ queryId +' total ');
+  console.log('nodelib-es/selectSingleQueryCount -> (%s) queryID', queryId);
+
+  // SQL 내 파라메타를 변경해준다.
+  var sQueryString = Utils.replaceSql2(queryParser.getQuery(type, queryId), datas);
+  console.log('nodelib-es/selectSingleQueryCount -> ' + sQueryString);
+
+  sQueryString = JSON.parse(sQueryString);
+
+  client.count(
+    sQueryString
+  ).then(function (resp) {
+      //console.log(resp.hits);
+      var count = resp.count;      
+      console.log('nodelib-es/selectSingleQueryCount -> count : %d', resp.count);
+      cb(null, count);
+  }, function (err) {
+      console.trace(err.message);
+      cb(error.message);
+  });
+
+}
+
+
+QueryProvider.prototype.countDocForTest = function (cb) {
+
+  client.count({
+    index: 'testindex',
+    type: 'testtype',
+    id: '1',
+   }).then(function (resp) {
+      // var hits = resp.hits.hits;
+      console.log(resp)
+      cb(null, resp);
+  }, function (err) {
+      console.trace(err.message);
+      cb(err.message);
   });
 
 }
