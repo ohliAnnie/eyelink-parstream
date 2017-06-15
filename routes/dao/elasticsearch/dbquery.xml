@@ -110,7 +110,7 @@
         "index" : #today#,
         "type" : "access",                    
         "body" : {       
-          "size"   : 9999, 
+          "size"   : 10000, 
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "response", "responsetime"],
           "query" : { "match_all" : { }    }
@@ -122,7 +122,7 @@
         "index" : #today#,
         "type" : "access",                    
         "body" : {       
-          "size"   : 9999, 
+          "size"   : 10000, 
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
           "query" : { 
@@ -153,11 +153,43 @@
         } 
       }
   ]]></query>
+    <query id='selectJiraAccOneWeek'><![CDATA[
+      {
+        "index" : [##index##],
+        "type" : "access",                    
+        "body" : {       
+          "size"   : 10000, 
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["timestamp", "response"],
+          "query" : { "match_all" : { }    }
+           }
+        } 
+  ]]></query>
     <query id='countAccJira'><![CDATA[
       {
-        "index" : #today#,
+        "index" : #index#,
         "type" : "access",                    
         "body" : {  }               
+       } 
+  ]]></query>
+    <query id='countAccJiraError'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : "access",                    
+        "body" : {  
+          "query": {
+            "bool": {
+              "filter": {
+                "range": {
+                  "response": {
+                    "gte": 400,
+                    "lte": 499
+                  }
+                }
+              }
+            }
+          }
+        }               
        } 
   ]]></query>
   </dashboard>
@@ -235,7 +267,7 @@
         "index" : "filebeat_jira_access-2017.06.01",
         "type" : "access",                    
         "body" : {       
-          "size"   : 9999, 
+          "size"   : 10000, 
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "query" : { "match_all" : { }
               }
@@ -259,7 +291,7 @@
         "index" : "filebeat_jira_access-2017.06.01",
         "type" : "access",                    
         "body" : {       
-          "size"   : 9999, 
+          "size"   : 10000, 
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "response", "responsetime"],
           "query" : { "match_all" : { }    }
@@ -271,7 +303,7 @@
         "index" : "filebeat_jira_access-2017.06.01",
         "type" : "access",                    
         "body" : {       
-          "size"   : 9999, 
+          "size"   : 10000, 
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
           "query" : { 
@@ -309,7 +341,7 @@
         "index" : "corecode-2017-05",
         "type" : "corecode",                    
         "body" : {       
-          "size"   : 9999,           
+          "size"   : 10000,           
           "query" : { "match_all" : { }    }
         } 
      ]]></query>
@@ -318,7 +350,7 @@
         "index" : "corecode-2017-05",
         "type" : "corecode",                    
         "body" : {       
-          "size"   : 9999,           
+          "size"   : 10000,           
           "query" : { "match_all" : { }    }
         } 
      ]]></query>
@@ -327,7 +359,7 @@
         "index" : "corecode-2017-05",
         "type" : "corecode",                    
         "body" : {       
-          "size"   : 9999,           
+          "size"   : 10000,           
           "query" : { "match_all" : { }    }
         } 
      ]]></query>
@@ -338,7 +370,7 @@
         "index" : "corecode-2017-05",
         "type" : "corecode",                    
         "body" : {       
-          "size"   : 9999,           
+          "size"   : 10000,           
           "query" : { "match_all" : { }    }
         } 
      ]]></query>     
@@ -347,7 +379,7 @@
         "index" : "corecode-2017-05",
         "type" : "corecode",              
         "body" : {       
-          "size" : 9999, 
+          "size" : 100000, 
           "sort" : { "event_time" : { "order" : "asc" }},
           "_source" : ["node_id", "event_time", "ampere", "voltage", "active_power", "power_factor", "event_type"],
           "query" : { 
@@ -372,7 +404,7 @@
         "index" : "corecode-2017-05",
         "type" : "corecode",              
         "body" : {       
-          "size" : 9999, 
+          "size" : 100000, 
           "sort" : { "event_time" : { "order" : "asc" }},
           "_source" : ["node_id", "event_time", "ampere", "voltage", "active_power", "power_factor", "event_type"],
           "query" : { 
@@ -397,7 +429,7 @@
         "index" : "corecode-2017-05",
         "type" : "corecode",
         "body" : {       
-          "size" : 9999, 
+          "size" : 100000, 
           "sort" : { "event_time" : { "order" : "asc" }},
           "_source" : ["node_id", "event_time", "event_type", "active_power", "ampere", "amount_active_power", "als_level", "dimming_level", "noise_decibel", "noise_frequency", "vibration_x", "vibration_y", "vibration_z"],
           "query" : { 
@@ -420,16 +452,16 @@
         "index" : "corecode-2017-05",
         "type" : "corecode",                    
         "body" : {       
-          "size"   : 9999,           
+          "size"   : 10000,           
           "query" : { "match_all" : { }    }
         } 
       ]]></query>
     <query id= 'insertClusteringMaster'><![CDATA[
      {
         "index" : "corecode-2017-05",
-        "type" : "corecode",                    
-        "body" : {       
-          "size"   : 9999,           
+        "type" : "corecode", 
+        "body" : { 
+          "size"   : 10000, 
           "query" : { "match_all" : { }    }
         } 
       ]]></query>  
