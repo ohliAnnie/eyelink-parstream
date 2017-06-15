@@ -36,7 +36,7 @@ var cy = cytoscape({
     .selector('node')
       .css({
         'width': '100px',
-        'height': '80px',
+        'height': '60px',
         'content': 'data(name)',
         'background-fit': 'cover',
          'border-color': '#000',
@@ -144,7 +144,7 @@ var cy = cytoscape({
   function doBigScatterChart(){
     oScatterChart = new BigScatterChart({
       sContainerId : 'chart1',
-      nWidth : window.innerWidth*0.25,
+      nWidth : window.innerWidth*0.42,
       nHeight : 280,
       nXMin: start, nXMax: end,
       nYMin: 0, nYMax: 10000,
@@ -236,10 +236,14 @@ function summary(data, start, end) {
   var load = dc.barChart("#load");
  
   var timeformat = d3.time.format('%m-%d %H:%M');
-
-  var date = new Date((start+end)/2);  
+  
+  if((end-start)<60*60*1000){
+    start -= 30*60*1000;
+    end += 30*60*1000;
+  }
+  
   var minDate = new Date(start); 
-  var maxDate = new Date(end+3600000);  
+  var maxDate = new Date(end);
   var gap = (end-start)/(24 * 60 * 60 * 1000);
 
   var nyx = crossfilter(data);
@@ -268,8 +272,8 @@ function summary(data, start, end) {
   
 var term = ['1s', '3s', '5s', 'Slow', 'Error'];
 chart
-    .width(window.innerWidth*0.42)
-    .height(300)    
+    .width(window.innerWidth*0.20)
+    .height(320)    
     .margins({left: 40, top: 5, right: 10, bottom: 40})
     .brushOn(false)    
     .dimension(termDim)
@@ -288,9 +292,9 @@ chart
 
 
   load
-    .width(window.innerWidth*0.58)
-    .height(300)
-    .margins({left: 60, top: 10, right: 10, bottom: 40})
+    .width(window.innerWidth*0.20)
+    .height(310)
+    .margins({left: 65, top: 10, right: 10, bottom: 40})
     .brushOn(false)
     .transitionDuration(500)
     .clipPadding(10)
@@ -302,7 +306,7 @@ chart
     })      
     .dimension(hourDim)
     .group(stackGroup, term[0], sel_stack('0'))
-    .mouseZoomable(false)
+    .mouseZoomable(true)
     .renderHorizontalGridLines(true)
     .x(d3.time.scale().domain([minDate, maxDate]))
     .round(d3.time.hour.round)
@@ -328,19 +332,22 @@ chart
  dc.renderAll();
 }
 
-function displayCount() {  
-  var todayCnt = 0, monthCnt = 0;
+function displayCount() {    
+  var mon = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];  
+  var day = new Date();
+  var pday = day.getTime() - 24*60*60*1000;
+  pday = new Date(pday);    
     $.ajax({
-    url: "/dashboard/restapi/countAccJiraMonth",
+    url: "/dashboard/restapi/countAccJira",
     dataType: "json",
     type: "GET",    
+    data: { index: "filebeat_jira_access-"+day.getFullYear()+"."+mon[day.getMonth()]+"."+day.getDate()},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
-        //- $("#successmsg").html(result.message);
-        monthCnt = result.rtnData;
-        $('#mevent-count').text(result.rtnData);
-        setStatus($('#mevent_status'), monthCnt/monthCnt*100, 'day', 0);        
+        //- $("#successmsg").html(result.message);        
+         $('#dayCnt').text(result.rtnData);               
+         pdayCnt(pday, mon);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -350,18 +357,18 @@ function displayCount() {
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
   });
+
   $.ajax({
     url: "/dashboard/restapi/countAccJira",
     dataType: "json",
     type: "GET",    
+    data: { index: "filebeat_jira_access-"+day.getFullYear()+"."+mon[day.getMonth()]+".*"},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
-        //- $("#successmsg").html(result.message);
-        todayCnt = result.rtnData;
-
-        $('#event-count').text(result.rtnData);
-        setStatus($('#event_status'), todayCnt/monthCnt * 100, 'day', 0);        
+        //- $("#successmsg").html(result.message);        
+        $('#monCnt').text(result.rtnData);        
+        pmonCnt(day, mon);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -371,6 +378,28 @@ function displayCount() {
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
   });
+ 
+   $.ajax({
+    url: "/dashboard/restapi/countAccJiraError",
+    dataType: "json",
+    type: "GET",    
+    data: { index: "filebeat_jira_access-"+day.getFullYear()+"."+mon[day.getMonth()]+"."+day.getDate()},
+    success: function(result) {
+      // console.log(result);
+      if (result.rtnCode.code == "0000") {
+        //- $("#successmsg").html(result.message);        
+         $('#errCnt').text(result.rtnData);               
+        perrCnt(pday, mon);
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });      
+
 }
 
 function setStatus(obj, percent, msg, cnt) {
@@ -383,4 +412,160 @@ function setStatus(obj, percent, msg, cnt) {
 function repVal(str) {
   str *= 1
   return str.toFixed(2);
+}
+
+function pdayCnt(day, mon){
+   $.ajax({
+    url: "/dashboard/restapi/countAccJira",
+    dataType: "json",
+    type: "GET",    
+    data: { index: "filebeat_jira_access-"+day.getFullYear()+"."+mon[day.getMonth()]+"."+day.getDate()},
+    success: function(result) {
+      // console.log(result);
+      if (result.rtnCode.code == "0000") {
+        //- $("#successmsg").html(result.message);
+        setStatus($('#dayCnt_status'), parseInt($('#dayCnt').text())/result.rtnData*100, 'day', result.rtnData);       
+
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
+}
+
+function pmonCnt(day, mon){
+   if(day.getMonth() == 0) {
+    var index = "filebeat_jira_access-"+(day.getFullYear()-1)+"."+mon[11]+".*";
+  } else {
+    var index = "filebeat_jira_access-"+day.getFullYear()+"."+mon[day.getMonth()-1]+".*";
+  }
+  $.ajax({
+    url: "/dashboard/restapi/countAccJira",
+    dataType: "json",
+    type: "GET",    
+    data: { index: index },
+    success: function(result) {
+      // console.log(result);
+      if (result.rtnCode.code == "0000") {
+        //- $("#successmsg").html(result.message);
+        setStatus($('#monCnt_status'), parseInt($('#monCnt').text())/result.rtnData*100, 'day', result.rtnData); 
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
+}
+
+function perrCnt(day, mon){
+   $.ajax({
+    url: "/dashboard/restapi/countAccJiraError",
+    dataType: "json",
+    type: "GET",    
+    data: { index: "filebeat_jira_access-"+day.getFullYear()+"."+mon[day.getMonth()]+"."+day.getDate()},
+    success: function(result) {
+      // console.log(result);
+      if (result.rtnCode.code == "0000") {
+        //- $("#successmsg").html(result.message);
+        setStatus($('#errCnt_status'), parseInt($('#errCnt').text())/result.rtnData*100, 'day', result.rtnData);       
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
+}
+
+function drawChart() {
+  var markerName = "dashboardChart";
+  var volumeChart = dc.barChart('#volumn-chart', markerName);
+
+  d3.json("/dashboard/restapi/getJiraAccOneWeek", function(err, out_data) {
+    // if (err) throw Error(error);
+    var dateFormat = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
+    var df = d3.time.format('%Y-%m-%dT%H:%M:%S.%LZ');
+    var numberFormat = d3.format('.2f');
+    var maxDate = new Date();
+    var minDate  = addDays(new Date(), -20);
+
+    // for Test
+    maxDate = new Date(new Date().getTime());
+    minDate = new Date(new Date().getTime()-7*24*60*60*1000);
+
+    var data = out_data.rtnData;
+    // console.log(out_data);
+    
+    data.forEach(function (d) {         
+      var a = d.timestamp.split(':');
+      var b = a[0].split('/');
+      var c = a[3].split(' ');
+      var mon = {'Jan' : 1, 'Feb' : 2, 'Mar' : 3, 'Apr' : 4, 'May' : 5, 'Jun' : 6, 'Jul' : 7, 'Aug' : 8, 'Sep' : 9, 'Oct' : 10, 'Nov' : 11, 'Dec' : 12 };      
+      d.day=d3.time.day(new Date(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]));
+            
+    });
+
+    // console.log(data);
+
+    var ndx = crossfilter(data);
+
+    var moveDays = ndx.dimension(function (d) {    
+      return d.day;
+    });
+
+   var stackGroup = moveDays.group().reduce(function(p, v){
+    p[v.event_type] = (p[v.event_type] || 0) + 1;    
+    return p;
+  }, function(p, v) {
+    p[v.event_type] = (p[v.event_type] || 0) - 1;
+    return p;
+  }, function() {
+    return{};
+  });
+  
+    // console.log(ampereGroup);
+  function sel_stack(i) {
+      return function(d) {            
+          return d.value[i]?d.value[i]:0;
+      };
+  }
+   
+/*  dc.barChart('#eventBar')  */
+var type = ['success', 'error'];
+    volumeChart
+      // .width(600)
+      .height(77)
+      .margins({top: 0, right: 50, bottom: 20, left: 40})
+      .dimension(moveDays)
+      .group(stackGroup, type[0], sel_stack('0'))
+      .centerBar(true)
+      .brushOn(false)
+      .gap(1)
+      .x(d3.time.scale().domain([minDate, maxDate]))      
+      .elasticY(true)
+      .round(d3.time.day.round)
+      .alwaysUseRounding(true)
+      .xUnits(d3.time.days)
+      .title(function(d) {
+       for(var i=0; i<type.length; i++) {
+        if(this.layer == type[i])                   
+          return this.layer + ' : ' + d.value[i];
+          }
+       })
+       .colors(d3.scale.ordinal().range(["#EDC951",  "#CC333F"]));
+    for(var i = 1; i<type.length; ++i){
+      volumeChart.stack(stackGroup, type[i], sel_stack(i));
+    }  
+
+    dc.renderAll(markerName);
+  });
 }

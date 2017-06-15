@@ -279,7 +279,6 @@ router.get('/scatter_detail', function(req, res, next) {
   });  
 });
 
-
 router.get('/restapi/selectScatterSection', function(req, res, next) {
   console.log('dashboard/restapi/selectScatterSection');  
   var s = new Date(parseInt(req.query.start)).toString().split(' ');
@@ -306,13 +305,10 @@ router.get('/restapi/selectScatterSection', function(req, res, next) {
 });
 
 router.get('/restapi/countAccJira', function(req, res, next) {
-  console.log('dashboard/restapi/countAccJira');    
-  var date = new Date().toString().split(' ');
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var in_data = {
-    today: "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+"."+date[2] ,
-  
-  };
+  console.log('dashboard/restapi/countAccJira');      
+  console.log(req.query.index);
+  var in_data = {    index : req.query.index    };
+  console.log(in_data);
   queryProvider.selectSingleQueryCount("dashboard","countAccJira", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');
@@ -323,24 +319,54 @@ router.get('/restapi/countAccJira', function(req, res, next) {
   });
 });
 
-router.get('/restapi/countAccJiraMonth', function(req, res, next) {
-  console.log('dashboard/restapi/countAccJiraMonth');    
-  var date = new Date().toString().split(' ');
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var in_data = {
-    today: "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+".*"
-  
-  };
-  queryProvider.selectSingleQueryCount("dashboard","countAccJira", in_data, function(err, out_data, params) {
+router.get('/restapi/countAccJiraError', function(req, res, next) {
+  console.log('dashboard/restapi/countAccJiraError');      
+  console.log(req.query.index);
+  var in_data = {    index : req.query.index    };
+  console.log(in_data);
+  queryProvider.selectSingleQueryCount("dashboard","countAccJiraError", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }    
+    console.log(out_data);  
     res.json({rtnCode: rtnCode, rtnData: out_data });
   });
 });
 
+router.get('/restapi/getJiraAccOneWeek', function(req, res, next) {
+  console.log('dashboard/restapi/getJiraAccOneWeek');
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  var week = [];
+  for(var i=0; i<7; i++)  {
+    var time = new Date().getTime() - i*24*60*60*1000;
+    var date = new Date(time).toString().split(' ');  
+    week[i] = "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+"."+date[2];
+  }  
+  var in_data = {
+    index: week
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccOneWeek", in_data, function(err, out_data, params) {
+    // console.log(out_datsa);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } 
+    var data = [];
+    out_data.forEach(function(d) {              
+      d._source.response = parseInt(d._source.response);
+      if(d._source.response >= 400 && d._source.response < 500) {
+        d._source.event_type = 1;
+      } else {
+        d._source.event_type = 0;
+      }
+      if(d._source.timestamp != null)
+        data.push(d._source);
+    });       
+    res.json({rtnCode: rtnCode, rtnData: data });
+  });  
+});
 // ###########################################################
 
 

@@ -31,7 +31,7 @@ block script
      displayCount();
 
       // draw Chart
-     // drawChart();
+      drawChart();
 
       // draw Map
       //- drawMap();
@@ -56,11 +56,9 @@ block content
           .dashboard-stat2
             .display
               .number
-                h3#mevent-count.font-blue-sharp 0
-                small TOTAL MONTHLY EVENT
-              .icon
-                i.icon-calendar
-            #mevent_status.progress-info
+                h3#monCnt.font-blue-sharp 0
+                small TOTAL MONTHLY EVENT              
+            #monCnt_status.progress-info
               .progress
                 span.progress-bar.progress-bar-success.blue-sharp(style='width: 90%;')
                   span.sr-only 76% progress
@@ -71,11 +69,11 @@ block content
           .dashboard-stat2
             .display
               .number
-                h3#event-count.font-green-sharp 0
+                h3#dayCnt.font-green-sharp 0
                 small Total Daily Event
               .icon
                 i.icon-pie-chart
-            #event_status.progress-info
+            #dayCnt_status.progress-info
               .progress
                 span.progress-bar.progress-bar-success.green-sharp(style='width: 85%;')
                   span.sr-only 85% change
@@ -86,11 +84,11 @@ block content
           .dashboard-stat2
             .display
               .number
-                h3#fault-count.font-red-haze 0
+                h3#errCnt.font-red-haze 0
                 small Daily Fault Event
               .icon
                 i.icon-speedometer
-            #fault_status.progress-info
+            #errCnt_status.progress-info
               .progress
                 span.progress-bar.progress-bar-success.red-haze(style='width: 45%;')
                   span.sr-only 45% grow
@@ -117,8 +115,8 @@ block content
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase Event Trend
-                span.caption-helper  The event counts
+                span.caption-subject.bold.uppercase One Week Event Count
+                span.caption-helper  by success / error
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-pencil
@@ -131,8 +129,8 @@ block content
               .chart(style='height:80px')
                 #volumn-chart.chart_custom
       .row
-        .col-md-6
-          .portlet.light
+        .col-md-6(style="height:815px")    
+          .portlet.light(style="height:815px")
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-blue-sharp Server Map
@@ -145,9 +143,9 @@ block content
                 a.remove(href='javascript:;')
             .portlet-body
               .row
-                .chart
+                .chart(style="height:720px")
                   #cy
-        .col-md-6
+        .col-md-3
           .portlet.light.bordered
             .portlet-title
               .caption
@@ -162,11 +160,8 @@ block content
             .portlet-body
               .row
                 .col-md-12(style="height:300px")                 
-                  #test(style="width:100%;")
-
-                  
-      .row
-        .col-md-8
+                  #test(style="width:100%;")                 
+        .col-md-3
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
@@ -183,10 +178,8 @@ block content
             .portlet-body
               .row
                 .col-md-12(style="height:300px")                  
-                  #load(style="width:100%;")
-                
-               
-        .col-md-4
+                  #load(style="width:100%;")               
+        .col-md-6
           .portlet.light.bordered
             .portlet-title
               .caption
