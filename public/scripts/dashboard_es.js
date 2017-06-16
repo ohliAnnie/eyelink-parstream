@@ -452,7 +452,7 @@ function pmonCnt(day, mon){
       // console.log(result);
       if (result.rtnCode.code == "0000") {
         //- $("#successmsg").html(result.message);
-        setStatus($('#monCnt_status'), parseInt($('#monCnt').text())/result.rtnData*100, 'day', result.rtnData); 
+        setStatus($('#monCnt_status'), parseInt($('#monCnt').text())/result.rtnData*100, 'month', result.rtnData); 
       } else {
         //- $("#errormsg").html(result.message);
       }

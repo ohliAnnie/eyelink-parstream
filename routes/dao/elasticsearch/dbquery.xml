@@ -341,7 +341,7 @@
         "index" : "corecode-2017-05",
         "type" : "corecode",                    
         "body" : {       
-          "size"   : 10000,           
+          "size"   : 100000,           
           "query" : { "match_all" : { }    }
         } 
      ]]></query>
@@ -350,7 +350,7 @@
         "index" : "corecode-2017-05",
         "type" : "corecode",                    
         "body" : {       
-          "size"   : 10000,           
+          "size"   : 100000,           
           "query" : { "match_all" : { }    }
         } 
      ]]></query>
@@ -359,7 +359,7 @@
         "index" : "corecode-2017-05",
         "type" : "corecode",                    
         "body" : {       
-          "size"   : 10000,           
+          "size"   : 100000,           
           "query" : { "match_all" : { }    }
         } 
      ]]></query>
@@ -370,7 +370,7 @@
         "index" : "corecode-2017-05",
         "type" : "corecode",                    
         "body" : {       
-          "size"   : 10000,           
+          "size"   : 100000,           
           "query" : { "match_all" : { }    }
         } 
      ]]></query>     
@@ -452,7 +452,7 @@
         "index" : "corecode-2017-05",
         "type" : "corecode",                    
         "body" : {       
-          "size"   : 10000,           
+          "size"   : 100000,           
           "query" : { "match_all" : { }    }
         } 
       ]]></query>
@@ -461,7 +461,7 @@
         "index" : "corecode-2017-05",
         "type" : "corecode", 
         "body" : { 
-          "size"   : 10000, 
+          "size"   : 100000, 
           "query" : { "match_all" : { }    }
         } 
       ]]></query>  
