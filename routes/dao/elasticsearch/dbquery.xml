@@ -105,9 +105,9 @@
         }
       } 
   ]]></query>
-  <query id='selectJiraAccScatter'><![CDATA[
+  <query id='selectJiraAccDash'><![CDATA[
       {
-        "index" : #today#,
+        "index" : #index#,
         "type" : "access",                    
         "body" : {       
           "size"   : 10000, 
@@ -341,7 +341,7 @@
         "index" : "corecode-2017-05",
         "type" : "corecode",                    
         "body" : {       
-          "size"   : 100000,           
+          "size"   : 10000,           
           "query" : { "match_all" : { }    }
         } 
      ]]></query>

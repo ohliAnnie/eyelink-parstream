@@ -131,8 +131,8 @@ block content
               .chart(style='height:80px')
                 #volumn-chart.chart_custom
       .row
-        .col-md-6(style="height:815px")    
-          .portlet.light(style="height:815px")
+        .col-md-6(style="height:820px")    
+          .portlet.light(style="height:820px")
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-blue-sharp Server Map
@@ -145,10 +145,25 @@ block content
                 a.remove(href='javascript:;')
             .portlet-body
               .row
-                .chart(style="height:720px")
+                .chart(style="height:730px")
                   #cy
-        .col-md-3
+        .col-md-6
           .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase Scatter Chart
+                span.caption-helper  Access Log Response Data
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart
+                #chart1(style="width:100%; height:100%")
+        .col-md-3
+          .portlet.light.bordered   
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Summary Chart
@@ -180,19 +195,4 @@ block content
             .portlet-body
               .row
                 .col-md-12(style="height:300px")                  
-                  #load(style="width:100%;")               
-        .col-md-6
-          .portlet.light.bordered
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase Scatter Chart
-                span.caption-helper  Access Log Response Data
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body
-              .chart
-                #chart1(style="width:100%; height:100%")
+                  #load(style="width:100%;")
