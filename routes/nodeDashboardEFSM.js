@@ -226,6 +226,7 @@ router.get('/restapi/selectJiraAccJson', function(req, res, next) {
 
 router.get('/restapi/selectJiraAccScatter', function(req, res, next) {
   console.log('dashboard/restapi/selectJiraAccScatter');
+  console.log(req.query.start, req.query.end);
   var date = new Date().toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var in_data = {
@@ -241,12 +242,30 @@ router.get('/restapi/selectJiraAccScatter', function(req, res, next) {
   });
 });
 
+router.get('/restapi/selectJiraAccDash', function(req, res, next) {
+  console.log('dashboard/restapi/selectJiraAccDash');
+  var date = new Date().toString().split(' ');
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  var in_data = {
+    index : req.query.index
+  };  
+  queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccDash", in_data, function(err, out_data, params) {
+    // console.log(out_datsa);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
+
 router.get('/scatter_detail', function(req, res, next) {
   var s = new Date(parseInt(req.query.start)).toString().split(' ');
   var e = new Date(parseInt(req.query.end)).toString().split(' ');
   var start = s[3]+'/'+s[1]+'/'+s[2]+':'+s[4]+' +0000';
   var end = e[3]+'/'+e[1]+'/'+e[2]+':'+e[4]+' +0000';  
-  var date = new Date().toString().split(' ');
+  var date = new Date(parseInt(req.query.start)).toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var in_data = {
     today: "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+"."+date[2]   ,
