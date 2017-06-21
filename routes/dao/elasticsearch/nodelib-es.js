@@ -146,7 +146,32 @@ QueryProvider.prototype.selectSingleQueryByID2 = function (type, queryId, datas,
       console.trace(err.message);
       cb(error.message);
   });
+}
 
+// query.xml에 정의된 query를 이용한 query수행
+QueryProvider.prototype.selectSingleQueryByID3 = function (type, queryId, datas, cb) {
+  var vTimeStamp = Date.now();
+  console.log('queryId : '+queryId);
+  console.time('nodelib-es/selectSingleQueryByID -> '+ queryId +' total ');
+  console.log('nodelib-es/selectSingleQueryByID -> (%s) queryID', queryId);
+
+  // SQL 내 파라메타를 변경해준다.
+  var sQueryString = Utils.replaceSql2(queryParser.getQuery(type, queryId), datas);
+  console.log('nodelib-es/selectSingleQueryByID -> ' + sQueryString);
+
+  sQueryString = JSON.parse(sQueryString);
+
+  client.search(
+    sQueryString
+  ).then(function (resp) {
+      //console.log(resp.hits);
+      var hits = resp.hits;      
+      console.log('nodelib-es/selectSingleQueryByID -> total : %d', resp.hits.total);
+      cb(null, hits);
+  }, function (err) {
+      console.trace(err.message);
+      cb(error.message);
+  });
 }
 
 // query.xml에 정의된 query를 이용한 query수행

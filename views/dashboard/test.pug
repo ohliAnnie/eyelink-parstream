@@ -1,0 +1,109 @@
+doctype html
+head
+  meta(charset='utf-8')
+  meta(name='viewport', content='width=device-width, initial-scale=1.0')
+  meta(name='description', content='')
+  meta(name='author', content='')
+  link(rel='shortcut icon', href='../../assets/ico/favicon.png')
+  title TreeGrid for Bootstrap 3.0.x
+  // Bootstrap core CSS
+  link(href='/assets/css/bootstrap.min.css', rel='stylesheet', type='text/css')
+  link(href='/assets/styles/jquery.treegrid.css', rel='stylesheet', type='text/css')
+  link(rel='stylesheet', href='http://yandex.st/highlightjs/7.3/styles/default.min.css')
+  script(src='http://yandex.st/highlightjs/7.3/highlight.min.js')
+  script.
+    hljs.initHighlightingOnLoad();
+  script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js')
+  script(src='/assets/scripts/libs/jquery.treegrid.js', type='text/javascript')
+  script(src='/assets/scripts/libs/jquery.treegrid.bootstrap3.js', type='text/javascript')
+  script(type='text/javascript').
+    $(document).ready(function() {
+    $('.tree').treegrid();
+    $('.tree-2').treegrid({
+    expanderExpandedClass: 'glyphicon glyphicon-minus',
+    expanderCollapsedClass: 'glyphicon glyphicon-plus'
+    });
+    });
+  script.
+    (function(i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r;
+    i[r] = i[r] || function() {
+    (i[r].q = i[r].q || []).push(arguments)
+    }, i[r].l = 1 * new Date();
+    a = s.createElement(o),
+    m = s.getElementsByTagName(o)[0];
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+    ga('create', 'UA-43342702-1', 'maxazan.github.io');
+    ga('send', 'pageview');
+.container
+  h1
+    a(href='http://maxazan.github.io/jquery-treegrid/') TreeGrid
+    |  Bootstrap 3 examples
+  table.table.tree
+    tr.treegrid-1
+      td Root node 1
+      td Additional info
+    tr.treegrid-2.treegrid-parent-1
+      td Node 1-1
+      td Additional info
+    tr.treegrid-3.treegrid-parent-1
+      td Node 1-2
+      td Additional info
+    tr.treegrid-4.treegrid-parent-3
+      td Node 1-2-1
+      td Additional info
+    tr.treegrid-5
+      td Root node 2
+      td Additional info
+    tr.treegrid-6.treegrid-parent-5
+      td Node 2-1
+      td Additional info
+    tr.treegrid-7.treegrid-parent-5
+      td Node 2-2
+      td Additional info
+    tr.treegrid-8.treegrid-parent-7
+      td Node 2-2-1
+      td Additional info
+  h3 Code
+  pre.
+    
+  h2
+    | Bootstrap TreeGrid example
+    br
+    br
+  table.table.tree-2.table-bordered.table-striped.table-condensed
+    tr.treegrid-1
+      td Root node 1
+      td Additional info
+    tr.treegrid-2.treegrid-parent-1
+      td Node 1-1
+      td Additional info
+    tr.treegrid-3.treegrid-parent-1
+      td Node 1-2
+      td Additional info
+    tr.treegrid-4.treegrid-parent-3
+      td Node 1-2-1
+      td Additional info
+    tr.treegrid-5
+      td Root node 2
+      td Additional info
+    tr.treegrid-6.treegrid-parent-5
+      td Node 2-1
+      td Additional info
+    tr.treegrid-7.treegrid-parent-5
+      td Node 2-2
+      td Additional info
+    tr.treegrid-8.treegrid-parent-7
+      td Node 2-2-1
+      td Additional info
+  h3 Code
+  pre.
+    
+// /container
+//
+  Bootstrap core JavaScript
+  ==================================================
+// Placed at the end of the document so the pages load faster
