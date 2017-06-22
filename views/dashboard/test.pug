@@ -24,86 +24,31 @@ head
     expanderCollapsedClass: 'glyphicon glyphicon-plus'
     });
     });
+.container  
+  style.
+    table { border-collapse:collapse; }
+    th, td { border:1px solid gray; }
+  button(onclick='add_row()') 행 추가하기
+  button(onclick='delete_row()') 행 삭제하기
+  hr
+  table
+    thead
+      th 테이블
+      th 헤더
+    tbody#my-tbody
   script.
-    (function(i, s, o, g, r, a, m) {
-    i['GoogleAnalyticsObject'] = r;
-    i[r] = i[r] || function() {
-    (i[r].q = i[r].q || []).push(arguments)
-    }, i[r].l = 1 * new Date();
-    a = s.createElement(o),
-    m = s.getElementsByTagName(o)[0];
-    a.async = 1;
-    a.src = g;
-    m.parentNode.insertBefore(a, m)
-    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-    ga('create', 'UA-43342702-1', 'maxazan.github.io');
-    ga('send', 'pageview');
-.container
-  h1
-    a(href='http://maxazan.github.io/jquery-treegrid/') TreeGrid
-    |  Bootstrap 3 examples
-  table.table.tree
-    tr.treegrid-1
-      td Root node 1
-      td Additional info
-    tr.treegrid-2.treegrid-parent-1
-      td Node 1-1
-      td Additional info
-    tr.treegrid-3.treegrid-parent-1
-      td Node 1-2
-      td Additional info
-    tr.treegrid-4.treegrid-parent-3
-      td Node 1-2-1
-      td Additional info
-    tr.treegrid-5
-      td Root node 2
-      td Additional info
-    tr.treegrid-6.treegrid-parent-5
-      td Node 2-1
-      td Additional info
-    tr.treegrid-7.treegrid-parent-5
-      td Node 2-2
-      td Additional info
-    tr.treegrid-8.treegrid-parent-7
-      td Node 2-2-1
-      td Additional info
-  h3 Code
-  pre.
-    
-  h2
-    | Bootstrap TreeGrid example
-    br
-    br
-  table.table.tree-2.table-bordered.table-striped.table-condensed
-    tr.treegrid-1
-      td Root node 1
-      td Additional info
-    tr.treegrid-2.treegrid-parent-1
-      td Node 1-1
-      td Additional info
-    tr.treegrid-3.treegrid-parent-1
-      td Node 1-2
-      td Additional info
-    tr.treegrid-4.treegrid-parent-3
-      td Node 1-2-1
-      td Additional info
-    tr.treegrid-5
-      td Root node 2
-      td Additional info
-    tr.treegrid-6.treegrid-parent-5
-      td Node 2-1
-      td Additional info
-    tr.treegrid-7.treegrid-parent-5
-      td Node 2-2
-      td Additional info
-    tr.treegrid-8.treegrid-parent-7
-      td Node 2-2-1
-      td Additional info
-  h3 Code
-  pre.
-    
-// /container
-//
-  Bootstrap core JavaScript
-  ==================================================
-// Placed at the end of the document so the pages load faster
+    function add_row() {
+    var my_tbody = document.getElementById('my-tbody');
+    // var row = my_tbody.insertRow(0); // 상단에 추가
+    var row = my_tbody.insertRow( my_tbody.rows.length ); // 하단에 추가
+    var cell1 = row.insertCell(0);
+    var cell2 = row.insertCell(1);
+    cell1.innerHTML = '항목';
+    cell2.innerHTML = new Date().toUTCString();
+    }
+    function delete_row() {
+    var my_tbody = document.getElementById('my-tbody');
+    if(my_tbody.row.length < 1) return;
+    // my_tbody.deleteRow(0); // 상단부터 삭제
+    my_tbody.deleteRow( my_tbody.rows.length-1 ); // 하단부터 삭제
+    }

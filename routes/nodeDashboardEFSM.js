@@ -315,18 +315,23 @@ router.get('/selected_detail', function(req, res, next) {
   var in_data = {
     index : "transactionlist-2017-06"    
   };
-  queryProvider.selectSingleQueryByID2("dashboard","getTransactionList", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID3("dashboard","getTransaction", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');
     console.log(out_data);    
-    var data = [];
-    out_data.forEach(function(d){
-      data.push(d._source);
+    var data = [], detail = [];
+    out_data.hits.forEach(function(d){
+      if(d._type == 'transactionList') {
+        data.push(d._source);  
+      } else {
+        detail.push(d._source);
+      }
+      
     });
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }  
-    res.render('./dashboard/scatter_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : data, index : in_data.index });
+    res.render('./dashboard/scatter_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : data, detail : detail });
   });  
 });
 
