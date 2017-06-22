@@ -12,16 +12,26 @@ var mainmenu = {dashboard:'open selected', timeseries:'', reports:'', analysis:'
 router.get('/', function(req, res, next) {
   mainmenu.dashboard = ' open selected';
   mainmenu.timeseries = '';
-  res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu});
- 
-  
-  
+  res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu}); 
+});
+
+router.get('/timeseries', function(req, res, next) {
+  // console.log(_rawDataByDay);
+  mainmenu.dashboard = '';
+  mainmenu.timeseries = ' open selected';
+  res.render('./dashboard/timeseriesEFSM', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/trenddata', function(req, res, next) {
   mainmenu.dashboard = ' open selected';
   mainmenu.timeseries = '';
   res.render('./dashboard/trenddata', { title: global.config.productname, mainmenu:mainmenu});
+});
+
+router.get('/test', function(req, res, next) {
+  mainmenu.dashboard = ' open selected';
+  mainmenu.timeseries = '';
+  res.render('./dashboard/test', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 // query RawData
@@ -283,18 +293,40 @@ router.get('/scatter_detail', function(req, res, next) {
     var data = [];
     var cnt = 0;
     out_data.forEach(function(d) {
-      d._source.no = ++cnt;
-      var a = d._source.timestamp.split(':');
-      var b = a[0].split('/');
-      var c = a[3].split(' ');
-      var mon = {'Jan' : 1, 'Feb' : 2, 'Mar' : 3, 'Apr' : 4, 'May' : 5, 'Jun' : 6, 'Jul' : 7, 'Aug' : 8, 'Sep' : 9, 'Oct' : 10, 'Nov' : 11, 'Dec' : 12 };
-      //d._source.timestamp = new Date(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]);
-      d._source.timestamp = b[1]+'-'+b[0]+' '+a[1]+':'+a[2]+':'+c[0];
       var r = d._source.request.split('?');      
       d._source.request = r[0];
-      data.push(d._source);
+      var p = d._source.request.split('.');      
+      if(p[p.length-1]!='css'&&p[p.length-1]!='js'&&p[p.length-1]!='png'&&p[p.length-1]!='gif'&&p[p.length-1]!='svg'){    
+        d._source.no = ++cnt;
+        var a = d._source.timestamp.split(':');
+        var b = a[0].split('/');
+        var c = a[3].split(' ');
+        var mon = {'Jan' : 1, 'Feb' : 2, 'Mar' : 3, 'Apr' : 4, 'May' : 5, 'Jun' : 6, 'Jul' : 7, 'Aug' : 8, 'Sep' : 9, 'Oct' : 10, 'Nov' : 11, 'Dec' : 12 };
+        //d._source.timestamp = new Date(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]);
+        d._source.timestamp = b[1]+'-'+b[0]+' '+a[1]+':'+a[2]+':'+c[0];        
+        data.push(d._source);
+      }
     });       
-    res.render('./sample/sampleES_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list: data });
+    res.render('./dashboard/scatter_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list: data });
+  });  
+});
+
+router.get('/selected_detail', function(req, res, next) {  
+  var in_data = {
+    index : "transactionlist-2017-06"    
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","getTransactionList", in_data, function(err, out_data, params) {
+    // console.log(out_datsa);
+    var rtnCode = CONSTS.getErrData('0000');
+    console.log(out_data);    
+    var data = [];
+    out_data.forEach(function(d){
+      data.push(d._source);
+    });
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }  
+    res.render('./dashboard/scatter_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : data, index : in_data.index });
   });  
 });
 
@@ -386,6 +418,44 @@ router.get('/restapi/getJiraAccOneWeek', function(req, res, next) {
     res.json({rtnCode: rtnCode, rtnData: data });
   });  
 });
+
+router.get('/restapi/getTransactionDetail', function(req, res, next) {
+  console.log('dashboard/restapi/getTransactionDetail');  
+  
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  var in_data = {
+    index : req.query.index ,
+    id : req.query.id
+  };
+  queryProvider.selectSingleQueryByID3("dashboard","getTransactionDetail", in_data, function(err, out_data, params) {
+    // console.log(out_datsa);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }    
+    res.json({rtnCode: rtnCode, rtnData: out_data['hits'] });
+  });
+});
+
+router.get('/restapi/getTransaction', function(req, res, next) {
+  console.log('dashboard/restapi/getTransaction');  
+  
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  var in_data = {
+    index : 'transactionlist-2017-06',
+    id : req.query.id
+  };
+  queryProvider.selectSingleQueryByID3("dashboard","getTransactionList", in_data, function(err, out_data, params) {
+    // console.log(out_datsa);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }    
+    res.json({rtnCode: rtnCode, rtnData: out_data['hits'] });
+  });
+});
+
+
 // ###########################################################
 
 

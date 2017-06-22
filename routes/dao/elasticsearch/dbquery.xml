@@ -202,6 +202,35 @@
          }               
        } 
   ]]></query>
+  <query id='getTransactionList'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : "transactionList",
+        "body" : {            
+         }               
+       } 
+    ]]></query>
+  <query id='getTransactionList2'><![CDATA[
+      {
+        "index" : #index#,        
+        "body" : {  
+          "query": {
+            "term" : {    "transaction_id": #id#    }
+           }
+         }               
+       } 
+    ]]></query>
+  <query id='getTransactionDetail'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : "transactionDetail",
+        "body" : {
+          "query": {
+              "term" : {    "transaction_id": #id#    }
+           }            
+         }               
+       } 
+    ]]></query>
   </dashboard>
   <reports>    
   </reports>
