@@ -58,8 +58,11 @@ html
     script(src='/scripts/calltreeEFSM.js', type='text/javascript')    
     script.
       jQuery(document).ready(function() {  
-        $('#sample_2 > tbody > tr').click(function(){
-          getTransaction('test-agent^1497852258124^5', '2017-06-19T15:07:56.110');
+        $('#sample_2 > tbody > tr').click(function(){                    
+          var values = $(this).find('td').map(function(){            
+            return $(this).text();
+          }).get();          
+          getTransaction(values[6], values[0]);
         });
          $('.tree-2').treegrid({
             expanderExpandedClass: 'glyphicon glyphicon-minus',
@@ -110,38 +113,4 @@ block content
                           td #{data.remote_addr}
                           td #{data.transaction_id}
                           td #{data.endpoint}
-          .row
-            .col-md-12
-              .portlet.light.bordered
-                .portlet-body.form                                                  
-                  table#call.table.tree-2.table-striped.table-bordered.table-hover(style='text-align:center;')
-                    thead                   
-          .row
-            .col-md-12
-              .portlet.light.bordered
-                .portlet-body.form                                                  
-                  table.table.tree-2.table-bordered.table-striped.table-condensed
-                    tr.treegrid-1
-                      td Root node 1
-                      td Additional info
-                    tr.treegrid-2.treegrid-parent-1
-                      td Node 1-1
-                      td Additional info
-                    tr.treegrid-3.treegrid-parent-1
-                      td Node 1-2
-                      td Additional info
-                    tr.treegrid-4.treegrid-parent-3
-                      td Node 1-2-1
-                      td Additional info
-                    tr.treegrid-5
-                      td Root node 2
-                      td Additional info
-                    tr.treegrid-6.treegrid-parent-5
-                      td Node 2-1
-                      td Additional info
-                    tr.treegrid-7.treegrid-parent-5
-                      td Node 2-2
-                      td Additional info
-                    tr.treegrid-8.treegrid-parent-7
-                      td Node 2-2-1
-                      td Additional info
+          #call              

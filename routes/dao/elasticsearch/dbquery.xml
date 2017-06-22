@@ -210,13 +210,10 @@
          }               
        } 
     ]]></query>
-  <query id='getTransactionList2'><![CDATA[
+  <query id='getTransaction'><![CDATA[
       {
         "index" : #index#,        
-        "body" : {  
-          "query": {
-            "term" : {    "transaction_id": #id#    }
-           }
+        "body" : {            
          }               
        } 
     ]]></query>
