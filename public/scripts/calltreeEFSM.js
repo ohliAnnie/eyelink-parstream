@@ -23,12 +23,11 @@ function getTransaction(id, date, app, agent) {
   });
 }
 
-function drawDetail(detail, id, date, app, agent) {  
-  console.log(detail);
+function drawDetail(detail, id, date, app, agent) {    
   $('#call').empty();
   var sb = new StringBuffer();
   sb.append('<div class="row"><div class="col-md-12"><div class="portlet light bordered"><div class="portlet-body form">');
-  sb.append('<table id="heda" class="table table-striped table-bordered table-hover"><tr>');
+  sb.append('<table class="table table-striped table-bordered table-hover"><tr>');
   sb.append('<th>Application : '+app+'</th><th>TransactionId : '+id+'</th><th>AgentId : '+agent+'</th></tr></table>')
   sb.append('<table class="table tree-2 table-bordered table-striped table-condensed">');
   sb.append('<tr><th>Method</th><th>Argument</th><th>Start Time</th><th>Gap(ms)</th>');
@@ -58,7 +57,7 @@ function drawDetail(detail, id, date, app, agent) {
     sb.append('<td>'+d.exec_api+'</td><td>'+d.agent_id+'</td><td>'+d.application_id+'</td></tr>');
   });
   sb.append('</table></dir></dir></dir></dir>');
-  console.log(sb.toString());
+  
   $('#call').append(sb.toString());  
     $('.tree-2').treegrid({
     expanderExpandedClass: 'glyphicon glyphicon-minus',
