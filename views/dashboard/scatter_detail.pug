@@ -62,7 +62,7 @@ html
           var values = $(this).find('td').map(function(){            
             return $(this).text();
           }).get();          
-          getTransaction(values[6], values[0]);
+          getTransaction(values[6], values[0], values[1], values[4]);
         });
          $('.tree-2').treegrid({
             expanderExpandedClass: 'glyphicon glyphicon-minus',
@@ -91,7 +91,7 @@ block content
             .col-md-12
               .portlet.light.bordered               
                 .portlet-body.form                                 
-                  table#sample_2.table.table-striped.table-bordered.table-hover(style='text-align:center;')
+                      
                     thead
                       tr                          
                         th(style='text-align:center;') Start Time

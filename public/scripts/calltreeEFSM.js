@@ -1,4 +1,4 @@
-function getTransaction(id, date) {  
+function getTransaction(id, date, app, agent) {  
   var i = date.split('T');
   i = i[0] .split('-');
   var index = 'transactionlist-'+i[0]+'-'+i[1];
@@ -11,7 +11,7 @@ function getTransaction(id, date) {
       id : id},
     success: function(result) {
       if (result.rtnCode.code == "0000") {        
-        drawDetail(result.rtnData[0]._source);        
+        drawDetail(result.rtnData[0]._source, id, date, app, agent);        
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -22,70 +22,14 @@ function getTransaction(id, date) {
     }
   });
 }
-function drawDetail2(detail) {  
-  console.log(detail);
-  $('#call').empty();
-  var sb = '<div class="row"><div class="col-md-12"><div class="portlet light bordered"><div class="portlet-body form">';
-  sb += '<table class="able tree-2 table-bordered table-striped table-condensed">';
-  sb += '<tr><th>Method</th><th>Argument</th><th>Start Time</th><th>Gap(ms)</th>';
-  sb += '<th>Exec(ms)</th><th>Exec(%)</th><th>Self(ms)</th><th>Class</th><th>API</th><th>Agent</th><th>Application</th></tr>';  
-  var level = 1;
-  detail.callstack.forEach(function(d){
-    if(d.start_time==null) {
-      d.start_time = '';
-    }
-    if(d.gqp_time==null) {
-      d.gap_time = '';
-    }
-    if(d.exec_time==null) {
-      d.exec_time = '';
-    }
-    if(d.self_time==null) {
-      d.self_time = '';
-    }
-    if(d.exec_class==null) {
-      d.exec_class = '';
-    }
-    if(d.exec_time==null) {
-      d.exec_time = '';
-    }
-    if(d.exec_api==null) {
-      d.exec_api = '';
-    }
-    if(d.agent_id==null) {
-      d.agent_id = '';
-    }
-    if(d.application_id==null) {
-      d.application_id = '';
-    }
-    console.log(d);
-    if(d.level == 1){
-      sb += '<tr class="treegrid-'+d.seq+'">';
-      level = d.seq;z
-    } else if(d.level != (level+1)){  
-      sb += '<tr class="treegrid-'+d.seq+' treegrid-parent-'+level+'">';
-      level = d.seq;
-    } else {
-      sb += '<tr class="treegrid-'+d.seq+' treegrid-parent-'+level+'">';
-    }
-    sb += '<td>'+d.method+'</td><td>'+d.argument+'</td><td>'+d.start_time+'</td><td>'+d.gap_time+'</td>';
-    sb += '<td>'+d.exec_time+'</td><td></td><td>'+d.self_time+'</td><td>'+d.exec_class+'</td>';
-    sb += '<td>'+d.exec_api+'</td><td id="id">'+d.agent_id+'</td><td>'+d.application_id+'</td></tr>';
-  });
-  sb+= '</table></div></div></div></div>';
-  console.log(sb);
-  document.getElementById("call").outerHTML = sb;
-  $('.tree-2').treegrid({
-    expanderExpandedClass: 'glyphicon glyphicon-minus',
-    expanderCollapsedClass: 'glyphicon glyphicon-plus'
-  });
-}
 
-function drawDetail(detail) {  
+function drawDetail(detail, id, date, app, agent) {  
   console.log(detail);
   $('#call').empty();
   var sb = new StringBuffer();
   sb.append('<div class="row"><div class="col-md-12"><div class="portlet light bordered"><div class="portlet-body form">');
+  sb.append('<table id="heda" class="table table-striped table-bordered table-hover"><tr>');
+  sb.append('<th>Application : '+app+'</th><th>TransactionId : '+id+'</th><th>AgentId : '+agent+'</th></tr></table>')
   sb.append('<table class="table tree-2 table-bordered table-striped table-condensed">');
   sb.append('<tr><th>Method</th><th>Argument</th><th>Start Time</th><th>Gap(ms)</th>');
   sb.append('<th>Exec(ms)</th><th>Exec(%)</th><th>Self(ms)</th><th>Class</th><th>API</th><th>Agent</th><th>Application</th></tr>');  
