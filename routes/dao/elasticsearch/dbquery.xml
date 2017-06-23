@@ -228,6 +228,30 @@
          }               
        } 
     ]]></query>
+      <query id='getAccTimeseries'><![CDATA[
+      {
+        "index" : #index#,  
+        "type"  : "access",
+        "body" : { 
+          "size"   : 10000, 
+           "sort" : { "@timestamp" : { "order" : "asc" }},
+           "_source" : ["timestamp", "responsetime"],
+           "query" : { "match_all" : { }    }           
+         }               
+       } 
+    ]]></query>
+      <query id='getMetricTimeseries'><![CDATA[
+      {
+        "index" : #index#,  
+        "type"  : "metricsets",
+        "body" : { 
+          "size"   : 10000, 
+           "sort" : { "@timestamp" : { "order" : "asc" }}, 
+           "_source" : ["@timestamp", "system"],
+           "query" : { "match_all" : { }    }           
+         } 
+       } 
+    ]]></query>    
   </dashboard>
   <reports>    
   </reports>

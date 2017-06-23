@@ -56,8 +56,7 @@ function drawDetail(detail, id, date, app, agent) {
     sb.append('<td>'+d.exec_time+'</td><td></td><td>'+d.self_time+'</td><td>'+d.exec_class+'</td>');
     sb.append('<td>'+d.exec_api+'</td><td>'+d.agent_id+'</td><td>'+d.application_id+'</td></tr>');
   });
-  sb.append('</table></dir></dir></dir></dir>');
-  
+  sb.append('</table></dir></dir></dir></dir>');  
   $('#call').append(sb.toString());  
     $('.tree-2').treegrid({
     expanderExpandedClass: 'glyphicon glyphicon-minus',
