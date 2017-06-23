@@ -460,6 +460,36 @@ router.get('/restapi/getTransaction', function(req, res, next) {
   });
 });
 
+router.get('/restapi/getAccTimeseries', function(req, res, next) {
+  console.log('dashboard/restapi/getAccTimeseries');    
+  var in_data = {
+    index : req.query.index
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","getAccTimeseries", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');
+    var data = [];   
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }    
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
+router.get('/restapi/getMetricTimeseries', function(req, res, next) {
+  console.log('dashboard/restapi/getMetricTimeseries');    
+  var in_data = {
+    index : req.query.index
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","getMetricTimeseries", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');
+    var data = [];   
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }    
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
 
 // ###########################################################
 

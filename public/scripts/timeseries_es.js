@@ -1,17 +1,20 @@
-function drawChart() {
+function drawAccChart() {
   var sdate = $('#sdate').val();
-  var edate = $('#edate').val();
+  var edate = $('#edate').val();   
+  var index = 'filebeat_jira_access-'+sdate;  
+  console.log(index);
   $.ajax({
-    url: "/dashboard/restapi/getTbRawDataByPeriod" ,
+    url: "/dashboard/restapi/getAccTimeseries" ,
     dataType: "json",
     type: "get",
-    data: {startDate:sdate, endDate:edate},
+    data: { index : index },
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
-        var data = result.rtnData;
-        // console.log(data);
-        drawTimeseries(data);
+        var data = result.rtnData;            
+        d3.selectAll("svg").remove();
+        drawAccTimeseries(data);
+
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -23,32 +26,52 @@ function drawChart() {
   });
 }
 
-function drawTimeseries(data) {
+function drawMetricChart() {
+  var sdate = $('#sdate').val();
+  var edate = $('#edate').val();   
+  var index = 'metricbeat-'+sdate;  
+  console.log(index);
+  $.ajax({
+    url: "/dashboard/restapi/getMetricTimeseries" ,
+    dataType: "json",
+    type: "get",
+    data: { index : index },
+    success: function(result) {
+      // console.log(result);
+      if (result.rtnCode.code == "0000") {
+        var data = result.rtnData;            
+        console.log(data);
+        drawMetricTimeseries(data);
 
-  d3.selectAll("svg").remove();
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
+}
 
+
+function drawAccTimeseries(out_data) {
   // 데이터 가공
   var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
-  data.forEach(function(d) {
-    d.event_time = df.parse(d.event_time);
-    d.ampere = d.ampere === undefined? 0:d.ampere;
-    // console.log('als_level : ' + d.als_level);
-    // console.log(d.als_level === '');
-    d.als_level = d.als_level === ''? 0:d.als_level;
-    d.dimming_level = d.dimming_level === ''? 0:d.dimming_level;
-    d.noise_frequency = d.noise_frequency === ''? 0:d.noise_frequency;
-    d.vibration_x = d.vibration_x === ''? 0 : d.vibration_x;
-    d.vibration_y = d.vibration_y === ''? 0 : d.vibration_y;
-    d.vibration_z = d.vibration_z === ''? 0 : d.vibration_z;
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
+  var data = [];
+  out_data.forEach(function(d) {
+    var t = d._source.timestamp.split(' ');
+      t = t[0].split(':');
+      var s = t[0].split('/');      
+      d._source.timestamp = new Date(s[2], mon[s[1]], s[0], t[1], t[2], t[3]);               
+      d._source.responsetime = parseInt(d._source.responsetime);                
+      data.push(d._source);
   });
-
-  // console.log(data);
 
   var chartName = '#ts-chart01';
   chart01 = d3.timeseries()
-    .addSerie(data,{x:'event_time',y:'active_power'},{interpolate:'linear'})
-    .addSerie(data,{x:'event_time',y:'ampere'},{interpolate:'step-before'})
-    .addSerie(data,{x:'event_time',y:'amount_active_power'},{interpolate:'linear'})
+    .addSerie(data,{x:'timestamp',y:'responsetime'},{interpolate:'linear'})    
     // .xscale.tickFormat(d3.time.format("%b %d"))
     .width($(chartName).parent().width()-100)
     .height(270)
@@ -57,7 +80,8 @@ function drawTimeseries(data) {
 
     // console.log(chart01);
   chart01(chartName);
-
+}
+function drawMetricTimeseries(data){
   var chartName = '#ts-chart02';
   chart02 = d3.timeseries()
     .addSerie(data,{x:'event_time',y:'als_level'},{interpolate:'step-before'})
