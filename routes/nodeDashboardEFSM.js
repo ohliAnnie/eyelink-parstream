@@ -475,12 +475,12 @@ router.get('/restapi/getAccTimeseries', function(req, res, next) {
   });
 });
 
-router.get('/restapi/getMetricTimeseries', function(req, res, next) {
-  console.log('dashboard/restapi/getMetricTimeseries');    
+router.get('/restapi/getCpuTimeseries', function(req, res, next) {
+  console.log('dashboard/restapi/getCpuTimeseries');    
   var in_data = {
     index : req.query.index
   };
-  queryProvider.selectSingleQueryByID2("dashboard","getMetricTimeseries", in_data, function(err, out_data, params) {    
+  queryProvider.selectSingleQueryByID2("dashboard","getCpuTimeseries", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');
     var data = [];   
     if (out_data == null) {

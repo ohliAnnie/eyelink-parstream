@@ -20,9 +20,10 @@ block script
 
       // time series char를 그린다.
       drawAccChart();
-      drawMetricChart();
+      drawCpuChart();
 
       $('#btn_search').click(function() {
+        d3.selectAll("svg").remove()
         drawAccChart();
         drawMetricChart();
       });
