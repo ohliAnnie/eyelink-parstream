@@ -240,17 +240,18 @@
          }               
        } 
     ]]></query>
-      <query id='getMetricTimeseries'><![CDATA[
+    <query id='getCpuTimeseries'><![CDATA[
       {
         "index" : #index#,  
         "type"  : "metricsets",
         "body" : { 
-          "size"   : 10000, 
-           "sort" : { "@timestamp" : { "order" : "asc" }}, 
-           "_source" : ["@timestamp", "system"],
-           "query" : { "match_all" : { }    }           
-         } 
-       } 
+          "size" : 10000,
+          "_source" : ["system.cpu", "timestamp"],
+          "query": {
+            "term": { "metricset.name": "cpu" }
+          } 
+        }
+      } 
     ]]></query>    
   </dashboard>
   <reports>    
