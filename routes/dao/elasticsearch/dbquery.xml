@@ -235,21 +235,60 @@
         "body" : { 
           "size"   : 10000, 
            "sort" : { "@timestamp" : { "order" : "asc" }},
-           "_source" : ["timestamp", "responsetime"],
+           "_source" : ["timestamp", "responsetime", "response"],
            "query" : { "match_all" : { }    }           
          }               
        } 
     ]]></query>
-    <query id='getCpuTimeseries'><![CDATA[
+    <query id='getProcessTimeseries'><![CDATA[
       {
         "index" : #index#,  
         "type"  : "metricsets",
         "body" : { 
           "size" : 10000,
-          "_source" : ["system.cpu", "timestamp"],
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["system.process.cpu.total.pct", "system.process.memory.rss.pct", "timestamp"], 
+          "query": {   
+            "bool": {
+              "must" : [
+                { "match": { "system.process.cmdline": "jira"}},
+                { "match": { "system.process.name": "java"}}
+              ]
+            }     
+          } 
+        }
+      } 
+    ]]></query>    
+    <query id='getTopTimeseries'><![CDATA[
+      {
+        "index" : #index#,  
+        "type"  : "metricsets",
+        "body" : { 
+          "size" : 10000,
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["system.process", "timestamp"],
           "query": {
             "term": { "metricset.name": "cpu" }
           } 
+        }
+      } 
+    ]]></query>
+    <query id='getTotalTimeseries'><![CDATA[
+      {
+        "index" : #index#,  
+        "type"  : "metricsets",
+        "body" : { 
+          "size" : 10000,
+          "sort" : { "timestamp" : { "order" : "asc" }},
+          "_source": ["system.cpu.user.pct", "system.cpu.system.pct", "system.cpu.idle.pct", "system.memory.used.pct", "system.memory.actual.used.pct", "system.memory.swap.used.pct", "timestamp", "metricset.name"], 
+          "query": {
+            "bool": {
+              "should" : [
+                { "match": { "metricset.name": "memory"}},
+                { "match": { "metricset.name": "cpu"}}
+                ]
+            }
+          }
         }
       } 
     ]]></query>    

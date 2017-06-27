@@ -475,12 +475,12 @@ router.get('/restapi/getAccTimeseries', function(req, res, next) {
   });
 });
 
-router.get('/restapi/getCpuTimeseries', function(req, res, next) {
-  console.log('dashboard/restapi/getCpuTimeseries');    
+router.get('/restapi/getProcessTimeseries', function(req, res, next) {
+  console.log('dashboard/restapi/getProcessTimeseries');    
   var in_data = {
     index : req.query.index
   };
-  queryProvider.selectSingleQueryByID2("dashboard","getCpuTimeseries", in_data, function(err, out_data, params) {    
+  queryProvider.selectSingleQueryByID2("dashboard","getProcessTimeseries", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');
     var data = [];   
     if (out_data == null) {
@@ -490,6 +490,35 @@ router.get('/restapi/getCpuTimeseries', function(req, res, next) {
   });
 });
 
+router.get('/restapi/getTopTimeseries', function(req, res, next) {
+  console.log('dashboard/restapi/getTopTimeseries');    
+  var in_data = {
+    index : req.query.index
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","getTopTimeseries", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');
+    var data = [];   
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }    
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
+router.get('/restapi/getTotalTimeseries', function(req, res, next) {
+  console.log('dashboard/restapi/getTotalTimeseries');    
+  var in_data = {
+    index : req.query.index
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","getTotalTimeseries", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');
+    var data = [];   
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }    
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
 
 // ###########################################################
 
