@@ -1,13 +1,11 @@
 function drawAccChart() {
   var sdate = $('#sdate').val();
-  var edate = $('#edate').val();   
-  var index = 'filebeat_jira_access-'+sdate;  
-  console.log(index);
+  var edate = $('#edate').val();     
   $.ajax({
     url: "/dashboard/restapi/getAccTimeseries" ,
     dataType: "json",
     type: "get",
-    data: { index : index },
+    data: { sdate : sdate },
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {        
@@ -132,31 +130,31 @@ function drawAccTimeseries(out_data) {
   // 데이터 가공
   var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
-  var data = [];
+  var data = [];  
   out_data.forEach(function(d) {
     var t = d._source.timestamp.split(' ');
       t = t[0].split(':');
       var s = t[0].split('/');   
-      var time  = new Date(s[2], mon[s[1]], s[0], t[1], t[2], t[3]).getTime() + 9*60*60*1000;
+      var time  = new Date(s[2]+'-'+mon[s[1]]+'-'+s[0]+'T'+t[1]+':'+t[2]+':'+t[3]).getTime() + 9*60*60*1000;
       d._source.timestamp = new Date(time);               
       d._source.response = parseInt(d._source.response);     
       d._source.responsetime = parseInt(d._source.responsetime);
       if(d._source.response >= 400) {
-        data.push({ timestamp : d._source.timestamp, error : d._source.responsetime, responsetime : 0, slow : 0 });
+        data.push({ timestamp : d._source.timestamp, error : d._source.responsetime, res_time : 0, slow : 0 });
       } else if(d._source.responsetime > 5000){
-        data.push({ timestamp : d._source.timestamp, error : 0, responsetime : 0, slow : d._source.responsetime });
+        data.push({ timestamp : d._source.timestamp, error : 0, res_time : 0, slow : d._source.responsetime });
       } else {
-        data.push({ timestamp : d._source.timestamp, error : 0, responsetime : d._source.responsetime, slow : 0 });
+        data.push({ timestamp : d._source.timestamp, error : 0, res_time : d._source.responsetime, slow : 0 });
       }
   }); 
 
   var chartName = '#ts-chart01';
   chart01 = d3.timeseries()
-    .addSerie(data,{x:'timestamp',y:'responsetime'},{interpolate:'step-before'})
+    .addSerie(data,{x:'timestamp',y:'res_time'},{interpolate:'step-before'})
     .addSerie(data,{x:'timestamp',y:'error'},{interpolate:'linear'})    
     .addSerie(data,{x:'timestamp',y:'slow'},{interpolate:'linear'})    
     // .xscale.tickFormat(d3.time.format("%b %d"))
-    .width($(chartName).parent().width()-100)
+    .width($(chartName).parent().width()-10)
     .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);
@@ -175,7 +173,7 @@ function drawProcessTimeseries(out_data){
     .addSerie(data,{x:'timestamp',y:'cpu_total'},{interpolate:'step-before'})
     .addSerie(data,{x:'timestamp',y:'memory_rss'},{interpolate:'linear'})
     // .xscale.tickFormat(french_timeformat)
-    .width($(chartName).parent().width()-100)
+    .width($(chartName).parent().width()-10)
     .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);
@@ -185,22 +183,44 @@ function drawProcessTimeseries(out_data){
 
 function drawTopTimeseries(out_data) {
   // 데이터 가공
+ 
   var data = [];
-  out_data.forEach(function(d) {      
-    if(d._source.metricset.name == "memory") {      
-      data.push({ timestamp : new Date(d._source.timestamp), cpu_user : 0, cpu_system : 0, cpu_idle : 0, memory_used : d._source.system.memory.used.pct, memory_actual_used: d._source.system.memory.actual.used.pct, memory_swap_used : d._source.system.memory.swap.used.pct } );
-    } else if(d._source.metricset.name == "cpu") {
-      data.push({ timestamp : new Date(d._source.timestamp), cpu_user : d._source.system.cpu.user.pct, cpu_system : d._source.system.cpu.system.pct, cpu_idle : d._source.system.cpu.idle.pct, memory_used : 0, memory_actual_used : 0, memory_swap_used : 0 } );
+  /*var top = [{name:'null',value:0},{name:'null',value:0},{name:'null',value:0},{name:'null',value:0},{name:'null',value:0},{name:'null',value:0},{name:'null',value:0},{name:'null',value:0},{name:'null',value:0},{name:'null',value:0}];  */
+  var top = [0,0,0,0,0,0,0,0,0,0]
+  var time = new Date();
+  var cnt = 0;
+  out_data.forEach(function(d) {          
+    d._source.timestamp = new Date(d._source.timestamp);    
+    if(time.getTime() != d._source.timestamp.getTime()){      
+      if(time.getTime() < d._source.timestamp.getTime()) {
+        data.push({ timestamp : time, top1 : top[0], top2 : top[1], top3 : top[2], top4 : top[3], top5 : top[4], top6 : top[5], top7 : top[6], top8 : top[7], top9 : top[8], top10 : top[9] });
+      }
+      time = d._source.timestamp;
+      cnt = 0;
+      top = [0,0,0,0,0,0,0,0,0,0];
+      //top = [['null', 0],['null', 0],['null', 0],['null', 0],['null', 0],['null', 0],['null', 0],['null', 0],['null', 0],['null', 0]];
+      //top = [{name:'null',value:0},{name:'null',value:0},{name:'null',value:0},{name:'null',value:0},{name:'null',value:0},{name:'null',value:0},{name:'null',value:0},{name:'null',value:0},{name:'null',value:0},{name:'null',value:0}];
+    } else {
+      top[cnt++] = d._source.system.process.cpu.total.pct;
     }
   });
 
+
     var chartName = '#ts-chart03';
   chart03 = d3.timeseries()
-    .addSerie(data,{x:'timestamp',y:'idle'},{interpolate:'step-before'})
-    .addSerie(data,{x:'timestamp',y:'user'},{interpolate:'linear'})
-    .addSerie(data,{x:'timestamp',y:'system'},{interpolate:'linear'})
+    .addSerie(data,{x:'timestamp',y:'top1'},{interpolate:'step-before'})
+    .addSerie(data,{x:'timestamp',y:'top2'},{interpolate:'linear'})
+    .addSerie(data,{x:'timestamp',y:'top3'},{interpolate:'linear'})
+    .addSerie(data,{x:'timestamp',y:'top4'},{interpolate:'linear'})
+    .addSerie(data,{x:'timestamp',y:'top5'},{interpolate:'linear'})
+    .addSerie(data,{x:'timestamp',y:'top6'},{interpolate:'linear'})
+    .addSerie(data,{x:'timestamp',y:'top7'},{interpolate:'linear'})
+    .addSerie(data,{x:'timestamp',y:'top8'},{interpolate:'linear'})
+    .addSerie(data,{x:'timestamp',y:'top9'},{interpolate:'linear'})
+    .addSerie(data,{x:'timestamp',y:'top10'},{interpolate:'linear'})
+
     // .xscale.tickFormat(french_timeformat)
-    .width($(chartName).parent().width()-100)
+    .width($(chartName).parent().width()-10)
     .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);
@@ -211,26 +231,32 @@ function drawTopTimeseries(out_data) {
 function drawTotalTimeseries(out_data) {
   // 데이터 가공
  var data = [];
+ var m_used = 0, m_actual_used = 0, m_swap_used = 0, c_user = 0, c_system = 0, c_idle = 0;
   out_data.forEach(function(d) {      
     if(d._source.metricset.name == "memory") {      
-      data.push({ timestamp : new Date(d._source.timestamp), cpu_user : 0, cpu_system : 0, cpu_idle : 0, memory_used : d._source.system.memory.used.pct, memory_actual_used: d._source.system.memory.actual.used.pct, memory_swap_used : d._source.system.memory.swap.used.pct } );
+      m_used = d._source.system.memory.used.pct;
+      m_actual_used = d._source.system.memory.actual.used.pct;
+      m_swap_used = d._source.system.memory.swap.used.pct;
+      data.push({ timestamp : new Date(d._source.timestamp), memory_used : m_used, memory_actual_used : m_actual_used, memory_swap_used : m_swap_used, cpu_user : c_user, cpu_system : c_system, cpu_idle : c_idle } );
     } else if(d._source.metricset.name == "cpu") {
-      data.push({ timestamp : new Date(d._source.timestamp), cpu_user : d._source.system.cpu.user.pct, cpu_system : d._source.system.cpu.system.pct, cpu_idle : d._source.system.cpu.idle.pct, memory_used : 0, memory_actual_used : 0, memory_swap_used : 0 } );
+      c_user = d._source.system.cpu.user.pct;
+      c_system = d._source.system.cpu.system.pct;
+      c_idle = d._source.system.cpu.idle.pct;
+      data.push({ timestamp : new Date(d._source.timestamp), cpu_user : d._source.system.cpu.user.pct, cpu_system : d._source.system.cpu.system.pct, cpu_idle : d._source.system.cpu.idle.pct } );
     }
   });
 
-  console.log(data);
-
     var chartName = '#ts-chart04';
   chart04 = d3.timeseries()
-    .addSerie(data,{x:'timestamp',y:'cpu_user'},{interpolate:'step-before'})
-    .addSerie(data,{x:'timestamp',y:'cpu_system'},{interpolate:'linear'})
-    .addSerie(data,{x:'timestamp',y:'cpu_idle'},{interpolate:'linear'})
     .addSerie(data,{x:'timestamp',y:'memory_used'},{interpolate:'linear'})
     .addSerie(data,{x:'timestamp',y:'memory_actual_used'},{interpolate:'linear'})
     .addSerie(data,{x:'timestamp',y:'memory_swap_used'},{interpolate:'linear'})
+    .addSerie(data,{x:'timestamp',y:'cpu_user'},{interpolate:'step-before'})
+    .addSerie(data,{x:'timestamp',y:'cpu_system'},{interpolate:'linear'})
+    .addSerie(data,{x:'timestamp',y:'cpu_idle'},{interpolate:'linear'})
+
     // .xscale.tickFormat(french_timeformat)
-    .width($(chartName).parent().width()-100)
+    .width($(chartName).parent().width()-10)
     .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);

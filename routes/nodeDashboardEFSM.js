@@ -461,13 +461,19 @@ router.get('/restapi/getTransaction', function(req, res, next) {
 });
 
 router.get('/restapi/getAccTimeseries', function(req, res, next) {
-  console.log('dashboard/restapi/getAccTimeseries');    
+  console.log('dashboard/restapi/getAccTimeseries');      
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  var ydate =  new Date(new Date(req.query.sdate).getTime() - 24*60*60*1000);
+  var y = ydate.toString().split(' ');  
+  var edate = new Date(new Date().getTime() - 9*60*60*1000);
+  var e = edate.toString().split(' ');
   var in_data = {
-    index : req.query.index
-  };
+    index : ['filebeat_jira_access-'+y[3]+'.'+mon[y[1]]+'.'+y[2], 'filebeat_jira_access-'+req.query.sdate],
+    sdate : y[3]+'-'+mon[y[1]]+'-'+y[2]+'T15:00:00.000Z',
+    edate : e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4]+'.000Z'
+  };  
   queryProvider.selectSingleQueryByID2("dashboard","getAccTimeseries", in_data, function(err, out_data, params) {    
-    var rtnCode = CONSTS.getErrData('0000');
-    var data = [];   
+    var rtnCode = CONSTS.getErrData('0000');  
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
     }    

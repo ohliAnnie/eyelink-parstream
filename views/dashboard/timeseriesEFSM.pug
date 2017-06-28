@@ -21,12 +21,14 @@ block script
       // time series char를 그린다.
       drawAccChart();
       drawProcessChart();
+      drawTopChart();
       drawTotalChart();
 
       $('#btn_search').click(function() {
         d3.selectAll("svg").remove()
         drawAccChart();
         drawProcessChart();
+        drawTopChart();
         drawTotalChart();
       });
 
@@ -86,8 +88,8 @@ block content
           .portlet.light
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Active Power / Ampere
-                span.caption-helper Active Power / Ampere
+                span.caption-subject.bold.uppercase.font-green-haze Response Time
+                span.caption-helper  res_time / slow / error
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -100,8 +102,8 @@ block content
           .portlet.light.bordered
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze ALS / Dimming Level
-                span.caption-helper ALS / Dimming Level
+                span.caption-subject.bold.uppercase.font-green-haze System Process
+                span.caption-helper  cpu total pct / memory rss pct
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -115,8 +117,8 @@ block content
           .portlet.light
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Noise
-                span.caption-helper Noise
+                span.caption-subject.bold.uppercase.font-green-haze Top 10
+                span.caption-helper  process cpu total pct
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -129,8 +131,8 @@ block content
           .portlet.light.bordered
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Vibration
-                span.caption-helper Vibration
+                span.caption-subject.bold.uppercase.font-green-haze System Cpu / System Memory
+                span.caption-helper  user pct / system pct / idle pct / used pct / actual used pct / swap used pct
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
