@@ -131,21 +131,31 @@ function drawAccTimeseries(out_data) {
   var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
   var data = [];  
+  var min = null;
+  var sCnt = 0, eCnt = 0, rCnt = 0;
   out_data.forEach(function(d) {
-    var t = d._source.timestamp.split(' ');
-      t = t[0].split(':');
-      var s = t[0].split('/');   
-      var time  = new Date(s[2]+'-'+mon[s[1]]+'-'+s[0]+'T'+t[1]+':'+t[2]+':'+t[3]).getTime() + 9*60*60*1000;
-      d._source.timestamp = new Date(time);               
-      d._source.response = parseInt(d._source.response);     
-      d._source.responsetime = parseInt(d._source.responsetime);
+    d._source.response = parseInt(d._source.response);     
+    d._source.responsetime = parseInt(d._source.responsetime);
+    if(d._source.timestamp.substring(0,17) == min){
       if(d._source.response >= 400) {
-        data.push({ timestamp : d._source.timestamp, error : d._source.responsetime, res_time : 0, slow : 0 });
+        eCnt++;
       } else if(d._source.responsetime > 5000){
-        data.push({ timestamp : d._source.timestamp, error : 0, res_time : 0, slow : d._source.responsetime });
+        sCnt++;
       } else {
-        data.push({ timestamp : d._source.timestamp, error : 0, res_time : d._source.responsetime, slow : 0 });
+        rCnt++;
       }
+    } else if (d._source.timestamp.substring(0,17) != min){
+      if(min != null){      
+       var t = d._source.timestamp.split(' ');            
+        t = t[0].split(':');
+        var s = t[0].split('/');   
+        var time  = new Date(new Date(s[2]+'-'+mon[s[1]]+'-'+s[0]+'T'+t[1]+':'+t[2]+':'+t[3]).getTime() + 9*60*60*1000);        
+        data.push({ timestamp : time, res_time : rCnt, error : eCnt, slow : sCnt });
+        sCnt = 0, eCnt = 0, rCnt = 0;
+      } 
+      min = d._source.timestamp.substring(0,17);   
+    }  
+      
   }); 
 
   var chartName = '#ts-chart01';
