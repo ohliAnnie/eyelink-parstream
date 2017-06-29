@@ -258,7 +258,7 @@ function drawAll(data, sdate, edate) {
     .transitionDuration(500)
     .elasticY(true)
     .y(d3.scale.linear().domain([0, data.length]))      
-    .brushOn(true)
+    .brushOn(true일)
     .mouseZoomable(true)
     .x(d3.time.scale().domain([minDate, maxDate]))
     .y(d3.scale.linear().domain([0, 100]))
