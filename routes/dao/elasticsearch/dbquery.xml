@@ -230,13 +230,20 @@
     ]]></query>
       <query id='getAccTimeseries'><![CDATA[
       {
-        "index" : #index#,  
+        "index" : [##index##],  
         "type"  : "access",
         "body" : { 
           "size"   : 10000, 
-           "sort" : { "@timestamp" : { "order" : "asc" }},
-           "_source" : ["timestamp", "responsetime", "response"],
-           "query" : { "match_all" : { }    }           
+         "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["@timestamp", "timestamp", "responsetime", "response"],
+           "query" : { 
+             "range" : {
+              "@timestamp": {
+                "gte": #sdate#,
+                "lte": #edate#
+              }
+            } 
+          }     
          }               
        } 
     ]]></query>
@@ -265,13 +272,24 @@
         "type"  : "metricsets",
         "body" : { 
           "size" : 10000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["system.process", "timestamp"],
+          "_source": ["system.process.name", "system.process.cpu.total.pct", "timestamp"],
+          "sort" : [{ "timestamp" : { "order" : "asc" }},
+          {"system.process.cpu.total.pct": "desc"}
+          ],
           "query": {
-            "term": { "metricset.name": "cpu" }
-          } 
-        }
-      } 
+              "bool": {
+                "must" : {
+                  "term": {   "metricset.name": "process"    }
+                },
+                "must_not" : {
+                  "range" : {
+                    "system.process.cpu.total.pct" : {"lte" : 0 }
+                  }
+                }
+              }
+            }
+          }
+        } 
     ]]></query>
     <query id='getTotalTimeseries'><![CDATA[
       {
@@ -293,7 +311,19 @@
       } 
     ]]></query>    
   </dashboard>
-  <reports>    
+  <reports>
+  <query id='selectJiraAcc'><![CDATA[
+      {
+        "index" : #index#,  
+        "type"  : "access",
+        "body" : { 
+          "size"   : 10000, 
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["timestamp", "responsetime", "response"],
+          "query" : { "match_all" : { }    }                         
+        }               
+      }     
+    ]]></query>    
   </reports>
   <!--
   <analysis>
