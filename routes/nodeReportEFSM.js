@@ -11,7 +11,7 @@ var mainmenu = {dashboard:'', timeseries:'', reports:'open selected', analysis:'
 
 /* GET reports page. */
 router.get('/', function(req, res, next) {
-  res.render('./reports/<report_allEFSM></report_allEFSM>', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./reports/report_allEFSM', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/main', function(req, res, next) {
@@ -27,7 +27,7 @@ router.get('/test', function(req, res, next) {
 });
 
 router.get('/all', function(req, res, next) {
-  res.render('./reports/report_all', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./reports/report_allEFSM', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/power', function(req, res, next) {
@@ -49,20 +49,18 @@ router.get('/live', function(req, res, next) {
 
 
 // query Report
-router.get('/restapi/getReportRawData', function(req, res, next) {
-  console.log('reports/restapi/getReportRawData');
-  var in_data = {MERGE:'Y'};
-  queryProvider.selectSingleQueryByID("reports","selectEventRawData", in_data, function(err, out_data, params) {
+router.get('/restapi/getJiraAcc', function(req, res, next) {
+  console.log('reports/restapi/getJiraAcc');
+  var in_data = {
+    index : req.query.index
+  };
+  queryProvider.selectSingleQueryByID2("reports","selectJiraAcc", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    }
-    // MERGE = 'Y'이면 이전 날짜의 RawData를 합쳐준다.
-    if (params.MERGE === 'Y')
-      out_data = Utils.mergeLoadedData(out_data);
-
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+    }       
+    res.json({rtnCode: rtnCode, rtnData: out_data});
   });
 });
 

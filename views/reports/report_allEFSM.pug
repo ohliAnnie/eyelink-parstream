@@ -8,28 +8,18 @@ block script
   script(type='text/javascript', src='/assets/annie/js/dc.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
   script(type='text/javascript', src="/scripts/util.js")
-  script(src='/scripts/report_all.js')
+  script(src='/scripts/report_allEFSM.js')
   script.
     $(document).ready(function() {                          
-       var dateFormat = 'YYYY-MM-DD';
-      $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
+       var dateFormat = 'YYYY.MM.DD';
+      $('#sdate').val(moment().subtract(0, 'days').format(dateFormat));
       $('#edate').val(moment().format(dateFormat));
       // time series char를 그린다.
         drawChart();
          $('#btn_search').click(function() {          
           drawChart();
         });
-    });                      
-    jQuery(document).ready(function() {
-      console.log('jQuery');
-      Metronic.init(); // init metronic core componets
-      eyelinkLayout.init(); // init eyelinklayout
-      QuickSidebar.init(); // init quick sidebar
-      Layout.init(); // init layout
-      Demo.init(); // init index page
-      ComponentsPickers.init();
-      ComponentsDropdowns.init();
-    });
+    });                         
 block content
   .container-fluid
     .page-content
@@ -75,7 +65,7 @@ block content
       a(href='javascript:dc.filterAll(); dc.renderAll();') Reset All
       .row
         .col-md-6
-          .portlet.light
+          .portlet.light(style='height:450px; ')
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Event Count
@@ -87,10 +77,10 @@ block content
                 a.collapse(href='javascript:;')
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
-              .chart
-                #eventChart(style='margine:0 auto;')
+              .chart(style='height:400px; ')
+                #pieChart
         .col-md-6
-          .portlet.light.bordered
+          .portlet.light.bordered(style='height:450px; ')
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Event Type Count by Day
@@ -102,11 +92,11 @@ block content
                 a.collapse(href='javascript:;')
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
-              .chart(style='height:500px; ')
-                #eventBar
+              .chart(style='height:400px; ')
+                #countBar
       .row
         .col-md-6
-          .portlet.light
+          .portlet.light(style='height:450px; ')
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Event Count by Day
@@ -118,10 +108,10 @@ block content
                 a.collapse(href='javascript:;')
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
-              .chart
-                #checkLine
+              .chart(style='height:450px; ')
+                #countLine
         .col-md-6
-          .portlet.light.bordered
+          .portlet.light.bordered(style='height:450px; ')
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Event Count by Node
@@ -133,7 +123,7 @@ block content
                 a.collapse(href='javascript:;')
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
-              .chart
+              .chart(style='height:450px; ')
                 #nodeBar.chart
     p.copyright Copyright M2U Technology All rights reserved.
   a.go2top(href='#index')
