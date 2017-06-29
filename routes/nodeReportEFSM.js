@@ -18,8 +18,8 @@ router.get('/main', function(req, res, next) {
   res.render('./reports/main', { title: global.config.productname, mainmenu:mainmenu });
 });
 
-router.get('/d3', function(req, res, next) {
-  res.render('./reports/report_d3', { title: global.config.productname, mainmenu:mainmenu });
+router.get('/cpu_memory', function(req, res, next) {
+  res.render('./reports/cpu_memory', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/test', function(req, res, next) {

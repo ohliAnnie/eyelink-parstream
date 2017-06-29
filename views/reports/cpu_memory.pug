@@ -24,7 +24,7 @@ block content
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 Reports_All
+        h1 CPU / Memory
         ol.breadcrumb
           li
             a(href='#') Home
@@ -64,12 +64,12 @@ block content
                         i.fa.fa-search Search
       a(href='javascript:dc.filterAll(); dc.renderAll();') Reset All
       .row
-        .col-md-6
+        .col-md-4
           .portlet.light(style='height:450px; ')
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Count All
-                span.caption-helper  Responsetime Type count chart
+                span.caption-subject.bold.uppercase.font-green-haze Event Count
+                span.caption-helper Two Column chart
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -79,12 +79,12 @@ block content
             .portlet-body
               .chart(style='height:400px; ')
                 #pieChart
-        .col-md-6
+        .col-md-4
           .portlet.light.bordered(style='height:450px; ')
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Count by Hour/Day
-                span.caption-helper  Responsetime Type count chart
+                span.caption-subject.bold.uppercase.font-green-haze Event Type Count by Day
+                span.caption-helper Two Column chart
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -93,14 +93,13 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart(style='height:400px; ')
-                #countBar
-      .row
-        .col-md-6
+                #countBar     
+        .col-md-4
           .portlet.light(style='height:450px; ')
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Count by Hour/Day
-                span.caption-helper  Responsetime Type count chart
+                span.caption-subject.bold.uppercase.font-green-haze Event Count by Day
+                span.caption-helper Two Column chart
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -110,7 +109,8 @@ block content
             .portlet-body
               .chart(style='height:450px; ')
                 #countLine
-        .col-md-6
+      .row                  
+        .col-md-12
           .portlet.light.bordered(style='height:450px; ')
             .portlet-title
               .caption
