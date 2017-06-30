@@ -18,6 +18,7 @@ function drawChart() {
     data: { index :  index }, 
     success: function(result) {   
       if (result.rtnCode.code == "0000") {             
+        console.log(sdate, edate);
         drawAll(result.rtnData, sdate, edate);
       } else {
         //- $("#errormsg").html(result.message);
@@ -30,7 +31,7 @@ function drawAll(data, sdate, edate) {
   var pieChart = dc.pieChart('#pieChart');
   var countBar = dc.barChart('#countBar');
   var countLine = dc.compositeChart("#countLine");
-  var nodeBar = dc.barChart('#nodeBar');
+  var serverCount = dc.barChart('#serverCount');
 
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var gap = (maxDate-minDate)/(24 * 60 * 60 * 1000);  
@@ -39,6 +40,9 @@ function drawAll(data, sdate, edate) {
   var minDate = new Date(sdate);  
   var maxDate =  new Date(edate);
   data.forEach(function(d) { 
+    if(d._type == "access"){
+         d._source.type = "jira";
+    } 
     var t = d._source.timestamp.split(' ');               
     t = t[0].split(':');
     var s = t[0].split('/');   
@@ -73,10 +77,9 @@ function drawAll(data, sdate, edate) {
   });
 
   if(sdate == edate) {
-    minDate = minTime;
-    maxDate = maxTime;
+    minDate = new Date(minTime.getTime()-30*60*1000);
+    maxDate = new Date(maxTime.getTime()+30*60*1000)
   }
-  console.log(acc);
   var nyx = crossfilter(acc);
   var all = nyx.groupAll();
 
@@ -98,7 +101,6 @@ function drawAll(data, sdate, edate) {
   }
 
   var stackGroup = dayDim.group().reduce(function(p, v){
-    console.log(v.index);
     p[v.index] = (p[v.index] || 0) + 1;    
     return p;
   }, function(p, v) {
@@ -113,18 +115,6 @@ function drawAll(data, sdate, edate) {
     },
     function (p, v) {      
       if(v.section == "error") {   -- p.cnt ;      }                  
-      return p;
-    },
-    function() {      return { cnt:0 };    }
-  );
-
-  var errGroup = dayDim.group().reduce(
-    function (p, v) {      
-      if(v.section == "error") {   ++p.cnt ;      }      
-      return p;
-    },
-    function (p, v) {      
-      if(v.section == "error") {    -- p.cnt ;      }                  
       return p;
     },
     function() {      return { cnt:0 };    }
@@ -177,6 +167,18 @@ function drawAll(data, sdate, edate) {
     },
     function() {      return { cnt:0 };    }
   );
+
+  var typeDim = nyx.dimension(function(d){    
+    return d.type;
+  });
+
+  var typeGroup = typeDim.group().reduce(function(p, v){
+    p[v.index] = (p[v.index] || 0) + 1;        
+    return p;
+  }, function(p, v) {
+    p[v.index] = (p[v.index] || 0) - 1;
+    return p;
+  }, function() {    return{};  });
 
 /* dc.pieChart('#eventChart') */
   pieChart 
@@ -258,7 +260,7 @@ function drawAll(data, sdate, edate) {
     .transitionDuration(500)
     .elasticY(true)
     .y(d3.scale.linear().domain([0, data.length]))      
-    .brushOn(true일)
+    .brushOn(true)
     .mouseZoomable(true)
     .x(d3.time.scale().domain([minDate, maxDate]))
     .y(d3.scale.linear().domain([0, 100]))
@@ -297,6 +299,41 @@ function drawAll(data, sdate, edate) {
             return d.value.cnt; })
           .colors("#00A0B0")
       ]);
+
+  var serverList = ["jira"];
+  serverCount
+    .width(window.innerWidth*0.43)
+    .height(380)
+    .margins({left: 65, top: 10, right: 10, bottom: 40})
+    .brushOn(true)
+    .transitionDuration(500)
+    .clipPadding(20)
+    .title(function(d) {
+      for(var i=0; i<term.length; i++) {
+        if(this.layer == term[i])                   
+          return this.layer + ' : ' + d.value[i];
+      }
+    })      
+    .dimension(typeDim)
+    .group(typeGroup, term[0], sel_stack('0'))
+    .mouseZoomable(true)
+    .renderHorizontalGridLines(true)
+    .centerBar(true)
+    .gap(serverList.length+20)             
+    .x(d3.scale.ordinal().domain(serverList)) 
+    .colors(d3.scale.ordinal().range(["#EDC951",  "#31a354", "#00A0B0", "#FFB2F5" , "#CC333F"]));
+    
+  serverCount.legend(dc.legend());
+  
+  dc.override(serverCount, 'legendables', function() {
+    var items = serverCount._legendables();
+    return items.reverse();    
+  });
+
+
+  for(var i = 1; i<term.length; ++i){
+    serverCount.stack(typeGroup, term[i], sel_stack(i));
+  }  
 
   dc.renderAll();
 }
