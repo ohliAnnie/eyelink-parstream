@@ -324,6 +324,60 @@
         }               
       }     
     ]]></query>    
+    <query id='selectCpuMemoryFilesystemAll'><![CDATA[
+      {
+        "index" : [##index##],  
+        "type"  : "metricsets",
+        "body" : { 
+          "size"   : 100000,    
+          "sort" : { "@timestamp" : { "order" : "asc" }},      
+          "_source" : ["timestamp", "system.cpu.system.pct", "system.memory.actual.used.pct", "system.filesystem.used.pct", "metricset.name"],
+          "query": {
+            "bool": {
+              "must" : {
+                "range" : {
+                  "timestamp": {
+                   "gte": #gte#,
+                   "lte": #lte#
+                  }
+                } 
+              },
+               "must_not" : [
+                { "match": { "metricset.name": "fsstat"}},
+                { "match": { "metricset.name": "load"}},
+                { "match": { "metricset.name": "process"}},
+                { "match": { "metricset.name": "network"}}
+              ]
+            }
+          }                     
+        }               
+      }     
+    ]]></query> 
+    <query id='selectProcessList'><![CDATA[
+      {
+        "index" : #index#,  
+        "type"  : "metricsets",
+        "body" : { 
+          "size" : 10000,
+          "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "timestamp"],
+          "sort" : [{ "timestamp" : { "order" : "asc" }},
+          {"system.process.cpu.total.pct": "desc"}
+          ],
+          "query": {
+              "bool": {
+                "must" : {
+                  "term": {   "metricset.name": "process"    }
+                },
+                "must_not" : {
+                  "range" : {
+                    "system.process.cpu.total.pct" : {"lte" : 0 }
+                  }
+                }
+              }
+            }
+          }
+        } 
+    ]]></query>
   </reports>
   <!--
   <analysis>

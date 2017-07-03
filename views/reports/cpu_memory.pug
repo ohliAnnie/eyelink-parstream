@@ -15,9 +15,9 @@ block script
       $('#sdate').val(moment().subtract(0, 'days').format(dateFormat));
       $('#edate').val(moment().format(dateFormat));
       // time series char를 그린다.
-        drawChart();
+        getData();
          $('#btn_search').click(function() {          
-          drawChart();
+          getData();
         });
     });                         
 block content
@@ -68,8 +68,8 @@ block content
           .portlet.light(style='height:450px; ')
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Event Count
-                span.caption-helper Two Column chart
+                span.caption-subject.bold.uppercase.font-green-haze Cpu
+                span.caption-helper  system.cpu.system.pct
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -78,13 +78,13 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart(style='height:400px; ')
-                #pieChart
+                #cpuChart
         .col-md-4
           .portlet.light.bordered(style='height:450px; ')
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Event Type Count by Day
-                span.caption-helper Two Column chart
+                span.caption-subject.bold.uppercase.font-green-haze Memory
+                span.caption-helper  system.memory.actual.used.pct
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -93,13 +93,13 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart(style='height:400px; ')
-                #countBar     
+                #memoryChart
         .col-md-4
           .portlet.light(style='height:450px; ')
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Event Count by Day
-                span.caption-helper Two Column chart
+                span.caption-subject.bold.uppercase.font-green-haze Filesystem
+                span.caption-helper  system.filesystem.used.pct
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -108,13 +108,13 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart(style='height:450px; ')
-                #countLine
+                #filesystemChart
       .row                  
         .col-md-12
           .portlet.light.bordered(style='height:450px; ')
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Event Count by Node
+                span.caption-subject.bold.uppercase.font-green-haze Filesystem
                 span.caption-helper Two Column chart
               .actions
                 a.btn.btn-default.btn-sm(href='#')
@@ -123,8 +123,10 @@ block content
                 a.collapse(href='javascript:;')
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
-              .chart(style='height:450px; ')
-                #nodeBar.chart
+              .chart
+                .table-scrollable.table-scrollable-borderless
+                  table#process.table.table-hover.table-light
+                    thead                
     p.copyright Copyright M2U Technology All rights reserved.
   a.go2top(href='#index')
     i.icon-arrow-up

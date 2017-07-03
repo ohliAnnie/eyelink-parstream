@@ -52,7 +52,7 @@ router.get('/live', function(req, res, next) {
 router.get('/restapi/getJiraAcc', function(req, res, next) {
   console.log('reports/restapi/getJiraAcc');
   var in_data = {
-    index : req.query.index
+    index : req.query.index,
   };
   queryProvider.selectSingleQueryByID2("reports","selectJiraAcc", in_data, function(err, out_data, params) {
     // console.log(out_data);
@@ -65,19 +65,39 @@ router.get('/restapi/getJiraAcc', function(req, res, next) {
 });
 
 // query Report
-router.get('/restapi/testData', function(req, res, next) {
-  console.log('reports/restapi/testData');
-  var in_data = {MERGE:'Y'};
-  queryProvider.selectSingleQueryByID("reports","testData", in_data, function(err, out_data, params) {
+router.get('/restapi/getCpuMemoryFilesystemAll', function(req, res, next) {
+  console.log('reports/restapi/getCpuMemoryFilesystemAll');
+  var in_data = {
+    index : req.query.index,
+    gte : req.query.gte,
+    lte : req.query.lte
+  };
+  queryProvider.selectSingleQueryByID2("reports","selectCpuMemoryFilesystemAll", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    }
-
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+    }       
+    res.json({rtnCode: rtnCode, rtnData: out_data});
   });
+});
 
+// query Report
+router.get('/restapi/getProcessList', function(req, res, next) {
+  console.log('reports/restapi/getProcessList');
+  var in_data = {
+    index : req.query.index,
+    gte : req.query.gte,
+    lte : req.query.lte
+  };
+  queryProvider.selectSingleQueryByID2("reports","selectProcessList", in_data, function(err, out_data, params) {
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }       
+    res.json({rtnCode: rtnCode, rtnData: out_data});
+  });
 });
 
 // query RawData
