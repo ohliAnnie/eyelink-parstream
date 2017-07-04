@@ -100,6 +100,24 @@ router.get('/restapi/getProcessList', function(req, res, next) {
   });
 });
 
+// query Report
+router.get('/restapi/getAccessError', function(req, res, next) {
+  console.log('reports/restapi/getAccessError');
+  var in_data = {
+    index : req.query.index,
+    gte : req.query.gte,
+    lte : req.query.lte
+  };
+  queryProvider.selectSingleQueryByID2("reports","selectAccessError", in_data, function(err, out_data, params) {
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }       
+    res.json({rtnCode: rtnCode, rtnData: out_data});
+  });
+});
+
 // query RawData
 router.get('/restapi/getTbRawDataByPeriod', function(req, res, next) {
   console.log(req.query);

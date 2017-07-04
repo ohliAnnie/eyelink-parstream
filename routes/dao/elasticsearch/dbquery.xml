@@ -358,7 +358,7 @@
         "index" : [##index##],  
         "type"  : "metricsets",
         "body" : { 
-          "size" : 100000,
+          "size" : 10000,
           "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "timestamp"],
           "sort" : [
             { "timestamp" : { "order" : "asc" }},
@@ -386,13 +386,12 @@
         }
       } 
     ]]></query>
-    <query id='selectError'><![CDATA[
+    <query id='selectAccessError'><![CDATA[
        "index" : [##index##],  
         "type"  : "access",
         "body" : { 
-          "size" : 100000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
-           "_source": ["response"], 
+          "size" : 10000,
+          "sort" : { "@timestamp" : { "order" : "asc" }},        
            "query" : {
              "bool": {
               "must" : {
@@ -407,12 +406,12 @@
                 "range" : {
                   "response" : {
                     "lte" : "399"
+                  }
                 }
               }
             }
           }
-        }
-      } 
+        } 
     ]]></query>  
   </reports>
   <!--
