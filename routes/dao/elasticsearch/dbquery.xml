@@ -355,29 +355,65 @@
     ]]></query> 
     <query id='selectProcessList'><![CDATA[
       {
-        "index" : #index#,  
+        "index" : [##index##],  
         "type"  : "metricsets",
         "body" : { 
-          "size" : 10000,
+          "size" : 100000,
           "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "timestamp"],
-          "sort" : [{ "timestamp" : { "order" : "asc" }},
-          {"system.process.cpu.total.pct": "desc"}
-          ],
+          "sort" : [
+            { "timestamp" : { "order" : "asc" }},
+            {"system.process.cpu.total.pct": "desc"}],
           "query": {
-              "bool": {
-                "must" : {
-                  "term": {   "metricset.name": "process"    }
-                },
-                "must_not" : {
-                  "range" : {
-                    "system.process.cpu.total.pct" : {"lte" : 0 }
+            "bool": {
+              "must" : {
+                "range" : {
+                  "timestamp": {
+                   "gte": #gte#,
+                   "lte": #lte#
                   }
+                } 
+              },
+              "filter" : {
+                "term": {   "metricset.name": "process"    }
+              },
+              "must_not" : {
+                "range" : {
+                  "system.process.cpu.total.pct" : {"lte" : 0 }
                 }
               }
             }
           }
-        } 
+        }
+      } 
     ]]></query>
+    <query id='selectError'><![CDATA[
+       "index" : [##index##],  
+        "type"  : "access",
+        "body" : { 
+          "size" : 100000,
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+           "_source": ["response"], 
+           "query" : {
+             "bool": {
+              "must" : {
+                "range" : {
+                  "timestamp": {
+                   "gte": #gte#,
+                   "lte": #lte#
+                  }
+                }
+              },
+              "must_not": {
+                "range" : {
+                  "response" : {
+                    "lte" : "399"
+                }
+              }
+            }
+          }
+        }
+      } 
+    ]]></query>  
   </reports>
   <!--
   <analysis>

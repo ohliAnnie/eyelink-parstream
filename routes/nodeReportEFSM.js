@@ -22,8 +22,8 @@ router.get('/cpu_memory', function(req, res, next) {
   res.render('./reports/cpu_memory', { title: global.config.productname, mainmenu:mainmenu });
 });
 
-router.get('/test', function(req, res, next) {
-  res.render('./reports/test', { title: 'Test', mainmenu:mainmenu });
+router.get('/error', function(req, res, next) {
+  res.render('./reports/error', { title: 'Test', mainmenu:mainmenu });
 });
 
 router.get('/all', function(req, res, next) {
