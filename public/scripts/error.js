@@ -39,11 +39,59 @@ function drawChart(rtnData, sdate, edate) {
   var countBar = dc.barChart("#countBar");
   var typePie = dc.pieChart("#typePie");
   var timeLine = dc.lineChart("#timeLine");
-  var weekLine = dc.lineChart("#weekLine");
-
+  var weekLine = dc.lineChart("#weekLine");  
   var data = [];
-  rtnData.forEach(function(d){
+  var mon = {'Jan' : 0, 'Feb' : 1, 'Mar' : 2, 'Apr' : 3, 'May' : 4, 'Jun' : 5, 'Jul' : 6, 'Aug' : 7, 'Sep' : 8, 'Oct' : 9, 'Nov' : 10, 'Dec' : 11 };    
+  rtnData.forEach(function(d){    
     console.log(d);
+    console.log(d._source.timestamp);
+    var t = d._source.timestamp.split(' ');
+    var d = t[0].split(':');        
+    var dd = d[0].split('/');     
+    var time = new Date(dd[2], mon[dd[1]], dd[0], d[1], d[2], d[3]);    
+    data.push({ timestamp : time, response : d._source.response });
   });
 
+  console.log(data);
+
+  var nyx = crossfilter(data);
+  var all = nyx.groupAll();
+
+  var typeDim = nyx.dimension(function(d) {
+    return d.response;
+  });
+  var pieGroup = typeDim.group().reduceCount(function(d) {
+    return 1;
+  });
+
+
+  var timeDim = nyx.dimension(function(d) {    
+    return d.timestamp; 
+  });
+
+
+  typePie
+    .width(window.innerWidth*0.45)
+    .height(400)
+    .radius(160)
+    .dimension(typeDim)
+    .group(pieGroup)    
+    .drawPaths(true)
+    .legend(dc.legend())
+    .label(function (d){
+      if(pieChart.hasFilter() && !pieChart.hasFilter(d.key)) {
+        return '0(0%)';
+      }
+      var label = d.key;
+      if(all.value()) {
+        label += '(' + Math.floor(d.value / all.value() * 100) + '%)';
+      }
+      return label;
+    })
+    .renderLabel(true)
+    .colors(d3.scale.ordinal().range(["#EDC951",  "#31a354", "#00A0B0", "#FFB2F5" , "#CC333F"]));
+
+
+
+  dc.renderAll();
 }

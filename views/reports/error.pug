@@ -78,7 +78,7 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart
-                #eventChart(style='margine:0 auto;')
+                #countBar(style='margine:0 auto;')
         .col-md-6
           .portlet.light.bordered
             .portlet-title
@@ -93,7 +93,7 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart(style='height:500px; ')
-                #eventBar
+                #typePie
       .row
         .col-md-6
           .portlet.light
@@ -109,7 +109,7 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart
-                #checkLine
+                #geoMap
         .col-md-6
           .portlet.light.bordered
             .portlet-title
@@ -124,7 +124,38 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart
-                #nodeBar.chart
+                #timeLine
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Event Count by Day
+                span.caption-helper Two Column chart
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print
+                a.collapse(href='javascript:;')
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart
+                #weekLine
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Event Count by Node
+                span.caption-helper Two Column chart
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print
+                a.collapse(href='javascript:;')
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart
+                #monLine
     p.copyright Copyright M2U Technology All rights reserved.
   a.go2top(href='#index')
     i.icon-arrow-up
