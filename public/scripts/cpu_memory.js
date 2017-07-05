@@ -137,7 +137,6 @@ function drawChart(rtnData, sdate, edate) {
     }
   );
 
-
   var guide9Group = timeDim.group().reduce(
     function(p, v){     
       p.avg = v.guide9;
@@ -165,7 +164,6 @@ function drawChart(rtnData, sdate, edate) {
       return {avg : 0}
     }
   );
-
 
 console.log(minDate, maxDate);
   cpuChart
@@ -264,6 +262,7 @@ function drawTable(data) {
   var sb = new StringBuffer();
   sb.append('<thead><tr><th>Pgid</th><th>Cpu</th><th>Memory</th><th>Name</th><th>Timestamp</th></tr></thead><tbody>');
   data.forEach(function(d){
+    d._source.timestamp = new Date(d._source.timestamp);
     sb.append('<tr><td>'+d._source.system.process.pgid+'</td><td>'+d._source.system.process.cpu.total.pct+'</td>');
     sb.append('<td>'+d._source.system.process.memory.rss.pct+'</td><td>'+d._source.system.process.name+'</td>');
     sb.append('<td>'+d._source.timestamp+'</td></tr>');
