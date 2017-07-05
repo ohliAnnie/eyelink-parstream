@@ -386,32 +386,65 @@
         }
       } 
     ]]></query>
-    <query id='selectAccessError'><![CDATA[
-       "index" : [##index##],  
-        "type"  : "access",
+    <query id='selectProcess'><![CDATA[
+      {
+        "index" : [##index##],  
+        "type"  : "metricsets",
         "body" : { 
-          "size" : 10000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},        
-           "query" : {
+          "size" : 100000,
+          "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "system.filesystem.used.pct", "timestamp", "metricset.name"],
+          "sort" : [
+            { "timestamp" : { "order" : "asc" }},
+            {"system.process.cpu.total.pct": "desc"}],
+          "query": {
              "bool": {
-              "must" : {
-                "range" : {
-                  "timestamp": {
-                   "gte": #gte#,
-                   "lte": #lte#
-                  }
-                }
-              },
-              "must_not": {
-                "range" : {
-                  "response" : {
-                    "lte" : "399"
-                  }
-                }
+                "must" : [
+                 { "range" : {
+                    "timestamp": {
+                     "gte": #gte#,
+                     "lte": #lte#
+                    }
+                  } 
+                 }
+                ],
+                "must_not" : [
+                  { "match": { "metricset.name": "load"}},
+                  { "match": { "metricset.name": "cpu"}},
+                  { "match": { "metricset.name": "memory"}},
+                  { "match": { "metricset.name": "fsstat"}},
+                  { "match": { "metricset.name": "network"}},
+                  {"range" : { "system.process.cpu.total.pct" : {"lte" : 0 }}},
+                  {"range" : { "system.filesystem.used.pct" : {"lte" : 0 }}}                  
+                ]
+              }
+           }
+        }
+      } 
+    ]]></query>
+    <query id='selectAccessError'><![CDATA[
+     { 
+       "index" : [##index##],  
+       "type"  : "access",
+       "_source": ["timestamp", "geoip", "response"], 
+       "body" : { 
+         "size" : 10000,
+         "sort" : { "@timestamp" : { "order" : "asc" }},        
+         "query" : {
+           "bool": {
+             "must" : {
+               "range" : {
+                 "timestamp": {     "gte": #gte#, "lte": #lte#                  }
+               }
+            },
+            "must_not": {
+              "range" : {
+                "response" : {   "lte" : "399"              }
               }
             }
           }
-        } 
+        }
+      } 
+    }  
     ]]></query>  
   </reports>
   <!--
