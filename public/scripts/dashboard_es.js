@@ -107,27 +107,26 @@ $(function(){ // on dom ready
  
 }); // on dom ready
 
-function getDash(day) {
-  console.log(new Date(day));
-  var mon = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];  
+function getDash(day) {  
+  var d = day.toString().split(' ');  
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   $.ajax({
     url: "/dashboard/restapi/selectJiraAccDash",
     dataType: "json",
     type: "GET",    
-    data: { index: "filebeat_jira_access-"+day.getFullYear()+"."+mon[day.getMonth()]+"."+day.getDate()},
+    data: { index: "filebeat_jira_access-"+d[3]+"."+mon[d[1]]+"."+d[2]},
     success: function(result) {
-      var mon = {'Jan' : 1, 'Feb' : 2, 'Mar' : 3, 'Apr' : 4, 'May' : 5, 'Jun' : 6, 'Jul' : 7, 'Aug' : 8, 'Sep' : 9, 'Oct' : 10, 'Nov' : 11, 'Dec' : 12 };
+      
       if (result.rtnCode.code == "0000") {
         //- $("#successmsg").html(result.message);        
         var data = [];
         var start=new Date().getTime(), end=new Date(1990,0,0,0,0,0).getTime();
         result.rtnData.forEach(function(d){                    
           if(d._source.response != null) {
-            var a = d._source.timestamp.split(':');
-
+            var a = d._source.timestamp.split(':');            
             var b = a[0].split('/');
             var c = a[3].split(' ');              
-            var date = new Date(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]).getTime();                          
+            var date = new Date(b[2], parseInt(mon[b[1]])-1, b[0], a[1], a[2], c[0]).getTime();                                      
             if(date < start){            
               start = date;            
             } else if(date > end){            
