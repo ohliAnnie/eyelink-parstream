@@ -433,7 +433,7 @@
            "bool": {
              "must" : {
                "range" : {
-                 "timestamp": {     "gte": #gte#, "lte": #lte#                  }
+                 "@timestamp": {     "gte": #gte#, "lte": #lte#                  }
                }
             },
             "must_not": {
