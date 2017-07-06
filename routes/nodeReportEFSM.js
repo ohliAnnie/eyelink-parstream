@@ -18,16 +18,24 @@ router.get('/main', function(req, res, next) {
   res.render('./reports/main', { title: global.config.productname, mainmenu:mainmenu });
 });
 
+router.get('/process', function(req, res, next) {
+  res.render('./reports/process', { title: global.config.productname, mainmenu:mainmenu });
+});
+
 router.get('/cpu_memory', function(req, res, next) {
   res.render('./reports/cpu_memory', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/error', function(req, res, next) {
-  res.render('./reports/error', { title: 'Test', mainmenu:mainmenu });
+  res.render('./reports/error', { title: global.config.productnam, mainmenu:mainmenu });
 });
 
 router.get('/all', function(req, res, next) {
   res.render('./reports/report_allEFSM', { title: global.config.productname, mainmenu:mainmenu });
+});
+
+router.get('/test', function(req, res, next) {
+  res.render('./reports/test', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/power', function(req, res, next) {
@@ -101,6 +109,25 @@ router.get('/restapi/getProcessList', function(req, res, next) {
 });
 
 // query Report
+router.get('/restapi/getProcess', function(req, res, next) {
+  console.log('reports/restapi/getProcess');
+  var in_data = {
+    index : req.query.index,
+    gte : req.query.gte,
+    lte : req.query.lte
+  };
+  queryProvider.selectSingleQueryByID2("reports","selectProcess", in_data, function(err, out_data, params) {
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }       
+    res.json({rtnCode: rtnCode, rtnData: out_data});
+  });
+});
+
+
+// query Report
 router.get('/restapi/getAccessError', function(req, res, next) {
   console.log('reports/restapi/getAccessError');
   var in_data = {
@@ -113,7 +140,7 @@ router.get('/restapi/getAccessError', function(req, res, next) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    }       
+    }           
     res.json({rtnCode: rtnCode, rtnData: out_data});
   });
 });
