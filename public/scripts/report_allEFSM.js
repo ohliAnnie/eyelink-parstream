@@ -1,21 +1,24 @@
 function drawChart() {
-  var sdate = $('#sdate').val();
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
+  var sdate = $('#sdate').val();  
+  var sindex =new Date(new Date(sdate).getTime()-24*60*60*1000);
   var edate = $('#edate').val();
-  var index = '', link = "/reports/restapi/getJiraAcc";  
-  var dCnt = (new Date(edate).getTime() - new Date(sdate).getTime())/(24*60*60*1000);  
-  if(dCnt == 0){
-    index = 'filebeat_jira_access-'+sdate;    
-  } else {   
-    link = "/reports/restapi/getJiraAccDays";
-    for(i=0; i<=dCnt; i++){    
-      index = 'filebeat_jira_access';
-    }
+  console.log(new Date(sdate), edate);
+  var index = [], cnt = 0;
+  for(i=sindex.getTime(); i < new Date(edate).getTime()+24*60*60*1000; i+=24*60*60*1000){    
+    var day = new Date(i).toString().split(' ');    
+    index[cnt++] = "filebeat_jira_access-"+day[3]+'.'+mon[day[1]]+'.'+day[2];    
   }  
+  console.log(index);
+  var s = sindex.toString().split(' ');
+  var gte = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T15:00:00.000Z';
+  var e = new Date(edate).toString().split(' ' );
+  var lte = e[3]+'-'+mon[e[1]]+'-'+e[2]+'T15:00:00.000Z';
   $.ajax({
-    url: link,
+    url: "/reports/restapi/getJiraAcc",
     dataType: "json",
     type: "get",
-    data: { index :  index }, 
+    data: { index :  index, gte : gte, lte : lte }, 
     success: function(result) {   
       if (result.rtnCode.code == "0000") {             
         console.log(sdate, edate);
@@ -39,6 +42,8 @@ function drawAll(data, sdate, edate) {
   var minTime = new Date(), maxTime = new Date('1990-01-01');
   var minDate = new Date(sdate);  
   var maxDate =  new Date(edate);
+  console.log(minDate);
+  console.log(maxDate);
   data.forEach(function(d) { 
     if(d._type == "access"){
          d._source.type = "jira";
