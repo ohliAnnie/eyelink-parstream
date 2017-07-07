@@ -61,6 +61,8 @@ router.get('/restapi/getJiraAcc', function(req, res, next) {
   console.log('reports/restapi/getJiraAcc');
   var in_data = {
     index : req.query.index,
+    gte : req.query.gte,
+    lte : req.query.lte
   };
   queryProvider.selectSingleQueryByID2("reports","selectJiraAcc", in_data, function(err, out_data, params) {
     // console.log(out_data);
