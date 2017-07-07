@@ -15,7 +15,7 @@ block script
   script(src='/scripts/cpu_memory.js')
   script.
     $(document).ready(function() {                          
-       var dateFormat = 'YYYY.MM.DD';
+       var dateFormat = 'YYYY-MM-DD';
       $('#sdate').val(moment().subtract(0, 'days').format(dateFormat));
       $('#edate').val(moment().format(dateFormat));
       // time series char를 그린다.
