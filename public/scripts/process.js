@@ -1,17 +1,19 @@
 function getData() {
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
   var sdate = $('#sdate').val();  
-  var sindex =new Date(new Date(sdate).getTime()-24*60*60*1000);
+  var s = sdate.split('-')
+  var sindex =new Date(new Date(s[0], parseInt(s[1])-1, s[2]).getTime()-24*60*60*1000);
   var edate = $('#edate').val();
   console.log(sdate, edate);
   var index = [], cnt = 0;
-  for(i=sindex.getTime(); i <= new Date(edate).getTime(); i+=24*60*60*1000){    
+  var e = edate.split('-');
+  for(i=sindex.getTime(); i < new Date(e[0], parseInt(e[1])-1, e[2]).getTime()+24*60*60*1000; i+=24*60*60*1000){    
     var day = new Date(i).toString().split(' ');    
     index[cnt++] = "metricbeat-"+day[3]+'.'+mon[day[1]]+'.'+day[2];    
   }  
   var s = sindex.toString().split(' ');
   var gte = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T15:00:00.000Z';
-  var e = edate.split('.');
+  var e = edate.split('-');
   var lte = e[0]+'-'+e[1]+'-'+e[2]+'T15:00:00.000Z';
   console.log(index, gte, lte);
   $.ajax({
@@ -42,8 +44,7 @@ function drawChart(rtnData, sdate, edate) {
   var memoryChart = dc.compositeChart("#memoryChart");
   var filesystemChart = dc.compositeChart("#filesystemChart");
   var processTable = dc.dataTable(".processTable");
-
-  console.log(rtnData);
+ 
   var data = [];
   var  filesystem = 0;  
   rtnData.forEach(function(d){          
@@ -56,7 +57,6 @@ function drawChart(rtnData, sdate, edate) {
       filesystem = d._source.system.filesystem.used.pct * 100;
     }        
   });
-  console.log(data);
 
   var nyx = crossfilter(data);
   var all = nyx.groupAll();
