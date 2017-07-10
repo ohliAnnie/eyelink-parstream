@@ -17,7 +17,7 @@ block script
     $(document).ready(function() {                          
        var dateFormat = 'YYYY-MM-DD';
       $('#sdate').val(moment().subtract(0, 'days').format(dateFormat));
-      $('#edate').val(moment().format(dateFormat));
+      $('#edate').val(moment().format(dateFormat));      
       // time series char를 그린다.
         getData();
          $('#btn_search').click(function() {          
@@ -28,7 +28,7 @@ block content
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 CPU / Memory
+        h1 Process
         ol.breadcrumb
           li
             a(href='#') Home
@@ -41,7 +41,7 @@ block content
             .portlet-title
               .caption.font-dark
                 span.caption-subject.bold.uppercase.font-blue-sharp Set date and area
-                span.caption-helper  Date range and select area
+                span.caption-helper  Date range and Process Name
             .portlet-body.form
                form.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
@@ -52,18 +52,9 @@ block content
                         input#sdate.form-control(type='text', name='from' value='')
                         span.input-group-addon to
                         input#edate.form-control(type='text', name='to' value='')
-                    label.control-label.col-md-1 Select Area
+                    label.control-label.col-md-1 Process Name
                     .col-md-6.form-inline
-                      select.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Area')
-                        option(value='') Zone ID
-                        option(value='') All Area
-                        option(value='') AreaID1234
-                        option(value='') AreaID5678
-                      select.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Item')
-                        option(value='') Node ID
-                        option(value='') Node ID
-                        option(value='') Item1234
-                        option(value='') Item5678
+                      input#process.form-control(type='text', name='process', value='', data-placeholder='Select Process')                 
                       button#btn_search.btn.blue
                         i.fa.fa-search Search
       a(href='javascript:dc.filterAll(); dc.renderAll();') Reset All
@@ -73,7 +64,7 @@ block content
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Cpu
-                span.caption-helper  system.cpu.system.pct
+                span.caption-helper  system.process.cpu.total
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -88,7 +79,7 @@ block content
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Memory
-                span.caption-helper  system.memory.actual.used.pct
+                span.caption-helper  system.process.memory.rss
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
