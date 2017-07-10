@@ -1,11 +1,26 @@
 function drawAccChart() {
-  var sdate = $('#sdate').val();
-  var edate = $('#edate').val();     
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
+  var sdate = $('#sdate').val();  
+  var s = sdate.split('-')
+  var sindex =new Date(new Date(s[0], parseInt(s[1])-1, s[2]).getTime()-24*60*60*1000);
+  var edate = $('#edate').val();
+  console.log(sdate, edate);
+  var index = [], cnt = 0;
+  var e = edate.split('-');
+  for(i=sindex.getTime(); i < new Date(e[0], parseInt(e[1])-1, e[2]).getTime()+24*60*60*1000; i+=24*60*60*1000){    
+    var day = new Date(i).toString().split(' ');    
+    index[cnt++] = "filebeat_jira_access-"+day[3]+'.'+mon[day[1]]+'.'+day[2];    
+  }  
+  console.log(index);
+  var s = sindex.toString().split(' ');
+  var gte = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T15:00:00.000Z';  
+  var lte = edate+'T15:00:00.000Z';
+
   $.ajax({
     url: "/dashboard/restapi/getAccTimeseries" ,
     dataType: "json",
     type: "get",
-    data: { sdate : sdate },
+    data: { index : index, gte : gte , lte : lte},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {        
@@ -22,16 +37,29 @@ function drawAccChart() {
   });
 }
 
-function drawProcessChart() {
-  var sdate = $('#sdate').val();
-  var edate = $('#edate').val();   
-  var index = 'metricbeat-'+sdate;  
-  console.log(index);
+function drawProcessChart() { 
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
+  var sdate = $('#sdate').val();  
+  var s = sdate.split('-')
+  var sindex =new Date(new Date(s[0], parseInt(s[1])-1, s[2]).getTime()-24*60*60*1000);
+  var edate = $('#edate').val();
+  console.log(sdate, edate);
+  var index = [], cnt = 0;
+  var e = edate.split('-');
+  for(i=sindex.getTime(); i < new Date(e[0], parseInt(e[1])-1, e[2]).getTime()+24*60*60*1000; i+=24*60*60*1000){       
+    var day = new Date(i).toString().split(' ');    
+    index[cnt++] = "metricbeat-"+day[3]+'.'+mon[day[1]]+'.'+day[2];    
+  }  
+  var s = sindex.toString().split(' ');
+  var gte = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T15:00:00.000Z';
+  var e = edate.split('-');
+  var lte = e[0]+'-'+e[1]+'-'+e[2]+'T15:00:00.000Z';
+  console.log(index, gte, lte);
   $.ajax({
     url: "/dashboard/restapi/getProcessTimeseries" ,
     dataType: "json",
     type: "get",
-    data: { index : index },
+    data: { index : index, gte : gte , lte : lte},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {        
@@ -47,16 +75,29 @@ function drawProcessChart() {
   });
 }
 
-function drawTopChart() {
-  var sdate = $('#sdate').val();
-  var edate = $('#edate').val();   
-  var index = 'metricbeat-'+sdate;  
-  console.log(index);
+function drawTopChart() {  
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
+  var sdate = $('#sdate').val();  
+  var s = sdate.split('-')
+  var sindex =new Date(new Date(s[0], parseInt(s[1])-1, s[2]).getTime()-24*60*60*1000);
+  var edate = $('#edate').val();
+  console.log(sdate, edate);
+  var index = [], cnt = 0;
+  var e = edate.split('-');
+  for(i=sindex.getTime(); i < new Date(e[0], parseInt(e[1])-1, e[2]).getTime()+24*60*60*1000; i+=24*60*60*1000){       
+    var day = new Date(i).toString().split(' ');    
+    index[cnt++] = "metricbeat-"+day[3]+'.'+mon[day[1]]+'.'+day[2];    
+  }  
+  var s = sindex.toString().split(' ');
+  var gte = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T15:00:00.000Z';
+  var e = edate.split('-');
+  var lte = e[0]+'-'+e[1]+'-'+e[2]+'T15:00:00.000Z';
+   console.log(index, gte, lte);
   $.ajax({
     url: "/dashboard/restapi/getTopTimeseries" ,
     dataType: "json",
     type: "get",
-    data: { index : index },
+    data: { index : index, gte : gte , lte : lte},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
@@ -73,15 +114,28 @@ function drawTopChart() {
 }
 
 function drawTotalChart() {
-  var sdate = $('#sdate').val();
-  var edate = $('#edate').val();   
-  var index = 'metricbeat-'+sdate;  
-  console.log(index);
+   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
+  var sdate = $('#sdate').val();  
+  var s = sdate.split('-')
+  var sindex =new Date(new Date(s[0], parseInt(s[1])-1, s[2]).getTime()-24*60*60*1000);
+  var edate = $('#edate').val();
+  console.log(sdate, edate);
+  var index = [], cnt = 0;
+  var e = edate.split('-');
+  for(i=sindex.getTime(); i < new Date(e[0], parseInt(e[1])-1, e[2]).getTime()+24*60*60*1000; i+=24*60*60*1000){       
+    var day = new Date(i).toString().split(' ');    
+    index[cnt++] = "metricbeat-"+day[3]+'.'+mon[day[1]]+'.'+day[2];    
+  }  
+  var s = sindex.toString().split(' ');
+  var gte = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T15:00:00.000Z';
+  var e = edate.split('-');
+  var lte = e[0]+'-'+e[1]+'-'+e[2]+'T15:00:00.000Z';
+   console.log(index, gte, lte);
   $.ajax({
     url: "/dashboard/restapi/getTotalTimeseries" ,
     dataType: "json",
     type: "get",
-    data: { index : index },
+    data: { index : index, gte : gte , lte : lte},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
@@ -98,15 +152,28 @@ function drawTotalChart() {
 }
 
 function drawMetricChart() {
-  var sdate = $('#sdate').val();
-  var edate = $('#edate').val();   
-  var index = 'metricbeat-'+sdate;  
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
+  var sdate = $('#sdate').val();  
+  var s = sdate.split('-')
+  var sindex =new Date(new Date(s[0], parseInt(s[1])-1, s[2]).getTime()-24*60*60*1000);
+  var edate = $('#edate').val();
+  console.log(sdate, edate);
+  var index = [], cnt = 0;
+  var e = edate.split('-');
+  for(i=sindex.getTime(); i < new Date(e[0], parseInt(e[1])-1, e[2]).getTime()+24*60*60*1000; i+=24*60*60*1000){       
+    var day = new Date(i).toString().split(' ');    
+    index[cnt++] = "metricbeat-"+day[3]+'.'+mon[day[1]]+'.'+day[2];    
+  }  
+  var s = sindex.toString().split(' ');
+  var gte = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T15:00:00.000Z';
+  var e = edate.split('-');
+  var lte = e[0]+'-'+e[1]+'-'+e[2]+'T15:00:00.000Z';
   console.log(index);
   $.ajax({
     url: "/dashboard/restapi/getMetricTimeseries" ,
     dataType: "json",
     type: "get",
-    data: { index : index },
+    data: { index : index, gte : gte , lte : lte},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {

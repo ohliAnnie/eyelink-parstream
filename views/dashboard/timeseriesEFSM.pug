@@ -14,7 +14,7 @@ block script
   script(type='text/javascript', src="/scripts/timeseries_es.js")
   script.
     $(document).ready(function() {
-      var dateFormat = 'YYYY.MM.DD';
+      var dateFormat = 'YYYY-MM-DD';
       $('#sdate').val(moment().format(dateFormat));
       $('#edate').val(moment().format(dateFormat));
 
@@ -131,8 +131,8 @@ block content
           .portlet.light.bordered
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze System Cpu / System Memory
-                span.caption-helper  user pct / system pct / idle pct / used pct / actual used pct / swap used pct
+                span.caption-subject.bold.uppercase.font-green-haze System Cpu/Memory
+                span.caption-helper  user / system / idle / used / actual used / swap used
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')

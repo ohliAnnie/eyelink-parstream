@@ -1,18 +1,18 @@
 function getData() {
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
   var sdate = $('#sdate').val();  
-  var sindex =new Date(new Date(sdate).getTime()-24*60*60*1000);
-  var edate = $('#edate').val();
-  console.log(sdate, edate);
+  var s = sdate.split('-')
+  var sindex =new Date(new Date(s[0], parseInt(s[1])-1, s[2]).getTime()-24*60*60*1000);
+  var edate = $('#edate').val();  
   var index = [], cnt = 0;
-  for(i=sindex.getTime(); i <= new Date(edate).getTime(); i+=24*60*60*1000){    
+  var e = edate.split('-');
+  for(i=sindex.getTime(); i <= new Date(e[0], parseInt(e[1])-1, e[2]).getTime(); i+=24*60*60*1000){    
     var day = new Date(i).toString().split(' ');    
     index[cnt++] = "metricbeat-"+day[3]+'.'+mon[day[1]]+'.'+day[2];    
-  }  
+  }    
   var s = sindex.toString().split(' ');
   var gte = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T15:00:00.000Z';
-  var e = edate.split('.');
-  var lte = e[0]+'-'+e[1]+'-'+e[2]+'T15:00:00.000Z';
+  var lte = edate+'T15:00:00.000Z';
   console.log(index, gte, lte);
   $.ajax({
     url: "/reports/restapi/getCpuMemoryFilesystemAll" ,
@@ -55,8 +55,10 @@ function getData() {
 
 
 function drawChart(rtnData, sdate, edate) {  
-  var minDate = new Date(sdate+' 00:00:00');
-  var maxDate = new Date(edate+' 24:00:00');
+  var s = sdate.split('-');
+  var minDate = new Date(s[0], parseInt(s[1])-1, s[2], 0, 0, 0);
+  var e = edate.split('-');
+  var maxDate = new Date(e[0], parseInt(e[1])-1, e[2], 24, 0, 0);
   
   var cpuChart = dc.compositeChart("#cpuChart");
   var memoryChart = dc.compositeChart("#memoryChart");
@@ -73,6 +75,7 @@ function drawChart(rtnData, sdate, edate) {
       filesystem = d._source.system.filesystem.used.pct * 100;
     }    
     var date = new Date(d._source.timestamp)
+    console.log(date);
     data.push({ timestamp : date, hour : d3.time.hour(date), cpu : cpu, memory : memory, filesystem : filesystem, guide9 : 90, guide7 : 70 });
   });
 
