@@ -44,12 +44,14 @@ function drawChart(rtnData, sdate, edate) {
   var maxTime = new Date(e[0], parseInt(e[1])-1, e[2], 23, 0, 0);
   var gap =(maxDate.getTime() - minDate.getTime())/24*60*60*1000;
 
-  var marker = dc_leaflet.markerChart(".map");
-  var countBar = dc.barChart("#countBar");
-  var typePie = dc.pieChart("#typePie");
-  var hourLine = dc.lineChart("#hourLine");
-  var weekLine = dc.lineChart("#weekLine");  
-  var monLine = dc.lineChart("#monLine");  
+  var groupName = "error";
+
+  var marker = dc_leaflet.markerChart("#demo .map .map", "map");
+  var countBar = dc.barChart("#countBar", groupName);
+  var typePie = dc.pieChart("#typePie", groupName);
+  var hourLine = dc.lineChart("#hourLine", groupName);
+  var weekLine = dc.lineChart("#weekLine", groupName);  
+  var monLine = dc.lineChart("#monLine", groupName);  
   
   var monthNameFormat = d3.time.format("%b-%Y");
 
@@ -213,6 +215,6 @@ function drawChart(rtnData, sdate, edate) {
   .zoom(11)
   .cluster(true);
 
-  dc.renderAll();
-  
+  dc.renderAll(groupName);
+  dc.renderAll("map");  
 }
