@@ -4,7 +4,13 @@ function getData() {
   var s = sdate.split('-')
   var sindex =new Date(new Date(s[0], parseInt(s[1])-1, s[2]).getTime()-24*60*60*1000);
   var edate = $('#edate').val();
+  var name = $('#process').val();
   console.log(sdate, edate);
+  if(name == '')  {
+    var url = "/reports/restapi/getProcess" 
+  } else {
+    var url = "/reports/restapi/getProcessByName" 
+  }
   var index = [], cnt = 0;
   var e = edate.split('-');
   for(i=sindex.getTime(); i < new Date(e[0], parseInt(e[1])-1, e[2]).getTime()+24*60*60*1000; i+=24*60*60*1000){    
@@ -17,10 +23,10 @@ function getData() {
   var lte = e[0]+'-'+e[1]+'-'+e[2]+'T15:00:00.000Z';
   console.log(index, gte, lte);
   $.ajax({
-    url: "/reports/restapi/getProcess" ,
+    url: url,
     dataType: "json",
     type: "get",
-    data: { index : index, gte : gte , lte : lte},
+    data: { index : index, gte : gte , lte : lte, name : name},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {        
@@ -37,26 +43,30 @@ function getData() {
 }
 
 function drawChart(rtnData, sdate, edate) {  
-  var minDate = new Date(sdate+' 00:00:00');
-  var maxDate = new Date(edate+' 24:00:00');
+  var s = sdate.split('-');
+  var minDate = new Date(s[0], parseInt(s[1])-1, s[2], 0, 0, 0);
+  var e = edate.split('-');
+  var maxDate = new Date(e[0], parseInt(e[1])-1, e[2], 24, 0, 0);
   
   var cpuChart = dc.compositeChart("#cpuChart");
   var memoryChart = dc.compositeChart("#memoryChart");
   var filesystemChart = dc.compositeChart("#filesystemChart");
   var processTable = dc.dataTable(".processTable");
  
+   var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S.%L+05:30").parse;
   var data = [];
   var  filesystem = 0;  
   rtnData.forEach(function(d){          
     if(d._source.metricset.name == "process")  {
     cpu = d._source.system.process.cpu.total.pct * 100;    
     memory = d._source.system.process.memory.rss.pct * 100;
-    var date = new Date(d._source.timestamp)
+    var date = new Date(d._source.timestamp);        
     data.push({ timestamp : date, hour : d3.time.hour(date), cpu : cpu, memory : memory, filesystem : filesystem, guide9 : 90, guide7 : 70, pgid : d._source.system.process.pgid, name : d._source.system.process.name });
     } else if(d._source.metricset.name == "filesystem") {
       filesystem = d._source.system.filesystem.used.pct * 100;
     }        
   });
+  console.log(data);
 
   var nyx = crossfilter(data);
   var all = nyx.groupAll();
@@ -158,6 +168,7 @@ console.log(minDate, maxDate);
     .x(d3.time.scale().domain([minDate, maxDate]))    
     .y(d3.scale.linear().domain([0, 100]))
     .round(d3.time.hour.round)
+
     .renderHorizontalGridLines(true)
     .renderVerticalGridLines(true) 
     .title(function(d) {
@@ -184,7 +195,7 @@ console.log(minDate, maxDate);
     .dimension(timeDim)
     .transitionDuration(500)          
  //   .brushOn(true)
-    .mouseZoomable(true)
+//    .mouseZoomable(true)
     .x(d3.time.scale().domain([minDate, maxDate]))    
     .y(d3.scale.linear().domain([0, 100]))
     .round(d3.time.hour.round)
@@ -212,8 +223,8 @@ console.log(minDate, maxDate);
      .margins({top: 20, right: 20, bottom: 40, left: 100})
     .dimension(timeDim)
     .transitionDuration(500)          
- //   .brushOn(true)
-    .mouseZoomable(true)
+    .brushOn(true)
+//    .mouseZoomable(true)
     .x(d3.time.scale().domain([minDate, maxDate]))    
     .y(d3.scale.linear().domain([0, 100]))
     .round(d3.time.hour.round)

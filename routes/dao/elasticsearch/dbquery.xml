@@ -404,7 +404,7 @@
         "index" : [##index##],  
         "type"  : "metricsets",
         "body" : { 
-          "size" : 100000,
+          "size" : 10000,
           "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "system.filesystem.used.pct", "timestamp", "metricset.name"],
           "sort" : [
             { "timestamp" : { "order" : "asc" }},
@@ -419,6 +419,44 @@
                     }
                   } 
                  }
+                ],
+                "must_not" : [
+                  { "match": { "metricset.name": "load"}},
+                  { "match": { "metricset.name": "cpu"}},
+                  { "match": { "metricset.name": "memory"}},
+                  { "match": { "metricset.name": "fsstat"}},
+                  { "match": { "metricset.name": "network"}},
+                  {"range" : { "system.process.cpu.total.pct" : {"lte" : 0 }}},
+                  {"range" : { "system.filesystem.used.pct" : {"lte" : 0 }}}                  
+                ]
+              }
+           }
+        }
+      } 
+    ]]></query>
+    <query id='selectProcessByName'><![CDATA[
+      {
+        "index" : [##index##],  
+        "type"  : "metricsets",
+        "body" : { 
+          "size" : 10000,
+          "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "system.filesystem.used.pct", "timestamp", "metricset.name"],
+          "sort" : [
+            { "timestamp" : { "order" : "asc" }},
+            {"system.process.cpu.total.pct": "desc"}],
+          "query": {
+             "bool": {
+                "must" : [
+                 { "range" : {
+                    "timestamp": {
+                     "gte": #gte#,
+                     "lte": #lte#
+                    }
+                  } 
+                 },
+                 { "match": {
+                   "system.process.name": #name#
+                 }}
                 ],
                 "must_not" : [
                   { "match": { "metricset.name": "load"}},

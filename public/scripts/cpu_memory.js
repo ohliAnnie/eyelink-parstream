@@ -74,8 +74,7 @@ function drawChart(rtnData, sdate, edate) {
     } else if(d._source.metricset.name == "filesystem") {
       filesystem = d._source.system.filesystem.used.pct * 100;
     }    
-    var date = new Date(d._source.timestamp)
-    console.log(date);
+    var date = new Date(d._source.timestamp);
     data.push({ timestamp : date, hour : d3.time.hour(date), cpu : cpu, memory : memory, filesystem : filesystem, guide9 : 90, guide7 : 70 });
   });
 
@@ -176,14 +175,13 @@ console.log(minDate, maxDate);
     .dimension(timeDim)
     .transitionDuration(500)          
 //    .brushOn(true)
-    .mouseZoomable(true)
+//    .mouseZoomable(true)
     .x(d3.time.scale().domain([minDate, maxDate]))    
     .y(d3.scale.linear().domain([0, 100]))
     .round(d3.time.hour.round)
     .renderHorizontalGridLines(true)
     .renderVerticalGridLines(true) 
-    .title(function(d) {
-      console.log(d);
+    .title(function(d) {      
       return "\npct : " + d.value.avg;
     })
     .legend(dc.legend().x(20).y(10).itemHeight(13).gap(5))

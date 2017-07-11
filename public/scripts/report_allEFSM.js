@@ -312,7 +312,7 @@ function drawAll(data, sdate, edate) {
     .margins({left: 65, top: 10, right: 10, bottom: 40})
     .brushOn(true)
     .transitionDuration(500)
-    .clipPadding(20)
+    .clipPadding(30)
     .title(function(d) {
       for(var i=0; i<term.length; i++) {
         if(this.layer == term[i])                   
@@ -323,9 +323,10 @@ function drawAll(data, sdate, edate) {
     .group(typeGroup, term[0], sel_stack('0'))
     .mouseZoomable(true)
     .renderHorizontalGridLines(true)
-    .centerBar(true)
+    //.centerBar(true)
     .gap(serverList.length+20)             
-    .x(d3.scale.ordinal().domain(serverList)) 
+    .x(d3.scale.ordinal().domain(serverList))     
+    .xUnits(dc.units.ordinal)
     .colors(d3.scale.ordinal().range(["#EDC951",  "#31a354", "#00A0B0", "#FFB2F5" , "#CC333F"]));
     
   serverCount.legend(dc.legend());

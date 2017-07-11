@@ -5,6 +5,7 @@ function getData(){
   var sindex =new Date(new Date(s[0], parseInt(s[1])-1, s[2]).getTime()-24*60*60*1000);
   var edate = $('#edate').val();
   console.log(sdate, edate);
+  console.log(sindex);
   var index = [], cnt = 0;
   var e = edate.split('-');
   for(i=sindex.getTime(); i < new Date(e[0], parseInt(e[1])-1, e[2]).getTime()+24*60*60*1000; i+=24*60*60*1000){    
@@ -43,13 +44,14 @@ function drawChart(rtnData, sdate, edate) {
   var maxTime = new Date(e[0], parseInt(e[1])-1, e[2], 23, 0, 0);
   var gap =(maxDate.getTime() - minDate.getTime())/24*60*60*1000;
 
-/var marker = dc_leaflet.markerChart("#demo1 .map");
+  var marker = dc_leaflet.markerChart(".map");
   var countBar = dc.barChart("#countBar");
   var typePie = dc.pieChart("#typePie");
   var hourLine = dc.lineChart("#hourLine");
   var weekLine = dc.lineChart("#weekLine");  
   var monLine = dc.lineChart("#monLine");  
   
+  var monthNameFormat = d3.time.format("%b-%Y");
 
   var data = [], geo = [];
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
@@ -63,13 +65,12 @@ function drawChart(rtnData, sdate, edate) {
     var day = d3.time.day(d._source.timestamp);
     var hour = d._source.timestamp.getHours();
     var weekly = week[d._source.timestamp.getDay()];    
-    var monthly = month[d._source.timestamp.getMonth()]; 
+    var weekNum = d._source.timestamp.getDay();    
+    var monthly = d._source.timestamp.getMonth();
     var type =  d._source.response;
     var geo = d._source.geoip.latitude+','+d._source.geoip.longitude;
-    data.push({ timestamp : d._source.timestamp, day : day, hour : hour, week : weekly, mon : monthly, type : type, geo : geo });
+    data.push({ timestamp : d._source.timestamp, day : day, hour : hour, week : weekly, weekNum : weekNum, mon : monthly, type : type, geo : geo });
   });
-  console.log(data);
-  //drawMarkerSelect(geo);
 
   var nyx = crossfilter(data);
   var all = nyx.groupAll();
@@ -108,45 +109,29 @@ function drawChart(rtnData, sdate, edate) {
     return 1;
   });
 
-  var monDim = nyx.dimension(function(d) {    
-    return d.mon; 
+  var wNumDim = nyx.dimension(function(d){        
+    return d.weekNum;
+  });
+
+  var wNumGroup = wNumDim.group().reduceCount(function(d) {
+    return 1;
+  });
+
+  var monDim = nyx.dimension(function(d) {     
+    return d.mon;
   });
 
   var monGroup = monDim.group().reduceCount(function(d) {
     return 1;
   });
 
-  var orderW = $.map(data, function(values) {
-     return values.week;
-  });
-
-  var orderM = $.map(data, function(values) {
-     return values.mon;
-  });
-
- function sort_group(group, order) {
-   return {
-     all: function() {
-        var g = group.all(), map = {};
-          g.forEach(function(kv) {
-            map[kv.key] = kv.value;
-           });
-           return order.map(function(k) {
-              return {key: k, value: map[k]};
-           });
-      }
-   };
-};
-    
- var sorted_week = sort_group(weekGroup, orderW);
- var sorted_mon = sort_group(monGroup, orderM);
-
-
-   countBar
-    .width(window.innerWidth*0.45)
+     countBar
+    .width(window.innerWidth*0.44)
     .height(390)
     .x(d3.time.scale().domain([minDate, maxDate]))    
     .xUnits(function(){return 20;})    
+    .round(d3.time.day.round)
+    .alwaysUseRounding(true)
     .dimension(dayDim)
     .group(barGroup)
     .elasticY(true)
@@ -157,7 +142,7 @@ function drawChart(rtnData, sdate, edate) {
     .clipPadding(20);
 
   typePie
-    .width(window.innerWidth*0.45)
+    .width(window.innerWidth*0.44)
     .height(400)
     .radius(160)
     .dimension(typeDim)
@@ -178,43 +163,51 @@ function drawChart(rtnData, sdate, edate) {
     .colors(d3.scale.ordinal().range(["#FFB2F5", "#EDC951",  "#31a354", "#00D8FF", "#8041D9", "#CC333F", "#00A0B0", "#B5B2FF" ]));
 
   hourLine
-    .width(window.innerWidth*0.45)
+    .width(window.innerWidth*0.44)
     .height(390)
-    .x(d3.scale.linear().domain([0,24]))
+    .x(d3.scale.linear().domain([0,23]))
     .elasticY(true)    
     .renderArea(true)
-    .brushOn(false)
+    .brushOn(true)
     .renderDataPoints(true)        
     .dimension(hourDim)
     .group(hourGroup);
 
   weekLine
-    .width(window.innerWidth*0.45)
+    .width(window.innerWidth*0.44)
     .height(390)
-    .xUnits(dc.units.ordinal)
-    .x(d3.scale.ordinal().domain(orderW))
+    .x(d3.scale.linear().domain([0,6]))       
     .elasticY(true)    
-    .brushOn(false)    
+    .brushOn(true)
     .renderDataPoints(true)                
-    .dimension(weekDim)
-    .group(sorted_week);
+    .dimension(wNumDim)
+    .group(wNumGroup)
+    .title(function(d){      
+      return week[d.key]+' : '+d.value;
+    });
+
+  weekLine.xAxis().tickFormat(function(v) {return week[v];})  ;
 
   monLine
-    .width(window.innerWidth*0.45)
+    .width(window.innerWidth*0.44)
     .height(390)
-    .xUnits(dc.units.ordinal)
-    .x(d3.scale.ordinal().domain(orderM))
+    .x(d3.scale.linear().domain([0,11]))             
     .elasticY(true)
     .renderDataPoints(true)        
-    .renderArea(true)
-    .brushOn(false)        
+    .brushOn(true)   
     .dimension(monDim)
-    .group(sorted_mon);
+    .group(monGroup)    
+    .title(function(d){      
+      return month[d.key]+' : '+d.value;
+    });
+
+
+  monLine.xAxis().tickFormat(function(v) {return month[v];})  ;
 
   marker
   .dimension(facilities)
   .group(facilitiesGroup)
-  .width(window.innerWidth*0.45)
+  .width(window.innerWidth*0.44)
   .height(400)
   .center([37.467271, 127.042861])
   .zoom(11)
