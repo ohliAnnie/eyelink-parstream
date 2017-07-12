@@ -60,14 +60,14 @@ block content
                     .col-md-4.form-inline                     
                       button#btn_search.btn.blue
                         i.fa.fa-search Search
-      a(href='javascript:dc.filterAll(); dc.renderAll();') Reset All
+      a(href='javascript:dc.filterAll("error"); dc.renderAll("error");') Reset All
       .row
         .col-md-6
           .portlet.light
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Count by Day
-                span.caption-helper Two Column chart
+                span.caption-helper  
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -82,7 +82,7 @@ block content
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Error Type
-                span.caption-helper Two Column chart
+                span.caption-helper  
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -98,7 +98,7 @@ block content
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Geo Map
-                span.caption-helper Two Column chart
+                span.caption-helper  
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -107,14 +107,15 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart(style='height:400px; ')
-                #demo1
+                #demo
                   .map
+                    .map
         .col-md-6
           .portlet.light.bordered
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Count by Hour
-                span.caption-helper Two Column chart
+                span.caption-helper  
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -130,7 +131,7 @@ block content
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Count by Week
-                span.caption-helper Two Column chart
+                span.caption-helper  
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -145,7 +146,7 @@ block content
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Count by Month
-                span.caption-helper Two Column chart
+                span.caption-helper  
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print

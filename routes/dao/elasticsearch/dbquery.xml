@@ -365,7 +365,7 @@
           }                     
         }               
       }     
-    ]]></query> 
+    ]]></query>      
     <query id='selectProcessList'><![CDATA[
       {
         "index" : [##index##],  
@@ -399,6 +399,35 @@
         }
       } 
     ]]></query>
+    <query id='selectProcessListByName'><![CDATA[
+      {
+        "index" : [##index##],  
+        "type"  : "metricsets",
+        "body" : { 
+          "size" : 10000,
+          "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "timestamp"],
+          "sort" : [
+            { "timestamp" : { "order" : "asc" }},
+            {"system.process.cpu.total.pct": "desc"}],
+          "query": {
+            "bool": {
+              "must" : [
+                {"range" : {   "timestamp": {   "gte": #gte#, "lte": #lte#       }       }},
+                { "match": {  "system.process.name": #name#    }}
+              ],
+              "filter" : {
+                "term": {   "metricset.name": "process"    }
+              },
+              "must_not" : {
+                "range" : {
+                  "system.process.cpu.total.pct" : {"lte" : 0 }
+                }
+              }
+            }
+          }
+        }
+      } 
+    ]]></query>    
     <query id='selectProcess'><![CDATA[
       {
         "index" : [##index##],  
@@ -418,7 +447,10 @@
                      "lte": #lte#
                     }
                   } 
-                 }
+                 },
+                 { "match": {
+                   "system.process.name": #name#
+                 }}
                 ],
                 "must_not" : [
                   { "match": { "metricset.name": "load"}},

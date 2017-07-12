@@ -83,7 +83,9 @@ function drawAll(data, sdate, edate) {
 
   if(sdate == edate) {
     minDate = new Date(minTime.getTime()-30*60*1000);
-    maxDate = new Date(maxTime.getTime()+30*60*1000)
+    maxDate = new Date(maxTime.getTime()+30*60*1000);
+  } else {
+    minDate = new Date(minDate.getTime()-12*60*60*1000);
   }
   var nyx = crossfilter(acc);
   var all = nyx.groupAll();
@@ -214,7 +216,7 @@ function drawAll(data, sdate, edate) {
     .margins({left: 65, top: 10, right: 10, bottom: 40})
     .brushOn(true)
     .transitionDuration(500)
-    .clipPadding(10)
+    .clipPadding(20)
     .title(function(d) {
       for(var i=0; i<term.length; i++) {
         if(this.layer == term[i])                   
@@ -226,10 +228,10 @@ function drawAll(data, sdate, edate) {
     .mouseZoomable(true)
     .renderHorizontalGridLines(true)
     .x(d3.time.scale().domain([minDate, maxDate]))    
-    .xUnits(function(){return 20;})
+    .xUnits(function(){return 24;})
     .elasticY(true)
     .centerBar(true)
-//    .gap(gap)
+  //.gap(20)
     .colors(d3.scale.ordinal().range(["#EDC951",  "#31a354", "#00A0B0", "#FFB2F5" , "#CC333F"]));
 
   if(sdate == edate){

@@ -20,7 +20,9 @@ block script
       $('#edate').val(moment().format(dateFormat));
       // time series char를 그린다.
         getData();
-         $('#btn_search').click(function() {          
+        getTable();
+         $('#btn_search').click(function() {    
+          $('#sample_2').empty();      
           getData();
         });
     });                         
@@ -49,7 +51,7 @@ block content
                     .col-md-2
                     label.control-label.col-md-1 Date Range
                     .col-md-4
-                      .input-group.input-large.date-picker.input-daterange(data-date='2017.01.01', data-date-format='yyyy.mm.dd')
+                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
                         input#sdate.form-control(type='text', name='from' value='')
                         span.input-group-addon to
                         input#edate.form-control(type='text', name='to' value='')
@@ -110,23 +112,14 @@ block content
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Process List
-                span.caption-helper Two Column chart
+                span.caption-helper
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
                   |  Print
                 a.collapse(href='javascript:;')
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
-            .portlet-body
-              .chart(style='height:auto; ')
-                table#sample_2.table.table-striped.table-bordered.table-hover(style='text-align:center;')
-                  thead     
-                    tr
-                      th(style='text-align:center;') Pgid
-                      th(style='text-align:center;') Cpu
-                      th(style='text-align:center;') Memory
-                      th(style='text-align:center;') Name
-                      th(style='text-align:center;') Timestamp                    
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')              
+            #sample             
     p.copyright Copyright M2U Technology All rights reserved.
   a.go2top(href='#index')
     i.icon-arrow-up

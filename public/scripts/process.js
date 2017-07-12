@@ -46,7 +46,7 @@ function drawChart(rtnData, sdate, edate) {
   var s = sdate.split('-');
   var minDate = new Date(s[0], parseInt(s[1])-1, s[2], 0, 0, 0);
   var e = edate.split('-');
-  var maxDate = new Date(e[0], parseInt(e[1])-1, e[2], 24, 0, 0);
+  
   
   var cpuChart = dc.compositeChart("#cpuChart");
   var memoryChart = dc.compositeChart("#memoryChart");
@@ -56,16 +56,23 @@ function drawChart(rtnData, sdate, edate) {
    var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S.%L+05:30").parse;
   var data = [];
   var  filesystem = 0;  
+  var date = new Date(), maxDate = minDate.getTime();
   rtnData.forEach(function(d){          
     if(d._source.metricset.name == "process")  {
-    cpu = d._source.system.process.cpu.total.pct * 100;    
-    memory = d._source.system.process.memory.rss.pct * 100;
-    var date = new Date(d._source.timestamp);        
-    data.push({ timestamp : date, hour : d3.time.hour(date), cpu : cpu, memory : memory, filesystem : filesystem, guide9 : 90, guide7 : 70, pgid : d._source.system.process.pgid, name : d._source.system.process.name });
+      cpu = d._source.system.process.cpu.total.pct * 100;    
+      memory = d._source.system.process.memory.rss.pct * 100;
+      date = new Date(d._source.timestamp);        
+      data.push({ timestamp : date, hour : d3.time.hour(date), cpu : cpu, memory : memory, filesystem : filesystem, guide9 : 90, guide7 : 70, pgid : d._source.system.process.pgid, name : d._source.system.process.name });
+      if(date.getTime() > maxDate){
+        maxDate = date.getTime();            
+      }
     } else if(d._source.metricset.name == "filesystem") {
       filesystem = d._source.system.filesystem.used.pct * 100;
     }        
+
   });
+  maxDate = new Date(maxDate);
+  console.log(minDate, maxDate);
   console.log(data);
 
   var nyx = crossfilter(data);
@@ -195,7 +202,7 @@ console.log(minDate, maxDate);
     .dimension(timeDim)
     .transitionDuration(500)          
  //   .brushOn(true)
-//    .mouseZoomable(true)
+    .mouseZoomable(true)
     .x(d3.time.scale().domain([minDate, maxDate]))    
     .y(d3.scale.linear().domain([0, 100]))
     .round(d3.time.hour.round)
@@ -216,6 +223,7 @@ console.log(minDate, maxDate);
           .colors("red")
           .dashStyle([2,2])
       ]);
+    
 
     filesystemChart
     .width(window.innerWidth*0.28)
@@ -223,8 +231,8 @@ console.log(minDate, maxDate);
      .margins({top: 20, right: 20, bottom: 40, left: 100})
     .dimension(timeDim)
     .transitionDuration(500)          
-    .brushOn(true)
-//    .mouseZoomable(true)
+//    .brushOn(true)
+    .mouseZoomable(true)
     .x(d3.time.scale().domain([minDate, maxDate]))    
     .y(d3.scale.linear().domain([0, 100]))
     .round(d3.time.hour.round)
@@ -245,6 +253,10 @@ console.log(minDate, maxDate);
           .colors("red")
           .dashStyle([2,2])
       ]);
+
+  cpuChart.rangeChart(filesystemChart);
+  memoryChart.rangeChart(cpuChart);  
+  filesystemChart.rangeChart(memoryChart);
 
   processTable 
     .dimension(timeDim)
