@@ -15,11 +15,11 @@ block script
   script(type='text/javascript', src='/assets/leaflet/leaflet.markercluster.js')  
   script(type='text/javascript', src='/assets/leaflet/dc.leaflet.js')
   script(type='text/javascript', src="/scripts/util.js")
-  script(src='/scripts/error.js')
+  script(src='/scripts/res&req.js')
   script.
     $(document).ready(function() {                          
        var dateFormat = 'YYYY-MM-DD';
-      $('#sdate').val(moment().subtract(13, 'days').format(dateFormat));
+      $('#sdate').val(moment().subtract(6, 'days').format(dateFormat));
       $('#edate').val(moment().format(dateFormat));
       // time series char를 그린다.
         getData();
@@ -31,7 +31,7 @@ block content
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 Error
+        h1 Res&Req
         ol.breadcrumb
           li
             a(href='#') Home

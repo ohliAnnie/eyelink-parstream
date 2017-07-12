@@ -54,9 +54,6 @@ function getData() {
   });
 }
 
-function getTable(){
-  
-}
 function drawChart(rtnData, sdate, edate) {  
   var s = sdate.split('-');
   var minDate = new Date(s[0], parseInt(s[1])-1, s[2], 0, 0, 0);
@@ -265,28 +262,10 @@ console.log(minDate, maxDate);
  dc.renderAll();
 }
 
-
-function drawTable2(data) {    
-  $('#sample').empty();
-  $('#sample_2').empty();
-
-  var sb = new StringBuffer();
-  sb.append('<thead><tr><th>Pgid</th><th>Cpu</th><th>Memory</th><th>Name</th><th>Timestamp</th></tr></thead><tbody>');
-  data.forEach(function(d){
-    d._source.timestamp = new Date(d._source.timestamp);
-    sb.append('<tr><td>'+d._source.system.process.pgid+'</td><td>'+d._source.system.process.cpu.total.pct+'</td>');
-    sb.append('<td>'+d._source.system.process.memory.rss.pct+'</td><td>'+d._source.system.process.name+'</td>');
-    sb.append('<td>'+d._source.timestamp+'</td></tr>');
-  });
-  sb.append('</tbody>');
-  $('#sample_2').append(sb.toString());  
-      TableManaged.init();
-}
-
 function drawTable(data) {    
-
+  $("#sample").empty();
   var sb = new StringBuffer();
-  sb.append('<div class="portlet-body form"><div class="chart">');
+  sb.append('<div class="portlet-body form"><div class="chart" style="height:auto">');
   sb.append('<table class="table table-striped table-bordered table-hover" id="sample_2">');
   sb.append('<thead><tr><th>Pgid</th><th>Cpu</th><th>Memory</th><th>Name</th><th>Timestamp</th></tr></thead><tbody>');
   data.forEach(function(d){

@@ -307,6 +307,10 @@ function drawAll(data, sdate, edate) {
           .colors("#00A0B0")
       ]);
 
+   if(sdate == edate) {
+    countLine.rangeChart(countBar);
+    countBar.rangeChart(countLine);
+    } 
   var serverList = ["jira"];
   serverCount
     .width(window.innerWidth*0.43)
