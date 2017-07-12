@@ -526,6 +526,88 @@
       } 
     }  
     ]]></query>  
+    <query id='selectDayErrorCount'><![CDATA[
+     { 
+       "index" : #index#,  
+       "type"  : "access",       
+       "body" : {                   
+         "query" : { "range" : {  
+           "response":  {   "gte": "400"     }     }     }     
+        }
+      }  
+    ]]></query>
+    <query id='selectDay1sCount'><![CDATA[
+     { 
+       "index" : #index#,  
+       "type"  : "access",       
+       "body" : {                   
+         "query" : { 
+           "bool" : {
+              "must" : [
+                {"range" : 
+                  { "response": { "lte": "400"  }}},
+                { "range": 
+                  { "responsetime" : { "lte" : "1000"}}}
+              ]
+            }
+          }
+        }
+      }  
+    ]]></query>
+    <query id='selectDay3sCount'><![CDATA[
+     { 
+       "index" : #index#,  
+       "type"  : "access",       
+       "body" : {                   
+         "query" : { 
+           "bool" : {
+              "must" : [
+                {"range" : 
+                  { "response": { "lte": "400"  }}},
+                { "range": 
+                  { "responsetime" : { "gte" : "1000", "lte" : "3000" }}}
+              ]
+            }
+          }
+        }
+      }  
+    ]]></query>    
+    <query id='selectDay5sCount'><![CDATA[
+     { 
+       "index" : #index#,  
+       "type"  : "access",       
+       "body" : {                   
+         "query" : { 
+           "bool" : {
+              "must" : [
+                {"range" : 
+                  { "response": { "lte": "400"  }}},
+                { "range": 
+                  { "responsetime" : { "gte" : "3000", "lte" : "5000" }}}
+              ]
+            }
+          }
+        }
+      }  
+    ]]></query>
+    <query id='<selectDaySlowCount'><![CDATA[
+     { 
+       "index" : #index#,  
+       "type"  : "access",       
+       "body" : {                   
+         "query" : { 
+           "bool" : {
+              "must" : [
+                {"range" : 
+                  { "response": { "lte": "400"  }}},
+                { "range": 
+                  { "responsetime" : { "gte" : "5000" }}}
+              ]
+            }
+          }
+        }
+      }  
+    ]]></query>
   </reports>
   <!--
   <analysis>
