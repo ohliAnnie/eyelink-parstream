@@ -284,9 +284,11 @@ function drawTable2(data) {
 }
 
 function drawTable(data) {    
-
+  /*var table = $('#sample_2').DataTable();
+  table.destroy();*/
+  $("#sample").empty();
   var sb = new StringBuffer();
-  sb.append('<div class="portlet-body form"><div class="chart">');
+  sb.append('<div class="portlet-body form"><div class="chart" style="height:auto">');
   sb.append('<table class="table table-striped table-bordered table-hover" id="sample_2">');
   sb.append('<thead><tr><th>Pgid</th><th>Cpu</th><th>Memory</th><th>Name</th><th>Timestamp</th></tr></thead><tbody>');
   data.forEach(function(d){
