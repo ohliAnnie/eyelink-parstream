@@ -447,10 +447,7 @@
                      "lte": #lte#
                     }
                   } 
-                 },
-                 { "match": {
-                   "system.process.name": #name#
-                 }}
+                 }
                 ],
                 "must_not" : [
                   { "match": { "metricset.name": "load"}},
