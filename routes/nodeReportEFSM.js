@@ -176,9 +176,7 @@ router.get('/restapi/getAccessError', function(req, res, next) {
 // query Report
 router.get('/restapi/getDay1sCount', function(req, res, next) {
   console.log('reports/restapi/getDay1sCount');
-  var in_data = {
-    index : req.query.index    
-  };
+  var in_data = {    index : req.query.index      };
   queryProvider.selectSingleQueryCount ("reports","selectDay1sCount", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
@@ -192,9 +190,7 @@ router.get('/restapi/getDay1sCount', function(req, res, next) {
 // query Report
 router.get('/restapi/getDay3sCount', function(req, res, next) {
   console.log('reports/restapi/getDay3sCount');
-  var in_data = {
-    index : req.query.index    
-  };
+  var in_data = {    index : req.query.index      };
   queryProvider.selectSingleQueryCount ("reports","selectDayErrorCount", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
@@ -208,9 +204,7 @@ router.get('/restapi/getDay3sCount', function(req, res, next) {
 // query Report
 router.get('/restapi/getDay5sCount', function(req, res, next) {
   console.log('reports/restapi/getDay5sCount');
-  var in_data = {
-    index : req.query.index    
-  };
+  var in_data = {    index : req.query.index      };
   queryProvider.selectSingleQueryCount ("reports","selectDay5sCount", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
@@ -224,9 +218,7 @@ router.get('/restapi/getDay5sCount', function(req, res, next) {
 // query Report
 router.get('/restapi/getDaySlowCount', function(req, res, next) {
   console.log('reports/restapi/getDaySlowCount');
-  var in_data = {
-    index : req.query.index    
-  };
+  var in_data = {    index : req.query.index      };
   queryProvider.selectSingleQueryCount ("reports","selectDaySlowCount", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
@@ -240,9 +232,7 @@ router.get('/restapi/getDaySlowCount', function(req, res, next) {
 // query Report
 router.get('/restapi/getDayErrorCount', function(req, res, next) {
   console.log('reports/restapi/getDayErrorCount');
-  var in_data = {
-    index : req.query.index    
-  };
+  var in_data = {    index : req.query.index      };
   queryProvider.selectSingleQueryCount ("reports","selectDayErrorCount", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');

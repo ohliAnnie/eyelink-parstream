@@ -590,7 +590,7 @@
         }
       }  
     ]]></query>
-    <query id='<selectDaySlowCount'><![CDATA[
+    <query id='selectDaySlowCount'><![CDATA[
      { 
        "index" : #index#,  
        "type"  : "access",       
