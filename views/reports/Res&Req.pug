@@ -6,6 +6,30 @@ block style
   link(rel='stylesheet', href='/assets/leaflet/dc.css')  
   link(type='text/css', href='/assets/leaflet/css/leaflet-legend.css', rel='stylesheet')
   link(rel='stylesheet', href='/stylesheets/style.css')
+  style.
+    body {
+      font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .bar {
+      fill: steelblue;
+    }
+
+    .x.axis path {
+      display: none;
+    }
+    path { 
+        stroke: red;
+        stroke-width: 2;
+        fill: none;
+    }
 block script
   script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
@@ -62,7 +86,7 @@ block content
                         i.fa.fa-search Search
       a(href='javascript:dc.filterAll("error"); dc.renderAll("error");') Reset All
       .row
-        .col-md-6
+        .col-md-12
           .portlet.light
             .portlet-title
               .caption
@@ -76,22 +100,7 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart(style='height:400px; ')
-                #countBar(style='margine:0 auto;')
-        .col-md-6
-          .portlet.light.bordered
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-green-haze Error Type
-                span.caption-helper  
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-print
-                  |  Print
-                a.collapse(href='javascript:;')
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
-            .portlet-body
-              .chart(style='height:400px; ')
-                #typePie
+                #day        
       .row
         .col-md-6
           .portlet.light
