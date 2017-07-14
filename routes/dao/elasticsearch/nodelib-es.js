@@ -156,7 +156,7 @@ QueryProvider.prototype.selectSingleQueryByID3 = function (type, queryId, datas,
   console.log('nodelib-es/selectSingleQueryByID -> (%s) queryID', queryId);
 
   // SQL 내 파라메타를 변경해준다.
-  var sQueryString = Utils.replaceSql2(queryParser.getQuery(type, queryId), datas);
+  var sQueryString = Utils.replaceSql3(queryParser.getQuery(type, queryId), datas);
   console.log('nodelib-es/selectSingleQueryByID -> ' + sQueryString);
 
   sQueryString = JSON.parse(sQueryString);
@@ -165,7 +165,7 @@ QueryProvider.prototype.selectSingleQueryByID3 = function (type, queryId, datas,
     sQueryString
   ).then(function (resp) {
       //console.log(resp.hits);
-      var hits = resp.hits;      
+      var hits = resp.aggregations;      
       console.log('nodelib-es/selectSingleQueryByID -> total : %d', resp.hits.total);
       cb(null, hits);
   }, function (err) {
