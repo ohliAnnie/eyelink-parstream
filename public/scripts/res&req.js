@@ -1,177 +1,97 @@
-var cntD1 = [], cntD3 = [], cntD5 = [], cntDS = [], cntDE = [], Di = 0; 
-function getData(){  
+function makeIndex(){    
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
+  var monS = ['01','02','03','04','05','06','07','08','09','10','11','12']  ;
   var sdate = $('#sdate').val();  
   var s = sdate.split('-')
   var minDate = new Date(s[0], parseInt(s[1])-1, s[2], 0, 0, 0);
   var edate = $('#edate').val();
   var e = edate.split('-');
   var maxDate = new Date(e[0], parseInt(e[1])-1, e[2], 0, 0, 0);
-  var indexD = [], cnt = 0;  
   console.log(sdate, edate);
+  var indexD = [], rangeD = [], xD = [], cnt = 0;    
   for(i=minDate.getTime(); i < maxDate.getTime()+24*60*60*1000; i+=24*60*60*1000){    
     var day = new Date(i).toString().split(' ');    
-    indexD[cnt++] = "filebeat_jira_access-"+day[3]+'.'+mon[day[1]]+'.'+day[2];    
+    indexD[cnt] = "filebeat_jira_access-"+day[3]+'.'+mon[day[1]]+'.'+day[2];    
+    xD[cnt] = day[3]+'-'+mon[day[1]]+'-'+day[2];
+    var day2 = new Date(i+24*60*60*1000).toString().split(' ');         
+    rangeD[cnt++] ='{"key" : "'+day[3]+'-'+mon[day[1]]+'-'+day[2] +'", "from" : "'+day[3]+'-'+mon[day[1]]+'-'+day[2]+'T00:00:00.000Z", "to" : "'+day2[3]+'-'+mon[day2[1]]+'-'+day2[2]+'T00:00:00.000Z" }';  
   }    
-  getDay(indexD);  
+  getData(indexD, xD, rangeD.toString(), "#day");  
  
-  var indexW = [];
-  var wStart = maxDate.getTime()-27*24*60*60*1000;
-  for(i=0; i<4; i++) {
-    var week = [];
-    for(j=0; j<7; j++){
-      var day = new Date(wStart).toString().split(' ');    
-      week[j] = "filebeat_jira_access-"+day[3]+'.'+mon[day[1]]+'.'+day[2];    
-      wStart += 24*60*60*1000;
+  var indexW = [], rangeW = [], xW = [], cnt = 0;   
+  for(i=27; i>=0; i--) {
+    var day = new Date(maxDate.getTime()-i*24*60*60*1000).toString().split(' ');    
+//    indexW[i] = "filebeat_jira_access-"+day[3]+'.'+mon[day[1]]+'.'+day[2];        
+    if(i%7 == 6){      
+      var day2 = new Date(maxDate.getTime()-(i-6)*24*60*60*1000).toString().split(' ');         
+      xW[cnt] = day[3]+'.'+mon[day[1]]+'.'+day[2]+'-'+day2[3]+'.'+mon[day2[1]]+'.'+day2[2];
+      rangeW[cnt] ='{"key" : "'+xW[cnt++] +'", "from" : "'+day[3]+'-'+mon[day[1]]+'-'+day[2]+'T00:00:00.000Z", "to" : "'+day2[3]+'-'+mon[day2[1]]+'-'+day2[2]+'T00:00:00.000Z" }';  
     }
-    indexW[i] = week;
+  }
+
+  indexW[1] = "filebeat_jira_access-"+maxDate.getFullYear()+'.'+monS[maxDate.getMonth()]+'.*';        
+  if(maxDate.getMonth()==0){
+    indexW[0] =  "filebeat_jira_access-"+(maxDate.getFullYear()-1)+'.12.*';         
+  } else {
+    indexW[0] = "filebeat_jira_access-"+maxDate.getFullYear()+'.'+monS[maxDate.getMonth()-1]+'.*';        
   }
   console.log(indexW);
-  var indexM = [], eYear = parseInt(e[0]), eMon = parseInt(e[1]);  
+  getData(indexW, xW, rangeW.toString(), "#week");  
+  
+  var indexM = [],  rangeM = [], xM = [], eYear = maxDate.getFullYear(), eMon = maxDate.getMonth();  
   for(i=5; i>=0; i--){
-    indexM[i] = "filebeat_jira_access-"+eYear+'.'+(eMon--)+'.*'
-    if(eMon == 0){
-      eMon = 12;
-      eYear--;
+    indexM[i] = "filebeat_jira_access-"+eYear+'.'+monS[eMon]+'.*'
+    if(eMon == 11){
+      var year = eYear+1, mon = 0;
+    } else {
+      var year = eYear, mon = eMon+1;
     }
+    xM[i] = eYear+'-'+monS[eMon--];    
+    rangeM[i] ='{"key" : "'+xM[i] +'", "from" : "'+xM[i]+'-01T00:00:00.000Z", "to" : "'+year+'-'+monS[mon]+'-01T00:00:00.000Z" }';  
+    if(eMon == 0){
+      eMon = 11;
+      eYear--;
+    }    
   }
-  console.log(indexM);  
+  getData(indexM, xM, rangeM.toString(), "#month");    
 }
 
-function getDay(indexD) {    
-  var cntD1 = [], cntD3 = [], cntD5 = [], cntDS = [], cntDE = [], Di = 0; 
-  var gap = indexD.length ;
-  for(i=0; i<gap; i++){
-     $.ajax({
-      url: "/reports/restapi/getDay1sCount" ,
-      dataType: "json",
-      type: "get",
-      data: { index : indexD[i] },
-      success: function(result) {
-        // console.log(result);        
-        if (result.rtnCode.code == "0000") {                            
-          setDayData(Di, 0, result.rtnData, gap);          
-        } else {
-          //- $("#errormsg").html(result.message);
-        }
-      },
-      error: function(req, status, err) {
-        //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+function getData(index, x, range, name) {    
+   $.ajax({
+    url: "/reports/restapi/getMultiIndexCount" ,
+    dataType: "json",
+    type: "get",
+    data: { index : index, range : range  },
+    success: function(result) {
+      // console.log(result);        
+      if (result.rtnCode.code == "0000") {                            
+        console.log(result.rtnData);
+        drawChart(result.rtnData.group_by_x.buckets, x, name);          
+      } else {
+        //- $("#errormsg").html(result.message);
       }
-    });      
-     $.ajax({
-      url: "/reports/restapi/getDay3sCount" ,
-      dataType: "json",
-      type: "get",
-      data: { index : indexD[i] },
-      success: function(result) {
-        // console.log(result);        
-        if (result.rtnCode.code == "0000") {                  
-          setDayData(Di, 1, result.rtnData, gap);
-        } else {
-          //- $("#errormsg").html(result.message);
-        }
-      },
-      error: function(req, status, err) {
-        //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-      }
-    }); 
-    $.ajax({
-      url: "/reports/restapi/getDay5sCount" ,
-      dataType: "json",
-      type: "get",
-      data: { index : indexD[i] },
-      success: function(result) {
-        // console.log(result);        
-        if (result.rtnCode.code == "0000") {                  
-          setDayData(Di, 2, result.rtnData, gap);
-        } else {
-          //- $("#errormsg").html(result.message);
-        }
-      },
-      error: function(req, status, err) {
-        //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-      }
-    }); 
-    $.ajax({
-      url: "/reports/restapi/getDaySlowCount" ,
-      dataType: "json",
-      type: "get",
-      data: { index : indexD[i] },
-      success: function(result) {
-        // console.log(result);        
-        if (result.rtnCode.code == "0000") {                  
-          setDayData(Di, 3, result.rtnData, gap);
-        } else {
-          //- $("#errormsg").html(result.message);
-        }
-      },
-      error: function(req, status, err) {
-        //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-      }
-    });  
-    $.ajax({
-      url: "/reports/restapi/getDayErrorCount" ,
-      dataType: "json",
-      type: "get",
-      data: { index : indexD[i] },
-      success: function(result) {
-        // console.log(result);        
-        if (result.rtnCode.code == "0000") {                  
-          setDayData(Di++, 4, result.rtnData, gap);
-        } else {
-          //- $("#errormsg").html(result.message);
-        }
-      },
-      error: function(req, status, err) {
-        //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-      }
-    });  
-  }
- 
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
 }
 
-
-function setDayData(x, y, cnt, gap){
-  switch(y) {
-    case 0 :
-     cntD1[x] = cnt;
-     break;
-    case 1 :
-     cntD3[x] = cnt;
-     break;
-    case 2 :
-     cntD5[x] = cnt;
-     break;
-    case 3 :
-     cntDS[x] = cnt;
-     break;
-    case 4 : 
-     cntDE[x] = cnt;
-     break;
-  }  
-  if(y == 4 && x== (gap-1) && cntD1.length == gap && cntD3.length == gap && cntD5.length == gap && cntDS.length == gap && cntDE.length == gap) {
-    dayChart(gap);
-  }  
-}
-
-function dayChart(gap) {  
-  var sdate = $('#edate').val();
-  var s = sdate.split('-');
-  var minDate = new Date(s[0], parseInt(s[1])-1, s[2], 0, 0, 0).getTime();    
+function drawChart(rtnData, xD, name) {      
   var data = [];
-  for(i=0; i<gap; i++) {    
-    var date = new Date(minDate - i*24*60*60*1000).toString().split(' ');
-    data.push({ "date" : date[3]+'/'+date[1]+'/'+date[2], "1s" : cntD1[i], "3s" : cntD3[i], "5s" : cntD5[i], "slow" : cntDS[i], "error" : cntDE[i]});
+  var max = 0;
+  for(i=0; i<xD.length; i++) {        
+    var d = rtnData[xD[i]];
+    var e = d.aggs.buckets[0] ;    
+   data.push({ "date" : xD[i], "1s" : d.by_type.buckets.s1.doc_count, "3s" : d.by_type.buckets.s3.doc_count, "5s" : d.by_type.buckets.s5.doc_count, "slow" : d.by_type.buckets.slow.doc_count, "error" : e.doc_count});
+   if(max < e.doc_count){
+    max = e.doc_count;
+   }
   }
   console.log(data);
 
-  var margin = {top: 20, right: 20, bottom: 30, left: 40},
+  var margin = {top: 20, right: 20, bottom: 30, left:50},
     width = window.innerWidth*0.9 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
@@ -181,13 +101,13 @@ function dayChart(gap) {
   var y = d3.scale.linear()
       .rangeRound([height, 0]);
 
-  y1 = d3.scale.linear().range([height, 0]).domain([0,100]);//marks can have min 0 and max 100
+  y1 = d3.scale.linear().range([height, 0]).domain([0,max*2]);//marks can have min 0 and max 100
 
   var yAxisRight = d3.svg.axis().scale(y1)
       .orient("right").ticks(5); 
 
   var color = d3.scale.ordinal()
-      .range(["#EDC951",  "#31a354", "#00A0B0", "#FFB2F5" , "#CC333F"]);
+      .range(["#EDC951",  "#31a354", "#00A0B0", "#FFB2F5"]);
 
   var xAxis = d3.svg.axis()
       .scale(x)
@@ -195,10 +115,10 @@ function dayChart(gap) {
 
   var yAxis = d3.svg.axis()
       .scale(y)
-      .orient("left")
-      .tickFormat(d3.format(".2s"));
+      .orient("left");
+      //.tickFormat(d3.format(".2s"));
 
-  var svg = d3.select("#day").append("svg")
+  var svg = d3.select(name).append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
     .append("g")
@@ -209,8 +129,7 @@ function dayChart(gap) {
       var y0 = 0;
       d.group = color.domain().map(function(name) { return {name: name, y0: y0, y1: y0 += +d[name]}; });
       d.total = d.group[d.group.length - 1].y1;
-    });
-    
+    });    
     
     x.domain(data.map(function(d) { return d.date; }));
     //stores toltal headcount
@@ -241,7 +160,7 @@ function dayChart(gap) {
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("Population");
+        .text("Count");
 
     var state = svg.selectAll(".state")
         .data(data)

@@ -46,9 +46,10 @@ block script
       $('#sdate').val(moment().subtract(6, 'days').format(dateFormat));
       $('#edate').val(moment().format(dateFormat));
       // time series char를 그린다.
-        getData();
+        makeIndex();
          $('#btn_search').click(function() {     
-          getData();
+          d3.select("svg").remove();
+          makeIndex();
         });
     });                      
 block content
@@ -102,40 +103,7 @@ block content
               .chart(style='height:400px; ')
                 #day        
       .row
-        .col-md-6
-          .portlet.light
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-green-haze Geo Map
-                span.caption-helper  
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-print
-                  |  Print
-                a.collapse(href='javascript:;')
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
-            .portlet-body
-              .chart(style='height:400px; ')
-                #demo
-                  .map
-                    .map
-        .col-md-6
-          .portlet.light.bordered
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-green-haze Count by Hour
-                span.caption-helper  
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-print
-                  |  Print
-                a.collapse(href='javascript:;')
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
-            .portlet-body
-              .chart(style='height:400px; ')
-                #hourLine
-      .row
-        .col-md-6
+        .col-md-12
           .portlet.light
             .portlet-title
               .caption
@@ -149,9 +117,10 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart(style='height:400px; ')
-                #weekLine
-        .col-md-6
-          .portlet.light.bordered
+                #week        
+      .row
+        .col-md-12
+          .portlet.light
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Count by Month
@@ -164,7 +133,4 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart(style='height:400px; ')
-                #monLine
-    p.copyright Copyright M2U Technology All rights reserved.
-  a.go2top(href='#index')
-    i.icon-arrow-up
+                #month        
