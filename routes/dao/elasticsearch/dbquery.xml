@@ -1,13 +1,20 @@
 <?xml version="1.0"?>
 <queryList>
-  <test>
-    <query id='test01'><![CDATA[
-      {q : 'aaa'}
+  <user>
+    <query id='selectUserList'><![CDATA[
+     {
+        "index" : "efsm_user-*",
+        "type" : "user",
+        "body" : {
+          "size" : 1000,
+          "query" : { "match_all" : { } }
+        }
+    }
      ]]></query>
     <query id='test02'><![CDATA[
       {q : 'bbb'}
      ]]></query>
-  </test>
+  </user>
   <dashboard>
     <query id='selectSuccessCount'><![CDATA[
     {
@@ -34,18 +41,7 @@
         }
       }
     }
-     ]]></query>
-      <!-- select b.zone_id, a.node_id, event_time, event_type, active_power, ampere, voltage,  power_factor,
-         reactive_power, apparent_power, amount_active_power,
-         als_level, dimming_level,
-           noise_decibel, noise_frequency,
-           b.gps_latitude, b.gps_longitude, b.gps_altitude,
-           vibration_x, vibration_y, vibration_z,
-           (vibration_x + vibration_y + vibration_z) / 3 as vibration
-      from tb_node_raw as a left outer join tb_node_info as b on a.node_id = b.node_id
-    where event_time >= timestamp #START_TIMESTAMP#
-      and event_time < timestamp #END_TIMESTAMP#
-    order by event_time -->    
+     ]]></query>        
     <query id='selectEventRawDataOld'><![CDATA[
     {
       index: 'corecode-2017-05',

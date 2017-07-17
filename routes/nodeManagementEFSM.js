@@ -16,11 +16,12 @@ router.get('/users', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }       
+    console.log(out_data);
     var users = out_data;    
     res.render('./management/usersEFSM', { title: global.config.productname, mainmenu:mainmenu, users:users });
   });
 });
-
+  
 router.get('/users/:id', function(req, res) {
   console.log(req.params.id);
   // 신규 등록
@@ -122,5 +123,6 @@ router.delete('/users/:id', function(req, res) {
     res.json({rtnCode: rtnCode});
   });
 });
+
 
 module.exports = router;
