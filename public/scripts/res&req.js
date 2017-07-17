@@ -19,27 +19,31 @@ function makeIndex(){
   getData(indexD, xD, rangeD.toString(), "#day");  
  
   var indexW = [], rangeW = [], xW = [], cnt = 0;   
-  for(i=27; i>=0; i--) {
+  var weeks = parseInt($('#weeks').val());
+  var wNum = weeks * 7 - 1;
+  for(i=wNum; i>=0; i--) {
     var day = new Date(maxDate.getTime()-i*24*60*60*1000).toString().split(' ');    
 //    indexW[i] = "filebeat_jira_access-"+day[3]+'.'+mon[day[1]]+'.'+day[2];        
     if(i%7 == 6){      
       var day2 = new Date(maxDate.getTime()-(i-6)*24*60*60*1000).toString().split(' ');         
-      xW[cnt] = day[3]+'.'+mon[day[1]]+'.'+day[2]+'-'+day2[3]+'.'+mon[day2[1]]+'.'+day2[2];
+      xW[cnt] = mon[day[1]]+'/'+day[2]+'~'+mon[day2[1]]+'/'+day2[2];
       rangeW[cnt] ='{"key" : "'+xW[cnt++] +'", "from" : "'+day[3]+'-'+mon[day[1]]+'-'+day[2]+'T00:00:00.000Z", "to" : "'+day2[3]+'-'+mon[day2[1]]+'-'+day2[2]+'T00:00:00.000Z" }';  
     }
   }
-
-  indexW[1] = "filebeat_jira_access-"+maxDate.getFullYear()+'.'+monS[maxDate.getMonth()]+'.*';        
-  if(maxDate.getMonth()==0){
-    indexW[0] =  "filebeat_jira_access-"+(maxDate.getFullYear()-1)+'.12.*';         
-  } else {
-    indexW[0] = "filebeat_jira_access-"+maxDate.getFullYear()+'.'+monS[maxDate.getMonth()-1]+'.*';        
-  }
-  console.log(indexW);
+  var wYear = maxDate.getFullYear(), wMon = maxDate.getMonth();
+  for(i=weeks/4; i>=0; i--) {
+    indexW[i] = "filebeat_jira_access-"+wYear+'.'+monS[wMon--]+'.*';          
+    if(wMon==0){
+      wYear--;
+      wMon = 12;      
+    } 
+  } 
   getData(indexW, xW, rangeW.toString(), "#week");  
   
   var indexM = [],  rangeM = [], xM = [], eYear = maxDate.getFullYear(), eMon = maxDate.getMonth();  
-  for(i=5; i>=0; i--){
+  var months = parseInt($('#months').val());
+  var mNum = months - 1;  
+  for(i=mNum; i>=0; i--){
     indexM[i] = "filebeat_jira_access-"+eYear+'.'+monS[eMon]+'.*'
     if(eMon == 11){
       var year = eYear+1, mon = 0;
@@ -54,6 +58,8 @@ function makeIndex(){
     }    
   }
   getData(indexM, xM, rangeM.toString(), "#month");    
+
+  console.log(weeks, months);
 }
 
 function getData(index, x, range, name) {    
