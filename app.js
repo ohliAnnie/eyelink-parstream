@@ -21,7 +21,7 @@ var analysis = require('./routes/nodeAnalysis' + global.config.pcode);
 var initapps = require('./routes/initApp');
 var socketapps = require('./routes/socketApp');
 var node = require('./routes/nodeCon');
-var management = require('./routes/nodeManagement');
+var management = require('./routes/nodeManagement' + global.config.pcode);
 var sample = require('./routes/nodeSample');
 var simulator = require('./routes/nodeSimulator');
 // for ES Test
