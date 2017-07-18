@@ -12,9 +12,9 @@ function makeIndex(){
   for(i=minDate.getTime(); i < maxDate.getTime()+24*60*60*1000; i+=24*60*60*1000){    
     var day = new Date(i).toString().split(' ');    
     indexD[cnt] = "filebeat_jira_access-"+day[3]+'.'+mon[day[1]]+'.'+day[2];    
-    xD[cnt] = day[3]+'-'+mon[day[1]]+'-'+day[2];
+    xD[cnt] = mon[day[1]]+'/'+day[2];
     var day2 = new Date(i+24*60*60*1000).toString().split(' ');         
-    rangeD[cnt++] ='{"key" : "'+day[3]+'-'+mon[day[1]]+'-'+day[2] +'", "from" : "'+day[3]+'-'+mon[day[1]]+'-'+day[2]+'T00:00:00.000Z", "to" : "'+day2[3]+'-'+mon[day2[1]]+'-'+day2[2]+'T00:00:00.000Z" }';  
+    rangeD[cnt++] ='{"key" : "'+mon[day[1]]+'/'+day[2] +'", "from" : "'+day[3]+'-'+mon[day[1]]+'-'+day[2]+'T00:00:00.000Z", "to" : "'+day2[3]+'-'+mon[day2[1]]+'-'+day2[2]+'T00:00:00.000Z" }';  
   }    
   getData(indexD, xD, rangeD.toString(), "#day");  
  
@@ -97,8 +97,8 @@ function drawChart(rtnData, xD, name) {
   }
   console.log(data);
 
-  var margin = {top: 20, right: 20, bottom: 30, left:50},
-    width = window.innerWidth*0.9 - margin.left - margin.right,
+  var margin = {top: 20, right: 25, bottom: 30, left:50},
+    width = window.innerWidth*0.44 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
   var x = d3.scale.ordinal()
@@ -149,7 +149,7 @@ function drawChart(rtnData, xD, name) {
     //this will make the y axis to teh right
     svg.append("g")       
           .attr("class", "y axis")  
-          .attr("transform", "translate(" + (width-100) + " ,0)") 
+          .attr("transform", "translate(" + (width-140) + " ,0)") 
           .style("fill", "red")   
           .call(yAxisRight);
           
@@ -175,12 +175,23 @@ function drawChart(rtnData, xD, name) {
         .attr("transform", function(d) { return "translate(" + x(d.date) + ",0)"; });
     //adding the rect for group chart
     state.selectAll("rect")
-        .data(function(d) { return d.group; })
+        .data(function(d) {         
+          return d.group; })
       .enter().append("rect")
         .attr("width", x.rangeBand())
         .attr("y", function(d) { return y(d.y1); })
         .attr("height", function(d) { return y(d.y0) - y(d.y1); })
-        .style("fill", function(d) { return color(d.name); });
+        .style("fill", function(d) { return color(d.name); })
+      .on("mouseover", function() { tooltip.style("display", null); })
+      .on("mouseout", function() { tooltip.style("display", "none"); })
+      .on("mousemove", function(d) {
+        console.log(d);
+        var xPosition = d3.mouse(this)[0] - 15;
+        var yPosition = d3.mouse(this)[1] - 25;        
+        tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+        tooltip.select("text").text(d.name+' : '+d.y1);
+        console.log(tooltip);
+      });
 
     svg.append("path")        // Add the valueline path.
           .attr("d", averageline(data));
@@ -203,6 +214,24 @@ function drawChart(rtnData, xD, name) {
         .attr("dy", ".35em")
         .style("text-anchor", "end")
         .text(function(d) { return d; });
+        
+  // Prep the tooltip bits, initial display is hidden
+        var tooltip = svg.append("g")
+          .attr("class", "tooltip")
+          .style("display", "none");
+    
+        tooltip.append("rect")
+        .attr("width", 60)
+        .attr("height", 20)
+        .attr("fill", "white")
+        .style("opacity", 0.5);
+
+    tooltip.append("text")
+      .attr("x", 15)
+      .attr("dy", "1.2em")
+      .style("text-anchor", "middle")
+      .attr("font-size", "12px")
+      .attr("font-weight", "bold");
 
 }
 
