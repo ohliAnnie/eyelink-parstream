@@ -79,7 +79,7 @@ block content
                       td  #{user._source.user_name}
                       td  #{user._source.user_email}
                       td
-                        if user._source.user_role === 'master'
+                        if user._source.user_role === 'Master'
                           span.label.label-sm.label-danger #{user._source.user_role}
                         else if user._source.user_role === 'Zone Manager'
                           span.label.label-sm.label-primary #{user._source.user_role}

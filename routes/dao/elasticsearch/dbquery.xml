@@ -11,6 +11,51 @@
         }
     }
      ]]></query>
+    <query id='insertUser'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : "user",        
+        "body" : {
+          "user_id" : #USERID#,
+          "user_pw" : #PASSWORD#,
+          "user_name" : #NAME#,
+          "user_role" : #ROLE#,
+          "user_email" : #EMAIL#,
+          "reg_date" : #DATE#
+        }
+    }
+     ]]></query>
+     <query id='selectCheckJoin'><![CDATA[
+     {
+        "index" : "efsm_user-*",
+        "type" : "user",        
+        "body" : {
+          "_source" : ["user_id"],
+          "query": {             
+            "bool": {
+              "must" : [
+                { "match": { "user_id": #USERID#}}                
+              ]
+            }     
+          } 
+        }
+      }
+     ]]></query>
+   <query id='selectEditUser'><![CDATA[
+     {
+        "index" : "efsm_user-*",
+        "type" : "user",        
+        "body" : {          
+          "query": {             
+            "bool": {
+              "must" : [
+                { "match": { "user_id": #USERID#}}                
+              ]
+            }     
+          } 
+        }
+      }
+     ]]></query>
     <query id='test02'><![CDATA[
       {q : 'bbb'}
      ]]></query>
@@ -29,32 +74,7 @@
       }
     }
      ]]></query>
-    <query id='selectQueryInParams'><![CDATA[
-    {
-      index: 'corecode-2017-05',
-      type: 'corecode',
-      body: {
-        query: {
-          match: {
-            node_id : '#NODE_ID#'
-          }
-        }
-      }
-    }
-     ]]></query>        
-    <query id='selectEventRawDataOld'><![CDATA[
-    {
-      index: 'corecode-2017-05',
-      type: 'corecode',
-      body: {
-        query: {
-          match: {
-            node_id : '#NODE_ID#'
-          }
-        }
-      }
-    }
-    ]]></query>
+   
     <query id='selectEventRawData'><![CDATA[
     {
       "index": "corecode-2017-05",
