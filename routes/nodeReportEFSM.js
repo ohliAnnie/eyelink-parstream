@@ -18,8 +18,8 @@ router.get('/main', function(req, res, next) {
   res.render('./reports/main', { title: global.config.productname, mainmenu:mainmenu });
 });
 
-router.get('/Res&Req', function(req, res, next) {
-  res.render('./reports/Res&Req', { title: global.config.productname, mainmenu:mainmenu });
+router.get('/Res_Req', function(req, res, next) {
+  res.render('./reports/Res_Req', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/process', function(req, res, next) {
