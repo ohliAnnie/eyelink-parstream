@@ -32,7 +32,7 @@ router.get('/users/:id', function(req, res) {
       USERID: req.params.id,
     };
     queryProvider.selectSingleQueryByID("user", "selectEditUser", in_data, function(err, out_data, params) {
-      console.log('db : '+out_data[0]);
+      console.log('db : '+out_data);
       var rtnCode = CONSTS.getErrData('0000');
       // if (out_data[0] === null) {
       //   rtnCode = CONSTS.getErrData('0001');
@@ -51,34 +51,33 @@ router.get('/users/:id', function(req, res) {
 });
 
 // 사용자 신규 등록
-router.post('/users/:id', function(req, res) {
-  var in_data = {
-    USERNAME: req.body.username,
-    USERID: req.body.userid,
-    PASSWORD: req.body.password[0],
-    EMAIL: req.body.email,
-    USERROLE: req.body.userrole,
+router.post('/users/:id', function(req, res) {  
+  var in_data = {    
+    USERID: req.body.userid,    
   };
   console.log(in_data);
-  queryProvider.selectSingleQueryByID("user", "selectCheckJoin", in_data, function(err, out_data, params) {
-    console.log(out_data[0][0]);
-    console.log(req.body.userid);
-    if (out_data[0][0] != null){
+  queryProvider.selectSingleQueryByID2("user", "selectCheckJoin", in_data, function(err, out_data, params) {        
+    if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');
       console.log(rtnCode);
       res.json({rtnCode: rtnCode});
     }  else  {
+      var d = new Date().toString().split(' ');  
+      var s = d[4].split(':');
+      var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
       var in_data = {
-        USERNAME: req.body.username,
+         INDEX: "efsm_user-"+d[3],
+        NAME: req.body.username,
         USERID: req.body.userid,
         PASSWORD: req.body.password[0],
         EMAIL: req.body.email,
-        USERROLE: req.body.userrole,
-        FLAG : 'C'
-      };
+        ROLE: req.body.userrole,
+        DATE: d[3]+'-'+mon[d[1]]+'-'+d[2]+'T'+s[0]+':'+s[1]+':'+s[2]
+      };      
       queryProvider.insertQueryByID("user", "insertUser", in_data, function(err, out_data) {
-        var rtnCode = CONSTS.getErrData(out_data);
-        if (err) { console.log(err);
+        if(out_data.result == "created");
+        var rtnCode = CONSTS.getErrData("0000");        
+        if (err) { console.log(err);          
           rtnCode = CONSTS.getErrData(out_data);
           console.log(rtnCode);
         }
