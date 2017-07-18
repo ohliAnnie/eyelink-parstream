@@ -33,58 +33,166 @@ describe("Util.js", function(){
 
   });
 
-  describe("SQL Query -> ", function() {
+  describe.only("SQL Query -> ", function() {
     // it('login', login());
 
-    it('replace SQL Paramter', function(done) {
+    it('Parstream Query내 파라메타 변환 처리(replaceSql)', function(done) {
       var sql = "SELECT * FROM A WHERE DATE >= #DATE# AND ID = #ID# AND NUM = #NUM#";
-      console.log("sql : %s ", sql);
+      // console.log("sql : %s ", sql);
 
       var params = {ID : 'AAAA', DATE: '2016-12-12', NUM: 5};
 
       sql = Utils.replaceSql(sql, params)
-      console.log(sql);
+      // console.log(sql);
       sql.should.be.equal("SELECT * FROM A WHERE DATE >= '2016-12-12' AND ID = 'AAAA' AND NUM = 5");
       done();
     })
 
-    it.only('replace ES SQL Paramter', function(done) {
-      var sql = '{ "index" : "corecode-2017-05", "type" : "corecode", "body" : {  "size" : 9999, '
-                      + ' "sort" : { "event_time" : { "order" : "asc" }},'
-                      + ' "_source" : ["node_id", "event_time", "ampere", "voltage", "active_power", "power_factor", "event_type"],'
-                      + ' "query" : { "bool" : { "must" : [  { "match_all": {} }  ], '
-                      + ' "filter" : [ { "term" : { "event_type": "1" } }, { "terms" : { "node_id": [##NODE##] } }, '
-                        + ' {"range" : { "event_time" : { "gte" : #START#,      "lt" :  #END# } } } ] } } } }';
-      console.log("sql : %s ", sql);
-
-      var params = { START : "2016-12-29T16:15:41.000Z", END: "2016-12-30T16:15:41.000Z", NODE: ["0001.00000013", "0002.0000002E", "0001.00000011", "0002.0000003F"]};
-
-      sql = Utils.replaceSql2(sql, params)
-      console.log(sql);
-      sql.should.be.equal('"index" : "corecode-2017-05", "type" : "corecode", "body" : {  "size" : 9999, '
-                      + ' "sort" : { "event_time" : { "order" : "asc" }},'
-                      + ' "_source" : ["node_id", "event_time", "ampere", "voltage", "active_power", "power_factor", "event_type"],'
-                      + ' "query" : { "bool" : { "must" : [  { "match_all": {} }  ], '
-                      + ' "filter" : [ { "term" : { "event_type": "1" } }, { "terms" : { "node_id": [##NODE##] } }, '
-                        + ' {"range" : { "event_time" : { "gte" : #START#,      "lt" :  #END# } } } ] } } } }');
-      done();
-    })
-
-    it(' replace SQL Paramter in "in" phase ', function(done) {
+    it('Parstream Query내 "in" 구문 배 파라메타 변환 처리(replaceSql)', function(done) {
       var sql = "SELECT * FROM A WHERE node_id in (##node_id##)";
-      console.log("sql : %s ", sql);
+      // console.log("sql : %s ", sql);
 
       var params = {node_id : ['AAAA', 'BBBB', 'CCCCC'],
             node_type : [10, 20],
             node_name : "aaa",
             node_name2 : 10};
 
-      console.log(params.node_id.length);
+      // console.log(params.node_id.length);
       sql = Utils.replaceSql(sql, params)
-      console.log(sql);
+      // console.log(sql);
       sql.should.be.equal("SELECT * FROM A WHERE node_id in ('AAAA','BBBB','CCCCC')");
       done();
     })
+
+    it('ES Query내 파라메타 변환 처리(replaceSql2)', function(done) {
+      var sql = '{ "index" : "corecode-2017-05", "type" : "corecode", "body" : {  "size" : 9999, '
+                      + ' "sort" : { "event_time" : { "order" : "asc" }},'
+                      + ' "_source" : ["node_id", "event_time", "ampere", "voltage", "active_power", "power_factor", "event_type"],'
+                      + ' "query" : { "bool" : { "must" : [  { "match_all": {} }  ], '
+                      + ' "filter" : [ { "term" : { "event_type": "1" } }, { "terms" : { "node_id": [##NODE##] } }, '
+                        + ' {"range" : { "event_time" : { "gte" : #START#,      "lt" :  #END# } } } ] } } } }';
+      // console.log("sql : %s ", sql);
+
+      var params = {
+              START : "2016-12-29T16:15:41.000Z",
+              END: "2016-12-30T16:15:41.000Z",
+              NODE: ["0001.00000013", "0002.0000002E", "0001.00000011", "0002.0000003F"]
+          };
+
+      sql = Utils.replaceSql2(sql, params)
+      console.log(sql);
+      sql.should.be.equal('{ "index" : "corecode-2017-05", "type" : "corecode", "body" : {  "size" : 9999, '
+                      + ' "sort" : { "event_time" : { "order" : "asc" }},'
+                      + ' "_source" : ["node_id", "event_time", "ampere", "voltage", "active_power", "power_factor", "event_type"],'
+                      + ' "query" : { "bool" : { "must" : [  { "match_all": {} }  ], '
+                      + ' "filter" : [ { "term" : { "event_type": "1" } }, { "terms" : { "node_id": ["0001.00000013","0002.0000002E","0001.00000011","0002.0000003F"] } }, '
+                        + ' {"range" : { "event_time" : { "gte" : "2016-12-29T16:15:41.000Z",      "lt" :  "2016-12-30T16:15:41.000Z" } } } ] } } } }');
+      done();
+    })
+
+    it('ES Query내 MultiIndex 파라메타 변환 처리(replaceSql3)', function(done) {
+      var sql = ''
+      +'{'
+      +' "index" : [##index##],'
+      +' "type"  : "access",'
+      +' "body" : {'
+      +'   "size" : 0,'
+      +'   "aggs" : {'
+      +'     "group_by_x" : {'
+      +'       "range": {'
+      +'         "field": "@timestamp",'
+      +'         "ranges":  [#range#],'
+      +'          "keyed" : true'
+      +'        },'
+      +'        "aggs": {'
+      +'          "by_type" : {'
+      +'            "range": {'
+      +'              "field": "responsetime",'
+      +'              "ranges" : ['
+      +'                { "key" : "s1", "to" : "1000" },'
+      +'                { "key" : "s3", "from" : "1000", "to" : "3000" },'
+      +'                { "key" : "s5", "from" : "3000", "to" : "5000" },'
+      +'                { "key" : "slow", "from" : "5000" }'
+      +'              ],'
+      +'              "keyed" : true'
+      +'            },'
+      +'            "aggs" : {'
+      +'              "by_response" : {'
+      +'                "range" : {'
+      +'                  "field": "response",'
+      +'                  "ranges" : [{ "key" : "cnt", "to" : 400 }]'
+      +'                }'
+      +'              }'
+      +'            }'
+      +'          },'
+      +'          "aggs" : {'
+      +'            "range" : {'
+      +'              "field": "response",'
+      +'              "ranges" : [{ "key" : "error", "from" : 400 }]'
+      +'            }'
+      +'          }'
+      +'        }'
+      +'      }'
+      +'    }'
+      +'  }'
+      +'}';
+      // console.log("sql : %s ", sql);
+
+      var params = {
+              index : '{"filebeat_jira_access-2017-06-*", "filebeat_jira_access-2017-07-*"}',
+              range: '{"key" : "2017-07-12", "from" : "2017-07-12T00:00:00.000Z", "to" : "2017-07-13T00:00:00.000Z" },{"key" : "2017-07-13", "from" : "2017-07-13T00:00:00.000Z", "to" : "2017-07-14T00:00:00.000Z" },{"key" : "2017-07-14", "from" : "2017-07-14T00:00:00.000Z", "to" : "2017-07-15T00:00:00.000Z" },{"key" : "2017-07-15", "from" : "2017-07-15T00:00:00.000Z", "to" : "2017-07-16T00:00:00.000Z" },{"key" : "2017-07-16", "from" : "2017-07-16T00:00:00.000Z", "to" : "2017-07-17T00:00:00.000Z" },{"key" : "2017-07-17", "from" : "2017-07-17T00:00:00.000Z", "to" : "2017-07-18T00:00:00.000Z" },{"key" : "2017-07-18", "from" : "2017-07-18T00:00:00.000Z", "to" : "2017-07-19T00:00:00.000Z" }'
+          };
+
+      sql = Utils.replaceSql3(sql, params)
+      // console.log(sql);
+      sql.should.be.equal('{'
+      +' "index" : [##index##],'
+      +' "type"  : "access",'
+      +' "body" : {'
+      +'   "size" : 0,'
+      +'   "aggs" : {'
+      +'     "group_by_x" : {'
+      +'       "range": {'
+      +'         "field": "@timestamp",'
+      +'         "ranges":  [#range#],'
+      +'          "keyed" : true'
+      +'        },'
+      +'        "aggs": {'
+      +'          "by_type" : {'
+      +'            "range": {'
+      +'              "field": "responsetime",'
+      +'              "ranges" : ['
+      +'                { "key" : "s1", "to" : "1000" },'
+      +'                { "key" : "s3", "from" : "1000", "to" : "3000" },'
+      +'                { "key" : "s5", "from" : "3000", "to" : "5000" },'
+      +'                { "key" : "slow", "from" : "5000" }'
+      +'              ],'
+      +'              "keyed" : true'
+      +'            },'
+      +'            "aggs" : {'
+      +'              "by_response" : {'
+      +'                "range" : {'
+      +'                  "field": "response",'
+      +'                  "ranges" : [{ "key" : "cnt", "to" : 400 }]'
+      +'                }'
+      +'              }'
+      +'            }'
+      +'          },'
+      +'          "aggs" : {'
+      +'            "range" : {'
+      +'              "field": "response",'
+      +'              "ranges" : [{ "key" : "error", "from" : 400 }]'
+      +'            }'
+      +'          }'
+      +'        }'
+      +'      }'
+      +'    }'
+      +'  }'
+      +'}'
+        );
+      done();
+    })
+
   });
 
 
