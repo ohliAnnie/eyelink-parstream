@@ -25,10 +25,22 @@ block style
       font: 10px sans-serif;
       shape-rendering: crispEdges;
     }
+    div.tooltip { 
+      position: absolute;     
+      text-align: center;     
+      width: 80px;          
+      height: 24px;         
+      padding: 2px;       
+      font: 13px sans-serif;    
+      background: lightsteelblue; 
+      border: 0px;    
+      border-radius: 8px;     
+      pointer-events: none;     
+    }
 block script
   script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
   script(type='text/javascript', src="/scripts/util.js")
-  script(src='/scripts/res_req.js')
+  script(src='/scripts/res_req.js')  
   script.
     $(document).ready(function() {                          
        var dateFormat = 'YYYY-MM-DD';

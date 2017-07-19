@@ -97,12 +97,12 @@ function drawChart(rtnData, xD, name) {
   }
   console.log(data);
 
-  var margin = {top: 20, right: 25, bottom: 30, left:50},
+  var margin = {top: 20, right: 40, bottom: 30, left:50},
     width = window.innerWidth*0.44 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
 
   var x = d3.scale.ordinal()
-      .rangeRoundBands([0, width-150], .1);
+      .rangeRoundBands([0, width-110], .1);
 
   var y = d3.scale.linear()
       .rangeRound([height, 0]);
@@ -123,6 +123,11 @@ function drawChart(rtnData, xD, name) {
       .scale(y)
       .orient("left");
       //.tickFormat(d3.format(".2s"));
+
+// Define the div for the tooltip
+  var div = d3.select("body").append("div") 
+    .attr("class", "tooltip")       
+    .style("opacity", 0);
 
   var svg = d3.select(name).append("svg")
       .attr("width", width + margin.left + margin.right)
@@ -149,7 +154,7 @@ function drawChart(rtnData, xD, name) {
     //this will make the y axis to teh right
     svg.append("g")       
           .attr("class", "y axis")  
-          .attr("transform", "translate(" + (width-140) + " ,0)") 
+          .attr("transform", "translate(" + (width-95) + " ,0)") 
           .style("fill", "red")   
           .call(yAxisRight);
           
@@ -179,19 +184,27 @@ function drawChart(rtnData, xD, name) {
           return d.group; })
       .enter().append("rect")
         .attr("width", x.rangeBand())
+        .attr("x", function(d) {return x(d.name);})
         .attr("y", function(d) { return y(d.y1); })
         .attr("height", function(d) { return y(d.y0) - y(d.y1); })
         .style("fill", function(d) { return color(d.name); })
-      .on("mouseover", function() { tooltip.style("display", null); })
-      .on("mouseout", function() { tooltip.style("display", "none"); })
-      .on("mousemove", function(d) {
-        console.log(d);
-        var xPosition = d3.mouse(this)[0] - 15;
-        var yPosition = d3.mouse(this)[1] - 25;        
-        tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-        tooltip.select("text").text(d.name+' : '+d.y1);
-        console.log(tooltip);
-      });
+        .on("mouseover", function(d) {    
+          console.log(d);
+          console.log(d3.event.pageX, d3.event.pageY);
+            div.transition()    
+                .duration(200)    
+                .style("opacity", .9);    
+            div .html(d.name + " : "  + d.y1)  
+                .style("left", (d3.event.pageX) + "px")   
+                .style("top", (d3.event.pageY - 28) + "px");  
+                console.log(div);
+            })          
+        .on("mouseout", function(d) {   
+            div.transition()    
+                .duration(500)    
+                .style("opacity", 0); 
+        });
+
 
     svg.append("path")        // Add the valueline path.
           .attr("d", averageline(data));
@@ -215,23 +228,7 @@ function drawChart(rtnData, xD, name) {
         .style("text-anchor", "end")
         .text(function(d) { return d; });
         
-  // Prep the tooltip bits, initial display is hidden
-        var tooltip = svg.append("g")
-          .attr("class", "tooltip")
-          .style("display", "none");
-    
-        tooltip.append("rect")
-        .attr("width", 60)
-        .attr("height", 20)
-        .attr("fill", "white")
-        .style("opacity", 0.5);
 
-    tooltip.append("text")
-      .attr("x", 15)
-      .attr("dy", "1.2em")
-      .style("text-anchor", "middle")
-      .attr("font-size", "12px")
-      .attr("font-weight", "bold");
 
 }
 
