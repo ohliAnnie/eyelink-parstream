@@ -3,7 +3,7 @@
   <user>
     <query id='selectUserList'><![CDATA[
      {
-        "index" : "efsm_user-*",
+        "index" : "efsm_user",
         "type" : "user",
         "body" : {
           "size" : 1000,
@@ -13,7 +13,7 @@
      ]]></query>
     <query id='insertUser'><![CDATA[
      {
-        "index" : #INDEX#,
+        "index" : "efsm_user",
         "type" : "user",        
         "body" : {
           "user_id" : #USERID#,
@@ -27,7 +27,7 @@
      ]]></query>
      <query id='selectCheckJoin'><![CDATA[
      {
-        "index" : "efsm_user-*",
+        "index" : "efsm_user",
         "type" : "user",        
         "body" : {
           "_source" : ["user_id"],
@@ -43,7 +43,7 @@
      ]]></query>
    <query id='selectEditUser'><![CDATA[
      {
-        "index" : "efsm_user-*",
+        "index" : "efsm_user",
         "type" : "user",        
         "body" : {          
           "query": {             
@@ -54,6 +54,13 @@
             }     
           } 
         }
+      }
+     ]]></query>
+     <query id='deleteUser'><![CDATA[
+     {
+        "index" : "efsm_user",
+        "type" : "user",        
+        "id" : #ID#
       }
      ]]></query>
     <query id='test02'><![CDATA[
