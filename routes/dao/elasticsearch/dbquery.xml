@@ -63,6 +63,21 @@
         "id" : #ID#
       }
      ]]></query>
+     <query id='updateUser'><![CDATA[
+     {
+        "index" : "efsm_user",
+        "type" : "user",        
+        "id" : #ID#,
+        "body" : {
+          "doc" : {            
+            "user_pw" : #PASSWORD#,
+            "user_name" : #NAME#,
+            "user_role" : #ROLE#,
+            "user_email" : #EMAIL#            
+          }
+        }
+      }
+     ]]></query>
     <query id='test02'><![CDATA[
       {q : 'bbb'}
      ]]></query>

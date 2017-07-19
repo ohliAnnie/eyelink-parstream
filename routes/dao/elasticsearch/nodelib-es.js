@@ -76,8 +76,7 @@ QueryProvider.prototype.insertQueryByID = function (type, queryId, datas, cb) {
   ).then(function (resp) {      
       console.log(resp);
       cb(null, resp);
-  }, function (err) {
-      console.log(err);
+  }, function (err) {      
       console.trace(err.message);
       cb(err.message);
   });
@@ -108,7 +107,7 @@ QueryProvider.prototype.updateQueryByID = function (type, queryId, datas, cb) {
   console.log('nodelib-es/updateQueryByID  -> ' + sQueryString);
 
   sQueryString = JSON.parse(sQueryString);
-  client.bulk(
+  client.update(
     sQueryString
   ).then(function (resp) {      
       console.log(resp);
