@@ -90,30 +90,31 @@ block content
                 .form-body
                   .form-group
                     label.control-label.col-md-5 User ID
+                    input#id(type='hidden', name='id', value=user._id)
                     .col-md-3
-                      span #{user.user_id}
-                      input#userid(type='hidden', name='userid', value=user.user_id)
+                      span #{user._source.user_id}
+                      input#userid(type='hidden', name='userid', value=user._source.user_id)
                   .form-group
                     label.control-label.col-md-5 Name
                     .col-md-3
-                      input#username.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_name, placeholder='Username', name='username')
+                      input#username.form-control.form-control-inline.input-large(size='16', type='text', value=user._source.user_name, placeholder='Username', name='username')
                   .form-group
                     label.control-label.col-md-5 Password
                     .col-md-3
-                      input#register_password.form-control.form-control-inline.input-large(size='16', type='password', value=user.user_pw, placeholder='password', name='password')
+                      input#register_password.form-control.form-control-inline.input-large(size='16', type='password', value=user._source.user_pw, placeholder='password', name='password')
                   .form-group
                     label.control-label.col-md-5 Re-type Your Password
                     .col-md-3
-                      input#register_password_1.form-control.form-control-inline.input-large(size='16', type='password', value=user.user_pw, placeholder='password', name='password_1')
+                      input#register_password_1.form-control.form-control-inline.input-large(size='16', type='password', value=user._source.user_pw, placeholder='password', name='password_1')
                   .form-group
                     label.control-label.col-md-5 Email
                     .col-md-3
-                      input#email.form-control.form-control-inline.input-large(size='16', type='text', value=user.user_email, placeholder='email', name='email')
+                      input#email.form-control.form-control-inline.input-large(size='16', type='text', value=user._source.user_email, placeholder='email', name='email')
                   .form-group
                     label.control-label.col-md-5 Select Role
                     .col-md-3
                       select#userrole.bs-select.form-control.input-large(data-show-subtext='true', name='userrole')
-                        option #{user.user_role}
+                        option #{user._source.user_role}
                         option  User
                         option  Asset Manager
                         option Zone Manager

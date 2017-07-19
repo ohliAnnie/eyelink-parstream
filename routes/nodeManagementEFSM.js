@@ -81,17 +81,17 @@ router.post('/users/:id', function(req, res) {
 router.put('/users/:id', function(req, res) {
   var in_data = {
     ID : req.body.id,
-    USERNAME: req.body.username,
-    USERID: req.body.userid,
+    NAME: req.body.username,  
     PASSWORD: req.body.password,
     EMAIL: req.body.email,
-    USERROLE: req.body.userrole,
+    ROLE: req.body.userrole
   };
-  queryProvider.insertQueryByID("user", "insertUser", in_data, function(err, out_data) {
-    if (out_data === 'D001') out_data = 'D002';
-    var rtnCode = CONSTS.getErrData(out_data);
-    if (err) { console.log(err);
-    }
+  console.log(in_data);
+  queryProvider.updateQueryByID("user", "updateUser", in_data, function(err, out_data) {
+    
+    if(out_data.result == "updated");
+        var rtnCode = CONSTS.getErrData("D002");            
+    if (err) { console.log(err);   }
     res.json({rtnCode: rtnCode});
   });
 });
