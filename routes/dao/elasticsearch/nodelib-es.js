@@ -69,8 +69,27 @@ QueryProvider.prototype.insertQueryByID = function (type, queryId, datas, cb) {
   console.log('nodelib-es/insertQueryByID -> ' + sQueryString);
 
   sQueryString = JSON.parse(sQueryString);
+  console.log(sQueryString);
 
   client.index(
+    sQueryString
+  ).then(function (resp) {      
+      console.log(resp);
+      cb(null, resp);
+  }, function (err) {      
+      console.trace(err.message);
+      cb(err.message);
+  });
+}
+
+QueryProvider.prototype.deleteQueryByID = function (type, queryId, datas, cb) {  
+  console.log('queryId : '+queryId);
+   // SQL 내 파라메타를 변경해준다.
+  var sQueryString = Utils.replaceSql2(queryParser.getQuery(type, queryId), datas);
+  console.log('nodelib-es/deleteQueryByID -> ' + sQueryString);
+
+  sQueryString = JSON.parse(sQueryString);
+  client.delete(
     sQueryString
   ).then(function (resp) {      
       console.log(resp);
@@ -79,7 +98,24 @@ QueryProvider.prototype.insertQueryByID = function (type, queryId, datas, cb) {
       console.trace(err.message);
       cb(err.message);
   });
+}
 
+QueryProvider.prototype.updateQueryByID = function (type, queryId, datas, cb) {  
+  console.log('queryId : '+queryId);
+   // SQL 내 파라메타를 변경해준다.
+  var sQueryString = Utils.replaceSql2(queryParser.getQuery(type, queryId), datas);
+  console.log('nodelib-es/updateQueryByID  -> ' + sQueryString);
+
+  sQueryString = JSON.parse(sQueryString);
+  client.update(
+    sQueryString
+  ).then(function (resp) {      
+      console.log(resp);
+      cb(null, resp);
+  }, function (err) {
+      console.trace(err.message);
+      cb(err.message);
+  });
 }
 // query.xml에 정의된 query를 이용한 query수행
 QueryProvider.prototype.selectSingleQueryByID = function (type, queryId, datas, cb) {

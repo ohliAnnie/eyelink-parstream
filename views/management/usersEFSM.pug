@@ -11,6 +11,7 @@ block script
   script(src='/assets/scripts/page/table-managed.js')
   script.
     $(document).ready(function() {
+      TableManaged.init();
       $('a').click(function(event){
         //- event.preventDefault();
         if ('deleteUser' != $(this).attr('flag')) return;
@@ -92,7 +93,7 @@ block content
                         a.btn.default.btn-xs.balck(href='/management/users/'+user._source.user_id)
                           i.fa.fa-edit
                           |  Edit
-                        a.btn.default.btn-xs.balck(flag='deleteUser', userid=''+ user._source.user_id)
+                        a.btn.default.btn-xs.balck(flag='deleteUser', userid=''+user._id)
                           i.fa.fa-trash-o
                           |  Delete          
               

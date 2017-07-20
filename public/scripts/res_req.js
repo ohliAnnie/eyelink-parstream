@@ -189,15 +189,12 @@ function drawChart(rtnData, xD, name) {
         .attr("height", function(d) { return y(d.y0) - y(d.y1); })
         .style("fill", function(d) { return color(d.name); })
         .on("mouseover", function(d) {    
-          console.log(d);
-          console.log(d3.event.pageX, d3.event.pageY);
             div.transition()    
                 .duration(200)    
                 .style("opacity", .9);    
             div .html(d.name + " : "  + d.y1)  
                 .style("left", (d3.event.pageX) + "px")   
                 .style("top", (d3.event.pageY - 28) + "px");  
-                console.log(div);
             })          
         .on("mouseout", function(d) {   
             div.transition()    
@@ -208,6 +205,30 @@ function drawChart(rtnData, xD, name) {
 
     svg.append("path")        // Add the valueline path.
           .attr("d", averageline(data));
+
+    // Add the scatterplot
+    svg.selectAll("dot")  
+        .data(data)     
+    .enter().append("circle")               
+        .attr("r", 6)   
+        .attr("cx", function(d) { return x(d.date) + x.rangeBand()/2; })     
+        .style("opacity", .1)
+        .attr("cy", function(d) { return y1(d.error); })   
+        .on("mouseover", function(d) {    
+            div.transition()    
+                .duration(200)    
+                .style("opacity", .9);    
+            div.html("error : "  + d.error)  
+                .style("left", (d3.event.pageX) + "px")   
+                .style("top", (d3.event.pageY - 28) + "px");  
+            })          
+        .on("mouseout", function(d) {   
+            div.transition()    
+                .duration(500)    
+                .style("opacity", 0); 
+        });
+    
+
     //add teh legend
     var legend = svg.selectAll(".legend")
         .data(color.domain().slice().reverse())

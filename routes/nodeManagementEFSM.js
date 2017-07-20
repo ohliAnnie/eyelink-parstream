@@ -31,21 +31,11 @@ router.get('/users/:id', function(req, res) {
     var in_data = {
       USERID: req.params.id,
     };
-    queryProvider.selectSingleQueryByID("user", "selectEditUser", in_data, function(err, out_data, params) {
-      console.log('db : '+out_data);
-      var rtnCode = CONSTS.getErrData('0000');
-      // if (out_data[0] === null) {
-      //   rtnCode = CONSTS.getErrData('0001');
-      //   var msg = CONSTS.getErrData(out_data);
-      //   console.log(msg);
-      //   res.redirect("./edit_user?msg=" + msg.code);
-      // }
-      console.log(out_data[0]);
-      var user = out_data[0][0];
+    queryProvider.selectSingleQueryByID2("user", "selectEditUser", in_data, function(err, out_data, params) {      
+      var rtnCode = CONSTS.getErrData('0000');      
+            
       res.render('./management/edit_user',
-        { title: 'EyeLink for ParStream',
-          mainmenu:mainmenu,
-          user:user });
+        { title: global.config.productname,   mainmenu:mainmenu,   user:out_data[0]});
      });
   }
 });
@@ -65,8 +55,7 @@ router.post('/users/:id', function(req, res) {
       var d = new Date().toString().split(' ');  
       var s = d[4].split(':');
       var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
-      var in_data = {
-         INDEX: "efsm_user-"+d[3],
+      var in_data = {         
         NAME: req.body.username,
         USERID: req.body.userid,
         PASSWORD: req.body.password[0],
@@ -76,7 +65,7 @@ router.post('/users/:id', function(req, res) {
       };      
       queryProvider.insertQueryByID("user", "insertUser", in_data, function(err, out_data) {
         if(out_data.result == "created");
-        var rtnCode = CONSTS.getErrData("0000");        
+        var rtnCode = CONSTS.getErrData("D001");        
         if (err) { console.log(err);          
           rtnCode = CONSTS.getErrData(out_data);
           console.log(rtnCode);
@@ -91,18 +80,18 @@ router.post('/users/:id', function(req, res) {
 // 사용자 정보 수정
 router.put('/users/:id', function(req, res) {
   var in_data = {
-    USERNAME: req.body.username,
-    USERID: req.body.userid,
+    ID : req.body.id,
+    NAME: req.body.username,  
     PASSWORD: req.body.password,
     EMAIL: req.body.email,
-    USERROLE: req.body.userrole,
-    FLAG : 'U'
+    ROLE: req.body.userrole
   };
-  queryProvider.insertQueryByID("user", "insertUser", in_data, function(err, out_data) {
-    if (out_data === 'D001') out_data = 'D002';
-    var rtnCode = CONSTS.getErrData(out_data);
-    if (err) { console.log(err);
-    }
+  console.log(in_data);
+  queryProvider.updateQueryByID("user", "updateUser", in_data, function(err, out_data) {
+    
+    if(out_data.result == "updated");
+        var rtnCode = CONSTS.getErrData("D002");            
+    if (err) { console.log(err);   }
     res.json({rtnCode: rtnCode});
   });
 });
@@ -110,15 +99,14 @@ router.put('/users/:id', function(req, res) {
 
 // 사용자 정보 삭제
 router.delete('/users/:id', function(req, res) {
-  var in_data = {
-    USERID: req.params.id,
-    FLAG : 'D'
+  var in_data = {    
+    ID: req.params.id,    
   };
-  queryProvider.insertQueryByID("user", "insertDeleteUser", in_data, function(err, out_data) {
-    if (out_data === 'D001') out_data = 'D003';
-    var rtnCode = CONSTS.getErrData(out_data);
-    if(err){ console.log(err);
-    }
+  console.log(in_data);
+  queryProvider.deleteQueryByID("user", "deleteUser", in_data, function(err, out_data) {
+    if(out_data.result == "deleted");
+        var rtnCode = CONSTS.getErrData("D003");        
+    if(err){ console.log(err);    }
     res.json({rtnCode: rtnCode});
   });
 });
