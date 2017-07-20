@@ -8,38 +8,40 @@ var queryProvider = new QueryProvider();
 
 var mainmenu = {dashboard:'', timeseries:'', reports:'open selected', analysis:'', management:'', settings:''};
 
+var indexAcc = global.config.es_index.es_jira;  
+var indexMetric = global.config.es_index.es_metric;
 
 /* GET reports page. */
 router.get('/', function(req, res, next) {
-  res.render('./reports/report_allEFSM', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./reports/report_all'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, indexs: global.config.es_index });
 });
 
 router.get('/main', function(req, res, next) {
-  res.render('./reports/main', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./reports/main', { title: global.config.productname, mainmenu:mainmenu, indexs: global.config.es_index });
 });
 
 router.get('/Res_Req', function(req, res, next) {
-  res.render('./reports/Res_Req', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./reports/Res_Req', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc });
 });
 
 router.get('/process', function(req, res, next) {
-  res.render('./reports/process', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./reports/process', { title: global.config.productname, mainmenu:mainmenu, indexs: indexMetric });
 });
 
 router.get('/cpu_memory', function(req, res, next) {
-  res.render('./reports/cpu_memory', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./reports/cpu_memory', { title: global.config.productname, mainmenu:mainmenu, indexs: indexMetric });
 });
 
 router.get('/error', function(req, res, next) {
-  res.render('./reports/error', { title: global.config.productnam, mainmenu:mainmenu });
+  res.render('./reports/error', { title: global.config.productnam, mainmenu:mainmenu, indexs: indexAcc });
 });
 
 router.get('/all', function(req, res, next) {
-  res.render('./reports/report_allEFSM', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./reports/report_allEFSM', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc });
 });
 
 router.get('/test', function(req, res, next) {
-  res.render('./reports/test', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./reports/test', { title: global.config.productname, mainmenu:mainmenu, indexs: global.config.es_index });
 });
 
 

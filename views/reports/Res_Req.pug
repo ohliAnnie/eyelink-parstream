@@ -56,6 +56,7 @@ block script
         });
     });                      
 block content
+  input#indexs(type='hidden', name='indexs', value=indexs)
   .container-fluid
     .page-content
       .breadcrumbs
@@ -82,7 +83,7 @@ block content
                       .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
                         input#sdate.form-control(type='text', name='from' value='')
                         span.input-group-addon to
-                        input#edate.form-control(type='text', name='to' value='')
+                        input#edate.form-control(type='text', name='to' value='')                        
                     label.control-label.col-md-1 Weeks
                     .col-md-1
                       select#weeks.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Week')

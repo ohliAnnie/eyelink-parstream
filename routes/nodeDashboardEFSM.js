@@ -9,6 +9,8 @@ var queryProvider = new QueryProvider();
 
 var mainmenu = {dashboard:'open selected', timeseries:'', reports:'', analysis:'', management:'', settings:''};
 
+var indexAcc = global.config.es_index.es_jira;
+
 router.get('/', function(req, res, next) {
   mainmenu.dashboard = ' open selected';
   mainmenu.timeseries = '';
@@ -19,7 +21,7 @@ router.get('/timeseries', function(req, res, next) {
   // console.log(_rawDataByDay);
   mainmenu.dashboard = '';
   mainmenu.timeseries = ' open selected';
-  res.render('./dashboard/timeseriesEFSM', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./dashboard/timeseries'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/trenddata', function(req, res, next) {
@@ -69,7 +71,7 @@ router.get('/restapi/selectJiraAccId', function(req, res, next) {
   var date = new Date().toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var in_data = {
-    today: "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+"."+date[2]
+    today: indexAcc+date[3]+"."+mon[date[1]]+"."+date[2]
   };
   queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccId", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
@@ -156,7 +158,7 @@ router.get('/restapi/selectJiraAccJson', function(req, res, next) {
   var date = new Date().toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var in_data = {
-    today: "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+"."+date[2]    
+    today: indexAcc+date[3]+"."+mon[date[1]]+"."+date[2]    
   };  
   queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccReq", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
@@ -239,7 +241,7 @@ router.get('/restapi/selectJiraAccScatter', function(req, res, next) {
   var date = new Date().toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var in_data = {
-    today: "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+"."+date[2]    
+    today: indexAcc+date[3]+"."+mon[date[1]]+"."+date[2]    
   };  
   queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccScatter", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
@@ -277,7 +279,7 @@ router.get('/scatter_detail', function(req, res, next) {
   var date = new Date(parseInt(req.query.start)).toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var in_data = {
-    today: "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+"."+date[2]   ,
+    today: indexAcc+date[3]+"."+mon[date[1]]+"."+date[2]   ,
     START : start,
     END : end,
     MIN : parseInt(req.query.min),
@@ -343,7 +345,7 @@ router.get('/restapi/selectScatterSection', function(req, res, next) {
   var date = new Date().toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var in_data = {
-    today: "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+"."+date[2] ,
+    today: indexAcc+date[3]+"."+mon[date[1]]+"."+date[2] ,
     START : start,
     END : end,
     MIN : parseInt(req.query.min),
@@ -397,7 +399,7 @@ router.get('/restapi/getJiraAccOneWeek', function(req, res, next) {
   for(var i=0; i<7; i++)  {
     var time = new Date().getTime() - i*24*60*60*1000;
     var date = new Date(time).toString().split(' ');  
-    week[i] = "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+"."+date[2];
+    week[i] = indexAcc+date[3]+"."+mon[date[1]]+"."+date[2];
   }  
   var in_data = {
     index: week

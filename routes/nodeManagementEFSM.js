@@ -7,10 +7,11 @@ var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ c
 var queryProvider = new QueryProvider();
 
 var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis:'', management:'open selected', settings:''};
+var indexUser = global.config.es_index.es_user;  
 
 router.get('/users', function(req, res, next) {
   console.log('user/restapi/selectUserList');
-  var in_data = {};
+  var in_data = { INDEX: indexUser };
   queryProvider.selectSingleQueryByID2("user", "selectUserList", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -18,7 +19,7 @@ router.get('/users', function(req, res, next) {
     }       
     console.log(out_data);
     var users = out_data;    
-    res.render('./management/usersEFSM', { title: global.config.productname, mainmenu:mainmenu, users:users });
+    res.render('./management/users'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, users:users });
   });
 });
   
@@ -29,6 +30,7 @@ router.get('/users/:id', function(req, res) {
     res.render('./management/sign_up', { title: global.config.productname, mainmenu:mainmenu });
   } else { // 기존 사용자 정보 변경
     var in_data = {
+      INDEX: indexUser,
       USERID: req.params.id,
     };
     queryProvider.selectSingleQueryByID2("user", "selectEditUser", in_data, function(err, out_data, params) {      
@@ -43,7 +45,8 @@ router.get('/users/:id', function(req, res) {
 // 사용자 신규 등록
 router.post('/users/:id', function(req, res) {  
   var in_data = {    
-    USERID: req.body.userid,    
+    INDEX: indexUser,
+    USERID: req.body.userid       
   };
   console.log(in_data);
   queryProvider.selectSingleQueryByID2("user", "selectCheckJoin", in_data, function(err, out_data, params) {        
@@ -56,6 +59,7 @@ router.post('/users/:id', function(req, res) {
       var s = d[4].split(':');
       var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
       var in_data = {         
+        INDEX: indexUser,
         NAME: req.body.username,
         USERID: req.body.userid,
         PASSWORD: req.body.password[0],
@@ -80,6 +84,7 @@ router.post('/users/:id', function(req, res) {
 // 사용자 정보 수정
 router.put('/users/:id', function(req, res) {
   var in_data = {
+    INDEX: indexUser,
     ID : req.body.id,
     NAME: req.body.username,  
     PASSWORD: req.body.password,
@@ -87,8 +92,7 @@ router.put('/users/:id', function(req, res) {
     ROLE: req.body.userrole
   };
   console.log(in_data);
-  queryProvider.updateQueryByID("user", "updateUser", in_data, function(err, out_data) {
-    
+  queryProvider.updateQueryByID("user", "updateUser", in_data, function(err, out_data) {    
     if(out_data.result == "updated");
         var rtnCode = CONSTS.getErrData("D002");            
     if (err) { console.log(err);   }
@@ -100,7 +104,8 @@ router.put('/users/:id', function(req, res) {
 // 사용자 정보 삭제
 router.delete('/users/:id', function(req, res) {
   var in_data = {    
-    ID: req.params.id,    
+    INDEX: indexUser,
+    ID: req.params.id  
   };
   console.log(in_data);
   queryProvider.deleteQueryByID("user", "deleteUser", in_data, function(err, out_data) {
