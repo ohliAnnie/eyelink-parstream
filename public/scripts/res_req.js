@@ -102,7 +102,7 @@ function drawChart(rtnData, xD, name) {
     height = 400 - margin.top - margin.bottom;
 
   var x = d3.scale.ordinal()
-      .rangeRoundBands([0, width-110], .1);
+      .rangeRoundBands([0, width-90], .1);
 
   var y = d3.scale.linear()
       .rangeRound([height, 0]);
@@ -154,7 +154,7 @@ function drawChart(rtnData, xD, name) {
     //this will make the y axis to teh right
     svg.append("g")       
           .attr("class", "y axis")  
-          .attr("transform", "translate(" + (width-95) + " ,0)") 
+          .attr("transform", "translate(" + (width-90) + " ,0)") 
           .style("fill", "red")   
           .call(yAxisRight);
           
