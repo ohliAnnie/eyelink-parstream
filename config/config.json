@@ -20,6 +20,12 @@
 		"method" : "nodelib-es",
 		"#method" : "jdbc"
 	},
+	"es_index" : {
+		"es_jira" : "filebeat_jira_access-",
+		"es_confluence" : "filebeat_confluence_acc-",
+		"es_metric" : "metricbeat-",
+		"es_user" : "efsm_user"
+	},
 	"analysis": {
 		"host" : "localhost",
 		"#host" : "m2u-da.eastus.cloudapp.azure.com",
