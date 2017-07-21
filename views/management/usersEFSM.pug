@@ -68,8 +68,7 @@ block content
                   tr
                     th(style='text-align:center;')  User ID
                     th(style='text-align:center;')  Name
-                    th(style='text-align:center;')  Email
-                    th(style='text-align:center;')  Role
+                    th(style='text-align:center;')  Email                    
                     th(style='text-align:center;')  Reg Date
                     th(style='text-align:center;')  Edit &amp; Delete
                 tbody
@@ -79,15 +78,6 @@ block content
 
                       td  #{user._source.user_name}
                       td  #{user._source.user_email}
-                      td
-                        if user._source.user_role === 'Master'
-                          span.label.label-sm.label-danger #{user._source.user_role}
-                        else if user._source.user_role === 'Zone Manager'
-                          span.label.label-sm.label-primary #{user._source.user_role}
-                        else if user._source.user_role === 'Asset Manager'
-                          span.label.label-sm.label-info #{user._source.user_role}
-                        else if user._source.user_role === 'User'
-                          span.label.label-sm.label-default #{user._source.user_role}
                       td  #{user._source.reg_date}
                       td
                         a.btn.default.btn-xs.balck(href='/management/users/'+user._source.user_id)
