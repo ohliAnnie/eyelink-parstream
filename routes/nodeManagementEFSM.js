@@ -63,17 +63,17 @@ router.post('/users/:id', function(req, res) {
         NAME: req.body.username,
         USERID: req.body.userid,
         PASSWORD: req.body.password[0],
-        EMAIL: req.body.email,
-        ROLE: req.body.userrole,
+        EMAIL: req.body.email,        
         DATE: d[3]+'-'+mon[d[1]]+'-'+d[2]+'T'+s[0]+':'+s[1]+':'+s[2]
       };      
       queryProvider.insertQueryByID("user", "insertUser", in_data, function(err, out_data) {
-        if(out_data.result == "created");
-        var rtnCode = CONSTS.getErrData("D001");        
-        if (err) { console.log(err);          
-          rtnCode = CONSTS.getErrData(out_data);
+        console.log(out_data);
+        if(out_data.result == "created"){
+          var rtnCode = CONSTS.getErrData("D001");        
           console.log(rtnCode);
         }
+        if (err) { console.log(err) };               
+      
         res.json({rtnCode: rtnCode});
       });
     }
@@ -88,8 +88,7 @@ router.put('/users/:id', function(req, res) {
     ID : req.body.id,
     NAME: req.body.username,  
     PASSWORD: req.body.password,
-    EMAIL: req.body.email,
-    ROLE: req.body.userrole
+    EMAIL: req.body.email    
   };
   console.log(in_data);
   queryProvider.updateQueryByID("user", "updateUser", in_data, function(err, out_data) {    
@@ -106,8 +105,7 @@ router.delete('/users/:id', function(req, res) {
   var in_data = {    
     INDEX: indexUser,
     ID: req.params.id  
-  };
-  console.log(in_data);
+  };  
   queryProvider.deleteQueryByID("user", "deleteUser", in_data, function(err, out_data) {
     if(out_data.result == "deleted");
         var rtnCode = CONSTS.getErrData("D003");        
@@ -115,6 +113,22 @@ router.delete('/users/:id', function(req, res) {
     res.json({rtnCode: rtnCode});
   });
 });
+
+router.get('/role', function(req, res, next) {
+  console.log('user/restapi/selectUserList');
+  var in_data = { INDEX: indexUser };
+  queryProvider.selectSingleQueryByID2("user", "selectUserList", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }       
+    console.log(rtnCode);
+    console.log(out_data);
+    var users = out_data;    
+    res.render('./management/role_list', { title: global.config.productname, mainmenu:mainmenu, users:users });
+  });
+});
+
 
 
 module.exports = router;

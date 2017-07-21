@@ -18,8 +18,7 @@
         "body" : {
           "user_id" : #USERID#,
           "user_pw" : #PASSWORD#,
-          "user_name" : #NAME#,
-          "user_role" : #ROLE#,
+          "user_name" : #NAME#,          
           "user_email" : #EMAIL#,
           "reg_date" : #DATE#
         }
@@ -71,8 +70,7 @@
         "body" : {
           "doc" : {            
             "user_pw" : #PASSWORD#,
-            "user_name" : #NAME#,
-            "user_role" : #ROLE#,
+            "user_name" : #NAME#,            
             "user_email" : #EMAIL#            
           }
         }
