@@ -14,23 +14,23 @@ block script
       TableManaged.init();
       $('a').click(function(event){
         //- event.preventDefault();
-        if ('deleteUser' != $(this).attr('flag')) return;
+        if ('deleteRole' != $(this).attr('flag')) return;
 
-        var userid = $(this).attr('userid');
-        if (userid == "") {
+        var roleid = $(this).attr('roleid');
+        if (roleid == "") {
           return false;
         }
         // TODO 메시지 공통 영역으로
         if (confirm("삭제 하시겠습니까? ")) {
           $.ajax({
-            url: "/management/users/" + userid,
+            url: "/management/role/" + roleid,
             dataType: "json",
             type: "DELETE",
-            data: {userid : userid},
+            data: {roleid : roleid},
             success: function(result) {
               alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
               if (result.rtnCode.code == "D003") {
-                location.href = "/management/users";
+                location.href = "/management/role";
               }
             },
             error: function(req, status, err) {
@@ -59,41 +59,29 @@ block content
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Role List
-                span.caption-helper  Detail information about users
+                span.caption-helper  Detail information about roles
               .tools
-                button.btn.btn-default.blue(type='button', onclick="location.href='/management/users/addUser'") Add
+                button.btn.btn-default.blue(type='button', onclick="location.href='/management/role/addRole'") Add
             .portlet-body.form
               table#sample_2.table.table-striped.table-bordered.table-hover(style='text-align:center;')
                 thead
                   tr
-                    th(style='text-align:center;')  User ID
-                    th(style='text-align:center;')  Name
-                    th(style='text-align:center;')  Email
-                    th(style='text-align:center;')  Role
-                    th(style='text-align:center;')  Reg Date
+                    th
+                    th(style='text-align:center;')  Role ID
+                    th(style='text-align:center;')  Name                                        
                     th(style='text-align:center;')  Edit &amp; Delete
                 tbody
-                  each user in users
+                  each role in roles
                     tr.odd.gradeX
-                      td  #{user._source.user_id}
+                      td
+                      td  #{role._source.role_id}
 
-                      td  #{user._source.user_name}
-                      td  #{user._source.user_email}
+                      td  #{role._source.role_name}                                            
                       td
-                        if user._source.user_role === 'Master'
-                          span.label.label-sm.label-danger #{user._source.user_role}
-                        else if user._source.user_role === 'Zone Manager'
-                          span.label.label-sm.label-primary #{user._source.user_role}
-                        else if user._source.user_role === 'Asset Manager'
-                          span.label.label-sm.label-info #{user._source.user_role}
-                        else if user._source.user_role === 'User'
-                          span.label.label-sm.label-default #{user._source.user_role}
-                      td  #{user._source.reg_date}
-                      td
-                        a.btn.default.btn-xs.balck(href='/management/users/'+user._source.user_id)
+                        a.btn.default.btn-xs.balck(href='/management/role/'+role._source.role_id)
                           i.fa.fa-edit
                           |  Edit
-                        a.btn.default.btn-xs.balck(flag='deleteUser', userid=''+user._id)
+                        a.btn.default.btn-xs.balck(flag='deleteRole', roleid=''+role._source.role_id)
                           i.fa.fa-trash-o
                           |  Delete          
               

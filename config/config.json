@@ -24,7 +24,10 @@
 		"es_jira" : "filebeat_jira_access-",
 		"es_confluence" : "filebeat_confluence_acc-",
 		"es_metric" : "metricbeat-",
-		"es_user" : "efsm_user"
+		"es_user" : "efsm_user",
+		"es_role" :  "efsm_role",
+		"es_auth_map" : "efsm_auth_map",
+		"es_auth_menu" : "efsm_auth_menu"
 	},
 	"analysis": {
 		"host" : "localhost",
