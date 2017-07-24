@@ -53,7 +53,7 @@ router.post('/users/:id', function(req, res) {
     INDEX: indexUser,
     TYPE : "user",
     ID : "user_id",
-    USERID: req.body.userid       
+    VALUE: req.body.userid       
   };
   console.log(in_data);
   queryProvider.selectSingleQueryByID2("user", "selectCheckJoin", in_data, function(err, out_data, params) {        
@@ -74,10 +74,9 @@ router.post('/users/:id', function(req, res) {
         DATE: d[3]+'-'+mon[d[1]]+'-'+d[2]+'T'+s[0]+':'+s[1]+':'+s[2]
       };      
       queryProvider.insertQueryByID("user", "insertUser", in_data, function(err, out_data) {
-        console.log(out_data);
         if(out_data.result == "created"){
           var rtnCode = CONSTS.getErrData("D001");        
-          console.log(rtnCode);
+          console.log(out_data.result);
         }
         if (err) { console.log(err) };               
       
@@ -115,6 +114,7 @@ router.delete('/users/:id', function(req, res) {
     TYPE: "user",
     ID: req.params.id  
   };  
+  console.log(in_data);
   queryProvider.deleteQueryByID("user", "deleteById", in_data, function(err, out_data) {
     if(out_data.result == "deleted");
         var rtnCode = CONSTS.getErrData("D003");        
@@ -148,13 +148,31 @@ router.get('/role/:id', function(req, res) {
       INDEX: indexRole,
       TYPE: "role",
       ID: "role_id",
-      VALUE: req.params.id,
+      VALUE: req.params.id
     };
-    queryProvider.selectSingleQueryByID2("user", "selectEditById", in_data, function(err, out_data, params) {      
-      var rtnCode = CONSTS.getErrData('0000');      
-            
+    queryProvider.selectSingleQueryByID2("user", "selectEditById", in_data, function(err, out_data, params) {           
+      console.log(out_data[0]);
+       if(out_data[0] != null){      
+        var in_data = {
+          INDEX: indexMenu,
+          TYPE: "menu",
+          ID: "role_id",
+          VALUE: req.params.id
+        };
+        var role = out_data[0];
+           queryProvider.selectSingleQueryByID2("user", "selectEditById", in_data, function(err, out_data, params) {                      
+            var menu = out_data[0];
+
+            console.log(role);
+            console.log(menu);
+            res.render('./management/edit_role',
+            { title: global.config.productname,   mainmenu:mainmenu,   role:role, menu:menu});
+          });
+         }
+         console.log(role);
+            console.log(menu);
       res.render('./management/edit_role',
-        { title: global.config.productname,   mainmenu:mainmenu,   role:out_data[0]});
+        { title: global.config.productname,   mainmenu:mainmenu,   role:role});
      });
   }
 });
@@ -179,7 +197,10 @@ router.post('/role/:id', function(req, res) {
       };        
       queryProvider.insertQueryByID("user", "insertRole", in_data, function(err, out_data) {        
         if(out_data.result == "created"){
-          var in_data = {         
+          console.log(out_data);
+          var rtnCode = CONSTS.getErrData("D001");        
+          var in_data = {  
+            ID: out_data._id,       
             INDEX: indexMenu,        
             ROLEID: req.body.roleid,            
             DASHBOARD: req.body.dashboard,
@@ -189,9 +210,9 @@ router.post('/role/:id', function(req, res) {
             ANALYSIS: req.body.analysis,
             SETTING: req.body.setting
           };   
-          queryProvider.insertQueryByID("user", "insertAuthMenu", in_data, function(err, out_data) {          
-            
+          queryProvider.insertQueryByID("user", "insertAuthMenu", in_data, function(err, out_data) {              
             if(out_data.result == "created"){
+              console.log(out_data);
               var rtnCode = CONSTS.getErrData("D001");        
               console.log('auth menu : '+out_data.result);
             } else {
@@ -222,24 +243,39 @@ router.post('/role/:id', function(req, res) {
 
 // ROLE 정보 수정
 router.put('/role/:id', function(req, res) {
-  var in_data = {
-    INDEX: indexUser,
-    ID : req.body.id,
-    NAME: req.body.username,  
-    PASSWORD: req.body.password,
-    EMAIL: req.body.email    
-  };
+    var in_data = {         
+      INDEX: indexRole,              
+      ID : req.body.id,
+      NAME: req.body.rolename,        
+    };     
   console.log(in_data);
   queryProvider.updateQueryByID("user", "updateRole", in_data, function(err, out_data) {    
-    if(out_data.result == "updated");
+    if(out_data.result == "updated" || out_data.result == "noop"){
+      var in_data = {         
+            INDEX: indexMenu,        
+            ID : req.body.id,
+            ROLEID: req.body.roleid,            
+            DASHBOARD: req.body.dashboard,
+            TIMESERIES: req.body.timeseries,
+            REPORT: req.body.report,
+            MANAGEMENT: req.body.management,
+            ANALYSIS: req.body.analysis,
+            SETTING: req.body.setting
+          };   
         var rtnCode = CONSTS.getErrData("D002");            
+        queryProvider.updateQueryByID("user", "updateAuthMenu", in_data, function(err, out_data) {    
+          if(out_data.result == "updated" || out_data.result == "noop"){
+            var rtnCode = CONSTS.getErrData("D002");      
+          }
+        });
+    }
     if (err) { console.log(err);   }
     res.json({rtnCode: rtnCode});
   });
 });
 
 // role 정보 삭제
-router.delete('/role:id', function(req, res) {
+router.delete('/role/:id', function(req, res) {
   console.log('delete role');
   var in_data = {    
     INDEX: indexRole,
@@ -265,5 +301,118 @@ router.delete('/role:id', function(req, res) {
   });
 });
 
+
+router.get('/memList/:id', function(req, res, next) {
+  console.log('role/restapi/selectMemList');
+  var in_data = { INDEX: indexMap, TYPE:"map", ID : "role_id", VALUE : req.params.id };
+  queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    console.log(rtnCode);
+    console.log(out_data);
+    var mems = out_data;
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }  else {
+      var in_data = { INDEX: indexUser, TYPE: "user" };
+      queryProvider.selectSingleQueryByID2("user", "selectList", in_data, function(err, out_data, params) {
+        var rtnCode = CONSTS.getErrData('0000');
+        if (out_data == null) {
+          rtnCode = CONSTS.getErrData('0001');
+        }               
+        var users = out_data;    
+        console.log(users);
+        res.render('./management/mem_list', { title: global.config.productname, mainmenu:mainmenu, mems:mems , users:users, roleid:req.params.id });
+      });
+    }            
+    res.render('./management/mem_list', { title: global.config.productname, mainmenu:mainmenu, mems:mems,  users:users, roleid:req.params.id  });
+  });
+});
+
+router.get('/mem/:id', function(req, res) {
+  console.log(req.params.id);
+  // 신규 등록
+  if (req.params.id === 'addMem') {
+    res.render('./management/add_mem', { title: global.config.productname, mainmenu:mainmenu });
+  } else { // 기존 사용자 정보 변경
+    var in_data = {
+      INDEX: indexMap,
+      TYPE: "map",
+      ID: "role_id",
+      VALUE: req.params.id
+    };
+    queryProvider.selectSingleQueryByID2("user", "selectEditById", in_data, function(err, out_data, params) {           
+      console.log(out_data[0]);
+       if(out_data[0] != null){      
+        var in_data = {
+          INDEX: indexMenu,
+          TYPE: "menu",
+          ID: "role_id",
+          VALUE: req.params.id
+        };
+        var role = out_data[0];
+           queryProvider.selectSingleQueryByID2("user", "selectEditById", in_data, function(err, out_data, params) {                      
+            var menu = out_data[0];
+
+            console.log(role);
+            console.log(menu);
+            res.render('./management/edit_role',
+            { title: global.config.productname,   mainmenu:mainmenu,   role:role, menu:menu});
+          });
+         }
+         console.log(role);
+            console.log(menu);
+      res.render('./management/edit_role',
+        { title: global.config.productname,   mainmenu:mainmenu,   role:role});
+     });
+  }
+});
+
+// mem 신규 등록
+router.post('/mem/:id', function(req, res) {  
+  console.log(req.body);
+  var in_data = {    
+    INDEX: indexMap,
+    TYPE: "map",
+    ROLEID: req.params.id,
+    USERID: req.body.userid    };  
+  queryProvider.selectSingleQueryByID2("user", "selectCheckMap", in_data, function(err, out_data, params) {        
+    console.log(out_data);
+    if (out_data[0] != null){
+      var rtnCode = CONSTS.getErrData('E006');    
+      res.json({rtnCode: rtnCode});
+    }  else  {
+      var in_data = {         
+        INDEX: indexMap,        
+        ROLEID: req.params.id,
+        USERID: req.body.userid      
+      };        
+      queryProvider.insertQueryByID("user", "insertMap", in_data, function(err, out_data) {        
+        console.log(out_data);
+        if(out_data.result == "created"){
+          console.log(out_data);
+          var rtnCode = CONSTS.getErrData("D001");                   
+        }
+        if (err) { console.log(err) };                     
+        res.json({rtnCode: rtnCode});
+      });
+    }
+  });
+});
+
+// role 정보 삭제
+router.delete('/mem/:id', function(req, res) {
+  console.log('delete mem');
+  var in_data = {    
+    INDEX: indexMap,
+    TYPE: "map",
+    ID: req.params.id  
+  };  
+  queryProvider.deleteQueryByID("user", "deleteById", in_data, function(err, out_data) {
+    if(out_data.result == "deleted");     
+        var rtnCode = CONSTS.getErrData("D003");        
+    if(err){ console.log(err);    }
+    res.json({rtnCode: rtnCode});
+  });
+});
 
 module.exports = router;

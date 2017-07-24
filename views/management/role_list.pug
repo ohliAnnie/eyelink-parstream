@@ -19,7 +19,7 @@ block script
         var roleid = $(this).attr('roleid');
         if (roleid == "") {
           return false;
-        }
+        }        
         // TODO 메시지 공통 영역으로
         if (confirm("삭제 하시겠습니까? ")) {
           $.ajax({
@@ -69,19 +69,28 @@ block content
                     th
                     th(style='text-align:center;')  Role ID
                     th(style='text-align:center;')  Name                                        
+                    th(style='text-align:center;')  List &amp; AddUser
                     th(style='text-align:center;')  Edit &amp; Delete
                 tbody
                   each role in roles
                     tr.odd.gradeX
                       td
+                         input#id(type='hidden', name='id', value=role._id)
                       td  #{role._source.role_id}
 
                       td  #{role._source.role_name}                                            
+                        input#name(type='hidden', name='id', value=role._source.role_name)
+                      td
+                        a.btn.default.btn-xs.green(href='/management/memList/'+role._source.role_id)                          
+                          |  Member List
+                        a.btn.default.btn-xs.blue(href='/management/member/'+role._source.role_id)                          
+                          i.fa.fa-edit
+                          |  Add User
                       td
                         a.btn.default.btn-xs.balck(href='/management/role/'+role._source.role_id)
                           i.fa.fa-edit
                           |  Edit
-                        a.btn.default.btn-xs.balck(flag='deleteRole', roleid=''+role._source.role_id)
+                        a.btn.default.btn-xs.balck(flag='deleteRole', roleid=''+role._id)
                           i.fa.fa-trash-o
                           |  Delete          
               
