@@ -4,9 +4,9 @@ block script
   script.
     $(document).ready(function() {
       $("#register-submit-btn").click(function() {
-        if ($("#username").val() == "") {
-          $("#username").focus();
-          $("#register_tnc_error").html("User Name를 입력하세요.");
+        if ($("#rolename").val() == "") {
+          $("#rolename").focus();
+          $("#register_tnc_error").html("Role Name를 입력하세요.");
           $("#register_tnc_error").show();
           return false;
         }      
@@ -14,8 +14,9 @@ block script
         // TODO 메시지 공통 영역으로
         if (confirm("저장 하시겠습니까? ")) {
           var roleid = $("#roleid").val();
+          console.log(roleid);
           $.ajax({
-            url: "/management/role/" + userid,
+            url: "/management/role/" + roleid,
             dataType: "json",
             type: "PUT",
             data:$('#update_account').serialize(),
@@ -42,7 +43,7 @@ block content
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 Edit User
+        h1 Edit Role
         ol.breadcrumb
           li
             a(href='/dashboard') Home
@@ -62,10 +63,10 @@ block content
               form#update_account.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
                   .form-group
-                    label.control-label.col-md-5 User ID
+                    label.control-label.col-md-5 Role ID
                     input#id(type='hidden', name='id', value=role._id)
                     .col-md-3
-                      //-span #{role._source.role_id}
+                      span #{role._source.role_id}
                       input#roleid(type='hidden', name='roleid', value=role._source.role_id)
                   .form-group
                     label.control-label.col-md-5 Name
@@ -76,7 +77,7 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Dashboard
                       select#dashboard.select2.form-control(name='dashboard')
-                        //-option #{menu._source.dashboard}
+                        option #{menu._source.menu_dashboard}
                         option No
                         option Yes       
                   .form-group
@@ -84,7 +85,7 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Timeseries
                       select#timeseries.select2.form-control(data-show-subtext='true', name='timeseries')
-                        //-option #{menu._source.timeseries}
+                        option #{menu._source.menu_timeseries}
                         option No
                         option Yes                                
                   .form-group
@@ -92,7 +93,7 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Report                      
                       select#report.select2.form-control(name='report')
-                        //-option #{menu._source.report}
+                        option #{menu._source.menu_report}
                         option No
                         option Yes                                 
                   .form-group
@@ -100,7 +101,7 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Management
                       select#management.select2.form-control(name='management')
-                        //-option #{menu._source.management}
+                        option #{menu._source.menu_management}
                         option No
                         option Yes                                                      
                   .form-group
@@ -108,7 +109,7 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Analysis
                       select#analysis.select2.form-control(name='analysis')
-                        option #{menu._source.analysis}
+                        option #{menu._source.menu_analysis}
                         option No
                         option Yes
                   .form-group
@@ -116,7 +117,7 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Setting
                       select#setting.select2.form-control(name='setting')
-                        //-option #{menu._source.setting}
+                        option #{menu._source.menu_setting}
                         option No
                         option Yes
                   .form-group
@@ -124,7 +125,7 @@ block content
                     .col-md-10
                       button#register-submit-btn.btn.btn-default.blue.pull-right Save
                     .col-md-2
-                      button.btn.btn-default(type='button', onclick="location.href='/management/users'") Cancel               
+                      button.btn.btn-default(type='button', onclick="location.href='/management/role'") Cancel               
             .portlet-footer
     p.copyright Copyright M2U Technology All rights reserved.
     a.go2top(href='#index')
