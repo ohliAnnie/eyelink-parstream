@@ -65,7 +65,7 @@ block content
                     label.control-label.col-md-5 User ID
                     input#id(type='hidden', name='id', value=role._id)
                     .col-md-3
-                      span #{role._source.role_id}
+                      //-span #{role._source.role_id}
                       input#roleid(type='hidden', name='roleid', value=role._source.role_id)
                   .form-group
                     label.control-label.col-md-5 Name
@@ -76,7 +76,7 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Dashboard
                       select#dashboard.select2.form-control(name='dashboard')
-                        option #{menu._source.dashboard}
+                        //-option #{menu._source.dashboard}
                         option No
                         option Yes       
                   .form-group
@@ -84,7 +84,7 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Timeseries
                       select#timeseries.select2.form-control(data-show-subtext='true', name='timeseries')
-                        option #{menu._source.timeseries}
+                        //-option #{menu._source.timeseries}
                         option No
                         option Yes                                
                   .form-group
@@ -92,7 +92,7 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Report                      
                       select#report.select2.form-control(name='report')
-                        option #{menu._source.report}
+                        //-option #{menu._source.report}
                         option No
                         option Yes                                 
                   .form-group
@@ -100,7 +100,7 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Management
                       select#management.select2.form-control(name='management')
-                        option #{menu._source.management}
+                        //-option #{menu._source.management}
                         option No
                         option Yes                                                      
                   .form-group
@@ -116,7 +116,7 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Setting
                       select#setting.select2.form-control(name='setting')
-                        option #{menu._source.setting}
+                        //-option #{menu._source.setting}
                         option No
                         option Yes
                   .form-group
