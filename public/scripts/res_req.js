@@ -1,4 +1,5 @@
-function makeIndex(){    
+function makeIndex(){      
+  var indexs = $('#indexs').val();  
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
   var monS = ['01','02','03','04','05','06','07','08','09','10','11','12']  ;
   var sdate = $('#sdate').val();  
@@ -11,7 +12,7 @@ function makeIndex(){
   var indexD = [], rangeD = [], xD = [], cnt = 0;    
   for(i=minDate.getTime(); i < maxDate.getTime()+24*60*60*1000; i+=24*60*60*1000){    
     var day = new Date(i).toString().split(' ');    
-    indexD[cnt] = "filebeat_jira_access-"+day[3]+'.'+mon[day[1]]+'.'+day[2];    
+    indexD[cnt] = indexs+day[3]+'.'+mon[day[1]]+'.'+day[2];    
     xD[cnt] = mon[day[1]]+'/'+day[2];
     var day2 = new Date(i+24*60*60*1000).toString().split(' ');         
     rangeD[cnt++] ='{"key" : "'+mon[day[1]]+'/'+day[2] +'", "from" : "'+day[3]+'-'+mon[day[1]]+'-'+day[2]+'T00:00:00.000Z", "to" : "'+day2[3]+'-'+mon[day2[1]]+'-'+day2[2]+'T00:00:00.000Z" }';  
@@ -23,7 +24,6 @@ function makeIndex(){
   var wNum = weeks * 7 - 1;
   for(i=wNum; i>=0; i--) {
     var day = new Date(maxDate.getTime()-i*24*60*60*1000).toString().split(' ');    
-//    indexW[i] = "filebeat_jira_access-"+day[3]+'.'+mon[day[1]]+'.'+day[2];        
     if(i%7 == 6){      
       var day2 = new Date(maxDate.getTime()-(i-6)*24*60*60*1000).toString().split(' ');         
       xW[cnt] = mon[day[1]]+'/'+day[2]+'~'+mon[day2[1]]+'/'+day2[2];
@@ -32,7 +32,7 @@ function makeIndex(){
   }
   var wYear = maxDate.getFullYear(), wMon = maxDate.getMonth();
   for(i=weeks/4; i>=0; i--) {
-    indexW[i] = "filebeat_jira_access-"+wYear+'.'+monS[wMon--]+'.*';          
+    indexW[i] = indexs+wYear+'.'+monS[wMon--]+'.*';          
     if(wMon==0){
       wYear--;
       wMon = 12;      
@@ -44,7 +44,7 @@ function makeIndex(){
   var months = parseInt($('#months').val());
   var mNum = months - 1;  
   for(i=mNum; i>=0; i--){
-    indexM[i] = "filebeat_jira_access-"+eYear+'.'+monS[eMon]+'.*'
+    indexM[i] = indexs+eYear+'.'+monS[eMon]+'.*'
     if(eMon == 11){
       var year = eYear+1, mon = 0;
     } else {
@@ -102,7 +102,7 @@ function drawChart(rtnData, xD, name) {
     height = 400 - margin.top - margin.bottom;
 
   var x = d3.scale.ordinal()
-      .rangeRoundBands([0, width-110], .1);
+      .rangeRoundBands([5, width-90], .1);
 
   var y = d3.scale.linear()
       .rangeRound([height, 0]);
@@ -154,7 +154,7 @@ function drawChart(rtnData, xD, name) {
     //this will make the y axis to teh right
     svg.append("g")       
           .attr("class", "y axis")  
-          .attr("transform", "translate(" + (width-95) + " ,0)") 
+          .attr("transform", "translate(" + (width-88) + " ,0)") 
           .style("fill", "red")   
           .call(yAxisRight);
           

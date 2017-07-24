@@ -108,13 +108,14 @@ $(function(){ // on dom ready
 }); // on dom ready
 
 function getDash(day) {  
+   var indexs = $('#indexs').val();
   var d = day.toString().split(' ');  
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   $.ajax({
     url: "/dashboard/restapi/selectJiraAccDash",
     dataType: "json",
     type: "GET",    
-    data: { index: "filebeat_jira_access-"+d[3]+"."+mon[d[1]]+"."+d[2]},
+    data: { index: indexs+d[3]+"."+mon[d[1]]+"."+d[2]},
     success: function(result) {
       
       if (result.rtnCode.code == "0000") {
@@ -208,7 +209,7 @@ function drawDash(data, start, end) {
           url: "/dashboard/restapi/selectScatterSection" ,
           dataType: "json",
           type: "get",
-          data: {       today : "filebeat_jira_access-"+date[3]+"."+mon[date[1]]+"."+date[2] , start:htXY.nXFrom, end:htXY.nXTo, min:htXY.nYFrom, max:htXY.nYTo},
+          data: {       today : indexs+date[3]+"."+mon[date[1]]+"."+date[2] , start:htXY.nXFrom, end:htXY.nXTo, min:htXY.nYFrom, max:htXY.nYTo},
           success: function(result) {
             if (result.rtnCode.code == "0000") {            
             var dataS = [];
@@ -372,7 +373,7 @@ function displayCount() {
     url: "/dashboard/restapi/countAccJira",
     dataType: "json",
     type: "GET",    
-    data: { index: "filebeat_jira_access-"+day.getFullYear()+"."+mon[day.getMonth()]+"."+day.getDate()},
+    data: { index: indexs+day.getFullYear()+"."+mon[day.getMonth()]+"."+day.getDate()},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
@@ -393,7 +394,7 @@ function displayCount() {
     url: "/dashboard/restapi/countAccJira",
     dataType: "json",
     type: "GET",    
-    data: { index: "filebeat_jira_access-"+day.getFullYear()+"."+mon[day.getMonth()]+".*"},
+    data: { index: indexs+day.getFullYear()+"."+mon[day.getMonth()]+".*"},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
@@ -414,7 +415,7 @@ function displayCount() {
     url: "/dashboard/restapi/countAccJiraError",
     dataType: "json",
     type: "GET",    
-    data: { index: "filebeat_jira_access-"+day.getFullYear()+"."+mon[day.getMonth()]+"."+day.getDate()},
+    data: { index: indexs+day.getFullYear()+"."+mon[day.getMonth()]+"."+day.getDate()},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
@@ -450,7 +451,7 @@ function pdayCnt(day, mon){
     url: "/dashboard/restapi/countAccJira",
     dataType: "json",
     type: "GET",    
-    data: { index: "filebeat_jira_access-"+day.getFullYear()+"."+mon[day.getMonth()]+"."+day.getDate()},
+    data: { index: indexs+day.getFullYear()+"."+mon[day.getMonth()]+"."+day.getDate()},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
@@ -470,9 +471,9 @@ function pdayCnt(day, mon){
 
 function pmonCnt(day, mon){
    if(day.getMonth() == 0) {
-    var index = "filebeat_jira_access-"+(day.getFullYear()-1)+"."+mon[11]+".*";
+    var index = indexs+(day.getFullYear()-1)+"."+mon[11]+".*";
   } else {
-    var index = "filebeat_jira_access-"+day.getFullYear()+"."+mon[day.getMonth()-1]+".*";
+    var index = indexs+day.getFullYear()+"."+mon[day.getMonth()-1]+".*";
   }
   $.ajax({
     url: "/dashboard/restapi/countAccJira",
@@ -500,7 +501,7 @@ function perrCnt(day, mon){
     url: "/dashboard/restapi/countAccJiraError",
     dataType: "json",
     type: "GET",    
-    data: { index: "filebeat_jira_access-"+day.getFullYear()+"."+mon[day.getMonth()]+"."+day.getDate()},
+    data: { index: indexs+day.getFullYear()+"."+mon[day.getMonth()]+"."+day.getDate()},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
@@ -582,6 +583,7 @@ var type = ['success', 'error'];
       .brushOn(false)
       .gap(1)
       .x(d3.time.scale().domain([minDate, maxDate]))      
+      //.yAxisPadding()
       .elasticY(true)
       .round(d3.time.day.round)
       .alwaysUseRounding(true)

@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <queryList>
   <user>
-    <query id='selectUserList'><![CDATA[
+    <query id='selectList'><![CDATA[
      {
-        "index" : "efsm_user",
-        "type" : "user",
+        "index" : #INDEX#,
+        "type" : #TYPE#,
         "body" : {
           "size" : 1000,
           "query" : { "match_all" : { } }
@@ -13,13 +13,12 @@
      ]]></query>
     <query id='insertUser'><![CDATA[
      {
-        "index" : "efsm_user",
+        "index" : #INDEX#,
         "type" : "user",        
         "body" : {
           "user_id" : #USERID#,
           "user_pw" : #PASSWORD#,
-          "user_name" : #NAME#,
-          "user_role" : #ROLE#,
+          "user_name" : #NAME#,          
           "user_email" : #EMAIL#,
           "reg_date" : #DATE#
         }
@@ -27,59 +26,80 @@
      ]]></query>
      <query id='selectCheckJoin'><![CDATA[
      {
-        "index" : "efsm_user",
-        "type" : "user",        
+        "index" : #INDEX#,
+        "type" : #TYPE#,        
         "body" : {
-          "_source" : ["user_id"],
+          "_source" : [#ID#],
           "query": {             
             "bool": {
               "must" : [
-                { "match": { "user_id": #USERID#}}                
+                { "match": { #ID# : #VALUE#}}                
               ]
             }     
           } 
         }
       }
      ]]></query>
-   <query id='selectEditUser'><![CDATA[
+   <query id='selectEditById'><![CDATA[
      {
-        "index" : "efsm_user",
-        "type" : "user",        
+        "index" : #INDEX#,
+        "type" : #TYPE#,        
         "body" : {          
           "query": {             
             "bool": {
               "must" : [
-                { "match": { "user_id": #USERID#}}                
+                { "match": { #ID# : #VALUE#  } }                
               ]
             }     
           } 
         }
       }
      ]]></query>
-     <query id='deleteUser'><![CDATA[
+     <query id='deleteById'><![CDATA[
      {
-        "index" : "efsm_user",
-        "type" : "user",        
+        "index" : #INDEX#,
+        "type" : #TYPE#,        
         "id" : #ID#
       }
      ]]></query>
      <query id='updateUser'><![CDATA[
      {
-        "index" : "efsm_user",
+        "index" : #INDEX#,
         "type" : "user",        
         "id" : #ID#,
         "body" : {
           "doc" : {            
             "user_pw" : #PASSWORD#,
-            "user_name" : #NAME#,
-            "user_role" : #ROLE#,
+            "user_name" : #NAME#,            
             "user_email" : #EMAIL#            
           }
         }
       }
      ]]></query>
-    <query id='test02'><![CDATA[
-      {q : 'bbb'}
+     <query id='insertRole'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : "role",        
+        "body" : {
+          "role_id" : #ROLEID#,          
+          "role_name" : #NAME#          
+        }
+    }
+     ]]></query>
+     <query id='insertAuthMenu'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : "menu",        
+        "body" : {
+          "rold_id" : #ROLEID#,                    
+          "menu_dashboard" : #DASHBOARD#,
+          "menu_timeseries" : #TIMESERIES#,
+          "menu_report" : #REPORT#,
+          "menu_management" : #MANAGEMENT#,
+          "menu_analysis" : #ANALYSIS#,
+          "menu_setting" : #SETTING#
+        }
+    }
      ]]></query>
   </user>
   <dashboard>
@@ -95,8 +115,7 @@
         }
       }
     }
-     ]]></query>
-   
+     ]]></query>   
     <query id='selectEventRawData'><![CDATA[
     {
       "index": "corecode-2017-05",

@@ -1,4 +1,5 @@
 function getData() {
+  var indexs = $('#indexs').val();  
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
   var sdate = $('#sdate').val();  
   var s = sdate.split('-')
@@ -9,7 +10,7 @@ function getData() {
   var e = edate.split('-');
   for(i=sindex.getTime(); i <= new Date(e[0], parseInt(e[1])-1, e[2]).getTime(); i+=24*60*60*1000){    
     var day = new Date(i).toString().split(' ');    
-    index[cnt++] = "metricbeat-"+day[3]+'.'+mon[day[1]]+'.'+day[2];    
+    index[cnt++] = indexs+day[3]+'.'+mon[day[1]]+'.'+day[2];    
   }    
   var s = sindex.toString().split(' ');
   var gte = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T15:00:00.000Z';

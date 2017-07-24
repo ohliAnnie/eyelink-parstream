@@ -1,4 +1,5 @@
 function drawChart() {
+  var indexs = $('#indexs').val();
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
   var sdate = $('#sdate').val();  
   var sindex =new Date(new Date(sdate).getTime()-24*60*60*1000);
@@ -7,7 +8,7 @@ function drawChart() {
   var index = [], cnt = 0;
   for(i=sindex.getTime(); i < new Date(edate).getTime()+24*60*60*1000; i+=24*60*60*1000){    
     var day = new Date(i).toString().split(' ');    
-    index[cnt++] = "filebeat_jira_access-"+day[3]+'.'+mon[day[1]]+'.'+day[2];    
+    index[cnt++] = indexs+day[3]+'.'+mon[day[1]]+'.'+day[2];    
   }  
   console.log(index);
   var s = sindex.toString().split(' ');

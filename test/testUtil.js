@@ -90,109 +90,35 @@ describe("Util.js", function(){
       done();
     })
 
-    it('ES Query내 MultiIndex 파라메타 변환 처리(replaceSql3)', function(done) {
-      var sql = ''
-      +'{'
-      +' "index" : [##index##],'
-      +' "type"  : "access",'
-      +' "body" : {'
-      +'   "size" : 0,'
-      +'   "aggs" : {'
-      +'     "group_by_x" : {'
-      +'       "range": {'
-      +'         "field": "@timestamp",'
-      +'         "ranges":  [#range#],'
-      +'          "keyed" : true'
-      +'        },'
-      +'        "aggs": {'
-      +'          "by_type" : {'
-      +'            "range": {'
-      +'              "field": "responsetime",'
-      +'              "ranges" : ['
-      +'                { "key" : "s1", "to" : "1000" },'
-      +'                { "key" : "s3", "from" : "1000", "to" : "3000" },'
-      +'                { "key" : "s5", "from" : "3000", "to" : "5000" },'
-      +'                { "key" : "slow", "from" : "5000" }'
-      +'              ],'
-      +'              "keyed" : true'
-      +'            },'
-      +'            "aggs" : {'
-      +'              "by_response" : {'
-      +'                "range" : {'
-      +'                  "field": "response",'
-      +'                  "ranges" : [{ "key" : "cnt", "to" : 400 }]'
-      +'                }'
-      +'              }'
-      +'            }'
-      +'          },'
-      +'          "aggs" : {'
-      +'            "range" : {'
-      +'              "field": "response",'
-      +'              "ranges" : [{ "key" : "error", "from" : 400 }]'
-      +'            }'
-      +'          }'
-      +'        }'
-      +'      }'
-      +'    }'
-      +'  }'
-      +'}';
+    it('ES Query내 파라메타 변환 처리(replaceSql2-Json)', function(done) {
+      var sql = '{ "index" : [##index##],  "type"  : "access", "body" : { "size" : 0, "aggs" : { "group_by_x" : { '
+             + ' "range": { "field": "@timestamp", "ranges":  [#range#], "keyed" : true }, "aggs": { "by_type" : { '
+             + ' "range": { "field": "responsetime", "ranges" : [ { "key" : "s1", "to" : "1000" }, '
+             + ' { "key" : "s3", "from" : "1000", "to" : "3000" }, { "key" : "s5", "from" : "3000", "to" : "5000" }, '
+             + ' { "key" : "slow", "from" : "5000" } ], "keyed" : true }, "aggs" : { "by_response" : { '
+             + ' "range" : { "field": "response", "ranges" : [{ "key" : "cnt", "to" : 400 }] } } } }, '
+             + ' "aggs" : { "range" : { "field": "response", "ranges" : [{ "key" : "error", "from" : 400 }] } } } } } } } ';
+    
       // console.log("sql : %s ", sql);
 
       var params = {
-              index : '{"filebeat_jira_access-2017-06-*", "filebeat_jira_access-2017-07-*"}',
-              range: '{"key" : "2017-07-12", "from" : "2017-07-12T00:00:00.000Z", "to" : "2017-07-13T00:00:00.000Z" },{"key" : "2017-07-13", "from" : "2017-07-13T00:00:00.000Z", "to" : "2017-07-14T00:00:00.000Z" },{"key" : "2017-07-14", "from" : "2017-07-14T00:00:00.000Z", "to" : "2017-07-15T00:00:00.000Z" },{"key" : "2017-07-15", "from" : "2017-07-15T00:00:00.000Z", "to" : "2017-07-16T00:00:00.000Z" },{"key" : "2017-07-16", "from" : "2017-07-16T00:00:00.000Z", "to" : "2017-07-17T00:00:00.000Z" },{"key" : "2017-07-17", "from" : "2017-07-17T00:00:00.000Z", "to" : "2017-07-18T00:00:00.000Z" },{"key" : "2017-07-18", "from" : "2017-07-18T00:00:00.000Z", "to" : "2017-07-19T00:00:00.000Z" }'
-          };
-
-      sql = Utils.replaceSql3(sql, params)
-      // console.log(sql);
-      sql.should.be.equal('{'
-      +' "index" : [##index##],'
-      +' "type"  : "access",'
-      +' "body" : {'
-      +'   "size" : 0,'
-      +'   "aggs" : {'
-      +'     "group_by_x" : {'
-      +'       "range": {'
-      +'         "field": "@timestamp",'
-      +'         "ranges":  [#range#],'
-      +'          "keyed" : true'
-      +'        },'
-      +'        "aggs": {'
-      +'          "by_type" : {'
-      +'            "range": {'
-      +'              "field": "responsetime",'
-      +'              "ranges" : ['
-      +'                { "key" : "s1", "to" : "1000" },'
-      +'                { "key" : "s3", "from" : "1000", "to" : "3000" },'
-      +'                { "key" : "s5", "from" : "3000", "to" : "5000" },'
-      +'                { "key" : "slow", "from" : "5000" }'
-      +'              ],'
-      +'              "keyed" : true'
-      +'            },'
-      +'            "aggs" : {'
-      +'              "by_response" : {'
-      +'                "range" : {'
-      +'                  "field": "response",'
-      +'                  "ranges" : [{ "key" : "cnt", "to" : 400 }]'
-      +'                }'
-      +'              }'
-      +'            }'
-      +'          },'
-      +'          "aggs" : {'
-      +'            "range" : {'
-      +'              "field": "response",'
-      +'              "ranges" : [{ "key" : "error", "from" : 400 }]'
-      +'            }'
-      +'          }'
-      +'        }'
-      +'      }'
-      +'    }'
-      +'  }'
-      +'}'
-        );
+          index : ["filebeat_jira_access-2017.06.*", "filebeat_jira_access-2017.07.*"],
+          range : '{"key" : "2017-06", "from" : "2017-06-01T00:00:00.000Z", "to" : "2017-07-01T00:00:00.000Z" },{"key" : "2017-07", "from" : "2017-07-01T00:00:00.000Z", "to" : "2017-08-01T00:00:00.000Z" }'
+        };
+        console.log(params);
+      sql = Utils.replaceSql2(sql, params)
+      console.log(sql);
+      sql.should.be.equal('{ "index" : ["filebeat_jira_access-2017.06.*","filebeat_jira_access-2017.07.*"],  "type"  : "access", "body" : { "size" : 0, "aggs" : { "group_by_x" : { '
+             + ' "range": { "field": "@timestamp", "ranges":  [{"key" : "2017-06", "from" : "2017-06-01T00:00:00.000Z", "to" : "2017-07-01T00:00:00.000Z" },{"key" : "2017-07", "from" : "2017-07-01T00:00:00.000Z", "to" : "2017-08-01T00:00:00.000Z" }], "keyed" : true }, "aggs": { "by_type" : { '
+             + ' "range": { "field": "responsetime", "ranges" : [ { "key" : "s1", "to" : "1000" }, '
+             + ' { "key" : "s3", "from" : "1000", "to" : "3000" }, { "key" : "s5", "from" : "3000", "to" : "5000" }, '
+             + ' { "key" : "slow", "from" : "5000" } ], "keyed" : true }, "aggs" : { "by_response" : { '
+             + ' "range" : { "field": "response", "ranges" : [{ "key" : "cnt", "to" : 400 }] } } } }, '
+             + ' "aggs" : { "range" : { "field": "response", "ranges" : [{ "key" : "error", "from" : 400 }] } } } } } } } ');
       done();
-    })
 
+      
+    })
   });
 
 

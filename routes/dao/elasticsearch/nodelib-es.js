@@ -289,7 +289,7 @@ QueryProvider.prototype.createIndexForTest = function (cb) {
     }
   }).then(function (resp) {
       // var hits = resp.hits.hits;
-      console.log(resp)
+      console.log(resp);
       cb(null, resp);
   }, function (err) {
       console.trace(err.message);
@@ -315,7 +315,7 @@ QueryProvider.prototype.updateDocForTest = function (cb) {
     }
   }).then(function (resp) {
       // var hits = resp.hits.hits;
-      console.log(resp)
+      console.log(resp);
       cb(null, resp);
   }, function (err) {
       console.trace(err.message);
