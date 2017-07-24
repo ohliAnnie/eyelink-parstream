@@ -11,6 +11,22 @@
         }
     }
      ]]></query>
+     <query id='selectListById'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size" : 1000,
+          "query" : { 
+            "bool": {
+              "must" : [
+                { "match": { #ID# : #VALUE#}}                
+              ]
+            }     
+          }
+        }
+    }
+     ]]></query>
     <query id='insertUser'><![CDATA[
      {
         "index" : #INDEX#,
@@ -90,14 +106,71 @@
      {
         "index" : #INDEX#,
         "type" : "menu",        
+        "id" : #ID#,
         "body" : {
-          "rold_id" : #ROLEID#,                    
+          "role_id" : #ROLEID#,                    
           "menu_dashboard" : #DASHBOARD#,
           "menu_timeseries" : #TIMESERIES#,
           "menu_report" : #REPORT#,
           "menu_management" : #MANAGEMENT#,
           "menu_analysis" : #ANALYSIS#,
           "menu_setting" : #SETTING#
+        }
+    }
+     ]]></query>
+    <query id='updateRole'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : "role",        
+        "id" : #ID#,
+        "body" : {
+          "doc" : {                        
+            "role_name" : #NAME#
+          }
+        }
+      }
+     ]]></query>  
+    <query id='updateAuthMenu'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : "menu",        
+        "id" : #ID#,
+        "body" : {
+          "doc" : {
+            "role_id" : #ROLEID#,                    
+            "menu_dashboard" : #DASHBOARD#,
+            "menu_timeseries" : #TIMESERIES#,
+            "menu_report" : #REPORT#,
+            "menu_management" : #MANAGEMENT#,
+            "menu_analysis" : #ANALYSIS#,
+            "menu_setting" : #SETTING#
+          }
+        }
+    }
+     ]]></query>    
+     <query id='selectCheckMap'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : #TYPE#,        
+        "body" : {          
+          "query": {             
+            "bool": {
+              "must" : [
+                { "match": { "role_id" : #ROLEID#}},
+                { "match": { "user_id" : #USERID#}}
+              ]
+            }     
+          } 
+        }
+      }
+     ]]></query>
+  <query id='insertMap'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : "map",        
+        "body" : {
+          "role_id" : #ROLEID#,          
+          "user_id" : #USERID#          
         }
     }
      ]]></query>
