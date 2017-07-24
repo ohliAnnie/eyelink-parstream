@@ -34,9 +34,11 @@ router.get('/users/:id', function(req, res) {
   } else { // 기존 사용자 정보 변경
     var in_data = {
       INDEX: indexUser,
-      USERID: req.params.id,
+      TYPE: "user",
+      ID : "user_id",
+      VALUE: req.params.id
     };
-    queryProvider.selectSingleQueryByID2("user", "selectEditUser", in_data, function(err, out_data, params) {      
+    queryProvider.selectSingleQueryByID2("user", "selectEditById", in_data, function(err, out_data, params) {      
       var rtnCode = CONSTS.getErrData('0000');      
             
       res.render('./management/edit_user',
@@ -143,10 +145,12 @@ router.get('/role/:id', function(req, res) {
     res.render('./management/add_role', { title: global.config.productname, mainmenu:mainmenu });
   } else { // 기존 사용자 정보 변경
     var in_data = {
-      INDEX: indexUser,
-      USERID: req.params.id,
+      INDEX: indexRole,
+      TYPE: "role",
+      ID: "role_id",
+      VALUE: req.params.id,
     };
-    queryProvider.selectSingleQueryByID2("user", "selectEditUser", in_data, function(err, out_data, params) {      
+    queryProvider.selectSingleQueryByID2("user", "selectEditById", in_data, function(err, out_data, params) {      
       var rtnCode = CONSTS.getErrData('0000');      
             
       res.render('./management/edit_role',
@@ -194,7 +198,8 @@ router.post('/role/:id', function(req, res) {
               var in_data = {    
                 INDEX: indexRole,
                 TYPE: "role",
-                ID: req.body.roleid
+                ID: "role_id",
+                VALUE: req.body.roleid
               };  
               queryProvider.deleteQueryByID("user", "deleteById", in_data, function(err, out_data) {  
                 if(out_data.result == "deleted"){
@@ -215,7 +220,7 @@ router.post('/role/:id', function(req, res) {
   });
 });
 
-// 사용자 정보 수정
+// ROLE 정보 수정
 router.put('/role/:id', function(req, res) {
   var in_data = {
     INDEX: indexUser,
@@ -225,7 +230,7 @@ router.put('/role/:id', function(req, res) {
     EMAIL: req.body.email    
   };
   console.log(in_data);
-  queryProvider.updateQueryByID("user", "updateUser", in_data, function(err, out_data) {    
+  queryProvider.updateQueryByID("user", "updateRole", in_data, function(err, out_data) {    
     if(out_data.result == "updated");
         var rtnCode = CONSTS.getErrData("D002");            
     if (err) { console.log(err);   }

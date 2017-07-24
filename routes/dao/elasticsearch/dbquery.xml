@@ -40,15 +40,15 @@
         }
       }
      ]]></query>
-   <query id='selectEditUser'><![CDATA[
+   <query id='selectEditById'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : "user",        
+        "type" : #TYPE#,        
         "body" : {          
           "query": {             
             "bool": {
               "must" : [
-                { "match": { "user_id": #USERID#}}                
+                { "match": { #ID# : #VALUE#  } }                
               ]
             }     
           } 
