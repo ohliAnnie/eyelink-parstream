@@ -12,6 +12,7 @@ function getData() {
   } else {
     var url = "/reports/restapi/getProcessByName" 
   }
+  console.log(indexs);
   var index = [], cnt = 0;
   var e = edate.split('-');
   for(i=sindex.getTime(); i < new Date(e[0], parseInt(e[1])-1, e[2]).getTime()+24*60*60*1000; i+=24*60*60*1000){    

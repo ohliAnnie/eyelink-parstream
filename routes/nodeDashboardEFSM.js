@@ -14,26 +14,26 @@ var indexAcc = global.config.es_index.es_jira;
 router.get('/', function(req, res, next) {
   mainmenu.dashboard = ' open selected';
   mainmenu.timeseries = '';
-  res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu}); 
+  res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc }); 
 });
 
 router.get('/timeseries', function(req, res, next) {
   // console.log(_rawDataByDay);
   mainmenu.dashboard = '';
   mainmenu.timeseries = ' open selected';
-  res.render('./dashboard/timeseries'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./dashboard/timeseries'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc });
 });
 
 router.get('/trenddata', function(req, res, next) {
   mainmenu.dashboard = ' open selected';
   mainmenu.timeseries = '';
-  res.render('./dashboard/trenddata', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./dashboard/trenddata', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc});
 });
 
 router.get('/test', function(req, res, next) {
   mainmenu.dashboard = ' open selected';
   mainmenu.timeseries = '';
-  res.render('./dashboard/test', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./dashboard/test', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc });
 });
 
 // query RawData
