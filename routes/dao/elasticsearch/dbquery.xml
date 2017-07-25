@@ -40,37 +40,6 @@
         }
     }
      ]]></query>
-     <query id='selectCheckJoin'><![CDATA[
-     {
-        "index" : #INDEX#,
-        "type" : #TYPE#,        
-        "body" : {
-          "_source" : [#ID#],
-          "query": {             
-            "bool": {
-              "must" : [
-                { "match": { #ID# : #VALUE#}}                
-              ]
-            }     
-          } 
-        }
-      }
-     ]]></query>
-   <query id='selectEditById'><![CDATA[
-     {
-        "index" : #INDEX#,
-        "type" : #TYPE#,        
-        "body" : {          
-          "query": {             
-            "bool": {
-              "must" : [
-                { "match": { #ID# : #VALUE#  } }                
-              ]
-            }     
-          } 
-        }
-      }
-     ]]></query>
      <query id='deleteById'><![CDATA[
      {
         "index" : #INDEX#,
@@ -336,7 +305,9 @@
       {
         "index" : #index#,
         "type" : "transactionList",
-        "body" : {            
+        "body" : {      
+           "query" : { "match_all" : { }    }
+           }      
          }               
        } 
     ]]></query>

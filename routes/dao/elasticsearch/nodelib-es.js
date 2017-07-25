@@ -207,12 +207,12 @@ QueryProvider.prototype.selectSingleQueryByID2 = function (type, queryId, datas,
 QueryProvider.prototype.selectSingleQueryByID3 = function (type, queryId, datas, cb) {
   var vTimeStamp = Date.now();
   console.log('queryId : '+queryId);
-  console.time('nodelib-es/selectSingleQueryByID -> '+ queryId +' total ');
-  console.log('nodelib-es/selectSingleQueryByID -> (%s) queryID', queryId);
+  console.time('nodelib-es/selectSingleQueryByID3 -> '+ queryId +' total ');
+  console.log('nodelib-es/selectSingleQueryByID3 -> (%s) queryID', queryId);
 
   // SQL 내 파라메타를 변경해준다.
   var sQueryString = Utils.replaceSql2(queryParser.getQuery(type, queryId), datas);
-  console.log('nodelib-es/selectSingleQueryByID -> ' + sQueryString);
+  console.log('nodelib-es/selectSingleQueryByID3 -> ' + sQueryString);
 
   sQueryString = JSON.parse(sQueryString);
 
@@ -220,8 +220,9 @@ QueryProvider.prototype.selectSingleQueryByID3 = function (type, queryId, datas,
     sQueryString
   ).then(function (resp) {
       //console.log(resp.hits);
+      console.log(resp);
       var hits = resp.aggregations;      
-      console.log('nodelib-es/selectSingleQueryByID -> total : %d', resp.hits.total);
+      console.log('nodelib-es/selectSingleQueryByID3 -> total : %d', resp.hits.total);
       cb(null, hits);
   }, function (err) {
       console.trace(err.message);
