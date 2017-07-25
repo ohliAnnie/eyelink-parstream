@@ -74,7 +74,7 @@ block content
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 Role
+        h1 Role : #{roleid}
         ol.breadcrumb
           li
             a(href='#') Home
@@ -107,28 +107,27 @@ block content
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Mem List
-                span.caption-helper  Member List by Role              
+                span.caption-helper  #{roleid} Member List 
             .portlet-body.form
               table#sample_2.table.table-striped.table-bordered.table-hover(style='text-align:center;')
                 thead
                   tr
-                    th
-                    th(style='text-align:center;')  User ID
-                    th(style='text-align:center;')  Name                                                            
-                    th(style='text-align:center;')  Edit &amp; Delete
+                    
+                    th(style='text-align:center;')  Role ID
+                    th(style='text-align:center;')  User ID                                                            
+                    th(style='text-align:center;')  Info
+                    th(style='text-align:center;')  Delete
                 tbody
                   each mem in mems
-                    tr.odd.gradeX                      
-                      td
-                         input#id(type='hidden', name='id', value=mem._id)
+                    tr.odd.gradeX                                            
+                      input#id(type='hidden', name='id', value=mem._id)
                       td  #{mem._source.role_id}
-
-                      td  #{mem._source.user_id}                                            
-                        input#name(type='hidden', name='id', value=mem._source.role_id)                      
+                      td  #{mem._source.user_id}                                                                    
                       td
-                        a.btn.default.btn-xs.balck(href='/management/mem/'+mem._source.user_id)
-                          i.fa.fa-edit
-                          |  Edit
+                        a.btn.default.btn-xs.balck(href='/management/user/'+mem._source.user_id)
+                          i.fa.fa-search
+                          |  Info
+                      td
                         a.btn.default.btn-xs.balck(flag='deleteMem', memid=''+mem._id)
                           i.fa.fa-trash-o
                           |  Delete          
