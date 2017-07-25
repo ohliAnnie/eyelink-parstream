@@ -17,7 +17,8 @@ block script
         if ('deleteRole' != $(this).attr('flag')) return;
 
         var roleid = $(this).attr('roleid');
-        if (roleid == "") {
+        var id = $(this).attr('id');
+        if (id == "") {
           return false;
         }        
         // TODO 메시지 공통 영역으로
@@ -26,7 +27,7 @@ block script
             url: "/management/role/" + roleid,
             dataType: "json",
             type: "DELETE",
-            data: {roleid : roleid},
+            data: {id:id},
             success: function(result) {
               alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
               if (result.rtnCode.code == "D003") {
@@ -66,16 +67,19 @@ block content
               table#sample_2.table.table-striped.table-bordered.table-hover(style='text-align:center;')
                 thead
                   tr
-                    th
+                    th(style='text-align:center;')  Edit 
                     th(style='text-align:center;')  Role ID
                     th(style='text-align:center;')  Name                                        
-                    th(style='text-align:center;')  List &amp; AddUser
-                    th(style='text-align:center;')  Edit &amp; Delete
+                    th(style='text-align:center;')  List
+                    th(style='text-align:center;')  Delete
                 tbody
                   each role in roles
                     tr.odd.gradeX
-                      td
+                      td                        
                          input#id(type='hidden', name='id', value=role._id)
+                         a.btn.default.btn-xs.balck(href='/management/role/'+role._source.role_id)
+                           i.fa.fa-edit
+                           |  Edit
                       td  #{role._source.role_id}
 
                       td  #{role._source.role_name}                                            
@@ -83,14 +87,8 @@ block content
                       td
                         a.btn.default.btn-xs.green(href='/management/memList/'+role._source.role_id)                          
                           |  Member List
-                        a.btn.default.btn-xs.blue(href='/management/member/'+role._source.role_id)                          
-                          i.fa.fa-edit
-                          |  Add User
-                      td
-                        a.btn.default.btn-xs.balck(href='/management/role/'+role._source.role_id)
-                          i.fa.fa-edit
-                          |  Edit
-                        a.btn.default.btn-xs.balck(flag='deleteRole', roleid=''+role._id)
+                      td                        
+                        a.btn.default.btn-xs.balck(flag='deleteRole', id=''+role._id, roleid=''+role._source.role_id)
                           i.fa.fa-trash-o
                           |  Delete          
               
