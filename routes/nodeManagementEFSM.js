@@ -32,17 +32,30 @@ router.get('/users/:id', function(req, res) {
   if (req.params.id === 'addUser') {
     res.render('./management/sign_up', { title: global.config.productname, mainmenu:mainmenu });
   } else { // 기존 사용자 정보 변경
-    var in_data = {
-      INDEX: indexUser,
-      TYPE: "user",
-      ID : "user_id",
-      VALUE: req.params.id
-    };
-    queryProvider.selectSingleQueryByID2("user", "selectEditById", in_data, function(err, out_data, params) {      
-      var rtnCode = CONSTS.getErrData('0000');      
-            
-      res.render('./management/edit_user',
-        { title: global.config.productname,   mainmenu:mainmenu,   user:out_data[0]});
+    var in_data = {  INDEX: indexUser,  TYPE: "user",  ID : "user_id",  VALUE: req.params.id   };
+    queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {      
+      if (out_data[0] != null){
+        var rtnCode = CONSTS.getErrData('0000');      
+        var user = out_data[0];
+        var in_data = {  INDEX: indexMap, TYPE: "map", ID : "user_id", VALUE: req.params.id   };
+        queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {      
+          if (out_data != null){
+            var rtnCode = CONSTS.getErrData('0000');      
+            var maps = out_data;          
+          } else {
+            var rtnCode = CONSTS.getErrData('0001');      
+            var maps = [];
+         }          
+         console.log(user);
+         console.log(maps);
+          res.render('./management/edit_user',        
+            { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps});
+         });
+       } else {
+        var rtnCode = CONSTS.getErrData('0001');                 
+       }        
+      res.render('./management/edit_user',        
+        { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps });
      });
   }
 });
@@ -56,7 +69,7 @@ router.post('/users/:id', function(req, res) {
     VALUE: req.body.userid       
   };
   console.log(in_data);
-  queryProvider.selectSingleQueryByID2("user", "selectCheckJoin", in_data, function(err, out_data, params) {        
+  queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {        
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');
       console.log(rtnCode);
@@ -78,14 +91,12 @@ router.post('/users/:id', function(req, res) {
           var rtnCode = CONSTS.getErrData("D001");        
           console.log(out_data.result);
         }
-        if (err) { console.log(err) };               
-      
+        if (err) { console.log(err) };
         res.json({rtnCode: rtnCode});
       });
     }
   });
 });
-
 
 // 사용자 정보 수정
 router.put('/users/:id', function(req, res) {
@@ -109,19 +120,69 @@ router.put('/users/:id', function(req, res) {
 // 사용자 정보 삭제
 router.delete('/users/:id', function(req, res) {
   console.log('deleteUser');
-  var in_data = {    
-    INDEX: indexUser,
-    TYPE: "user",
-    ID: req.params.id  
-  };  
-  console.log(in_data);
+  console.log(req.body.id, req.params.id);
+  var in_data = {  INDEX: indexUser,  TYPE: "user",  ID: req.body.id   };    
   queryProvider.deleteQueryByID("user", "deleteById", in_data, function(err, out_data) {
     if(out_data.result == "deleted");
-        var rtnCode = CONSTS.getErrData("D003");        
+      var rtnCode = CONSTS.getErrData("D003");
+      var in_data = {  INDEX: indexMap, TYPE: "map",  ID: "user_id",  VALUE : req.params.id  };  
+      console.log(in_data);
+      queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {      
+        if (out_data != null){
+          var rtnCode = CONSTS.getErrData('0000');    
+          console.log('map');          
+          console.log(out_data);
+
+          for(i=0; i<out_data.length; i++){  
+            var in_data = { INDEX : indexMap, TYPE: "map", ID : out_data[i]._id     }
+            console.log(in_data);
+            queryProvider.deleteQueryByID("user", "deleteById", in_data, function(err, out_data) {  
+              if(out_data.result == "deleted"){
+                var rtnCode = CONSTS.getErrData("D004");                          
+              }
+              if(err){ console.log(err);    }              
+            });            
+          }
+        } else {
+          var rtnCode = CONSTS.getErrData('E007');                
+        }        
+        res.json({rtnCode: rtnCode});
+      });
     if(err){ console.log(err);    }
     res.json({rtnCode: rtnCode});
   });
 });
+
+router.get('/user/:id', function(req, res) {
+  console.log(req.params.id);
+  var in_data = {  INDEX: indexUser,  TYPE: "user",  ID : "user_id",  VALUE: req.params.id   };
+  queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {      
+    if (out_data[0] != null){
+      var rtnCode = CONSTS.getErrData('0000');      
+      var user = out_data[0];
+      var in_data = {  INDEX: indexMap, TYPE: "map", ID : "user_id", VALUE: req.params.id   };
+        queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {      
+          if (out_data != null){
+            var rtnCode = CONSTS.getErrData('0000');      
+            var maps = out_data;          
+          } else {
+            var rtnCode = CONSTS.getErrData('0001');      
+            var maps = [];
+         }          
+         console.log(user);
+         console.log(maps);
+          res.render('./management/user_info',        
+            { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps});
+         });
+       } else {
+        var rtnCode = CONSTS.getErrData('0001');                 
+       }        
+      res.render('./management/user_info',        
+        { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps });
+   });
+  
+});
+
 
 router.get('/role', function(req, res, next) {
   console.log('role/restapi/selectRoleList');
@@ -150,7 +211,7 @@ router.get('/role/:id', function(req, res) {
       ID: "role_id",
       VALUE: req.params.id
     };
-    queryProvider.selectSingleQueryByID2("user", "selectEditById", in_data, function(err, out_data, params) {           
+    queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {           
       console.log(out_data[0]);
        if(out_data[0] != null){      
         var in_data = {
@@ -160,19 +221,16 @@ router.get('/role/:id', function(req, res) {
           VALUE: req.params.id
         };
         var role = out_data[0];
-           queryProvider.selectSingleQueryByID2("user", "selectEditById", in_data, function(err, out_data, params) {                      
+           queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {                      
             var menu = out_data[0];
-
             console.log(role);
             console.log(menu);
             res.render('./management/edit_role',
             { title: global.config.productname,   mainmenu:mainmenu,   role:role, menu:menu});
           });
          }
-         console.log(role);
-            console.log(menu);
       res.render('./management/edit_role',
-        { title: global.config.productname,   mainmenu:mainmenu,   role:role});
+        { title: global.config.productname,   mainmenu:mainmenu,   role:role,  menu:menu});
      });
   }
 });
@@ -185,7 +243,7 @@ router.post('/role/:id', function(req, res) {
     TYPE: "role",
     ID: "role_id",
     VALUE: req.body.roleid    };  
-  queryProvider.selectSingleQueryByID2("user", "selectCheckJoin", in_data, function(err, out_data, params) {        
+  queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {        
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');    
       res.json({rtnCode: rtnCode});
@@ -280,25 +338,45 @@ router.delete('/role/:id', function(req, res) {
   var in_data = {    
     INDEX: indexRole,
     TYPE: "role",
-    ID: req.params.id  
+    ID: req.body.id  
   };  
   queryProvider.deleteQueryByID("user", "deleteById", in_data, function(err, out_data) {
-    if(out_data.result == "deleted");
-     var in_data = {    
-        INDEX: indexMenu,
-        TYPE: "menu",
-        ID: req.params.id  
-      };  
+    if(out_data.result == "deleted"){
+     var in_data = {    INDEX: indexMenu,  TYPE: "menu",   ID: req.body.id   };  
       queryProvider.deleteQueryByID("user", "deleteById", in_data, function(err, out_data) {
-        if(out_data.result == "deleted");
+        if(out_data.result == "deleted"){
             var rtnCode = CONSTS.getErrData("D003");        
-        if(err){ console.log(err);    }
-        res.json({rtnCode: rtnCode});
-      });
+            var in_data = {  INDEX: indexMap, TYPE: "map",  ID: "role_id",  VALUE : req.params.id  };  
+            queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {      
+              if (out_data != null){
+                var rtnCode = CONSTS.getErrData('0000');    
+                console.log('map');          
+                console.log(out_data);
+                for(i=0; i<out_data.length; i++){  
+                  var in_data = { INDEX : indexMap, TYPE: "map", ID : out_data[i]._id     }
+                  console.log(in_data);
+                  queryProvider.deleteQueryByID("user", "deleteById", in_data, function(err, out_data) {  
+                    if(out_data.result == "deleted"){
+                    var rtnCode = CONSTS.getErrData("D003");                          
+                  }
+                  if(err){ console.log(err);    }              
+                });            
+               }
+              } else {
+                var rtnCode = CONSTS.getErrData('E007');                
+              }        
+              res.json({rtnCode: rtnCode});
+            });
+          }
+          if(err){ console.log(err);    }
+          res.json({rtnCode: rtnCode});
+        });
         var rtnCode = CONSTS.getErrData("D003");        
     if(err){ console.log(err);    }
     res.json({rtnCode: rtnCode});
+    }
   });
+
 });
 
 
@@ -340,7 +418,7 @@ router.get('/mem/:id', function(req, res) {
       ID: "role_id",
       VALUE: req.params.id
     };
-    queryProvider.selectSingleQueryByID2("user", "selectEditById", in_data, function(err, out_data, params) {           
+    queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {           
       console.log(out_data[0]);
        if(out_data[0] != null){      
         var in_data = {
@@ -350,7 +428,7 @@ router.get('/mem/:id', function(req, res) {
           VALUE: req.params.id
         };
         var role = out_data[0];
-           queryProvider.selectSingleQueryByID2("user", "selectEditById", in_data, function(err, out_data, params) {                      
+           queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {                      
             var menu = out_data[0];
 
             console.log(role);

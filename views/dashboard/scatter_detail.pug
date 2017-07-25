@@ -58,8 +58,7 @@ html
     script(src='/scripts/calltreeEFSM.js', type='text/javascript')    
     script.
       jQuery(document).ready(function() {  
-        $('#sample_2 > tbody > tr').click(function(){               
-        console.log('test')     ;
+        $('#sample_2 > tbody > tr').click(function(){                       
           var values = $(this).find('td').map(function(){            
             return $(this).text();
           }).get();          

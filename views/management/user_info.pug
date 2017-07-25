@@ -63,39 +63,12 @@ block script
         $("#register_tnc_error").html("");
         $("#register_tnc_error").hide();
       });
-      $('a').click(function(event){
-        //- event.preventDefault();
-        if ('deleteMem' != $(this).attr('flag')) return;
-        var userid = $('#userid').val();
-        var memid = $(this).attr('memid');
-        if (memid == "") {
-          return false;
-        }        
-        // TODO 메시지 공통 영역으로
-        if (confirm("삭제 하시겠습니까? ")) {
-          $.ajax({
-            url: "/management/mem/" + memid,
-            dataType: "json",
-            type: "DELETE",
-            data: {memid : memid},
-            success: function(result) {
-              alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
-              if (result.rtnCode.code == "D003") {
-                location.href = "/management/users/"+userid;
-              }
-            },
-            error: function(req, status, err) {
-              $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-            }
-          });
-        }        
-      });
     });
 block content
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 Edit User
+        h1 User Info
         ol.breadcrumb
           li
             a(href='/dashboard') Home
@@ -103,14 +76,14 @@ block content
             a(href='#') Management
           li
             a(href='/management/users') Users
-          li.active Edit User
+          li.active User
       .row
         .col-md-12
           .portlet.light
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze User Information
-                span.caption-helper  Update user information
+                span.caption-helper  #{username}'s information
             .portlet-body.from
               form#update_account.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
@@ -123,37 +96,26 @@ block content
                   .form-group
                     label.control-label.col-md-5 Name
                     .col-md-3
-                      input#username.form-control.form-control-inline.input-large(size='16', type='text', value=user._source.user_name, placeholder='Username', name='username')
+                      span #{user._source.user_name}
                   .form-group
                     label.control-label.col-md-5 Password
                     .col-md-3
-                      input#register_password.form-control.form-control-inline.input-large(size='16', type='password', value=user._source.user_pw, placeholder='password', name='password')
-                  .form-group
-                    label.control-label.col-md-5 Re-type Your Password
-                    .col-md-3
-                      input#register_password_1.form-control.form-control-inline.input-large(size='16', type='password', value=user._source.user_pw, placeholder='password', name='password_1')
+                      span #{user._source.user_pw}                  
                   .form-group
                     label.control-label.col-md-5 Email
                     .col-md-3
-                      input#email.form-control.form-control-inline.input-large(size='16', type='text', value=user._source.user_email, placeholder='email', name='email')
+                      span #{user._source.user_email}
                   .form-group
                     label.control-label.col-md-5 Atteched                    
                     .col-md-3
                       each map in maps
-                        .form-group
-                          .col-md-6
-                            span #{map._source.role_id}
-                          .col-md-6
-                            td                        
-                            a.btn.default.btn-xs.balck(flag='deleteMem', memid=''+map._id)
-                              i.fa.fa-trash-o
-                              |  Delete
+                        span #{map._source.role_id}
+                        br                        
                   .form-group
-                    #register_tnc_error(style='text-align:center;')
-                    .col-md-10
-                      button#register-submit-btn.btn.btn-default.blue.pull-right Save
+                    #register_tnc_error(style='text-align:center;')            
+                    .col-md-8
                     .col-md-2
-                      button.btn.btn-default(type='button', onclick="location.href='/management/users'") Cancel               
+                      button.btn.btn-default(type='button', onclick="location.href=history.back()") Back        
             .portlet-footer
     p.copyright Copyright M2U Technology All rights reserved.
     a.go2top(href='#index')
