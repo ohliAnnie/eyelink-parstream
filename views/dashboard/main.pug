@@ -3,14 +3,14 @@ block style
   link(rel='stylesheet', href='/stylesheets/style.css')
   link(type='text/css', rel='stylesheet', href='/assets/sample/style/bigscatterchart.css') 
   link(href='/assets/sample/style/dashboard_main.css', rel='stylesheet')
+  link(rel='stylesheet', href='/assets/leaflet/dc.css')  
 block script
   script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
   script(type='text/javascript', src='/assets/annie/js/dc.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
   script(type='text/javascript', src='/socket.io/socket.io.js')
-  script(type='text/javascript', src="/scripts/util.js")
-  script(type='text/javascript', src="/scripts/dashboard_es.js")
+  script(type='text/javascript', src="/scripts/util.js")  
   script(src='/assets/sample/js/cytoscape.min.js')  
   script(src='/assets/sample/js/dagre.min.js')
   script(src='/assets/sample/js/cytoscape-dagre.js')   
@@ -19,22 +19,14 @@ block script
   script(type='text/javascript', src='/assets/sample/js/jquery.Class.js')
   script(type='text/javascript', src='/assets/sample/js/jquery.dragToSelect.js')
   script(type='text/javascript', src='/assets/sample/js/jquery.BigScatterChart.js')   
+  script(type='text/javascript', src="/scripts/dashboard_es.js")
   script.
-    $(document).ready(function(e) {
-      // display Count 4 type.
-     displayCount();
-
-      // draw Chart
+    $(document).ready(function(e) {      
+      displayCount();
       drawChart();
-
-      // draw Map
-      //- drawMap();
-
-      // process websocket
-      // FIXME 실행시 map Container 오류 발생함.
-      //- processSocket();
     });
 block content
+  input#indexs(type='hidden', name='indexs', value=indexs)
   .container-fluid
     .page-content
       .breadcrumbs
