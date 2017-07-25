@@ -1,4 +1,5 @@
 function getTransaction(id, date, app, agent) {  
+  console.log(id, date, app, agent);
   var i = date.split('T');
   i = i[0] .split('-');
   var index = 'transactionlist-'+i[0]+'-'+i[1];
@@ -10,7 +11,8 @@ function getTransaction(id, date, app, agent) {
       index : index,
       id : id},
     success: function(result) {
-      if (result.rtnCode.code == "0000") {        
+      if (result.rtnCode.code == "0000") {      
+        console.log(result)  ;
         drawDetail(result.rtnData[0]._source, id, date, app, agent);        
       } else {
         //- $("#errormsg").html(result.message);

@@ -316,18 +316,17 @@ router.get('/selected_detail', function(req, res, next) {
   var in_data = {
     index : "transactionlist-2017-06"    
   };
-  queryProvider.selectSingleQueryByID3("dashboard","getTransaction", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID2("dashboard","getTransaction", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');
     console.log(out_data);    
     var data = [], detail = [];
-    out_data.hits.forEach(function(d){
+    out_data.forEach(function(d){
       if(d._type == 'transactionList') {
         data.push(d._source);  
       } else {
         detail.push(d._source);
-      }
-      
+      }      
     });
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -352,7 +351,7 @@ router.get('/restapi/selectScatterSection', function(req, res, next) {
     MAX : parseInt(req.query.max)  
   };
   queryProvider.selectSingleQueryByID2("dashboard","selectScatterSection", in_data, function(err, out_data, params) {
-    // console.log(out_datsa);
+     console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -433,13 +432,13 @@ router.get('/restapi/getTransactionDetail', function(req, res, next) {
     index : req.query.index ,
     id : req.query.id
   };
-  queryProvider.selectSingleQueryByID3("dashboard","getTransactionDetail", in_data, function(err, out_data, params) {
-    // console.log(out_datsa);
+  queryProvider.selectSingleQueryByID2("dashboard","getTransactionDetail", in_data, function(err, out_data, params) {
+     console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
     }    
-    res.json({rtnCode: rtnCode, rtnData: out_data['hits'] });
+    res.json({rtnCode: rtnCode, rtnData: out_data });
   });
 });
 
@@ -451,13 +450,13 @@ router.get('/restapi/getTransaction', function(req, res, next) {
     index : 'transactionlist-2017-06',
     id : req.query.id
   };
-  queryProvider.selectSingleQueryByID3("dashboard","getTransactionList", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID2("dashboard","getTransactionList", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
     }    
-    res.json({rtnCode: rtnCode, rtnData: out_data['hits'] });
+    res.json({rtnCode: rtnCode, rtnData: out_data });
   });
 });
 
