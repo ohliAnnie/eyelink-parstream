@@ -67,19 +67,16 @@ block content
               table#sample_2.table.table-striped.table-bordered.table-hover(style='text-align:center;')
                 thead
                   tr
-                    th(style='text-align:center;')  Edit 
+                    th(style='text-align:center;')  
                     th(style='text-align:center;')  Role ID
                     th(style='text-align:center;')  Name                                        
                     th(style='text-align:center;')  List
-                    th(style='text-align:center;')  Delete
+                    th(style='text-align:center;')  Edit &amp; Delete
                 tbody
                   each role in roles
                     tr.odd.gradeX
                       td                        
-                         input#id(type='hidden', name='id', value=role._id)
-                         a.btn.default.btn-xs.balck(href='/management/role/'+role._source.role_id)
-                           i.fa.fa-edit
-                           |  Edit
+                         input#id(type='hidden', name='id', value=role._id)                         
                       td  #{role._source.role_id}
 
                       td  #{role._source.role_name}                                            
@@ -88,6 +85,9 @@ block content
                         a.btn.default.btn-xs.green(href='/management/memList/'+role._source.role_id)                          
                           |  Member List
                       td                        
+                        a.btn.default.btn-xs.balck(href='/management/role/'+role._source.role_id)
+                           i.fa.fa-edit
+                           |  Edit
                         a.btn.default.btn-xs.balck(flag='deleteRole', id=''+role._id, roleid=''+role._source.role_id)
                           i.fa.fa-trash-o
                           |  Delete          
