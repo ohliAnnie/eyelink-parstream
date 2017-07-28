@@ -267,13 +267,15 @@ html
                       a(href='/reports/cpu_memory') Cpu/Memory
                     li
                       a(href='/reports/error') Error
-                    li
-                      a(href='/reports/d3') d3
-                    li
-                      a(href='/reports/live') Live
+                    //- li
+                    //-   a(href='/reports/d3') d3
+                    //- li
+                    //-   a(href='/reports/live') Live
                 li#menuanalysis.dropdown.dropdown-fw
                   a(href='javascript:;') Analysis
                   ul.dropdown-menu.dropdown-menu-fw
+                    li.active
+                      a(href='/analysis/anomaly') Anomaly
                     li.active
                       a(href='/analysis/clustering') Clustering
                     li
