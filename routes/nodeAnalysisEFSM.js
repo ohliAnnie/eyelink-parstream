@@ -36,6 +36,13 @@ router.get('/runalaysis', function(req, res, next) {
   console.log(_rawDataByDay);
   res.render('./analysis/runanalysis', { title: global.config.productname, mainmenu:mainmenu});
 });
+
+router.get('/anomaly', function(req, res, next) {
+  console.log(_rawDataByDay);
+  res.render('./analysis/anomaly', { title: global.config.productname, mainmenu:mainmenu});
+});
+
+
 /*router.get('/clustering', function(req, res, next) {
    var in_data = {};
   queryProvider.selectSingleQueryByID("analysis", "selectDaClusterMasterAll", in_data, function(err, out_data, params) {
