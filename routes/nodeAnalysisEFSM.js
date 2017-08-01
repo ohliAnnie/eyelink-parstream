@@ -49,18 +49,16 @@ router.get('/postTest', function(req, res, next) {
 });
 
 router.post('/restapi/insertAnomal', function(req, res, next) {  
-  console.log('/analysis/restapi/insertAnomal');
-  console.log(req.params.id);
-  console.log(req.body);  
-    
-    var in_data = {    INDEX: "Analysis", TYPE: "anomaly", ID: new Date().getTime(),
+  console.log('/analysis/restapi/insertAnomal');  
+  console.log(req.body);      
+    var in_data = {    INDEX: "analysis", TYPE: "anomaly", ID: new Date().getTime(),
     BODY : req.body
     //AMPARE : d.a_pattern, POWER : d.p_pattern, APOWER : d.ap_pattern, POWERF : d.pf_patter
      };  
      queryProvider.insertQueryByID("analysis", "insertAnomaly", in_data, function(err, out_data) {        
           console.log(out_data);
           if(out_data.result == "created"){
-            console.log(out_data);
+            console.log(out_data);  
             var rtnCode = CONSTS.getErrData("D001");                   
           }
         if (err) { console.log(err) };                     

@@ -846,7 +846,7 @@
   <query id='insertAnomaly'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : #TYOE#,        
+        "type" : #TYPE#,        
         "id" : #ID#,
         "body" : #BODY#
     }
