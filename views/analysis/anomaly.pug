@@ -4,16 +4,10 @@ block style
   link(rel='stylesheet', href='/stylesheets/style.css')
   link(rel='stylesheet', href='/scripts/d3_timeseries.css')
   link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')
-  style.
-    #Chart { font: 12px Arial;}
+  style.    
     path { 
-        stroke: steelblue;
         stroke-width: 2;
         fill: none;
-    }
-    #real {
-      width: 960px;
-      height: 480px;
     }
     .line {
       fill: none;      
@@ -28,25 +22,6 @@ block style
         stroke-width: 1;
         shape-rendering: crispEdges;
     }     
-    .graph .axis {
-        stroke-width: 1;
-    }
-    .graph .axis .tick line {
-        stroke: black;
-    }
-    .graph .axis .tick text {
-        fill: black;
-        font-size: 0.7em;
-    }
-    .graph .axis .domain {
-        fill: none;
-        stroke: black;
-    }
-    .graph .group {
-        fill: none;
-        stroke: black;
-        stroke-width: 1.5;
-    }
 block script
   script(type='text/javascript', src='/assets/leaflet/d3.js')
   script(src='/assets/annie/js/vue.min.js')
@@ -67,14 +42,26 @@ block content
             a(href='/dashboard') Home
           li
             a(href='#') Analysis
-          li.active Anomaly      .col-md-12
+          li.active Anomaly      
+      .row
+        .col-md-12
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
                 span.caption-subject.bold.uppercase Anomaly Chart
                 span.caption-helper  by Factor                
             .portlet-body
-              .chart(style='height:570px;')                
+              .chart(style='height:510px;')
+                #real
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Anomaly Chart
+                span.caption-helper  by Factor                
+            .portlet-body
+              .chart(style='height:510px;')                
                 #Chart
       .row
         .col-md-12
@@ -87,24 +74,4 @@ block content
               .chart
                 input#daDate(type='hidden', name='hidden', value='')
                 .graph
-      .row
-        .col-md-12
-          .portlet.light.bordered
-            .portlet-title
-              .caption.font-dark
-                span.caption-subject.bold.uppercase Anomaly Chart
-                span.caption-helper  by Factor                
-            .portlet-body
-              .chart
-                input#daDate(type='hidden', name='hidden', value='')
-                #graph
-      .row
-        .col-md-12
-          .portlet.light.bordered
-            .portlet-title
-              .caption.font-dark
-                span.caption-subject.bold.uppercase Anomaly Chart
-                span.caption-helper  by Factor                
-            .portlet-body
-              .chart                
-                #real
+
