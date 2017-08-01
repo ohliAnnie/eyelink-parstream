@@ -42,20 +42,29 @@ router.get('/anomaly', function(req, res, next) {
   res.render('./analysis/anomaly', { title: global.config.productname, mainmenu:mainmenu});
 });
 
-// mem 신규 등록
-router.post('/restapi/insertAnomaly', function(req, res) {  
-  req.body.anomaly_patter.forEach(function(d) {
-    var in_data = {    INDEX: "Analysis", TYPE: "anomaly", ID: new Date().getTime()    
+
+router.get('/postTest', function(req, res, next) {
+  console.log(_rawDataByDay);
+  res.render('./analysis/postTest', { title: global.config.productname, mainmenu:mainmenu});
+});
+
+router.post('/restapi/insertAnomal', function(req, res, next) {  
+  console.log('/analysis/restapi/insertAnomal');
+  console.log(req.params.id);
+  console.log(req.body);  
+    
+    var in_data = {    INDEX: "Analysis", TYPE: "anomaly", ID: new Date().getTime(),
+    BODY : req.body
+    //AMPARE : d.a_pattern, POWER : d.p_pattern, APOWER : d.ap_pattern, POWERF : d.pf_patter
      };  
-     queryProvider.insertQueryByID("user", "insertAnomaly", in_data, function(err, out_data) {        
+     queryProvider.insertQueryByID("analysis", "insertAnomaly", in_data, function(err, out_data) {        
           console.log(out_data);
           if(out_data.result == "created"){
             console.log(out_data);
             var rtnCode = CONSTS.getErrData("D001");                   
           }
         if (err) { console.log(err) };                     
-        res.json({rtnCode: rtnCode});
-    });  
+        res.json({rtnCode: rtnCode});    
   });
 });
 

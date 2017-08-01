@@ -848,9 +848,7 @@
         "index" : #INDEX#,
         "type" : #TYOE#,        
         "id" : #ID#,
-        "body" : {
-                
-        }
+        "body" : #BODY#
     }
   ]]></query>
   <query id='selectDaClusterMasterAll'><![CDATA[
