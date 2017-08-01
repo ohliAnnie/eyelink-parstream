@@ -42,28 +42,23 @@ router.get('/anomaly', function(req, res, next) {
   res.render('./analysis/anomaly', { title: global.config.productname, mainmenu:mainmenu});
 });
 
-
-/*router.get('/clustering', function(req, res, next) {
-   var in_data = {};
-  queryProvider.selectSingleQueryByID("analysis", "selectDaClusterMasterAll", in_data, function(err, out_data, params) {
-    // console.log(out_data);
-    var rtnCode = CONSTS.getErrData('0000');
-    if (out_data[0] === null) {
-      rtnCode = CONSTS.getErrData('0001');
-    }
-    console.log(out_data[0]);
-    var master = out_data[0];
-    queryProvider.selectSingleQueryByID("analysis", "selectDaClusterDetailAll", in_data, function(err, out_data, params) {
-      var rtnCode = CONSTS.getErrData('0000');
-      if (out_data[0] === null) {
-        rtnCode = CONSTS.getErrData('0001');
-      }
-      console.log(out_data[0]);
-      var detail = out_data[0];
-      res.render('./analysis/clustering', { title: 'EyeLink for ParStream', mainmenu:mainmenu, master:master, detail:detail});
-    });
+// mem 신규 등록
+router.post('/restapi/insertAnomaly', function(req, res) {  
+  req.body.anomaly_patter.forEach(function(d) {
+    var in_data = {    INDEX: "Analysis", TYPE: "anomaly", ID: new Date().getTime()    
+     };  
+     queryProvider.insertQueryByID("user", "insertAnomaly", in_data, function(err, out_data) {        
+          console.log(out_data);
+          if(out_data.result == "created"){
+            console.log(out_data);
+            var rtnCode = CONSTS.getErrData("D001");                   
+          }
+        if (err) { console.log(err) };                     
+        res.json({rtnCode: rtnCode});
+    });  
   });
-});*/
+});
+
 
 // query RawData
 router.get('/restapi/getDaClusterDetail', function(req, res, next) {
