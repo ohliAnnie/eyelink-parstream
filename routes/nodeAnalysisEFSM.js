@@ -49,10 +49,11 @@ router.get('/postTest', function(req, res, next) {
 });
 
 router.post('/restapi/insertAnomal', function(req, res, next) {  
-  console.log('/analysis/restapi/insertAnomal');  
-  console.log(req.body);      
+  console.log('/analysis/restapi/insertAnomal');    
+  console.log(JSON.stringify(req.body));
+
     var in_data = {    INDEX: "analysis", TYPE: "anomaly", ID: new Date().getTime(),
-    BODY : req.body
+    BODY : JSON.stringify(req.body)
     //AMPARE : d.a_pattern, POWER : d.p_pattern, APOWER : d.ap_pattern, POWERF : d.pf_patter
      };  
      queryProvider.insertQueryByID("analysis", "insertAnomaly", in_data, function(err, out_data) {        
