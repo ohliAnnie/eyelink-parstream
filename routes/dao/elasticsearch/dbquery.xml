@@ -843,6 +843,16 @@
   ]]></query>  
 </sample>
 <analysis>
+  <query id='insertAnomaly'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : #TYOE#,        
+        "id" : #ID#,
+        "body" : {
+                
+        }
+    }
+  ]]></query>
   <query id='selectDaClusterMasterAll'><![CDATA[
        {
         "index" : "corecode-2017-05",
