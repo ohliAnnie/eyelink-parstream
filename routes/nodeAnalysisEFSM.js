@@ -47,8 +47,8 @@ router.get('/postTest', function(req, res, next) {
   res.render('./analysis/postTest', { title: global.config.productname, mainmenu:mainmenu});
 });
 
-router.post('/restapi/insertAnomal', function(req, res, next) {  
-  console.log('/analysis/restapi/insertAnomal');    
+router.post('/restapi/insertAnomaly', function(req, res, next) {  
+  console.log('/analysis/restapi/insertAnomaly');    
   console.log(JSON.stringify(req.body));
     var in_data = {    INDEX: "analysis", TYPE: "anomaly", ID: new Date().getTime(),
     BODY : JSON.stringify(req.body)
@@ -65,10 +65,30 @@ router.post('/restapi/insertAnomal', function(req, res, next) {
   });
 });
 
+router.post('/restapi/updateAnomaly', function(req, res, next) {  
+  console.log('/analysis/restapi/updateAnomaly');    
+  console.log(JSON.stringify(req.body));
+  var in_data = {  INDEX: "analysis", TYPE: "anomaly", ID: "update" };  
+  queryProvider.deleteQueryByID("analysis", "deleteById", in_data, function(err, out_data) {
+    if(out_data.result == "deleted"){
+      var rtnCode = CONSTS.getErrData("D003");
+      var in_data = {    INDEX: "analysis", TYPE: "anomaly", ID: "update",  BODY : JSON.stringify(req.body)     };  
+     queryProvider.insertQueryByID("analysis", "insertAnomaly", in_data, function(err, out_data) {                  
+        if(out_data.result == "created"){          
+        var rtnCode = CONSTS.getErrData("D001");                   
+        }
+        if (err) { console.log(err) };                     
+        res.json({rtnCode: rtnCode});    
+      });
+    }
+    res.json({rtnCode: rtnCode});
+  });  
+});
+
 // query RawData
 router.get('/restapi/getAnomaly', function(req, res, next) {
   console.log(req.query);
-  var in_data = {  INDEX: "analysis", TYPE: "anomaly" }
+  var in_data = {  INDEX: "analysis", TYPE: "anomaly" , ID: "update"}
   queryProvider.selectSingleQueryByID2("analysis", "selectAnomalyById", in_data, function(err, out_data, params) {
     console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
