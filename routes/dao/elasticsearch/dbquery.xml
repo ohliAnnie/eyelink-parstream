@@ -854,11 +854,10 @@
   <query id='selectAnomalyById'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : #TYPE#,       
-        "id" : #ID#,
+        "type" : #TYPE#,               
         "body" : {
           "query" : {
-            "match_all" : {}
+            "term" : {   "_id" : #ID#     }
           }
         }
     }

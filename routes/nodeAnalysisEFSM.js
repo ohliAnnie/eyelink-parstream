@@ -50,10 +50,11 @@ router.get('/postTest', function(req, res, next) {
 router.post('/restapi/insertAnomaly', function(req, res, next) {  
   console.log('/analysis/restapi/insertAnomaly');    
   console.log(JSON.stringify(req.body));
-    var in_data = {    INDEX: "analysis", TYPE: "anomaly", ID: new Date().getTime(),
-    BODY : JSON.stringify(req.body)
-    //AMPARE : d.a_pattern, POWER : d.p_pattern, APOWER : d.ap_pattern, POWERF : d.pf_patter
-     };  
+   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
+   var day = new Date().toString().split(' ');    
+   var id = day[3]+mon[day[1]]+day[2];   
+   var id = "update";
+    var in_data = {    INDEX: "analysis", TYPE: "anomaly", ID: id,   BODY : JSON.stringify(req.body)   };  
      queryProvider.insertQueryByID("analysis", "insertAnomaly", in_data, function(err, out_data) {        
           console.log(out_data);
           if(out_data.result == "created"){
@@ -75,20 +76,21 @@ router.post('/restapi/updateAnomaly', function(req, res, next) {
       var in_data = {    INDEX: "analysis", TYPE: "anomaly", ID: "update",  BODY : JSON.stringify(req.body)     };  
      queryProvider.insertQueryByID("analysis", "insertAnomaly", in_data, function(err, out_data) {                  
         if(out_data.result == "created"){          
-        var rtnCode = CONSTS.getErrData("D001");                   
+          rtnCode = CONSTS.getErrData("D001");                   
         }
         if (err) { console.log(err) };                     
         res.json({rtnCode: rtnCode});    
       });
+     rtnCode = CONSTS.getErrData("D002");  
     }
     res.json({rtnCode: rtnCode});
   });  
 });
 
 // query RawData
-router.get('/restapi/getAnomaly', function(req, res, next) {
+router.get('/restapi/getAnomaly/:id', function(req, res, next) {
   console.log(req.query);
-  var in_data = {  INDEX: "analysis", TYPE: "anomaly" , ID: "update"}
+  var in_data = {  INDEX: "analysis", TYPE: "anomaly" , ID: req.params.id}
   queryProvider.selectSingleQueryByID2("analysis", "selectAnomalyById", in_data, function(err, out_data, params) {
     console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
