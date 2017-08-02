@@ -843,7 +843,7 @@
   ]]></query>  
 </sample>
 <analysis>
-  <query id='insertAnomaly'><![CDATA[
+  <query id='insertById'><![CDATA[
      {
         "index" : #INDEX#,
         "type" : #TYPE#,        
@@ -851,17 +851,24 @@
         "body" : #BODY#
     }
   ]]></query>
-  <query id='selectAnomalyById'><![CDATA[
+  <query id='selectById'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : #TYPE#,                
+        "type" : #TYPE#,               
         "body" : {
           "query" : {
-            "match_all" : {}
+            "term" : {   "_id" : #ID#     }
           }
         }
     }
   ]]></query>
+  <query id='deleteById'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : #TYPE#,        
+        "id" : #ID#
+      }
+     ]]></query>
   <query id='selectDaClusterMasterAll'><![CDATA[
        {
         "index" : "corecode-2017-05",

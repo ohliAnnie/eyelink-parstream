@@ -47,14 +47,19 @@ router.get('/postTest', function(req, res, next) {
   res.render('./analysis/postTest', { title: global.config.productname, mainmenu:mainmenu});
 });
 
-router.post('/restapi/insertAnomal', function(req, res, next) {  
-  console.log('/analysis/restapi/insertAnomal');    
+router.post('/restapi/insertAnomaly/:id', function(req, res, next) {  
+  console.log('/analysis/restapi/insertAnomaly');    
   console.log(JSON.stringify(req.body));
-    var in_data = {    INDEX: "analysis", TYPE: "anomaly", ID: new Date().getTime(),
-    BODY : JSON.stringify(req.body)
-    //AMPARE : d.a_pattern, POWER : d.p_pattern, APOWER : d.ap_pattern, POWERF : d.pf_patter
-     };  
-     queryProvider.insertQueryByID("analysis", "insertAnomaly", in_data, function(err, out_data) {        
+   var id = req.params.id;
+   var in_data = {    INDEX: "analysis", TYPE: "anomaly", ID: id   };  
+   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {        
+    if (out_data[0] != null){
+      var rtnCode = CONSTS.getErrData('E005');
+      console.log(rtnCode);
+      res.json({rtnCode: rtnCode});
+    }  else  {
+      var in_data = {    INDEX: "analysis", TYPE: "anomaly", ID: id,   BODY : JSON.stringify(req.body)   };  
+     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {        
           console.log(out_data);
           if(out_data.result == "created"){
             console.log(out_data);  
@@ -62,14 +67,48 @@ router.post('/restapi/insertAnomal', function(req, res, next) {
           }
         if (err) { console.log(err) };                     
         res.json({rtnCode: rtnCode});    
+      });
+    }
   });
 });
 
+router.post('/restapi/updateAnomaly/:id', function(req, res, next) {  
+  console.log('/analysis/restapi/updateAnomaly');    
+  console.log(JSON.stringify(req.body));
+  var in_data = {  INDEX: "analysis", TYPE: "anomaly", ID: req.params.id };  
+  queryProvider.deleteQueryByID("analysis", "deleteById", in_data, function(err, out_data) {
+    if(out_data.result == "deleted"){
+      var rtnCode = CONSTS.getErrData("D003");
+      var in_data = {    INDEX: "analysis", TYPE: "anomaly", ID: req.params.id,  BODY : JSON.stringify(req.body)     };  
+     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {                  
+        if(out_data.result == "created"){          
+          rtnCode = CONSTS.getErrData("D001");                   
+        }
+        if (err) { console.log(err) };                     
+        res.json({rtnCode: rtnCode});    
+      });
+     rtnCode = CONSTS.getErrData("D002");  
+    }
+    res.json({rtnCode: rtnCode});
+  });  
+});
+
+router.delete('/restapi/deleteAnomaly/:id', function(req, res, next) {  
+  console.log('/analysis/restapi/deleteAnomaly');      
+  var in_data = {  INDEX: "analysis", TYPE: "anomaly", ID: req.params.id };  
+  queryProvider.deleteQueryByID("analysis", "deleteById", in_data, function(err, out_data) {
+    if(out_data.result == "deleted"){
+      var rtnCode = CONSTS.getErrData("D003");    
+    }
+    res.json({rtnCode: rtnCode});
+  });  
+});
+
 // query RawData
-router.get('/restapi/getAnomaly', function(req, res, next) {
+router.get('/restapi/getAnomaly/:id', function(req, res, next) {
   console.log(req.query);
-  var in_data = {  INDEX: "analysis", TYPE: "anomaly" }
-  queryProvider.selectSingleQueryByID2("analysis", "selectAnomalyById", in_data, function(err, out_data, params) {
+  var in_data = {  INDEX: "analysis", TYPE: "anomaly" , ID: req.params.id}
+  queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data === null) {
