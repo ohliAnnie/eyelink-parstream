@@ -1,15 +1,16 @@
 function getData(){
-  d3.csv("../assets/demo1.csv", function(error, value) {
+  d3.csv("../assets/demo1.csv", function(error, getData) {
       var day = new Date().getTime();     
       var clust = [], data = [];     
       var date = day-109*60*1000;     
       var cnt = 0, cntC = 0;
-      value.forEach(function(d) {
+      console.log(getData);
+      getData.forEach(function(d) {
         cnt++;
         if(cnt> 60){
            clust.push({ "x": cntC++, "value" : Math.floor(d.close/3) })
         }
-        if(cnt <111){
+        if(cnt <110){
           data.push({"date" : date, "value" : Math.floor(d.close/3)});             
         }
        date += 60*1000;
@@ -86,7 +87,7 @@ function drawChart(data, clust, now){
    now = new Date().getTime();
    //console.log(now);
    data.push({ "date":now, "close" : 20 + Math.random() * 100});
-    x.domain([now-110*60*1000, now+10*60*1000]);
+    x.domain([now-109*60*1000, now+10*60*1000]);
 
   
       // Slide x-axis left
@@ -111,7 +112,7 @@ function drawChart(data, clust, now){
 
 function drawLive(data){
     var limit = 60 * 1,
-            duration = 60*1000,
+            duration = 1*1000,
             now = new Date(Date.now() - duration)
 
         var width = 500,
@@ -232,13 +233,13 @@ function drawLive(data){
  function drawLiveChart(data, clust, now){
     var limit = 60* 1,
     duration = 1000;   
-    var margin = {top: 10, right: 50, bottom: 30, left: 50},
-  width = window.innerWidth*0.85 - margin.left - margin.right,
+ var margin = {top: 10, right: 50, bottom: 30, left: 50},
+  width = window.innerWidth*0.88 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;
   var start = now-110*60*1000;
   console.log(data);
   console.log(clust);
-  var value = data[108].value;
+  var value = clust[50].value;
     var groups = {
       output: {
         value: value,
@@ -250,7 +251,7 @@ function drawLive(data){
     }
 
     var x = d3.time.scale()
-     .domain([now-110*60*1000, now+10*60*1000])
+     .domain([now-109*60*1000, now+10*60*1000])
     .range([0, width])
 
     var y = d3.scale.linear()
@@ -329,7 +330,7 @@ var yaxis = svg.append('g')
         group.data.push(value)
         group.path.attr('d', line)
       }
-    x.domain([now-110*60*1000, now+10*60*1000]);
+    x.domain([now-109*60*1000, now+10*60*1000]);
     // Slide paths left
       paths.attr('transform', null)
       .transition()
