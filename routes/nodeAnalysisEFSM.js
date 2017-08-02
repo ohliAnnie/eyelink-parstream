@@ -42,7 +42,6 @@ router.get('/anomaly', function(req, res, next) {
   res.render('./analysis/anomaly', { title: global.config.productname, mainmenu:mainmenu});
 });
 
-
 router.get('/postTest', function(req, res, next) {
   console.log(_rawDataByDay);
   res.render('./analysis/postTest', { title: global.config.productname, mainmenu:mainmenu});
@@ -51,7 +50,6 @@ router.get('/postTest', function(req, res, next) {
 router.post('/restapi/insertAnomal', function(req, res, next) {  
   console.log('/analysis/restapi/insertAnomal');    
   console.log(JSON.stringify(req.body));
-
     var in_data = {    INDEX: "analysis", TYPE: "anomaly", ID: new Date().getTime(),
     BODY : JSON.stringify(req.body)
     //AMPARE : d.a_pattern, POWER : d.p_pattern, APOWER : d.ap_pattern, POWERF : d.pf_patter
@@ -66,6 +64,22 @@ router.post('/restapi/insertAnomal', function(req, res, next) {
         res.json({rtnCode: rtnCode});    
   });
 });
+
+// query RawData
+router.get('/restapi/getAnomaly', function(req, res, next) {
+  console.log(req.query);
+  var in_data = {  INDEX: "analysis", TYPE: "anomaly" }
+  queryProvider.selectSingleQueryByID2("analysis", "selectAnomalyById", in_data, function(err, out_data, params) {
+    console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data === null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    console.log('analysis/restapi/getDaClusterDetail -> length : %s', out_data.length);
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]._source});
+  });
+});
+
 
 
 // query RawData
