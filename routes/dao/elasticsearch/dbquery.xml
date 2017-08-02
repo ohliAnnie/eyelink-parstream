@@ -843,7 +843,7 @@
   ]]></query>  
 </sample>
 <analysis>
-  <query id='insertAnomaly'><![CDATA[
+  <query id='insertById'><![CDATA[
      {
         "index" : #INDEX#,
         "type" : #TYPE#,        
@@ -851,7 +851,7 @@
         "body" : #BODY#
     }
   ]]></query>
-  <query id='selectAnomalyById'><![CDATA[
+  <query id='selectById'><![CDATA[
      {
         "index" : #INDEX#,
         "type" : #TYPE#,               
