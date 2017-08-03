@@ -1,3 +1,4 @@
+
 $(function(){ // on dom ready  
   getDash(new Date);
   var elesJson = {
@@ -160,6 +161,7 @@ function getDash(day) {
 
 var cnt = 0;
 function drawDash(data, start, end) {  
+  var indexs = $('#indexs').val();
   if(Modernizr.canvas){
     doBigScatterChart(start, end);
   }
@@ -366,17 +368,21 @@ chart
 }
 
 function displayCount() {    
+  var indexs = $('#indexs').val();
+  console.log(indexs);
   var mon = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];  
   var day = new Date();
+  var d = day.toString().split(' ');
+  console.log(d);
   var pday = day.getTime() - 24*60*60*1000;
-  pday = new Date(pday);    
+  pday = new Date(pday);      
     $.ajax({
     url: "/dashboard/restapi/countAccJira",
     dataType: "json",
     type: "GET",    
-    data: { index: indexs+day.getFullYear()+"."+mon[day.getMonth()]+"."+day.getDate()},
+    data: { index: indexs+day.getFullYear()+"."+mon[day.getMonth()]+"."+d[2]},
     success: function(result) {
-      // console.log(result);
+      console.log(result);
       if (result.rtnCode.code == "0000") {
         //- $("#successmsg").html(result.message);        
          $('#dayCnt').text(result.rtnData);               
@@ -416,7 +422,7 @@ function displayCount() {
     url: "/dashboard/restapi/countAccJiraError",
     dataType: "json",
     type: "GET",    
-    data: { index: indexs+day.getFullYear()+"."+mon[day.getMonth()]+"."+day.getDate()},
+    data: { index: indexs+day.getFullYear()+"."+mon[day.getMonth()]+"."+d[2]},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
@@ -448,15 +454,18 @@ function repVal(str) {
 }
 
 function pdayCnt(day, mon){
+ var indexs = $('#indexs').val();
+ var d = day.toString().split(' ');
+
    $.ajax({
     url: "/dashboard/restapi/countAccJira",
     dataType: "json",
     type: "GET",    
-    data: { index: indexs+day.getFullYear()+"."+mon[day.getMonth()]+"."+day.getDate()},
+    data: { index: indexs+day.getFullYear()+"."+mon[day.getMonth()]+"."+d[2]},
     success: function(result) {
-      // console.log(result);
+       console.log(result);
       if (result.rtnCode.code == "0000") {
-        //- $("#successmsg").html(result.message);
+        //- $("#successmsg").html(result.message);        /
         setStatus($('#dayCnt_status'), parseInt($('#dayCnt').text())/result.rtnData*100, 'day', result.rtnData);       
 
       } else {
@@ -471,6 +480,7 @@ function pdayCnt(day, mon){
 }
 
 function pmonCnt(day, mon){
+  var indexs = $('#indexs').val();
    if(day.getMonth() == 0) {
     var index = indexs+(day.getFullYear()-1)+"."+mon[11]+".*";
   } else {
@@ -498,11 +508,13 @@ function pmonCnt(day, mon){
 }
 
 function perrCnt(day, mon){
+  var indexs = $('#indexs').val();
+  var d = day.toString().split(' ');
    $.ajax({
     url: "/dashboard/restapi/countAccJiraError",
     dataType: "json",
     type: "GET",    
-    data: { index: indexs+day.getFullYear()+"."+mon[day.getMonth()]+"."+day.getDate()},
+    data: { index: indexs+day.getFullYear()+"."+mon[day.getMonth()]+"."+d[2]},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
