@@ -195,8 +195,8 @@ router.get('/restapi/getDaClusterMasterAll', function(req, res, next) {
 // query RawData
 router.get('/restapi/getClusterNodePower', function(req, res, next) { 
   var in_data = {
-      START_TIMESTAMP: req.query.startDate + 'T00:00:00.000Z',
-      END_TIMESTAMP: req.query.endDate + 'T23:59:59.000Z',
+      START_TIMESTAMP: req.query.startDate,
+      END_TIMESTAMP: req.query.endDate,
       NODE: req.query.nodeId.split(',')      };
       /*    var start = "2016-12-29T16:15:41.000Z";
     var end = "2016-12-30T16:15:41.000Z";
