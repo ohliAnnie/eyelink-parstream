@@ -353,7 +353,7 @@
         "index" : [##index##],  
         "type"  : "metricsets",
         "body" : { 
-          "size" : 100000,
+          "size" : 10000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["system.process.cpu.total.pct", "system.process.memory.rss.pct", "timestamp"], 
           "query": {   
@@ -373,7 +373,7 @@
         "index" : [##index##],  
         "type"  : "metricsets",
         "body" : { 
-          "size" : 100000,
+          "size" : 10000,
           "_source": ["system.process.name", "system.process.cpu.total.pct", "timestamp"],
           "sort" : [{ "timestamp" : { "order" : "asc" }},
           {"system.process.cpu.total.pct": "desc"}
@@ -399,7 +399,7 @@
         "index" : [##index##],  
         "type"  : "metricsets",
         "body" : { 
-          "size" : 100000,
+          "size" : 10000,
           "sort" : { "timestamp" : { "order" : "asc" }},
           "_source": ["system.cpu.user.pct", "system.cpu.system.pct", "system.cpu.idle.pct", "system.memory.used.pct", "system.memory.actual.used.pct", "system.memory.swap.used.pct", "timestamp", "metricset.name"], 
           "query": {

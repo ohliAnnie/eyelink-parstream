@@ -42,8 +42,7 @@ function drawProcessChart() {
   var sdate = $('#sdate').val();  
   var s = sdate.split('-')
   var sindex =new Date(new Date(s[0], parseInt(s[1])-1, s[2]).getTime()-24*60*60*1000);
-  var edate = $('#edate').val();
-  console.log(sdate, edate);
+  var edate = $('#edate').val();  
   var index = [], cnt = 0;
   var e = edate.split('-');
   for(i=sindex.getTime(); i < new Date(e[0], parseInt(e[1])-1, e[2]).getTime()+24*60*60*1000; i+=24*60*60*1000){       
@@ -241,6 +240,7 @@ function drawAccTimeseries(out_data) {
 }
 
 function drawProcessTimeseries(out_data){
+  console.log(out_data);
   var data = [];
   out_data.forEach(function(d) {      
       data.push({ timestamp : new Date(d._source.timestamp), cpu_total : d._source.system.process.cpu.total.pct, memory_rss : d._source.system.process.memory.rss.pct } );
