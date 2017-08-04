@@ -87,6 +87,7 @@ html
         $('#menuanalysis').addClass( '#{mainmenu.analysis}');
         $('#menumanagement').addClass( '#{mainmenu.management}');
         $('#menusettings').addClass( '#{mainmenu.settings}');
+        $('#menusample').addClass( '#{mainmenu.sample}');
 
         $('#btn_logout').click(function() {
           location.href = "/logout";
@@ -243,7 +244,7 @@ html
                     li
                       a(href='/dashboard/') Dashboard
                     li
-                      a(href='/dashboard/livedata') Live Data
+                      a(href='/dashboardes/trenddata') Trend Data(ES)
                     li
                       a(href='#') Requested task
                 li#menutimeseries.dropdown.dropdown-fw
@@ -259,16 +260,22 @@ html
                     li.active
                       a(href='/reports/all') OverView
                     li
-                      a(href='/reports/power') Power
+                      a(href='/reports/Res_Req') Res_Req
                     li
-                      a(href='/reports/fault') Fault
+                      a(href='/reports/process') process
                     li
-                      a(href='/reports/d3') d3
+                      a(href='/reports/cpu_memory') Cpu/Memory
                     li
-                      a(href='/reports/live') Live
+                      a(href='/reports/error') Error
+                    //- li
+                    //-   a(href='/reports/d3') d3
+                    //- li
+                    //-   a(href='/reports/live') Live
                 li#menuanalysis.dropdown.dropdown-fw
                   a(href='javascript:;') Analysis
                   ul.dropdown-menu.dropdown-menu-fw
+                    li.active
+                      a(href='/analysis/anomaly') Anomaly
                     li.active
                       a(href='/analysis/clustering') Clustering
                     li
@@ -276,6 +283,8 @@ html
                 li#menumanagement.dropdown.dropdown-fw
                   a(href='javascript:;') Management
                   ul.dropdown-menu.dropdown-menu-fw
+                    li.active
+                      a(href='/management/role') Role
                     li.active
                       a(href='/management/users') Users
                 li#menusettings.dropdown.dropdown-fw
@@ -285,4 +294,29 @@ html
                       a(href='#') Preferences
                     li
                       a(href='#') Configuration
+                li#menusample.dropdown.dropdown-fw
+                  a(href='javascript:;') Sample
+                  ul.dropdown-menu.dropdown-menu-fw
+                    li
+                      a(href='/sample/samplePage') samplePage
+                    li
+                      a(href='/sample/sampleES') sample_ES
+                    li
+                      a(href='/sample/serverMap') serverMap
+                    li
+                      a(href='/sample/serverMap1') serverMap1
+                    li
+                      a(href='/sample/serverMap2') serverMap2              
+                    li                      
+                      a(href='/sample/scatterTest01') scatterTest01
+                    li                      
+                      a(href='/sample/summary') summary
+                    li
+                      a(href='/sample/sankey') sankey                      
+                    li
+                      a(href='/sample/sankey01') sankey1
+                    li
+                      a(href='/sample/sankey02') sankey2
+                    li
+                      a(href='/sample/sankey03') sankey3
       block content

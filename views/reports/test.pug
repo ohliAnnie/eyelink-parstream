@@ -1,111 +1,72 @@
-extends ../layout-reports
-block style  
-  link(rel='stylesheet', type='text/css', href='/assets/annie/css/bootstrap.min.css')
-  link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')
-block scripts
-  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
-  script(src='/assets/annie/js/vue.min.js')
-  script(src='/scripts/integrateIndex.js')      
-block content
-  body
-  main.layout-contents.padding
-    div.layout-contents-inner
-      section
-        header.page-title
-          h1.title Reports
-          p.count Total
-            mark.report 836
-        fieldset.search-container
-          legend search
-            div.right-content-view
-              label(for='') List view
-                select.select(name='', id='')
-                  option(value='') 15
-            div.left-content-view
-              span.datepicker
-                input(type='text', name='daterange', id='', value='')
-                select.select(name='', id='')
-                  option(value='') Zone ID
-                select.select(name='', id='')
-                  option(value='') Node ID
-                select.select(name='', id='')
-                  option(value='') ALL
-              button.btn-submit.search(type='submit') SEARCH
-        script.
-          $(document).ready(function() {            
-            var start = moment().subtract(29, 'days');
-            var end = moment();
-            $('input[name="daterange"]')
-              .daterangepicker(
-              {
-                "autoApply" : true,
-                startDate : start,
-                endDate : end,
-                locale : {
-                  format : 'YYYY-MM-DD'
-                }
-              },
-              function(start, end, label) {
-                console.log("New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')");
-              });
-          }); 
-        div.map-container(style='width:98%;height:440px;')
-          div.inner
-            #table
-              .panel.panel-card
-                .panel-title
-                  h5.no-margin.m-b Click Line Show Chart
-                .panel-body
-                  .panel-checkbox-xs.visible-xs-block.visible-sm-block                
-                    input#ampere.click_checkbox(type='checkbox', name='ampere', value='1', v-on='click:checkOpt', checked='true')
-                    text  ampere
-                    |  
-                    input#voltage.click_checkbox(type='checkbox', name='voltage', value='2', v-on='click:checkOpt', checked='true')
-                    text  voltage
-                    |  
-                    input#active_power.click_checkbox(type='checkbox', name='active_power', value='3', v-on='click:checkOpt')
-                    text  active_power
-                    |  
-                    input#apparent_power.click_checkbox(type='checkbox', name='apparent_power', value='4', v-on='click:checkOpt', checked='true')
-                    text  apparent_power
-                    |  
-                    input#reactive_power.click_checkbox(type='checkbox', name='reactive_power', value='5', v-on='click:checkOpt')
-                    text  reactive_power
-                    |  
-                    input#power_factor.click_checkbox(type='checkbox', name='power_factor', value='6', v-on='click:checkOpt')
-                    text  power_factor
-                  .col-xm-12.col-sm-12.col-md-10.col-xs-12
-                    #LINE(style='width:98%;height:350px;')
-        ul.list-reports
-          li
-            div.chart
-              #table    
-                .panel.panel-card                             
-                  .panel-title
-                    h5(style='color:black;').no-margin.m-b Area Chart
-                  .panel-body
-                    #Area(style='height:280px;background-color:#232b32;')
-          li
-            div.chart
-              #table                      
-                .panel.panel-card
-                  .panel-title
-                    h5(style='color:black;').no-margin.m-b Dual Area Chart
-                  .panel-body
-                    #DualArea(style='height:280px;background-color:#232b32;')
-          li
-            div.chart
-              #table                      
-                .panel.panel-card                
-                  .panel-title
-                    h5(style='color:black;').no-margin.m-b Line Area Chart
-                  .panel-body
-                    #LineArea(style='height:280px;background-color:#232b32;')
-          li
-            div.chart
-              #table                      
-                .panel.panel-card
-                  .panel-title
-                    h5(style='color:black;').no-margin.m-b Line Bar Chart
-                  .panel-body
-                    #LineBar(style='height:280px;background-color:#232b32;')      
+doctype transitional
+head
+  title DC.js + Leaflet
+  meta(itemprop='name', content='DC.js + Leaflet')
+  meta(itemprop='description', content='DC.js + Leaflet chart')
+  meta(charset='UTF-8')
+  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
+  link(type='text/css', href='/assets/leaflet/css/MarkerCluster.Default.css', rel='stylesheet')
+  link(type='text/css', href='/assets/leaflet/css/MarkerCluster.css', rel='stylesheet')
+  link(rel='stylesheet', href='/assets/leaflet/dc.css')
+  link(type='text/css', href='/assets/leaflet/css/leaflet-legend.css', rel='stylesheet')
+  style.
+    #holder {
+    width:850px;
+    margin:20px auto;
+    }
+    #holder>div {
+    padding:30px 0;
+    clear:both;
+    }
+    .map {
+    width:600px;
+    height:400px;
+    }
+    .pie {
+    margin-left:30px;
+    }
+    #octocat {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    }
+    /*map legend styling*/
+    /*--*/
+#holder
+  #demo1
+    h2 Markers with clustering, popups and single selection
+    i Renewable energy plants in Bulgaria in 2012
+    .map
+    .pie  
+script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+script(type='text/javascript', src='/assets/annie/js/dc.js')
+script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+script(type='text/javascript', src='/assets/leaflet/leaflet.js')
+// Optional
+script(type='text/javascript', src='/assets/leaflet/leaflet.markercluster.js')  
+script(type='text/javascript', src='/assets/leaflet/dc.leaflet.js')
+script(type='text/javascript').
+  /*     Markers      */
+  d3.tsv("/assets/demo1.tsv", function(data) {    
+  drawMarkerSelect(data);  
+  console.log(data);
+  });
+  function drawMarkerSelect(data) {
+  var xf = crossfilter(data);
+  var groupname = "marker-select";
+  var facilities = xf.dimension(function(d) { return d.geo; });
+  var facilitiesGroup = facilities.group().reduceCount();
+  var marker = dc_leaflet.markerChart("#demo1 .map",groupname)
+  .dimension(facilities)
+  .group(facilitiesGroup)
+  .width(600)
+  .height(400)
+  .center([42.69,25.42])
+  .zoom(7)
+  .cluster(true);
+  
+  dc.renderAll(groupname);
+  return {marker: marker};
+  }
+  

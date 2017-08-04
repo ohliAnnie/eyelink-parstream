@@ -15,14 +15,17 @@ global.config = config;
 
 var intro = require('./routes/intro');
 var login = require('./routes/nodeLogin');
-var dashboard = require('./routes/nodeDashboard');
-var reports = require('./routes/nodeReports');
-var analysis = require('./routes/nodeAnalysis');
+var dashboard = require('./routes/nodeDashboard' + global.config.pcode);
+var reports = require('./routes/nodeReport' + global.config.pcode);
+var analysis = require('./routes/nodeAnalysis' + global.config.pcode);
 var initapps = require('./routes/initApp');
 var socketapps = require('./routes/socketApp');
 var node = require('./routes/nodeCon');
-var management = require('./routes/nodeManagement');
+var management = require('./routes/nodeManagement' + global.config.pcode);
+var sample = require('./routes/nodeSample');
 var simulator = require('./routes/nodeSimulator');
+// for ES Test
+var dashboardes = require('./routes/nodeDashboard' + global.config.pcode);
 
 var app = express();
 
@@ -53,7 +56,9 @@ app.use('/analysis', analysis);
 app.use('/intro', intro);
 app.use('/node', node);
 app.use('/management', management);
+app.use('/sample', sample);
 app.use('/simulator', simulator);
+app.use('/dashboardes', dashboardes);
 
 global._rawDataByDay = {};
 // dbquery.xml 파일 내용을 loading
