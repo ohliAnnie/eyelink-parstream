@@ -265,12 +265,12 @@ var yaxis = svg.append('g')
   .attr("class", "valueline")
    .attr('stroke', 'gray')
   .attr("d", valueline(data));
+
 var formatTime = d3.time.format("%I:%M:%S");
 // Define the div for the tooltip
 var div = d3.select("body").append("div") 
     .attr("class", "tooltip")       
     .style("opacity", 0);
-
 
     // Add the scatterplot
     svg.selectAll("dot1")  
@@ -315,7 +315,28 @@ var div = d3.select("body").append("div")
                 .duration(500)    
                 .style("opacity", 0); 
         });
-           // Add the scatterplot
+
+        var ddata = [];
+      var circle =svg.selectAll("dot3")
+        .data(ddata)
+        .enter().append('circle')
+        .attr("r", 5)   
+        .attr('opacity', 0.5)
+        .attr("cx", function(d) { console.log(d); return x(d.date); })     
+        .attr("cy", function(d) { return y(d.value); })   
+        .on("mouseover", function(d) {    
+            div.transition()    
+                .duration(200)    
+                .style("opacity", 1);    
+            div .html(formatTime(new Date(d.date)) + "<br/>"  + d.value)  
+                .style("left", (d3.event.pageX) + "px")   
+                .style("top", (d3.event.pageY - 28) + "px");  
+            })          
+        .on("mouseout", function(d) {   
+            div.transition()    
+                .duration(500)    
+                .style("opacity", 0); 
+        });
 
     var paths = svg.append('g');
 
@@ -326,9 +347,7 @@ var div = d3.select("body").append("div")
       .data([group.data])
       .attr('class', name + ' group')
       .style('stroke', group.color);
-      console.log(group);      
-
-}
+   }
 
     var cnt = 1, index = 49;
   function tick() {     
@@ -343,8 +362,8 @@ var div = d3.select("body").append("div")
         group.value = value
         group.data.push(value)
         group.path.attr('d', line)        
-      }
-      console.log(group);     
+      }      
+      ddata.push({ date:now, value:value});      
 
     x.domain([now-109*60*1000, now+10*60*1000]);
     // Slide paths left
@@ -352,8 +371,14 @@ var div = d3.select("body").append("div")
       .transition()
       .duration(duration)
       .ease('linear')
-   //   .attr('transform', 'translate(' + x(now - (limit) * duration) + ')')
+   //   .attr('transform', 'translate(' + x(now - (limit) * duration) + ')')   
       .each('end', tick)
+
+       circle.transition()
+                   .duration(duration)
+                   .ease("linear")
+                   .attr("transform", "translate("+x(d.date)+", " + y(d.value) + ")");
+
     }
   tick();
 }
