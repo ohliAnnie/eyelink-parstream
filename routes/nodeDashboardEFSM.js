@@ -24,6 +24,12 @@ router.get('/timeseries', function(req, res, next) {
   res.render('./dashboard/timeseries'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc });
 });
 
+router.get('/inspector', function(req, res, next) {
+  mainmenu.dashboard = ' open selected';  
+  res.render('./dashboard/inspector', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc });
+});
+
+
 router.get('/trenddata', function(req, res, next) {
   mainmenu.dashboard = ' open selected';
   mainmenu.timeseries = '';
