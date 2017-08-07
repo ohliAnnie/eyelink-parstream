@@ -374,11 +374,6 @@ var div = d3.select("body").append("div")
    //   .attr('transform', 'translate(' + x(now - (limit) * duration) + ')')   
       .each('end', tick)
 
-       circle.transition()
-                   .duration(duration)
-                   .ease("linear")
-                   .attr("transform", "translate("+x(d.date)+", " + y(d.value) + ")");
-
     }
   tick();
 }
