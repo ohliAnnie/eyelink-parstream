@@ -3,16 +3,16 @@ $(function(){ // on dom ready
   getDash(new Date);
   var elesJson = {
     nodes: [
-      { data: { id: 'n1', name : 'USER', img: '../assets/images/user1.png' } },
-      { data: { id: 'n2', name : 'USER', img: '../assets/images/user2.png' } },
-      { data: { id: 'n3', name : 'FRONT-WEB', img: '../assets/sample/tomcat0.png' } },
-      { data: { id: 'n4', name : 'BACKEND-WEB', img: '../assets/sample/tomcat3.png' } },
-      { data: { id: 'n5', name : 'BACKEND-API', img: '../assets/sample/tomcat1.png' } },
-      { data: { id: 'n6', name : 'MEMCACHED', img: '../assets/sample/memcached.png' } },
-      { data: { id: 'n7', name : 'XXX:YYY:ZZZ', img: '../assets/sample/cloud.png' } },
-      { data: { id: 'n8', name : 'URL\t2740\nURL:XXX\t1974\nURL:AAA\t1370\n765', img: '../assets/sample/cloud.png' } },      
-      { data: { id: 'n10', name : 'MySQL', img: '../assets/sample/mysql.png' } },
-      { data: { id: 'n11', name : 'ARCUS', img: '../assets/sample/arcus.png' } },      ],
+      { data: { id: 'n1', name : 'USER', img: '../assets/images/user1.png', parent : 'p1'} },
+      { data: { id: 'n2', name : 'USER', img: '../assets/images/user2.png', parent : 'p2'} },
+      { data: { id: 'n3', name : 'FRONT-WEB', img: '../assets/sample/tomcat0.png', error : 0} },
+      { data: { id: 'n4', name : 'BACKEND-WEB', img: '../assets/sample/tomcat3.png', error : 0} },
+      { data: { id: 'n5', name : 'BACKEND-API', img: '../assets/sample/tomcat1.png', error : 0} },
+      { data: { id: 'n6', name : 'MEMCACHED', img: '../assets/sample/memcached.png', error : 0} },
+      { data: { id: 'n7', name : 'XXX:YYY:ZZZ', img: '../assets/sample/cloud.png', error : 0} },
+      { data: { id: 'n8', name : 'URL\t2740\nURL:XXX\t1974\nURL:AAA\t1370\n765', img: '../assets/sample/cloud.png', error : 0} },
+      { data: { id: 'n10', name : 'MySQL', img: '../assets/sample/mysql.png' }},
+      { data: { id: 'n11', name : 'ARCUS', img: '../assets/sample/arcus.png', error : 0} }],
     edges: [
        { data: { count : 8459, source: 'n1', target: 'n3' } },
        { data: { count : 5922, source: 'n3', target: 'n6' } },
@@ -28,10 +28,11 @@ $(function(){ // on dom ready
        { data: { count : 2285, source: 'n4', target: 'n10' } },
        { data: { count : 2280, source: 'n4', target: 'n11' } },     
     ]  
-  };
+  };  
   var cy = cytoscape({
     container: document.getElementById('cy'),
-          
+
+      
      style: cytoscape.stylesheet()
       .selector('node')
         .css({
@@ -46,8 +47,11 @@ $(function(){ // on dom ready
           'text-outline-color': 'white',          
           'shape': 'rectangle',   
           'text-valign': 'bottom', 
-          'text-wrap' : 'wrap' ,
+          'text-wrap' : 'wrap' ,          
           'background-image': 'data(img)', })
+      .selector(':parent')
+        .css({
+          'background-opacity': 0.333 })
       .selector('edge')
         .css({
           'curve-style': 'bezier',
@@ -61,6 +65,20 @@ $(function(){ // on dom ready
           'opacity': 0.8,
           
         })
+      .selector(".background")
+        .css({
+          "text-background-opacity": 1,
+          "text-background-color": "red",
+          "text-background-shape":  "circle",
+          "text-border-color": "red",
+          "text-border-width": 2,
+          "text-border-opacity": 1,
+          "text-valign": "top",
+          "text-halign": "right",
+          "text-color" : "white"
+//          "text-outline-color": "red",
+ //         "text-outline-width": 3
+        })      
       .selector(':selected')
         .css({
           'background-color': 'black',
@@ -105,7 +123,58 @@ $(function(){ // on dom ready
       // giddy up
     }
   }); 
- 
+  console.log(elesJson);
+
+
+   cy.$('#n1').qtip({
+ content: {
+    prerender:true,
+    text : '3'
+  },
+  show: {
+            when: false, // Don't specify a show event
+            ready: true, // Show the tooltip when ready            
+        },
+  hide: {
+    event : false, // Don't specify a hide event
+  },
+  position: {
+    my: 'bottom left',
+    at: 'top center'
+  },
+  style: {
+    classes: 'my-qtip',
+    tip: {
+      width: 8,
+      height: 4    
+    }
+  }
+});
+    cy.$('#n2').qtip({
+ content: {
+    prerender:true,
+    text : '2'
+  },
+  show: {
+            when: false, // Don't specify a show event
+            ready: true, // Show the tooltip when ready            
+        },
+  hide: {
+    event : false, // Don't specify a hide event
+  },
+  position: {
+    my: 'bottom left',
+    at: 'top center'
+  },
+  style: {
+    classes: 'my-qtip',
+    tip: {
+      width: 8,
+      height: 4    
+    }
+  }
+});
+
 }); // on dom ready
 
 function getDash(day) {  

@@ -19,17 +19,11 @@ block script
       $('#edate').val(moment().format(dateFormat));
 
       // time series char를 그린다.
-      drawAccChart();
-      drawProcessChart();
-      drawTopChart();
-      drawTotalChart();
+      drawCountChart();      
 
       $('#btn_search').click(function() {
         d3.selectAll("svg").remove()
-        drawAccChart();
-        drawProcessChart();
-        drawTopChart();
-        drawTotalChart();
+        drawCountChart();        
       });
 
     });
@@ -65,7 +59,7 @@ block content
                 .form-body
                   .form-group.last
                     label.control-label.col-md-1 Date Range
-                    .col-md-4
+                    .col-md-5
                       .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
                         input#sdate.form-control(type='text', name='from' value='')
                         span.input-group-addon to
@@ -87,7 +81,7 @@ block content
                 a.fullscreen(href='javascript:;')
                 a.remove(href='javascript:;')
             .portlet-body
-              .chart#ts-chart01
+              .chart#ts-chart0
         .col-md-6
           .portlet.light.bordered
             .portlet-title
@@ -145,7 +139,7 @@ block content
                 a.fullscreen(href='javascript:;')
                 a.remove(href='javascript:;')
             .portlet-body
-              .chart#ts-chart03
+              .chart#ts-chart01
         .col-md-6
           .portlet.light.bordered
             .portlet-title
