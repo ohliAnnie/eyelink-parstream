@@ -533,6 +533,24 @@ router.get('/restapi/getTotalTimeseries', function(req, res, next) {
   });
 });
 
+router.get('/restapi/getRestimeCount', function(req, res, next) {
+  console.log('dashboard/restapi/getRestimeCount');    
+  var in_data = {
+    index : req.query.index,
+    gte : req.query.gte,
+    lte : req.query.lte
+  };
+  queryProvider.selectSingleQueryByID3("dashboard","getRestimeCount", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');    
+    console.log(out_data)  ;
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }    
+    res.json({rtnCode: rtnCode, rtnData: out_data.group_by_timestamp.buckets });
+  });
+});
+
+
 // ###########################################################
 
 
