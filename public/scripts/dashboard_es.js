@@ -3,16 +3,18 @@ $(function(){ // on dom ready
   getDash(new Date);
   var elesJson = {
     nodes: [
-      { data: { id: 'n1', name : 'USER', img: '../assets/images/user1.png', parent : 'p1'} },
-      { data: { id: 'n2', name : 'USER', img: '../assets/images/user2.png', parent : 'p2'} },
-      { data: { id: 'n3', name : 'FRONT-WEB', img: '../assets/sample/tomcat0.png', error : 0} },
-      { data: { id: 'n4', name : 'BACKEND-WEB', img: '../assets/sample/tomcat3.png', error : 0} },
-      { data: { id: 'n5', name : 'BACKEND-API', img: '../assets/sample/tomcat1.png', error : 0} },
-      { data: { id: 'n6', name : 'MEMCACHED', img: '../assets/sample/memcached.png', error : 0} },
-      { data: { id: 'n7', name : 'XXX:YYY:ZZZ', img: '../assets/sample/cloud.png', error : 0} },
-      { data: { id: 'n8', name : 'URL\t2740\nURL:XXX\t1974\nURL:AAA\t1370\n765', img: '../assets/sample/cloud.png', error : 0} },
-      { data: { id: 'n10', name : 'MySQL', img: '../assets/sample/mysql.png' }},
-      { data: { id: 'n11', name : 'ARCUS', img: '../assets/sample/arcus.png', error : 0} }],
+      { data: { id: 'p1', name : 4, img: '../assets/sample/back.png' } },
+      { data: { id: 'p2', name : 12, img: '../assets/sample/back.png' } },
+      { data: { id: 'n1', name : 'USER', img: '../assets/images/user1.png' } },
+      { data: { id: 'n2', name : 'USER', img: '../assets/images/user2.png' } },
+      { data: { id: 'n3', name : 'FRONT-WEB', img: '../assets/sample/tomcat0.png' } },
+      { data: { id: 'n4', name : 'BACKEND-WEB', img: '../assets/sample/tomcat3.png' } },
+      { data: { id: 'n5', name : 'BACKEND-API', img: '../assets/sample/tomcat1.png', parent : 'p2'} },
+      { data: { id: 'n6', name : 'MEMCACHED', img: '../assets/sample/memcached.png' } },
+      { data: { id: 'n7', name : 'XXX:YYY:ZZZ', img: '../assets/sample/cloud.png' } },
+      { data: { id: 'n8', name : 'URL\t2740\nURL:XXX\t1974\nURL:AAA\t1370\n765', img: '../assets/sample/cloud.png', parent : 'p1'} },
+      { data: { id: 'n10', name : 'MySQL', img: '../assets/sample/mysql.png' } },
+      { data: { id: 'n11', name : 'ARCUS', img: '../assets/sample/arcus.png' } }],
     edges: [
        { data: { count : 8459, source: 'n1', target: 'n3' } },
        { data: { count : 5922, source: 'n3', target: 'n6' } },
@@ -33,11 +35,14 @@ $(function(){ // on dom ready
     container: document.getElementById('cy'),
 
       
+  boxSelectionEnabled: false,
+  autounselectify: true,
+
      style: cytoscape.stylesheet()
       .selector('node')
         .css({
-          'width': '100px',
-          'height': '60px',
+          'width': '90px',
+          'height': '90px',
           'content': 'data(name)',
           'background-fit': 'cover',
            'border-color': '#000',
@@ -45,13 +50,29 @@ $(function(){ // on dom ready
           'border-opacity': 0.5,
           'text-outline-width': 2,
           'text-outline-color': 'white',          
-          'shape': 'rectangle',   
+          'shape': 'circle',   
           'text-valign': 'bottom', 
           'text-wrap' : 'wrap' ,          
-          'background-image': 'data(img)', })
+          'background-image': 'data(img)'
+          })
       .selector(':parent')
         .css({
           'background-opacity': 0.333 })
+      .selector('$node > node')
+        .css({
+          'padding-top': '0px',
+          'padding-left': '0px',
+          'padding-bottom': '0px',
+          'padding-right': '0px',
+           'border-color': 'white',
+          'text-valign': 'top',
+          'text-halign': 'right',
+          'text-outline-width': 10,
+          'text-outline-color': 'red',
+          'background-color': 'red',
+          "color" : "white",
+          "font-size" : '20px'
+        })
       .selector('edge')
         .css({
           'curve-style': 'bezier',
@@ -62,8 +83,7 @@ $(function(){ // on dom ready
           'text-outline-width': 5,
           'text-outline-color': 'white',
           'content': 'data(count)',
-          'opacity': 0.8,
-          
+          'opacity': 0.8,          
         })
       .selector(".background")
         .css({
@@ -110,6 +130,11 @@ $(function(){ // on dom ready
 
     elements: elesJson,
     
+/*  layout: {
+    name: 'preset',
+    padding: 5
+  },
+*/
     layout: {
       name: 'dagre',
       rankDir: 'LR',
@@ -117,7 +142,6 @@ $(function(){ // on dom ready
       edgeSep: 100,
       rankSep: 100,
     },
-
     ready: function(){
       window.cy = this;
       // giddy up
