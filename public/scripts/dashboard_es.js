@@ -34,10 +34,10 @@ $(function(){ // on dom ready
   var cy = cytoscape({
     container: document.getElementById('cy'),
 
-      
+/*      
   boxSelectionEnabled: false,
   autounselectify: true,
-
+*/
      style: cytoscape.stylesheet()
       .selector('node')
         .css({
