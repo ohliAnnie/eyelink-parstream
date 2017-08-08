@@ -4,6 +4,15 @@ block style
   link(type='text/css', rel='stylesheet', href='/assets/sample/style/bigscatterchart.css') 
   link(href='/assets/sample/style/dashboard_main.css', rel='stylesheet')
   link(rel='stylesheet', href='/assets/leaflet/dc.css')  
+  link(rel='stylesheet', href='/assets/sample/style/jquery.qtip.min.css')  
+  style.
+    .qtip.my-qtip{      
+      width : auto;
+      background-color: red;
+      text-align: center;
+      color : white;   
+      font-size : 13px;   
+   }
 block script
   script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
@@ -14,6 +23,8 @@ block script
   script(src='/assets/sample/js/cytoscape.min.js')  
   script(src='/assets/sample/js/dagre.min.js')
   script(src='/assets/sample/js/cytoscape-dagre.js')   
+  script(src='/assets/sample/js/cytoscape-qtip.js')   
+  script(src='/assets/sample/js/jquery.qtip.min.js')   
   script(type='text/javascript', src='/assets/sample/js/modernizr.js')
   script(type='text/javascript', src='/assets/sample/js/underscore-min.js') 
   script(type='text/javascript', src='/assets/sample/js/jquery.Class.js')
