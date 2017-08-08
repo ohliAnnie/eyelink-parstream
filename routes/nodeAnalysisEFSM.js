@@ -119,6 +119,30 @@ router.get('/restapi/getAnomaly/:id', function(req, res, next) {
   });
 });
 
+router.post('/restapi/insertAnomalyPattern/:id', function(req, res, next) {  
+  console.log('/analysis/restapi/insertAnomalyPattern');    
+  console.log(JSON.stringify(req.body));
+   var id = req.params.id;
+   var in_data = {    INDEX: "analysis", TYPE: "anomaly_pattern", ID: id   };  
+   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {        
+    if (out_data[0] != null){
+      var rtnCode = CONSTS.getErrData('E005');
+      console.log(rtnCode);
+      res.json({rtnCode: rtnCode});
+    }  else  {
+      var in_data = {    INDEX: "analysis", TYPE: "anomaly_pattern", ID: id,   BODY : JSON.stringify(req.body)   };  
+     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {        
+          console.log(out_data);
+          if(out_data.result == "created"){
+            console.log(out_data);  
+            var rtnCode = CONSTS.getErrData("D001");                   
+          }
+        if (err) { console.log(err) };                     
+        res.json({rtnCode: rtnCode});    
+      });
+    }
+  });
+});
 
 
 // query RawData
