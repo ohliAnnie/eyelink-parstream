@@ -416,6 +416,48 @@
         }
       } 
     ]]></query>    
+    <query id='getRestimeCount'><![CDATA[
+      {
+        "index" : [##index##],  
+        "type"  : "access",
+        "body" : {                     
+          "size" : 0,
+          "query": {          
+            "bool": {
+              "filter" : {
+               "range" : {
+                 "@timestamp" : {
+                    "gte" : #gte#,
+                    "lte" : #lte#
+                 }
+                }
+              }
+            }
+          },
+            "aggs" : {  
+              "group_by_timestamp" : {                
+                "date_histogram" : {                  
+                  "field": "@timestamp",              
+                  "interval" : "60m"
+                },
+                "aggs": { 
+                  "group_by_time": {    
+                    "range": {  
+                      "field": "responsetime",          
+                      "ranges" : [
+                        { "key" : "s1", "to" : "1000" },      
+                        { "key" : "s3", "from" : "1000", "to" : "3000" },               
+                        { "key" : "s5", "from" : "3000", "to" : "5000" }, 
+                        { "key" : "slow", "from" : "5000" } ],
+                      "keyed" : true      
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }      
+    ]]></query>    
   </dashboard>
   <reports>
   <query id='selectJiraAcc'><![CDATA[
