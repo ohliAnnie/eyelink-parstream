@@ -458,6 +458,16 @@
           }
         }      
     ]]></query>    
+    <query id='selectAppmapdata'><![CDATA[
+      {
+        "index" : #index#,  
+        "type"  : "applicationLinkData",
+        "body" : { 
+          "size"   : 10000,     
+          "query" : { "match_all" : { }     }                                              
+          }      
+        }       
+    ]]></query>
   </dashboard>
   <reports>
   <query id='selectJiraAcc'><![CDATA[
@@ -911,13 +921,24 @@
         "id" : #ID#
       }
      ]]></query>
-  <query id='selectDaClusterMasterAll'><![CDATA[
+  <query id='selectAnomalyRaw'><![CDATA[
        {
-        "index" : "corecode-2017-05",
-        "type" : "corecode",                    
+        "index" : #INDEX#,
+        "type" : #TYPE#,                    
         "body" : {       
-          "size"   : 10000,           
-          "query" : { "match_all" : { }    }
+          "size" : 10000,
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source": ["power_factor", "active_power", "ampere", "voltage"], 
+          "query": {
+            "bool": {
+              "must": [
+                { "match": {"node_id": "0002.00000039" }},
+                { "match": {
+                  "event_type": "1"
+                }}
+              ]
+            }
+          }
         } 
      ]]></query>
     <query id='selectDaClusterDetailAll'><![CDATA[
@@ -951,8 +972,9 @@
      ]]></query>     
      <query id='selectClusterNodePower'><![CDATA[
      {
-        "index" : "corecode-2017-05",
+        "index" : "corecode-*",
         "type" : "corecode",              
+
         "body" : {       
           "size" : 100000, 
           "sort" : { "event_time" : { "order" : "asc" }},
