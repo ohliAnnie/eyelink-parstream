@@ -8,8 +8,7 @@ $(function(){ // on dom ready
     data: {},
     success: function(result) {      
       if (result.rtnCode.code == "0000") {        
-        makeElesJson(result.rtnData);        
-        getServerMap(result.rtnData);     
+        makeElesJson(result.rtnData);             
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -21,22 +20,43 @@ $(function(){ // on dom ready
   });
 }); // on dom ready
 
-function makeElesJson(data){
+function makeElesJson(data){  
   console.log(data);
-  var nodes = [], edges = [], nodekey = [];
+  var nodes = [], edges = [], nodekey = [], edgekey = [];
   data.forEach(function(d){    
     if(nodekey[d._source.application_id]!=null) {       
-      nodekey[d._source.application_id]++;      
+      if(parseInt(d._source.state) >=400 ) {
+        nodekey[d._source.application_id]++;
+      }
     } else { 
-      nodekey[d._source.application_id] = 0;      
-      nodes.push({ data : { id : d._source.application_id, name : d._source.application_name, img : '', parent : 'p_'+d._source.application_id }});      
-    }    
+      nodekey[d._source.application_id] = 0;                  
+      var img = d._source.application_name.split(' ');
+      nodes.push({ data : { id : d._source.application_id, name : d._source.application_name, img : '../assets/sample/'+img[0]+'.png', parent : 'p_'+d._source.application_id }});      
+      if(parseInt(d._source.state) >= 400 ) {
+        nodekey[d._source.application_id]++;
+      }
+    }
+    if(edgekey[d._source.application_id+'-'+d._source.to_application_id] != null) {
+      edgekey[d._source.application_id+'-'+d._source.to_application_id]++
+    } else {
+      edgekey[d._source.application_id+'-'+d._source.to_application_id] = 1;
+    }
   });
-  console.log(nodes);
-  console.log(nodekey);
+  for(key in nodekey) {
+    if(nodekey[key] != 0){
+      nodes.push({ data : { id : 'p_'+key, name : nodekey[key] ,img : '../assets/sample/back.png' }});      
+    }
+  }
+  for(key in edgekey) {
+    var id = key.split('-');    
+    edges.push({ data : { count : edgekey[key], source : id[0], target : id[1]} });
+  }
+  var elesJson = { nodes : nodes, edges : edges };
+  console.log(elesJson);
+  getServerMap(elesJson);
 }
-function getServerMap(data) {  
-  var elesJson = {
+function getServerMap(elesJson) {  
+  /*var elesJson = {
     nodes: [
       { data: { id: 'p1', name : 4, img: '../assets/sample/back.png' } },
       { data: { id: 'p2', name : 12, img: '../assets/sample/back.png' } },
@@ -65,7 +85,7 @@ function getServerMap(data) {
        { data: { count : 2285, source: 'n4', target: 'n10' } },
        { data: { count : 2280, source: 'n4', target: 'n11' } },     
     ]  
-  };  
+  };  */
   var cy = cytoscape({
     container: document.getElementById('cy'),
 
@@ -161,15 +181,9 @@ function getServerMap(data) {
         .css({
           'text-wrap' : 'wrap'
         }),
-        
-
+      
     elements: elesJson,
-    
-/*  layout: {
-    name: 'preset',
-    padding: 5
-  },
-*/
+
     layout: {
       name: 'dagre',
       rankDir: 'LR',
