@@ -1,6 +1,41 @@
 
 $(function(){ // on dom ready  
   getDash(new Date);
+   $.ajax({
+    url: "/dashboard/restapi/getAppmapdata" ,
+    dataType: "json",
+    type: "get",
+    data: {},
+    success: function(result) {      
+      if (result.rtnCode.code == "0000") {        
+        makeElesJson(result.rtnData);        
+        getServerMap(result.rtnData);     
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
+}); // on dom ready
+
+function makeElesJson(data){
+  console.log(data);
+  var nodes = [], edges = [], nodekey = [];
+  data.forEach(function(d){    
+    if(nodekey[d._source.application_id]!=null) {       
+      nodekey[d._source.application_id]++;      
+    } else { 
+      nodekey[d._source.application_id] = 0;      
+      nodes.push({ data : { id : d._source.application_id, name : d._source.application_name, img : '', parent : 'p_'+d._source.application_id }});      
+    }    
+  });
+  console.log(nodes);
+  console.log(nodekey);
+}
+function getServerMap(data) {  
   var elesJson = {
     nodes: [
       { data: { id: 'p1', name : 4, img: '../assets/sample/back.png' } },
@@ -148,62 +183,10 @@ $(function(){ // on dom ready
     }
   }); 
   console.log(elesJson);
-
-
-   cy.$('#n1').qtip({
- content: {
-    prerender:true,
-    text : '3'
-  },
-  show: {
-            when: false, // Don't specify a show event
-            ready: true, // Show the tooltip when ready            
-        },
-  hide: {
-    event : false, // Don't specify a hide event
-  },
-  position: {
-    my: 'bottom left',
-    at: 'top center'
-  },
-  style: {
-    classes: 'my-qtip',
-    tip: {
-      width: 8,
-      height: 4    
-    }
-  }
-});
-    cy.$('#n2').qtip({
- content: {
-    prerender:true,
-    text : '2'
-  },
-  show: {
-            when: false, // Don't specify a show event
-            ready: true, // Show the tooltip when ready            
-        },
-  hide: {
-    event : false, // Don't specify a hide event
-  },
-  position: {
-    my: 'bottom left',
-    at: 'top center'
-  },
-  style: {
-    classes: 'my-qtip',
-    tip: {
-      width: 8,
-      height: 4    
-    }
-  }
-});
-
-}); // on dom ready
+};
 
 function getDash(day) {  
-   var indexs = $('#indexs').val();
-   console.log(indexs);
+  var indexs = $('#indexs').val();
   var d = day.toString().split(' ');  
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   $.ajax({
@@ -239,7 +222,6 @@ function getDash(day) {
               });
             }
         });  
-        console.log(new Date(start), new Date(end))     ;
         drawDash(data, start, end);
       } else {
         //- $("#errormsg").html(result.message);
@@ -259,7 +241,6 @@ function drawDash(data, start, end) {
     doBigScatterChart(start, end);
   }
   var oScatterChart;
-  console.log(oScatterChart);
   function doBigScatterChart(start, end){
     oScatterChart = new BigScatterChart({
       sContainerId : 'chart1',
@@ -286,12 +267,8 @@ function drawDash(data, start, end) {
       sXLabel : '',
       nPaddingRight : 5,
       fOnSelect : function(htPosition, htXY){
-        console.log('fOnSelect', htPosition, htXY);
-        console.time('fOnSelect');
         console.log(new Date(start), new Date(end));
         var aData = this.getDataByXY(htXY.nXFrom, htXY.nXTo, htXY.nYFrom, htXY.nYTo);
-        console.log(new Date(htXY.nXTo), new Date(htXY.nXFrom));
-        console.log(htXY.nXTo, htXY.nXFrom);
         var link = '/dashboard/selected_detail?start='+htXY.nXFrom+'&end='+htXY.nXTo+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;
         console.timeEnd('fOnSelect');
         console.log('adata length', aData.length);
@@ -354,9 +331,6 @@ function drawDash(data, start, end) {
       oScatterChart.addBubbleAndDraw(data);         
   }   
    if(cnt++ == 0) {
-    console.log(new Date(start));
-    console.log(new Date(end)); 
-
     summary(data, start, end);
    }  
 };  
