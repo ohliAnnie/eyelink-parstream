@@ -3,23 +3,23 @@ if ( process.argv[2] == null ) {
   process.exit();
 }
 
+const log4js = require('log4js');
+log4js.configure({
+  appenders: { datagen: { type: 'file', filename: 'datagen.log' } },
+  categories: { default: { appenders: ['datagen'], level: 'debug' } }
+});
+global.logger = log4js.getLogger('datagen');
+
+logger.info('Data Simulator has been started.');
 
 var fs = require('fs');
 var sleep = require('system-sleep');
-var parse = require('csv-parse');
 var moment = require('moment-timezone');
 var datetime = require('node-datetime');
 var xml2js = require('xml2js');
 
 var QueryProvider = require('./nodelib-es').QueryProvider;
 var queryProvider = new QueryProvider();
-
-const log4js = require('log4js');
-log4js.configure({
-  appenders: { datagen: { type: 'file', filename: 'datagen.log' } },
-  categories: { default: { appenders: ['datagen'], level: 'debug' } }
-});
-const logger = log4js.getLogger('datagen');
 
 const datafilepath = process.argv[2];
 const nodeId = process.argv[3];
@@ -40,11 +40,12 @@ loadQuery('./dbquery.xml');
 var initialDataProcessed = false;
 var processedDays = 0;
 
-var cur_datetime = moment(datetime.create().format('Y-m-d H:M:S'));
-var prev_month_datetime = cur_datetime.subtract(1, 'months');
-
-// sample data 
+// sample csv line data 
 // 0002.00000038,49,2016-11-17 11:49:01.533,2016-11-17 11:49:01,,,,,,,,,,,,,,11,100,1.1,10000,,,,,,,,,,,,,,,0,
+
+// var cur_datetime = moment(datetime.create().format('Y-m-d H:M:S'));
+var cur_datetime = moment(datetime.create().format('Y-m-d'));
+var prev_month_datetime = cur_datetime.subtract(1, 'months');
 
 // 실제 라인 단위로 데이터 읽어와서 처리하는 로직 시작.
 lineReader.on('line', function (line) {
@@ -52,6 +53,8 @@ lineReader.on('line', function (line) {
   if ( line.startsWith(nodeId) ) {
       matchedCount += 1;
       logger.info('Processing data : ', line);
+      
+      cur_datetime = moment(datetime.create().format('Y-m-d H:M:S'));
 
       var data_arr = line.split(',');
 
@@ -75,17 +78,17 @@ lineReader.on('line', function (line) {
               logger.debug('=======================================');
           }
       }
-      var cur_kor_datetime = prev_month_datetime.tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss');
+      var cur_kor_datetime = prev_month_datetime.format('YYYY-MM-DD') + ' ' + cur_datetime.format('HH:mm:ss');
 
       // 이벤트 타임을 현재 일자에 맞게 변경하기 (입력시 필요한 값으로 변경)
-      data_arr[2] = cur_kor_datetime.split(' ')[0] + ' ' + data_arr[2].split(' ')[1];
-      data_arr[3] = cur_kor_datetime.split(' ')[0] + ' ' + data_arr[3].split(' ')[1];
+      data_arr[2] = cur_kor_datetime.split(' ')[0] + 'T' + data_arr[2].split(' ')[1];
+      data_arr[3] = cur_kor_datetime.split(' ')[0] + 'T' + data_arr[3].split(' ')[1];
 
       var curDateTime = moment(cur_kor_datetime, 'YYYY-MM-DD HH:mm:ss');
       var eventDateTime = moment(data_arr[3], 'YYYY-MM-DD HH:mm:ss');
       var diffSeconds = eventDateTime.diff(curDateTime, 'seconds');
       
-      logger.debug('processingDateTime : ',event_date + ' ' + cur_kor_datetime.split(' ')[1],', eventDateTime : ',data_arr[3],', diffSeconds : ',diffSeconds);
+      logger.debug('processingDateTime : ',event_date + ' ' + cur_kor_datetime.split(' ')[1],', eventDateTime : ',data_arr[3].split('T').join(' '),', diffSeconds : ',diffSeconds);
 
       var index = 'corecode-' + cur_kor_datetime.split(' ')[0];
 
@@ -109,12 +112,10 @@ lineReader.on('line', function (line) {
   } else {
     notMatchedCount += 1;
   }
-  
 })
 .on('close', function() {
-
-  console.log('matched : ', matchedCount, ', unmatched: ', notMatchedCount, ', total : ', (matchedCount + notMatchedCount));
-  
+  logger.info('matched : ', matchedCount, ', unmatched: ', notMatchedCount, ', total : ', (matchedCount + notMatchedCount));
+  logger.info('Data Simulator finished successfully.');
 });
 
 function printUsage() {
@@ -124,7 +125,7 @@ function printUsage() {
   console.log('Ex. $ node dataSimulator.js ./source.csv 0002.00000039 30');
 }
 function insertData(index, type, linedata){
-  // console.log('inserting data : ', linedata);
+
   logger.debug('Inserting data - index: ', index, ', data : ', linedata);
   
   queryProvider.insertData(type, 'insertData', makeJsonData(index, type, linedata));

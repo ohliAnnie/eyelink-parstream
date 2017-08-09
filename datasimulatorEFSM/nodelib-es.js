@@ -22,8 +22,8 @@ QueryProvider.prototype.insertData = function (type, queryId, datas) {
     sQueryString
   ).then(function (resp) {      
       // console.log(resp);
-  }, function (err) {      
-      console.trace(err.message);
+  }, function (err) {
+      logger.error(err.message);
   });
 }
 
