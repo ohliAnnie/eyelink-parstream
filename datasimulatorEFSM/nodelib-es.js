@@ -9,6 +9,64 @@ QueryProvider = function() {
 
 };
 
+QueryProvider.prototype.defineMappings = function (newIndex) {
+
+  client.indices.create({
+    index: newIndex,
+    body: {
+      mappings: {
+        'corecode': {
+          properties: {
+            "node_id" : { "type" : "string", "index" : "not_analyzed" },
+            "event_type" : { "type" : "string", "index" : "not_analyzed" },
+            "measure_time" : { "type" : "string" },
+            "event_time" : { "type" : "date" },
+            "voltage" : { "type" : "double" },
+            "ampere" : { "type" : "double" },
+            "power_factor" : { "type" : "double" },
+            "active_power" : { "type" : "double" },
+            "reactive_power" : { "type" : "double" },
+            "apparent_power" : { "type" : "double" },
+            "amount_of_active_power" : { "type" : "double" },
+            "als_level" : { "type" : "integer" },
+            "dimming_level" : { "type" : "integer" },
+            "vibration_x" : { "type" : "integer" },
+            "vibration_y" : { "type" : "integer" },
+            "vibration_z" : { "type" : "integer" },
+            "vibration_max" : { "type" : "integer" },
+            "noise_origin_decibel" : { "type" : "double" },
+            "noise_origin_frequency" : { "type" : "integer" },
+            "noise_decibel" : { "type" : "double" },
+            "noise_frequency" : { "type" : "integer" },
+            "gps_longitude" : { "type" : "double" },
+            "gps_latitude" : { "type" : "double" },
+            "gps_altitude" : { "type" : "double" },
+            "node_geo" : { "type" : "geo_point" },
+            "gps_satellite_count" : { "type" : "integer" },
+            "status_als" : { "type" : "integer" },
+            "status_gps" : { "type" : "integer" },
+            "status_noise" : { "type" : "integer" },
+            "status_vibration" : { "type" : "integer" },
+            "status_power_meter" : { "type" : "integer" },
+            "status_emergency_led_active" : { "type" : "integer" },
+            "status_self_diagnostics_led_active" : { "type" : "integer" },
+            "status_active_mode" : { "type" : "integer" },
+            "status_led_on_off_type" : { "type" : "integer" },
+            "reboot_time" : { "type" : "string"},
+            "event_remain" : { "type" : "integer" },
+            "failfirmwareupdate" : { "type" : "integer" }
+          }
+        }
+      }
+    }
+  }).then(function (resp) {
+      logger.trace(resp);
+  }, function (err) {
+      logger.error(err.message);
+  });
+
+}
+
 QueryProvider.prototype.insertData = function (type, queryId, datas) {  
   // console.log('queryId : '+queryId);
    // SQL 내 파라메타를 변경해준다.
@@ -17,6 +75,7 @@ QueryProvider.prototype.insertData = function (type, queryId, datas) {
 
   sQueryString = JSON.parse(sQueryString);
   // console.log(sQueryString);
+  // sQueryString = sQueryString.replace(/\r?\n|\r/g, ' ');
 
   client.index(
     sQueryString
@@ -24,6 +83,7 @@ QueryProvider.prototype.insertData = function (type, queryId, datas) {
       // console.log(resp);
   }, function (err) {
       logger.error(err.message);
+      console.log(sQueryString);
   });
 }
 

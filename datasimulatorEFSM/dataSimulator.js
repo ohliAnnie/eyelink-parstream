@@ -45,7 +45,9 @@ var processedDays = 0;
 
 // var cur_datetime = moment(datetime.create().format('Y-m-d H:M:S'));
 var cur_datetime = moment(datetime.create().format('Y-m-d'));
-var prev_month_datetime = cur_datetime.subtract(1, 'months');
+var prev_month_datetime = cur_datetime.subtract(initialDataInDays, 'days');
+
+var needNewMapping = true;
 
 // 실제 라인 단위로 데이터 읽어와서 처리하는 로직 시작.
 lineReader.on('line', function (line) {
@@ -77,6 +79,7 @@ lineReader.on('line', function (line) {
               logger.debug('=========== ' + initialDataInDays + ' days passed ============');
               logger.debug('=======================================');
           }
+          needNewMapping = true;
       }
       var cur_kor_datetime = prev_month_datetime.format('YYYY-MM-DD') + ' ' + cur_datetime.format('HH:mm:ss');
 
@@ -92,6 +95,10 @@ lineReader.on('line', function (line) {
 
       var index = 'corecode-' + cur_kor_datetime.split(' ')[0];
 
+      if ( needNewMapping ) {
+        queryProvider.defineMappings(index);
+        needNewMapping = false;
+      }
       if ( !initialDataProcessed ){
           sleep(100);
           insertData(index, type, data_arr.join(','));
@@ -159,39 +166,39 @@ function makeJsonData(index, type, data) {
     "event_type" : linedataArr[1],
     "measure_time" : linedataArr[2],
     "event_time" : linedataArr[3],
-    "voltage" : linedataArr[4] || 'NULL',
-    "ampere" : linedataArr[5] || 'NULL',
-    "power_factor" : linedataArr[6] || 'NULL',
-    "active_power" : linedataArr[7] || 'NULL',
-    "reactive_power" : linedataArr[8] || 'NULL',
-    "apparent_power" : linedataArr[9] || 'NULL',
-    "amount_active_power" : linedataArr[10] || 'NULL',
-    "als_level" : linedataArr[11] || 'NULL',
-    "dimming_level" : linedataArr[12] || 'NULL',
-    "vibration_x" : linedataArr[13] || 'NULL',
-    "vibration_y" : linedataArr[14] || 'NULL',
-    "vibration_z" : linedataArr[15] || 'NULL',
-    "vibration_max" : linedataArr[16] || 'NULL',
-    "noise_origin_decibel" :linedataArr[17] || 'NULL',
-    "noise_origin_frequency" : linedataArr[18] || 'NULL',
-    "noise_decibel" : linedataArr[19] || 'NULL',
-    "noise_frequency" :linedataArr[20] || 'NULL',
-    "gps_longitude" : linedataArr[21] || 'NULL',
-    "gps_latitude" : linedataArr[21] || 'NULL',
-    "gps_altitude" : linedataArr[23] || 'NULL',
-    "gps_satellite_count" : linedataArr[24] || 'NULL',
-    "status_als" : linedataArr[25] || 'NULL',
-    "status_gps" : linedataArr[26] || 'NULL',
-    "status_noise" : linedataArr[27] || 'NULL',
-    "status_vibration" : linedataArr[28] || 'NULL',
-    "status_power_meter" : linedataArr[29] || 'NULL',
-    "status_emergency_led_active" : linedataArr[30] || 'NULL',
-    "status_self_diagnostics_led_active" : linedataArr[31] || 'NULL',
-    "status_active_mode" : linedataArr[32] || 'NULL',
-    "status_led_on_off_type" : linedataArr[33] || 'NULL',
+    "voltage" : parseFloat(linedataArr[4]) || 0,
+    "ampere" : parseFloat(linedataArr[5]) || 0,
+    "power_factor" : parseFloat(linedataArr[6]) || 0,
+    "active_power" : parseFloat(linedataArr[7]) || 0,
+    "reactive_power" : parseFloat(linedataArr[8]) || 0,
+    "apparent_power" : parseFloat(linedataArr[9]) || 0,
+    "amount_of_active_power" : parseFloat(linedataArr[10]) || 0,
+    "als_level" : parseInt(linedataArr[11]) || 0,
+    "dimming_level" : parseInt(linedataArr[12]) || 0,
+    "vibration_x" : parseInt(linedataArr[13]) || 0,
+    "vibration_y" : parseInt(linedataArr[14]) || 0,
+    "vibration_z" : parseInt(linedataArr[15]) || 0,
+    "vibration_max" : parseInt(linedataArr[16]) || 0,
+    "noise_origin_decibel" : parseFloat(linedataArr[17]) || 0,
+    "noise_origin_frequency" : parseInt(linedataArr[18]) || 0,
+    "noise_decibel" : parseFloat(linedataArr[19]) || 0,
+    "noise_frequency" : parseInt(linedataArr[20]) || 0,
+    "gps_longitude" : parseFloat(linedataArr[21]) || 0,
+    "gps_latitude" : parseFloat(linedataArr[21]) || 0,
+    "gps_altitude" : parseFloat(linedataArr[23]) || 0,
+    "gps_satellite_count" : parseInt(linedataArr[24]) || 0,
+    "status_als" : parseInt(linedataArr[25]) || 0,
+    "status_gps" : parseInt(linedataArr[26])|| 0,
+    "status_noise" : parseInt(linedataArr[27]) || 0,
+    "status_vibration" : parseInt(linedataArr[28]) || 0,
+    "status_power_meter" : parseInt(linedataArr[29]) || 0,
+    "status_emergency_led_active" : parseInt(linedataArr[30]) || 0,
+    "status_self_diagnostics_led_active" : parseInt(linedataArr[31]) || 0,
+    "status_active_mode" : parseInt(linedataArr[32]) || 0,
+    "status_led_on_off_type" : parseInt(linedataArr[33]) || 0,
     "reboot_time" : linedataArr[34] || 'NULL',
-    "event_remain" : linedataArr[35] || 'NULL',
-    "failfirmwareupdate" : linedataArr[36] || 'NULL'
+    "event_remain" : parseInt(linedataArr[35]) || 0,
+    "failfirmwareupdate" : parseInt(linedataArr[36]) || 0
   }
   return s_logs;
 }

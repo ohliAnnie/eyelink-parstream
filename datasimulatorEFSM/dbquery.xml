@@ -17,7 +17,7 @@
             , "active_power" : #active_power#
             , "reactive_power" : #reactive_power#
             , "apparent_power" : #apparent_power#
-            , "amount_of_active_power" : #amount_active_power#
+            , "amount_of_active_power" : #amount_of_active_power#
             , "als_level" : #als_level#
             , "dimming_level" : #dimming_level#
             , "vibration_x" : #vibration_x#
