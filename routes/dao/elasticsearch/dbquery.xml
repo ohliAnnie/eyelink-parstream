@@ -1018,24 +1018,6 @@
             }
           }
         } 
-    ]]></query>
-    <query id= 'insertClusteringDetail'><![CDATA[
-      {
-        "index" : "corecode-2017-05",
-        "type" : "corecode",                    
-        "body" : {       
-          "size"   : 100000,           
-          "query" : { "match_all" : { }    }
-        } 
-      ]]></query>
-    <query id= 'insertClusteringMaster'><![CDATA[
-     {
-        "index" : "corecode-2017-05",
-        "type" : "corecode", 
-        "body" : { 
-          "size"   : 100000, 
-          "query" : { "match_all" : { }    }
-        } 
-      ]]></query>  
+    ]]></query>    
 </analysis>
 </queryList>
