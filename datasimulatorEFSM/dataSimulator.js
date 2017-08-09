@@ -11,8 +11,6 @@ var moment = require('moment-timezone');
 var datetime = require('node-datetime');
 var xml2js = require('xml2js');
 
-var express = require('express');
-var router = express.Router();
 var QueryProvider = require('./nodelib-es').QueryProvider;
 var queryProvider = new QueryProvider();
 
@@ -57,8 +55,6 @@ lineReader.on('line', function (line) {
 
       var data_arr = line.split(',');
 
-      // 한국 시간으로 변경하기
-      var cur_kor_datetime = prev_month_datetime.tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss');
       var event_date = data_arr[3].split(' ')[0];
 
       if ( curDate == null ) {
@@ -67,7 +63,7 @@ lineReader.on('line', function (line) {
       if ( curDate !== event_date ){
           logger.debug('Changing date. curDate: ',curDate,', event_date: ',event_date);
           processedDays += 1;
-          prev_month_datetime.add(processedDays, 'days');
+          prev_month_datetime.add(1, 'days');
           curDate = event_date;
 
           if ( processedDays >= initialDataInDays ){
@@ -79,15 +75,17 @@ lineReader.on('line', function (line) {
               logger.debug('=======================================');
           }
       }
+      var cur_kor_datetime = prev_month_datetime.tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss');
 
       // 이벤트 타임을 현재 일자에 맞게 변경하기 (입력시 필요한 값으로 변경)
+      data_arr[2] = cur_kor_datetime.split(' ')[0] + ' ' + data_arr[2].split(' ')[1];
       data_arr[3] = cur_kor_datetime.split(' ')[0] + ' ' + data_arr[3].split(' ')[1];
 
       var curDateTime = moment(cur_kor_datetime, 'YYYY-MM-DD HH:mm:ss');
       var eventDateTime = moment(data_arr[3], 'YYYY-MM-DD HH:mm:ss');
       var diffSeconds = eventDateTime.diff(curDateTime, 'seconds');
       
-      logger.debug('curDateTime : ',event_date + ' ' + cur_kor_datetime.split(' ')[1],', eventDateTime : ',data_arr[3],', diffSeconds : ',diffSeconds);
+      logger.debug('processingDateTime : ',event_date + ' ' + cur_kor_datetime.split(' ')[1],', eventDateTime : ',data_arr[3],', diffSeconds : ',diffSeconds);
 
       var index = 'corecode-' + cur_kor_datetime.split(' ')[0];
 
