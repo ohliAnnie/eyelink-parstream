@@ -458,6 +458,16 @@
           }
         }      
     ]]></query>    
+    <query id='selectAppmapdata'><![CDATA[
+      {
+        "index" : #index#,  
+        "type"  : "applicationLinkData",
+        "body" : { 
+          "size"   : 10000,     
+          "query" : { "match_all" : { }     }                                              
+          }      
+        }       
+    ]]></query>
   </dashboard>
   <reports>
   <query id='selectJiraAcc'><![CDATA[
@@ -911,13 +921,24 @@
         "id" : #ID#
       }
      ]]></query>
-  <query id='selectDaClusterMasterAll'><![CDATA[
+  <query id='selectAnomalyRaw'><![CDATA[
        {
-        "index" : "corecode-2017-05",
-        "type" : "corecode",                    
+        "index" : #INDEX#,
+        "type" : #TYPE#,                    
         "body" : {       
-          "size"   : 10000,           
-          "query" : { "match_all" : { }    }
+          "size" : 10000,
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source": ["power_factor", "active_power", "ampere", "voltage"], 
+          "query": {
+            "bool": {
+              "must": [
+                { "match": {"node_id": "0002.00000039" }},
+                { "match": {
+                  "event_type": "1"
+                }}
+              ]
+            }
+          }
         } 
      ]]></query>
     <query id='selectDaClusterDetailAll'><![CDATA[
@@ -951,8 +972,8 @@
      ]]></query>     
      <query id='selectClusterNodePower'><![CDATA[
      {
-        "index" : "corecode-2017-05",
-        "type" : "corecode",              
+        "index" : "corecode-*",
+        "type" : "corecode",
         "body" : {       
           "size" : 100000, 
           "sort" : { "event_time" : { "order" : "asc" }},
@@ -973,31 +994,7 @@
             }
           }
         } 
-     ]]></query>
-   <query id='selectClusterNodePowerTest'><![CDATA[
-     {
-        "index" : "corecode-2017-05",
-        "type" : "corecode",              
-        "body" : {       
-          "size" : 100000, 
-          "sort" : { "event_time" : { "order" : "asc" }},
-          "_source" : ["node_id", "event_time", "ampere", "voltage", "active_power", "power_factor", "event_type"],
-          "query" : { 
-            "bool" : {
-              "must" : [      { "match_all": {} }        ],
-               "filter" : [
-                { "term" : { "event_type": "1" } },
-                {"range" : { "event_time" :
-                  { "gte" : "2016-12-29T16:15:41.000Z",
-                      "lt" : "2016-12-30T16:15:41.000Z" }
-                    }
-                  } 
-                ]
-              }
-            }
-          }
-        } 
-     ]]></query>
+     ]]></query>   
 <!--  (vibration_x + vibration_y + vibration_z) / 3 as vibration 없음 -->
     <query id='selectClusterRawData'><![CDATA[
      {
@@ -1021,24 +1018,6 @@
             }
           }
         } 
-    ]]></query>
-    <query id= 'insertClusteringDetail'><![CDATA[
-      {
-        "index" : "corecode-2017-05",
-        "type" : "corecode",                    
-        "body" : {       
-          "size"   : 100000,           
-          "query" : { "match_all" : { }    }
-        } 
-      ]]></query>
-    <query id= 'insertClusteringMaster'><![CDATA[
-     {
-        "index" : "corecode-2017-05",
-        "type" : "corecode", 
-        "body" : { 
-          "size"   : 100000, 
-          "query" : { "match_all" : { }    }
-        } 
-      ]]></query>  
+    ]]></query>    
 </analysis>
 </queryList>
