@@ -234,13 +234,13 @@
                       { "range" : 
                         { "responsetime" : 
                           { "gte" : #MIN#,
-                            "lt" : #MAX#  } 
+                            "lte" : #MAX#  } 
                         }
                       },
                       { "range" : 
                         { "timestamp" :
                           { "gte" : #START#,
-                            "lt" : #END# }
+                            "lte" : #END# }
                         }
                       }
                     ]
@@ -875,13 +875,13 @@
                       { "range" : 
                         { "responsetime" : 
                           { "gte" : #MIN#,
-                            "lt" : #MAX#  } 
+                            "lte" : #MAX#  } 
                         }
                       },
                       { "range" : 
                         { "timestamp" :
                           { "gte" : #START#,
-                            "lt" : #END# }
+                            "lte" : #END# }
                         }
                       }
                     ]
@@ -986,7 +986,7 @@
                 { "terms" : { "node_id": [##NODE##] } },             
                 {"range" : { "event_time" :
                   { "gte" : #START_TIMESTAMP#,
-                      "lt" : #END_TIMESTAMP# }
+                      "lte" : #END_TIMESTAMP# }
                     }
                   } 
                 ]
@@ -1011,7 +1011,7 @@
                   { "terms" : { "node_id": [##NODE##] }  },
                   { "range" : { "event_time" :
                       { "gte" : #START_TIMESTAMP#,
-                         "lt" : #END_TIMESTAMP# } }
+                         "lte" : #END_TIMESTAMP# } }
                    }   
                 ]
               }
