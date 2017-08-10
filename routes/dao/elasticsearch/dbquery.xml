@@ -920,27 +920,7 @@
         "type" : #TYPE#,        
         "id" : #ID#
       }
-     ]]></query>
-  <query id='selectAnomalyRaw'><![CDATA[
-       {
-        "index" : #INDEX#,
-        "type" : #TYPE#,                    
-        "body" : {       
-          "size" : 10000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source": ["power_factor", "active_power", "ampere", "voltage"], 
-          "query": {
-            "bool": {
-              "must": [
-                { "match": {"node_id": "0002.00000039" }},
-                { "match": {
-                  "event_type": "1"
-                }}
-              ]
-            }
-          }
-        } 
-     ]]></query>
+     ]]></query> 
     <query id='selectDaClusterDetailAll'><![CDATA[
        {
         "index" : "corecode-2017-05",
@@ -975,7 +955,7 @@
         "index" : "corecode-*",
         "type" : "corecode",
         "body" : {       
-          "size" : 10000, 
+          "size" : 100000, 
           "sort" : { "event_time" : { "order" : "asc" }},
           "_source" : ["node_id", "event_time", "ampere", "voltage", "active_power", "power_factor", "event_type"],
           "query" : { 
