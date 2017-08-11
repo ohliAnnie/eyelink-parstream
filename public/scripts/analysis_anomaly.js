@@ -42,9 +42,15 @@ function getPatternData(raw, start, end, now, point){
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {                        
-        match = ({ampere : result.clust.ampere[result.pattern.ampere], voltage : result.clust.voltage[result.pattern.voltage], power_factor : result.clust.power_factor[result.pattern.power_factor], active_power : result.clust.active_power[result.pattern.active_power] })
-        console.log(match);
-        drawVoltage(raw, match['voltage'], start, end, now, point);
+        var voltage = ({ center : result.clust.voltage.center['cluster_0'], min : result.clust.voltage.min_value['cluster_0'], max : result.clust.voltage.max_value['cluster_0'] })
+        //match = ({ampere : result.clust.ampere.center['cluster_0'], voltage : result.clust.voltage.center['cluster_0'], power_factor : result.clust.power_factor.center['cluster_0'], active_power : result.clust.active_power.center['cluster_0'] })
+        //match = ({ampere : result.clust.ampere[result.pattern.ampere], voltage : result.clust.voltage[result.pattern.voltage], power_factor : result.clust.power_factor[result.pattern.power_factor], active_power : result.clust.active_power[result.pattern.active_power] })
+    var data = [];
+    for(i=0; i<voltage.center.length; i++){
+      data.push({date : start+i*60*1000, center : voltage.center[i], min : voltage.min[i], max : voltage.max[i]});
+    }
+    console.log(data)
+        drawVoltage(raw, data, start, end, now, point);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -94,14 +100,26 @@ function drawVoltage(raw, compare, start, end, now, point) {
      return x(now - (limit - 1 - i) * duration)  })
     .y(function(d) {      return y(d)   })
 
- var valueline = d3.svg.line()
+  var valueline = d3.svg.line()
   .x(function(d) { return x(new Date(d.event_time)); })
   .y(function(d) { return y(d.voltage); });
   
    var compareline = d3.svg.line()
     .interpolate("cardinal")
     .x(function(d, i) { return x(start+((i+1)*60*1000));})
-    .y(function(d) {console.log(d); return y(d);});
+    .y(function(d) {  return y(d.center);});
+
+  var upperInnerArea = d3.svg.area()
+    .interpolate('basis')
+    .x (function (d,i) { return x(d.date); })
+    .y0(function (d) { console.log(d); return y(d.max); })
+    .y1(function (d) { return y(d.center); });
+
+  var lowerInnerArea = d3.svg.area()
+    .interpolate('basis')
+    .x (function (d,i) { return x(d.date); })
+    .y0(function (d) { return y(d.center); })
+    .y1(function (d) { return y(d.min); });
 
     var svg = d3.select('#voltage')
     .append('svg')    
@@ -120,16 +138,77 @@ var yaxis = svg.append('g')
  .attr('class', 'y axis')   
     .call(y.axis = d3.svg.axis().scale(y).orient('left'))
 
+var legendWidth  = 310, legendHeight = 55;
+
+ var legend = svg.append('g')
+    .attr('class', 'legend')
+    .attr('transform', 'translate(' + margin.left + ', 0)');
+
+  legend.append('rect')
+    .attr('class', 'legend-bg')
+    .attr('width',  legendWidth)
+    .attr('height', legendHeight);
+
+  legend.append('rect')
+    .attr('class', 'inner')
+    .attr('width',  75)
+    .attr('height', 15)
+    .attr('x', 10)
+    .attr('y', 10);
+
+  legend.append('text')
+    .attr('x', 115)
+    .attr('y', 20)
+    .text('min-max');
+
+  legend.append('path')
+    .attr('class', 'compareline')
+    .attr('d', 'M10,40L85,40');
+
+  legend.append('text')
+    .attr('x', 115)
+    .attr('y', 43)
+    .text('Pattern');
+
+  legend.append('path')
+    .attr('class', 'live-line')
+    .attr('d', 'M170,40L245,40');
+
+  legend.append('text')
+    .attr('x', 275)
+    .attr('y', 43)
+    .text('Live');  
+
+   legend.append('path')
+    .attr('class', 'valueline')
+    .attr('d', 'M170,17L245,17');
+
+  legend.append('text')
+    .attr('x', 275)
+    .attr('y', 20)
+    .text('Compare');
+  
+svg.append('path')
+    .datum(compare)     
+    .attr('class', 'area upper inner')
+    .attr('d', upperInnerArea);
+    //.attr('clip-path', 'url(#rect-clip)');
+
+  svg.append('path')
+    .datum(compare)     
+    .attr('class', 'area lower inner')
+    .attr('d', lowerInnerArea)
+    .attr('clip-path', 'url(#rect-clip)');
+
   svg.append("path")   
-  .attr("class", "compareline")
-   .attr('stroke', 'skyblue')
+  .attr("class", "compareline")   
 //   .attr('opacity', 0.5)
   .attr("d", compareline(compare));
 
   svg.append("path")   
-  .attr("class", "valueline")
-   .attr('stroke', 'gray')
+  .attr("class", "valueline")   
   .attr("d", valueline(raw));
+ 
 
 var formatTime = d3.time.format("%I:%M:%S");
 // Define the div for the tooltip
@@ -164,8 +243,8 @@ var div = d3.select("body").append("div")
         .enter().append("circle")               
         .attr("r", 5)   
         .attr('opacity', 0)
-        .attr("cx", function(d, i) { return x(start+((i+1)*60*1000)); })     
-        .attr("cy", function(d) { return y(d); })   
+        .attr("cx", function(d, i) { return x(d.date); })     
+        .attr("cy", function(d) { return y(d.center); })   
         .on("mouseover", function(d, i) {    
             div.transition()    
                 .duration(200)    
@@ -219,7 +298,7 @@ var div = d3.select("body").append("div")
     /*if(cnt++%60 == 0){
       value = clust[index++];
     }    */
-    var nnow = new Date().getTime() - duration;
+    now = new Date().getTime() - duration;
 
     for (var name in groups) {
       var group = groups[name]
@@ -228,9 +307,9 @@ var div = d3.select("body").append("div")
         group.data.push(value)
         group.path.attr('d', line)        
       }      
-      ddata.push({ date:nnow, value:value});      
+      ddata.push({ date:now, value:value});      
 
-    x.domain([nnow-(now-start), nnow+(end-now)]);
+     x.domain([now-109*60*1000, now+10*60*1000]);
     // Slide paths left
       paths.attr('transform', null)
       .transition()
