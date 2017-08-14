@@ -427,7 +427,7 @@ chart
     .renderHorizontalGridLines(true)
     .x(d3.time.scale().domain([minDate, maxDate]))
 //    .round(d3.time.hour.round)
-    .xUnits(function(){return 10;})
+    .xUnits(function(){return 13;})
     .elasticY(true)
     .centerBar(true)
  //   .gap(gap)
@@ -627,7 +627,7 @@ function drawChart() {
 
     // for Test
     maxDate = new Date(new Date().getTime());
-    minDate = new Date(new Date().getTime()-7*24*60*60*1000);
+    minDate = new Date(new Date().getTime()-7*24*60*60*1000-12*60*60*1000);
 
     var data = out_data.rtnData;
     // console.log(out_data);
@@ -671,18 +671,17 @@ var type = ['success', 'error'];
     volumeChart
       // .width(600)
       .height(77)
-      .margins({top: 0, right: 50, bottom: 20, left: 40})
+      .margins({top: 0, right: 50, bottom: 20, left: 60})
       .dimension(moveDays)
       .group(stackGroup, type[0], sel_stack('0'))
       .centerBar(true)
-      .brushOn(false)
-      .gap(1)
-      .x(d3.time.scale().domain([minDate, maxDate]))      
+      .brushOn(false)      
+      .x(d3.time.scale().domain([minDate, maxDate]))            
       //.yAxisPadding()
       .elasticY(true)
       .round(d3.time.day.round)
       .alwaysUseRounding(true)
-      .xUnits(d3.time.days)
+      .xUnits(function(){return 8;})      
       .title(function(d) {
        for(var i=0; i<type.length; i++) {
         if(this.layer == type[i])                   
