@@ -835,7 +835,7 @@
   ]]></query>
   <query id='selectJiraAccReq'><![CDATA[
       {
-        "index" : "filebeat_jira_access-2017.06.01",
+        "index" : #index#,
         "type" : "access",       
         "body" : {
           "size"   : 350,
