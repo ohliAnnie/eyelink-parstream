@@ -38,7 +38,7 @@ function getData() {
   var raw = [], match = {};
   var iso = d3.time.format.utc("%Y-%m-%dT%H:%M:%S.%LZ");
   var sDate = iso(new Date(start.getTime()-30*1000+9*60*60*1000)).split('.');
-  var nDate = iso(new Date(now.getTime()+9*60*60*1000)).split('.');
+  var nDate = iso(new Date(now.getTime()+30*1000+9*60*60*1000)).split('.');
   console.log(sDate, nDate);
   $.ajax({
     url: "/analysis/restapi/getClusterNodePower" ,
@@ -123,13 +123,13 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id) {
         var yStart = 0, yEnd = 280;
         break;
       case 'ampere' :
-        var yStart = 0, yEnd = 2;
+        var yStart = 0, yEnd = 1.5;
         break;
       case 'active_power' :
         var yStart = 0, yEnd = 200;
         break;
       case 'power_factor' :
-        var yStart = 0, yEnd = 2;
+        var yStart = 0, yEnd = 1.5;
         break;      
     }
     var y = d3.scale.linear()    
@@ -139,7 +139,8 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id) {
     var line = d3.svg.line()
     .interpolate('basis')
     .x(function(d, i) {       
-     return x(now - (limit - 1 - i) * duration)  })
+      return x(now)  })
+     //return x(now - (limit - 1 - i) * duration)  })
     .y(function(d) {      return y(d)   })
 
   var valueline = d3.svg.line()
