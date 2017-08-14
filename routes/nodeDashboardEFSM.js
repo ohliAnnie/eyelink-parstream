@@ -17,6 +17,11 @@ router.get('/', function(req, res, next) {
   res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc }); 
 });
 
+ router.get('/error_pop', function(req, res, next) { 
+  res.render('./dashboard/error_pop', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc });
+});
+
+
 router.get('/timeseries', function(req, res, next) {
   // console.log(_rawDataByDay);
   mainmenu.dashboard = '';

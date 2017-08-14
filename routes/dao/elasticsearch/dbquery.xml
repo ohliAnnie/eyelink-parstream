@@ -838,7 +838,7 @@
         "index" : #index#,
         "type" : "access",       
         "body" : {
-          "size"   : 350,
+          "size"   : 100,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["request", "clientip", "auth"],
           "query" : { "match_all" : { } }
