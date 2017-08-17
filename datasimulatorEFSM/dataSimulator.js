@@ -24,7 +24,19 @@ var queryProvider = new QueryProvider();
 const datafilepath = process.argv[2];
 const nodeId = process.argv[3];
 const type = 'corecode';
-const initialDataInDays = ( process.argv[4] == null ? 0 : process.argv[4] );  
+const initialDataInDays = ( process.argv[4] == null ? 0 : process.argv[4] ); 
+
+// startDatetimeToSkip : 데이터의 시간이 아니라 12시간 차이를 계산한 시간을 줘야 함
+const startDatetimeToSkip = ( process.argv[5] == null ? null : moment(process.argv[5]) );
+
+// TODO : 현재까지 입력된 데이터 이후의 데이터부터 입력하려면 initialDataInDays로 일자 기준을 잡고, startDatetimeToSkip로 시간을 잡아줘야 한다.
+// 이것을 startDatetimeToSkip 하나로만 처리할 수 있도록 하면 좋을 듯 
+logger.info('=========================================================');
+logger.info('== Data File Path        : ', datafilepath);
+logger.info('== Node ID               : ', nodeId);
+logger.info('== Initial Data In Days  : ', initialDataInDays);
+logger.info('== Start Datetime        : ', startDatetimeToSkip);
+logger.info('=========================================================');
 
 var lineReader = require('readline').createInterface({
   input: fs.createReadStream(datafilepath)
@@ -46,7 +58,6 @@ var processedDays = 0;
 // var cur_datetime = moment(datetime.create().format('Y-m-d H:M:S'));
 var cur_datetime = moment(datetime.create().format('Y-m-d'));
 var prev_month_datetime = cur_datetime.subtract(initialDataInDays, 'days');
-
 var needNewMapping = true;
 
 // 실제 라인 단위로 데이터 읽어와서 처리하는 로직 시작.
@@ -72,15 +83,16 @@ lineReader.on('line', function (line) {
           curDate = event_date;
 
           if ( processedDays >= initialDataInDays ){
-
               initialDataProcessed = true;
-              
-              logger.debug('=======================================');
-              logger.debug('=========== ' + initialDataInDays + ' days passed ============');
-              logger.debug('=======================================');
           }
+          logger.debug('=======================================');
+          logger.debug('=========== ' + initialDataInDays + ' days passed ============');
+          logger.debug('=======================================');
+
           needNewMapping = true;
       }
+      // var cur_kor_datetime = prev_month_datetime.format('YYYY-MM-DD') + ' ' + cur_datetime.format('HH:mm:ss');
+      // TODO : Testing......12시간 차이 만들기 (밤낮 바꾸기)
       var cur_kor_datetime = prev_month_datetime.format('YYYY-MM-DD') + ' ' + cur_datetime.format('HH:mm:ss');
 
       // 이벤트 타임을 현재 일자에 맞게 변경하기 (입력시 필요한 값으로 변경)
@@ -88,33 +100,41 @@ lineReader.on('line', function (line) {
       data_arr[3] = cur_kor_datetime.split(' ')[0] + 'T' + data_arr[3].split(' ')[1];
 
       var curDateTime = moment(cur_kor_datetime, 'YYYY-MM-DD HH:mm:ss');
-      var eventDateTime = moment(data_arr[3], 'YYYY-MM-DD HH:mm:ss');
-      var diffSeconds = eventDateTime.diff(curDateTime, 'seconds');
+      var nextEventDateTime = moment(data_arr[3], 'YYYY-MM-DD HH:mm:ss').subtract(12, 'hours');
+      data_arr[3] = data_arr[3].split('T')[0] + 'T' + nextEventDateTime.format('HH:mm:ss');
+
+      var diffSeconds = nextEventDateTime.diff(curDateTime, 'seconds');
       
-      logger.debug('processingDateTime : ',event_date + ' ' + cur_kor_datetime.split(' ')[1],', eventDateTime : ',data_arr[3].split('T').join(' '),', diffSeconds : ',diffSeconds);
+      // logger.debug('ProcessingDateTime : ',event_date + ' ' + cur_kor_datetime.split(' ')[1],', Next Event DateTime : ',data_arr[3].split('T').join(' '),', diffSeconds : ',diffSeconds);
+      logger.debug('Processing DateTime : ',event_date + ' ' + data_arr[3].split('T')[1],', Next Event DateTime : ',data_arr[3].split('T').join(' ') );
 
-      var index = 'corecode-' + cur_kor_datetime.split(' ')[0];
+      // TODO : 공통 로직 함수로 처리....
+      if ( startDatetimeToSkip == null || nextEventDateTime.diff(startDatetimeToSkip, 'seconds') > 0 ){
+          var index = 'corecode-' + cur_kor_datetime.split(' ')[0];
 
-      if ( needNewMapping ) {
-        queryProvider.defineMappings(index);
-        needNewMapping = false;
-      }
-      if ( !initialDataProcessed ){
-          sleep(100);
-          insertData(index, type, data_arr.join(','));
-      } 
-      else {
-
-          if ( diffSeconds <= 0 ) {
-              sleep(100);
-              insertData(index, type, data_arr.join(','));
-          } else if ( diffSeconds > 0 ){
-            
-              logger.info('Waiting ', diffSeconds, ' seconds.....');
-
-              sleep(diffSeconds * 1000);
-              insertData(index, type, data_arr.join(','));
+          if ( needNewMapping ) {
+            queryProvider.defineMappings(index);
+            needNewMapping = false;
           }
+          if ( !initialDataProcessed ){
+              sleep(200);
+              insertData(index, type, data_arr.join(','));
+          } 
+          else {
+
+              if ( diffSeconds <= 0 ) {
+                  sleep(200);
+                  insertData(index, type, data_arr.join(','));
+              } else if ( diffSeconds > 0 ){
+                
+                  logger.info('Waiting ', diffSeconds, ' seconds.....');
+
+                  sleep(diffSeconds * 1000);
+                  insertData(index, type, data_arr.join(','));
+              }
+          }
+      } else {
+          // skip
       }
   } else {
     notMatchedCount += 1;
@@ -126,16 +146,17 @@ lineReader.on('line', function (line) {
 });
 
 function printUsage() {
-  console.log('Usage : $ node dataSimulator.js [data source file path] [node id] {days for initial data}');
+  console.log('Usage : $ node dataSimulator.js [data source file path] [node id] {days for initial data} {insert start datetime}');
   console.log('    []: required, {}: optional');
   console.log('');
-  console.log('Ex. $ node dataSimulator.js ./source.csv 0002.00000039 30');
+  console.log('Ex. $ node dataSimulator.js ./source.csv 0002.00000039 30 \'2017-08-11 11:00:00\'');
+  // node dataSimulator.js ../source/busan_tb_node_raw.0315.csv 0002.00000039 38 '2017-08-17 05:00:00'
 }
 function insertData(index, type, linedata){
 
   logger.debug('Inserting data - index: ', index, ', data : ', linedata);
-  
-  queryProvider.insertData(type, 'insertData', makeJsonData(index, type, linedata));
+  // TODO : uncomment when deploy
+  // queryProvider.insertData(type, 'insertData', makeJsonData(index, type, linedata));
 }
 
 function loadQuery(queryFilePath) {
