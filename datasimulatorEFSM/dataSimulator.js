@@ -26,8 +26,8 @@ const nodeId = process.argv[3];
 const type = 'corecode';
 const initialDataInDays = ( process.argv[4] == null ? 0 : process.argv[4] ); 
 
-// startDatetimeToSkip : 데이터의 시간이 아니라 12시간 차이를 계산한 시간을 줘야 함
-const startDatetimeToSkip = ( process.argv[5] == null ? null : moment(process.argv[5]) );
+// startDatetimeToSkip : 실제 데이터의 시간을 입력받아서 12시간 차이를 계산한 시간으로 변경
+const startDatetimeToSkip = ( process.argv[5] == null ? null : moment(process.argv[5]).subtract(12, 'hours') );
 
 // TODO : 현재까지 입력된 데이터 이후의 데이터부터 입력하려면 initialDataInDays로 일자 기준을 잡고, startDatetimeToSkip로 시간을 잡아줘야 한다.
 // 이것을 startDatetimeToSkip 하나로만 처리할 수 있도록 하면 좋을 듯 
@@ -65,11 +65,16 @@ lineReader.on('line', function (line) {
 
   if ( line.startsWith(nodeId) ) {
       matchedCount += 1;
+      logger.info('---------------------------------------------------------------------------');
       logger.info('Processing data : ', line);
       
       cur_datetime = moment(datetime.create().format('Y-m-d H:M:S'));
 
       var data_arr = line.split(',');
+
+      var eventDatetime12early = moment(data_arr[3]).subtract(12, 'hours');
+
+      data_arr[3] = eventDatetime12early.format('YYYY-MM-DD HH:mm:ss');
 
       var event_date = data_arr[3].split(' ')[0];
 
@@ -92,15 +97,13 @@ lineReader.on('line', function (line) {
           needNewMapping = true;
       }
       // var cur_kor_datetime = prev_month_datetime.format('YYYY-MM-DD') + ' ' + cur_datetime.format('HH:mm:ss');
-      // TODO : Testing......12시간 차이 만들기 (밤낮 바꾸기)
       var cur_kor_datetime = prev_month_datetime.format('YYYY-MM-DD') + ' ' + cur_datetime.format('HH:mm:ss');
 
       // 이벤트 타임을 현재 일자에 맞게 변경하기 (입력시 필요한 값으로 변경)
-      data_arr[2] = cur_kor_datetime.split(' ')[0] + 'T' + data_arr[2].split(' ')[1];
       data_arr[3] = cur_kor_datetime.split(' ')[0] + 'T' + data_arr[3].split(' ')[1];
 
       var curDateTime = moment(cur_kor_datetime, 'YYYY-MM-DD HH:mm:ss');
-      var nextEventDateTime = moment(data_arr[3], 'YYYY-MM-DD HH:mm:ss').subtract(12, 'hours');
+      var nextEventDateTime = moment(data_arr[3], 'YYYY-MM-DD HH:mm:ss');
       data_arr[3] = data_arr[3].split('T')[0] + 'T' + nextEventDateTime.format('HH:mm:ss');
 
       var diffSeconds = nextEventDateTime.diff(curDateTime, 'seconds');
@@ -108,7 +111,6 @@ lineReader.on('line', function (line) {
       // logger.debug('ProcessingDateTime : ',event_date + ' ' + cur_kor_datetime.split(' ')[1],', Next Event DateTime : ',data_arr[3].split('T').join(' '),', diffSeconds : ',diffSeconds);
       logger.debug('Processing DateTime : ',event_date + ' ' + data_arr[3].split('T')[1],', Next Event DateTime : ',data_arr[3].split('T').join(' ') );
 
-      // TODO : 공통 로직 함수로 처리....
       if ( startDatetimeToSkip == null || nextEventDateTime.diff(startDatetimeToSkip, 'seconds') > 0 ){
           var index = 'corecode-' + cur_kor_datetime.split(' ')[0];
 
@@ -154,9 +156,8 @@ function printUsage() {
 }
 function insertData(index, type, linedata){
 
-  logger.debug('Inserting data - index: ', index, ', data : ', linedata);
-  // TODO : uncomment when deploy
-  // queryProvider.insertData(type, 'insertData', makeJsonData(index, type, linedata));
+  logger.debug('Inserting data - index: ',index,', data : ',linedata);
+  queryProvider.insertData(type, 'insertData', makeJsonData(index, type, linedata));
 }
 
 function loadQuery(queryFilePath) {
