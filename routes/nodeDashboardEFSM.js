@@ -17,12 +17,23 @@ router.get('/', function(req, res, next) {
   res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc }); 
 });
 
+ router.get('/error_pop', function(req, res, next) { 
+  res.render('./dashboard/error_pop', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc });
+});
+
+
 router.get('/timeseries', function(req, res, next) {
   // console.log(_rawDataByDay);
   mainmenu.dashboard = '';
   mainmenu.timeseries = ' open selected';
   res.render('./dashboard/timeseries'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc });
 });
+
+router.get('/inspector', function(req, res, next) {
+  mainmenu.dashboard = ' open selected';  
+  res.render('./dashboard/inspector', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc });
+});
+
 
 router.get('/trenddata', function(req, res, next) {
   mainmenu.dashboard = ' open selected';
@@ -255,11 +266,9 @@ router.get('/restapi/selectJiraAccScatter', function(req, res, next) {
 
 router.get('/restapi/selectJiraAccDash', function(req, res, next) {
   console.log('dashboard/restapi/selectJiraAccDash');
-  var date = new Date().toString().split(' ');
-  
-  var in_data = {
-    index : req.query.index
-  };  
+  var date = new Date().toString().split(' ');  
+  var in_data = {    index : req.query.index, START : req.query.START, END : req.query.END  };  
+  console.log(in_data);
   queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccDash", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');
@@ -319,7 +328,6 @@ router.get('/selected_detail', function(req, res, next) {
   queryProvider.selectSingleQueryByID2("dashboard","getTransaction", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');
-    console.log(out_data);    
     var data = [], detail = [];
     out_data.forEach(function(d){
       if(d._type == 'transactionList') {
@@ -333,25 +341,25 @@ router.get('/selected_detail', function(req, res, next) {
     }  
     res.render('./dashboard/scatter_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : data, detail : detail });
   });  
-});
+});                 
 
 router.get('/restapi/selectScatterSection', function(req, res, next) {
   console.log('dashboard/restapi/selectScatterSection');  
   var s = new Date(parseInt(req.query.start)).toString().split(' ');
   var e = new Date(parseInt(req.query.end)).toString().split(' ');
+  var y = new Date(parseInt(req.query.end)-24*60*60*1000).toString().split(' ');
   var start = s[3]+'/'+s[1]+'/'+s[2]+':'+s[4]+' +0000';
   var end = e[3]+'/'+e[1]+'/'+e[2]+':'+e[4]+' +0000';  
   var date = new Date().toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var in_data = {
-    today: indexAcc+date[3]+"."+mon[date[1]]+"."+date[2] ,
+    index:  [indexAcc+e[3]+"."+mon[e[1]]+"."+e[2],  indexAcc+y[3]+"."+mon[y[1]]+"."+y[2]],
     START : start,
     END : end,
     MIN : parseInt(req.query.min),
     MAX : parseInt(req.query.max)  
   };
-  queryProvider.selectSingleQueryByID2("dashboard","selectScatterSection", in_data, function(err, out_data, params) {
-     console.log(out_data);
+  queryProvider.selectSingleQueryByID2("dashboard","selectScatterSection", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -385,8 +393,7 @@ router.get('/restapi/countAccJiraError', function(req, res, next) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    }    
-    console.log(out_data);  
+    }        
     res.json({rtnCode: rtnCode, rtnData: out_data });
   });
 });
@@ -432,8 +439,7 @@ router.get('/restapi/getTransactionDetail', function(req, res, next) {
     index : req.query.index ,
     id : req.query.id
   };
-  queryProvider.selectSingleQueryByID2("dashboard","getTransactionDetail", in_data, function(err, out_data, params) {
-     console.log(out_data);
+  queryProvider.selectSingleQueryByID2("dashboard","getTransactionDetail", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
@@ -451,8 +457,7 @@ router.get('/restapi/getTransaction', function(req, res, next) {
     id : req.query.id
   };
   queryProvider.selectSingleQueryByID2("dashboard","getTransactionList", in_data, function(err, out_data, params) {
-    // console.log(out_datsa);
-    var rtnCode = CONSTS.getErrData('0000');
+       var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
     }    
@@ -526,6 +531,40 @@ router.get('/restapi/getTotalTimeseries', function(req, res, next) {
     res.json({rtnCode: rtnCode, rtnData: out_data });
   });
 });
+
+router.get('/restapi/getRestimeCount', function(req, res, next) {
+  console.log('dashboard/restapi/getRestimeCount');    
+  var in_data = {
+    index : req.query.index,
+    gte : req.query.gte,
+    lte : req.query.lte
+  };
+  queryProvider.selectSingleQueryByID3("dashboard","getRestimeCount", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');    
+    console.log(out_data)  ;
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }    
+    res.json({rtnCode: rtnCode, rtnData: out_data.group_by_timestamp.buckets });
+  });
+});
+
+router.get('/restapi/getAppmapdata', function(req, res, next) {
+  console.log('dashboard/restapi/getAppmapdata');    
+  var in_data = {
+    index : 'applicationmapdata-2017-08',
+    //gte : req.query.gte,
+    //lte : req.query.lte
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","selectAppmapdata", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');    
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }    
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
 
 // ###########################################################
 
