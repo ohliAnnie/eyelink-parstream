@@ -3,6 +3,7 @@ block style
   link(rel='stylesheet', href='/assets/leaflet/dc.css')
   link(rel='stylesheet', href='/stylesheets/style.css')
   link(type='text/css', rel='stylesheet', href='/assets/sample/style/bigscatterchart.css') 
+  link(type='text/css', rel='stylesheet', href='/assets/sample/style/jquery-ui.css')
   link(href='/assets/sample/style/dashboard_main.css', rel='stylesheet')      
   link(href='/assets/sample/style/sankey01.css', rel='stylesheet')
 block script
@@ -17,6 +18,7 @@ block script
   script(src='/assets/sample/js/cytoscape-dagre.js')     
   script(type='text/javascript', src='/assets/sample/js/modernizr.js')
   script(type='text/javascript', src='/assets/sample/js/underscore-min.js') 
+  //script(type='text/javascript', src='/assets/sample/js/date.js')
   script(type='text/javascript', src='/assets/sample/js/jquery.Class.js')
   script(type='text/javascript', src='/assets/sample/js/jquery.dragToSelect.js')
   script(type='text/javascript', src='/assets/sample/js/jquery.BigScatterChart.js')   
@@ -32,7 +34,7 @@ block script
       getData();
       $( "#btn_sankey" ).click(function() {
         console.log('test');
-        $( "#sankey" ).slideToggle( "slide" );
+        $( "#cy" ).slideToggle( "slide" );
       });
     });
 block content    
@@ -89,9 +91,9 @@ block content
               a#btn_sankey.icon-btn.sankey-toggler.uppercase(style='z-index: 10;')
                 i.fa.fa-arrow-left                
                 div SANKEY  
-              .chart(style='height:510px; z-index: 2') 
-                #sankey(style='height:500px; width:95%;')
+              .chart(style='height:500px; z-index: 2')                 
                 #cy(style='height:500px; width:95%; z-index: 2')                               
+                #sankey(style='height:495px; width:95%;')
               .portlet-body.smap-chart-box
                 .row
                   .col-md-12
@@ -108,10 +110,10 @@ block content
                           a.btn-icon-only.grey(href='#', title='도움말')
                             i.fa.fa-question-circle(data-toggle='modal', aria-hidden='true')
                     .row(style='height:')
-                      .col-md-3.smap-chart
+                      .col-md-2.smap-chart
                         p Count by All
                         #test
-                      .col-md-3.smap-chart(id='')
+                      .col-md-4.smap-chart(id='')
                         p Count by Hour
                         #load                      
                       .col-md-6.smap-chart(id='')
