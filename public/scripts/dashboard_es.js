@@ -19,9 +19,8 @@ $(function(){ // on dom ready
     }
   });
 }); // on dom ready
-
+var nodeList = [];
 function makeElesJson(data){  
-  console.log(data);
   var nodes = [], edges = [], nodekey = [], edgekey = [];
   data.forEach(function(d){    
     if(nodekey[d._source.application_id]!=null) {       
@@ -31,6 +30,7 @@ function makeElesJson(data){
     } else { 
       nodekey[d._source.application_id] = 0;                  
       var img = d._source.application_name.split(' ');
+      nodeList.push({ id : d._source.application_id, status : 0 });
       nodes.push({ data : { id : d._source.application_id, name : d._source.application_name, img : '../assets/sample/'+img[0]+'.png', parent : 'p_'+d._source.application_id }});      
       if(parseInt(d._source.state) >= 400 ) {
         nodekey[d._source.application_id]++;
@@ -51,8 +51,7 @@ function makeElesJson(data){
     var id = key.split('-');    
     edges.push({ data : { count : edgekey[key], source : id[0], target : id[1]} });
   }
-  var elesJson = { nodes : nodes, edges : edges };
-  console.log(elesJson);
+  var elesJson = { nodes : nodes, edges : edges };  
   getServerMap(elesJson);
 }
 
@@ -167,13 +166,19 @@ function getServerMap(elesJson) {
       window.cy = this;
       // giddy up
     }
-  }); 
-  console.log(elesJson);
-
- cy.on('click', 'node', function(evt){
+  });
+  console.log(nodeList);  
+  cy.on('click', 'node', function(evt){
     console.log(this);
-      console.log( 'clicked ' + this.id() );
-  }); 
+     console.log( 'clicked ' + this.id() );
+     var id = this.id();
+     nodeList.forEach(function(d){      
+      if(d.id == id){
+         d.status = (d.status == 0) ?1 : 0
+      }
+     });
+     console.log(nodeList);
+  });  
 };
 
 function getDash(day) {  
@@ -293,10 +298,10 @@ function drawDash(data, start, end) {
               var c = a[3].split(' ');
               var mon = {'Jan' : 1, 'Feb' : 2, 'Mar' : 3, 'Apr' : 4, 'May' : 5, 'Jun' : 6, 'Jul' : 7, 'Aug' : 8, 'Sep' : 9, 'Oct' : 10, 'Nov' : 11, 'Dec' : 12 };
               var date = new Date(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]).getTime()+9*60*60*1000;                  
-              if(date.getTime() < startS){
-                startS = date.getTime();            
+              if(date < startS){
+                startS = date;            
               } else if(date > endS){
-                endS = date.getTime();        
+                endS = date;        
               }
               dataS.push({
                 x : date,
@@ -436,12 +441,10 @@ chart
 }
 
 function displayCount() {    
-  var indexs = $('#indexs').val();
-  console.log(indexs);
+  var indexs = $('#indexs').val();  
   var mon = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];  
   var day = new Date();
-  var d = day.toString().split(' ');
-  console.log(d);
+  var d = day.toString().split(' ');  
   var pday = day.getTime() - 24*60*60*1000;
   pday = new Date(pday);      
     $.ajax({
@@ -450,7 +453,6 @@ function displayCount() {
     type: "GET",    
     data: { index: indexs+day.getFullYear()+"."+mon[day.getMonth()]+"."+d[2]},
     success: function(result) {
-      console.log(result);
       if (result.rtnCode.code == "0000") {
         //- $("#successmsg").html(result.message);        
          $('#dayCnt').text(result.rtnData);               
