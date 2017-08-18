@@ -145,41 +145,6 @@
      ]]></query>
   </user>
   <dashboard>
-    <query id='selectSuccessCount'><![CDATA[
-    {
-      index: 'corecode-2017-05',
-      type: 'corecode',
-      body: {
-        query: {
-          match: {
-            node_id : '0001.00000001'
-          }
-        }
-      }
-    }
-     ]]></query>   
-    <query id='selectEventRawData'><![CDATA[
-    {
-      "index": "corecode-2017-05",
-      "type": "corecode",
-      "body": {
-        "size" : -1,
-        "_source" : ["node_id", "event_time", "event_type"],
-        "query": {
-          "bool": {
-            "filter" : {
-              "range" : {
-                "event_time" : {
-                  "gte" : "2016-11-21",
-                  "lte" : "2016-11-22"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    ]]></query>
   <query id='selectJiraAccId'><![CDATA[
       {
         "index" : #today#,
@@ -192,18 +157,36 @@
         }
       } 
   ]]></query>
-   <query id='selectJiraAccReq'><![CDATA[
+  <query id='selectJiraAccReq'><![CDATA[
       {
-        "index" : #today#,
+        "index" : [##index##],
         "type" : "access",       
         "body" : {
-          "size"   : 20,
+          "size"   : 10000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["request", "clientip", "auth"],
-          "query" : { "match_all" : { } }
-        }
-      } 
-  ]]></query>
+          "query" : { 
+            "bool" : {
+              "must" : [      { "match_all": {} }        ],
+              "filter" : [
+                {
+                  "bool" : {
+                    "should" : [
+                      { "range" : 
+                        { "@timestamp" :
+                          { "gte" : #START#,
+                            "lte" : #END# }
+                        }
+                      }
+                    ]
+                  }                    
+                }              
+              ]
+            }
+          }
+        } 
+      }
+  ]]></query>  
   <query id='selectJiraAccDash'><![CDATA[
       {
         "index" : [##index##],
@@ -790,25 +773,13 @@
         "index" : #index#,
         "type" : "access",       
         "body" : {
-          "size"   : 100,
+          "size"   : 10000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["request", "clientip", "auth"],
           "query" : { "match_all" : { } }
         }
       } 
   ]]></query>
-  <query id='selectJiraAccScatter'><![CDATA[
-      {
-        "index" : "filebeat_jira_access-2017.06.01",
-        "type" : "access",                    
-        "body" : {       
-          "size"   : 10000, 
-          "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["timestamp", "response", "responsetime"],
-          "query" : { "match_all" : { }    }
-           }
-        } 
-  ]]></query>  
   <query id='selectScatterSection'><![CDATA[
       {
         "index" : "filebeat_jira_access-2017.06.01",

@@ -1,6 +1,8 @@
 
 $(function(){ // on dom ready  
-  getDash(new Date);
+  getDash(new Date);  
+  displayCount();
+  drawChart();      
    $.ajax({
     url: "/dashboard/restapi/getAppmapdata" ,
     dataType: "json",
@@ -19,9 +21,12 @@ $(function(){ // on dom ready
     }
   });
 }); // on dom ready
+
 var nodeList = [];
+
 function makeElesJson(data){  
   var nodes = [], edges = [], nodekey = [], edgekey = [];
+  var color = ["#d5d5d5", "#57a115", "#de9400", "#de3636"];
   data.forEach(function(d){    
     if(nodekey[d._source.application_id]!=null) {       
       if(parseInt(d._source.state) >=400 ) {
@@ -42,6 +47,15 @@ function makeElesJson(data){
       edgekey[d._source.application_id+'-'+d._source.to_application_id] = 1;
     }
   });
+  console.log(nodekey);
+  nodes.forEach(function(d){    
+    if(nodekey[d.data.id]!=0){
+      d.data.color = color[3];
+    } else {
+      d.data.color = color[0];
+    }
+  });
+  console.log(nodes);
   for(key in nodekey) {
     if(nodekey[key] != 0){
       nodes.push({ data : { id : 'p_'+key, name : nodekey[key] ,img : '../assets/sample/back.png' }});      
@@ -55,7 +69,7 @@ function makeElesJson(data){
   getServerMap(elesJson);
 }
 
-function getServerMap(elesJson) {  
+function getServerMap(elesJson) {    
   var cy = cytoscape({
     container: document.getElementById('cy'),
 
@@ -70,8 +84,8 @@ function getServerMap(elesJson) {
           'height': '90px',
           'content': 'data(name)',
           'background-fit': 'cover',
-           'border-color': '#000',
-          'border-width': 1,
+           'border-color': 'data(color)',
+          'border-width': 3,
           'border-opacity': 0.5,
           'text-outline-width': 2,
           'text-outline-color': 'white',          
@@ -166,27 +180,23 @@ function getServerMap(elesJson) {
       window.cy = this;
       // giddy up
     }
-  });
-  console.log(nodeList);  
-  cy.on('click', 'node', function(evt){
-    console.log(this);
-     console.log( 'clicked ' + this.id() );
+  });  
+  cy.on('click', 'node', function(evt){    
      var id = this.id();
      nodeList.forEach(function(d){      
       if(d.id == id){
          d.status = (d.status == 0) ?1 : 0
       }
      });
-     console.log(nodeList);
   });  
 };
 
 function getDash(day) {  
   console.log(day);
-  var yDay = new Date(day.getTime()-24*60*60*1000);  
+  var yDay = new Date(day.getTime()-24*60*60*1000);    
   var indexs = $('#indexs').val();
   var d = day.toString().split(' ');  
-  var y = yDay.toString().split(' ');
+  var y = yDay.toString().split(' ');  
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   $.ajax({
     url: "/dashboard/restapi/selectJiraAccDash",
@@ -233,7 +243,110 @@ function getDash(day) {
     }
   });
 
+$.ajax({
+    url: "/dashboard/restapi/selectJiraAccReq" ,
+    dataType: "json",
+    type: "get",
+    data: { index: [indexs+d[3]+"."+mon[d[1]]+"."+d[2], indexs+y[3]+"."+mon[y[1]]+"."+y[2]],
+              START : y[3]+"-"+mon[y[1]]+"-"+y[2]+'T15:00:00', END : d[3]+"-"+mon[d[1]]+"-"+d[2]+"T15:00:00"},
+    success: function(result) {
+      console.log(result);
+      if (result.rtnCode.code == "0000") {        
+        makeData(result.rtnData);
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });     
 }
+
+function getDataByToggle(gap) {  
+  d3.select("#test").select("svg").remove();
+  d3.select("#load").select("svg").remove();
+  d3.select("#sankey").select("svg").remove();
+  var day = new Date();
+  var yDay = new Date(day.getTime()-24*60*60*1000);  
+  var indexs = $('#indexs').val();
+  var d = day.toString().split(' ');  
+  var y = yDay.toString().split(' ');
+  var yyDay = new Date(day.getTime()-48*60*60*1000);  
+  var yy = yyDay.toString().split(' ')
+  var now = new Date().getTime() - 9*60*60*1000;
+  var e = new Date(now).toString(' ').split(' ');
+  var s = new Date(now-gap*60*1000).toString().split(' ');
+  console.log(e);
+  console.log(s);
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  $.ajax({
+    url: "/dashboard/restapi/selectJiraAccDash",
+    dataType: "json",
+    type: "GET",    
+    data: { index: [indexs+d[3]+"."+mon[d[1]]+"."+d[2], indexs+y[3]+"."+mon[y[1]]+"."+y[2], indexs+yy[3]+"."+mon[yy[1]]+"."+yy[2]],
+              START : s[3]+"-"+mon[s[1]]+"-"+s[2]+'T'+s[4], END : e[3]+"-"+mon[e[1]]+"-"+e[2]+"T"+e[4]},
+    success: function(result) {
+      
+      if (result.rtnCode.code == "0000") {
+        //- $("#successmsg").html(result.message);        
+        var data = [];
+        var start=new Date().getTime(), end=new Date(1990,0,0,0,0,0).getTime();
+        result.rtnData.forEach(function(d){                    
+          if(d._source.response != null) {
+            var a = d._source.timestamp.split(':');            
+            var b = a[0].split('/');
+            var c = a[3].split(' ');              
+            var date = new Date(b[2], parseInt(mon[b[1]])-1, b[0], a[1], a[2], c[0]).getTime()+9*60*60*1000;             
+            if(date < start){            
+              start = date;            
+            } else if(date > end){            
+              end = date;        
+            }          
+              data.push({
+                x : date,
+                y : d._source.responsetime,
+                date : new Date(date),
+               hour : new Date(date).getHours(),
+                type : d._source.response >= 400? 'Error' : (d._source.responsetime >= 300 ? 'Redirection' : 'Success'), 
+                term : d._source.response >= 400? 'Error' : (d._source.responsetime < 1000 ? '1s' : (d._source.responsetime < 3000 ? '3s' : (d._source.responsetime < 5000 ? '5s' : 'Slow'))),
+                index : d._source.response >= 400? 4 : (d._source.responsetime < 1000 ? 0 : (d._source.responsetime < 3000 ? 1 : (d._source.responsetime < 5000 ? 2 : 3)))
+              });
+            }
+        });  
+        drawDash(data, start, end);
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
+
+$.ajax({
+    url: "/dashboard/restapi/selectJiraAccReq" ,
+    dataType: "json",
+    type: "get",
+    data: { index: [indexs+d[3]+"."+mon[d[1]]+"."+d[2], indexs+y[3]+"."+mon[y[1]]+"."+y[2], indexs+yy[3]+"."+mon[yy[1]]+"."+yy[2]],
+              START : s[3]+"-"+mon[s[1]]+"-"+s[2]+'T'+s[4], END : e[3]+"-"+mon[e[1]]+"-"+e[2]+"T"+e[4]},
+    success: function(result) {
+      console.log(result);
+      if (result.rtnCode.code == "0000") {        
+        makeData(result.rtnData);
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });     
+}
+
 
 var cnt = 0;
 function drawDash(data, start, end) {  
@@ -379,8 +492,8 @@ function summary(data, start, end) {
     return{};
   });
   
-var term = ['1s', '3s', '5s', 'Slow', 'Error'];
-chart
+  var term = ['1s', '3s', '5s', 'Slow', 'Error'];
+  chart
     .width(window.innerWidth*0.14)
     .height(320)    
     .margins({left: 40, top: 5, right: 10, bottom: 40})
@@ -688,16 +801,17 @@ var type = ['success', 'error'];
         var el = document.getElementById('chart1');
 //        el.parentNode.removeChild(el);
         disp = el.style.display;
-        el.style.display = 'none';
+        el.style.display = 'none';z
         el.offsetHeight;
         el.style.display ='block';
 
         document.getElementById('chart1').remove();*/        
         d3.select("#test").select("svg").remove();
         d3.select("#load").select("svg").remove();
+        d3.select("#sankey").select("svg").remove();
         /*document.createElement('chart1');*/
         console.log(d.x);
-        getDash(d.x);
+        getDash(d.x);        
       });  
     });    
     dc.renderAll(markerName);
@@ -709,8 +823,120 @@ function clear(cvsId) {
     var canvas = document.getElementsByClassName("bigscatterchart-Success");    
     console.log(canvas);    
     ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    
-    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);      
 }
+
+function makeData(result){
+  var node={}, nodes = [], line = {}, lines = [], req={},  last = {}, lineNode = {}, id={};
+ var colors=['#FF0000', '#FF5E00', '#FFBB00', '#FFE400', '#ABF200', '#1DDB16', '#00D8FF', '#0054FF', '#0100FF', '#5F00FF',
+                    '#FF00DD', '#FF007F', '#FFA7A7', '#FFE08C', '#CEF279', '#B2EBF4', '#B5B2FF', '#FFB2F5', '#CC723D', '#008299'];  
+ var reqCnt = 0, nodeCnt = 0, lineCnt = 0, lineNodeCnt = 0, idCnt = 0;        
+ var nodeNo = 0;
+ var nodeList = [];
+ result.forEach(function(d) {        
+    var a = d._source.request.split('?');                         
+    var c = a[0].split('.');    
+    if(c[c.length-1]!='js'&&c[c.length-1]!='css'&&c[c.length-1]!='png'&&c[c.length-1]!='woff'&&c[c.length-1]!='json'&&c[c.length-1]!='jsp'&&c[c.length-1]!='jspa'&&c[c.length-1]!='ico'&&c[c.length-1]!='svg'&&c[c.length-1]!='gif'){     
+    var b = a[0].split('/');
+
+    if(req[a[0]] == null) {          
+      req[a[0]] = { no : reqCnt++, cnt : 1};
+    } else {
+      req[a[0]].cnt++;        
+    }        
+    
+    if(id[b[b.length-1]] == null) {
+      id[b[b.length-1]] = colors[idCnt++%20];                   
+    }
+    
+    var nodeId = b[b.length-1]+'_'+req[a[0]].no;       
+    
+    if(node[nodeId] ==null){
+      nodeList[nodeNo] = nodeId;
+      node[nodeId] ={ name : a[0], id : nodeId, no : nodeNo++ };          
+    }
+    if(last[d._source.auth] != null){
+      var from = last[d._source.auth];
+      var to = nodeId;  
+      if(node[from].no > node[to].no){
+        from = nodeId;
+        to = last[d._source.auth];
+      }        
+      if(from != to){
+        if(line[node[to].no+'-'+node[from].no] == null){
+          if(lineNode[from] == null) {                
+            lineNode[from] = {};        
+            node[from].no = lineNodeCnt;        
+            nodes[lineNodeCnt++] = node[from];                        
+          }
+          if(lineNode[to] == null) {
+            lineNode[to] = {};    
+            node[to].no = lineNodeCnt;
+            nodes[lineNodeCnt++] = node[to];                                
+          }
+          var source = node[from].no;
+          var target = node[to].no;              
+          if(line[source+'-'+target] == null) {                
+            line[source+'-'+target] = { no : lineCnt };               
+            lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1 };                
+          } else {                            
+            lines[line[source+'-'+target].no].value += 0.0001;
+            lines[line[source+'-'+target].no].cnt++;
+          }
+        } else {                   
+          lines[line[node[to].no+'-'+node[from].no].no].value += 0.0001;
+          lines[line[node[to].no+'-'+node[from].no].no].cnt++;
+        }
+      } else {            
+       if(lineNode[to] == null) {
+          lineNode[to] = {};                  
+          node[to].no = lineNodeCnt;              
+          nodes[lineNodeCnt++] = node[to];                                
+        }  
+      }
+    }        
+    last[d._source.auth] =  node[nodeId].id;       
+  }
+   });
+
+ var json = {"nodes" :nodes, "links" : lines };
+ drawSankey({rtnData : json, id : id});
+}
+
+
+function drawSankey(data){    
+  console.log(data);
+  
+  console.log(data.id);
+  var colors = data.id;
+  /*var json = JSON.parse(data.rtnData); 
+  console.log(json);*/
+    var chart = d3.select("#sankey").append("svg").chart("Sankey.Path");
+   chart
+      .name(label)
+      .colorNodes(function(name, node) {
+        return color(node, 1) || colors.fallback;
+      })
+      .colorLinks(function(link) {
+        return color(link.source, 4) || color(link.target, 1) || colors.fallback;
+      })
+      .nodeWidth(15)
+      .nodePadding(10)
+      .spread(true)
+      .iterations(0)
+      .draw(data.rtnData);
+    function label(node) {
+      return node.name.replace(/\s*\(.*?\)$/, '');
+    }
+    
+    function color(node, depth) {
+      var id = node.id.replace(/(_score)?(_\d+)?$/, '');
+      if (colors[id]) {
+        return colors[id];
+      } else if (depth > 0 && node.targetLinks && node.targetLinks.length == 1) {
+        return color(node.targetLinks[0].source, depth-1);
+      } else {
+        return null;
+      }
+    }
+};
