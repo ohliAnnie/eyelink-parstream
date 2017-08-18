@@ -25,16 +25,18 @@ block script
   script(src='/assets/sample/js/sankey.js')
   script(src='/assets/sample/js/d3.chart.min.js')
   script(src='/assets/sample/js/d3.chart.sankey.min.js')    
-  script(type='text/javascript', src="/scripts/dashboard_es.js")
-  script(src='/assets/sample/script/sankey_main.js')    
+  script(type='text/javascript', src="/scripts/dashboard_es.js")  
   script.
     $(document).ready(function(e) {      
-      displayCount();
-      drawChart(); 
-      getData();
+ 
       $( "#btn_sankey" ).click(function() {
         console.log('test');
         $( "#cy" ).slideToggle( "slide" );
+      });
+      $('input[type="radio"]').on('click change', function(e) {
+        var time = {'10min' : 10, '30min' : 30, '1hour' : 60, '3hour' : 3*60, '6hour' : 6*60, '12hour' : 12*60, '24hour' : 24*60 };
+          getDataByToggle(time[e.target.id]);
+          console.log(e.target.id);            
       });
     });
 block content    
@@ -56,39 +58,30 @@ block content
             .portlet-title
               .caption.font-dark
                 span.caption-subject.bold.uppercase Server Map
-              .btn-group.actions(data-toggle='buttons')
+              .btn-group.actions(data-toggle='buttons')                    
                 label.btn.btn-default
-                  input.toggle(type='radio')
-                  |  Real Time
-                label.btn.btn-default.active
-                  input.toggle(type='radio')
-                  |  Last 5m
+                  input.toggle(type='radio' id='10min')
+                  |  Last 10m
                 label.btn.btn-default
-                  input.toggle(type='radio')
-                  |  20m
+                  input.toggle(type='radio' id='30min')
+                  |  Last 30m
                 label.btn.btn-default
-                  input.toggle(type='radio')
-                  |  1h
+                  input.toggle(type='radio' id ='1hour')
+                  |  Last 1h
                 label.btn.btn-default
-                  input.toggle(type='radio')
-                  |  3h
+                  input.toggle(type='radio' id ='3hour')
+                  |  Last 3h
                 label.btn.btn-default
-                  input.toggle(type='radio')
-                  |  6h
+                  input.toggle(type='radio' id ='6hour')
+                  |  Last 6h
                 label.btn.btn-default
-                  input.toggle(type='radio')
-                  |  12h
+                  input.toggle(type='radio' id ='12hour')
+                  |  Last 12h
                 label.btn.btn-default
-                  input.toggle(type='radio')
-                  |  1d
-                label.btn.btn-default
-                  input.toggle(type='radio')
-                  |  2d
-                label.btn.btn-default
-                  input.toggle(type='radio')
-                  i.fa.fa-search(aria-hidden='true')
+                  input.toggle(type='radio' id ='24hour')
+                  |  Last 24h
             .portlet-body(style='height:950px;  z-index: 2')
-              a#btn_sankey.icon-btn.sankey-toggler.uppercase(style='z-index: 10;')
+              a#btn_sankey.icon-btn.sankey-toggler.uppercase(style='z-index: 10; float: right;')
                 i.fa.fa-arrow-left                
                 div SANKEY  
               .chart(style='height:500px; z-index: 2')                 
@@ -101,11 +94,9 @@ block content
                       .portlet-title.smap-chart-title
                         .caption
                           span.caption-subject.bold
-                            | BACKEND API 
-                            span.badge.badge-danger  12 
-                            i.fa.fa-long-arrow-right(aria-hidden='true')
-                            |   ServerName
+                            | Summary
                         .actions
+                          a.btn.btn-sm.blue(href='#', onclick="javascript_:;")  by Selected Node
                           a.btn.btn-sm.red(href='#', onclick="javascript_:window.open('error_pop','pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=1000,height=640,top=50,left=50');")  Error & History 
                           a.btn-icon-only.grey(href='#', title='도움말')
                             i.fa.fa-question-circle(data-toggle='modal', aria-hidden='true')
@@ -126,19 +117,8 @@ block content
                 .portlet-title
                   .caption.caption-md.font-blue
                     i.icon-bar-chart.theme-font.hide
-                    span.caption-subject.theme-font.bold.uppercase Summary
+                    span.caption-subject.theme-font.bold.uppercase Count
                     span.caption-helper.hide description
-                  .actions
-                    .btn-group.btn-group-devided(data-toggle='buttons')
-                      label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
-                        input#option1.toggle(type='radio', name='options')
-                        |                     Today
-                      label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
-                        input#option2.toggle(type='radio', name='options')
-                        |                     Week
-                      label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
-                        input#option2.toggle(type='radio', name='options')
-                        |                     Month
                 .portlet-body(style='height:150px')
                   .row.list-separated(style='height:150px') 
                     .col-lg-3.col-md-3.col-sm-6.col-xs-12
