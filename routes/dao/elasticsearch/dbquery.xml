@@ -153,7 +153,18 @@
           "size"   : 20,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["request", "clientip", "auth"],
-          "query" : { "match_all" : { } }
+          "query": {
+            "bool" : {
+              "must" : {
+                "match_all" : {}
+              },
+              "must_not" : {
+                "match": {
+                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                 }  
+              }
+            }
+          }
         }
       } 
   ]]></query>
@@ -181,7 +192,12 @@
                     ]
                   }                    
                 }              
-              ]
+              ],
+              "must_not" : {
+              "match": {
+                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+               }  
+             }
             }
           }
         } 
@@ -208,7 +224,12 @@
                             "lte" : #END# }
                         }
                       }
-                    ]
+                    ],
+                    "must_not" : {
+                      "match": {
+                       "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                      }  
+                    }
                   }                    
                 }              
               ]
@@ -247,7 +268,12 @@
                     ]
                   }                    
                 }              
-              ]
+              ],
+                "must_not" : {
+                  "match": {
+                   "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                  }  
+                }
             }
           }
         } 
@@ -261,15 +287,39 @@
           "size"   : 10000, 
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "response"],
-          "query" : { "match_all" : { }    }
-           }
+          "query": {
+            "bool" : {
+              "must" : {
+                "match_all" : {}
+              },
+              "must_not" : {
+                "match": {
+                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                 }  
+              }
+            }
+          }
         } 
+      }
   ]]></query>
     <query id='countAccJira'><![CDATA[
       {
         "index" : #index#,
         "type" : "access",                    
-        "body" : {  }               
+        "body" : { 
+          "query": {
+            "bool" : {
+              "must" : {
+                "match_all" : {}
+              },
+              "must_not" : {
+                "match": {
+                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                 }  
+              }
+            }
+          }
+         }               
        } 
   ]]></query>
     <query id='countAccJiraError'><![CDATA[
@@ -286,6 +336,11 @@
                     "lte": 499
                   }
                 }
+              },
+              "must_not" : {
+                "match": {
+                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                 }  
               }
             }
           }
