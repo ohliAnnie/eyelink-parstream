@@ -343,8 +343,8 @@ router.get('/restapi/selectScatterSection', function(req, res, next) {
           index : d._source.response >= 400? 4 : (d._source.responsetime < 1000 ? 0 : (d._source.responsetime < 3000 ? 1 : (d._source.responsetime < 5000 ? 2 : 3)))
         });
        });
-    }   
-    res.json({rtnCode: rtnCode, rtnData: dataS, start : startS, end : endScss });
+    }       
+    res.json({rtnCode: rtnCode, rtnData: dataS, start : startS, end : endS });
   });
 });
 
