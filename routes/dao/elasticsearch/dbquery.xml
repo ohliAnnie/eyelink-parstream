@@ -318,7 +318,7 @@
                  }  
               }
             }
-          }
+          }         
          }               
        } 
   ]]></query>
@@ -396,8 +396,7 @@
            "query" : { 
              "range" : {
               "@timestamp": {
-                "gte": #gte#,
-                "lte": #lte#
+                "gte": #gte#,         "lte": #lte#
               }
             } 
           }     
