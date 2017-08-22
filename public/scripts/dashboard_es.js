@@ -3,15 +3,26 @@ $(function(){ // on dom ready
   getDash(new Date);  
   displayCount();
   drawChart();      
-   $.ajax({
-    url: "/dashboard/restapi/getAppmapdata" ,
+  getMapData(new Date);
+}); // on dom ready
+
+function getMapData(day){
+  console.log('map : '+day);
+  var yDay = new Date(day.getTime()-24*60*60*1000);    
+  var indexs = $('#indexs').val();
+  var d = day.toString().split(' ');  
+  var y = yDay.toString().split(' ');  
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+     $.ajax({
+    url: "/dashboard/restapi/getJiramapdata" ,
     dataType: "json",
     type: "get",
-    data: {},
+    data: { index: [indexs+d[3]+"."+mon[d[1]]+"."+d[2], indexs+y[3]+"."+mon[y[1]]+"."+y[2]],
+              START : y[3]+"-"+mon[y[1]]+"-"+y[2]+'T15:00:00', END : d[3]+"-"+mon[d[1]]+"-"+d[2]+"T15:00:00"},
     success: function(result) {      
+      console.log(result);
       if (result.rtnCode.code == "0000") {          
-        var elseJson = { nodes : result.nodes, edges : result.edges };
-        console.log(elseJson);
+        var elseJson = { nodes : result.nodes, edges : result.edges };      
         getServerMap(elseJson);             
         nodeLIst = result.nodeList;
       } else {
@@ -23,12 +34,10 @@ $(function(){ // on dom ready
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
   });
-}); // on dom ready
-
+}
 function getServerMap(elesJson) {    
   var cy = cytoscape({
     container: document.getElementById('cy'),
-
      style: cytoscape.stylesheet()
       .selector('node')
         .css({
@@ -88,8 +97,6 @@ function getServerMap(elesJson) {
           "text-valign": "top",
           "text-halign": "right",
           "text-color" : "white"
-//          "text-outline-color": "red",
- //         "text-outline-width": 3
         })      
       .selector(':selected')
         .css({
@@ -292,7 +299,9 @@ function drawDash(data, start, end) {
       fOnSelect : function(htPosition, htXY){
         console.log(new Date(start), new Date(end));
         var aData = this.getDataByXY(htXY.nXFrom, htXY.nXTo, htXY.nYFrom, htXY.nYTo);
-        var link = '/dashboard/selected_detail?start='+htXY.nXFrom+'&end='+htXY.nXTo+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;
+        var start = parseInt(htXY.nXFrom)-9*60*60*1000;
+        var end = parseInt(htXY.nXTo)-9*60*60*1000;
+        var link = '/dashboard/selected_detail?start='+start+'&end='+end+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;
         console.timeEnd('fOnSelect');
         console.log('adata length', aData.length);
         window.open(link, "EyeLink Service LIst", "menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50");
@@ -302,10 +311,11 @@ function drawDash(data, start, end) {
           url: "/dashboard/restapi/selectScatterSection" ,
           dataType: "json",
           type: "get",
-          data: { start:htXY.nXFrom, end:htXY.nXTo, min:htXY.nYFrom, max:htXY.nYTo},
+          data: { start:start, end:end, min:htXY.nYFrom, max:htXY.nYTo},
           success: function(result) {
             if (result.rtnCode.code == "0000") {            
-            
+            console.log(new Date(result.start));
+            console.log(new Date(result.end));
             console.log(result);
              summary(result.rtnData, result.start, result.end);
           } else {
@@ -687,9 +697,11 @@ var type = ['success', 'error'];
         d3.select("#test").select("svg").remove();
         d3.select("#load").select("svg").remove();
         d3.select("#sankey").select("svg").remove();
+        //d3.select("#cy").select("svg").remove();
         /*document.createElement('chart1');*/
         console.log(d.x);
-        getDash(d.x);        
+        getDash(d.x); 
+        getMapData(d.x);
       });  
     });    
     dc.renderAll(markerName);
