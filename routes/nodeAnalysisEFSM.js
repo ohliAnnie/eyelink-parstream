@@ -179,6 +179,17 @@ router.get('/restapi/getAnomalyPattern/:id', function(req, res, next) {
   });
 });
 
+router.get('/restapi/getAnomalyPatternCheck/:id', function(req, res, next) {  
+  var in_data = {  INDEX: "analysis", TYPE: "anomaly_pattern" , ID: req.params.id}
+  queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data === null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } 
+  res.json({rtnCode: rtnCode, pattern : pattern});  
+});
+});
+
 // query RawData
 router.get('/restapi/getClusterNodePower', function(req, res, next) { 
   var in_data = {
