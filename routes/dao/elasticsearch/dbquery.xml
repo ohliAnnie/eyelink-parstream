@@ -360,16 +360,18 @@
   <query id='getTransactionList'><![CDATA[
       {
         "index" : #index#,
-        "type" : "transactionList",
-        "body" : {      
-           "query" : { "match_all" : { }    }
-           }      
+        "type" : #type#
+        "body" : {
+          "query": {
+              "term" : {    "_id": #id#    }
+           }            
          }               
        } 
     ]]></query>
   <query id='getTransaction'><![CDATA[
       {
         "index" : #index#,        
+        "type" : #type#,
         "body" : {            
          }               
        } 
@@ -377,10 +379,10 @@
   <query id='getTransactionDetail'><![CDATA[
       {
         "index" : #index#,
-        "type" : "transactionDetail",
+        "type" : #type#,
         "body" : {
           "query": {
-              "term" : {    "transaction_id": #id#    }
+              "term" : {    "_id": #id#    }
            }            
          }               
        } 

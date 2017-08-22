@@ -62,8 +62,12 @@ function getData() {
 }
 
 function getPatternData(raw, start, end, now, point){
+  console.log(new Date(point));
+  var day = new Date(point).toString().split(' ');
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   $.ajax({
-    url: "/analysis/restapi/getAnomalyPattern/2017-02-01T11:00:00",
+    url: "/analysis/restapi/getAnomalyPattern/2017-08-21T15:50:00",
+    //url: "/analysis/restapi/getAnomalyPattern/"+day[3]+'-'+mon[day[1]]+'-'+day[2]+'T'+day[4],
     dataType: "json",
     type: "get",
     data: {},
@@ -104,6 +108,8 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id) {
   width = window.innerWidth*0.88 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;  
   liveValue = raw[raw.length-1];  
+  console.log(raw);
+  console.log(liveValue);
     var groups = {
       output: {
         value: liveValue[id],
