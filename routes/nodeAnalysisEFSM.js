@@ -124,6 +124,7 @@ router.get('/restapi/getAnomaly/:id', function(req, res, next) {
   });
 });
 
+
 router.post('/restapi/insertAnomalyPattern/:id', function(req, res, next) {  
   console.log('/analysis/restapi/insertAnomalyPattern');    
   console.log(JSON.stringify(req.body));   
