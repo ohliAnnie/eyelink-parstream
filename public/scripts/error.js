@@ -61,6 +61,7 @@ function drawChart(rtnData, sdate, edate) {
   var month = ['Jan', 'Feb' , 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   var week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   rtnData.forEach(function(d){        
+    if(d._source.timestamp != null) {
    var t = d._source.timestamp.split(' ');               
     t = t[0].split(':');
     var s = t[0].split('/');       
@@ -73,6 +74,7 @@ function drawChart(rtnData, sdate, edate) {
     var type =  d._source.response;
     var geo = d._source.geoip.latitude+','+d._source.geoip.longitude;
     data.push({ timestamp : d._source.timestamp, day : day, hour : hour, week : weekly, weekNum : weekNum, mon : monthly, type : type, geo : geo });
+  }
   });
 
   var nyx = crossfilter(data);
