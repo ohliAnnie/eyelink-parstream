@@ -66,7 +66,7 @@ function getPatternData(raw, start, end, now, point){
   var day = new Date(point).toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   $.ajax({
-    url: "/analysis/restapi/getAnomalyPattern/2017-08-23T15:50:00",
+    url: "/analysis/restapi/getAnomalyPattern/2017-08-23T13:22:00",
     //  url: "/analysis/restapi/getAnomalyPattern/"+day[3]+'-'+mon[day[1]]+'-'+day[2]+'T'+day[4],
     dataType: "json",
     type: "get",
