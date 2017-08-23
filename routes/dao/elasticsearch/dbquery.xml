@@ -283,27 +283,49 @@
           "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
           "query" : { 
             "bool" : {
-              "must" : [      { "match_all": {} }        ],
-              "filter" : [
-                {
-                  "bool" : {
-                    "should" : [
-                      { "range" : 
-                        { "responsetime" : 
-                          { "gte" : #MIN#,
-                            "lte" : #MAX#  } 
-                        }
-                      },
-                      { "range" : 
-                        { "timestamp" :
-                          { "gte" : #START#,
-                            "lte" : #END# }
-                        }
-                      }
-                    ]
+              "must" :
+                { "range" : 
+                  { "@timestamp" :
+                      { "gte" : #START#, "lte" : #END# }
+                  }
+                },
+              "filter" :
+                { "range" : 
+                   { "responsetime" : 
+                       { "gte" : #MIN#,       "lte" : #MAX#  }                     
                   }                    
-                }              
-              ],
+                },                            
+                "must_not" : {
+                  "match": {
+                   "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                  }  
+                }
+            }
+          }
+        } 
+      }
+  ]]></query>
+  <query id='selectScatterSectionList'><![CDATA[
+      {
+        "index" : [##index##],
+        "type" : "access",                    
+        "body" : {       
+          "size"   : 100000, 
+          "sort" : { "@timestamp" : { "order" : "asc" }},          
+          "query" : { 
+            "bool" : {
+              "must" :
+                { "range" : 
+                  { "@timestamp" :
+                      { "gte" : #START#, "lte" : #END# }
+                  }
+                },
+              "filter" :
+                { "range" : 
+                   { "responsetime" : 
+                       { "gte" : #MIN#,       "lte" : #MAX#  }                     
+                  }                    
+                },                            
                 "must_not" : {
                   "match": {
                    "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
