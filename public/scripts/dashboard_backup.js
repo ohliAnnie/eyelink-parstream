@@ -1,29 +1,14 @@
 var nodeList = [];
-$(function(){ // on dom ready    
+$(function(){ // on dom ready  
+  getDash(new Date);  
   displayCount();
   drawChart();      
-  makeDatabyDay(new Date());
-}); // on dom ready
-
-function makeDatabyDay(day){
-  var yDay = new Date(day.getTime()-24*60*60*1000);    
-  var indexs = $('#indexs').val();
-  var d =day.toString().split(' ');  
-  var y = yDay.toString().split(' ');  
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var data = { index: [indexs+d[3]+"."+mon[d[1]]+"."+d[2], indexs+y[3]+"."+mon[y[1]]+"."+y[2]],
-              START : y[3]+"-"+mon[y[1]]+"-"+y[2]+'T15:00:00', END : d[3]+"-"+mon[d[1]]+"-"+d[2]+"T15:00:00"};   
-  getDash(data);    
-  getMapData(data);
-}
-function getMapData(data){  
-  $.ajax({
-    url: "/dashboard/restapi/getJiramapdata" ,
+   $.ajax({
+    url: "/dashboard/restapi/getAppmapdata" ,
     dataType: "json",
     type: "get",
-    data: data,
+    data: {},
     success: function(result) {      
-      console.log(result);
       if (result.rtnCode.code == "0000") {          
         var elseJson = { nodes : result.nodes, edges : result.edges };      
         getServerMap(elseJson);             
@@ -37,7 +22,8 @@ function getMapData(data){
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
   });
-}
+}); // on dom ready
+
 function getServerMap(elesJson) {    
   var cy = cytoscape({
     container: document.getElementById('cy'),
@@ -153,12 +139,19 @@ function getServerMap(elesJson) {
   });  
 };
 
-function getDash(data) {    
+function getDash(day) {  
+  console.log(day);
+  var yDay = new Date(day.getTime()-24*60*60*1000);    
+  var indexs = $('#indexs').val();
+  var d = day.toString().split(' ');  
+  var y = yDay.toString().split(' ');  
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   $.ajax({
     url: "/dashboard/restapi/selectJiraAccDash",
     dataType: "json",
     type: "GET",    
-    data: data,
+    data: { index: [indexs+d[3]+"."+mon[d[1]]+"."+d[2], indexs+y[3]+"."+mon[y[1]]+"."+y[2]],
+              START : y[3]+"-"+mon[y[1]]+"-"+y[2]+'T15:00:00', END : d[3]+"-"+mon[d[1]]+"-"+d[2]+"T15:00:00"},
     success: function(result) {
       console.log(result)      ;
       if (result.rtnCode.code == "0000") {
@@ -179,7 +172,8 @@ $.ajax({
     url: "/dashboard/restapi/selectJiraSankeyByLink" ,
     dataType: "json",
     type: "get",
-    data: data,
+    data: { index: [indexs+d[3]+"."+mon[d[1]]+"."+d[2], indexs+y[3]+"."+mon[y[1]]+"."+y[2]],
+              START : y[3]+"-"+mon[y[1]]+"-"+y[2]+'T15:00:00', END : d[3]+"-"+mon[d[1]]+"-"+d[2]+"T15:00:00"},
     success: function(result) {      
       if (result.rtnCode.code == "0000") {                
         drawSankey({rtnData : result.rtnData, id : result.id});
@@ -209,10 +203,47 @@ function getDataByToggle(gap) {
   var e = new Date(now).toString(' ').split(' ');
   var s = new Date(now-gap*60*1000).toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var data = { index: [indexs+d[3]+"."+mon[d[1]]+"."+d[2], indexs+y[3]+"."+mon[y[1]]+"."+y[2], indexs+yy[3]+"."+mon[yy[1]]+"."+yy[2]],
-              START : s[3]+"-"+mon[s[1]]+"-"+s[2]+'T'+s[4], END : e[3]+"-"+mon[e[1]]+"-"+e[2]+"T"+e[4]};
-  getDash(data);    
-  getMapData(data);
+  $.ajax({
+    url: "/dashboard/restapi/selectJiraAccDash",
+    dataType: "json",
+    type: "GET",    
+    data: { index: [indexs+d[3]+"."+mon[d[1]]+"."+d[2], indexs+y[3]+"."+mon[y[1]]+"."+y[2], indexs+yy[3]+"."+mon[yy[1]]+"."+yy[2]],
+              START : s[3]+"-"+mon[s[1]]+"-"+s[2]+'T'+s[4], END : e[3]+"-"+mon[e[1]]+"-"+e[2]+"T"+e[4]},
+    success: function(result) {
+      
+      if (result.rtnCode.code == "0000") {
+        //- $("#successmsg").html(result.message);        
+        
+        drawDash(result.rtnData, result.start, result.end);
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
+
+$.ajax({
+    url: "/dashboard/restapi/selectJiraSankeyByLink" ,
+    dataType: "json",
+    type: "get",
+    data: { index: [indexs+d[3]+"."+mon[d[1]]+"."+d[2], indexs+y[3]+"."+mon[y[1]]+"."+y[2], indexs+yy[3]+"."+mon[yy[1]]+"."+yy[2]],
+              START : s[3]+"-"+mon[s[1]]+"-"+s[2]+'T'+s[4], END : e[3]+"-"+mon[e[1]]+"-"+e[2]+"T"+e[4]},
+    success: function(result) {
+      console.log(result);
+      if (result.rtnCode.code == "0000") {        
+        drawSankey({ rtnData : result.rtnData, id : result.id });
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });     
 }
 
 var cnt = 0;
@@ -254,27 +285,28 @@ function drawDash(data, start, end) {
         return sDate[0]+':'+sDate[1]; 
       },
       nPaddingRight : 5,
-      fOnSelect : function(htPosition, htXY){        
+      fOnSelect : function(htPosition, htXY){
+        console.log(new Date(start), new Date(end));
         var aData = this.getDataByXY(htXY.nXFrom, htXY.nXTo, htXY.nYFrom, htXY.nYTo);
-        console.log(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
         var start = parseInt(htXY.nXFrom)-9*60*60*1000;
         var end = parseInt(htXY.nXTo)-9*60*60*1000;
         var link = '/dashboard/selected_detail?start='+start+'&end='+end+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;
         console.timeEnd('fOnSelect');
         console.log('adata length', aData.length);
-        window.open(link, "EyeLink Service List", "menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50");        
+        window.open(link, "EyeLink Service LIst", "menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50");
+        d3.select("#test").select("svg").remove();
+        d3.select("#load").select("svg").remove();        
         $.ajax({
           url: "/dashboard/restapi/selectScatterSection" ,
           dataType: "json",
           type: "get",
           data: { start:start, end:end, min:htXY.nYFrom, max:htXY.nYTo},
           success: function(result) {
-            if (result.rtnCode.code == "0000") {                      
+            if (result.rtnCode.code == "0000") {            
+            console.log(new Date(result.start));
+            console.log(new Date(result.end));
             console.log(result);
-            d3.select("#test").select("svg").remove();
-            d3.select("#load").select("svg").remove();       
-            d3.select("#sankey").select("svg").remove();       
-           summary(result.rtnData, parseInt(htXY.nXFrom), parseInt(htXY.nXTo));
+             summary(result.rtnData, result.start, result.end);
           } else {
             //- $("#errormsg").html(result.message);
           }
@@ -283,44 +315,7 @@ function drawDash(data, start, end) {
           //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
           $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
         }
-      });          
-      $.ajax({
-        url: "/dashboard/restapi/selectJiraSankeyByLinkForScatter" ,
-        dataType: "json",
-        type: "get",
-        data: { start:start, end:end, min:htXY.nYFrom, max:htXY.nYTo},
-        success: function(result) {      
-          if (result.rtnCode.code == "0000") {                
-            drawSankey({rtnData : result.rtnData, id : result.id});
-          } else {
-            //- $("#errormsg").html(result.message);
-          }
-        },
-        error: function(req, status, err) {
-          //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-          $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-        }
-      });                  
-       $.ajax({
-          url: "/dashboard/restapi/getJiramapdataForScatter" ,
-          dataType: "json",
-          type: "get",
-          data: { start:start, end:end, min:htXY.nYFrom, max:htXY.nYTo},
-          success: function(result) {      
-            console.log(result);
-            if (result.rtnCode.code == "0000") {          
-              var elseJson = { nodes : result.nodes, edges : result.edges };      
-              getServerMap(elseJson);             
-              nodeLIst = result.nodeList;
-            } else {
-              //- $("#errormsg").html(result.message);
-            }
-          },
-          error: function(req, status, err) {
-            //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-            $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-          }
-        });
+      });                       
       }
     }); 
       if(cnt != 0){         
@@ -335,7 +330,7 @@ function drawDash(data, start, end) {
    }  
 };  
 
-function summary(data, start, end) {    
+function summary(data, start, end) {  
   var chart = dc.barChart("#test");
   var load = dc.barChart("#load");
  
@@ -348,8 +343,6 @@ function summary(data, start, end) {
   
   var minDate = new Date(start); 
   var maxDate = new Date(end);
-  console.log(minDate, maxDate);
-  console.log(data);
   var gap = (end-start)/(24 * 60 * 60 * 1000);
 
   var nyx = crossfilter(data);
@@ -681,14 +674,21 @@ var type = ['success', 'error'];
     volumeChart.on("renderlet.somename", function(chart) {
       chart.selectAll('rect').on("click", function(d) {
        
-    
+       /*document.getElementById('chart1').reload();
+        var el = document.getElementById('chart1');
+//        el.parentNode.removeChild(el);
+        disp = el.style.display;
+        el.style.display = 'none';z
+        el.offsetHeight;
+        el.style.display ='block';
+
+        document.getElementById('chart1').remove();*/        
         d3.select("#test").select("svg").remove();
         d3.select("#load").select("svg").remove();
         d3.select("#sankey").select("svg").remove();
-        //d3.select("#cy").select("svg").remove();
         /*document.createElement('chart1');*/
         console.log(d.x);
-        makeDatabyDay(d.x);        
+        getDash(d.x);        
       });  
     });    
     dc.renderAll(markerName);

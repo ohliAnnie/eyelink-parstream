@@ -150,7 +150,7 @@
         "index" : #today#,
         "type" : "access",       
         "body" : {
-          "size"   : 20,
+          "size"   : 10000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["request", "clientip", "auth"],
           "query": {
@@ -173,7 +173,7 @@
         "index" : [##index##],
         "type" : "access",       
         "body" : {
-          "size"   : 10000,
+          "size"   : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["request", "clientip", "auth"],
           "query" : { 
@@ -201,8 +201,40 @@
             }
           }
         } 
-      }
+      }      
   ]]></query>  
+<query id='selectJiraAccReqMinMax'><![CDATA[
+      {
+        "index" : [##index##],
+        "type" : "access",       
+        "body" : {
+          "size"   : 100000,
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["request", "clientip", "auth"],
+          "query" : { 
+            "bool" : {
+              "must" :
+                { "range" : 
+                  { "@timestamp" :
+                      { "gte" : #START#, "lte" : #END# }
+                  }
+                },
+              "filter" :
+                { "range" : 
+                   { "responsetime" : 
+                       { "gte" : #MIN#,       "lte" : #MAX#  }                     
+                  }                    
+                },                   
+              "must_not" : {
+              "match": {
+                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+               }  
+             }
+            }
+          }
+        } 
+      }
+  ]]></query>    
   <query id='selectJiraAccDash'><![CDATA[
       {
         "index" : [##index##],
@@ -238,14 +270,14 @@
         } 
       }
   ]]></query>
-  <query id='selectScatterSection'><![CDATA[
-      {
+   <query id='selectJiraAccMap'><![CDATA[
+       {
         "index" : [##index##],
-        "type" : "access",                    
-        "body" : {       
-          "size"   : 10000, 
+        "type" : "access",       
+        "body" : {
+          "size"   : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
+          "_source" : ["response", "timestamp"],
           "query" : { 
             "bool" : {
               "must" : [      { "match_all": {} }        ],
@@ -254,13 +286,7 @@
                   "bool" : {
                     "should" : [
                       { "range" : 
-                        { "responsetime" : 
-                          { "gte" : #MIN#,
-                            "lte" : #MAX#  } 
-                        }
-                      },
-                      { "range" : 
-                        { "timestamp" :
+                        { "@timestamp" :
                           { "gte" : #START#,
                             "lte" : #END# }
                         }
@@ -269,6 +295,101 @@
                   }                    
                 }              
               ],
+              "must_not" : {
+              "match": {
+                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+               }  
+             }
+            }
+          }
+        } 
+      }
+  ]]></query>
+   <query id='selectJiraAccMapMinMax'><![CDATA[
+       {
+        "index" : [##index##],
+        "type" : "access",       
+        "body" : {
+          "size"   : 100000,
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["response", "timestamp"],
+          "query" : { 
+            "bool" : {
+              "must" :
+                { "range" : 
+                  { "@timestamp" :
+                      { "gte" : #START#, "lte" : #END# }
+                  }
+                },
+              "filter" :
+                { "range" : 
+                   { "responsetime" : 
+                       { "gte" : #MIN#,       "lte" : #MAX#  }                     
+                  }                    
+                },                  
+              "must_not" : {
+              "match": {
+                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+               }  
+             }
+            }
+          }
+        } 
+      }
+  ]]></query>
+  <query id='selectScatterSection'><![CDATA[
+      {
+        "index" : [##index##],
+        "type" : "access",                    
+        "body" : {       
+          "size"   : 100000, 
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
+          "query" : { 
+            "bool" : {
+              "must" :
+                { "range" : 
+                  { "@timestamp" :
+                      { "gte" : #START#, "lte" : #END# }
+                  }
+                },
+              "filter" :
+                { "range" : 
+                   { "responsetime" : 
+                       { "gte" : #MIN#,       "lte" : #MAX#  }                     
+                  }                    
+                },                            
+                "must_not" : {
+                  "match": {
+                   "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                  }  
+                }
+            }
+          }
+        } 
+      }
+  ]]></query>
+  <query id='selectScatterSectionList'><![CDATA[
+      {
+        "index" : [##index##],
+        "type" : "access",                    
+        "body" : {       
+          "size"   : 100000, 
+          "sort" : { "@timestamp" : { "order" : "asc" }},          
+          "query" : { 
+            "bool" : {
+              "must" :
+                { "range" : 
+                  { "@timestamp" :
+                      { "gte" : #START#, "lte" : #END# }
+                  }
+                },
+              "filter" :
+                { "range" : 
+                   { "responsetime" : 
+                       { "gte" : #MIN#,       "lte" : #MAX#  }                     
+                  }                    
+                },                            
                 "must_not" : {
                   "match": {
                    "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
@@ -284,7 +405,7 @@
         "index" : [##index##],
         "type" : "access",                    
         "body" : {       
-          "size"   : 10000, 
+          "size"   : 100000, 
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "response"],
           "query": {
@@ -360,16 +481,18 @@
   <query id='getTransactionList'><![CDATA[
       {
         "index" : #index#,
-        "type" : "transactionList",
-        "body" : {      
-           "query" : { "match_all" : { }    }
-           }      
+        "type" : #type#
+        "body" : {
+          "query": {
+              "term" : {    "_id": #id#    }
+           }            
          }               
        } 
     ]]></query>
   <query id='getTransaction'><![CDATA[
       {
         "index" : #index#,        
+        "type" : #type#,
         "body" : {            
          }               
        } 
@@ -377,10 +500,10 @@
   <query id='getTransactionDetail'><![CDATA[
       {
         "index" : #index#,
-        "type" : "transactionDetail",
+        "type" : #type#,
         "body" : {
           "query": {
-              "term" : {    "transaction_id": #id#    }
+              "term" : {    "_id": #id#    }
            }            
          }               
        } 
@@ -390,7 +513,7 @@
         "index" : [##index##],  
         "type"  : "access",
         "body" : { 
-          "size"   : 10000, 
+          "size"   : 100000, 
          "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["@timestamp", "timestamp", "responsetime", "response"],
            "query" : { 
@@ -408,7 +531,7 @@
         "index" : [##index##],  
         "type"  : "metricsets",
         "body" : { 
-          "size" : 10000,
+          "size" : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["system.process.cpu.total.pct", "system.process.memory.rss.pct", "timestamp"], 
           "query": {   
@@ -428,7 +551,7 @@
         "index" : [##index##],  
         "type"  : "metricsets",
         "body" : { 
-          "size" : 10000,
+          "size" : 100000,
           "_source": ["system.process.name", "system.process.cpu.total.pct", "timestamp"],
           "sort" : [{ "timestamp" : { "order" : "asc" }},
           {"system.process.cpu.total.pct": "desc"}
@@ -454,7 +577,7 @@
         "index" : [##index##],  
         "type"  : "metricsets",
         "body" : { 
-          "size" : 10000,
+          "size" : 100000,
           "sort" : { "timestamp" : { "order" : "asc" }},
           "_source": ["system.cpu.user.pct", "system.cpu.system.pct", "system.cpu.idle.pct", "system.memory.used.pct", "system.memory.actual.used.pct", "system.memory.swap.used.pct", "timestamp", "metricset.name"], 
           "query": {
@@ -530,7 +653,7 @@
         "index" : [##index##],  
         "type"  : "access",
         "body" : { 
-          "size"   : 10000, 
+          "size"   : 100000, 
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "responsetime", "response"],
            "query" : {
@@ -550,7 +673,7 @@
         "index" : [##index##],  
         "type"  : "metricsets",
         "body" : { 
-          "size"   : 10000,    
+          "size"   : 100000,    
           "sort" : { "@timestamp" : { "order" : "asc" }},      
           "_source" : ["timestamp", "system.cpu.system.pct", "system.memory.actual.used.pct", "system.filesystem.used.pct", "metricset.name"],
           "query": {
@@ -579,7 +702,7 @@
         "index" : [##index##],  
         "type"  : "metricsets",
         "body" : { 
-          "size" : 10000,
+          "size" : 100000,
           "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "timestamp"],
           "sort" : [
             { "timestamp" : { "order" : "asc" }},
@@ -612,7 +735,7 @@
         "index" : [##index##],  
         "type"  : "metricsets",
         "body" : { 
-          "size" : 10000,
+          "size" : 100000,
           "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "timestamp"],
           "sort" : [
             { "timestamp" : { "order" : "asc" }},
@@ -641,7 +764,7 @@
         "index" : [##index##],  
         "type"  : "metricsets",
         "body" : { 
-          "size" : 10000,
+          "size" : 100000,
           "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "system.filesystem.used.pct", "timestamp", "metricset.name"],
           "sort" : [
             { "timestamp" : { "order" : "asc" }},
@@ -676,7 +799,7 @@
         "index" : [##index##],  
         "type"  : "metricsets",
         "body" : { 
-          "size" : 10000,
+          "size" : 100000,
           "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "system.filesystem.used.pct", "timestamp", "metricset.name"],
           "sort" : [
             { "timestamp" : { "order" : "asc" }},
@@ -715,7 +838,7 @@
        "type"  : "access",
        "_source": ["timestamp", "geoip", "response"], 
        "body" : { 
-         "size" : 10000,
+         "size" : 100000,
          "sort" : { "@timestamp" : { "order" : "asc" }},        
          "query" : {
            "bool": {

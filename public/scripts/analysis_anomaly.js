@@ -38,7 +38,7 @@ function getData() {
   var raw = [], match = {};
   var iso = d3.time.format.utc("%Y-%m-%dT%H:%M:%S.%LZ");
   var sDate = iso(new Date(start.getTime()-30*1000+9*60*60*1000)).split('.');
-  var nDate = iso(new Date(now.getTime()+30*1000+9*60*60*1000)).split('.');
+  var nDate = iso(new Date(now.getTime()+60*1000+9*60*60*1000)).split('.');
   console.log(sDate, nDate);
   $.ajax({
     url: "/analysis/restapi/getClusterNodePower" ,
@@ -62,8 +62,12 @@ function getData() {
 }
 
 function getPatternData(raw, start, end, now, point){
+  console.log(new Date(point));
+  var day = new Date(point).toString().split(' ');
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   $.ajax({
-    url: "/analysis/restapi/getAnomalyPattern/2017-02-01T11:00:00",
+    //url: "/analysis/restapi/getAnomalyPattern/2017-08-21T15:50:00",
+    url: "/analysis/restapi/getAnomalyPattern/"+day[3]+'-'+mon[day[1]]+'-'+day[2]+'T'+day[4],
     dataType: "json",
     type: "get",
     data: {},
@@ -104,6 +108,8 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id) {
   width = window.innerWidth*0.88 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;  
   liveValue = raw[raw.length-1];  
+  console.log(raw);
+  console.log(liveValue);
     var groups = {
       output: {
         value: liveValue[id],
@@ -138,10 +144,11 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id) {
 
     var line = d3.svg.line()
     .interpolate('basis')
-    .x(function(d, i) {       
-      return x(now)  })
-     //return x(now - (limit - 1 - i) * duration)  })
-    .y(function(d) {      return y(d)   })
+    .x(function(d, i) {        
+     // return x(now)  })
+     console.log(new Date(now - (limit - 10 - i) * duration));
+     return x(now - (limit - 1 - i) * duration)  })
+    .y(function(d) {  return y(d)   })
 
   var valueline = d3.svg.line()
   .x(function(d) { return x(new Date(d.event_time)); })
@@ -336,9 +343,13 @@ var div = d3.select("body").append("div")
       .style('stroke', group.color);
    }
     
-  function tick() {       
+  function tick() {           
     now = new Date().getTime();    
+    if(cnt++ ==0){
+      now = point;
+    } 
     value = liveValue[id];    
+    console.log(now, value);
     for (var name in groups) {
       var group = groups[name]
         //group.data.push(group.value) // Real values arrive at irregular intervals
@@ -347,7 +358,7 @@ var div = d3.select("body").append("div")
         group.path.attr('d', line)        
       }      
       ddata.push({ date:now, value:value});            
-     x.domain([now-109*60*1000+gap, now+10*60*1000-gap]);
+     x.domain([now-110*60*1000+gap, now+10*60*1000-gap]);
     // Slide paths left
       paths.attr('transform', null)
       .transition()
@@ -356,12 +367,39 @@ var div = d3.select("body").append("div")
       .each('end', tick);
    //   .attr('transform', 'translate(' + x(now - (limit) * duration) + ')')         
       if(end<=now){
-        console.log('reload');
-        window.location.reload(true);
+        if(end == (end+10*60*1000)){
+          end += 10*60*1000;
+        }
+        console.log(new Date(end));
+        var day = new Date(end).toString().split(' ');
+        var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+        $.ajax({
+          url: "/analysis/restapi/getAnomalyPatternCheck/"+day[3]+'-'+mon[day[1]]+'-'+day[2]+'T'+day[4],
+          dataType: "json",
+          type: "get",
+          data: {},
+          success: function(result) {
+            console.log('re');
+            console.log(result);            
+              if(result != null) {
+                console.log('reload');
+                window.location.reload(true);
+              }
+            if (result.rtnCode.code == "0000") {                                      
+            } else {
+              //- $("#errormsg").html(result.message);
+            }
+          },
+          error: function(req, status, err) {
+            //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+          }
+        });
+        
       }     
 
     }
     tick();  
 }
-
+var cnt = 0;
 
