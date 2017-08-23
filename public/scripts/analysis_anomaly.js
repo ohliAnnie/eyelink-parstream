@@ -114,7 +114,7 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id) {
     var groups = {
       output: {
         value: liveValue[id],
-        color: 'red',
+        color: 'blue',
         data: d3.range(0).map(function() {
           return 0
         })
@@ -400,9 +400,10 @@ var div = d3.select("body").append("div")
       .ease('linear')
       .each('end', tick);
    //   .attr('transform', 'translate(' + x(now - (limit) * duration) + ')')         
-      if(oriEnd<=now){
-        if(now >= (end+10*60*1000)){
-          end += 10*60*1000;
+      if(end<=now){
+        if(now >= (end+5*60*1000)){
+          console.log('reload');
+          window.location.reload(true);
         }
         console.log(new Date(end));
         var day = new Date(end).toString().split(' ');

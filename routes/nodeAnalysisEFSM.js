@@ -131,13 +131,10 @@ router.post('/restapi/insertAnomalyPattern/:id', function(req, res, next) {
    queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {        
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');
-      console.log(rtnCode);
       res.json({rtnCode: rtnCode});
-    }  else  {
-      var id = req.params.id.split('T');
-      var in_data = {    INDEX: "analysis", TYPE: "anomaly_pattern", ID: id[0],   BODY : JSON.stringify(req.body)   };  
+    }  else  {      
+      var in_data = {    INDEX: "analysis", TYPE: "anomaly_pattern", ID: req.params.id,   BODY : JSON.stringify(req.body)   };  
      queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {        
-          console.log(out_data);
           if(out_data.result == "created"){
             console.log(out_data);  
             var rtnCode = CONSTS.getErrData("D001");                   
@@ -159,9 +156,7 @@ router.get('/restapi/getAnomalyPattern/:id', function(req, res, next) {
     } else {
       var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
       var day = new Date().toString().split(' ');
-      console.log(day);
       var id = day[3]+'-'+mon[day[1]]+'-'+day[2];
-      console.log(id);
       var in_data = {  INDEX: "analysis", TYPE: "anomaly" , ID: id };      
       var pattern = out_data[0]._source ;      
       queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data,  function(err, out_data, params) {        
@@ -170,7 +165,6 @@ router.get('/restapi/getAnomalyPattern/:id', function(req, res, next) {
         var rtnCode = CONSTS.getErrData('0000');
         if (out_data === null) {   rtnCode = CONSTS.getErrData('0001');        }
         console.log('analysis/restapi/getAnomaly -> length : %s', out_data.length);
-        console.log(out_data);
         res.json({rtnCode: rtnCode, pattern : pattern, clust : clust});
       });
     }
