@@ -38,7 +38,7 @@ function getData() {
   var raw = [], match = {};
   var iso = d3.time.format.utc("%Y-%m-%dT%H:%M:%S.%LZ");
   var sDate = iso(new Date(start.getTime()-30*1000+9*60*60*1000)).split('.');
-  var nDate = iso(new Date(now.getTime()+60*1000+9*60*60*1000)).split('.');
+  var nDate = iso(new Date(now.getTime()+0*1000+9*60*60*1000)).split('.');
   console.log(sDate, nDate);
   $.ajax({
     url: "/analysis/restapi/getClusterNodePower" ,
@@ -66,25 +66,25 @@ function getPatternData(raw, start, end, now, point){
   var day = new Date(point).toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   $.ajax({
-    //url: "/analysis/restapi/getAnomalyPattern/2017-08-21T15:50:00",
-    url: "/analysis/restapi/getAnomalyPattern/"+day[3]+'-'+mon[day[1]]+'-'+day[2]+'T'+day[4],
+    url: "/analysis/restapi/getAnomalyPattern/2017-08-23T13:20:00",
+    //  url: "/analysis/restapi/getAnomalyPattern/"+day[3]+'-'+mon[day[1]]+'-'+day[2]+'T'+day[4],
     dataType: "json",
     type: "get",
     data: {},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {                        
-        console.log(result.clust);
-      var voltage = ({ center : result.clust.voltage.center['cluster_0'], min : result.clust.voltage.min_value['cluster_0'], max : result.clust.voltage.max_value['cluster_0'] })
-      var ampere = ({ center : result.clust.ampere.center['cluster_0'], min : result.clust.ampere.min_value['cluster_0'], max : result.clust.ampere.max_value['cluster_0'] })
-      var power_factor = ({ center : result.clust.power_factor.center['cluster_0'], min : result.clust.power_factor.min_value['cluster_0'], max : result.clust.power_factor.max_value['cluster_0'] })
-      var active_power = ({ center : result.clust.active_power.center['cluster_0'], min : result.clust.active_power.min_value['cluster_0'], max : result.clust.active_power.max_value['cluster_0'] })
+        console.log(result);
+      var voltage = ({ center : result.clust.voltage.center[result.pattern.voltage], min : result.clust.voltage.min_value[result.pattern.voltage], max : result.clust.voltage.max_value[result.pattern.voltage], lower : result.clust.voltage.lower[result.pattern.voltage], upper : result.clust.voltage.upper[result.pattern.voltage]})
+      var ampere = ({ center : result.clust.ampere.center[result.pattern.ampere], min : result.clust.ampere.min_value[result.pattern.ampere], max : result.clust.ampere.max_value[result.pattern.ampere], lower : result.clust.ampere.lower[result.pattern.ampere], upper : result.clust.ampere.upper[result.pattern.ampere]})
+      var power_factor = ({ center : result.clust.power_factor.center[result.pattern.power_factor], min : result.clust.power_factor.min_value[result.pattern.power_factor], max : result.clust.power_factor.max_value[result.pattern.power_factor], lower : result.clust.power_factor.lower[result.pattern.power_factor], upper : result.clust.power_factor.upper[result.pattern.power_factor]})
+      var active_power = ({ center : result.clust.active_power.center[result.pattern.active_power], min : result.clust.active_power.min_value[result.pattern.active_power], max : result.clust.active_power.max_value[result.pattern.active_power], lower : result.clust.active_power.lower[result.pattern.active_power], upper : result.clust.active_power.upper[result.pattern.active_power]})
     var vdata = [], adata = [], pfdata = [], apdata = [];
     for(i=0; i<voltage.center.length; i++){
-      vdata.push({date : start+i*60*1000, center : voltage.center[i], min : voltage.min[i], max : voltage.max[i]});
-      adata.push({date : start+i*60*1000, center : ampere.center[i], min : ampere.min[i], max : ampere.max[i]});
-      apdata.push({date : start+i*60*1000, center : active_power.center[i], min : active_power.min[i], max : active_power.max[i]});
-      pfdata.push({date : start+i*60*1000, center : power_factor.center[i], min : power_factor.min[i], max : power_factor.max[i]});
+      vdata.push({date : start+i*60*1000, center : voltage.center[i], min : voltage.min[i], max : voltage.max[i], lower :  voltage.lower[i], upper : voltage.upper[i] });
+      adata.push({date : start+i*60*1000, center : ampere.center[i], min : ampere.min[i], max : ampere.max[i], lower : ampere.lower[i], upper : ampere.upper[i]});
+      apdata.push({date : start+i*60*1000, center : active_power.center[i], min : active_power.min[i], max : active_power.max[i], lower : active_power.lower[i], upper : active_power.upper[i] });
+      pfdata.push({date : start+i*60*1000, center : power_factor.center[i], min : power_factor.min[i], max : power_factor.max[i], lower : power_factor.lower[i], upper : power_factor.upper[i]});
     }    
         drawChart(raw, vdata, start, end, now, point, now-point, 'voltage', '#voltage');
         drawChart(raw, adata, start, end, now, point, now-point, 'ampere', '#ampere');
@@ -103,7 +103,8 @@ function getPatternData(raw, start, end, now, point){
 }
 
 function drawChart(raw, compare, start, end, now, point, gap, id, chart_id) {
-  var limit = 60 * 1,    duration = 1000;   
+  oriEnd = end;  
+  var limit = 60 * 0.7,    duration = 1000;   
  var margin = {top: 10, right: 50, bottom: 30, left: 50},
   width = window.innerWidth*0.88 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;  
@@ -119,7 +120,6 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id) {
         })
       }
     }
-
     var x = d3.time.scale()
      .domain([start, end])
     .range([0, width]);
@@ -145,8 +145,7 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id) {
     var line = d3.svg.line()
     .interpolate('basis')
     .x(function(d, i) {        
-     // return x(now)  })
-     console.log(new Date(now - (limit - 10 - i) * duration));
+     // return x(now)  })     
      return x(now - (limit - 1 - i) * duration)  })
     .y(function(d) {  return y(d)   })
 
@@ -159,17 +158,29 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id) {
     .x(function(d, i) { return x(d.date); })
     .y(function(d) {  return y(d.center);});
 
-  var upperInnerArea = d3.svg.area()
+  var upperOuterArea = d3.svg.area()
     .interpolate('basis')
     .x (function (d,i) { return x(d.date); })
     .y0(function (d) { return y(d.max); })
+    .y1(function (d) { return y(d.upper); });
+
+  var upperInnerArea = d3.svg.area()
+    .interpolate('basis')
+    .x (function (d,i) { return x(d.date); })
+    .y0(function (d) { return y(d.upper); })
     .y1(function (d) { return y(d.center); });
 
   var lowerInnerArea = d3.svg.area()
     .interpolate('basis')
     .x (function (d,i) { return x(d.date); })
     .y0(function (d) { return y(d.center); })
-    .y1(function (d) { return y(d.min); });
+    .y1(function (d) { return y(d.lower); });
+
+  var lowerOuterArea = d3.svg.area()
+    .interpolate('basis')
+    .x (function (d,i) { return x(d.date); })
+    .y0(function (d) { return y(d.lower); })
+    .y1(function (d) { console.log(d); return y(d.min); });
 
     var svg = d3.select(chart_id)
     .append('svg')    
@@ -188,7 +199,7 @@ var yaxis = svg.append('g')
  .attr('class', 'y axis')   
     .call(y.axis = d3.svg.axis().scale(y).orient('left'))
 
-var legendWidth  = 310, legendHeight = 55;
+var legendWidth  = 300, legendHeight = 60;
 
  var legend = svg.append('g')
     .attr('class', 'legend')
@@ -206,37 +217,49 @@ var legendWidth  = 310, legendHeight = 55;
     .attr('x', 10)
     .attr('y', 10);
 
-  legend.append('text')
-    .attr('x', 115)
+    legend.append('text')
+    .attr('x', 123)
     .attr('y', 20)
-    .text('min-max');
+    .text('lower-upper');
+
+    legend.append('rect')
+    .attr('class', 'outer')
+    .attr('width',  75)
+    .attr('height', 15)
+    .attr('x', 10)
+    .attr('y', 35);  
+
+    legend.append('text')
+    .attr('x', 115)
+    .attr('y', 45)
+    .text('min-max');;
 
   legend.append('path')
     .attr('class', 'compareline')
-    .attr('d', 'M10,40L85,40');
+    .attr('d', 'M170,13L245,13');
 
   legend.append('text')
-    .attr('x', 115)
-    .attr('y', 43)
+    .attr('x', 270)
+    .attr('y', 16)
     .text('Pattern');
-
-  legend.append('path')
-    .attr('class', 'live-line')
-    .attr('d', 'M170,40L245,40');
-
-  legend.append('text')
-    .attr('x', 275)
-    .attr('y', 43)
-    .text('Live');  
 
    legend.append('path')
     .attr('class', 'valueline')
-    .attr('d', 'M170,17L245,17');
+    .attr('d', 'M170,31L245,31');
 
   legend.append('text')
-    .attr('x', 275)
-    .attr('y', 20)
-    .text('Compare');
+    .attr('x', 265)
+    .attr('y', 34)
+    .text('Data');
+
+  legend.append('path')
+    .attr('class', 'live-line')
+    .attr('d', 'M170,50L245,50');
+
+  legend.append('text')
+    .attr('x', 265)
+    .attr('y', 53)
+    .text('Live');  
   
 svg.append('path')
     .datum(compare)     
@@ -248,6 +271,18 @@ svg.append('path')
     .datum(compare)     
     .attr('class', 'area lower inner')
     .attr('d', lowerInnerArea)
+    .attr('clip-path', 'url(#rect-clip)');
+
+svg.append('path')
+    .datum(compare)     
+    .attr('class', 'area upper outer')
+    .attr('d', upperOuterArea);
+    //.attr('clip-path', 'url(#rect-clip)');
+
+  svg.append('path')
+    .datum(compare)     
+    .attr('class', 'area lower outer')
+    .attr('d', lowerOuterArea)
     .attr('clip-path', 'url(#rect-clip)');
 
   svg.append("path")   
@@ -342,14 +377,13 @@ var div = d3.select("body").append("div")
       .attr('class', name + ' group')
       .style('stroke', group.color);
    }
-    
+  
   function tick() {           
     now = new Date().getTime();    
     if(cnt++ ==0){
       now = point;
     } 
-    value = liveValue[id];    
-    console.log(now, value);
+    value = liveValue[id];            
     for (var name in groups) {
       var group = groups[name]
         //group.data.push(group.value) // Real values arrive at irregular intervals
@@ -366,8 +400,8 @@ var div = d3.select("body").append("div")
       .ease('linear')
       .each('end', tick);
    //   .attr('transform', 'translate(' + x(now - (limit) * duration) + ')')         
-      if(end<=now){
-        if(end == (end+10*60*1000)){
+      if(oriEnd<=now){
+        if(now >= (end+10*60*1000)){
           end += 10*60*1000;
         }
         console.log(new Date(end));
@@ -401,5 +435,5 @@ var div = d3.select("body").append("div")
     }
     tick();  
 }
-var cnt = 0;
+var cnt = 0, oriEnd = 0;
 
