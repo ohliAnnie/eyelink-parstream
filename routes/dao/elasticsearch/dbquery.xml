@@ -201,8 +201,40 @@
             }
           }
         } 
-      }
+      }      
   ]]></query>  
+<query id='selectJiraAccReqMinMax'><![CDATA[
+      {
+        "index" : [##index##],
+        "type" : "access",       
+        "body" : {
+          "size"   : 100000,
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["request", "clientip", "auth"],
+          "query" : { 
+            "bool" : {
+              "must" :
+                { "range" : 
+                  { "@timestamp" :
+                      { "gte" : #START#, "lte" : #END# }
+                  }
+                },
+              "filter" :
+                { "range" : 
+                   { "responsetime" : 
+                       { "gte" : #MIN#,       "lte" : #MAX#  }                     
+                  }                    
+                },                   
+              "must_not" : {
+              "match": {
+                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+               }  
+             }
+            }
+          }
+        } 
+      }
+  ]]></query>    
   <query id='selectJiraAccDash'><![CDATA[
       {
         "index" : [##index##],
@@ -263,6 +295,38 @@
                   }                    
                 }              
               ],
+              "must_not" : {
+              "match": {
+                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+               }  
+             }
+            }
+          }
+        } 
+      }
+  ]]></query>
+   <query id='selectJiraAccMapMinMax'><![CDATA[
+       {
+        "index" : [##index##],
+        "type" : "access",       
+        "body" : {
+          "size"   : 100000,
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["response", "timestamp"],
+          "query" : { 
+            "bool" : {
+              "must" :
+                { "range" : 
+                  { "@timestamp" :
+                      { "gte" : #START#, "lte" : #END# }
+                  }
+                },
+              "filter" :
+                { "range" : 
+                   { "responsetime" : 
+                       { "gte" : #MIN#,       "lte" : #MAX#  }                     
+                  }                    
+                },                  
               "must_not" : {
               "match": {
                 "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"

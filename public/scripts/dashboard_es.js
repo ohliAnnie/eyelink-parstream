@@ -17,7 +17,7 @@ function makeDatabyDay(day){
   getMapData(data);
 }
 function getMapData(data){  
-     $.ajax({
+  $.ajax({
     url: "/dashboard/restapi/getJiramapdata" ,
     dataType: "json",
     type: "get",
@@ -273,6 +273,7 @@ function drawDash(data, start, end) {
             console.log(result);
             d3.select("#test").select("svg").remove();
             d3.select("#load").select("svg").remove();       
+            d3.select("#sankey").select("svg").remove();       
            summary(result.rtnData, parseInt(htXY.nXFrom), parseInt(htXY.nXTo));
           } else {
             //- $("#errormsg").html(result.message);
@@ -282,7 +283,44 @@ function drawDash(data, start, end) {
           //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
           $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
         }
-      });                       
+      });          
+      $.ajax({
+        url: "/dashboard/restapi/selectJiraSankeyByLinkForScatter" ,
+        dataType: "json",
+        type: "get",
+        data: { start:start, end:end, min:htXY.nYFrom, max:htXY.nYTo},
+        success: function(result) {      
+          if (result.rtnCode.code == "0000") {                
+            drawSankey({rtnData : result.rtnData, id : result.id});
+          } else {
+            //- $("#errormsg").html(result.message);
+          }
+        },
+        error: function(req, status, err) {
+          //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+          $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+        }
+      });                  
+       $.ajax({
+          url: "/dashboard/restapi/getJiramapdataForScatter" ,
+          dataType: "json",
+          type: "get",
+          data: { start:start, end:end, min:htXY.nYFrom, max:htXY.nYTo},
+          success: function(result) {      
+            console.log(result);
+            if (result.rtnCode.code == "0000") {          
+              var elseJson = { nodes : result.nodes, edges : result.edges };      
+              getServerMap(elseJson);             
+              nodeLIst = result.nodeList;
+            } else {
+              //- $("#errormsg").html(result.message);
+            }
+          },
+          error: function(req, status, err) {
+            //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+          }
+        });
       }
     }); 
       if(cnt != 0){         
