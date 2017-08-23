@@ -49,36 +49,41 @@ function drawAll(data, sdate, edate) {
     if(d._type == "access"){
          d._source.type = "jira";
     } 
-    var t = d._source.timestamp.split(' ');               
-    t = t[0].split(':');
-    var s = t[0].split('/');   
-    d._source.timestamp = new Date(new Date(s[2]+'-'+mon[s[1]]+'-'+s[0]+'T'+t[1]+':'+t[2]+':'+t[3]).getTime() + 9*60*60*1000);
-    d._source.response = parseInt(d._source.response);     
-    d._source.responsetime = parseInt(d._source.responsetime);
-    d._source.day = d3.time.day(d._source.timestamp);
-    d._source.hour = d3.time.hour(d._source.timestamp);
-    if(d._source.response >= 400)  {
-      d._source.section = 'error';
-      d._source.index = 4;
-    } else if(d._source.responsetime <= 1000) {
-      d._source.section = '1s';
-      d._source.index = 0;
-    } else if(d._source.responsetime <= 3000) {
-      d._source.section = '3s';
-      d._source.index = 1;
-    } else if(d._source.responsetime <= 5000) {
-      d._source.section = '5s';
-      d._source.index = 2;
-    } else {
-      d._source.section = 'slow';
-      d._source.index = 3
-    }    
-    acc.push(d._source);
-    if(minTime.getTime() > d._source.hour.getTime()){
-      minTime = d._source.hour;
-    }
-    if(maxTime.getTime() < d._source.hour.getTime()){
-      maxTime = d._source.hour;
+    if(d._source.timestamp != null){
+
+    
+      
+      var t = d._source.timestamp.split(' ');                   
+      t = t[0].split(':');
+      var s = t[0].split('/');   
+      d._source.timestamp = new Date(new Date(s[2]+'-'+mon[s[1]]+'-'+s[0]+'T'+t[1]+':'+t[2]+':'+t[3]).getTime() + 9*60*60*1000);
+      d._source.response = parseInt(d._source.response);     
+      d._source.responsetime = parseInt(d._source.responsetime);
+      d._source.day = d3.time.day(d._source.timestamp);
+      d._source.hour = d3.time.hour(d._source.timestamp);
+      if(d._source.response >= 400)  {
+        d._source.section = 'error';
+        d._source.index = 4;
+      } else if(d._source.responsetime <= 1000) {
+        d._source.section = '1s';
+        d._source.index = 0;
+      } else if(d._source.responsetime <= 3000) {
+        d._source.section = '3s';
+        d._source.index = 1;
+      } else if(d._source.responsetime <= 5000) {
+        d._source.section = '5s';
+        d._source.index = 2;
+      } else {
+        d._source.section = 'slow';
+        d._source.index = 3
+      }    
+      acc.push(d._source);
+      if(minTime.getTime() > d._source.hour.getTime()){
+        minTime = d._source.hour;
+      }
+      if(maxTime.getTime() < d._source.hour.getTime()){
+        maxTime = d._source.hour;
+      }
     }
   });
 
