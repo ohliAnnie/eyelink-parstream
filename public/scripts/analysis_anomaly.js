@@ -66,7 +66,7 @@ function getPatternData(raw, start, end, now, point){
   var day = new Date(point).toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   $.ajax({
-    url: "/analysis/restapi/getAnomalyPattern/2017-08-23T13:20:00",
+    url: "/analysis/restapi/getAnomalyPattern/2017-08-23T15:50:00",
     //  url: "/analysis/restapi/getAnomalyPattern/"+day[3]+'-'+mon[day[1]]+'-'+day[2]+'T'+day[4],
     dataType: "json",
     type: "get",
@@ -108,9 +108,7 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id) {
  var margin = {top: 10, right: 50, bottom: 30, left: 50},
   width = window.innerWidth*0.88 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;  
-  liveValue = raw[raw.length-1];  
-  console.log(raw);
-  console.log(liveValue);
+  liveValue = raw[raw.length-1];    
     var groups = {
       output: {
         value: liveValue[id],
@@ -180,7 +178,7 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id) {
     .interpolate('basis')
     .x (function (d,i) { return x(d.date); })
     .y0(function (d) { return y(d.lower); })
-    .y1(function (d) { console.log(d); return y(d.min); });
+    .y1(function (d) { return y(d.min); });
 
     var svg = d3.select(chart_id)
     .append('svg')    
@@ -378,6 +376,7 @@ var div = d3.select("body").append("div")
       .style('stroke', group.color);
    }
   
+  oriNow = now;
   function tick() {           
     now = new Date().getTime();    
     if(cnt++ ==0){
@@ -400,11 +399,12 @@ var div = d3.select("body").append("div")
       .ease('linear')
       .each('end', tick);
    //   .attr('transform', 'translate(' + x(now - (limit) * duration) + ')')         
-      if(end<=now){
-        if(now >= (end+5*60*1000)){
-          console.log('reload');
-          window.location.reload(true);
+      if(oriEnd<=now){
+        if(now >= (end+2*60*1000)){
+          end += 2*60*1000;
         }
+        if((now-oriNow) > 10*1000) {
+          oriNow = now;
         console.log(new Date(end));
         var day = new Date(end).toString().split(' ');
         var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
@@ -430,11 +430,11 @@ var div = d3.select("body").append("div")
             $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
           }
         });
-        
-      }     
+        }        
+      }    
 
     }
     tick();  
 }
-var cnt = 0, oriEnd = 0;
+var cnt = 0, oriEnd = 0, oriNow = 0;
 
