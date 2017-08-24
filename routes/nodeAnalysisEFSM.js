@@ -179,32 +179,59 @@ router.get('/restapi/getAnomalyPattern/:id', function(req, res, next) {
 });
 
 // query RawData
-router.get('/restapi/getAnomalyPatterns', function(req, res, next) {    
-  var e = new Date().toString().split(' ');
-  var s = new Date(new Date().getTime()-10*60*1000).toString().split(' ');
+router.get('/restapi/getAnomalyChartData', function(req, res, next) {    
+  var now = new Date(parseInt(req.query.now));   
+  console.log(now);
+  var e = now.toString().split(' ');
+  var s = new Date(now.getTime()-10*60*1000).toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var in_data = {  INDEX: "analysis", TYPE: "anomaly_pattern", gte : s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4], lte : e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4] }
   queryProvider.selectSingleQueryByID2("analysis", "selectByTimestamp", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data.length == 0) {
       rtnCode = CONSTS.getErrData('0001');
-    } else {
-      var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-      var day = new Date().toString().split(' ');
-      var id = day[3]+'-'+mon[day[1]]+'-'+day[2];
+    } else {      
+      var id = e[3]+'-'+mon[e[1]]+'-'+e[2];
       var in_data = {  INDEX: "analysis", TYPE: "anomaly" , ID: id };      
       var pattern = out_data[0]._source ;      
       queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data,  function(err, out_data, params) {        
         var clust = out_data[0]._source.pattern_data;
         console.log(pattern);
         var rtnCode = CONSTS.getErrData('0000');
-        if (out_data.length == 0) {   rtnCode = CONSTS.getErrData('0001');        }
+        if (out_data.length == 0) { 
+         rtnCode = CONSTS.getErrData('0001');        
+        } else {
+          console.log(pattern.timestamp)
+          var t = pattern.timestamp.split('T');
+          var tt = t[0].split('-');          
+          var ttt = t[1].split(':');    
+          var point = new Date(tt[0], parseInt(tt[1])-1, tt[2], ttt[0], ttt[1], ttt[2]).getTime();                                   
+          var start = point -110.9*60*1000;
+          var s = new Date(start).toString().split(' ');                
+          var in_data = {
+          START_TIMESTAMP: s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4],
+          END_TIMESTAMP:  e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4],
+          NODE: ["0002.00000039"]       };
+         queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
+            var rtnCode = CONSTS.getErrData('0000');
+            if (out_data.length == 0) {
+              rtnCode = CONSTS.getErrData('0001');
+            }
+            console.log('analysis/restapi/getClusterNodePower -> length : %s', out_data.length);
+            var data = [];    
+            out_data.forEach(function(d){      
+              data.push(d._source);
+            });                  
+
+            res.json({rtnCode: rtnCode, pattern : pattern, clust : clust, raw : data, point : point});
+          });
+        }         
         console.log('analysis/restapi/getAnomaly -> length : %s', out_data.length);
-        res.json({rtnCode: rtnCode, pattern : pattern, clust : clust});
+        res.json({rtnCode: rtnCode, pattern : pattern, clust : clust, raw : data});
       });
     }
     console.log('analysis/restapi/getAnomalyPattern -> length : %s', out_data.length);
-    res.json({rtnCode: rtnCode, pattern : pattern, clust : clust});
+    res.json({rtnCode: rtnCode, pattern : pattern, clust : clust, raw : data});
   });
 });
 
@@ -215,7 +242,7 @@ router.get('/restapi/getAnomalyPatternCheck/:id', function(req, res, next) {
     if (out_data.length == 0) {
       rtnCode = CONSTS.getErrData('0001');
     } 
-    res.json({rtnCode: rtnCode, pattern : pattern});  
+    res.json({rtnCode: rtnCode, rtnData : out_data});  
   });
 });
 
