@@ -25,56 +25,18 @@ var liveValue = [];
     });  
   }, 30*1000);    
 
-function getData() {
-  var now = new Date();
-  console.log('now : '+now);
-  var min = Math.floor(now.getMinutes()/10)*10;  
-  var point = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), min, 0);
-  console.log('point : '+point);
-  var start = new Date(point.getTime()-110*60*1000);  
-  console.log('start : '+start);
-  var end = new Date(point.getTime()+10*60*1000);
-  console.log('end : '+end);
-  var raw = [], match = {};
-  var iso = d3.time.format.utc("%Y-%m-%dT%H:%M:%S.%LZ");
-  var sDate = iso(new Date(start.getTime()-30*1000+9*60*60*1000)).split('.');
-  var nDate = iso(new Date(now.getTime()+0*1000+9*60*60*1000)).split('.');
-  console.log(sDate, nDate);
-  $.ajax({
-    url: "/analysis/restapi/getClusterNodePower" ,
-    dataType: "json",
-    type: "get",
-    data: { nodeId : "0002.00000039", startDate : sDate[0] , endDate : nDate[0] },
-    success: function(result) {
-      // console.log(result);
-      if (result.rtnCode.code == "0000") {        
-        raw = result.rtnData;        
-        getPatternData(raw, start.getTime(), end.getTime(), now.getTime(), point);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
-  });  
-}
-
-function getPatternData(raw, start, end, now, point){
-  console.log(new Date(point));
-  var day = new Date(point).toString().split(' ');
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+function getData(){  
+  var now = new Date().getTime();
   $.ajax({
    // url: "/analysis/restapi/getAnomalyPattern/2017-08-23T15:50:00",
-    url: "/analysis/restapi/getAnomalyPattern/"+day[3]+'-'+mon[day[1]]+'-'+day[2]+'T'+day[4],
+    url: "/analysis/restapi/getAnomalyChartData",
     dataType: "json",
     type: "get",
-    data: {},
+    data: { now : now },
     success: function(result) {
-      // console.log(result);
-      if (result.rtnCode.code == "0000") {                        
-        console.log(result);
+      var raw = result.raw;
+      var point = result.point, start = point -110*60*1000, end = point+10*60*1000;
+      if (result.rtnCode.code == "0000") {                                
       var voltage = ({ center : result.clust.voltage.center[result.pattern.voltage], min : result.clust.voltage.min_value[result.pattern.voltage], max : result.clust.voltage.max_value[result.pattern.voltage], lower : result.clust.voltage.lower[result.pattern.voltage], upper : result.clust.voltage.upper[result.pattern.voltage]})
       var ampere = ({ center : result.clust.ampere.center[result.pattern.ampere], min : result.clust.ampere.min_value[result.pattern.ampere], max : result.clust.ampere.max_value[result.pattern.ampere], lower : result.clust.ampere.lower[result.pattern.ampere], upper : result.clust.ampere.upper[result.pattern.ampere]})
       var power_factor = ({ center : result.clust.power_factor.center[result.pattern.power_factor], min : result.clust.power_factor.min_value[result.pattern.power_factor], max : result.clust.power_factor.max_value[result.pattern.power_factor], lower : result.clust.power_factor.lower[result.pattern.power_factor], upper : result.clust.power_factor.upper[result.pattern.power_factor]})
@@ -85,11 +47,15 @@ function getPatternData(raw, start, end, now, point){
       adata.push({date : start+i*60*1000, center : ampere.center[i], min : ampere.min[i], max : ampere.max[i], lower : ampere.lower[i], upper : ampere.upper[i]});
       apdata.push({date : start+i*60*1000, center : active_power.center[i], min : active_power.min[i], max : active_power.max[i], lower : active_power.lower[i], upper : active_power.upper[i] });
       pfdata.push({date : start+i*60*1000, center : power_factor.center[i], min : power_factor.min[i], max : power_factor.max[i], lower : power_factor.lower[i], upper : power_factor.upper[i]});
-    }    
+    } 
         drawChart(raw, vdata, start, end, now, point, now-point, 'voltage', '#voltage');
         drawChart(raw, adata, start, end, now, point, now-point, 'ampere', '#ampere');
         drawChart(raw, apdata, start, end, now, point, now-point, 'active_power', '#active_power');
         drawChart(raw, pfdata, start, end, now, point, now-point, 'power_factor', '#power_factor');
+        console.log(new Date(start));
+        console.log(new Date(point));
+        console.log(new Date(now));
+        console.log(new Date(end));
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -112,7 +78,7 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id) {
     var groups = {
       output: {
         value: liveValue[id],
-        color: 'blue',
+        color: 'red',
         data: d3.range(0).map(function() {
           return 0
         })
@@ -400,6 +366,10 @@ var div = d3.select("body").append("div")
       .each('end', tick);
    //   .attr('transform', 'translate(' + x(now - (limit) * duration) + ')')         
       if(oriEnd<=now){
+         if(now > oriEnd+3*60*1000) {
+                console.log('reload');
+                window.location.reload(true);
+        }
         if(now >= (end+2*60*1000)){
           end += 2*60*1000;
         }
@@ -413,14 +383,11 @@ var div = d3.select("body").append("div")
           dataType: "json",
           type: "get",
           data: {},
-          success: function(result) {
-            console.log('re');
-            console.log(result);            
-              if(result != null) {
+          success: function(result) {            
+            console.log(result.rtnCode.message);            
+            if (result.rtnCode.code == "0000") {                                      
                 console.log('reload');
                 window.location.reload(true);
-              }
-            if (result.rtnCode.code == "0000") {                                      
             } else {
               //- $("#errormsg").html(result.message);
             }
