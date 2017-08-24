@@ -1021,6 +1021,25 @@
         "id" : #ID#
       }
      ]]></query> 
+     <query id='selectByTimestamp'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : #TYPE#,                       
+        "body" : {
+          "size" : 1,
+          "sort" : { "timestamp" : { "order" : "desc"  } },
+          "query" : {
+           "bool": {
+             "must" : {
+               "range" : {
+                 "timestamp": {  "gte": #gte#, "lte" : #lte#  }
+               }
+            }            
+          }
+        }
+      }
+    }
+  ]]></query>
     <query id='selectDaClusterDetailAll'><![CDATA[
        {
         "index" : "corecode-2017-05",
