@@ -218,12 +218,23 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
               rtnCode = CONSTS.getErrData('0001');
             }
             console.log('analysis/restapi/getClusterNodePower -> length : %s', out_data.length);
-            var data = [];    
+            var voltage = ({ center : clust.voltage.center[pattern.voltage], min : clust.voltage.min_value[pattern.voltage], max : clust.voltage.max_value[pattern.voltage], lower : clust.voltage.lower[pattern.voltage], upper : clust.voltage.upper[pattern.voltage]});
+            var ampere = ({ center : clust.ampere.center[pattern.ampere], min : clust.ampere.min_value[pattern.ampere], max : clust.ampere.max_value[pattern.ampere], lower : clust.ampere.lower[pattern.ampere], upper : clust.ampere.upper[pattern.ampere]});
+            var power_factor = ({ center : clust.power_factor.center[pattern.power_factor], min : clust.power_factor.min_value[pattern.power_factor], max : clust.power_factor.max_value[pattern.power_factor], lower : clust.power_factor.lower[pattern.power_factor], upper : clust.power_factor.upper[pattern.power_factor]});
+            var active_power = ({ center : clust.active_power.center[pattern.active_power], min : clust.active_power.min_value[pattern.active_power], max : clust.active_power.max_value[pattern.active_power], lower : clust.active_power.lower[pattern.active_power], upper : clust.active_power.upper[pattern.active_power]});
+            var vdata = [], adata = [], pfdata = [], apdata = [];
+            for(i=0; i<voltage.center.length; i++){
+              vdata.push({date : start+(i+1)*60*1000, center : voltage.center[i], min : voltage.min[i], max : voltage.max[i], lower :  voltage.lower[i], upper : voltage.upper[i] });
+              adata.push({date : start+(i+1)*60*1000, center : ampere.center[i], min : ampere.min[i], max : ampere.max[i], lower : ampere.lower[i], upper : ampere.upper[i]});
+              apdata.push({date : start+(i+1)*60*1000, center : active_power.center[i], min : active_power.min[i], max : active_power.max[i], lower : active_power.lower[i], upper : active_power.upper[i] });
+              pfdata.push({date : start+(i+1)*60*1000, center : power_factor.center[i], min : power_factor.min[i], max : power_factor.max[i], lower : power_factor.lower[i], upper : power_factor.upper[i]});
+            } 
+            var anomaly = { vdata : vdata, adata : adata, apdata : apdata, pfdata : pfdata };
+            var data = []; 
             out_data.forEach(function(d){      
               data.push(d._source);
             });                  
-
-            res.json({rtnCode: rtnCode, pattern : pattern, clust : clust, raw : data, point : point});
+            res.json({rtnCode: rtnCode, anomaly : anomaly, raw : data, point : point});
           });
         }         
         console.log('analysis/restapi/getAnomaly -> length : %s', out_data.length);

@@ -36,22 +36,11 @@ function getData(){
     success: function(result) {
       var raw = result.raw;
       var point = result.point, start = point -110*60*1000, end = point+10*60*1000;
-      if (result.rtnCode.code == "0000") {                                
-      var voltage = ({ center : result.clust.voltage.center[result.pattern.voltage], min : result.clust.voltage.min_value[result.pattern.voltage], max : result.clust.voltage.max_value[result.pattern.voltage], lower : result.clust.voltage.lower[result.pattern.voltage], upper : result.clust.voltage.upper[result.pattern.voltage]})
-      var ampere = ({ center : result.clust.ampere.center[result.pattern.ampere], min : result.clust.ampere.min_value[result.pattern.ampere], max : result.clust.ampere.max_value[result.pattern.ampere], lower : result.clust.ampere.lower[result.pattern.ampere], upper : result.clust.ampere.upper[result.pattern.ampere]})
-      var power_factor = ({ center : result.clust.power_factor.center[result.pattern.power_factor], min : result.clust.power_factor.min_value[result.pattern.power_factor], max : result.clust.power_factor.max_value[result.pattern.power_factor], lower : result.clust.power_factor.lower[result.pattern.power_factor], upper : result.clust.power_factor.upper[result.pattern.power_factor]})
-      var active_power = ({ center : result.clust.active_power.center[result.pattern.active_power], min : result.clust.active_power.min_value[result.pattern.active_power], max : result.clust.active_power.max_value[result.pattern.active_power], lower : result.clust.active_power.lower[result.pattern.active_power], upper : result.clust.active_power.upper[result.pattern.active_power]})
-    var vdata = [], adata = [], pfdata = [], apdata = [];
-    for(i=0; i<voltage.center.length; i++){
-      vdata.push({date : start+i*60*1000, center : voltage.center[i], min : voltage.min[i], max : voltage.max[i], lower :  voltage.lower[i], upper : voltage.upper[i] });
-      adata.push({date : start+i*60*1000, center : ampere.center[i], min : ampere.min[i], max : ampere.max[i], lower : ampere.lower[i], upper : ampere.upper[i]});
-      apdata.push({date : start+i*60*1000, center : active_power.center[i], min : active_power.min[i], max : active_power.max[i], lower : active_power.lower[i], upper : active_power.upper[i] });
-      pfdata.push({date : start+i*60*1000, center : power_factor.center[i], min : power_factor.min[i], max : power_factor.max[i], lower : power_factor.lower[i], upper : power_factor.upper[i]});
-    } 
-        drawChart(raw, vdata, start, end, now, point, now-point, 'voltage', '#voltage');
-        drawChart(raw, adata, start, end, now, point, now-point, 'ampere', '#ampere');
-        drawChart(raw, apdata, start, end, now, point, now-point, 'active_power', '#active_power');
-        drawChart(raw, pfdata, start, end, now, point, now-point, 'power_factor', '#power_factor');
+      if (result.rtnCode.code == "0000") {                                              
+        drawChart(raw, result.anomaly.vdata, start, end, now, point, now-point, 'voltage', '#voltage');
+        drawChart(raw, result.anomaly.adata, start, end, now, point, now-point, 'ampere', '#ampere');
+        drawChart(raw, result.anomaly.apdata, start, end, now, point, now-point, 'active_power', '#active_power');
+        drawChart(raw, result.anomaly.pfdata, start, end, now, point, now-point, 'power_factor', '#power_factor');
         console.log(new Date(start));
         console.log(new Date(point));
         console.log(new Date(now));
@@ -78,7 +67,7 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id) {
     var groups = {
       output: {
         value: liveValue[id],
-        color: 'red',
+        color: 'blue',
         data: d3.range(0).map(function() {
           return 0
         })
@@ -163,7 +152,7 @@ var yaxis = svg.append('g')
  .attr('class', 'y axis')   
     .call(y.axis = d3.svg.axis().scale(y).orient('left'))
 
-var legendWidth  = 300, legendHeight = 60;
+var legendWidth  = 300, legendHeight = 55;
 
  var legend = svg.append('g')
     .attr('class', 'legend')
@@ -179,11 +168,11 @@ var legendWidth  = 300, legendHeight = 60;
     .attr('width',  75)
     .attr('height', 15)
     .attr('x', 10)
-    .attr('y', 10);
+    .attr('y', 8);
 
     legend.append('text')
     .attr('x', 123)
-    .attr('y', 20)
+    .attr('y', 19)
     .text('lower-upper');
 
     legend.append('rect')
@@ -191,40 +180,31 @@ var legendWidth  = 300, legendHeight = 60;
     .attr('width',  75)
     .attr('height', 15)
     .attr('x', 10)
-    .attr('y', 35);  
+    .attr('y', 33);  
 
     legend.append('text')
     .attr('x', 115)
-    .attr('y', 45)
+    .attr('y', 43)
     .text('min-max');;
 
   legend.append('path')
     .attr('class', 'compareline')
-    .attr('d', 'M170,13L245,13');
+    .attr('d', 'M170,15L245,15');
 
   legend.append('text')
     .attr('x', 270)
-    .attr('y', 16)
+    .attr('y', 19)
     .text('Pattern');
 
    legend.append('path')
     .attr('class', 'valueline')
-    .attr('d', 'M170,31L245,31');
+    .attr('d', 'M170,40L245,40');
 
   legend.append('text')
     .attr('x', 265)
-    .attr('y', 34)
+    .attr('y', 43)
     .text('Data');
 
-  legend.append('path')
-    .attr('class', 'live-line')
-    .attr('d', 'M170,50L245,50');
-
-  legend.append('text')
-    .attr('x', 265)
-    .attr('y', 53)
-    .text('Live');  
-  
 svg.append('path')
     .datum(compare)     
     .attr('class', 'area upper inner')
