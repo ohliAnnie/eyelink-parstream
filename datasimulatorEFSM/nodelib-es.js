@@ -66,7 +66,8 @@ QueryProvider.prototype.defineMappings = function (newIndex) {
   });
 
   client.indices.putSettings(
-    { "index": { "max_result_window": 100000 } }
+    index: newIndex,
+    body: { "index": { "max_result_window": 100000 } }
   ).then(function (resp) {
       logger.trace(resp);
   }, function (err) {
