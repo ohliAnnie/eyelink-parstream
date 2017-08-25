@@ -65,10 +65,10 @@ QueryProvider.prototype.defineMappings = function (newIndex) {
       logger.error(err.message);
   });
 
-  client.indices.putSettings(
+  client.indices.putSettings({
     index: newIndex,
     body: { "index": { "max_result_window": 100000 } }
-  ).then(function (resp) {
+  }).then(function (resp) {
       logger.trace(resp);
   }, function (err) {
       logger.error(err.message);

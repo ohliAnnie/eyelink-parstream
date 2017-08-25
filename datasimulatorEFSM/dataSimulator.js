@@ -65,8 +65,11 @@ lineReader.on('line', function (line) {
 
   if ( line.startsWith(nodeId) ) {
       matchedCount += 1;
-      logger.info('---------------------------------------------------------------------------');
-      logger.info('Processing data : ', line);
+
+      if ( processedDays >= initialDataInDays ){
+        logger.info('---------------------------------------------------------------------------');
+        logger.info('Processing data : ', line);
+      }
       
       cur_datetime = moment(datetime.create().format('Y-m-d H:M:S'));
 
@@ -110,14 +113,16 @@ lineReader.on('line', function (line) {
       // logger.debug('nextEventDateTime: ',nextEventDateTime,', curDateTime: ',cur_datetime,', diffMillis: ',diffSeconds);
       
       // logger.debug('ProcessingDateTime : ',event_date + ' ' + cur_kor_datetime.split(' ')[1],', Next Event DateTime : ',data_arr[3].split('T').join(' '),', diffSeconds : ',diffSeconds);
-      logger.debug('Processing DateTime : ',event_date + ' ' + data_arr[3].split('T')[1],', Next Event DateTime : ',data_arr[3].split('T').join(' '),', diffSeconds : ',diffSeconds );
+      if ( processedDays >= initialDataInDays ){
+          logger.debug('Processing DateTime : ',event_date + ' ' + data_arr[3].split('T')[1],', Next Event DateTime : ',data_arr[3].split('T').join(' '),', diffSeconds : ',diffSeconds );
+      }
 
       if ( startDatetimeToSkip == null || nextEventDateTime.diff(startDatetimeToSkip, 'seconds') > 0 ){
           var index = 'corecode-' + cur_kor_datetime.split(' ')[0];
 
           if ( needNewMapping ) {
-            queryProvider.defineMappings(index);
-            needNewMapping = false;
+              queryProvider.defineMappings(index);
+              needNewMapping = false;
           }
           if ( !initialDataProcessed ){
               sleep(1000);
