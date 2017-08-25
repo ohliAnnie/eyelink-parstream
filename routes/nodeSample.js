@@ -202,13 +202,12 @@ router.get('/restapi/selectJiraAccJson', function(req, res, next) {
 
 router.get('/restapi/selectJiraAccReq', function(req, res, next) {
   console.log('sample/restapi/selectJiraAccId');
- var in_data = {   index : req.query.index };
-  queryProvider.selectSingleQueryByID2("sample","selectJiraAccReq", in_data, function(err, out_data, params) {
-    // console.log(out_datsa);
-    var rtnCode = CONSTS.getErrData('0000');
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');
-     }     
+ var in_data = {    index : req.query.index    };
+  queryProvider.selectSingleQueryByID2("sample","selectJiraAccReq", in_data, function(err, out_data, params) {        
+    var rtnCode = CONSTS.getErrData('0000');  
+    if (out_data == null) {      
+      rtnCode = CONSTS.getErrData('0001');      
+    }
     res.json({rtnCode: rtnCode, rtnData: out_data});
   });
 });
@@ -217,8 +216,7 @@ router.get('/restapi/selectJiraAccReq', function(req, res, next) {
 router.get('/restapi/selectJiraAccScatter', function(req, res, next) {
   console.log('sample/restapi/selectJiraAccScatter');
   var in_data = {};
-  queryProvider.selectSingleQueryByID2("sample","selectJiraAccScatter", in_data, function(err, out_data, params) {
-    // console.log(out_datsa);
+  queryProvider.selectSingleQueryByID2("sample","selectJiraAccScatter", in_data, function(err, out_data, params) {   
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
