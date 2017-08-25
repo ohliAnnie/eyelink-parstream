@@ -26,8 +26,8 @@ const nodeId = process.argv[3];
 const type = 'corecode';
 const initialDataInDays = ( process.argv[4] == null ? 0 : process.argv[4] ); 
 
-// startDatetimeToSkip : 실제 데이터의 시간을 입력받아서 12시간 차이를 계산한 시간으로 변경
-const startDatetimeToSkip = ( process.argv[5] == null ? null : moment(process.argv[5]).subtract(12, 'hours') );
+// startDatetimeToSkip : 실제로 데이터가 insert되어야 하는 일시 입력받는다. (Next Event DateTime 기준)
+const startDatetimeToSkip = ( process.argv[5] == null ? null : moment(process.argv[5]) );
 
 // TODO : 현재까지 입력된 데이터 이후의 데이터부터 입력하려면 initialDataInDays로 일자 기준을 잡고, startDatetimeToSkip로 시간을 잡아줘야 한다.
 // 이것을 startDatetimeToSkip 하나로만 처리할 수 있도록 하면 좋을 듯 
@@ -91,7 +91,7 @@ lineReader.on('line', function (line) {
               initialDataProcessed = true;
           }
           logger.debug('=======================================');
-          logger.debug('=========== ' + initialDataInDays + ' days passed ============');
+          logger.debug('=========== ' + processedDays + ' days passed ============');
           logger.debug('=======================================');
 
           needNewMapping = true;
@@ -106,10 +106,11 @@ lineReader.on('line', function (line) {
       var nextEventDateTime = moment(data_arr[3], 'YYYY-MM-DD HH:mm:ss');
       data_arr[3] = data_arr[3].split('T')[0] + 'T' + nextEventDateTime.format('HH:mm:ss');
 
-      var diffSeconds = nextEventDateTime.diff(curDateTime, 'seconds');
+      var diffSeconds = nextEventDateTime.diff(cur_datetime)/1000;
+      // logger.debug('nextEventDateTime: ',nextEventDateTime,', curDateTime: ',cur_datetime,', diffMillis: ',diffSeconds);
       
       // logger.debug('ProcessingDateTime : ',event_date + ' ' + cur_kor_datetime.split(' ')[1],', Next Event DateTime : ',data_arr[3].split('T').join(' '),', diffSeconds : ',diffSeconds);
-      logger.debug('Processing DateTime : ',event_date + ' ' + data_arr[3].split('T')[1],', Next Event DateTime : ',data_arr[3].split('T').join(' ') );
+      logger.debug('Processing DateTime : ',event_date + ' ' + data_arr[3].split('T')[1],', Next Event DateTime : ',data_arr[3].split('T').join(' '),', diffSeconds : ',diffSeconds );
 
       if ( startDatetimeToSkip == null || nextEventDateTime.diff(startDatetimeToSkip, 'seconds') > 0 ){
           var index = 'corecode-' + cur_kor_datetime.split(' ')[0];
@@ -119,13 +120,13 @@ lineReader.on('line', function (line) {
             needNewMapping = false;
           }
           if ( !initialDataProcessed ){
-              sleep(200);
+              sleep(1000);
               insertData(index, type, data_arr.join(','));
           } 
           else {
 
               if ( diffSeconds <= 0 ) {
-                  sleep(200);
+                  sleep(1000);
                   insertData(index, type, data_arr.join(','));
               } else if ( diffSeconds > 0 ){
                 
@@ -152,7 +153,7 @@ function printUsage() {
   console.log('    []: required, {}: optional');
   console.log('');
   console.log('Ex. $ node dataSimulator.js ./source.csv 0002.00000039 30 \'2017-08-11 11:00:00\'');
-  // node dataSimulator.js ../source/busan_tb_node_raw.0315.csv 0002.00000039 38 '2017-08-17 05:00:00'
+  // node dataSimulator.js ../source/busan_tb_node_raw.0315.csv 0002.00000039 38 '2017-08-17 17:00:00'
 }
 function insertData(index, type, linedata){
 

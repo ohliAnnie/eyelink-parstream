@@ -65,6 +65,13 @@ QueryProvider.prototype.defineMappings = function (newIndex) {
       logger.error(err.message);
   });
 
+  client.indices.putSettings(
+    { "index": { "max_result_window": 100000 } }
+  ).then(function (resp) {
+      logger.trace(resp);
+  }, function (err) {
+      logger.error(err.message);
+  });
 }
 
 QueryProvider.prototype.insertData = function (type, queryId, datas) {  
