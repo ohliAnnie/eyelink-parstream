@@ -93,9 +93,7 @@ lineReader.on('line', function (line) {
           if ( processedDays >= initialDataInDays ){
               initialDataProcessed = true;
           }
-          logger.debug('=======================================');
           logger.debug('=========== ' + processedDays + ' days passed ============');
-          logger.debug('=======================================');
 
           needNewMapping = true;
       }
@@ -122,6 +120,7 @@ lineReader.on('line', function (line) {
 
           if ( needNewMapping ) {
               queryProvider.defineMappings(index);
+              queryProvider.indexSettings(index, 0);
               needNewMapping = false;
           }
           if ( !initialDataProcessed ){

@@ -5,6 +5,8 @@ var client = new elasticsearch.Client({
   // log: 'trace'
 });
 
+var sleep = require('system-sleep');
+
 QueryProvider = function() {
 
 };
@@ -65,14 +67,24 @@ QueryProvider.prototype.defineMappings = function (newIndex) {
       logger.error(err.message);
   });
 
-  client.indices.putSettings({
-    index: newIndex,
-    body: { "index": { "max_result_window": 100000 } }
-  }).then(function (resp) {
-      logger.trace(resp);
-  }, function (err) {
-      logger.error(err.message);
-  });
+}
+
+QueryProvider.prototype.indexSettings = function (newIndex, failCount) {
+  if ( failCount < 10 ) {
+    sleep(1000);
+    var self = this;
+    client.indices.putSettings({
+      index: newIndex,
+      body: { "index": { "max_result_window": 100000 } }
+    }).then(function (resp) {
+        logger.trace(resp);
+    }, function (err) {
+        logger.debug('failCount(',failCount+1,')', err.message);
+        self.indexSettings(newIndex, failCount + 1);
+    });
+  }else {
+    logger.error('Index settings skipped because of too many fail count. failCount: '+failCount);
+  }
 }
 
 QueryProvider.prototype.insertData = function (type, queryId, datas) {  
