@@ -283,22 +283,65 @@ router.get('/restapi/getClusterNodePower', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-
-    // console.log('typeof array : %s', (typeof out_data[0] !== 'undefined'));
-    // console.log('typeof array : %s', (out_data[0] !== null));
-
-    // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data);
-    // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data[0]);
     console.log('analysis/restapi/getClusterNodePower -> length : %s', out_data.length);
     var data = [];    
-    out_data.forEach(function(d){      
-           
+    out_data.forEach(function(d){                 
       data.push(d._source);
     });    
     res.json({rtnCode: rtnCode, rtnData: data});
   });
 });
 
+router.post('/restapi/insertClusterMaster/:id', function(req, res, next) {  
+  console.log('/analysis/restapi/insertClusterMaster');    
+  console.log(JSON.stringify(req.body));
+   var id = req.params.id;
+   var in_data = {    INDEX: "cluster", TYPE: "master", ID: id   };  
+   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {        
+    if (out_data[0] != null){
+      var rtnCode = CONSTS.getErrData('E005');
+      console.log(rtnCode);
+      res.json({rtnCode: rtnCode});
+    }  else  {
+      var in_data = {    INDEX: "cluster", TYPE: "master", ID: id,   BODY : JSON.stringify(req.body)   };  
+     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {        
+          console.log(out_data);
+          if(out_data.result == "created"){
+            console.log(out_data);  
+
+            var rtnCode = CONSTS.getErrData("D001");                   
+          }
+        if (err) { console.log(err) };                     
+        res.json({rtnCode: rtnCode});    
+      });
+    }
+  });
+});
+
+router.post('/restapi/insertClusterDetail/:id', function(req, res, next) {  
+  console.log('/analysis/restapi/insertClusterDetail');    
+  console.log(JSON.stringify(req.body));
+   var id = req.params.id;
+   var in_data = {    INDEX: "cluster", TYPE: "master", ID: id   };  
+   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {        
+    if (out_data[0] != null){
+      var rtnCode = CONSTS.getErrData('E005');
+      console.log(rtnCode);
+      res.json({rtnCode: rtnCode});
+    }  else  {
+      var in_data = {    INDEX: "cluster", TYPE: "master", ID: id,   BODY : JSON.stringify(req.body)   };  
+     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {        
+          console.log(out_data);
+          if(out_data.result == "created"){
+            console.log(out_data);  
+            var rtnCode = CONSTS.getErrData("D001");                   
+          }
+        if (err) { console.log(err) };                     
+        res.json({rtnCode: rtnCode});    
+      });
+    }
+  });
+});
 
 // run analysis
 router.post('/restapi/runAnalysis', function(req, res, next) {
@@ -317,67 +360,94 @@ router.post('/restapi/runAnalysis', function(req, res, next) {
   });
 });
 
-// insert RawData
-router.post('/restapi/insertClusterRawData', function(req, res, next) {
-  console.log('/restapi/insertClusterRawData start ');
-  // console.log('/restapi/insertClusterRawData -> body : %j', req.body);
-  // console.log('/restapi/insertClusterRawData -> master : %j', req.body.tb_da_clustering_master);
-  // console.log('/restapi/insertClusterRawData -> detail : %j', req.body.tb_da_clustering_detail);
-
-  req.body.tb_da_clustering_master.forEach(function(d) {
-    var in_data = {
-      DATIME : d.da_time, START : d.start_date+' 00:00:00.0',  END : d.end_date+' 23:59:59.0', TIMEINTERVAL : d.time_interval ,
-      C0VOL : d.c0_voltage, C1VOL : d.c1_voltage, C2VOL : d.c2_voltage, C3VOL : d.c3_voltage,
-      C0AMP : d.c0_ampere, C1AMP : d.c1_ampere, C2AMP : d.c2_ampere, C3AMP : d.c3_ampere,
-      C0ACT : d.c0_active_power, C1ACT : d.c1_active_power, C2ACT : d.c2_active_power, C3ACT : d.c3_active_power,
-      C0POW : d.c0_power_factor, C1POW : d.c1_power_factor, C2POW : d.c2_power_factor, C3POW : d.c3_power_factor,
-     };
-    queryProvider.insertQueryByID("analysis", "insertClusteringMaster", in_data, function(err, out_data) {
-      console.log('/restapi/insertClusterRawData -> insertClusteringMaster result : %s ', out_data);
-    });
+// query RawData
+router.get('/restapi/getDaClusterDetail', function(req, res, next) {  
+  var in_data = {
+      index : "cluster",    type : "detail",
+      DADATE : "2017-08-28" };
+//      DADATE : req.query.daDate };
+  queryProvider.selectSingleQueryByID2("analysis", "selectDaClusterDetail", in_data, function(err, out_data, params) {    
+    console.log(err);
+    console.log(out_data);    
+    if (out_data === null) {
+      var rtnCode = CONSTS.getErrData('0001');
+      res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+    } else {
+      var rtnCode = CONSTS.getErrData('0000');
+      console.log('analysis/restapi/getDaClusterDetail -> length : %s', out_data.length);      
+    }   
+    res.json({rtnCode: rtnCode});
   });
+});
 
-  // req.body.tb_da_clustering_detail.forEach(function(d) {
-  //   console.log(d);
-  // });
-
-
-  req.body.tb_da_clustering_detail.forEach(function(d) {
-    var in_data = {
-      DATIME : d.da_time, EVENTTIME : d.event_time,
-      C0VOL : d.c0_voltage, C1VOL : d.c1_voltage, C2VOL : d.c2_voltage, C3VOL : d.c3_voltage,
-      C0AMP : d.c0_ampere, C1AMP : d.c1_ampere, C2AMP : d.c2_ampere, C3AMP : d.c3_ampere,
-      C0ACT : d.c0_active_power, C1ACT : d.c1_active_power, C2ACT : d.c2_active_power, C3ACT : d.c3_active_power,
-      C0POW : d.c0_power_factor, C1POW : d.c1_power_factor, C2POW : d.c2_power_factor, C3POW : d.c3_power_factor,
-     };
-    queryProvider.insertQueryByID("analysis", "insertClusteringDetail", in_data, function(err, out_data) {
-      console.log('/restapi/insertClusterRawData -> insertClusteringDetail result : %s ', out_data);
-    });
-  });
-
-  // TO-DO 일단 파일로 저장함. DB로 INSERT 로직 추가 구현 필요함.
-  // var clustering_data = req.body;
-  // var clustering_data = JSON.parse(req.body);
-  // var clustering_data = JSON.stringify(req.body, null, 4);
-  // console.log(clustering_data);
-/*  fs.writeFile('./insertClusterRawData.log', clustering_data, function(err) {
-    if(err) throw err;
-    console.log('File write completed');
-  });*/
-  // var in_data = {
-  //     START_TIMESTAMP: req.query.startDate + ' 00:00:00',
-  //     END_TIMESTAMP: req.query.endDate + ' 23:59:59',
-  //     NODE: req.query.node,
-  //     FLAG : 'N'};
-  // queryProvider.selectSingleQueryByID("analysis", "selectClusterRawData", in_data, function(err, out_data, params) {
-  //   // console.log(out_data);
+router.get('/restapi/getDaClusterMasterByDadate', function(req, res, next) {
+  console.log(req.query);
+  var in_data = {
+      index : "cluster",    type : "master",
+      DADATE: req.query.daDate };
+  queryProvider.selectSingleQueryByID2("analysis", "selectDaClusterMasterByDadate", in_data, function(err, out_data, params) {
+    // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
+    if (out_data[0] === null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    console.log('analysis/restapi/getDaClusterMaster -> length : %s', out_data[0].length);
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+  });
+});
 
-    // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data);
-    // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data[0]);
-    // console.log('analysis/restapi/getClusterRawData -> length : %s', out_data[0].length);
-    res.json({rtnCode: rtnCode, rtnData: ''});
-  // });
+
+router.get('/restapi/getDaClusterMaster', function(req, res, next) {
+  console.log(req.query);
+  console.log(req.query.interval);
+  var in_data = {
+      index : "cluster", type : "master",
+      START_TIMESTAMP: req.query.startDate + ' 00:00:00',
+      END_TIMESTAMP: req.query.endDate + ' 23:59:59',
+      INTERVAL: parseInt(req.query.interval),
+      FLAG : 'N'};
+  if(req.query.interval === 'all')  {
+    var sql = "selectDaClusterMasterAll";
+  } else {
+    var sql = "selectDaClusterMaster";
+  }
+  queryProvider.selectSingleQueryByID2("analysis", sql, in_data, function(err, out_data, params) {
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data[0] === null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    console.log('analysis/restapi/getDaClusterMaster -> length : %s', out_data[0].length);
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+  });
+});
+
+// query RawData
+router.get('/restapi/getClusterRawData', function(req, res, next) {
+  console.log(req.query);
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  var start = new Date(req.query.startDate).getTime();  
+  var end = new Date(req.query.endDate).getTime();
+  var index = [], cnt = 0;
+  for(i = start; i<=end; i+24*60*60*1000){
+    var d = new Date(i).toString().split(' ');
+    index[cnt++]  = "corecode-"+ d[3]+'-'+mon[d[1]]+'-'+d[2];
+  }
+  var in_data = {
+      index :  index, type : "corecode",
+      START_TIMESTAMP: req.query.startDate + ' 00:00:00',
+      END_TIMESTAMP: req.query.endDate + ' 23:59:59',
+      NODE: req.query.node,
+      FLAG : 'N'};
+  queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawData", in_data, function(err, out_data, params) {
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data[0] === null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    console.log('analysis/restapi/getClusterRawData -> length : %s', out_data[0].length);
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+  });
 });
 
 
