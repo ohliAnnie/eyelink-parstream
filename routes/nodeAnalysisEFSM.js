@@ -116,8 +116,10 @@ router.get('/restapi/getAnomaly/:id', function(req, res, next) {
   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
-    if (out_data == null) {
+    if (out_data.length == 0) {
       rtnCode = CONSTS.getErrData('0001');
+      console.log('test');
+      res.json({rtnCode: rtnCode});
     }
     console.log('analysis/restapi/getDaClusterDetail -> length : %s', out_data.length);
     res.json({rtnCode: rtnCode, rtnData: out_data[0]._source});
