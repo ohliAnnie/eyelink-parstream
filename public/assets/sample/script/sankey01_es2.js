@@ -10,7 +10,7 @@ $(function(){
     type: "get",
     data: { index : index },
     success: function(result) {
-      // console.log(result);
+      console.log(result);
       if (result.rtnCode.code == "0000") {        
         makeData(result.rtnData);
       } else {
