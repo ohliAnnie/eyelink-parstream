@@ -273,10 +273,21 @@ router.get('/restapi/getAnomalyPatternCheck/:id', function(req, res, next) {
 
 // query RawData
 router.get('/restapi/getClusterNodePower', function(req, res, next) { 
+  console.log(req.query)
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };  
+  var start = new Date(req.query.startDate).getTime();  
+  var end = new Date(req.query.endDate).getTime();  
+  var index = [], cnt = 0;
+  for(i = start; i<=end; i=i+24*60*60*1000){
+    var d = new Date(i).toString().split(' ');    
+    index[cnt++]  = "corecode-"+d[3]+'-'+mon[d[1]]+'-'+d[2];
+  }
+  console.log(index);
   var in_data = {
+      index : index, type : "corecode",
       START_TIMESTAMP: req.query.startDate,
       END_TIMESTAMP: req.query.endDate,
-      NODE: req.query.nodeId.split(',')      };
+    };
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
