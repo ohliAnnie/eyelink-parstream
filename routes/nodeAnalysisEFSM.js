@@ -272,7 +272,27 @@ router.get('/restapi/getAnomalyPatternCheck/:id', function(req, res, next) {
 });
 
 // query RawData
-router.get('/restapi/getClusterNodePower', function(req, res, next) { 
+router.get('/restapi/getClusterNodePower', function(req, res, next) {
+  console.log(req.query);
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };  
+  var in_data = {
+      START_TIMESTAMP: req.query.startDate,
+      END_TIMESTAMP: req.query.endDate,
+      NODE: [req.query.nodeId],
+      FLAG : 'N'};
+  queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data === null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    console.log('analysis/restapi/getClusterNodePower -> length : %s', out_data.length);
+    res.json({rtnCode: rtnCode, rtnData: out_data});
+  });
+});
+
+// query RawData
+router.get('/restapi/getClusterRawData', function(req, res, next) { 
   console.log(req.query)
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };  
   var start = new Date(req.query.startDate).getTime();  
@@ -288,13 +308,13 @@ router.get('/restapi/getClusterNodePower', function(req, res, next) {
       START_TIMESTAMP: req.query.startDate,
       END_TIMESTAMP: req.query.endDate,
     };
-  queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawData", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-    console.log('analysis/restapi/getClusterNodePower -> length : %s', out_data.length);
+    console.log('analysis/restapi/getClusterRawData -> length : %s', out_data.length);
     var data = [];    
     out_data.forEach(function(d){                 
       data.push(d._source);
@@ -432,35 +452,6 @@ router.get('/restapi/getDaClusterMaster', function(req, res, next) {
     res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });
 });
-
-// query RawData
-router.get('/restapi/getClusterRawData', function(req, res, next) {
-  console.log(req.query);
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var start = new Date(req.query.startDate).getTime();  
-  var end = new Date(req.query.endDate).getTime();
-  var index = [], cnt = 0;
-  for(i = start; i<=end; i+24*60*60*1000){
-    var d = new Date(i).toString().split(' ');
-    index[cnt++]  = "corecode-"+ d[3]+'-'+mon[d[1]]+'-'+d[2];
-  }
-  var in_data = {
-      index :  index, type : "corecode",
-      START_TIMESTAMP: req.query.startDate + ' 00:00:00',
-      END_TIMESTAMP: req.query.endDate + ' 23:59:59',
-      NODE: req.query.node,
-      FLAG : 'N'};
-  queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawData", in_data, function(err, out_data, params) {
-    // console.log(out_data);
-    var rtnCode = CONSTS.getErrData('0000');
-    if (out_data[0] === null) {
-      rtnCode = CONSTS.getErrData('0001');
-    }
-    console.log('analysis/restapi/getClusterRawData -> length : %s', out_data[0].length);
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
-  });
-});
-
 
 function getConnectionToDA(connName, callback){
   var pUrl = global.config.analysis.host;
