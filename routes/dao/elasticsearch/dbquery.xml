@@ -1039,65 +1039,80 @@
         }
       }
     }
-  ]]></query>
-    <query id='selectDaClusterDetailAll'><![CDATA[
-       {
-        "index" : "corecode-2017-05",
-        "type" : "corecode",                    
+  ]]></query>    
+    <query id='selectDaClusterMasterAll'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : #type#,                    
         "body" : {       
-          "size"   : 10000,           
-          "query" : { "match_all" : { }    }
+          "size"   : 10000,                     
+          "query" : { 
+            "bool" : {
+              "must" : { "match_all": {} },
+               "filter" : {
+                "range" : {
+                   "event_time" : { "gte" : #START_TIMESTAMP#, "lte" : #END_TIMESTAMP# }                    
+                  } 
+                }
+              }
+          }
         } 
-     ]]></query>
+      }
+     ]]></query>     
     <query id='selectDaClusterMaster'><![CDATA[
       {
-        "index" : "corecode-2017-05",
-        "type" : "corecode",                    
+        "index" : #index#,
+        "type" : #type#,                    
+        "body" : {       
+          "size"   : 10000,                     
+          "query" : { 
+            "bool" : {
+              "must" : { "match" : { interval : #INTERVAL#} },
+               "filter" : {
+                "range" : {
+                   "event_time" : { "gte" : #START_TIMESTAMP#, "lte" : #END_TIMESTAMP# }                    
+                  } 
+                }
+              }
+          }
+        } 
+      }
+     ]]></query>     
+    <query id='selectDaClusterMasterByDadate'><![CDATA[      
+      {
+        "index" : #index#,
+        "type" : #type#,                    
         "body" : {       
           "size"   : 10000,           
-          "query" : { "match_all" : { }    }
+          "query" : {
+            "bool": {
+              "must" : {
+                "match" : { "daDate" : #DADATE# }
+              }
+            }            
+          }
         } 
-     ]]></query>
-    <query id='selectDaClusterMasterByDadate'><![CDATA[      
     ]]></query>
     <query id='selectDaClusterDetail'><![CDATA[
      {
-        "index" : "corecode-2017-05",
-        "type" : "corecode",                    
+        "index" : "#index#",
+        "type" : #type#,                    
         "body" : {       
           "size"   : 10000,           
-          "query" : { "match_all" : { }    }
-        } 
+          "query" : {
+            "bool": {
+              "must" : {
+                "match" : { "daDate" : #DADATE# }
+              }
+            }            
+          }
+        }
+      } 
      ]]></query>     
-     <query id='selectClusterNodePower'><![CDATA[
+<!--  (vibration_x + vibration_y + vibration_z) / 3 as vibration 없음 -->
+    <query id='selectClusterNodePower'><![CDATA[
      {
         "index" : "corecode-*",
-        "type" : "corecode",
-        "body" : {       
-          "size" : 100000, 
-          "sort" : { "event_time" : { "order" : "asc" }},
-          "_source" : ["node_id", "event_time", "ampere", "voltage", "active_power", "power_factor", "event_type"],
-          "query" : { 
-            "bool" : {
-              "must" : [      { "match_all": {} }        ],
-               "filter" : [
-                { "term" : { "event_type": "1" } },   
-                { "terms" : { "node_id": [##NODE##] } },             
-                {"range" : { "event_time" :
-                  { "gte" : #START_TIMESTAMP#,
-                      "lte" : #END_TIMESTAMP# }
-                    }
-                  } 
-                ]
-              }
-            }
-          }
-        } 
-     ]]></query>   
-<!--  (vibration_x + vibration_y + vibration_z) / 3 as vibration 없음 -->
-    <query id='selectClusterRawData'><![CDATA[
-     {
-        "index" : "corecode-2017-05",
         "type" : "corecode",
         "body" : {       
           "size" : 10000, 
@@ -1118,5 +1133,27 @@
           }
         } 
     ]]></query>    
+    <query id='selectClusterRawData'><![CDATA[
+     {
+        "index" : "corecode-*",
+        "type" : "corecode",
+        "body" : {       
+          "size" : 10000, 
+          "sort" : { "event_time" : { "order" : "asc" }},          
+          "query" : { 
+              "bool" : {
+                "must" : [   { "match_all": {} }  ],
+                "filter" : { 
+                  "range" : { 
+                    "event_time" :
+                      { "gte" : #START_TIMESTAMP#,  "lte" : #END_TIMESTAMP# 
+                  }                     
+               }                   
+             }
+           }
+         }
+      } 
+    }
+    ]]></query>        
 </analysis>
 </queryList>
