@@ -286,8 +286,12 @@ router.get('/restapi/getClusterNodePower', function(req, res, next) {
     if (out_data === null) {
       rtnCode = CONSTS.getErrData('0001');
     }
+   var data = [];    
+    out_data.forEach(function(d){                 
+      data.push(d._source);
+    });    
     console.log('analysis/restapi/getClusterNodePower -> length : %s', out_data.length);
-    res.json({rtnCode: rtnCode, rtnData: out_data});
+    res.json({rtnCode: rtnCode, rtnData: data});
   });
 });
 
