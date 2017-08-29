@@ -48,6 +48,7 @@ function getMasterList(interval) {
     data: { startDate:sdate, endDate:edate, interval:interval },
     success: function(result) {
       if (result.rtnCode.code == "0000") {
+        console.log(result);
         var master = result.rtnData;          
         drawMaster(master);
       }
@@ -60,18 +61,21 @@ function getMasterList(interval) {
 }
 
 function drawMaster(master) {
+  console.log(master)
   var seatvar = document.getElementsByClassName("masterList");
   var cnt = 0
   $('#masterList').empty();
-  master.forEach(function(d) {   
+  master.forEach(function(d) { 
+    d = d._source.master_result;  
+    console.log(d);
     var sb = new StringBuffer();
     if(cnt == 0) {
-      sb.append('<tr><th>DA Date</th><th>Start Date-End Date</th><th>Interval</th><th></th></tr>');
+      sb.append('<tr><th>DA Time</th><th>Start Date-End Date</th><th>Interval</th><th></th></tr>');
       cnt++;
     }
-    var sdate = d.start_date.split(' ');
-    var edate = d.end_date.split(' ');
-    sb.append('<tr><td><a href="#" onclick="clickfunc(this)">' + d.da_date+'</td><td> '+sdate[0]+' ~ '+edate[0]+' </td>');
+    var sdate = d.start_date.split('T');
+    var edate = d.end_date.split('T');
+    sb.append('<tr><td><a href="#" onclick="clickfunc(this)">' + d.da_time+'</td><td> '+sdate[0]+' ~ '+edate[0]+' </td>');
     if (d.time_interval == 180) {
       var interval = '3hours';
     } else if (d.time_interval == 360) {
@@ -81,7 +85,7 @@ function drawMaster(master) {
     }
     sb.append('<td>'+interval+'</td>');
     sb.append('<td><a href="#" onclick="javascript_:window.open(');
-    var d = d.da_date.split(' ')
+    var d = d.da_time.split('T')
     var script = "'clusteringPop?dadate="+d[0]+"&datime="+d[1]+"&interval="+interval+"&start="+sdate[0]+"&end="+edate[0]+"', '', 'menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50'";
     sb.append(script+');" class="btn red"> Detail </a></td></tr>')
     
@@ -97,6 +101,7 @@ function drawCheckChart(factor, daDate) {
     data: {daDate : daDate},
     success: function(result) {
       if (result.rtnCode.code == "0000") {
+        console.log(result)
         var data = result.rtnData;
         var set = [];
         data.forEach(function(d){

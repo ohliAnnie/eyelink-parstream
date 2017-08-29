@@ -1051,7 +1051,7 @@
               "must" : { "match_all": {} },
                "filter" : {
                 "range" : {
-                   "event_time" : { "gte" : #START_TIMESTAMP#, "lte" : #END_TIMESTAMP# }                    
+                   "master_result.da_time" : { "gte" : #START_TIMESTAMP#, "lte" : #END_TIMESTAMP# }                    
                   } 
                 }
               }
@@ -1070,7 +1070,7 @@
               "must" : { "match" : { interval : #INTERVAL#} },
                "filter" : {
                 "range" : {
-                   "event_time" : { "gte" : #START_TIMESTAMP#, "lte" : #END_TIMESTAMP# }                    
+                   "master_result.da_time" : { "gte" : #START_TIMESTAMP#, "lte" : #END_TIMESTAMP# }                    
                   } 
                 }
               }
@@ -1095,14 +1095,14 @@
     ]]></query>
     <query id='selectDaClusterDetail'><![CDATA[
      {
-        "index" : "#index#",
+        "index" : #index#,
         "type" : #type#,                    
         "body" : {       
           "size"   : 10000,           
           "query" : {
             "bool": {
               "must" : {
-                "match" : { "daDate" : #DADATE# }
+                "match" : { "_id" : #DADATE# }
               }
             }            
           }
