@@ -33,14 +33,15 @@ function getData(){
     dataType: "json",
     type: "get",
     data: { now : now },
-    success: function(result) {
+    success: function(result) {      
       var raw = result.raw;
-      var point = result.point, start = point -110*60*1000, end = point+10*60*1000;
+      console.log(result)
+      var point = result.point, start = point -50*60*1000, end = point+10*60*1000;      
       if (result.rtnCode.code == "0000") {                                              
-        drawChart(raw, result.anomaly.vdata, start, end, now, point, now-point, 'voltage', '#voltage');
-        drawChart(raw, result.anomaly.adata, start, end, now, point, now-point, 'ampere', '#ampere');
-        drawChart(raw, result.anomaly.apdata, start, end, now, point, now-point, 'active_power', '#active_power');
-        drawChart(raw, result.anomaly.pfdata, start, end, now, point, now-point, 'power_factor', '#power_factor');
+        drawChart(raw, result.anomaly.vdata, start, end, now, point, now-point, 'voltage', '#voltage', result.pattern);
+        /*drawChart(raw, result.anomaly.adata, start, end, now, point, now-point, 'ampere', '#ampere', result.pattern);
+        drawChart(raw, result.anomaly.apdata, start, end, now, point, now-point, 'active_power', '#active_power', result.pattern);
+        drawChart(raw, result.anomaly.pfdata, start, end, now, point, now-point, 'power_factor', '#power_factor', result.pattern);*/
         console.log(new Date(start));
         console.log(new Date(point));
         console.log(new Date(now));
@@ -57,17 +58,27 @@ function getData(){
   
 }
 
-function drawChart(raw, compare, start, end, now, point, gap, id, chart_id) {
+function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, pattern) {
   oriEnd = end;  
-  var limit = 60 * 0.7,    duration = 1000;   
+  var limit = 60,    duration = 1000;   
  var margin = {top: 10, right: 50, bottom: 30, left: 50},
   width = window.innerWidth*0.88 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;  
+  if(pattern[id+'_status'] < 0.5){
+    var color = 'green';
+  } else if(pattern[id+'_status'] < 1){ 
+    var color = 'blue';
+  } else if(pattern[id+'_status'] < 5){ 
+    var color = 'yellow';
+  } else {
+    var color = 'red';
+  }
+
   liveValue = raw[raw.length-1];    
     var groups = {
       output: {
         value: liveValue[id],
-        color: 'blue',
+        color: 'red',
         data: d3.range(0).map(function() {
           return 0
         })
@@ -97,9 +108,9 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id) {
 
     var line = d3.svg.line()
     .interpolate('basis')
-    .x(function(d, i) {        
-     // return x(now)  })     
-     return x(now - (limit - 1 - i) * duration)  })
+    .x(function(d, i) {              
+      //return x(now)  })      
+     return x(now - (limit - i -1) * (duration))  })
     .y(function(d) {  return y(d)   })
 
   var valueline = d3.svg.line()
@@ -204,6 +215,29 @@ var legendWidth  = 300, legendHeight = 55;
     .attr('x', 265)
     .attr('y', 43)
     .text('Data');
+
+var statusWidth  = 64, statusHeight = 55;
+
+ var status = svg.append('g')
+    .attr('class', 'status')
+    .attr('transform', 'translate(' + 400 + ', 0)');
+
+  status.append('rect')
+    .attr('class', 'status-bg')
+    .attr('width',  statusWidth)
+    .attr('height', statusHeight);
+
+    status.append('text')
+    .attr('x', 18)
+    .attr('y', 15)
+    .text('status');
+
+    status.append('circle')    
+    .attr('class', 'sign')
+    .attr('cy',  34)
+    .attr('cx', 32)
+    .attr('r', 12)
+    .style("fill", color );
 
 svg.append('path')
     .datum(compare)     
@@ -336,8 +370,9 @@ var div = d3.select("body").append("div")
         group.data.push(value)
         group.path.attr('d', line)        
       }      
-      ddata.push({ date:now, value:value});            
-     x.domain([now-110*60*1000+gap, now+10*60*1000-gap]);
+      ddata.push({ date:now, value:value});                 
+     x.domain([now-50*60*1000+gap, now+10*60*1000-gap]);
+     //x.domain([start,end]);
     // Slide paths left
       paths.attr('transform', null)
       .transition()
