@@ -1157,5 +1157,28 @@
       } 
     }
     ]]></query>        
+      <query id='selectDataBySource'><![CDATA[
+     {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {       
+          "size" : 100000, 
+          "sort" : { "event_time" : { "order" : "asc" }},          
+          "_source" : [##Source##],
+          "query" : {               
+              "bool" : {
+                "must" : [   { "match_all": {} }  ],
+                "filter" : { 
+                  "range" : { 
+                    "event_time" :
+                      { "gte" : #START_TIMESTAMP#,  "lte" : #END_TIMESTAMP# 
+                  }                     
+               }                   
+             }
+           }
+         }
+      } 
+    }
+    ]]></query>        
 </analysis>
 </queryList>

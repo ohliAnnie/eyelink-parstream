@@ -112,7 +112,7 @@ router.delete('/restapi/deleteAnomaly/:id', function(req, res, next) {
 // query RawData
 router.get('/restapi/getAnomaly/:id', function(req, res, next) {
   console.log(req.query);
-  var in_data = {  INDEX: "analysis", TYPE: "anomaly" , ID: req.params.id}
+  var in_data = {  INDEX: "analysis", TYPE: "anomaly" , ID: req.params.id}  
   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
@@ -146,7 +146,6 @@ router.post('/restapi/insertAnomalyPattern/:id', function(req, res, next) {
     }
      res.json({rtnCode: rtnCode});    
   });
-
 });
 
 // query RawData
@@ -187,7 +186,7 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
   var e = now.toString().split(' ');
   var s = new Date(now.getTime()-10*60*1000).toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var in_data = {  INDEX: "analysis", TYPE: "anomaly_pattern", gte : s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4], lte : e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4] }
+  var in_data = {  INDEX: "analysis", TYPE: "anomaly_pattern", gte : s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4], lte : e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4] } 
   queryProvider.selectSingleQueryByID2("analysis", "selectByTimestamp", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -213,8 +212,8 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
           var tt = t[0].split('-');          
           var ttt = t[1].split(':');    
           var point = new Date(tt[0], parseInt(tt[1])-1, tt[2], ttt[0], ttt[1], ttt[2]).getTime();                                   
-          var start = point - 110*60*1000;
-          var s = new Date(start-0.5*60*1000).toString().split(' ');                
+          var start = point - 50*60*1000;
+          var s = new Date(start-0.7*60*1000).toString().split(' ');                
           var in_data = {
           START_TIMESTAMP: s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4],
           END_TIMESTAMP:  e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4],
@@ -236,7 +235,7 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
                 adata.push({date : start, center : ampere.center[0], min : ampere.min[0], max : ampere.max[0], lower : ampere.lower[0], upper : ampere.upper[0]});
                 apdata.push({date : start, center : active_power.center[0], min : active_power.min[0], max : active_power.max[0], lower : active_power.lower[0], upper : active_power.upper[0] });
                 pfdata.push({date : start, center : power_factor.center[0], min : power_factor.min[0], max : power_factor.max[0], lower : power_factor.lower[0], upper : power_factor.upper[0]});
-              for(i=0; i<voltage.center.length; i++){
+              for(i=60; i<voltage.center.length; i++){
                 vdata.push({date : start+(i+1)*60*1000, center : voltage.center[i], min : voltage.min[i], max : voltage.max[i], lower :  voltage.lower[i], upper : voltage.upper[i] });
                 adata.push({date : start+(i+1)*60*1000, center : ampere.center[i], min : ampere.min[i], max : ampere.max[i], lower : ampere.lower[i], upper : ampere.upper[i]});
                 apdata.push({date : start+(i+1)*60*1000, center : active_power.center[i], min : active_power.min[i], max : active_power.max[i], lower : active_power.lower[i], upper : active_power.upper[i] });
@@ -247,16 +246,16 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
               out_data.forEach(function(d){      
                 data.push(d._source);
               });   
-              res.json({rtnCode: rtnCode, anomaly : anomaly, raw : data, point : point});
+              res.json({rtnCode: rtnCode, anomaly : anomaly, raw : data, point : point, pattern : pattern});
             }
           });
         }         
         console.log('analysis/restapi/getAnomaly -> length : %s', out_data.length);
-        res.json({rtnCode: rtnCode});
+         res.json({rtnCode: rtnCode, anomaly : anomaly, raw : data, point : point});
       });
     }
     console.log('analysis/restapi/getAnomalyPattern -> length : %s', out_data.length);
-    res.json({rtnCode: rtnCode});
+     res.json({rtnCode: rtnCode, anomaly : anomaly, raw : data, point : point});
   });
 });
 
@@ -313,6 +312,39 @@ router.get('/restapi/getClusterRawData', function(req, res, next) {
       END_TIMESTAMP: req.query.endDate,
     };
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawData", in_data, function(err, out_data, params) {
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    console.log('analysis/restapi/getClusterRawData -> length : %s', out_data.length);
+    var data = [];    
+    out_data.forEach(function(d){                 
+      data.push(d._source);
+    });    
+    res.json({rtnCode: rtnCode, rtnData: data});
+  });
+});
+
+// query RawData
+router.get('/restapi/getDataBySource', function(req, res, next) { 
+  console.log(req.query)
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };  
+  var start = new Date(req.query.startDate).getTime();  
+  var end = new Date(req.query.endDate).getTime();  
+  var index = [], cnt = 0;
+  for(i = start; i<=end; i=i+24*60*60*1000){
+    var d = new Date(i).toString().split(' ');    
+    index[cnt++]  = "corecode-"+d[3]+'-'+mon[d[1]]+'-'+d[2];
+  }
+  console.log(index);
+  var in_data = {
+      index : "corecode-*", type : "corecode",
+      START_TIMESTAMP: req.query.startDate,
+      END_TIMESTAMP: req.query.endDate,
+      Source : req.query.source.split(',')
+    };
+  queryProvider.selectSingleQueryByID2("analysis", "selectDataBySource", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
