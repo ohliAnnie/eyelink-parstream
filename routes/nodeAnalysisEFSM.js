@@ -357,7 +357,7 @@ router.post('/restapi/insertClusterDetail/:id', function(req, res, next) {
   console.log('/analysis/restapi/insertClusterDetail');    
   console.log(JSON.stringify(req.body));
    var id = req.params.id;
-   var in_data = {    INDEX: "cluster", TYPE: "master", ID: id   };  
+   var in_data = {    INDEX: "cluster", TYPE: "detail", ID: id   };  
    queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {        
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');
