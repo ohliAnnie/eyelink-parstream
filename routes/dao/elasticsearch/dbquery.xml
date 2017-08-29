@@ -1117,7 +1117,7 @@
         "body" : {       
           "size" : 100000, 
           "sort" : { "event_time" : { "order" : "asc" }},
-          "_source" : ["node_id", "event_time", "event_type", "active_power", "ampere", "power_factor", "voltage"],
+          "_source" : ["event_time", "active_power", "ampere", "power_factor", "voltage"],
           "query" : { 
               "bool" : {
                 "must" : { "match": {

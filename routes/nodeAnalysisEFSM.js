@@ -364,7 +364,7 @@ router.post('/restapi/insertClusterDetail/:id', function(req, res, next) {
       console.log(rtnCode);
       res.json({rtnCode: rtnCode});
     }  else  {
-      var in_data = {    INDEX: "cluster", TYPE: "master", ID: id,   BODY : JSON.stringify(req.body)   };  
+      var in_data = {    INDEX: "cluster", TYPE: "detail", ID: id,   BODY : JSON.stringify(req.body)   };  
      queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {        
           console.log(out_data);
           if(out_data.result == "created"){
