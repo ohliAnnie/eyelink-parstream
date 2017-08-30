@@ -277,10 +277,10 @@ router.get('/restapi/getClusterNodePower', function(req, res, next) {
   var in_data = {
       START_TIMESTAMP: req.query.startDate,
       END_TIMESTAMP: req.query.endDate,
-      NODE: [req.query.nodeId],
+      NODE: req.query.nodeId.split(','),
       FLAG : 'N'};
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
-    // console.log(out_data);
+     //console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data === null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -312,6 +312,30 @@ router.get('/restapi/getClusterRawData', function(req, res, next) {
       END_TIMESTAMP: req.query.endDate,
     };
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawData", in_data, function(err, out_data, params) {
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    console.log('analysis/restapi/getClusterRawData -> length : %s', out_data.length);
+    var data = [];    
+    out_data.forEach(function(d){                 
+      data.push(d._source);
+    });    
+    res.json({rtnCode: rtnCode, rtnData: data});
+  });
+});
+
+// query RawData
+router.get('/restapi/getClusterRawDataByNode', function(req, res, next) { 
+  console.log(req.query)    
+  var in_data = {
+      index : "corecode-*", type : "corecode",
+      START_TIMESTAMP: req.query.startDate,
+      END_TIMESTAMP: req.query.endDate,
+      node : req.query.node
+    };
+  queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawDataByNode", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -442,7 +466,7 @@ router.get('/restapi/getDaClusterDetail', function(req, res, next) {
       var rtnCode = CONSTS.getErrData('0000');
       console.log('analysis/restapi/getDaClusterDetail -> length : %s', out_data.length);      
     }   
-    res.json({rtnCode: rtnCode, rtnDate : out_data});
+    res.json({rtnCode: rtnCode, rtnData : out_data[0]._source.detail_result });
   });
 });
 
@@ -450,7 +474,7 @@ router.get('/restapi/getDaClusterMasterByDadate', function(req, res, next) {
   console.log(req.query);
   var in_data = {
       index : "cluster",    type : "master",
-      DADATE: req.query.daDate };
+      DADATE: req.query.dadate };
   queryProvider.selectSingleQueryByID2("analysis", "selectDaClusterMasterByDadate", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
@@ -458,7 +482,7 @@ router.get('/restapi/getDaClusterMasterByDadate', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     }
     console.log('analysis/restapi/getDaClusterMaster -> length : %s', out_data.length);
-    res.json({rtnCode: rtnCode, rtnData: out_data});
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]._source.master_result });
   });
 });
 
