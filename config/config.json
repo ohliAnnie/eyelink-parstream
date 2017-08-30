@@ -30,8 +30,8 @@
 		"es_auth_menu" : "efsm_auth_menu"
 	},
 	"analysis": {
-		"host" : "localhost",
-		"#host" : "m2u-da.eastus.cloudapp.azure.com",
-		"#port" : 5225
+		"#host" : "localhost",
+		"host" : "m2u-da.eastus.cloudapp.azure.com",
+		"port" : 5225
 	}
 }
