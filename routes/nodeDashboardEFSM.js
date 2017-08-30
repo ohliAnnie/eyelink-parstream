@@ -591,23 +591,6 @@ router.get('/restapi/getTotalTimeseries', function(req, res, next) {
   });
 });
 
-router.get('/restapi/getRestimeCount', function(req, res, next) {
-  console.log('dashboard/restapi/getRestimeCount');    
-  var in_data = {
-    index : req.query.index,
-    gte : req.query.gte,
-    lte : req.query.lte
-  };
-  queryProvider.selectSingleQueryByID3("dashboard","getRestimeCount", in_data, function(err, out_data, params) {    
-    var rtnCode = CONSTS.getErrData('0000');    
-    console.log(out_data)  ;
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');      
-    }    
-    res.json({rtnCode: rtnCode, rtnData: out_data.group_by_timestamp.buckets });
-  });
-});
-
 router.get('/restapi/getJiramapdata', function(req, res, next) {
   console.log('dashboard/restapi/getJiramapdata');    
  var in_data = {    index : req.query.index, START : req.query.START, END : req.query.END  };    
@@ -788,6 +771,75 @@ router.get('/restapi/getAppmapdata', function(req, res, next) {
   });
 });
 */
+
+router.get('/restapi/getHeapData', function(req, res, next) {
+  console.log('dashboard/restapi/getHeapData');    
+  var in_data = {
+    index : req.query.index,
+    type : req.query.type,
+    gte : req.query.gte,
+    lte : req.query.lte
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","selectByTimestamp", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');        
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }        
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
+router.get('/restapi/getJvmSysData', function(req, res, next) {
+  console.log('dashboard/restapi/getHeapData');    
+  var in_data = {
+    index : req.query.index,
+    type : req.query.type,
+    gte : req.query.gte,
+    lte : req.query.lte
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","selectByTimestamp", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');        
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }        
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
+
+router.get('/restapi/getStatTransaction', function(req, res, next) {
+  console.log('dashboard/restapi/getHeapData');    
+  var in_data = {
+    index : req.query.index,
+    type : req.query.type,
+    gte : req.query.gte,
+    lte : req.query.lte
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","selectByTimestamp", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');        
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }        
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
+router.get('/restapi/getRestimeCount', function(req, res, next) {
+  console.log('dashboard/restapi/getRestimeCount');    
+  var in_data = {
+    index : req.query.index,
+    gte : req.query.gte,
+    lte : req.query.lte
+  };
+  queryProvider.selectSingleQueryByID3("dashboard","getRestimeCount", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');    
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }    
+    res.json({rtnCode: rtnCode, rtnData: out_data.group_by_timestamp.buckets });
+  });
+});
+
 
 // ###########################################################
 
