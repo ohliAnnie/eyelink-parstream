@@ -145,6 +145,25 @@
      ]]></query>
   </user>
   <dashboard>
+  <query id='selectByTimestamp'><![CDATA[
+     {
+        "index" : #index#,
+        "type" : #type#,                       
+        "body" : {
+          "size" : 10000,
+          "sort" : { "timestamp" : { "order" : "asc"  } },
+          "query" : {
+           "bool": {
+             "must" : {
+               "range" : {
+                 "timestamp": {  "gte": #gte#, "lte" : #lte#  }
+               }
+            }            
+          }
+        }
+      }
+    }
+  ]]></query>    
   <query id='selectJiraAccId'><![CDATA[
       {
         "index" : #today#,
@@ -1027,7 +1046,7 @@
         "type" : #TYPE#,                       
         "body" : {
           "size" : 1,
-          "sort" : { "timestamp" : { "order" : "desc"  } },
+          "sort" : { "timestamp" : { "order" : "asc"  } },
           "query" : {
            "bool": {
              "must" : {
