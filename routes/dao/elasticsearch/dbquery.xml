@@ -1087,7 +1087,8 @@
           "query" : {
             "bool": {
               "must" : {
-                "match" : { "daDate" : #DADATE# }
+                "match" : { "master_result.da_time" : #DADATE# }
+                }
               }
             }            
           }
@@ -1117,7 +1118,7 @@
         "body" : {       
           "size" : 100000, 
           "sort" : { "event_time" : { "order" : "asc" }},
-          "_source" : ["event_time", "active_power", "ampere", "power_factor", "voltage"],
+          "_source" : ["event_time", "active_power", "ampere", "power_factor", "voltage", "node_id"],
           "query" : { 
               "bool" : {
                 "must" : { "match": {
@@ -1141,10 +1142,39 @@
         "type" : "corecode",
         "body" : {       
           "size" : 100000, 
+          "_source" : ["event_time", "active_power", "ampere", "power_factor", "voltage", "node_id"],
           "sort" : { "event_time" : { "order" : "asc" }},          
           "query" : { 
               "bool" : {
-                "must" : [   { "match_all": {} }  ],
+                "must" : { "match": {
+                  "event_type" : "1"
+                } }  ,
+                "filter" : { 
+                  "range" : { 
+                    "event_time" :
+                      { "gte" : #START_TIMESTAMP#,  "lte" : #END_TIMESTAMP# 
+                  }                     
+               }                   
+             }
+           }
+         }
+      } 
+    }
+    ]]></query>        
+    <query id='selectClusterRawDataByNode'><![CDATA[
+     {
+        "index" : "corecode-*",
+        "type" : "corecode",
+        "body" : {       
+          "size" : 100000, 
+          "sort" : { "event_time" : { "order" : "asc" }},          
+          "query" : { 
+              "bool" : {
+                "must" : { 
+                  "match" : {
+                    "node_id" : #node#
+                  }
+                },
                 "filter" : { 
                   "range" : { 
                     "event_time" :
