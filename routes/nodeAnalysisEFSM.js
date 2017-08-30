@@ -430,20 +430,19 @@ router.post('/restapi/runAnalysis', function(req, res, next) {
 // query RawData
 router.get('/restapi/getDaClusterDetail', function(req, res, next) {  
   var in_data = {
-      index : "cluster",    type : "detail",
-      DADATE : "2017-08-28" };
-//      DADATE : req.query.daDate };
-  queryProvider.selectSingleQueryByID2("analysis", "selectDaClusterDetail", in_data, function(err, out_data, params) {    
+      INDEX : "cluster",    TYPE : "detail",
+      ID : req.query.daDate };
+  queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {    
     console.log(err);
     console.log(out_data);    
     if (out_data === null) {
       var rtnCode = CONSTS.getErrData('0001');
-      res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+      res.json({rtnCode: rtnCode, rtnData: out_data});
     } else {
       var rtnCode = CONSTS.getErrData('0000');
       console.log('analysis/restapi/getDaClusterDetail -> length : %s', out_data.length);      
     }   
-    res.json({rtnCode: rtnCode});
+    res.json({rtnCode: rtnCode, rtnDate : out_data});
   });
 });
 
@@ -455,11 +454,11 @@ router.get('/restapi/getDaClusterMasterByDadate', function(req, res, next) {
   queryProvider.selectSingleQueryByID2("analysis", "selectDaClusterMasterByDadate", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
-    if (out_data[0] === null) {
+    if (out_data === null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-    console.log('analysis/restapi/getDaClusterMaster -> length : %s', out_data[0].length);
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+    console.log('analysis/restapi/getDaClusterMaster -> length : %s', out_data.length);
+    res.json({rtnCode: rtnCode, rtnData: out_data});
   });
 });
 
@@ -469,8 +468,8 @@ router.get('/restapi/getDaClusterMaster', function(req, res, next) {
   console.log(req.query.interval);
   var in_data = {
       index : "cluster", type : "master",
-      START_TIMESTAMP: req.query.startDate + ' 00:00:00',
-      END_TIMESTAMP: req.query.endDate + ' 23:59:59',
+      START_TIMESTAMP: req.query.startDate + 'T00:00:00',
+      END_TIMESTAMP: req.query.endDate + 'T23:59:59',
       INTERVAL: parseInt(req.query.interval),
       FLAG : 'N'};
   if(req.query.interval === 'all')  {
@@ -481,11 +480,11 @@ router.get('/restapi/getDaClusterMaster', function(req, res, next) {
   queryProvider.selectSingleQueryByID2("analysis", sql, in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
-    if (out_data[0] === null) {
+    if (out_data === null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-    console.log('analysis/restapi/getDaClusterMaster -> length : %s', out_data[0].length);
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+    console.log('analysis/restapi/getDaClusterMaster -> length : %s', out_data.length);
+    res.json({rtnCode: rtnCode, rtnData: out_data });
   });
 });
 
