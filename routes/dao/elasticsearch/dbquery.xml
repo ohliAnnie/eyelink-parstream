@@ -1164,7 +1164,7 @@
     <query id='selectClusterRawDataByNode'><![CDATA[
      {
         "index" : "corecode-*",
-        "type" : "corecode",
+        "type" : "corecode",        
         "body" : {       
           "size" : 100000, 
           "sort" : { "event_time" : { "order" : "asc" }},          
