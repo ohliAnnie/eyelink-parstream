@@ -434,23 +434,6 @@ router.post('/restapi/insertClusterDetail/:id', function(req, res, next) {
   });
 });
 
-// run analysis
-router.post('/restapi/runAnalysis', function(req, res, next) {
-  console.log(req.query);
-  var in_data = {"start_date": req.body.startDate,
-                "end_date": req.body.endDate,
-                "time_interval": parseInt(req.body.interval)};
-  in_data = JSON.stringify(in_data, null, 4);
-  console.log(in_data);
-  // FIX-ME Socket Connection Close 처리 로직 보완 필요함.
-  getConnectionToDA("DataAnalysis", function(socket) {
-    writeDataToDA(socket, in_data, function() {
-      var rtnCode = CONSTS.getErrData('0000');
-      res.json({rtnCode: rtnCode, rtnData: ''});
-    });
-  });
-});
-
 // query RawData
 router.get('/restapi/getDaClusterDetail', function(req, res, next) {  
   var in_data = {
@@ -512,11 +495,31 @@ router.get('/restapi/getDaClusterMaster', function(req, res, next) {
   });
 });
 
-function getConnectionToDA(connName, callback){
+// run analysis
+router.post('/restapi/runAnalysis', function(req, res, next) {
+  console.log(req.body);
+  var in_data = {"start_date": req.body.startDate,
+                "end_date": req.body.endDate,
+                "time_interval": parseInt(req.body.interval)};
+  in_data = JSON.stringify(in_data, null, 4);
+  console.log(in_data);
+  // FIX-ME Socket Connection Close 처리 로직 보완 필요함.
+  getConnectionToDA("DataAnalysis", function(socket) {
+    console.log(socket);
+    writeDataToDA(socket, in_data, function() {
+      var rtnCode = CONSTS.getErrData('0000');
+      res.json({rtnCode: rtnCode, rtnData: ''});
+    });
+  });
+});
+
+function getConnectionToDA(connName, callback){  
   var pUrl = global.config.analysis.host;
   var pPort = global.config.analysis.port;
   // var pUrl = 'm2u-da.eastus.cloudapp.azure.com';
   // var pUrl = 'localhost';
+  console.log(pUrl);
+  console.log(pPort);
   var client = net.connect({port: pPort, host:pUrl}, function() {
     console.log(connName + ' Connected: ');
     console.log('   local = %s:%s', this.localAddress, this.localPort);
