@@ -50,8 +50,8 @@ html
           var sdate = urlParams.start;
           var edate = urlParams.end;
           var interval = urlParams.interval;
-          $('#sdate').val(sdate);
-          $('#edate').val(edate);
+          $('#sdate').val(sdate.split('T')[0]);
+          $('#edate').val(edate.split('T')[0]);
           $('#interval').val(interval);
           drawCheckChart();
           getNodeList();
