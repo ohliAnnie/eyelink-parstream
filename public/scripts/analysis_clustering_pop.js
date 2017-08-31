@@ -800,23 +800,33 @@ function drawTimeseries(data) {
    d3.select("#ts-chart04").select("svg").remove();
   // 데이터 가공
   var df = d3.time.format('%Y-%m-%dT%H:%M:%S');
+  var power = [], vib = [], noise = [], als = [];
   data.forEach(function(d) {
     d.event_time = df.parse(d.event_time);    
-    d.active_power = d.active_power === undefined? 0:d.active_power;
+    if(d.event_type == "1"){
+      power.push({ "time" : d.event_time, "active_power" : d.active_power, "ampere" : d.ampere, "amount_active_power" : d.amount_of_active_power });
+    } else if(d.event_type =="33")   {
+      vib.push({ "time" : d.event_time,  "vibration_x" : d.vibration_x, "vibration_y" : d.vibration_y, "vibration_z" : d.vibration_z, "vibration" : (d.vibration_x+d.vibration_y+d.vibration_z)/3});
+    } else if(d.event_type == "49"){
+      noise.push({ "time" : d.event_time, "decibel" : d.noise_decibel, "frequency" : d.noise_frequency });
+    } else if(d.event_type == "17") {
+      als.push({ "time" : d.event_time, "dimming_level" : d.dimming_level, "als_level" : d.als_level });
+    }
+    
     d.als_level = d.als_level === ''? 0:d.als_level;
     d.dimming_level = d.dimming_level === ''? 0:d.dimming_level;
     d.noise_frequency = d.noise_frequency === ''? 0:d.noise_frequency;
-    d.vibration_x = d.vibration_x === ''? 0 : d.vibration_x;
-    d.vibration_y = d.vibration_y === ''? 0 : d.vibration_y;
-    d.vibration_z = d.vibration_z === ''? 0 : d.vibration_z;
-    d.vibration = (d.vibration_x+d.vibration_y+d.vibration_z)/3;
+   
   });
+
+
+  console.log(data);
 
   var chartName = '#ts-chart01';
   chart01 = d3.timeseries()
-    .addSerie(data,{x:'event_time',y:'active_power'},{interpolate:'linear'})
-    .addSerie(data,{x:'event_time',y:'ampere'},{interpolate:'step-before'})
-    .addSerie(data,{x:'event_time',y:'amount_active_power'},{interpolate:'linear'})
+    .addSerie(power,{x:'time',y:'active_power'},{interpolate:'linear'})
+    .addSerie(power,{x:'time',y:'ampere'},{interpolate:'step-before'})
+    .addSerie(power,{x:'time',y:'amount_active_power'},{interpolate:'linear'})
     // .xscale.tickFormat(d3.time.format("%b %d"))
     .width(window.innerWidth*0.2)
     .height(270)
@@ -827,8 +837,8 @@ function drawTimeseries(data) {
 
   var chartName = '#ts-chart02';
   chart02 = d3.timeseries()
-    .addSerie(data,{x:'event_time',y:'als_level'},{interpolate:'step-before'})
-    .addSerie(data,{x:'event_time',y:'dimming_level'},{interpolate:'linear'})
+    .addSerie(als,{x:'time',y:'als_level'},{interpolate:'step-before'})
+    .addSerie(als,{x:'time',y:'dimming_level'},{interpolate:'linear'})
     // .xscale.tickFormat(french_timeformat)
     .width(window.innerWidth*0.2)
     .height(270)
@@ -839,8 +849,8 @@ function drawTimeseries(data) {
 
   chartName = '#ts-chart03';
   chart03 = d3.timeseries()
-    .addSerie(data,{x:'event_time',y:'noise_decibel'},{interpolate:'step-before'})
-    .addSerie(data,{x:'event_time',y:'noise_frequency'},{interpolate:'linear'})
+    .addSerie(noise,{x:'time',y:'decibel'},{interpolate:'step-before'})
+    .addSerie(noise,{x:'time',y:'frequency'},{interpolate:'linear'})
     // .xscale.tickFormat(french_timeformat)
     .width(window.innerWidth*0.2)
     .height(270)
@@ -851,10 +861,10 @@ function drawTimeseries(data) {
 
   chartName = '#ts-chart04';
   chart04 = d3.timeseries()
-    .addSerie(data,{x:'event_time',y:'vibration_x'},{interpolate:'linear'})
-    .addSerie(data,{x:'event_time',y:'vibration_y'},{interpolate:'step-before'})
-    .addSerie(data,{x:'event_time',y:'vibration_z'},{interpolate:'linear'})
-    .addSerie(data,{x:'event_time',y:'vibration'},{interpolate:'linear'})
+    .addSerie(vib,{x:'time',y:'vibration_x'},{interpolate:'linear'})
+    .addSerie(vib,{x:'time',y:'vibration_y'},{interpolate:'step-before'})
+    .addSerie(vib,{x:'time',y:'vibration_z'},{interpolate:'linear'})
+    .addSerie(vib,{x:'time',y:'vibration'},{interpolate:'linear'})
     // .xscale.tickFormat(french_timeformat)
     .width(window.innerWidth*0.2)
     .height(270)
