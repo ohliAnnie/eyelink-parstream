@@ -1040,7 +1040,7 @@
         "id" : #ID#
       }
      ]]></query> 
-     <query id='selectByAnalysisTimestamp'><![CDATA[
+   <query id='selectByAnalysisTimestamp'><![CDATA[
      {
         "index" : #INDEX#,
         "type" : #TYPE#,                       
