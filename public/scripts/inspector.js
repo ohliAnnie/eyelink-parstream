@@ -24,7 +24,7 @@ function drawCountChart() {
       console.log(result);
       if (result.rtnCode.code == "0000") {        
         drawHeap(result.rtnData);
-
+        drawPermgen(result.rtnData);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -87,15 +87,14 @@ function drawHeap(out_data) {
   out_data.forEach(function(d) {
     d = d._source;
     console.log(d);
-    data.push({ "timestamp" : new Date(new Date(d.timestamp).getTime()+9*60*60*1000), "max" : d.heapMax, "used" : d.heapUsed, "nonUsed" : d.nonHeapUsed });
+    data.push({ "timestamp" : new Date(new Date(d.timestamp).getTime()+9*60*60*1000), "max" : d.heapMax, "used" : d.heapUsed });
       
   }); 
 
   var chartName = '#ts-chart01';
   chart01 = d3.timeseries()
     .addSerie(data,{x:'timestamp',y:'max'},{interpolate:'step-before'})
-    .addSerie(data,{x:'timestamp',y:'used'},{interpolate:'linear'})    
-    .addSerie(data,{x:'timestamp',y:'nonUsed'},{interpolate:'linear'})        
+    .addSerie(data,{x:'timestamp',y:'used'},{interpolate:'linear'})        
     // .xscale.tickFormat(d3.time.format("%b %d"))
     .width($(chartName).parent().width()-10)
     .height(270)
@@ -104,6 +103,37 @@ function drawHeap(out_data) {
 
     // console.log(chart01);
   chart01(chartName);
+}
+
+function drawPermgen(out_data) {
+  // 데이터 가공
+  console.log(out_data);
+  var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
+  var data = [];  
+  var min = null;
+  var sCnt = 0, eCnt = 0, rCnt = 0;
+  out_data.forEach(function(d) {
+    d = d._source;
+    if(d.nonHeapMax != -1){
+      data.push({ "timestamp" : new Date(new Date(d.timestamp).getTime()+9*60*60*1000), "max" : d.nonHeapMax, "used" : d.nonHeapUsed });
+    } else {
+       data.push({ "timestamp" : new Date(new Date(d.timestamp).getTime()+9*60*60*1000), "max" : d.nonHeapMax, "used" : d.nonHeapUsed });
+    }
+  }); 
+
+  var chartName = '#ts-chart02';
+  chart02 = d3.timeseries()
+    .addSerie(data,{x:'timestamp',y:'max'},{interpolate:'step-before'})
+    .addSerie(data,{x:'timestamp',y:'used'},{interpolate:'linear'})        
+    // .xscale.tickFormat(d3.time.format("%b %d"))
+    .width($(chartName).parent().width()-10)
+    .height(270)
+    // .yscale.tickFormat(french_locale.numberFormat(",f"))
+    .margin.left(0);
+
+    // console.log(chart01);
+  chart02(chartName);
 }
 
 function drawJvmSys(out_data) {
@@ -115,7 +145,7 @@ function drawJvmSys(out_data) {
   var min = null;
   var sCnt = 0, eCnt = 0, rCnt = 0;
   out_data.forEach(function(d) {
-    d = d._source;    
+    d = d._source;        
     data.push({ "timestamp" : new Date(new Date(d.timestamp).getTime()+9*60*60*1000), "jvm" : d.jvmCpuLoad*100, "system" : d.systemCpuLoad*100 });
   }); 
 
