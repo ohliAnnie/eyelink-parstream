@@ -187,7 +187,7 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
   var s = new Date(now.getTime()-10*60*1000).toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var in_data = {  INDEX: "analysis", TYPE: "anomaly_pattern", gte : s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4], lte : e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4] } 
-  queryProvider.selectSingleQueryByID2("analysis", "selectByTimestamp", in_data, function(err, out_data, params) {    
+  queryProvider.selectSingleQueryByID2("analysis", "selectByAnalysisTimestamp", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       console.log('null');
@@ -197,7 +197,7 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
     } else {      
       var id = e[3]+'-'+mon[e[1]]+'-'+e[2];
       var in_data = {  INDEX: "analysis", TYPE: "anomaly" , ID: id };      
-      var pattern = out_data[0]._source ;      
+      var pattern = out_data[0]._source.analysis ;      
       queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data,  function(err, out_data, params) {                                
         var rtnCode = CONSTS.getErrData('0000');
         if (out_data == null) { 
@@ -206,12 +206,13 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
         } else if(out_data.length == 0) {
            rtnCode = CONSTS.getErrData('0001');
         } else {
-          var clust = out_data[0]._source.pattern_data;;
+          var clust = out_data[0]._source.pattern_data;
           console.log(pattern.timestamp)
           var t = pattern.timestamp.split('T');
           var tt = t[0].split('-');          
           var ttt = t[1].split(':');    
-          var point = new Date(tt[0], parseInt(tt[1])-1, tt[2], ttt[0], ttt[1], ttt[2]).getTime();                                   
+          var point = new Date(tt[0], parseInt(tt[1])-1, tt[2], ttt[0], ttt[1], ttt[2]).getTime();    
+          console.log(point)                               
           var start = point - 50*60*1000;
           var s = new Date(start-0.7*60*1000).toString().split(' ');                
           var in_data = {
@@ -226,22 +227,22 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
               rtnCode = CONSTS.getErrData('0001');
             } else {
             console.log('analysis/restapi/getClusterNodePower -> length : %s', out_data.length);
-              var voltage = ({ center : clust.voltage.center[pattern.voltage], min : clust.voltage.min_value[pattern.voltage], max : clust.voltage.max_value[pattern.voltage], lower : clust.voltage.lower[pattern.voltage], upper : clust.voltage.upper[pattern.voltage]});
-              var ampere = ({ center : clust.ampere.center[pattern.ampere], min : clust.ampere.min_value[pattern.ampere], max : clust.ampere.max_value[pattern.ampere], lower : clust.ampere.lower[pattern.ampere], upper : clust.ampere.upper[pattern.ampere]});
-              var power_factor = ({ center : clust.power_factor.center[pattern.power_factor], min : clust.power_factor.min_value[pattern.power_factor], max : clust.power_factor.max_value[pattern.power_factor], lower : clust.power_factor.lower[pattern.power_factor], upper : clust.power_factor.upper[pattern.power_factor]});
-              var active_power = ({ center : clust.active_power.center[pattern.active_power], min : clust.active_power.min_value[pattern.active_power], max : clust.active_power.max_value[pattern.active_power], lower : clust.active_power.lower[pattern.active_power], upper : clust.active_power.upper[pattern.active_power]});
+              var voltage = ({ center : clust.voltage.center[pattern.voltage], center2 : clust.voltage.center[pattern.voltage_2], center3 : clust.voltage.center[pattern.voltage_3], min : clust.voltage.min_value[pattern.voltage], max : clust.voltage.max_value[pattern.voltage], lower : clust.voltage.lower[pattern.voltage], upper : clust.voltage.upper[pattern.voltage]});              
+              var ampere = ({ center : clust.ampere.center[pattern.ampere], center2 : clust.ampere.center[pattern.ampere_2], center3 : clust.ampere.center[pattern.ampere_3], min : clust.ampere.min_value[pattern.ampere], max : clust.ampere.max_value[pattern.ampere], lower : clust.ampere.lower[pattern.ampere], upper : clust.ampere.upper[pattern.ampere]});
+              var power_factor = ({ center : clust.power_factor.center[pattern.power_factor], center2 : clust.power_factor.center[pattern.power_factor_2], center3 : clust.power_factor.center[pattern.power_factor_3], min : clust.power_factor.min_value[pattern.power_factor], max : clust.power_factor.max_value[pattern.power_factor], lower : clust.power_factor.lower[pattern.power_factor], upper : clust.power_factor.upper[pattern.power_factor]});
+              var active_power = ({ center : clust.active_power.center[pattern.active_power], center2 : clust.active_power.center[pattern.active_power_2], center3 : clust.active_power.center[pattern.active_power_3], min : clust.active_power.min_value[pattern.active_power], max : clust.active_power.max_value[pattern.active_power], lower : clust.active_power.lower[pattern.active_power], upper : clust.active_power.upper[pattern.active_power]});
               var vdata = [], adata = [], pfdata = [], apdata = [];
-                vdata.push({date : start, center : voltage.center[0], min : voltage.min[0], max : voltage.max[0], lower :  voltage.lower[0], upper : voltage.upper[0] });
-                adata.push({date : start, center : ampere.center[0], min : ampere.min[0], max : ampere.max[0], lower : ampere.lower[0], upper : ampere.upper[0]});
-                apdata.push({date : start, center : active_power.center[0], min : active_power.min[0], max : active_power.max[0], lower : active_power.lower[0], upper : active_power.upper[0] });
-                pfdata.push({date : start, center : power_factor.center[0], min : power_factor.min[0], max : power_factor.max[0], lower : power_factor.lower[0], upper : power_factor.upper[0]});
-              for(i=60; i<voltage.center.length; i++){
-                vdata.push({date : start+(i+1)*60*1000, center : voltage.center[i], min : voltage.min[i], max : voltage.max[i], lower :  voltage.lower[i], upper : voltage.upper[i] });
-                adata.push({date : start+(i+1)*60*1000, center : ampere.center[i], min : ampere.min[i], max : ampere.max[i], lower : ampere.lower[i], upper : ampere.upper[i]});
-                apdata.push({date : start+(i+1)*60*1000, center : active_power.center[i], min : active_power.min[i], max : active_power.max[i], lower : active_power.lower[i], upper : active_power.upper[i] });
-                pfdata.push({date : start+(i+1)*60*1000, center : power_factor.center[i], min : power_factor.min[i], max : power_factor.max[i], lower : power_factor.lower[i], upper : power_factor.upper[i]});
-              } 
-              var anomaly = { vdata : vdata, adata : adata, apdata : apdata, pfdata : pfdata };
+                vdata.push({date : start, center : voltage.center[0], center2 : voltage.center2[0], center3 : voltage.center3[0], min : voltage.min[0], max : voltage.max[0], lower :  voltage.lower[0], upper : voltage.upper[0] });
+                adata.push({date : start, center : ampere.center[0], center2 : ampere.center2[0], center3 : ampere.center3[0], min : ampere.min[0], max : ampere.max[0], lower : ampere.lower[0], upper : ampere.upper[0]});
+                apdata.push({date : start, center : active_power.center[0], center2 : active_power.center2[0], center3 : active_power.center3[0], min : active_power.min[0], max : active_power.max[0], lower : active_power.lower[0], upper : active_power.upper[0] });
+                pfdata.push({date : start, center : power_factor.center[0], center2 : power_factor.center2[0], center3 : power_factor.center3[0], min : power_factor.min[0], max : power_factor.max[0], lower : power_factor.lower[0], upper : power_factor.upper[0]});
+              for(i=60; i<voltage.center.length; i++){                
+                vdata.push({date : start+(i-59)*60*1000, center : voltage.center[i], center2 : voltage.center2[i], center3 : voltage.center3[i], min : voltage.min[i], max : voltage.max[i], lower :  voltage.lower[i], upper : voltage.upper[i] });
+                adata.push({date : start+(i-59)*60*1000, center : ampere.center[i], center2 : ampere.center2[i], center3 : ampere.center3[i], min : ampere.min[i], max : ampere.max[i], lower : ampere.lower[i], upper : ampere.upper[i]});
+                apdata.push({date : start+(i-59)*60*1000, center : active_power.center[i], center2 : active_power.center2[i], center3 : active_power.center3[i], min : active_power.min[i], max : active_power.max[i], lower : active_power.lower[i], upper : active_power.upper[i] });
+                pfdata.push({date : start+(i-59)*60*1000, center : power_factor.center[i], center2 : power_factor.center2[i], center3 : power_factor.center3[i], min : power_factor.min[i], max : power_factor.max[i], lower : power_factor.lower[i], upper : power_factor.upper[i]});
+              }                           
+              var anomaly = { vdata : vdata, adata : adata, apdata : apdata, pfdata : pfdata };              
               var data = []; 
               out_data.forEach(function(d){      
                 data.push(d._source);

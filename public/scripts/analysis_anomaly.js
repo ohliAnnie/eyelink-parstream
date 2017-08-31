@@ -39,9 +39,9 @@ function getData(){
       var point = result.point, start = point -50*60*1000, end = point+10*60*1000;      
       if (result.rtnCode.code == "0000") {                                              
         drawChart(raw, result.anomaly.vdata, start, end, now, point, now-point, 'voltage', '#voltage', result.pattern);
-        /*drawChart(raw, result.anomaly.adata, start, end, now, point, now-point, 'ampere', '#ampere', result.pattern);
+        drawChart(raw, result.anomaly.adata, start, end, now, point, now-point, 'ampere', '#ampere', result.pattern);
         drawChart(raw, result.anomaly.apdata, start, end, now, point, now-point, 'active_power', '#active_power', result.pattern);
-        drawChart(raw, result.anomaly.pfdata, start, end, now, point, now-point, 'power_factor', '#power_factor', result.pattern);*/
+        drawChart(raw, result.anomaly.pfdata, start, end, now, point, now-point, 'power_factor', '#power_factor', result.pattern);
         console.log(new Date(start));
         console.log(new Date(point));
         console.log(new Date(now));
@@ -64,13 +64,11 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, patt
  var margin = {top: 10, right: 50, bottom: 30, left: 50},
   width = window.innerWidth*0.88 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;  
-  if(pattern[id+'_status'] < 0.5){
-    var color = 'green';
-  } else if(pattern[id+'_status'] < 1){ 
-    var color = 'blue';
-  } else if(pattern[id+'_status'] < 5){ 
-    var color = 'yellow';
-  } else {
+  if(pattern[id+'_status'] == "normal"){
+    var color = 'green';    
+  } else if(pattern[id+'_status'] == "caution"){ 
+    var color = 'blue';    
+  } else if(pattern[id+'_status'] == "anomaly"){   
     var color = 'red';
   }
 
@@ -110,17 +108,29 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, patt
     .interpolate('basis')
     .x(function(d, i) {              
       //return x(now)  })      
-     return x(now - (limit - i -1) * (duration))  })
+    console.log(new Date(now - (limit - i -1) * (duration)));
+     return x(now - (limit - i -1) * (duration))  })    
     .y(function(d) {  return y(d)   })
 
   var valueline = d3.svg.line()
-  .x(function(d) { return x(new Date(d.event_time)); })
+  .x(function(d) { 
+    return x(new Date(d.event_time)); })
   .y(function(d) { return y(d[id]); });
   
    var compareline = d3.svg.line()
     .interpolate("cardinal")
     .x(function(d, i) { return x(d.date); })
     .y(function(d) {  return y(d.center);});
+
+  var compareline2 = d3.svg.line()
+    .interpolate("cardinal")
+    .x(function(d, i) { return x(d.date); })
+    .y(function(d) {  return y(d.center2);});
+
+  var compareline3 = d3.svg.line()
+    .interpolate("cardinal")
+    .x(function(d, i) { return x(d.date); })
+    .y(function(d) {  return y(d.center3);});
 
   var upperOuterArea = d3.svg.area()
     .interpolate('basis')
@@ -163,7 +173,7 @@ var yaxis = svg.append('g')
  .attr('class', 'y axis')   
     .call(y.axis = d3.svg.axis().scale(y).orient('left'))
 
-var legendWidth  = 300, legendHeight = 55;
+var legendWidth  = 380, legendHeight = 55;
 
  var legend = svg.append('g')
     .attr('class', 'legend')
@@ -176,51 +186,69 @@ var legendWidth  = 300, legendHeight = 55;
 
   legend.append('rect')
     .attr('class', 'inner')
-    .attr('width',  75)
+    .attr('width',  55)
     .attr('height', 15)
     .attr('x', 10)
     .attr('y', 8);
 
     legend.append('text')
-    .attr('x', 123)
+    .attr('x', 103)
     .attr('y', 19)
     .text('lower-upper');
 
     legend.append('rect')
     .attr('class', 'outer')
-    .attr('width',  75)
+    .attr('width',  55)
     .attr('height', 15)
     .attr('x', 10)
     .attr('y', 33);  
 
     legend.append('text')
-    .attr('x', 115)
+    .attr('x', 95)
     .attr('y', 43)
-    .text('min-max');;
+    .text('min-max');
 
   legend.append('path')
     .attr('class', 'compareline')
-    .attr('d', 'M170,15L245,15');
+    .attr('d', 'M150,15L205,15');
 
   legend.append('text')
-    .attr('x', 270)
+    .attr('x', 230)
     .attr('y', 19)
     .text('Pattern');
 
    legend.append('path')
     .attr('class', 'valueline')
-    .attr('d', 'M170,40L245,40');
+    .attr('d', 'M150,40L205,40');
 
   legend.append('text')
-    .attr('x', 265)
+    .attr('x', 225)
     .attr('y', 43)
     .text('Data');
 
-var statusWidth  = 64, statusHeight = 55;
+    legend.append('path')
+    .attr('class', 'compareline2')
+    .attr('d', 'M265,15L320,15');
+
+  legend.append('text')
+    .attr('x', 348)
+    .attr('y', 19)
+    .text('Pattern2');
+
+   legend.append('path')
+    .attr('class', 'compareline3')
+    .attr('d', 'M265,40L320,40');
+
+  legend.append('text')
+    .attr('x', 348)
+    .attr('y', 43)
+    .text('Pattern3');
+
+var statusWidth  = 63, statusHeight = 55;
 
  var status = svg.append('g')
     .attr('class', 'status')
-    .attr('transform', 'translate(' + 400 + ', 0)');
+    .attr('transform', 'translate(' + 500 + ', 0)');
 
   status.append('rect')
     .attr('class', 'status-bg')
@@ -228,9 +256,9 @@ var statusWidth  = 64, statusHeight = 55;
     .attr('height', statusHeight);
 
     status.append('text')
-    .attr('x', 18)
+    .attr('x', 15)
     .attr('y', 15)
-    .text('status');
+    .text(pattern[id+'_status']);
 
     status.append('circle')    
     .attr('class', 'sign')
@@ -264,14 +292,22 @@ svg.append('path')
     .attr('clip-path', 'url(#rect-clip)');
 
   svg.append("path")   
-  .attr("class", "compareline")   
+  .attr("class", "compareline3")   
 //   .attr('opacity', 0.5)
   .attr("d", compareline(compare));
 
   svg.append("path")   
+  .attr("class", "compareline2")   
+//   .attr('opacity', 0.5)
+  .attr("d", compareline(compare));
+
+  svg.append("path")     
+  .attr("class", "compareline")   
+  .attr("d", compareline(compare));
+
+  svg.append("path")   
   .attr("class", "valueline")   
-  .attr("d", valueline(raw));
- 
+  .attr("d", valueline(raw)); 
 
 var formatTime = d3.time.format("%I:%M:%S");
 // Define the div for the tooltip
@@ -358,10 +394,11 @@ var div = d3.select("body").append("div")
   
   oriNow = now;
   function tick() {           
-    now = new Date().getTime();    
-    if(cnt++ ==0){
+    if(cnt++ == 0) {
       now = point;
-    } 
+    }
+    now = new Date().getTime();    
+    console.log(new Date(now));
     value = liveValue[id];            
     for (var name in groups) {
       var group = groups[name]
