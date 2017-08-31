@@ -1040,18 +1040,18 @@
         "id" : #ID#
       }
      ]]></query> 
-     <query id='selectByTimestamp'><![CDATA[
+     <query id='selectByAnalysisTimestamp'><![CDATA[
      {
         "index" : #INDEX#,
         "type" : #TYPE#,                       
         "body" : {
           "size" : 1,
-          "sort" : { "timestamp" : { "order" : "asc"  } },
+          "sort" : { "analysis.timestamp" : { "order" : "asc"  } },
           "query" : {
            "bool": {
              "must" : {
                "range" : {
-                 "timestamp": {  "gte": #gte#, "lte" : #lte#  }
+                 "analysis.timestamp": {  "gte": #gte#, "lte" : #lte#  }
                }
             }            
           }
