@@ -10,7 +10,7 @@ block script
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
   script(type='text/javascript', src="/scripts/util.js")
-  script(type='text/javascript', src="/scripts/d3_timeseries_6.js")
+  script(type='text/javascript', src="/scripts/d3_timeseries.js")
   script(type='text/javascript', src="/scripts/inspector.js")
   script.
     $(document).ready(function() {
@@ -102,7 +102,7 @@ block content
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze JVM/System Cpu Usage
-                span.caption-helper  
+                span.caption-helper  Cpu Usage(%)
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -125,37 +125,3 @@ block content
                 a.remove(href='javascript:;')
             .portlet-body
               .chart#ts-chart04
-      .row
-        .col-md-6
-          .portlet.light
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-green-haze Active Thread
-                span.caption-helper  
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body
-              .chart#ts-chart05
-        .col-md-6
-          .portlet.light.bordered
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-green-haze Transaction Per Second
-                span.caption-helper  
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body
-              .chart#ts-chart06
-
-
-
-
-

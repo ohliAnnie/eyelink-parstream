@@ -15,33 +15,11 @@ function drawCountChart() {
   console.log(index);
   var s = sindex.toString().split(' ');
   var gte = s[3]+'-'+mon[s[1]]+'-'+s[2];  
-  var lte = edate;
-
   $.ajax({
-    url: "/dashboard/restapi/getRestimeCount" ,
-    dataType: "json",
-    type: "get",
-    data: { index : index, gte : gte+'T15:00:00.000Z' , lte : lte+'T15:00:00.000Z'},
-    success: function(result) {
-      console.log(result);
-      if (result.rtnCode.code == "0000") {        
-        drawCountTimeseries(result.rtnData);
-
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
-  });
-
-   $.ajax({
     url: "/dashboard/restapi/getHeapData" ,
     dataType: "json",
     type: "get",
-    data: { index : "elagent_test-agent-*", type : "AgentStatJvmGc", gte : sdate+'T00:00:00' , lte : edate+'T23:59:59'},
+    data: { index : "elagent_test-agent-*", type : "AgentStatJvmGc", gte : gte+'T15:00:00' , lte : edate+'T15:00:00'},
     success: function(result) {
       console.log(result);
       if (result.rtnCode.code == "0000") {        
@@ -62,7 +40,7 @@ function drawCountChart() {
     url: "/dashboard/restapi/getJvmSysData" ,
     dataType: "json",
     type: "get",
-    data: { index : "elagent_test-agent-*", type : "AgentStatCpuLoad", gte : sdate+'T00:00:00' , lte : edate+'T23:59:59'},
+    data: { index : "elagent_test-agent-*", type : "AgentStatCpuLoad", gte : gte+'T15:00:00' , lte : edate+'T15:00:00'},
     success: function(result) {
       console.log(result);
       if (result.rtnCode.code == "0000") {        
@@ -82,7 +60,7 @@ function drawCountChart() {
     url: "/dashboard/restapi/getStatTransaction" ,
     dataType: "json",
     type: "get",
-    data: { index : "elagent_test-agent-*", type : "AgentStatTransaction", gte : sdate+'T00:00:00' , lte : edate+'T23:59:59'},
+    data: { index : "elagent_test-agent-*", type : "AgentStatTransaction", gte : gte+'T15:00:00' , lte : edate+'T15:00:00'},
     success: function(result) {
       console.log(result);
       if (result.rtnCode.code == "0000") {        
@@ -98,35 +76,6 @@ function drawCountChart() {
   });
 }
 
-function drawCountTimeseries(out_data) {
-  // 데이터 가공
-  console.log(out_data);
-  var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
-  var data = [];  
-  var min = null;
-  var sCnt = 0, eCnt = 0, rCnt = 0;
-  out_data.forEach(function(d) {        
-    data.push({ "timestamp" : d.key, "1s" : d.group_by_time.buckets.s1.doc_count , "3s" : d.group_by_time.buckets.s3.doc_count, "5s" : d.group_by_time.buckets.s5.doc_count, "slow" : d.group_by_time.buckets.slow.doc_count });
-      
-  }); 
-
-  var chartName = '#ts-chart05';
-  chart05 = d3.timeseries()
-    .addSerie(data,{x:'timestamp',y:'1s'},{interpolate:'step-before'})
-    .addSerie(data,{x:'timestamp',y:'3s'},{interpolate:'linear'})    
-    .addSerie(data,{x:'timestamp',y:'5s'},{interpolate:'linear'})    
-    .addSerie(data,{x:'timestamp',y:'slow'},{interpolate:'linear'})    
-    // .xscale.tickFormat(d3.time.format("%b %d"))
-    .width($(chartName).parent().width()-10)
-    .height(270)
-    // .yscale.tickFormat(french_locale.numberFormat(",f"))
-    .margin.left(0);
-
-    // console.log(chart01);
-  chart05(chartName);
-}
-
 function drawHeap(out_data) {
   // 데이터 가공
   console.log(out_data);
@@ -138,7 +87,7 @@ function drawHeap(out_data) {
   out_data.forEach(function(d) {
     d = d._source;
     console.log(d);
-    data.push({ "timestamp" : new Date(d.timestamp), "max" : d.heapMax, "used" : d.heapUsed, "nonUsed" : d.nonHeapUsed });
+    data.push({ "timestamp" : new Date(new Date(d.timestamp).getTime()+9*60*60*1000), "max" : d.heapMax, "used" : d.heapUsed, "nonUsed" : d.nonHeapUsed });
       
   }); 
 
@@ -167,8 +116,7 @@ function drawJvmSys(out_data) {
   var sCnt = 0, eCnt = 0, rCnt = 0;
   out_data.forEach(function(d) {
     d = d._source;    
-    data.push({ "timestamp" : new Date(d.timestamp), "jvm" : d.jvmCpuLoad, "system" : d.systemCpuLoad });
-      
+    data.push({ "timestamp" : new Date(new Date(d.timestamp).getTime()+9*60*60*1000), "jvm" : d.jvmCpuLoad*100, "system" : d.systemCpuLoad*100 });
   }); 
 
   var chartName = '#ts-chart03';
@@ -195,7 +143,7 @@ function drawTransaction(out_data) {
   var sCnt = 0, eCnt = 0, rCnt = 0;
   out_data.forEach(function(d) {
     d = d._source;    
-    data.push({ "timestamp" : new Date(d.timestamp), "S.C" : d.sampledContinuationCount, "S.N" : d.sampledNewCount, "U.C" : d.unsampledContinuationCount, "U.N" : d.unsampledNewCount, "Total" : d.sampledContinuationCount+d.sampledNewCount+d.unsampledContinuationCount+d.unsampledNewCount });
+    data.push({ "timestamp" : new Date(new Date(d.timestamp).getTime()+9*60*60*1000), "S.C" : d.sampledContinuationCount, "S.N" : d.sampledNewCount, "U.C" : d.unsampledContinuationCount, "U.N" : d.unsampledNewCount, "Total" : d.sampledContinuationCount+d.sampledNewCount+d.unsampledContinuationCount+d.unsampledNewCount });
   }); 
 
   var chartName = '#ts-chart04';
