@@ -1,7 +1,7 @@
 var liveValue = [];
  setInterval(function() { 
     now = new Date().getTime();    
-    var s = new Date(now-59*1000).toString().split(' ');
+    var s = new Date(now-60*1000).toString().split(' ');
     var e = new Date(now+1*1000).toString().split(' ');
     var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
     $.ajax({
@@ -10,10 +10,14 @@ var liveValue = [];
       type: "get",
       data: { nodeId : "0002.00000039", startDate : s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4] , endDate : e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4] },
       success: function(result) {
-        // console.log(result);
-        if (result.rtnCode.code == "0000") {        
-        liveValue = result.rtnData[0];
-        console.log(liveValue)
+        console.log(result);
+        if (result.rtnCode.code == "0000") {                
+          if(result.rtnData.length == 1){
+            liveValue = result.rtnData[0];
+            console.log(liveValue)
+          } else {
+            console.log(new Date());
+          }
         } else {
           //- $("#errormsg").html(result.message);
         }
@@ -23,7 +27,7 @@ var liveValue = [];
         $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
       }
     });  
-  }, 30*1000);    
+  }, 5*1000);    
 
 function getData(){  
   var now = new Date().getTime();
@@ -41,11 +45,11 @@ function getData(){
         drawChart(raw, result.anomaly.vdata, start, end, now, point, now-point, 'voltage', '#voltage', result.pattern);
         drawChart(raw, result.anomaly.adata, start, end, now, point, now-point, 'ampere', '#ampere', result.pattern);
         drawChart(raw, result.anomaly.apdata, start, end, now, point, now-point, 'active_power', '#active_power', result.pattern);
-        drawChart(raw, result.anomaly.pfdata, start, end, now, point, now-point, 'power_factor', '#power_factor', result.pattern);
-        console.log(new Date(start));
-        console.log(new Date(point));
-        console.log(new Date(now));
-        console.log(new Date(end));
+        drawChart(raw, result.anomaly.pfdata, start, end, now, point, now-point, 'power_factor', '#power_factor', result.pattern);        
+        console.log('start\n'+new Date(start));
+        console.log('point\n'+new Date(point));
+        console.log('now\n'+new Date(now));
+        console.log('end\n'+new Date(end));
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -76,7 +80,7 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, patt
     var groups = {
       output: {
         value: liveValue[id],
-        color: 'red',
+        color: 'blue',
         data: d3.range(0).map(function() {
           return 0
         })
@@ -107,9 +111,8 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, patt
     var line = d3.svg.line()
     .interpolate('basis')
     .x(function(d, i) {              
-      //return x(now)  })      
-    console.log(new Date(now - (limit - i -1) * (duration)));
-     return x(now - (limit - i -1) * (duration))  })    
+     //return x(now)  })          
+     return x(now + i*(duration)) })
     .y(function(d) {  return y(d)   })
 
   var valueline = d3.svg.line()
@@ -395,10 +398,10 @@ var div = d3.select("body").append("div")
   oriNow = now;
   function tick() {           
     if(cnt++ == 0) {
-      now = point;
+      now = new Date(liveValue.event_time).getTime();      
+      console.log(new Date(now))
     }
-    now = new Date().getTime();    
-    console.log(new Date(now));
+    now = new Date().getTime();        
     value = liveValue[id];            
     for (var name in groups) {
       var group = groups[name]
