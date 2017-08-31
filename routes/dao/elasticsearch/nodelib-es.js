@@ -14,8 +14,8 @@ QueryProvider.prototype.ping = function (cb) {
   client.ping({
     // ping usually has a 3000ms timeout
     requestTimeout: Infinity
-  }, function (error) {
-    if (error) {
+  }, function (err) {
+    if (err) {
       console.trace('elasticsearch cluster is down!');
       cb(false);
     } else {
@@ -38,9 +38,9 @@ QueryProvider.prototype.selectQueryString = function (qString, cb) {
     var hits = body.hits.hits;
     // console.log(body)
     cb(null, body.hits.total, hits);
-  }, function (error) {
-    console.trace(error.message);
-    cb(error.message);
+  }, function (err) {
+    console.trace(err.message);
+    cb(err.message);
   });
 }
 
@@ -56,9 +56,9 @@ QueryProvider.prototype.selectQueryStringCount = function (qString, cb) {
     var count = body.count;
     // console.log(body)
     cb(null, body, count);
-  }, function (error) {
-    console.trace(error.message);
-    cb(error.message);
+  }, function (err) {
+    console.trace(err.message);
+    cb(err.message);
   });
 }
 
@@ -135,36 +135,6 @@ QueryProvider.prototype.selectSingleQueryByID = function (type, queryId, datas, 
       }
     }
   }
-  // var qString = {
-  //   index: 'corecode-2016-08',
-  //   type: 'corecode',
-  //   body: {
-  //     query: {
-  //       filtered : {
-  //         query : {
-  //           match_all : {}
-  //         },
-  //         filter : {
-  //           and : [
-  //             {
-  //               range : {
-  //                 event_time : {
-  //                   from : "",
-  //                   to : ""
-  //                 }
-  //               }
-  //             },
-  //             {
-  //               term : {
-  //                 node_id : '0001.00000001'
-  //               }
-  //             }
-  //           ]
-  //         }
-  //       }
-  //     }
-  //   }
-  // };
   client.search(
     qString
   ).then(function (resp) {
@@ -173,7 +143,7 @@ QueryProvider.prototype.selectSingleQueryByID = function (type, queryId, datas, 
       cb(null, resp.hits.total, hits);
   }, function (err) {
       console.trace(err.message);
-      cb(error.message);
+      cb(err.message);
   });
 }
 
@@ -198,8 +168,8 @@ QueryProvider.prototype.selectSingleQueryByID2 = function (type, queryId, datas,
       console.log('nodelib-es/selectSingleQueryByID2 -> total : %d', resp.hits.total);
       cb(null, hits);
   }, function (err) {
-      console.trace(err.message);
-      cb(error.message);
+      console.trace(err.message);      
+      cb(err.message);
   });
 }
 
@@ -226,7 +196,7 @@ QueryProvider.prototype.selectSingleQueryByID3 = function (type, queryId, datas,
       cb(null, hits);
   }, function (err) {
       console.trace(err.message);
-      cb(error.message);
+      cb(err.message);
   });
 }
 
@@ -252,7 +222,7 @@ QueryProvider.prototype.selectSingleQueryCount = function (type, queryId, datas,
       cb(null, count);
   }, function (err) {
       console.trace(err.message);
-      cb(error.message);
+      cb(err.message);
   });
 
 }

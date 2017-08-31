@@ -75,29 +75,7 @@ router.get('/restapi/getDaClusterDetail', function(req, res, next) {
   });
 });
 
-router.get('/restapi/getDaClusterMaster', function(req, res, next) {
-  console.log(req.query);
-  console.log(req.query.interval);
-  var in_data = {
-      START_TIMESTAMP: req.query.startDate + ' 00:00:00',
-      END_TIMESTAMP: req.query.endDate + ' 23:59:59',
-      INTERVAL: parseInt(req.query.interval),
-      FLAG : 'N'};
-  if(req.query.interval === 'all')  {
-    var sql = "selectDaClusterMasterAll";
-  } else {
-    var sql = "selectDaClusterMaster";
-  }
-  queryProvider.selectSingleQueryByID("analysis", sql, in_data, function(err, out_data, params) {
-    // console.log(out_data);
-    var rtnCode = CONSTS.getErrData('0000');
-    if (out_data[0] === null) {
-      rtnCode = CONSTS.getErrData('0001');
-    }
-    console.log('analysis/restapi/getDaClusterMaster -> length : %s', out_data[0].length);
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
-  });
-});
+
 
 router.get('/restapi/getDaClusterMasterByDadate', function(req, res, next) {
   console.log(req.query);
@@ -169,12 +147,6 @@ router.get('/restapi/getClusterRawData', function(req, res, next) {
     if (out_data[0] === null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-
-    // console.log('typeof array : %s', (typeof out_data[0] !== 'undefined'));
-    // console.log('typeof array : %s', (out_data[0] !== null));
-
-    // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data);
-    // console.log('analysis/restapi/getReportRawData -> out_data : %s', out_data[0]);
     console.log('analysis/restapi/getClusterRawData -> length : %s', out_data[0].length);
     res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });
