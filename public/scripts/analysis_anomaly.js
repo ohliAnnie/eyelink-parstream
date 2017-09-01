@@ -75,7 +75,6 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, patt
   } else if(pattern[id+'_status'] == "anomaly"){   
     var color = 'red';
   }
-
   liveValue = raw[raw.length-1];    
     var groups = {
       output: {
@@ -86,6 +85,9 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, patt
         })
       }
     }
+      now = new Date(liveValue.event_time).getTime();      
+      console.log(new Date(now));
+    
     var x = d3.time.scale()
      .domain([start, end])
     .range([0, width]);
@@ -397,10 +399,7 @@ var div = d3.select("body").append("div")
   
   oriNow = now;
   function tick() {           
-    if(cnt++ == 0) {
-      now = new Date(liveValue.event_time).getTime();      
-      console.log(new Date(now))
-    }
+
     now = new Date().getTime();        
     value = liveValue[id];            
     for (var name in groups) {
@@ -458,5 +457,5 @@ var div = d3.select("body").append("div")
     }
     tick();  
 }
-var cnt = 0, oriEnd = 0, oriNow = 0;
+var oriEnd = 0, oriNow = 0;
 

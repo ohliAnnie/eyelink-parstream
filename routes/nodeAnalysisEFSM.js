@@ -182,8 +182,9 @@ router.get('/restapi/getAnomalyPattern/:id', function(req, res, next) {
 // query RawData
 router.get('/restapi/getAnomalyChartData', function(req, res, next) {    
   var now = new Date(parseInt(req.query.now));   
+  var end = now.getTime()+5*1000;
   console.log(now);
-  var e = now.toString().split(' ');
+  var e = new Date(end).toString().split(' ');
   var s = new Date(now.getTime()-10*60*1000).toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var in_data = {  INDEX: "analysis", TYPE: "anomaly_pattern", gte : s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4], lte : e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4] } 
@@ -238,12 +239,20 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
                 adata.push({date : start+(i-59)*60*1000, center : ampere.center[i], center2 : ampere.center2[i], center3 : ampere.center3[i], min : ampere.min[i], max : ampere.max[i], lower : ampere.lower[i], upper : ampere.upper[i]});
                 apdata.push({date : start+(i-59)*60*1000, center : active_power.center[i], center2 : active_power.center2[i], center3 : active_power.center3[i], min : active_power.min[i], max : active_power.max[i], lower : active_power.lower[i], upper : active_power.upper[i] });
                 pfdata.push({date : start+(i-59)*60*1000, center : power_factor.center[i], center2 : power_factor.center2[i], center3 : power_factor.center3[i], min : power_factor.min[i], max : power_factor.max[i], lower : power_factor.lower[i], upper : power_factor.upper[i]});
-              }                           
+              }                      
+
               var anomaly = { vdata : vdata, adata : adata, apdata : apdata, pfdata : pfdata };              
               var data = []; 
               out_data.forEach(function(d){      
                 data.push(d._source);
               });   
+              var last = data[data.length-1];
+              
+              console.log(last)
+              var n = now.toString().split(' ');
+              console.log(n)
+              data.push({ active_power : last.active_power, ampere : last.ampere, power_factor : last.power_factor, voltage : last.voltage, event_time : n[3]+'-'+mon[n[1]]+'-'+n[2]+'T'+n[4], node_id : last.node_id });
+              console.log(data[data.length-1]);
               res.json({rtnCode: rtnCode, anomaly : anomaly, raw : data, point : point, pattern : pattern});
             }
           });
