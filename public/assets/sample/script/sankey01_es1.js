@@ -2,7 +2,8 @@ $(function(){
  var indexs = $('#indexs').val();       
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
   var day = new Date().toString().split(' ');    
-  var index = indexs+day[3]+'.'+mon[day[1]]+'.'+day[2];
+  //var index = indexs+day[3]+'.'+mon[day[1]]+'.*';
+  index = indexs+'2017.08.*';
   console.log(index);
 $.ajax({
     url: "/sample/restapi/selectJiraAccReq" ,
@@ -25,6 +26,7 @@ $.ajax({
 });
 
 function makeData(result){
+
   var node={}, nodes = [], line = {}, lines = [], req={},  last = {}, lineNode = {}, id={};
  var colors=['#FF0000', '#FF5E00', '#FFBB00', '#FFE400', '#ABF200', '#1DDB16', '#00D8FF', '#0054FF', '#0100FF', '#5F00FF',
                     '#FF00DD', '#FF007F', '#FFA7A7', '#FFE08C', '#CEF279', '#B2EBF4', '#B5B2FF', '#FFB2F5', '#CC723D', '#008299'];  
@@ -32,11 +34,11 @@ function makeData(result){
  var nodeNo = 0;
  var nodeList = [];
  result.forEach(function(d) {        
+  if(d._source.response > 300){  
     var a = d._source.request.split('?');                     
-    console.log(a[0]);
+    //console.log(a[0]);
     var c = a[0].split('.');    
-    if(c[c.length-1]!='js'&&c[c.length-1]!='css'&&c[c.length-1]!='png'&&c[c.length-1]!='woff'&&c[c.length-1]!='json'&&c[c.length-1]!='jsp'&&c[c.length-1]!='jspa'&&c[c.length-1]!='ico'&&c[c.length-1]!='svg'){
-      console.log(c);
+    //  console.log(c);
     var b = a[0].split('/');
 
     if(req[a[0]] == null) {          
@@ -78,10 +80,17 @@ function makeData(result){
           var target = node[to].no;              
           if(line[source+'-'+target] == null) {                
             line[source+'-'+target] = { no : lineCnt };               
-            lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1 };                
+            if(parseInt(d._source.response) < 400){
+             lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 0 };                            
+            } else {
+              lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 1 };
+            }
           } else {                            
             lines[line[source+'-'+target].no].value += 0.0001;
             lines[line[source+'-'+target].no].cnt++;
+            if(parseInt(d._source.response) >= 400){
+             lines[line[source+'-'+target].no].errcnt++;
+            }
           }
         } else {                   
           lines[line[node[to].no+'-'+node[from].no].no].value += 0.0001;
@@ -103,12 +112,17 @@ function makeData(result){
  drawChart({rtnData : json, id : id});
 }
 
-function drawChart(data){     
-  console.log(data.rtnData);
-  console.log(data.id);
+function drawChart(data){  
+console.log(data)   ;
+/*  console.log(data.rtnData);
+  console.log(data.id);*/
   var colors = data.id;
   /*var json = JSON.parse(data.rtnData); 
   console.log(json);*/
+  var div = d3.select("body").append("div") 
+    .attr("class", "tooltip")       
+    .style("opacity", 0);
+
     var chart = d3.select("#chart").append("svg").chart("Sankey.Path");
    chart
       .name(label)
@@ -122,11 +136,41 @@ function drawChart(data){
       .nodePadding(10)
       .spread(true)
       .iterations(0)
-      .draw(data.rtnData);
+      .draw(data.rtnData)
+      .alignLabel('start')                                // align node labels: start, end, auto
+      .alignLabel(function(link) {
+        return link.errcnt;
+      });
     function label(node) {
       return node.name.replace(/\s*\(.*?\)$/, '');
     }
+
+    /*function label(link) {
+      return node.errcnt.replace(/\s*\(.*?\)$/, '');
+    }*/
     
+chart.on('link:mouseover', function(link) {  
+  if(link.errcnt != 0){
+          div.transition()    
+                .duration(200)    
+                .style("opacity", 1);    
+ //           div .html(formatTime(new Date(start+((i+1)*60*1000))) + "<br/>"  + d)  
+            div .html('ErrCnt</br>' + link.errcnt)  
+                .style("left", (d3.event.pageX) + "px")   
+                .style("top", (d3.event.pageY - 28) + "px");  
+  }
+    //alert('ErrCount : ' + link.errcnt);
+  });
+
+chart.on('link:mouseout', function(link) {  
+  if(link.errcnt != 0){
+          div.transition()    
+                .duration(500)    
+                .style("opacity", 0); 
+  }
+    //alert('ErrCount : ' + link.errcnt);
+  });
+
     function color(node, depth) {
       var id = node.id.replace(/(_score)?(_\d+)?$/, '');
       if (colors[id]) {
@@ -136,5 +180,5 @@ function drawChart(data){
       } else {
         return null;
       }
-    }s 
+    }
 };

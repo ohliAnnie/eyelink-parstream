@@ -966,13 +966,17 @@
   ]]></query>
   <query id='selectJiraAccReq'><![CDATA[
       {
-        "index" : #index#,
+        "index" : ["filebeat_jira_access-2017.08.31", "filebeat_jira_access-2017.09.01"],
         "type" : "access",       
         "body" : {
-          "size"   : 10000,
+          "size"   : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["request", "clientip", "auth"],
-          "query" : { "match_all" : { } }
+          "_source" : ["request", "clientip", "auth", "response"],
+          "query" : { 
+            "bool" : {
+              "must" : {   "match_all" : { } }              
+              }
+            }
         }
       } 
   ]]></query>
