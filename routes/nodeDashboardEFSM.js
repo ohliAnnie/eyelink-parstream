@@ -615,7 +615,7 @@ router.get('/restapi/getJiramapdata', function(req, res, next) {
           nodekey[d._source.application_id] = 0;                  
           var img = d._source.application_name.split(' ');
           nodeList.push({ id : d._source.application_id, status : 0 });
-          nodes.push({ data : { id : d._source.application_id, name : d._source.application_name, img : '../assets/sample/server-'+img[0]+'.png', parent : 'p_'+d._source.application_id }});      
+          nodes.push({ data : { id : d._source.application_id, name : d._source.application_name, img : '../assets/sample/'+img[0]+'.png', parent : 'p_'+d._source.application_id }});      
           if(parseInt(d._source.response) >= 400 ) {
             nodekey[d._source.application_id]++;
           }
