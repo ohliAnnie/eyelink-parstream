@@ -9,12 +9,10 @@ var liveValue = [];
       dataType: "json",
       type: "get",
       data: { nodeId : "0002.00000039", startDate : s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4] , endDate : e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4] },
-      success: function(result) {
-        console.log(result);
+      success: function(result) {        
         if (result.rtnCode.code == "0000") {                
           if(result.rtnData.length == 1){
-            liveValue = result.rtnData[0];
-            console.log(liveValue)
+            liveValue = result.rtnData[0];            
           } else {
             console.log(new Date());
           }
@@ -64,6 +62,7 @@ function getData(){
 
 function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, pattern) {
   oriEnd = end;  
+  console.log('raw'+new Date(raw[raw.length-1].event_time))
   var limit = 60,    duration = 1000;   
  var margin = {top: 10, right: 50, bottom: 30, left: 50},
   width = window.innerWidth*0.88 - margin.left - margin.right,
@@ -86,8 +85,7 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, patt
       }
     }
       now = new Date(liveValue.event_time).getTime();      
-      console.log(new Date(now));
-    
+
     var x = d3.time.scale()
      .domain([start, end])
     .range([0, width]);
@@ -409,8 +407,11 @@ var div = d3.select("body").append("div")
         group.data.push(value)
         group.path.attr('d', line)        
       }      
-      ddata.push({ date:now, value:value});                 
-     x.domain([now-50*60*1000+gap, now+10*60*1000-gap]);
+      ddata.push({ date:now, value:value});     
+      var d = ddata[ddata.length-1];
+      //console.log(new Date(d.date));            
+     x.domain([now-50*60*1000+gap, now+10*60*1000-gap]);     
+     //console.log(new Date(now-50*60*1000+gap), new Date(now+10*60*1000-gap));     
      //x.domain([start,end]);
     // Slide paths left
       paths.attr('transform', null)
@@ -457,5 +458,5 @@ var div = d3.select("body").append("div")
     }
     tick();  
 }
-var oriEnd = 0, oriNow = 0;
+var cnt = 0, oriEnd = 0, oriNow = 0;
 
