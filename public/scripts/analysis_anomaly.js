@@ -40,10 +40,10 @@ function getData(){
       console.log(result)
       var point = result.point, start = point -50*60*1000, end = point+10*60*1000;      
       if (result.rtnCode.code == "0000") {                                              
-        drawChart(raw, result.anomaly.vdata, start, end, now, point, now-point, 'voltage', '#voltage', result.pattern);
-        drawChart(raw, result.anomaly.adata, start, end, now, point, now-point, 'ampere', '#ampere', result.pattern);
-        drawChart(raw, result.anomaly.apdata, start, end, now, point, now-point, 'active_power', '#active_power', result.pattern);
-        drawChart(raw, result.anomaly.pfdata, start, end, now, point, now-point, 'power_factor', '#power_factor', result.pattern);        
+        drawChart(raw, result.anomaly.vdata, start, end, now, point, now-point, 'voltage', '#voltage', result.pattern, result.pt.vapt, result.pt.vcpt);
+        drawChart(raw, result.anomaly.adata, start, end, now, point, now-point, 'ampere', '#ampere', result.pattern, result.pt.aapt, result.pt.acpt);
+        drawChart(raw, result.anomaly.apdata, start, end, now, point, now-point, 'active_power', '#active_power', result.pattern, result.pt.apapt, result.pt.apcpt);
+        drawChart(raw, result.anomaly.pfdata, start, end, now, point, now-point, 'power_factor', '#power_factor', result.pattern, result.pt.pfapt, result.pt.pfcpt);
         console.log('start\n'+new Date(start));
         console.log('point\n'+new Date(point));
         console.log('now\n'+new Date(now));
@@ -60,7 +60,7 @@ function getData(){
   
 }
 
-function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, pattern) {
+function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, pattern, apt, cpt) {
   oriEnd = end;  
   console.log('raw'+new Date(raw[raw.length-1].event_time))
   var limit = 60,    duration = 1000;   
@@ -78,7 +78,7 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, patt
     var groups = {
       output: {
         value: liveValue[id],
-        color: 'blue',
+        color: 'black',
         data: d3.range(0).map(function() {
           return 0
         })
@@ -369,7 +369,7 @@ var div = d3.select("body").append("div")
         .attr("r", 5)   
         .attr('opacity', 0.5)
         .attr("cx", function(d) { console.log(d); return x(d.date); })     
-        .attr("cy", function(d) { return y(d.value); })   
+        .attr("cy", function(d) { return y(d.value); })           
         .on("mouseover", function(d) {    
             div.transition()    
                 .duration(200)    
@@ -383,6 +383,54 @@ var div = d3.select("body").append("div")
                 .duration(500)    
                 .style("opacity", 0); 
         });
+
+     var circle =svg.selectAll("dot4")
+        .data(cpt)
+        .enter().append('circle')
+        .attr("r", 3)   
+        .attr('opacity', 1)
+        .attr("cx", function(d) { console.log(d); return x(d.date); })     
+        .attr("cy", function(d) { return y(d.value); })   
+        .attr('class', 'cpt')
+        .attr("fill", "blue")
+        .on("mouseover", function(d) {    
+            div.transition()    
+                .duration(200)                    
+                .style("opacity", 1)
+                .style("fill", "yellow");    
+            div .html('caution</br>'+d.value)  
+                .style("left", (d3.event.pageX) + "px")   
+                .style("top", (d3.event.pageY - 28) + "px");  
+            })          
+        .on("mouseout", function(d) {   
+            div.transition()    
+                .duration(500)    
+                .style("opacity", 0); 
+        });   
+
+       var circle =svg.selectAll("dot5")
+        .data(apt)
+        .attr('class', 'apt')
+        .enter().append('circle')
+        .attr("r", 3)   
+        .attr('opacity', 0.1)
+        .attr("cx", function(d) { console.log(d); return x(d.date); })     
+        .attr("cy", function(d) { return y(d.value); })   
+        .attr("fill", "red")
+        .on("mouseover", function(d) {    
+            div.transition()    
+                .duration(200)                    
+                .style("opacity", 1);    
+            div .html('anomaly</br>'+d.value)  
+                .style("left", (d3.event.pageX) + "px")   
+                .style("top", (d3.event.pageY - 28) + "px");  
+            })          
+        .on("mouseout", function(d) {   
+            div.transition()    
+                .duration(500)    
+                .style("opacity", 0); 
+        });   
+
 
     var paths = svg.append('g');
 
