@@ -952,7 +952,21 @@
     ]]></query>        
   </reports> 
   <sample>
-    <query id='selectJiraAccess'><![CDATA[
+  <query id='selectByIdList'><![CDATA[      
+   {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {       
+          "size"   : 10000, 
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"], 
+          "query" : { 
+            "terms" : {  "_id" : [##id##]        }
+          }
+       }
+    } 
+  ]]></query>
+    <query id='selectJiraAccess'><![CDATA[      
       {
         "index" : "filebeat_jira_access-2017.06.01",
         "type" : "access",                    

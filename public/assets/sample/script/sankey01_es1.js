@@ -55,7 +55,7 @@ function makeData(result){
     
     if(node[nodeId] ==null){
       nodeList[nodeNo] = nodeId;
-      node[nodeId] ={ name : a[0], id : nodeId, no : nodeNo++ };          
+      node[nodeId] ={ name : a[0], id : nodeId, no : nodeNo++, errcnt : 0 };          
     }
     if(last[d._source.auth] != null){
       var from = last[d._source.auth];
@@ -80,16 +80,26 @@ function makeData(result){
           var target = node[to].no;              
           if(line[source+'-'+target] == null) {                
             line[source+'-'+target] = { no : lineCnt };               
-            if(parseInt(d._source.response) < 400){
+            if(parseInt(d._source.response) < 400){              
              lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 0 };                            
             } else {
-              lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 1 };
+              console.log(d._id);              
+              lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 1, elist : d._id };              
+              nodes[target].errcnt++;                           
+              console.log(d._id);
+              console.log(nodes[target].name);
+              console.log(nodes[target].errcnt);
             }
           } else {                            
             lines[line[source+'-'+target].no].value += 0.0001;
             lines[line[source+'-'+target].no].cnt++;
             if(parseInt(d._source.response) >= 400){
              lines[line[source+'-'+target].no].errcnt++;
+             lines[line[source+'-'+target].no].elist += ','+d._id;
+             nodes[target].errcnt++;             
+              console.log(d._id);
+              console.log(nodes[target].name);
+              console.log(nodes[target].errcnt);
             }
           }
         } else {                   
@@ -107,6 +117,12 @@ function makeData(result){
     last[d._source.auth] =  node[nodeId].id;       
   }
    });
+
+ nodes.forEach(function(d){
+  if(d.errcnt > 0){
+    d.name = '[Err:'+ d.errcnt + '] '+d.name;
+  }
+ });
 
  var json = {"nodes" :nodes, "links" : lines };
  drawChart({rtnData : json, id : id});
@@ -136,11 +152,7 @@ console.log(data)   ;
       .nodePadding(10)
       .spread(true)
       .iterations(0)
-      .draw(data.rtnData)
-      .alignLabel('start')                                // align node labels: start, end, auto
-      .alignLabel(function(link) {
-        return link.errcnt;
-      });
+      .draw(data.rtnData);
     function label(node) {
       return node.name.replace(/\s*\(.*?\)$/, '');
     }
@@ -167,6 +179,15 @@ chart.on('link:mouseout', function(link) {
           div.transition()    
                 .duration(500)    
                 .style("opacity", 0); 
+  }
+    //alert('ErrCount : ' + link.errcnt);
+  });
+
+chart.on('link:click', function(link) {  
+  console.log(link.errcnt)
+  console.log(link.elist);
+  if(link.errcnt != 0){
+    window.open('error_pop?link='+link.elist,'pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=1000,height=640,top=50,left=50');
   }
     //alert('ErrCount : ' + link.errcnt);
   });
