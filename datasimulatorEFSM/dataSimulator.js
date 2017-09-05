@@ -63,13 +63,14 @@ var needNewMapping = true;
 // 실제 라인 단위로 데이터 읽어와서 처리하는 로직 시작.
 lineReader.on('line', function (line) {
 
-  if ( line.startsWith(nodeId) ) {
+  // if ( line.startsWith(nodeId) ) {  // 17.08.29 전체 노드에 대해서 데이터 입력을 위해서 else문과 함께 주석처리
       matchedCount += 1;
 
-      if ( processedDays >= initialDataInDays ){
-        logger.info('---------------------------------------------------------------------------');
-        logger.info('Processing data : ', line);
-      }
+      // 17.08.29 아래 로그는 더 아래쪽으로 내렸음.
+      // if ( processedDays >= initialDataInDays ){
+      //   logger.info('---------------------------------------------------------------------------');
+      //   logger.info('Processing data : ', line);
+      // }
       
       cur_datetime = moment(datetime.create().format('Y-m-d H:M:S'));
 
@@ -111,7 +112,12 @@ lineReader.on('line', function (line) {
       // logger.debug('nextEventDateTime: ',nextEventDateTime,', curDateTime: ',cur_datetime,', diffMillis: ',diffSeconds);
       
       // logger.debug('ProcessingDateTime : ',event_date + ' ' + cur_kor_datetime.split(' ')[1],', Next Event DateTime : ',data_arr[3].split('T').join(' '),', diffSeconds : ',diffSeconds);
-      if ( processedDays >= initialDataInDays ){
+      if ( (processedDays >= initialDataInDays) && (nextEventDateTime.diff(startDatetimeToSkip, 'seconds') > 0) ){
+          // 17.08.29 info로 로그를 남기는 아래 두 라인은 사실 최상단에 있는 것이 맞으나, 
+          // 과거 데이터를  skip할 때 너무 많은 로그를 남기면서 hang 걸리는 문제가 발생하여 아래쪽으로 내렸음
+          logger.info('---------------------------------------------------------------------------');
+          logger.info('Processing data : ', line);
+          
           logger.debug('Processing DateTime : ',event_date + ' ' + data_arr[3].split('T')[1],', Next Event DateTime : ',data_arr[3].split('T').join(' '),', diffSeconds : ',diffSeconds );
       }
 
@@ -143,9 +149,9 @@ lineReader.on('line', function (line) {
       } else {
           // skip
       }
-  } else {
-    notMatchedCount += 1;
-  }
+  // } else { // 17.08.29 전체 노드에 대해서 데이터 입력을 위해서 if문과 함께 주석처리
+  //   notMatchedCount += 1;
+  // }
 })
 .on('close', function() {
   logger.info('matched : ', matchedCount, ', unmatched: ', notMatchedCount, ', total : ', (matchedCount + notMatchedCount));
@@ -157,7 +163,7 @@ function printUsage() {
   console.log('    []: required, {}: optional');
   console.log('');
   console.log('Ex. $ node dataSimulator.js ./source.csv 0002.00000039 30 \'2017-08-11 11:00:00\'');
-  // node dataSimulator.js ../source/busan_tb_node_raw.0315.csv 0002.00000039 38 '2017-08-17 17:00:00'
+  // node dataSimulator.js ../source/busan_tb_node_raw.0315.csv 0002.00000039 49 '2017-08-29 16:58:27'
 }
 function insertData(index, type, linedata){
 
