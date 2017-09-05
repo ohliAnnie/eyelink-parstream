@@ -3,15 +3,14 @@ $(function(){
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
   var day = new Date().toString().split(' ');    
   //var index = indexs+day[3]+'.'+mon[day[1]]+'.*';
-  index = indexs+'2017.08.*';
+  index = indexs+'2017.09.05';
   console.log(index);
 $.ajax({
     url: "/sample/restapi/selectJiraAccReq" ,
     dataType: "json",
     type: "get",
     data: { index : index },
-    success: function(result) {
-      console.log(result);
+    success: function(result) {      
       if (result.rtnCode.code == "0000") {        
         makeData(result.rtnData);
       } else {
@@ -33,90 +32,91 @@ function makeData(result){
  var reqCnt = 0, nodeCnt = 0, lineCnt = 0, lineNodeCnt = 0, idCnt = 0;        
  var nodeNo = 0;
  var nodeList = [];
- result.forEach(function(d) {        
-  if(d._source.response > 300){  
-    var a = d._source.request.split('?');                     
-    //console.log(a[0]);
-    var c = a[0].split('.');    
-    //  console.log(c);
-    var b = a[0].split('/');
-
-    if(req[a[0]] == null) {          
-      req[a[0]] = { no : reqCnt++, cnt : 1};
-    } else {
-      req[a[0]].cnt++;        
-    }        
-    
-    if(id[b[b.length-1]] == null) {
-      id[b[b.length-1]] = colors[idCnt++%20];                   
-    }
-    
-    var nodeId = b[b.length-1]+'_'+req[a[0]].no;       
-    
-    if(node[nodeId] ==null){
-      nodeList[nodeNo] = nodeId;
-      node[nodeId] ={ name : a[0], id : nodeId, no : nodeNo++, errcnt : 0 };          
-    }
-    if(last[d._source.auth] != null){
-      var from = last[d._source.auth];
-      var to = nodeId;  
-      if(node[from].no > node[to].no){
-        from = nodeId;
-        to = last[d._source.auth];
+ result.forEach(function(d) {
+  if(d._source.request != null) {        
+  var a = d._source.request.split('?');                         
+  var c = a[0].split('.');
+  if(c[c.length-1]!='js'&&c[c.length-1]!='css'&&c[c.length-1]!='png'&&c[c.length-1]!='woff'&&c[c.length-1]!='json'&&c[c.length-1]!='jsp'&&c[c.length-1]!='ico'&&c[c.length-1]!='svg'&&c[c.length-1]!='gif'&&c[c.length-1]!='eot'&&c[c.length-1]!='charts'&&c[c.length-1]!='da'&&c[c.length-1]!='gadget'){             
+   if(d._source.auth == null){
+     d._source.auth = 'visitor';
+    } 
+    var b = a[0].split('/');  
+      if(req[a[0]] == null) {          
+        req[a[0]] = { no : reqCnt++, cnt : 1};
+      } else {
+        req[a[0]].cnt++;        
       }        
-      if(from != to){
-        if(line[node[to].no+'-'+node[from].no] == null){
-          if(lineNode[from] == null) {                
-            lineNode[from] = {};        
-            node[from].no = lineNodeCnt;        
-            nodes[lineNodeCnt++] = node[from];                        
-          }
-          if(lineNode[to] == null) {
-            lineNode[to] = {};    
-            node[to].no = lineNodeCnt;
-            nodes[lineNodeCnt++] = node[to];                                
-          }
-          var source = node[from].no;
-          var target = node[to].no;              
-          if(line[source+'-'+target] == null) {                
-            line[source+'-'+target] = { no : lineCnt };               
-            if(parseInt(d._source.response) < 400){              
-             lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 0 };                            
-            } else {
-              console.log(d._id);              
-              lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 1, elist : d._id };              
-              nodes[target].errcnt++;                           
-              console.log(d._id);
-              console.log(nodes[target].name);
-              console.log(nodes[target].errcnt);
-            }
-          } else {                            
-            lines[line[source+'-'+target].no].value += 0.0001;
-            lines[line[source+'-'+target].no].cnt++;
-            if(parseInt(d._source.response) >= 400){
-             lines[line[source+'-'+target].no].errcnt++;
-             lines[line[source+'-'+target].no].elist += ','+d._id;
-             nodes[target].errcnt++;             
-              console.log(d._id);
-              console.log(nodes[target].name);
-              console.log(nodes[target].errcnt);
-            }
-          }
-        } else {                   
-          lines[line[node[to].no+'-'+node[from].no].no].value += 0.0001;
-          lines[line[node[to].no+'-'+node[from].no].no].cnt++;
-        }
-      } else {            
-       if(lineNode[to] == null) {
-          lineNode[to] = {};                  
-          node[to].no = lineNodeCnt;              
-          nodes[lineNodeCnt++] = node[to];                                
-        }  
+      
+      if(id[b[b.length-1]] == null) {
+        id[b[b.length-1]] = colors[idCnt++%20];                   
       }
-    }        
-    last[d._source.auth] =  node[nodeId].id;       
-  }
-   });
+      
+      var nodeId = b[b.length-1]+'_'+req[a[0]].no;       
+      
+  if(node[nodeId] ==null){
+        nodeList[nodeNo] = nodeId;
+        node[nodeId] ={ name : a[0], id : nodeId, no : nodeNo++, errcnt : 0 };  
+      }
+      if(last[d._source.auth] != null){
+        var from = last[d._source.auth];
+        var to = nodeId;  
+        if(node[from].no > node[to].no){
+          from = nodeId;
+          to = last[d._source.auth];
+        }        
+        if(from != to){
+          if(line[node[to].no+'-'+node[from].no] == null){
+            if(lineNode[from] == null) {                
+              lineNode[from] = {};        
+              node[from].no = lineNodeCnt;        
+              nodes[lineNodeCnt++] = node[from];                        
+            }
+            if(lineNode[to] == null) {
+              lineNode[to] = {};    
+              node[to].no = lineNodeCnt;
+              nodes[lineNodeCnt++] = node[to];                                
+            }
+            var source = node[from].no;
+            var target = node[to].no;              
+            if(line[source+'-'+target] == null) {                
+              line[source+'-'+target] = { no : lineCnt };               
+              if(d._source.response < 400){             
+                lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 0 };                           
+              } else {             
+                lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 1, elist : d._id };
+                nodes[target].errcnt++;                                         
+             }  
+            } else {                            
+              lines[line[source+'-'+target].no].value += 0.0001;
+              lines[line[source+'-'+target].no].cnt++;
+              if(parseInt(d._source.response) >= 400){
+                 if(lines[line[source+'-'+target].no].errcnt == 0) {
+                    lines[line[source+'-'+target].no].elist = d._id;
+                 } else {
+                  lines[line[source+'-'+target].no].elist += ','+d._id;       
+                 }       
+               lines[line[source+'-'+target].no].errcnt++;             
+               nodes[target].errcnt++;                           
+                }
+            }
+          } else {                   
+            lines[line[node[to].no+'-'+node[from].no].no].value += 0.0001;
+            lines[line[node[to].no+'-'+node[from].no].no].cnt++;
+          }
+        } else {            
+         if(lineNode[to] == null) {
+            lineNode[to] = {};                  
+            node[to].no = lineNodeCnt;              
+            nodes[lineNodeCnt++] = node[to];                                
+          }  
+        }
+      }        
+      last[d._source.auth] =  node[nodeId].id;       
+   }
+ }
+ });
+
+ console.log(node);
 
  nodes.forEach(function(d){
   if(d.errcnt > 0){
@@ -125,6 +125,7 @@ function makeData(result){
  });
 
  var json = {"nodes" :nodes, "links" : lines };
+ console.log(json);
  drawChart({rtnData : json, id : id});
 }
 
