@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding= "UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+        "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+        "http://tiles.apache.org/dtds/tiles-config_3_0.dtd" >
+<tiles-definitions>
+    <definition name =".empty" template= "/WEB-INF/views/layout/empty.jsp" >
+        <put-attribute name ="title" value="ONM" />
+    </definition >
+
+    <definition name =".login" template= "/WEB-INF/views/layout/login.jsp" >
+        <put-attribute name ="title" value="ONM" />
+        <put-attribute name ="lnb" value= "/WEB-INF/views/layout/lnb.jsp" />
+    </definition >
+
+    <definition name ="*/login" extends=".login">
+        <put-attribute name ="body" value= "/WEB-INF/jsp/auth/login.jsp" />
+    </definition >
+
+    <definition name ="index" extends=".empty">
+        <put-attribute name ="body" value= "/WEB-INF/jsp/index.jsp" />
+    </definition >
+
+    <definition name =".default" template= "/WEB-INF/views/layout/default.jsp" >
+        <put-attribute name ="title" value="ONM" />
+        <put-attribute name ="lnb" value= "/WEB-INF/views/layout/lnb.jsp" />
+    </definition >
+
+	<!-- begin : dashboard 용 : lnb를 포함하지 않음 -->
+    <definition name ="nonelnb.definition" template= "/WEB-INF/views/layout/noneLnb.jsp" >
+        <put-attribute name ="title" value="ONM" />
+		<put-attribute name="body"   value="" />
+    </definition >
+	<definition name="*.nonelnb" extends="nonelnb.definition">
+		<put-attribute name="body"   value="/WEB-INF/jsp/{1}.jsp" />
+	</definition>
+	<definition name="*/*.nonelnb" extends="nonelnb.definition">
+		<put-attribute name="body"   value="/WEB-INF/jsp/{1}/{2}.jsp" />
+	</definition>
+	<definition name="*/*/*.nonelnb" extends="nonelnb.definition">
+		<put-attribute name="body"   value="/WEB-INF/jsp/{1}/{2}/{3}.jsp" />
+	</definition>
+	<!-- end : dashboard 용 : lnb를 포함하지 않음 -->
+
+    <definition name ="*/*" extends=".default">
+        <put-attribute name ="body" value= "/WEB-INF/jsp/{1}/{2}.jsp" />
+    </definition >
+
+    <definition name ="*" extends=".default">
+        <put-attribute name ="body" value= "/WEB-INF/jsp/{1}.jsp" />
+    </definition >
+
+</tiles-definitions>

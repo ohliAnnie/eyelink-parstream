@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bots xmlns="http://aitools.org/programd/4.6/bot-configuration"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://aitools.org/programd/4.6/bot-configuration http://aitools.org/programd/4.6/bot-configuration.xsd">
+    <bot id="Samplebot" enabled="true">
+        <properties href="classpath:conf/properties.xml"/>
+        <predicates href="classpath:conf/predicates.xml"/>
+        <substitutions href="file:/home/jboss/conf/programd/substitutions.xml"/>
+        <sentence-splitters href="classpath:conf/sentence-splitters.xml"/>
+        <!--<listeners href="classpath:conf/listeners.xml"/>-->
+        <!--<learn>../aiml/AAA/*.aiml</learn>
+        <learn>../aiml/alice/*.aiml</learn>
+        <learn>../aiml/FrenchAIML/*.aiml</learn>
+        <learn>../aiml/GermanAlice/*.aiml</learn>
+        <learn>../aiml/maria/*.aiml</learn>
+        <learn>../aiml/standard/*.aiml</learn>-->
+        <!--<testing>-->
+            <!--<test-suite-path>classpath:testing/AIML.xml</test-suite-path>-->
+            <!--<report-directory>file:/var/log/programd/test-reports</report-directory>-->
+        <!--</testing>-->
+        <learn>file:/home/jboss/conf/programd/AIML.aiml</learn>
+    </bot>
+</bots>

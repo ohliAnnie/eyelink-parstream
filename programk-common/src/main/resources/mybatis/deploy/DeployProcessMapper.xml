@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016 KT, Inc.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of KT
+  ~ , Inc. You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with KT.
+  ~
+  ~ Revision History
+  ~ Author              Date                  Description
+  ~ Seo Jong Hwa        2016 . 6 . 29
+  ~ 배치 스케줄러에서 사용하는 쿼리 모음
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.deploy.DeployProcessMapper">
+    <resultMap id="BaseResultMap" type="com.kt.programk.common.domain.deploy.DeployAiml">
+        <result column="cate_id" jdbcType="INTEGER" property="cateId"/>
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="input" jdbcType="VARCHAR" property="input"/>
+        <result column="that_id" jdbcType="INTEGER" property="thatId"/>
+        <result column="image_id" jdbcType="INTEGER" property="imageId"/>
+        <result column="image_url" jdbcType="VARCHAR" property="imageUrl"/>
+        <result column="image_alt" jdbcType="VARCHAR" property="imageAlt"/>
+        <result column="link_id" jdbcType="INTEGER" property="linkId"/>
+        <result column="link_title" jdbcType="VARCHAR" property="linkTitle"/>
+        <result column="link_comment" jdbcType="VARCHAR" property="linkComment"/>
+        <result column="link_url" jdbcType="VARCHAR" property="linkUrl"/>
+        <result column="recommend_id" jdbcType="INTEGER" property="recommendId"/>
+        <result column="recommend_input" jdbcType="VARCHAR" property="recommendInput"/>
+        <result column="reply_id" jdbcType="INTEGER" property="replyId"/>
+        <result column="reply_input" jdbcType="VARCHAR" property="replyInput"/>
+        <result column="option_id" jdbcType="INTEGER" property="optionId"/>
+        <result column="option_val" jdbcType="VARCHAR" property="optionVal"/>
+        <result column="option_seq" jdbcType="VARCHAR" property="optionSeq"/>
+    </resultMap>
+
+    <!-- 검색시 where 조건 -->
+    <sql id="whereSearch">
+        WHERE  0 = 0
+        <if test='completed != null'>
+            AND completed = #{completed}
+        </if>
+        <if test='gubun != null'>
+            AND gubun = #{gubun}
+        </if>
+    </sql>
+
+    <!-- BOT 변경 배포 스케줄러 조회 -->
+    <select id="selectListFromScheduler" parameterType="com.kt.programk.common.domain.deploy.DeployScheduler"
+            resultType="com.kt.programk.common.domain.deploy.DeployScheduler">
+            SELECT
+                t1.id as id,
+                t1.deploy_date as DeployDate,
+                t1.cp_id as cpId,
+                t1.completed as complete,
+                t1.description as description,
+                t1.user_id as userId,
+                t1.sub_label as subLabel,
+                t1.gubun as gubun
+            FROM deploy_scheduler AS t1
+            <include refid="whereSearch" />
+            ORDER BY t1.id DESC
+    </select>
+
+    <!-- 배포 스케줄러가 이미 완료한 작업인지 조회 -->
+    <select id="countDeployNodeHistory" parameterType="hashmap"
+            resultType="java.lang.Integer">
+        <![CDATA[
+           SELECT
+            count(*)
+            FROM deploy_node_history
+            WHERE scheduler_id = #{schedulerId}
+            and host_ip = #{hostIp};
+        ]]>
+    </select>
+
+    <!-- 모든 노드가 배포가 완료되었는지 확인 -->
+    <select id="countDeployAllNodeHistory" parameterType="java.lang.Integer"
+            resultType="java.lang.Integer">
+        <![CDATA[
+           SELECT
+            count(DISTINCT host_ip)
+            FROM deploy_node_history
+            WHERE scheduler_id = #{schedulerId};
+        ]]>
+    </select>
+
+
+    <!--배포 카테고리 목록 조회 -->
+    <select id="selectPredListByCpId" parameterType="java.lang.Integer"
+            resultType="com.kt.programk.common.domain.deploy.DeployPredCategory">
+        <![CDATA[
+          SELECT cp_id AS cpId , cate_id AS cateId
+          FROM deploy_pred_category
+          WHERE cp_id = #{cpId}
+        ]]>
+    </select>
+
+    <select id="selectPropListByCpId" parameterType="java.lang.Integer"
+            resultType="com.kt.programk.common.domain.deploy.DeployPropCategory">
+        <![CDATA[
+          SELECT cp_id AS cpId , cate_id AS cateId
+          FROM deploy_prop_category
+          WHERE cp_id = #{cpId}
+        ]]>
+    </select>
+
+    <select id="selectSubsListByCpId" parameterType="java.lang.Integer"
+            resultType="com.kt.programk.common.domain.deploy.DeploySubsCategory">
+        <![CDATA[
+          SELECT cp_id AS cpId , cate_id AS cateId
+          FROM deploy_subs_category
+          WHERE cp_id = #{cpId}
+        ]]>
+    </select>
+
+    <select id="selectAimlListByCpId" parameterType="java.lang.Integer"
+            resultType="com.kt.programk.common.domain.deploy.DeploySubsCategory">
+        <![CDATA[
+          SELECT cp_id AS cpId , cate_id AS cateId
+          FROM deploy_aiml_category
+          WHERE cp_id = #{cpId}
+        ]]>
+    </select>
+
+    <!--배포할 파일 경로를 가져온다.-->
+    <select id="selectFromBotFileByCp" parameterType="hashmap"
+            resultType="com.kt.programk.common.domain.core.BotFile">
+        SELECT
+            t2.id as id,
+            t2.bot_id as botId,
+            t2.file_name as fileName,
+            t2.path as path,
+            t2.last_loaded as lastLoaded,
+            t2.file_type as fileType
+        FROM bot AS t1
+          INNER JOIN bot_file AS t2
+          ON t1.id = t2.bot_id
+        WHERE  0 = 0
+            AND t1.cp_id = #{cpId}
+            AND t1.sub_label = #{subLabel}
+            AND t2.file_type = #{fileType}
+    </select>
+
+    <!-- AIML 조회  -->
+    <select id="selectListFromAimlMain" parameterType="com.kt.programk.common.domain.core.AimlMain"
+            resultMap="BaseResultMap">
+        <![CDATA[
+            SELECT
+                t1.cate_id as cate_id,
+                t1.id as id,
+                t1.input as input,
+                t1.reply as reply,
+                t1.that_id as that_id,
+                t2.id as image_id,
+                t2.url as image_url,
+                t2.alt as image_alt,
+                t3.id as link_id,
+                t3.title as link_title,
+                t3.comment as link_comment,
+                t3.url as link_url,
+                t4.id as recommend_id,
+                t4.recommend_input as recommend_input,
+                t5.id as reply_id,
+                t5.reply_input as reply_input,
+                t6.id as option_id,
+                t6.val as option_val,
+                t6.seq as option_seq
+            FROM aiml_main AS t1
+            LEFT OUTER JOIN aiml_images AS t2
+            ON t1.id = t2.main_id
+            LEFT OUTER JOIN aiml_link AS t3
+            ON t1.id = t3.main_id
+            LEFT OUTER JOIN aiml_recommend AS t4
+            ON t1.id = t4.main_id
+            LEFT OUTER JOIN aiml_reply AS t5
+            ON t1.id = t5.main_id
+            LEFT OUTER JOIN aiml_option AS t6
+            ON t1.id = t6.main_id
+            WHERE t1.cate_id = #{cateId};
+        ]]>
+    </select>
+
+    <!-- 해당 CP의 AIML 카테고리 조회 -->
+    <select id="selectListFromAimlCategoryByCpId" parameterType="AimlCategory" resultType="AimlCategory">
+        SELECT t1.id, t1.name, t1.created, t1.modified, t1.restriction, t1.cp_id, t1.topic, t1.enabled
+        FROM aiml_category AS t1
+        INNER JOIN deploy_aiml_category AS t2
+        ON t1.id = t2.cate_id
+        WHERE 0 = 0
+        AND t2.cp_id = #{cpId}
+    </select>
+
+    <!--해당 CP의 substitutions 조회 -->
+    <select id="selectListFromAimlSubs" parameterType="java.lang.Integer"
+            resultType="com.kt.programk.common.domain.core.AimlSubs">
+        <![CDATA[
+
+            SELECT t1.cate_id AS cateId, t1.find AS find, t1.replace AS replace, t1.created AS created, t1.modified AS modified
+            FROM aiml_subs AS t1
+            INNER JOIN deploy_subs_category AS t2
+            ON t1.cate_id = t2.cate_id
+            WHERE 0 = 0
+            AND t2.cp_id = #{cpId}
+            ORDER BY t1.created asc, LENGTH(find) desc, find asc;
+        ]]>
+    </select>
+
+    <!--해당 CP의 properties 조회 -->
+    <select id="selectListFromAimlProp" parameterType="java.lang.Integer"
+            resultType="com.kt.programk.common.domain.core.AimlProp">
+        <![CDATA[
+            SELECT t1.cate_id AS cateId, t1.name as name, t1.val as val, t1.created AS created, t1.modified AS modified
+            FROM aiml_prop AS t1
+            INNER JOIN deploy_prop_category AS t2
+            ON t1.cate_id = t2.cate_id
+            WHERE 0 = 0
+            AND t2.cp_id = #{cpId}
+        ]]>
+    </select>
+
+    <!--해당 CP의 predicate 조회 -->
+    <select id="selectListFromAimlPred" parameterType="java.lang.Integer"
+            resultType="com.kt.programk.common.domain.core.AimlPred">
+        <![CDATA[
+
+            SELECT t1.cate_id AS cateId, t1.name as name,t1.basic as basic,  t1.val as val, t1.created AS created, t1.modified AS modified
+            FROM aiml_pred AS t1
+            INNER JOIN deploy_pred_category AS t2
+            ON t1.cate_id = t2.cate_id
+            WHERE 0 = 0
+            AND t2.cp_id = #{cpId};
+        ]]>
+    </select>
+</mapper>

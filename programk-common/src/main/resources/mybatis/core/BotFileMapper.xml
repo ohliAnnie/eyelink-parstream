@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.core.BotFileMapper">
+    <resultMap id="BaseResultMap" type="BotFile">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="bot_id" jdbcType="INTEGER" property="botId"/>
+        <result column="file_name" jdbcType="VARCHAR" property="fileName"/>
+        <result column="path" jdbcType="VARCHAR" property="path"/>
+        <result column="last_loaded" jdbcType="TIMESTAMP" property="lastLoaded"/>
+        <result column="fileType" jdbcType="VARCHAR" property="fileType"/>
+    </resultMap>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="BotFile"
+            resultMap="BaseResultMap">
+        <![CDATA[
+            SELECT id, bot_id, file_name, path, last_loaded, file_type
+            FROM bot_file
+            WHERE 0 = 0
+            AND id = #{id};
+        ]]>
+    </select>
+
+    <!-- AIML 파일 배포 할때 사용 -->
+    <select id="selectByCpId" parameterType="BotFile"
+            resultMap="BaseResultMap">
+        <![CDATA[
+            SELECT id, bot_id, file_name, path, last_loaded, file_type
+            FROM bot_file
+            WHERE 0 = 0
+            AND bot_id = #{botId}
+            AND file_type = #{fileType}
+            AND active = #{active}
+        ]]>
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectList" parameterType="BotFile"
+            resultMap="BaseResultMap">
+        <![CDATA[
+            SELECT id, bot_id, file_name, path, last_loaded, file_type
+            FROM bot_file
+            WHERE bot_id = #{botId}
+            offset ${firstRecordIndex} limit ${recordCountPerPage};
+        ]]>
+    </select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="BotFile">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select nextval('seq_bot_file')
+        </selectKey>
+        <![CDATA[
+        INSERT INTO bot_file(id, bot_id, file_name, path, last_loaded, file_type)
+        VALUES (#{id}, #{botId}, #{fileName}, #{path}, null, #{fileType});
+        ]]>
+    </insert>
+
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="BotFile">
+        <![CDATA[
+        DELETE FROM bot_file
+        WHERE 0 = 0
+            AND id = #{id};
+        ]]>
+    </delete>
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="BotFile">
+        update bot_file
+        <set>
+            <if test="fileName != null">
+                file_name = #{fileName},
+            </if>
+            <if test="lastLoaded != null">
+                last_loaded = #{lastLoaded},
+            </if>
+            <if test="fileType != null">
+                file_type = #{fileType},
+            </if>
+        </set>
+        WHERE 0 = 0
+        AND id = #{id};
+    </update>
+
+    <update id="updateByFileName" parameterType="BotFile">
+        UPDATE bot_file
+        SET last_loaded = now()
+        WHERE 0 = 0
+        AND file_name = #{fileName}
+        AND file_type = #{fileType}
+    </update>
+
+</mapper>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <import resource="context/context.xml"/>
+    <!--JBOSS 의 커넥션을 사용하기 위해서 주석 처리 -->
+    <import resource="context/abstract.xml"/>
+    <import resource="context/context-datasource.xml"/>
+    <import resource="context/context-was-transaction.xml"/>
+</beans>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016 KT, Inc.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of KT
+  ~ , Inc. You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with KT.
+  ~
+  ~ Revision History
+  ~ Author              Date                  Description
+  ~ Seo Jong Hwa        2016 . 7 . 4
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 클러스트 환경 설정 -->
+    <bean id="redisClusterInfo" class="com.kt.programk.common.utils.RedisClusterInfo">
+        <constructor-arg ref="config"/>
+    </bean>
+
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="${commons.programk.redis.maxTotal}"/>
+        <property name="maxIdle" value="${commons.programk.redis.maxIdle}"/>
+        <property name="maxWaitMillis" value="${commons.programk.redis.maxWaitMillis}"/>
+    </bean>
+
+    <bean id="jedisConnFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <constructor-arg value="#{redisClusterInfo.readNode()}"/>
+        <constructor-arg ref="jedisPoolConfig"/>
+        <property name="usePool" value="true"/>
+    </bean>
+
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
+          p:connection-factory-ref="jedisConnFactory"/>
+
+    <bean id="allowIpRepository" class="com.kt.programk.common.db.repository.AllowIpRepository">
+        <property name="redisTemplate" ref="redisTemplate"/>
+    </bean>
+
+    <bean id="botRepository" class="com.kt.programk.common.db.repository.BotRepository">
+        <property name="redisTemplate" ref="redisTemplate"/>
+    </bean>
+
+    <bean id="predicateRepository" class="com.kt.programk.common.db.repository.PredicateRepository">
+        <property name="redisTemplate" ref="redisTemplate"/>
+    </bean>
+    
+    <bean id="noticeRepository" class="com.kt.programk.common.db.repository.NoticeRepository">
+        <property name="redisTemplate" ref="redisTemplate"/>
+    </bean>
+</beans>

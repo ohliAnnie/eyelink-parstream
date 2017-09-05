@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- scan component -->
+    <context:component-scan base-package="com.kt.programk.common">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+    <context:annotation-config/>
+
+    <!-- config -->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+          p:ignoreUnresolvablePlaceholders="true">
+        <property name="locations">
+            <list>
+                <!-- commons -->
+                <value>classpath*:/config/commons/${env}/commons.properties</value>
+                <!-- custom config -->
+                <value>file:${config}</value>
+            </list>
+        </property>
+    </bean>
+
+
+    <bean id="configBuildFactoryBean" class="com.kt.programk.common.utils.ConfigBuildFactoryBean"
+          init-method="init">
+        <property name="locations">
+            <list>
+                <!-- commons -->
+                <value>classpath*:/config/commons/${env}/commons.properties</value>
+                <!-- custom config -->
+                <value>file:${config}</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="configBuildService" factory-bean="configBuildFactoryBean"
+          factory-method="createInstance"/>
+
+    <bean id="config" class="com.kt.programk.common.utils.ConfigProperties"
+          p:properties-ref="configBuildService" init-method="init"/>
+
+</beans>

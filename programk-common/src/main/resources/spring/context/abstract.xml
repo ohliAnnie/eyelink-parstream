@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 암복화 모듈 -->
+    <bean id="jdbcConfig" class="com.kt.programk.common.utils.JdbcConfig">
+    	<property name="useCrypt"      value="${commons.programk.postgresql.jdbc.crypt}" />
+        <property name="decUrl"        value="${commons.programk.postgresql.jdbc.url}" />
+        <property name="decUsername"   value="${commons.programk.postgresql.jdbc.username}" />
+        <property name="decPassword"   value="${commons.programk.postgresql.jdbc.password}" />
+    </bean>
+
+    <!-- 데이터 베이스 -->
+    <bean id="abstractDatasource" class="org.apache.tomcat.jdbc.pool.DataSource" destroy-method="close" abstract="true">
+        <property name="driverClassName" value="${commons.postgresql.driver}"/>
+        <property name="url" value="#{jdbcConfig.decUrl}"/>
+        <property name="username" value="#{jdbcConfig.decUsername}"/>
+        <property name="password" value="#{jdbcConfig.decPassword}"/>
+    </bean>
+    
+</beans>

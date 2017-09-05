@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.admin.CpUserMapper">
+    <resultMap id="BaseResultMap" type="CpUser">
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="user_pwd" jdbcType="VARCHAR" property="userPwd"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="cell_phone" jdbcType="VARCHAR" property="cellPhone"/>
+        <result column="enabled" jdbcType="VARCHAR" property="enabled"/>
+        <result column="created" jdbcType="TIMESTAMP" property="created"/>
+        <result column="modified" jdbcType="TIMESTAMP" property="modified"/>
+        <result column="cp_id" jdbcType="INTEGER" property="cpId"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="auth" jdbcType="VARCHAR" property="auth"/>
+        <result column="menu" jdbcType="VARCHAR" property="menu"/>
+        <result column="group_name" jdbcType="VARCHAR" property="groupName"/>
+        <result column="last_login" jdbcType="TIMESTAMP" property="lastLogin"/>
+        <result column="cp_group" jdbcType="VARCHAR" property="cpGroup"/>
+    </resultMap>
+
+    <!-- 카운트 조회 -->
+    <select id="countAll" parameterType="CpUser" resultType="java.lang.Integer" >
+        select count(*)
+        from cp_user
+    </select>
+
+    <select id="countByUserId" parameterType="CpUser" resultType="java.lang.Integer" >
+        select count(*)
+        from cp_user
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="countByCpId" parameterType="CpUser" resultType="java.lang.Integer" >
+        select count(*)
+        from cp_user
+        WHERE id IN (select cp_user_id from cp_group where cp_id = #{cpId}) 
+    </select>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="CpUser"
+            resultMap="BaseResultMap">
+        SELECT id, user_id, user_pwd, name, cell_phone, enabled, created, modified,cp_id,description,auth,menu, group_name, last_login,
+        		(select array_to_string(array(select cp_id from cp_group where cp_user_id = cp_user.id), ',')) as cp_group
+		FROM cp_user
+		WHERE 0 = 0
+		<if test='userId != null and userId != ""'>
+            AND user_id = #{userId}
+        </if>
+		<if test='id != null and id != 0'>
+            AND id = #{id}
+        </if>
+    </select>
+
+    <!-- 이름으로 상세 조회 -->
+    <select id="selectByName" parameterType="CpUser"
+            resultMap="BaseResultMap">
+        <![CDATA[
+        SELECT id, user_id, user_pwd, name, cell_phone, enabled, created, modified,cp_id,description,auth,menu, group_name,
+        		(SELECT label FROM cp where cp.id = cp_user.cp_id)
+			FROM cp_user
+			WHERE name = #{name}
+        ]]>
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectList" parameterType="CpUser"
+            resultMap="BaseResultMap">
+        <![CDATA[
+            SELECT id, user_id, user_pwd, name, cell_phone, enabled, created, modified,description,auth,menu, group_name
+			FROM cp_user
+			ORDER BY id DESC
+            offset ${firstRecordIndex} limit ${recordCountPerPage}
+        ]]>
+    </select>
+
+    <select id="selectListByCpId" parameterType="CpUser"
+            resultMap="BaseResultMap">
+        <![CDATA[
+            SELECT id, user_id, user_pwd, name, cell_phone, enabled, created, modified,description,auth,menu, group_name
+			FROM cp_user
+			WHERE id IN (select cp_user_id from cp_group where cp_id = #{cpId}) 
+			ORDER BY id DESC
+			offset ${firstRecordIndex} limit ${recordCountPerPage}
+        ]]>
+    </select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="CpUser">
+    	<selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select nextval('seq_cp_user')
+        </selectKey>
+        <![CDATA[
+        INSERT INTO cp_user(id, user_id, user_pwd, name, cell_phone, enabled, created, modified, cp_id,description,auth,menu, group_name)
+        VALUES (#{id}, #{userId}, #{userPwd}, #{name}, #{cellPhone}, #{enabled}, now(), now(), #{cpId}, #{description}, #{auth}, #{menu}, #{groupName});
+        ]]>
+    </insert>
+
+    <insert id="insertByCpGroup" parameterType="CpUser">
+        <![CDATA[
+        INSERT INTO cp_group(cp_id, cp_user_id)
+        VALUES (#{cpId}, #{id});
+        ]]>
+    </insert>
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="CpUser">
+        <![CDATA[
+        DELETE FROM cp_user
+        WHERE 0 = 0
+          AND id = #{id};
+        ]]>
+    </delete>
+    
+    <delete id="deleteByCpGroup" parameterType="CpUser">
+        <![CDATA[
+        DELETE FROM cp_group
+        WHERE 0 = 0
+          AND cp_user_id = #{id};
+        ]]>
+    </delete>    
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="CpUser">
+        update cp_user
+        <set>
+        	<if test="userPwd != null and userPwd != ''">
+        		user_pwd = #{userPwd},
+        	</if>
+        	<if test="cpId != null and cpId != 0">
+                cp_id = #{cpId},
+            </if>
+            <if test="cellPhone != null and cellPhone != ''">
+                cell_phone = #{cellPhone},
+            </if>
+            <if test="enabled != null and enabled != ''">
+                enabled = #{enabled},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="auth != null and auth != ''">
+                auth = #{auth},
+            </if>
+            <if test="menu != null and menu != ''">
+                menu = #{menu},
+            </if>
+            <if test="groupName != null">
+                group_name = #{groupName},
+            </if>
+            <if test="lastLogin == null">
+            	modified = now()   
+            </if>
+            <if test="lastLogin != null">
+                last_login = now()
+            </if>   
+        </set>
+        where user_id = #{userId}
+    </update>
+
+</mapper>

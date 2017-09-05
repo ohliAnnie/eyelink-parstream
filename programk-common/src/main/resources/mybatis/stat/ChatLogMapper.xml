@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016 KT, Inc.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of KT
+  ~ , Inc. You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with KT.
+  ~
+  ~ Revision History
+  ~ Author              Date                  Description
+  ~ Seo Jong Hwa        2016 . 7 . 12
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.stat.ChatLogMapper">
+    <resultMap id="BaseResultMap" type="ChatLog">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="cp_label" jdbcType="VARCHAR" property="cpLabel"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="user_input" jdbcType="VARCHAR" property="userInput"/>
+        <result column="input" jdbcType="VARCHAR" property="input"/>
+        <result column="reply" jdbcType="VARCHAR" property="reply"/>
+        <result column="cate_name" jdbcType="VARCHAR" property="cateName"/>
+        <result column="created" jdbcType="TIMESTAMP" property="created"/>
+    </resultMap>
+    
+    <!-- 검색시 where 조건 -->
+    <sql id="whereSearch">
+		WHERE  0 = 0		
+		<if test='cpLabel != null and cpLabel != ""'>
+            AND cp_label = #{cpLabel}
+        </if>
+		<if test='cateName != null and cateName != ""'>
+            AND cate_name = #{cateName}
+        </if>        
+		<if test='input != null and input != ""'>
+            AND input = #{input}
+        </if>
+		<if test='userInput != null and userInput != ""'>
+			AND ( 0 = 1
+			<foreach collection="userInputList" item="item">
+	             OR LOWER(user_input) LIKE '%'|| LOWER(#{item}) ||'%'
+	        </foreach>
+	        )
+        </if>
+        <if test='reply != null and reply != ""'>
+            AND ( 0 = 1
+			<foreach collection="replyList" item="item">
+	             OR LOWER(reply) LIKE '%'|| LOWER(#{item}) ||'%'
+	        </foreach>
+	        )
+        </if>
+        <if test='userId != null and userId != ""'>
+            AND ( 0 = 1
+			<foreach collection="userIdList" item="item">
+	             OR LOWER(user_id) LIKE '%'|| LOWER(#{item}) ||'%'
+	        </foreach>
+	        )
+        </if>
+        <if test='exUserInput != null and exUserInput != ""'>
+			<foreach collection="exUserInputList" item="item">
+	             AND LOWER(user_input) NOT LIKE '%'|| LOWER(#{item}) ||'%'
+	        </foreach>
+        </if>
+        <if test='exReply != null and exReply != ""'>
+			<foreach collection="exReplyList" item="item">
+	             AND LOWER(reply) NOT LIKE '%'|| LOWER(#{item}) ||'%'
+	        </foreach>
+        </if>
+        <if test='exUserId != null and exUserId != ""'>
+			<foreach collection="exUserIdList" item="item">
+	             AND LOWER(user_id) NOT LIKE '%'|| LOWER(#{item}) ||'%'
+	        </foreach>
+        </if>
+        <if test='(sdate != null and sdate != "") and (edate != null and edate != "")'>
+            AND created::timestamp BETWEEN #{sdate}::timestamp AND #{edate}::timestamp
+        </if>
+	</sql>
+	
+	<!-- 개수 조회 -->
+    <select id="countAll" parameterType="ChatLog" resultType="java.lang.Integer" >
+        SELECT count(*) FROM chat_log
+        <include refid="whereSearch" />
+    </select>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="ChatLog"
+            resultMap="BaseResultMap">
+        <![CDATA[
+           SELECT id, cp_label, user_id, user_input, input, reply, cate_name, created
+           FROM chat_log
+           WHERE id = #{id};
+        ]]>
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectList" parameterType="ChatLog"
+            resultMap="BaseResultMap">
+        SELECT id, cp_label, user_id, user_input, input, reply, cate_name, created
+        FROM chat_log
+        <include refid="whereSearch" />
+        ORDER BY created DESC, id DESC
+        <if test="recordCountPerPage != 0">
+        offset ${firstRecordIndex} limit ${recordCountPerPage}
+        </if>
+    </select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="ChatLog">
+        <!--<selectKey keyProperty="id" resultType="int" order="BEFORE">-->
+            <!--select  nextval('seq_chat_log')-->
+        <!--</selectKey>-->
+        <![CDATA[
+          INSERT INTO chat_log(id, cp_label, user_id, user_input, input, reply, cate_name, created)
+          VALUES (nextval('seq_chat_log'),#{cpLabel}, #{userId}, #{userInput}, #{input}, #{reply}, #{cateName}, #{created});
+        ]]>
+    </insert>
+
+    <!-- 다중 입력 -->
+    <insert id="insertBatch" parameterType="java.util.Map">
+        INSERT INTO chat_log(id, cp_label, user_id, user_input, input, reply, cate_name, created)
+        values
+        <foreach collection="list" item="item" separator=" , ">
+            (nextval('seq_chat_log'),#{item.cpLabel}, #{item.userId}, #{item.userInput}, #{item.input}, #{item.reply}, #{item.cateName}, #{item.created})
+        </foreach>
+    </insert>
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="ChatLog">
+        <![CDATA[
+          DELETE FROM chat_log
+          WHERE id = #{id};
+        ]]>
+    </delete>
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="ChatLog">
+        UPDATE chat_log
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="input != null">
+                input = #{input},
+            </if>
+            <if test="reply != null">
+                reply = #{reply},
+            </if>
+            <if test="cateName != null">
+                cate_name = #{cateName},
+            </if>
+        </set>
+        WHERE id = #{id};
+    </update>
+
+</mapper>

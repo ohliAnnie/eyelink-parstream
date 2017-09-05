@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+
+    <!-- 쿠키 해데 정보를 검사해 로캘 리졸브 -->
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <property name="cookieName" value="lang"/>
+        <property name="cookieMaxAge" value="3600"/>
+        <property name="defaultLocale" value="ko"/>
+    </bean>
+
+    <!-- HTTP 요청을 검사해 로캘 리졸브 -->
+    <bean id="localChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+        <property name="paramName" value="lang"/>
+    </bean>
+
+    <!-- HandlerMapping 서버로 들어온 요청을 어느 핸들러로 전달할지 결정  -->
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="interceptors">
+            <list>
+                <ref bean="localChangeInterceptor"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- HandlerAdapter  디스패처 서블릿과 시제 핸들러 구현체 사이의 가교 역할 -->
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
+    <!-- view name tanslator 서버로 들어온 요청을 보고  뷰 이름을 저장한다. -->
+    <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
+
+    <!-- 클라이언트에게 XML이나 JSON을 전달하는 방법을 제공하기위해서 ContentNegotiatingViewResolver 선언 -->
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <!-- ViewResolver 우선순위 설정 -->
+        <property name="order" value="1"/>
+        <!--<property name="favorPathExtension" value="true"/>-->
+        <!--<property name="favorParameter" value="true"/>-->
+        <!--<property name="parameterName" value="mediaType"/>-->
+        <!--<property name="ignoreAcceptHeader" value="true"/>-->
+        <!--<property name="mediaTypes">-->
+            <!--&lt;!&ndash; 맵핑될 확장자 정의 &ndash;&gt;-->
+            <!--<map>-->
+                <!--<entry key="json" value="application/json"/>-->
+                <!--<entry key="xml" value="application/xml"/>-->
+            <!--</map>-->
+        <!--</property>-->
+    </bean>
+
+    <!--REST API ERROR Handler -->
+    <bean id="jacksonHttpMessageConverter" class="com.kt.programk.api.convert.DefaultJacksonHttpMessageConverter">
+        <property name="prettyPrint" value="true"/>
+    </bean>
+
+
+    <bean id="annotationMethodHandlerExceptionResolver"
+          class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver">
+        <property name="order" value="0"/>
+    </bean>
+
+    <bean id="restExceptionResolver" class="com.kt.programk.api.exhandler.RestExceptionHandler">
+        <property name="order" value="100"/>
+        <property name="messageConverters">
+            <list>
+                <ref bean="jacksonHttpMessageConverter"/>
+            </list>
+        </property>
+        <property name="errorResolver">
+            <bean class="com.kt.programk.api.exhandler.DefaultRestErrorResolver">
+                <property name="localeResolver" ref="localeResolver"/>
+                <property name="exceptionMappingDefinitions">
+                    <map>
+                        <!-- 400 programd에서 발생하는 일반적인 오류 -->
+                        <entry key="com.kt.programk.common.exception.ApplicationRuntimeException" value="400,1000,api.programk.error"/>
+                        <entry key="com.kt.programk.common.exception.DatabaseRuntimeException" value="400,1001,api.database.error"/>
+
+                        <entry key="com.kt.programk.api.exception.NotFoundChatException" value="400,2000, api.programk.chat"/>
+                        <entry key="com.kt.programk.api.exception.NotFoundTokenException" value="400,2001, api.programk.token"/>
+                        <entry key="com.kt.programk.api.exception.NotFoundUserException" value="400,2002, api.programk.user"/>
+                        <entry key="com.kt.programk.api.exception.NotFoundServiceException" value="400,2003, api.programk.notFoundService"/>
+                        <entry key="com.kt.programk.api.exception.NotFoundActiveBotException" value="400,2004, api.programk.notFoundActiveBot"/>
+
+                        <!-- 401 클라이언트 인증 실패-->
+                        <entry key="com.kt.programk.common.exception.UnauthorizedException" value="401,1002, api.programk.auth"/>
+                        <!-- 403 액세스 금지 -->
+                        <entry key="com.kt.programk.common.exception.ForbiddenException" value="403,1003, _exmsg"/>
+                        <!-- 404 -->
+                        <entry key="com.kt.programk.common.exception.UnknownResourceException" value="404,1004 api.programk.unknown"/>
+                        <!-- 500 (catch all): -->
+                        <entry key="Throwable" value="500"/>
+                    </map>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <mvc:default-servlet-handler/>
+</beans>

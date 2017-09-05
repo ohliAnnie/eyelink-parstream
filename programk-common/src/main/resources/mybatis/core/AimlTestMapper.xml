@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016 KT, Inc.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of KT
+  ~ , Inc. You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with KT.
+  ~
+  ~ Revision History
+  ~ Author              Date                  Description
+  ~ Seo Jong Hwa        2016 . 6 . 23
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.core.AimlTestMapper">
+    <resultMap id="BaseResultMap" type="AimlTest">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="cate_id" jdbcType="INTEGER" property="cateId"/>
+        <result column="main_id" jdbcType="INTEGER" property="mainId"/>
+        <result column="test_input" jdbcType="VARCHAR" property="testInput"/>
+    </resultMap>
+    
+    <!-- 검색시 where 조건 -->
+    <sql id="whereSearch">
+		WHERE  0 = 0		
+		<if test='cateId != null and cateId != 0'>
+            AND cate_id = #{cateId}
+        </if>        
+        <if test='mainId != null and mainId != 0'>
+            AND main_id = #{mainId}
+        </if>
+	</sql>
+	
+	<!-- 이전답변 상위 -->
+    <sql id="tableThatId">
+		SELECT *, row_number() OVER () AS rn
+		FROM  (
+				SELECT UNNEST(STRING_TO_ARRAY(0 || ancestors ||','|| id,',')::int[]) as id FROM (
+				WITH RECURSIVE tree AS (
+		  			SELECT id, '' AS ancestors
+		  			FROM aiml_main WHERE that_id = 0
+		  			UNION ALL
+		  			SELECT aiml_main.id, tree.ancestors ||','|| aiml_main.that_id 
+		  			FROM aiml_main, tree
+		  			WHERE aiml_main.that_id = tree.id
+				)
+				SELECT * FROM tree
+				WHERE ancestors != ''
+			) AS a1
+		) AS a2
+	</sql>
+    
+    <!-- 카운트 조회 -->
+	<select id="countAll" parameterType="AimlTest" resultType="java.lang.Integer" >
+        SELECT count(*) FROM aiml_test
+        <include refid="whereSearch" />
+    </select>
+    
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="AimlTest"
+            resultMap="BaseResultMap">
+        <![CDATA[
+           SELECT id, cate_id, main_id, test_input
+           FROM aiml_test
+           WHERE id = #{id}
+        ]]>
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectList" parameterType="AimlTest"
+            resultMap="BaseResultMap">
+          SELECT id, cate_id, main_id, test_input
+          FROM aiml_test
+          <include refid="whereSearch" />
+          ORDER BY id ASC;
+    </select>
+    
+    <select id="selectListByCpId" parameterType="AimlTest"
+            resultMap="BaseResultMap">
+          SELECT 0 as rn, t2.id, t2.input, t1.test_input
+		  FROM aiml_test t1 
+		  INNER JOIN aiml_main t2 on t1.main_id = t2.id
+		  INNER JOIN aiml_category t3 on t2.cate_id = t3.id
+		  INNER JOIN deploy_aiml_category t4 on t3.cp_id = t4.cp_id and t2.cate_id = t4.cate_id
+		  WHERE t3.cp_id = #{cpId} AND t2.that_id = 0 AND t3.topic = 'N' AND t3.enabled = 'Y'
+		  UNION ALL
+		  SELECT t1.rn, t2.id, t2.input, (select test_input from aiml_test where main_id = t2.id limit 1) as test_input
+		  FROM 
+		  (<include refid="tableThatId" />) AS t1
+		  INNER JOIN aiml_main t2 on t1.id = t2.id
+		  INNER JOIN aiml_category t3 on t2.cate_id = t3.id
+		  INNER JOIN deploy_aiml_category t4 on t3.cp_id = t4.cp_id and t2.cate_id = t4.cate_id
+		  WHERE t3.cp_id = #{cpId} AND t3.topic = 'N' AND t3.enabled = 'Y'
+		  ORDER BY rn ASC
+    </select>    
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="AimlTest">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select nextval('seq_aiml_test')
+        </selectKey>
+        <![CDATA[
+          INSERT INTO aiml_test(id, cate_id, main_id, test_input)
+          VALUES (#{id}, #{cateId}, #{mainId}, #{testInput});
+        ]]>
+    </insert>
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="AimlTest">
+    	 DELETE FROM aiml_test
+         WHERE cate_id = #{cateId}
+         <if test='mainId != null and mainId != 0'>
+              AND main_id = #{mainId}
+         </if>
+    </delete>
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="AimlTest">
+        UPDATE aiml_test
+            <set>
+            <if test="testInput != null">
+                test_input = #{testInput},
+            </if>
+        </set>
+        WHERE id = #{id};
+    </update>
+
+</mapper>

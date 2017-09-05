@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.admin.CpMapper">
+    <resultMap id="BaseResultMap" type="Cp">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="label" jdbcType="VARCHAR" property="label"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="enabled" jdbcType="VARCHAR" property="enabled"/>
+        <result column="created" jdbcType="TIMESTAMP" property="created"/>
+        <result column="modified" jdbcType="TIMESTAMP" property="modified"/>
+        <result column="token" jdbcType="VARCHAR" property="token"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="enabled" jdbcType="VARCHAR" property="enabled"/>
+        <result column="host_ip" jdbcType="VARCHAR" property="hostIp"/>
+    </resultMap>
+    
+    <!-- 검색시 where 조건 -->
+    <sql id="whereSearch">
+		WHERE  0 = 0		
+		<if test="id != null and id != 0">
+            AND id = #{id}
+        </if>
+        <if test="cpGroup != null and cpGroup != ''">
+            AND id IN (select unnest::integer as id from unnest(string_to_array(#{cpGroup},',')))
+        </if>
+	</sql>
+
+    <!-- 카운트 조회 -->
+    <select id="countByExample" parameterType="Cp" resultType="java.lang.Integer" >
+        select count(*) from cp
+        <include refid="whereSearch" />
+    </select>
+    
+    <select id="countByLabel" parameterType="Cp" resultType="java.lang.Integer" >
+        select count(*) from cp
+        WHERE  0 = 0
+        AND label = #{label}
+    </select>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="Cp"
+            resultMap="BaseResultMap">
+        <![CDATA[
+            SELECT id, label, url, created, modified, token, description, enabled,
+            		(SELECT array_to_string(array(SELECT host_ip FROM allow_ip WHERE cp_id = cp.id), ', ')) as host_ip
+            FROM cp
+            WHERE 0 = 0
+            AND id = #{id}
+        ]]>
+    </select>
+
+    <!-- 라벨명으로 검색 -->
+    <select id="selectByLable" parameterType="Cp"
+            resultMap="BaseResultMap">
+        <![CDATA[
+            SELECT id, label, url, created, modified, token, description,enabled
+            FROM cp
+            WHERE 0 = 0
+            AND label = #{label}
+        ]]>
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectList" parameterType="Cp"
+            resultMap="BaseResultMap">
+          SELECT id, label, url, created, modified,token, description, enabled
+          FROM cp
+          <include refid="whereSearch" />
+          ORDER  by id DESC
+          <if test="recordCountPerPage != 0">
+          offset ${firstRecordIndex} limit ${recordCountPerPage}  
+          </if> 
+    </select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="Cp">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select nextval('seq_cp')
+        </selectKey>
+        <![CDATA[
+        INSERT INTO cp(id, label, url, created, modified, token, description, enabled)
+        VALUES (#{id}, #{label}, #{url}, now(), now(), #{token}, #{description}, #{enabled});
+
+        ]]>
+    </insert>
+
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="Cp">
+        <![CDATA[
+        DELETE FROM cp
+        WHERE 0 = 0
+          AND id = #{id};
+        ]]>
+    </delete>
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="Cp">
+        update cp
+        <set>
+            <if test="label != null">
+                label = #{label},
+            </if>
+            <if test="url != null">
+                url = #{url},
+            </if>
+            <if test="token != null">
+                token = #{token},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="enabled != null">
+                enabled = #{enabled},
+            </if>
+            modified = now()
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.SampleMapper">
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectSample" parameterType="com.kt.programk.common.domain.Sample"
+            resultType="com.kt.programk.common.domain.Sample">
+		<![CDATA[
+			SELECT 
+				id,
+				name,
+				password
+		    FROM SAMPLE
+			WHERE name=#{name}
+        ]]>
+	</select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectListSample" parameterType="com.kt.programk.common.domain.Sample"
+            resultType="com.kt.programk.common.domain.Sample">
+		<![CDATA[
+			SELECT 
+				id AS "id",
+				name AS "name",
+				password AS "password"
+		    FROM SAMPLE
+        ]]>
+	</select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insertSample" parameterType="com.kt.programk.common.domain.Sample">
+		INSERT INTO SAMPLE (
+		id, name, password)
+		VALUES(#{id}, #{name}, #{password});
+	</insert>
+
+    <!-- 샘플 수정 -->
+    <update id="updateSample" parameterType="com.kt.programk.common.domain.Sample">
+		UPDATE SAMPLE
+		SET
+		name=#{name}, password=#{password}
+		WHERE id=#{id}
+	</update>
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteSample" parameterType="com.kt.programk.common.domain.Sample">
+		DELETE FROM SAMPLE
+		WHERE
+		id=#{id}
+	</delete>
+
+</mapper>

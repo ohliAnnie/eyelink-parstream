@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       ">
+
+    <import resource="/spring/context/context.xml"/>
+    <import resource="/spring/context/abstract.xml"/>
+    <import resource="/spring/context/context-datasource.xml"/>
+    <import resource="/spring/context/context-transaction.xml"/>
+
+    <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
+        <property name="location" value="classpath:config/commons/${env}/commons.properties,file:${config}"/>
+    </bean>
+
+    <!-- 배포 진행중인 작업을 캐시에 저장 -->
+    <bean id="childrenCache" class="com.kt.programk.deploy.cache.ChildrenCache"/>
+
+    <!-- 배포할 파일이  있는지 조회 -->
+    <bean id="searchDeploy" class="com.kt.programk.deploy.route.SearchDeploy">
+        <property name="childrenCache" ref="childrenCache"/>
+        <property name="botDeployService" ref="botDeployService"/>
+    </bean>
+    
+    <!--AIML 파일 생성-->
+    <bean id="aimlTemplateProcess" class="com.kt.programk.deploy.process.AimlTemplateProcess">
+        <property name="config" ref="config"/>
+        <property name="childrenCache" ref="childrenCache"/>
+        <property name="botDeployService" ref="botDeployService"/>
+    </bean>
+
+    <!-- Substitutions 파일 생성-->
+    <bean id="substitutionsTemplateProcess" class="com.kt.programk.deploy.process.SubstitutionsTemplateProcess">
+        <property name="config" ref="config"/>
+        <property name="childrenCache" ref="childrenCache"/>
+        <property name="botDeployService" ref="botDeployService"/>
+    </bean>
+
+    <!-- predicates 파일 생성 -->
+    <bean id="predicatesTemplateProcess" class="com.kt.programk.deploy.process.PredicatesTemplateProcess">
+        <property name="config" ref="config"/>
+        <property name="childrenCache" ref="childrenCache"/>
+        <property name="botDeployService" ref="botDeployService"/>
+    </bean>
+
+    <!--properties 파일 생성 -->
+    <bean id="propertiesTemplateProcess" class="com.kt.programk.deploy.process.PropertiesTemplateProcess">
+        <property name="config" ref="config"/>
+        <property name="childrenCache" ref="childrenCache"/>
+        <property name="botDeployService" ref="botDeployService"/>
+    </bean>
+
+    <!-- 디플로이 성공시 -->
+    <bean id="successDeploy" class="com.kt.programk.deploy.route.SuccessDeploy">
+        <property name="childrenCache" ref="childrenCache"/>
+        <property name="botDeployService" ref="botDeployService"/>
+    </bean>
+
+    <!-- 디플로이 실패시 -->
+    <bean id="failDeploy" class="com.kt.programk.deploy.route.FailDeploy">
+        <property name="childrenCache" ref="childrenCache"/>
+        <property name="botDeployService" ref="botDeployService"/>
+    </bean>
+
+    <camelContext id="deployCamel" xmlns="http://camel.apache.org/schema/spring">
+        <template id="deployProducer"/>
+        <consumerTemplate id="deployConsumer"/>
+
+        <onException>
+            <exception>com.kt.programk.common.exception.ApplicationRuntimeException</exception>
+            <to uri="direct:error"/>
+        </onException>
+
+        <onException>
+            <exception>java.lang.Exception</exception>
+            <redeliveryPolicy maximumRedeliveries="1" redeliveryDelay="5000"/>
+        </onException>
+
+        <route>
+            <!-- 매 1분 마다 실행 -->
+            <from uri="quartz://timerName?cron=0+0/1+*+1/1+*+?+*"/>
+            <to uri="direct:search"/>
+<!--             <to uri="mock:result"/> -->
+        </route>
+
+        <route>
+            <from uri="direct:search"/>
+            <process ref="searchDeploy"/>
+        </route>
+
+        <!-- 전체 파일 생성 -->
+        <route>
+            <from uri="direct:all"/>
+            <bean ref="aimlTemplateProcess" method="execute"/>
+            <bean ref="substitutionsTemplateProcess" method="execute"/>
+            <bean ref="propertiesTemplateProcess" method="execute"/>
+            <bean ref="predicatesTemplateProcess" method="execute"/>
+            <process ref="successDeploy"/>
+        </route>
+
+        <!-- 정리 파일 생성 -->
+        <route>
+            <from uri="direct:clean"/>
+            <bean ref="aimlTemplateProcess" method="clean"/>
+            <bean ref="substitutionsTemplateProcess" method="clean"/>
+            <bean ref="propertiesTemplateProcess" method="clean"/>
+            <bean ref="predicatesTemplateProcess" method="clean"/>
+            <process ref="successDeploy"/>
+        </route>
+
+        <route>
+            <from uri="direct:aiml"/>
+            <bean ref="aimlTemplateProcess" method="execute"/>
+        </route>
+
+        <route>
+            <from uri="direct:subs"/>
+            <bean ref="substitutionsTemplateProcess" method="execute"/>
+        </route>
+
+        <route>
+            <from uri="direct:prop"/>
+            <bean ref="propertiesTemplateProcess" method="execute"/>
+        </route>
+
+        <route>
+            <from uri="direct:pred"/>
+            <bean ref="predicatesTemplateProcess" method="execute"/>
+        </route>
+
+        <route>
+            <from uri="direct:error"/>
+            <process ref="failDeploy"/>
+        </route>
+    </camelContext>
+</beans>

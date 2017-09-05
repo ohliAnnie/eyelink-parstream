@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.admin.AllowIpMapper">
+    <resultMap id="BaseResultMap" type="AllowIp">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="host_ip" jdbcType="VARCHAR" property="hostIp"/>
+        <result column="enabled" jdbcType="VARCHAR" property="enabled"/>
+        <result column="created" jdbcType="TIMESTAMP" property="created"/>
+        <result column="modified" jdbcType="TIMESTAMP" property="modified"/>
+        <result column="cp_id" jdbcType="INTEGER" property="cpId"/>
+    </resultMap>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="AllowIp" resultMap="BaseResultMap">
+    <![CDATA[
+        SELECT id, host_ip, enabled, created, modified, cp_id
+        FROM allow_ip
+        WHERE 0 = 0
+        AND id = #{id};
+        ]]>
+    </select>
+    
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByCpId" parameterType="AllowIp" resultMap="BaseResultMap">
+    <![CDATA[
+        SELECT id, host_ip, enabled, created, modified, cp_id
+        FROM allow_ip
+        WHERE 0 = 0
+        AND cp_id = #{cpId};
+        ]]>
+    </select>    
+
+    <!-- 서비스 토큰을 이용해 ip 정보를 가져온다. -->
+    <select id="selectListByToken" parameterType="hashmap" resultType="com.kt.programk.common.db.domain.AllowIpDTO">
+        SELECT t1.host_ip as ip, t2.token as token
+        FROM ALLOW_IP as t1
+        INNER JOIN CP as t2
+        ON t1.cp_id = t2.id
+        WHERE t2.token = #{token}
+        AND t1.enabled = 'Y'
+        AND t1.host_ip = #{hostIp};
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectList" parameterType="AllowIp" resultMap="BaseResultMap">
+    <![CDATA[
+        SELECT id, host_ip, enabled, created, modified, cp_id
+        FROM allow_ip
+        offset ${firstRecordIndex} limit ${recordCountPerPage};
+    ]]>
+    </select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="AllowIp">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select nextval('seq_allow_ip')
+        </selectKey>
+        <![CDATA[
+            INSERT INTO allow_ip(id, host_ip, enabled, created, modified, cp_id)
+            VALUES (#{id}, #{hostIp}, #{enabled}, now(), now(), #{cpId});
+        ]]>
+    </insert>
+
+    <!-- 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="AllowIp">
+        <![CDATA[
+
+        DELETE FROM allow_ip
+        WHERE 0 = 0
+          AND id = #{id};
+
+        ]]>
+    </delete>
+    
+    <!-- 삭제 -->
+    <delete id="deleteByCpId" parameterType="AllowIp">
+        <![CDATA[
+
+        DELETE FROM allow_ip
+        WHERE 0 = 0
+          AND cp_id = #{cpId};
+
+        ]]>
+    </delete>    
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="AllowIp">
+        update allow_ip
+        <set>
+            <if test="hostIp != null">
+                host_ip = #{hostIp},
+            </if>
+            <if test="enabled != null">
+                enabled = #{enabled},
+            </if>
+            <if test="created != null">
+                created = #{created},
+            </if>
+            <if test="modified != null">
+                modified = #{modified},
+            </if>
+            <if test="cpId != null">
+                cp_id = #{cpId},
+        </if>
+        </set>
+        where id = #{id}
+    </update>
+</mapper>

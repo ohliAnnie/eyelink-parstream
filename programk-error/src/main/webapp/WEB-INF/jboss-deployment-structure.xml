@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016 KT, Inc.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of KT
+  ~ , Inc. You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with KT.
+  ~
+  ~ Revision History
+  ~ Author              Date                  Description
+  ~ Seo Jong Hwa        2016 . 7 . 12
+  -->
+
+<jboss-deployment-structure>
+    <deployment>
+        <exclusions>
+            <module name="org.apache.commons.logging" />
+            <module name="org.apache.log4j" />
+            <module name="org.jboss.logging" />
+            <module name="org.jboss.logging.jul-to-slf4j-stub" />
+            <module name="org.jboss.logmanager" />
+            <module name="org.jboss.logmanager.log4j" />
+            <module name="org.slf4j" />
+            <module name="org.slf4j.impl" />
+        </exclusions>
+    </deployment>
+</jboss-deployment-structure>

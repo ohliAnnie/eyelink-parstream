@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	   		http://www.springframework.org/schema/context
+	   		http://www.springframework.org/schema/context/spring-context-3.0.xsd
+			http://www.springframework.org/schema/mvc
+			http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+
+    <!-- Activates various annotations to be detected in bean classes -->
+    <context:annotation-config />
+
+    <!-- Scans the classpath for annotated components that will be auto-registered as Spring beans.
+     For example @Controller and @Service. Make sure to set the correct base-package-->
+    <context:component-scan base-package="com.kt.programk.api.web" />
+
+    <!-- Configures the annotation-driven Spring MVC Controller programming model.
+    Note that, with Spring 3.0, this tag works in Servlet MVC only!  -->
+    <mvc:annotation-driven />
+
+    <!-- Loads bulletin related configuration-->
+    <import resource="classpath*:/spring/context-was-root.xml" />
+    <!-- 상용 -->
+    <!--<import resource="classpath*:/spring/context/context-cluster-redis.xml" />-->
+    <!-- 개발 장비 -->
+    <!--<import resource="classpath*:/spring/context/context-single-redis.xml" />-->
+    <!-- DB 사용 -->
+    <import resource="classpath*:/spring/context/context-db.xml" />
+
+    <!-- AIML CORE 생성 -->
+    <bean id="core" class="org.aitools.programd.Core">
+        <constructor-arg index="0" type="java.net.URL" value="file:/#{systemProperties['user.dir']}"/>
+        <constructor-arg index="1" type="java.net.URL" value="${core.programk.path}"/>
+        <constructor-arg index="2" ref="predicateRepository"/>
+        <constructor-arg index="3" ref="aimlPredicateMapper"/>
+        <constructor-arg index="4" ref="deployNodeHistoryMapper"/>
+        <constructor-arg index="5" ref="botFileMapper"/>
+    </bean>
+
+    <bean id="deployService" class="com.kt.programk.deploy.service.DeployService">
+        <constructor-arg ref="core"/>
+    </bean>
+
+    <!-- 텍스트 메세지 외부화 -->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <!--한글 깨짐을 방지하기 위해 디폴트 인코딩 UTF-8 지정 -->
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="basenames">
+            <list>
+                <value>classpath:/messages/messages</value>
+                <!--<value>file:C:\messages/messages</value>-->
+            </list>
+        </property>
+        <property name="cacheSeconds" value="60"/>
+    </bean>
+</beans>

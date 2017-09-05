@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+    <!-- Configure Console -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type
+             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>%date %level - %message%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Configure APP LOG -->
+    <appender name="APP" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/opt/aibot/log/deploy/app.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/opt/aibot/log/deploy/app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="SERVICE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/opt/aibot/log/deploy/service.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/opt/aibot/log/deploy/service-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.kt.programk.common.logs.CLogger" level="debug" additivity="false">
+        <appender-ref ref="SERVICE" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+   <root level="debug">
+        <appender-ref ref="APP" />
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

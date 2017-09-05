@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.admin.AccessIpMapper">
+    <resultMap id="BaseResultMap" type="AccessIp">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="host_ip" jdbcType="VARCHAR" property="hostIp"/>
+        <result column="enabled" jdbcType="VARCHAR" property="enabled"/>
+        <result column="created" jdbcType="TIMESTAMP" property="created"/>
+        <result column="modified" jdbcType="TIMESTAMP" property="modified"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+    </resultMap>
+
+    <!-- 카운트 조회 -->
+    <select id="countByExample" parameterType="AccessIp" resultType="java.lang.Integer" >
+        select count(*)
+        from access_ip;
+    </select>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="AccessIp" resultMap="BaseResultMap">
+    <![CDATA[
+        SELECT id, host_ip, enabled, created, modified, user_id
+        FROM access_ip
+        WHERE 0 = 0
+        AND id = #{id};
+        ]]>
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectList" parameterType="AccessIp" resultMap="BaseResultMap">
+    <![CDATA[
+        SELECT id, host_ip, enabled, created, modified, user_id
+        FROM access_ip
+        offset ${firstRecordIndex} limit ${recordCountPerPage};
+    ]]>
+    </select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="AccessIp">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select nextval('seq_access_ip')
+        </selectKey>
+        <![CDATA[
+            INSERT INTO access_ip(id, host_ip, enabled, created, modified, user_id)
+            VALUES (#{id}, #{hostIp}, #{enabled}, now(), now(), #{userId});
+        ]]>
+    </insert>
+
+    <!-- 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="AccessIp">
+        <![CDATA[
+
+        DELETE FROM access_ip
+        WHERE 0 = 0
+          AND id = #{id};
+
+        ]]>
+    </delete>
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="AccessIp">
+        update access_ip
+        <set>
+            <if test="hostIp != null">
+                host_ip = #{hostIp},
+            </if>
+            <if test="enabled != null">
+                enabled = #{enabled},
+            </if>
+            <if test="created != null">
+                created = #{created},
+            </if>
+            <if test="modified != null">
+                modified = #{modified},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+</mapper>

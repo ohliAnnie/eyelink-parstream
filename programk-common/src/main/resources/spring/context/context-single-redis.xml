@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016 KT, Inc.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of KT
+  ~ , Inc. You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with KT.
+  ~
+  ~ Revision History
+  ~ Author              Date                  Description
+  ~ Seo Jong Hwa        2016 . 7 . 6
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+          p:host-name="${commons.programk.redis.host1}" p:port="${commons.programk.redis.port1}" />
+
+    <bean id="stringRedisSerializer"
+          class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+
+    <!--<bean id="jacksonJsonRedisSerializer"-->
+          <!--class="org.springframework.data.redis.serializer.JacksonJsonRedisSerializer"/>-->
+
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
+          p:connection-factory-ref="jedisConnectionFactory"/>
+
+    <!--<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"-->
+          <!--p:connection-factory-ref="jedisConnectionFactory"-->
+          <!--p:keySerializer-ref="stringRedisSerializer"-->
+          <!--p:hashKeySerializer-ref="stringRedisSerializer"-->
+          <!--p:valueSerializer-ref="stringRedisSerializer"/>-->
+
+    <bean id="allowIpRepository" class="com.kt.programk.common.db.repository.AllowIpRepository">
+        <property name="redisTemplate" ref="redisTemplate"/>
+    </bean>
+
+    <bean id="botRepository" class="com.kt.programk.common.db.repository.BotRepository">
+        <property name="redisTemplate" ref="redisTemplate"/>
+    </bean>
+
+    <bean id="predicateRepository" class="com.kt.programk.common.db.repository.PredicateRepository">
+        <property name="redisTemplate" ref="redisTemplate"/>
+    </bean>
+
+    <bean id="noticeRepository" class="com.kt.programk.common.db.repository.NoticeRepository">
+        <property name="redisTemplate" ref="redisTemplate"/>
+    </bean>
+</beans>

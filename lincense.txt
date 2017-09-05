@@ -1,0 +1,222 @@
+License Info
+
+Third-party dependencies and license info
+    SonarQube :: Maven2 Plugin
+        https://mvnrepository.com/artifact/org.codehaus.sonar/sonar-maven-plugin
+        License : LPGL 3.0
+
+    hamcrest-all
+        https://mvnrepository.com/artifact/org.hamcrest/hamcrest-all
+        License : BSD 2-clause
+
+    junit
+        https://mvnrepository.com/artifact/junit/junit
+        License : EPL 1.0
+
+    unitils-core
+        https://mvnrepository.com/artifact/org.unitils/unitils-core
+        License : Apache 2.0
+
+    mockito-core
+        https://mvnrepository.com/artifact/org.mockito/mockito-core
+        License : MIT
+
+    mockito-all
+        https://mvnrepository.com/artifact/org.mockito/mockito-all
+        License : MIT
+
+    Json Path
+        https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path
+        License : Apache 2.0
+
+    JsonPath Assert
+        https://mvnrepository.com/artifact/com.jayway.jsonpath/json-path-assert
+        License : Apache 2.0
+
+    validation-api
+        https://mvnrepository.com/artifact/javax.validation/validation-api
+        License : Apache 2.0
+
+    Log4jdbc Remix
+        https://mvnrepository.com/artifact/org.lazyluke/log4jdbc-remix
+        License : Apache 2.0
+
+    Logback Access Module
+        https://mvnrepository.com/artifact/ch.qos.logback/logback-access
+        License : LPGL
+
+    Logback Core Module
+        https://mvnrepository.com/artifact/ch.qos.logback/logback-core
+        License : EPL 1.0, LGPL 2.1
+
+    Logback Classic Module
+        https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
+        License : EPL 1.0, LGPL 2.1
+
+    SLF4J API Module
+        https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+        License : MIT
+
+    JCL 1.1.1 Implemented Over SLF4J
+        https://mvnrepository.com/artifact/org.slf4j/jcl-over-slf4j
+        License : MIT
+
+    Log4j Implemented Over SLF4J
+        https://mvnrepository.com/artifact/org.slf4j/log4j-over-slf4j
+        License : Apache 2.0, MIT
+
+    SLF4J JCL Binding
+        https://mvnrepository.com/artifact/org.slf4j/slf4j-jcl
+        License : MIT
+
+    Jackson Databind
+        https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+        License : Apache 2.0
+
+    Hibernate Validator Engine
+        https://mvnrepository.com/artifact/org.hibernate/hibernate-validator
+        License : Apache 2.0
+
+    springframework
+        https://mvnrepository.com/artifact/org.springframework/spring-core
+        License : Apache 2.0
+
+    Apache Commons IO
+        https://mvnrepository.com/artifact/commons-io/commons-io
+        License : Apache 2.0
+
+    Tomcat Jdbc
+        https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jdbc
+        License : Apache 2.0
+
+    jackson-jaxrs
+        https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-jaxrs
+        License : Apache 2.0, LGPL 2.1
+
+    jackson-core-asl
+        https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-core-asl
+        License : Apache 2.0
+
+    jdom
+        https://mvnrepository.com/artifact/jdom/jdom
+        License : Apache
+
+    Data Mapper For Jackson
+        https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-mapper-asl
+        License : Apache 2.0
+
+    Gson
+        https://mvnrepository.com/artifact/com.google.code.gson/gson
+        License : Apache 2.0
+
+    mybatis
+        https://mvnrepository.com/artifact/org.mybatis/mybatis
+        License : Apache 2.0
+
+    mybatis-spring
+        https://mvnrepository.com/artifact/org.mybatis/mybatis-spring
+        License : Apache 2.0
+
+    Apache Camel
+        http://camel.apache.org/
+        License : Apache 2.0
+
+    Spring Data Redis
+        https://mvnrepository.com/artifact/org.springframework.data/spring-data-redis
+        License : Apache 2.0
+
+    jedis
+        https://mvnrepository.com/artifact/redis.clients/jedis
+        License : MIT
+
+    freemarker
+        https://mvnrepository.com/artifact/org.freemarker/freemarker
+        License : Apache 2.0
+
+    joda-time
+        https://mvnrepository.com/artifact/joda-time/joda-time
+        License : Apache 2.0
+
+    standard
+        https://mvnrepository.com/artifact/taglibs/standard
+        License : 알수 없음
+
+    jstl
+        https://mvnrepository.com/artifact/javax.servlet/jstl
+        License : CDDL, GPL 2.0
+
+    Java Servlet API
+        https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api
+        License : CDDL, GPL 2.0
+
+    Jackson Annotations
+        https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations
+        License : Apache 2.0
+
+    Jackson Core
+        https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+        License : Apache 2.0
+
+    Jackson Databind
+        https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+        License : Apache 2.0
+
+    Data Mapper For Jackson
+        https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-mapper-asl
+        License : Apache 2.0
+
+    Tiles Extras
+        https://mvnrepository.com/artifact/org.apache.tiles/tiles-extras
+        License : Apache 2.0
+
+    javax.el-api
+        https://mvnrepository.com/artifact/javax.el/javax.el-api
+        License : CDDL 2, GPL
+
+    javax.el
+        https://mvnrepository.com/artifact/org.glassfish.web/javax.el
+        License : CDDL 2, GPL
+
+    Apache Commons FileUpload
+        https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload
+        License : Apache 2.0
+
+    Opencsv
+        https://mvnrepository.com/artifact/net.sf.opencsv/opencsv
+        License : Apache 2.0
+
+    JSON.simple
+        https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
+        License : Apache 2.0
+
+    Java Port Of GNU Getopt
+        https://mvnrepository.com/artifact/gnu.getopt/java-getopt
+        License : 알수없음
+
+    jsp-api
+        https://mvnrepository.com/artifact/javax.servlet.jsp/jsp-api
+        License : CDDL 2, GPL
+
+    Rhino
+        https://mvnrepository.com/artifact/rhino/js
+        License : MPL 1.1
+
+    dwr
+        https://mvnrepository.com/artifact/dwr/dwr
+        License : Apache 2.0
+
+    log4j
+        https://mvnrepository.com/artifact/log4j/log4j
+        License : Apache 2.0
+
+    GIT
+        https://github.com/git/git-scm.com/blob/master/README.md#license
+        License : MIT license
+
+    MAVEN
+        http://maven.apache.org/
+        License : APACHE LICENSE
+
+    jquery
+        https://github.com/jquery/jquery/blob/master/LICENSE.txt
+        License : MIT license

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.core.AimlImagesMapper">
+    <resultMap id="BaseResultMap" type="AimlImages">
+        <result column="cate_id" jdbcType="INTEGER" property="cateId"/>
+        <result column="main_id" jdbcType="INTEGER" property="mainId"/>
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="alt" jdbcType="VARCHAR" property="alt"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+    </resultMap>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="AimlImages"
+            resultMap="BaseResultMap">
+        <![CDATA[
+           SELECT cate_id, main_id, id, url, alt
+           FROM aiml_images
+           WHERE id = #{id};
+        ]]>
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectList" parameterType="AimlImages"
+            resultMap="BaseResultMap">
+        <![CDATA[
+          SELECT cate_id, main_id, id, url, alt
+           FROM aiml_images
+           WHERE cate_id = #{cateId} AND main_id = #{mainId};
+        ]]>
+    </select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="AimlImages">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select nextval('seq_aiml_images')
+        </selectKey>
+        <![CDATA[
+          INSERT INTO aiml_images(cate_id, main_id, id, url, alt)
+          VALUES (#{cateId}, #{mainId}, #{id}, #{url}, #{alt});
+        ]]>
+    </insert>
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="AimlImages">
+         DELETE FROM aiml_images
+         WHERE cate_id = #{cateId}
+         <if test='mainId != null and mainId != 0'>
+              AND main_id = #{mainId}
+         </if>
+    </delete>
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="AimlImages">
+        UPDATE aiml_images
+        <set>
+            <if test="url != null">
+                url = #{url},
+            </if>
+        </set>
+        WHERE cate_id = #{cateId} AND id = #{id};
+    </update>
+
+</mapper>

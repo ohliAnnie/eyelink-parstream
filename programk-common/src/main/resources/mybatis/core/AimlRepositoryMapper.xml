@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016 KT, Inc.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of KT
+  ~ , Inc. You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with KT.
+  ~
+  ~ Revision History
+  ~ Author              Date                  Description
+  ~ preludio        2017 . 4 . 10
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.core.AimlRepositoryMapper">
+    <resultMap id="BaseResultMap" type="AimlRepository">
+        <result column="object_key" jdbcType="VARCHAR" property="objectKey"/>
+        <result column="key" jdbcType="VARCHAR" property="key"/>
+        <result column="value" jdbcType="VARCHAR" property="value"/>
+    </resultMap>
+    
+    <!-- 조회 -->
+    <select id="selectListByAll" parameterType="AimlRepository" resultMap="BaseResultMap">
+        <![CDATA[
+	        SELECT object_key, key, value FROM repository
+	        WHERE object_key = #{objectKey} AND key = #{key}
+        ]]>
+    </select>
+    
+    <select id="selectListByObjectKey" parameterType="AimlRepository" resultMap="BaseResultMap">
+        <![CDATA[
+	        SELECT object_key, key, value FROM repository
+	        WHERE object_key = #{objectKey}
+        ]]>
+    </select>
+    
+    <select id="selectListByKey" parameterType="AimlRepository" resultMap="BaseResultMap">
+        <![CDATA[
+	        SELECT object_key, key, value FROM repository
+	        WHERE key = #{key}
+        ]]>
+    </select>
+
+    <!-- 저장 -->
+    <insert id="insert" parameterType="AimlRepository">
+        <![CDATA[
+	        INSERT INTO repository(object_key, key, value)
+	        VALUES (#{objectKey}, #{key}, #{value})
+        ]]>
+    </insert>
+
+    <!--수정 -->
+    <update id="update" parameterType="AimlRepository">
+        <![CDATA[
+	        UPDATE repository SET value = #{value}, created = now()
+	        WHERE object_key = #{objectKey} AND key = #{key}
+		]]>
+    </update>
+
+    <!-- 삭제 -->
+    <delete id="deleteByAll" parameterType="AimlRepository">
+        <![CDATA[
+        	DELETE FROM repository WHERE object_key = #{objectKey} AND key = #{key}
+        ]]>
+    </delete>
+
+    <delete id="deleteByObjectKey" parameterType="AimlRepository">
+        <![CDATA[
+        	DELETE FROM repository WHERE object_key = #{objectKey}
+        ]]>
+    </delete>
+    
+    <delete id="deleteByKey" parameterType="AimlRepository">
+        <![CDATA[
+        	DELETE FROM repository WHERE key = #{key}
+        ]]>
+    </delete>
+    
+</mapper>

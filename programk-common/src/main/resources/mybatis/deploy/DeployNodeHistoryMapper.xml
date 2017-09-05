@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.deploy.DeployNodeHistoryMapper">
+    <resultMap id="BaseResultMap" type="DeployNodeHistory">
+        <result column="scheduler_id" jdbcType="INTEGER" property="schedulerId"/>
+        <result column="host_ip" jdbcType="VARCHAR" property="hostIp"/>
+        <result column="file_name" jdbcType="VARCHAR" property="fileName"/>
+        <result column="created" jdbcType="TIMESTAMP" property="created"/>
+        <result column="modified" jdbcType="TIMESTAMP" property="modified"/>
+        <result column="write_success" jdbcType="VARCHAR" property="writeSuccess"/>
+        <result column="read_success" jdbcType="VARCHAR" property="readSuccess"/>
+        <result column="err_msg" jdbcType="VARCHAR" property="errMsg"/>
+    </resultMap>
+
+    <!-- 배포 성공 개수 조회 -->
+    <select id="successDeployCount" parameterType="java.lang.Integer" resultType="java.lang.Integer" >
+        SELECT count(*) FROM deploy_node_history
+        WHERE 0 = 0
+        AND scheduler_id = #{schedulerId}
+        AND write_success = 'Y'
+        AND read_success = 'Y';
+    </select>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="DeployNodeHistory"
+            resultMap="BaseResultMap">
+        <![CDATA[
+          SELECT scheduler_id, host_ip, file_name, created, modified, write_success, read_success, err_msg
+          FROM deploy_node_history
+          WHERE scheduler_id = #{schedulerId} AND host_ip = #{hostIp};
+        ]]>
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectList" parameterType="DeployNodeHistory"
+            resultMap="BaseResultMap">
+        <![CDATA[
+          SELECT scheduler_id, host_ip, file_name, created, modified, write_success, read_success, err_msg
+          FROM deploy_node_history
+          WHERE scheduler_id = #{schedulerId}
+          offset ${firstRecordIndex} limit ${recordCountPerPage};
+        ]]>
+    </select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="DeployNodeHistory">
+        <![CDATA[
+          INSERT INTO deploy_node_history (scheduler_id, host_ip, file_name, created, modified, write_success, read_success, err_msg )
+          VALUES (#{schedulerId}, #{hostIp}, #{fileName}, now(), now(),#{writeSuccess}, #{readSuccess}, #{errMsg});
+        ]]>
+    </insert>
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="DeployNodeHistory">
+        <![CDATA[
+          DELETE FROM deploy_node_history
+          WHERE scheduler_id = #{schedulerId}
+          AND host_ip = #{hostIp}
+          AND file_name = #{fileName};
+        ]]>
+    </delete>
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="DeployNodeHistory">
+        UPDATE deploy_node_history
+        <set>
+            <if test="writeSuccess != null">
+                write_success = #{writeSuccess},
+            </if>
+            <if test="readSuccess != null">
+                read_success =  #{readSuccess},
+            </if>
+                modified = now()
+        </set>
+        WHERE scheduler_id = #{schedulerId}
+        AND host_ip = #{hostIp}
+        AND file_name = #{fileName};
+    </update>
+
+    <!-- 가장 최근 패포 파일 명으로 수정 -->
+    <update id="updateByFileName" parameterType="DeployNodeHistory">
+        UPDATE deploy_node_history
+        <set>
+            <if test="readSuccess != null">
+                read_success =  #{readSuccess},
+            </if>
+            <if test="errMsg != null">
+                err_msg =  #{errMsg},
+            </if>
+            modified = now()
+        </set>
+        WHERE 0 = 0
+        AND host_ip = #{hostIp}
+        AND file_name = #{fileName}
+        AND scheduler_id in (select scheduler_id from deploy_node_history WHERE host_ip= #{hostIp} AND file_name = #{fileName} order by scheduler_id desc limit 1)
+    </update>
+
+</mapper>

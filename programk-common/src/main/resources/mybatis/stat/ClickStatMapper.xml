@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016 KT, Inc.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of KT
+  ~ , Inc. You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with KT.
+  ~
+  ~ Revision History
+  ~ Author              Date                  Description
+  ~ Seo Jong Hwa        2016 . 7 . 12
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.stat.ClickStatMapper">
+	<resultMap id="BaseResultMap" type="ClickStat">        
+        <result column="cp_label" jdbcType="VARCHAR" property="label"/>
+        <result column="start_time" jdbcType="VARCHAR" property="startTime"/>
+        <result column="end_time" jdbcType="VARCHAR" property="endTime"/>
+        <result column="search_count" jdbcType="INTEGER" property="searchCount"/>
+        <result column="response_count" jdbcType="INTEGER" property="responseCount"/>
+        <result column="user_count" jdbcType="INTEGER" property="userCount"/>
+        <result column="total_cnt" jdbcType="INTEGER" property="totalCnt"/>
+        <result column="cate_name" jdbcType="VARCHAR" property="cateName"/>
+        <result column="input" jdbcType="VARCHAR" property="input"/>
+        <result column="user_input" jdbcType="VARCHAR" property="userInput"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+    </resultMap>
+    
+    <!-- 사용자별 통계 검색시 where 조건 -->
+    <sql id="whereSearch">
+		WHERE  0 = 0		
+		<if test='label != null and label != ""'>
+            AND cp_label = #{label}
+        </if>
+		<if test='(startTime != null and startTime != "") and (endTime != null and endTime != "")'>
+            AND start_time <![CDATA[>=]]> #{startTime} AND end_time <![CDATA[<=]]> #{endTime}
+        </if>
+	</sql>
+	
+	<!-- order 조건 -->
+    <sql id="orderSearch">
+		<if test='order == "searchCountDesc"'>
+            ORDER BY search_count DESC
+        </if>
+		<if test='order == "searchCountAsc"'>
+            ORDER BY search_count ASC
+        </if>
+        <if test='order == "responseCountDesc"'>
+            ORDER BY response_count DESC
+        </if>
+		<if test='order == "responseCountAsc"'>
+            ORDER BY response_count ASC
+        </if>
+        <if test='order == "searchPercentDesc"'>
+            ORDER BY searchPercent DESC
+        </if>
+		<if test='order == "searchPercentAsc"'>
+            ORDER BY searchPercent ASC
+        </if>
+        <if test='order == null or order == ""'>
+            ORDER BY search_count DESC
+        </if>
+	</sql>
+    
+	<!-- 사용자별 통계 카운트 조회 -->
+    <select id="countByPeriodUser" parameterType="ClickStat" resultType="java.lang.Integer" >
+        SELECT count(*) FROM (
+        	SELECT count(*) FROM chat_user_stat
+        	<include refid="whereSearch" />
+        	GROUP BY user_id
+        ) as t1
+    </select>
+    
+    <!-- 기간별통계(월별) 조회  -->
+    <select id="selectListByPeriodMonth" parameterType="ClickStat" resultMap="BaseResultMap">
+        SELECT to_char(start_time::timestamp, 'YYYY-MM') as start_time, search_count, response_count, user_count
+        FROM chat_month_stat
+        <include refid="whereSearch" />
+        ORDER BY start_time ASC
+    </select>
+    
+    <!-- 기간별통계(일별) 조회  -->
+    <select id="selectListByPeriodDay" parameterType="ClickStat" resultMap="BaseResultMap">
+        SELECT to_char(start_time::timestamp, 'YYYY-MM-DD') as start_time, search_count, response_count, user_count
+        FROM chat_day_stat
+        <include refid="whereSearch" />
+        ORDER BY start_time ASC
+    </select>
+    
+    <!-- 시간대별통계 조회  -->
+    <select id="selectListByPeriodTime" parameterType="ClickStat" resultMap="BaseResultMap">
+        SELECT to_char(start_time::timestamp, 'HH24') as time, sum(search_count) as search_count, sum(response_count) as response_count, sum(user_count) as user_count
+        FROM chat_time_stat
+        <include refid="whereSearch" />
+        GROUP BY to_char(start_time::timestamp, 'HH24')
+        ORDER BY time ASC        
+    </select>
+    
+    <!-- 사용자별별통계 조회  -->
+    <select id="selectListByPeriodUser" parameterType="ClickStat" resultMap="BaseResultMap">
+        SELECT user_id, sum(search_count) as search_count, sum(response_count) as response_count
+        FROM chat_user_stat
+        <include refid="whereSearch" />
+        GROUP BY user_id
+        <include refid="orderSearch" />
+        <if test="recordCountPerPage != 0">
+        offset ${firstRecordIndex} limit ${recordCountPerPage}
+        </if>
+    </select>
+    
+    <!-- 카테고리 통계 조회  -->
+    <select id="selectListByOrderCategory" parameterType="ClickStat" resultMap="BaseResultMap">
+        SELECT cate_name, sum(total_cnt) as total_cnt
+        FROM chat_category_stat
+        <include refid="whereSearch" />
+        GROUP BY cate_name
+		ORDER BY total_cnt desc, cate_name asc
+		limit #{viewCount}
+    </select>
+    
+    <!-- 대화 통계 조회  -->
+    <select id="selectListByOrderInput" parameterType="ClickStat" resultMap="BaseResultMap">
+        SELECT input, sum(total_cnt) as total_cnt
+        FROM chat_input_stat
+        <include refid="whereSearch" />
+        GROUP BY input
+		ORDER BY total_cnt desc, input asc
+		limit #{viewCount}
+    </select>    
+    
+    <!-- 질문 통계 조회  -->
+    <select id="selectListByOrderUserInput" parameterType="ClickStat" resultMap="BaseResultMap">
+        SELECT user_input, sum(total_cnt) as total_cnt
+        FROM chat_user_input_stat
+        <include refid="whereSearch" />
+        GROUP BY user_input
+		ORDER BY total_cnt desc, user_input asc
+		limit #{viewCount}
+    </select>
+    
+    <!-- 전체 카테고리 조회  -->
+    <select id="selectCategoryNameByStat" resultType="com.kt.programk.common.domain.category.AimlCategory">
+      SELECT t2.id, t1.name
+        FROM aiml_category AS t1
+        INNER JOIN aiml_main As t2
+        ON t1.id = t2.cate_id;
+    </select>
+
+    <select id="selectAimlNameByStat" resultType="com.kt.programk.common.domain.core.AimlMain">
+        SELECT id, input
+          FROM aiml_main;
+    </select>
+
+    <!--시간대별 통계 -->
+    <insert id="insertTimeStat" parameterType="hashmap">
+        INSERT INTO chat_time_stat(cp_label, start_time, end_time, search_count, response_count, success_percent, user_count)
+        SELECT
+            cp.label as label,
+            #{startTime} as startTime,
+            #{endTime} as endTime,
+            DECODE(search.count, NULL, 0, search.count) as searchCount,
+            DECODE(response.count,NULL, 0, response.count) as responseCount,
+            DECODE(response.count,NULL, 0, cast(response.count as numeric) * 100 / cast(search.count as numeric)) as searchPercent,
+            DECODE(user.count, NULL, 0, user.count) as userCount
+        FROM cp as cp
+            LEFT OUTER JOIN (
+                SELECT cp_label, count(*) as  count FROM chat_log WHERE created BETWEEN #{searchStart} AND #{searchEnd} and cate_name not in('None','미응답') group by cp_label
+                ) as response
+            ON cp.label = response.cp_label
+            LEFT OUTER JOIN (
+                SELECT cp_label, count(*) as count FROM chat_log WHERE created BETWEEN #{searchStart} AND #{searchEnd} group by cp_label) as search
+            ON cp.label = search.cp_label
+            LEFT OUTER JOIN (
+                SELECT cp_label, count(distinct user_id) as count FROM chat_log WHERE created between #{searchStart} and #{searchEnd} group by cp_label) as user
+            ON CP.LABEL = user.cp_label
+        WHERE NOT EXISTS (SELECT 1 FROM chat_time_stat WHERE start_time = #{startTime} AND end_time = #{endTime});
+    </insert>
+
+    <!--일별 통계 -->
+    <insert id="insertDayStat" parameterType="hashmap">
+        INSERT INTO chat_day_stat(cp_label, start_time, end_time, search_count, response_count, success_percent, user_count)
+        SELECT
+        cp.label as label,
+        #{startTime} as startTime,
+        #{endTime} as endTime,
+        DECODE(search.count, NULL, 0, search.count) as searchCount,
+        DECODE(response.count,NULL, 0, response.count) as responseCount,
+        DECODE(response.count,NULL, 0, cast(response.count as numeric) * 100 / cast(search.count as numeric)) as searchPercent,
+        DECODE(user.count, NULL, 0, user.count) as userCount
+        FROM cp as cp
+        LEFT OUTER JOIN (
+        SELECT cp_label, count(*) as  count FROM chat_log WHERE created BETWEEN #{searchStart} AND #{searchEnd} and cate_name not in('None','미응답') group by cp_label
+        ) as response
+        ON cp.label = response.cp_label
+        LEFT OUTER JOIN (
+        SELECT cp_label, count(*) as count FROM chat_log WHERE created BETWEEN #{searchStart} AND #{searchEnd} group by cp_label) as search
+        ON cp.label = search.cp_label
+        LEFT OUTER JOIN (
+        SELECT cp_label, count(distinct user_id) as count FROM chat_log WHERE created between #{searchStart} and #{searchEnd} group by cp_label) as user
+        ON CP.LABEL = user.cp_label
+        WHERE NOT EXISTS (SELECT 1 FROM chat_day_stat WHERE start_time = #{startTime} AND end_time = #{endTime});
+    </insert>
+
+    <!--월별 통계 -->
+    <insert id="insertMonthStat" parameterType="hashmap">
+        INSERT INTO chat_month_stat(cp_label, start_time, end_time, search_count, response_count, success_percent, user_count)
+        SELECT
+        cp.label as label,
+        #{startTime} as startTime,
+        #{endTime} as endTime,
+        DECODE(search.count, NULL, 0, search.count) as searchCount,
+        DECODE(response.count,NULL, 0, response.count) as responseCount,
+        DECODE(response.count,NULL, 0, cast(response.count as numeric) * 100 / cast(search.count as numeric)) as searchPercent,
+        DECODE(user.count, NULL, 0, user.count) as userCount
+        FROM cp as cp
+        LEFT OUTER JOIN (
+        SELECT cp_label, count(*) as  count FROM chat_log WHERE created BETWEEN #{searchStart} AND #{searchEnd} and cate_name not in('None','미응답') group by cp_label
+        ) as response
+        ON cp.label = response.cp_label
+        LEFT OUTER JOIN (
+        SELECT cp_label, count(*) as count FROM chat_log WHERE created BETWEEN #{searchStart} AND #{searchEnd} group by cp_label) as search
+        ON cp.label = search.cp_label
+        LEFT OUTER JOIN (
+        SELECT cp_label, count(distinct user_id) as count FROM chat_log WHERE created between #{searchStart} and #{searchEnd} group by cp_label) as user
+        ON CP.LABEL = user.cp_label
+        WHERE NOT EXISTS (SELECT 1 FROM chat_month_stat WHERE start_time = #{startTime} AND end_time = #{endTime});
+    </insert>
+
+
+    <!-- 사용자별 통계 -->
+    <insert id="insertUserStat" parameterType="hashmap">
+        INSERT INTO chat_user_stat(cp_label, user_id, start_time, end_time, search_count, response_count, success_percent)
+        SELECT
+            response.cp_label as label,
+            response.user_id as userId,
+            #{startTime} as startTime,
+            #{endTime} as endTime,
+            DECODE(search.count,NULL,0, search.count) as searchCount,
+            DECODE(response.count,NULL,0, response.count) as responseCount,
+            DECODE(search.count,NULL,0, cast(response.count as numeric) * 100 / cast(search.count as numeric)) as searchPercent
+        FROM cp as cp
+            JOIN(
+                SELECT cp_label,user_id, count(*) as  count FROM chat_log WHERE created BETWEEN #{searchStart} AND #{searchEnd} AND cate_name NOT IN('None','미응답') GROUP BY cp_label, user_id
+                ) as response
+            ON cp.label = response.cp_label
+            JOIN(
+                SELECT cp_label,user_id, count(*) as count from chat_log WHERE created BETWEEN #{searchStart} AND #{searchEnd} GROUP BY cp_label, user_id
+                ) as search
+            on cp.label = search.cp_label AND response.user_id = search.user_id
+        WHERE NOT EXISTS (SELECT 1 FROM chat_user_stat WHERE start_time = #{startTime} AND end_time = #{endTime});
+    </insert>
+
+    <!--카테고리별 통계-->
+    <insert id="insertCategoryStat" parameterType="hashmap">
+        INSERT INTO chat_category_stat(cp_label, cate_name, start_time, end_time, total_cnt)
+        SELECT
+            cp_label as cpLabel,
+            cate_name as cateName,
+            #{startTime} as startTime,
+            #{endTime} as endTime,
+            count(*) as count
+        FROM chat_log
+        WHERE 0 = 0
+        AND created BETWEEN #{searchStart} AND  #{searchEnd} AND NOT EXISTS (SELECT 1 FROM chat_category_stat WHERE start_time = #{startTime} AND end_time = #{endTime})
+        GROUP BY cp_label, cate_name
+        ORDER BY count desc;
+    </insert>
+
+    <!-- 대화 통계 -->
+    <insert id="insertChatStat" parameterType="hashmap">
+        INSERT INTO chat_input_stat(cp_label, input, start_time, end_time, total_cnt)
+        SELECT
+            cp_label as cpLabel,
+            input as input,
+            #{startTime} as startTime,
+            #{endTime}as endTime,
+            count(*) as count
+        FROM chat_log
+        WHERE 0 = 0
+        AND created between #{searchStart} AND #{searchEnd}
+        AND  NOT EXISTS (SELECT 1 FROM chat_input_stat WHERE start_time = #{startTime} AND end_time = #{endTime})
+        GROUP BY cp_label, input
+        ORDER BY count desc;
+    </insert>
+
+    <!-- 질문 통계 -->
+    <insert id="insertInputUserStat" parameterType="hashmap">
+        INSERT INTO chat_user_input_stat(cp_label, user_input, start_time, end_time, total_cnt)
+        SELECT
+            cp_label as cpLabel,
+            user_input as userInput,
+            #{startTime} as startTime,
+            #{endTime}as endTime,
+            count(*) as count
+        FROM chat_log
+        WHERE 0 = 0
+            AND created between #{searchStart} AND #{searchEnd}
+            AND  NOT EXISTS (SELECT 1 FROM chat_user_input_stat WHERE start_time = #{startTime} AND end_time = #{endTime})
+            GROUP BY cp_label, user_input
+            ORDER BY count desc;
+    </insert>
+
+    <!--특정 기간이 지난 chat_log 삭제 -->
+    <delete id="deleteChatLog">
+        <![CDATA[
+            DELETE FROM chat_log
+            WHERE created < (CURRENT_TIMESTAMP - #{n});
+        ]]>
+    </delete>
+
+    <!-- 특정 기간이 지난 aiml_predicate 개수 조회 -->
+    <select id="countAimlPredicate" resultType="java.lang.Integer">
+          <![CDATA[
+            SELECT COUNT(*) FROM aiml_predicate
+            WHERE created < (CURRENT_TIMESTAMP - #{n});
+        ]]>
+    </select>
+
+    <!-- 페이징을 이용해서 데이터를 가져온다. -->
+    <select id="selectListAimlPredicate" resultType="com.kt.programk.common.domain.core.AimlPredicate">
+        <![CDATA[
+            SELECT
+              user_id AS userid, bot_id AS botid, name AS name, val AS val, created::date AS created
+            FROM aiml_predicate
+            WHERE created < (CURRENT_TIMESTAMP - #{n})
+            offset #{firstRecordIndex} limit #{recordCountPerPage};
+        ]]>
+    </select>
+
+    <!--특정 기간이 지난 aiml_predicate 삭제 -->
+    <delete id="deleteAimlPredicate">
+        <![CDATA[
+            DELETE FROM aiml_predicate
+            WHERE created < (CURRENT_TIMESTAMP - #{n});
+        ]]>
+    </delete>
+</mapper>

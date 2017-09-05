@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016 KT, Inc.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of KT
+  ~ , Inc. You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with KT.
+  ~
+  ~ Revision History
+  ~ Author              Date                  Description
+  ~ Seo Jong Hwa        2016 . 6 . 23
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.core.AimlReplyMapper">
+    <resultMap id="BaseResultMap" type="AimlReply">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="cate_id" jdbcType="INTEGER" property="cateId"/>
+        <result column="main_id" jdbcType="INTEGER" property="mainId"/>
+        <result column="reply_input" jdbcType="VARCHAR" property="replyInput"/>
+    </resultMap>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="AimlReply"
+            resultMap="BaseResultMap">
+        <![CDATA[
+           SELECT id, cate_id, main_id, reply_input
+           FROM aiml_reply
+           WHERE id = #{id}
+        ]]>
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectList" parameterType="AimlReply"
+            resultMap="BaseResultMap">
+        <![CDATA[
+          SELECT id, cate_id, main_id, reply_input
+           FROM aiml_reply
+           WHERE cate_id = #{cateId} AND main_id = #{mainId}
+           ORDER BY id ASC;
+        ]]>
+    </select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="AimlReply">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select nextval('seq_aiml_reply')
+        </selectKey>
+        <![CDATA[
+          INSERT INTO aiml_reply(id, cate_id, main_id, reply_input)
+          VALUES (#{id}, #{cateId}, #{mainId}, #{replyInput});
+        ]]>
+    </insert>
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="AimlReply">
+    	 DELETE FROM aiml_reply
+         WHERE cate_id = #{cateId}
+         <if test='mainId != null and mainId != 0'>
+              AND main_id = #{mainId}
+         </if>
+    </delete>
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="AimlReply">
+        UPDATE aiml_reply
+            <set>
+            <if test="replyInput != null">
+                reply_input = #{replyInput},
+            </if>
+        </set>
+        WHERE id = #{id};
+    </update>
+
+</mapper>

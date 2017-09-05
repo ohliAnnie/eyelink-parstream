@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016 KT, Inc.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of KT
+  ~ , Inc. You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with KT.
+  ~
+  ~ Revision History
+  ~ Author              Date                  Description
+  ~ Seo Jong Hwa        2016 . 6 . 22
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.core.AimlSubsMapper">
+    <resultMap id="BaseResultMap" type="AimlSubs">
+        <result column="cate_id" jdbcType="INTEGER" property="cateId"/>
+        <result column="find" jdbcType="VARCHAR" property="find"/>
+        <result column="replace" jdbcType="VARCHAR" property="replace"/>
+        <result column="created" jdbcType="TIMESTAMP" property="created"/>
+        <result column="modified" jdbcType="TIMESTAMP" property="modified"/>
+        <result column="cate_name" jdbcType="VARCHAR" property="cateName"/>
+    </resultMap>
+
+    <!-- 검색시 where 조건 -->
+    <sql id="whereSearch">
+		WHERE  (0 = 0			
+		<if test='cpId != null and cpId != 0'>
+            AND t2.cp_id = #{cpId}
+        </if>        
+		<if test='cateName != null and cateName != ""'>
+            AND LOWER(t2.name) LIKE '%'|| LOWER(#{cateName}) ||'%'
+        </if>
+		<if test='find != null and find != ""'>
+            AND LOWER(t1.find) LIKE '%'|| LOWER(#{find}) ||'%'
+        </if>
+        <if test='replace != null and replace != ""'>
+            AND LOWER(t1.replace) LIKE '%'|| LOWER(#{replace}) ||'%'
+        </if>
+        <if test='cateId != null and cateId != 0'>
+            AND t1.cate_id = #{cateId}
+        </if>
+        )
+        <if test='userAuth == "CPA"'>
+        	OR (t2.restriction = 'all')
+        </if>  
+	</sql>
+	
+	<!-- 검색시order 조건 -->
+    <sql id="orderSearch">
+		<if test='order == "findDesc"'>
+            ORDER by length(t1.find) DESC, t1.find DESC
+        </if>
+		<if test='order == "findAsc"'>
+            ORDER by length(t1.find) ASC, t1.find ASC
+        </if>
+        <if test='order == null or order == ""'>
+            ORDER by t2.restriction ASC, t1.created DESC
+        </if>
+	</sql>
+	
+	<!-- 카운트 조회 -->
+	<select id="countAll" parameterType="AimlSubs" resultType="java.lang.Integer" >
+        SELECT count(*)
+	    FROM aiml_subs AS t1 INNER JOIN subs_category AS t2 on t1.cate_id = t2.id
+        <include refid="whereSearch" />
+    </select>
+    
+    <select id="countByFind" parameterType="AimlSubs" resultType="java.lang.Integer" >
+        SELECT count(*)
+	    FROM aiml_subs AS t1 
+	    INNER JOIN subs_category AS t2 on t1.cate_id = t2.id
+        WHERE t2.cp_id = #{cpId}
+        AND t1.find = #{find}
+    </select>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="AimlSubs"
+            resultMap="BaseResultMap">
+        <![CDATA[
+           SELECT cate_id, find, replace, created, modified
+           FROM aiml_subs
+           WHERE cate_id = #{cateId} AND find = #{find};
+        ]]>
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectList" parameterType="AimlSubs"
+            resultMap="BaseResultMap">
+          SELECT t1.cate_id, t1.find, t1.replace, t1.created, t1.modified, t2.name as cate_name, t2.restriction, t2.cp_id
+		  FROM aiml_subs AS t1 INNER JOIN subs_category AS t2 on t1.cate_id = t2.id
+		  <include refid="whereSearch" />
+		  <include refid="orderSearch" />
+		  <if test="recordCountPerPage != 0">
+          offset ${firstRecordIndex} limit ${recordCountPerPage};
+          </if>
+    </select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="AimlSubs">
+        <![CDATA[
+          INSERT INTO aiml_subs(cate_id, find, replace, created, modified)
+          VALUES (#{cateId}, #{find}, #{replace}, now(), now());
+        ]]>
+    </insert>
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="AimlSubs">
+    	 DELETE FROM aiml_subs
+         WHERE cate_id = #{cateId} 
+         <if test="find != null">
+               AND find = #{find}
+         </if>
+    </delete>
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteAll" parameterType="AimlSubs">
+    	 DELETE FROM aiml_subs
+         WHERE cate_id IN ( SELECT id FROM subs_category WHERE cp_id = #{cpId} ) 
+    </delete>
+   
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="AimlSubs">
+        UPDATE aiml_subs
+        <set>
+            <if test="find != null">
+                find = #{find},
+            </if>
+            <if test="replace != null">
+                replace = #{replace},
+            </if>
+            modified = now()
+        </set>
+        WHERE cate_id = #{cateId} AND find = #{findOrg};
+    </update>
+
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       ">
+
+    <import resource="/spring/context/context.xml"/>
+    <import resource="/spring/context/abstract.xml"/>
+    <import resource="/spring/context/context-datasource.xml"/>
+    <import resource="/spring/context/context-transaction.xml"/>
+
+    <bean id="cvsToList" class="com.kt.programk.collector.process.CvsToList">
+        <constructor-arg ref="chatLogMapper"/>
+        <constructor-arg ref="clickStatMapper"/>
+    </bean>
+
+    <camelContext id="fileCamel" xmlns="http://camel.apache.org/schema/spring">
+        <!-- 아직까지는 스프링 설정 파일과 연동이 되지 않는다.-->
+        <propertyPlaceholder id="properties" location="classpath:/config/commons/${env}/commons.properties,file:${config}"/>
+
+        <route>
+            <from uri="file://{{collector.stat.file.dir}}?include=stat-.*log&amp;consumer.delay={{collector.stat.file.delay}}&amp;move=done&amp;moveFailed=error\"/>
+            <onException>
+                <exception>java.io.IOException</exception>
+                <handled>
+                    <constant>false</constant>
+                </handled>
+            </onException>
+            <split streaming="true" parallelProcessing="true">
+                <tokenize token="\n"/>
+                <setHeader headerName="foo">
+                    <constant>foo</constant>
+                </setHeader>
+                <log message="Processing message[${property.CamelSplitIndex}]"/>
+                <aggregate strategyRef="arrayListAggregationStrategy" completionTimeout="5000" completionSize="1000">
+                    <correlationExpression>
+                        <simple>${header.foo}</simple>
+                    </correlationExpression>
+                    <unmarshal>
+                        <csv delimiter=","/>
+                    </unmarshal>
+                    <process ref="cvsToList"/>
+<!--                     <to uri="mock:out"/> -->
+                </aggregate>
+            </split>
+        </route>
+
+    </camelContext>
+
+    <bean id="arrayListAggregationStrategy" class="com.kt.programk.collector.strategy.StringAggregationStrategy"/>
+</beans>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!-- 클러스트 환경 설정 -->
+    <!--<util:set id="jedisClusterNodes">-->
+    <!--<bean class="redis.clients.jedis.HostAndPort" c:host="${commons.programk.redis.host1}"-->
+    <!--c:port="${commons.programk.redis.port1}"/>-->
+    <!--<bean class="redis.clients.jedis.HostAndPort" c:host="${commons.programk.redis.host2}"-->
+    <!--c:port="${commons.programk.redis.port2}"/>-->
+    <!--<bean class="redis.clients.jedis.HostAndPort" c:host="${commons.programk.redis.host3}"-->
+    <!--c:port="${commons.programk.redis.port3}"/>-->
+    <!--</util:set>-->
+
+    <!--<bean id="jedisCluster" class="redis.clients.jedis.JedisCluster" c:nodes-ref="jedisClusterNodes"/>-->
+
+    <!-- 싱글 환경 설정 -->
+    <bean id="jedisCluster" class="redis.clients.jedis.JedisPool">
+        <constructor-arg name="host" value="${commons.programk.redis.host1}"/>
+        <constructor-arg name="port" value="${commons.programk.redis.port1}"/>
+    </bean>
+
+    <bean id="memoryCacheHandler" class="org.aitools.programd.redis.MemoryCacheHandler">
+        <constructor-arg ref="jedisCluster"/>
+    </bean>
+</beans>

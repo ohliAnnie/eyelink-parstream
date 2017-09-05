@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+        http://www.springframework.org/schema/aop  http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+    <!-- 맵핑되는 확장자가 없을때 JSP 로 뷰 처리 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="contentType" value="text/html; charset=UTF-8"/>
+    </bean>
+
+    <!-- 쿠키 해데 정보를 검사해 로캘 리졸브 -->
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <property name="cookieName" value="lang"/>
+        <property name="cookieMaxAge" value="3600"/>
+        <property name="defaultLocale" value="ko"/>
+    </bean>
+
+    <!-- HTTP 요청을 검사해 로캘 리졸브 -->
+    <bean id="localChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+        <property name="paramName" value="lang"/>
+    </bean>
+
+    <!-- HandlerMapping 서버로 들어온 요청을 어느 핸들러로 전달할지 결정  -->
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="interceptors">
+            <list>
+                <ref bean="localChangeInterceptor"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- HandlerAdapter  디스패처 서블릿과 시제 핸들러 구현체 사이의 가교 역할 -->
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"/>
+
+    <!-- view name tanslator 서버로 들어온 요청을 보고  뷰 이름을 저장한다. -->
+    <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator"/>
+
+    <!-- 클라이언트에게 XML이나 JSON을 전달하는 방법을 제공하기위해서 ContentNegotiatingViewResolver 선언 -->
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <!-- ViewResolver 우선순위 설정 -->
+        <property name="order" value="1"/>
+        <!--<property name="mediaTypes">-->
+            <!--&lt;!&ndash; 맵핑될 확장자 정의 &ndash;&gt;-->
+            <!--<map>-->
+                <!--<entry key="json" value="application/json"/>-->
+                <!--<entry key="xml" value="application/xml"/>-->
+            <!--</map>-->
+        <!--</property>-->
+    </bean>
+
+    <!-- 로컬에 민감한 텍스트 메세지 외부화 -->
+    <!--<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">-->
+    <!--&lt;!&ndash;한글 깨짐을 방지하기 위해 디폴트 인코딩 UTF-8 지정 &ndash;&gt;-->
+    <!--<property name="defaultEncoding" value="UTF-8"/>-->
+    <!--<property name="basenames">-->
+    <!--<list>-->
+    <!--&lt;!&ndash;<value>/WEB-INF/messages/messages</value>&ndash;&gt;-->
+    <!--<value>classpath*:/onm/messages/messages</value>-->
+    <!--</list>-->
+    <!--</property>-->
+    <!--<property name="cacheSeconds" value="60"/>-->
+    <!--</bean>-->
+
+    <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <prop key="java.lang.Exception">error/error</prop>
+                <prop key="java.lang.RuntimeException">error/error</prop>
+            </props>
+        </property>
+        <property name="statusCodes">
+            <props>
+                <prop key="error/404">404</prop>
+                <prop key="error/error">500</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- FileUpload Configuration 500M -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="512000000"/>
+		<property name="defaultEncoding" value="UTF-8"/>
+	</bean>
+
+    <!-- tiles 설정 -->
+    <!--<bean id="tilesViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">-->
+        <!--<property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView"/>-->
+        <!--<property name="order" value="1"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">-->
+        <!--<property name="definitions">-->
+            <!--<list>-->
+                <!--<value>classpath:/onm/tiles/tiles-definitions.xml</value>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--REST API ERROR Handler -->
+    <!--<bean id="jacksonHttpMessageConverter" class="com.ktnline.util.DefaultJacksonHttpMessageConverter">-->
+        <!--<property name="prettyPrint" value="true"/>-->
+    <!--</bean>-->
+
+
+    <bean id="annotationMethodHandlerExceptionResolver"
+          class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver">
+        <property name="order" value="0"/>
+    </bean>
+
+    <!--<bean id="restExceptionResolver" class="com.ktnline.exhandler.RestExceptionHandler">-->
+        <!--<property name="order" value="100"/>-->
+        <!--<property name="messageConverters">-->
+            <!--<list>-->
+                <!--<ref bean="jacksonHttpMessageConverter"/>-->
+            <!--</list>-->
+        <!--</property>-->
+        <!--<property name="errorResolver">-->
+            <!--<bean class="com.ktnline.exhandler.DefaultRestErrorResolver">-->
+                <!--<property name="localeResolver" ref="localeResolver"/>-->
+                <!--<property name="defaultMoreInfoUrl" value="mailto:ubeansvoca@gmail.com"/>-->
+                <!--<property name="exceptionMappingDefinitions">-->
+                    <!--<map>-->
+                        <!--&lt;!&ndash; 401 &ndash;&gt;-->
+                        <!--&lt;!&ndash;<entry key="com.ktnline.exception.UnauthorizedException" value="401, _exmsg"/>&ndash;&gt;-->
+                        <!--&lt;!&ndash; 404 &ndash;&gt;-->
+                        <!--<entry key="com.ktnline.exception.UnknownResourceException" value="404, _exmsg"/>-->
+                        <!--&lt;!&ndash; 415 &ndash;&gt;-->
+                        <!--&lt;!&ndash;<entry key="com.ktnline.exception.UnknownResourceException" value="415, _exmsg"/>&ndash;&gt;-->
+                        <!--&lt;!&ndash; 500 (catch all): &ndash;&gt;-->
+                        <!--<entry key="Throwable" value="500"/>-->
+                    <!--</map>-->
+                <!--</property>-->
+            <!--</bean>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <mvc:default-servlet-handler/>
+</beans>

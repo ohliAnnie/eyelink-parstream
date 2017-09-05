@@ -1,0 +1,91 @@
+@charset "utf-8";
+
+/* Reset */
+h1, h2, h3, h4, h5, h6,
+div, p, blockquote, pre, address,
+ul, ol, li, dl, dt, dd,
+table, caption, th, td,
+form, fieldset, legend,
+hr{margin:0;padding:0;}
+h1, h2, h3, h4, h5, h6{font-size:100%;}
+ul, ol{list-style:none;}
+li{font-size:12px;}
+table{margin:0; padding:0; border-spacing:0; border:0; border-collapse:collapse;}
+*+html table{border-collapse:collapse;}
+img, fieldset, abbr, acronym{border:0;}
+address, caption, cite, code, dfn, em, var{font-style:normal; font-weight:normal;}
+q:before, q:after{content: '';}
+input, select, button, textarea{color:#666; font-size:100%; font-family:'dotum';}
+textarea{border:1px solid #c0c0c0;}
+.select{vertical-align:middle;}
+form{display:inline;}
+
+/* Base */
+html, body{min-width:1200px; width:100%;}
+body{min-width:1200px; width:100%; height:100%; _height:100%; margin:0; padding:0; font-family:"맑은 고딕", Malgun Gothic, Dotum, "돋움", Tahoma, Arial, sans-serif; font-size:12px; line-height:normal; color:#666;}
+hr, .blind{display:none}
+.block{display:block}
+caption, legend, .txtHidn{font-size:0; line-height:0; text-indent:-999px;}
+body.main a{color:#fff;}
+a{color:#666;}
+a:link, a:visited, a:active, a:hover{text-decoration:none;}
+a:hover{color:#ed2a25;}
+
+/* Margin,Padding */
+.btnInfo{margin-left:7px;}
+.btnJoin{margin-right:4px;}
+.checkInfo{padding-top:16px;}
+
+/* Line */
+.lineStyle1, .loginBox>dl:first-child{border-top:1px solid #e2e2e2;}
+
+/* Icon */
+
+/* Btn */
+.btnLogin, .btnJoin>span, .btnIdPw>span{cursor:pointer;}
+
+/* layout */
+.loginBox dl{display:inline-block;}
+.clearfix:after{display:block; clear:both; content:'.'; visibility:hidden; height:0;}
+input[type=text]::-ms-clear{display:none;}
+
+/* Logo */
+.searchGrpLogo{float:left; display:inline-block; width:357px; height:31px; background:url('../images/plus_cms_logo.png') no-repeat 0 0;}
+.searchGrpLogo>a{width:275px; height:31px;}
+
+/* Login */
+.bg_fff{background:#fff;}
+.searchGrpLoginWrap{position:absolute; top:50%; left:50%; margin-top:-160px; margin-left:-185px; min-width:382px; min-height:500px;}
+.loginForm, .loginBox dl{clear:both;}
+.checkIDBox{clear:both; display:block; height:19px; margin-left:63px;}
+.checkID{float:left; display:inline-block; vertical-align:middle;}
+.checkIDBox span{float:left; display:inline-block; margin-left:3px; vertical-align:middle;}
+.searchGrpLoginBox{display:block; float:left;}
+.loginBox{width:382px; padding-top:20px; padding-bottom:7px;}
+.loginBox>dl{height:42px;}
+.loginBox>dl>dt{float:left; width:67px; height:31px;}
+.loginBox>dl>dd{float:left; height:38px;}
+.txtId, .txtPw{display:inline-block; width:47px; height:14px; margin-top:9px;}
+.txtId{background:url('../images/txt_id.png') no-repeat 0 0;}
+.txtPw{background:url('../images/txt_pw.png') no-repeat 0 0;}
+.loginBox>dl:first-child{padding-top:16px;}
+.intLogin{display:block; width:297px; height:29px; line-height:29px; padding-left:7px; padding-right:7px; border:1px solid #cacaca;}
+.btnLoginBox{clear:both; display:block; width:380px; height:36px; background:url('../images/btn_login.png') no-repeat 0 0;}
+.btnLoginBox>input{width:380px; height:36px; border:0; background:none; font-size:0; line-height:0; text-indent:-999px;}
+/* 파트너ID회원가입,ID/PW찾기 */
+.btnJoin, .btnIdPw{float:left; display:inline-block; padding:7px 0; text-align:center; vertical-align:middle; border:1px solid #cacaca; border-radius:3px; background:#f9f9f9;}
+.btnJoin:hover, .btnIdPw:hover{border:1px solid #f0bbb9; background:#f9efef;}
+.btnJoin{width:202px;}
+.btnIdPw{width:170px;}
+.btnJoin span, .btnIdPw span{position:relative; display:inline-block; padding-left:16px; vertical-align:middle;}
+.btnJoin span:before, .btnIdPw span:before{content:''; position:absolute; left:0; top:50%; margin-top:-5px; display:block; width:20px; height:13px;}
+.btnJoin span:before{background:url('../images/ui-icon1.png') no-repeat 0 0;}
+.btnIdPw span:before{background:url('../images/ui-icon1.png') no-repeat -40px 0;}
+.btnJoin:hover span:before{background:url('../images/ui-icon1.png') no-repeat -20px 0;}
+.btnIdPw:hover span:before{background:url('../images/ui-icon1.png') no-repeat -60px 0;}
+/* icon-파트너ID회원가입,ID/PW찾기 */
+.checkTxt{clear:both;}
+.checkTxt>p{display:inline-block; min-width:380px; padding-top:10px;}
+
+/* footer */
+.footer{display:none;}

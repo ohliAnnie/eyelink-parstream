@@ -1,0 +1,337 @@
+@charset "utf-8";
+
+/* Dim */
+.searchDimm{display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:4; background:#000; -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)"; /*ie8*/filter:alpha(opacity=80); /*ie5-7*/opacity:0.8; /* css standard, currently it works in most modern browsers*/}
+
+/* 말줄임표용 Text Class */
+.userNameBox{display:inline-block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:middle; word-wrap:normal;}
+
+/* Text */
+.userNameBox, 
+table tr td a:hover, 
+.tableWrite a:hover{text-decoration:underline;}
+.btnBg{text-decoration:none;}
+.fontB,
+.depth2 a,
+.depth2 .on, 
+.menuBox .depth1 a.on, 
+.depth2 a:hover, 
+.depth3 a:hover, 
+.depth3 li .on, 
+.searchGrpLnbTitle, 
+.contentTitle, 
+.contentTitle2, 
+table tr th,
+.popContent .alert p{font-weight:700;}
+
+/* Size */
+.contentTitle{font-size:18px;}
+.searchGrpLnbTitle{font-size:16px;}
+.contentsTitle{font-size:14px;}
+.font12{font-size:12px;}
+.font11{font-size:11px;}
+
+/* Color */
+.blackTxt, .searchGrpLnbTitle, .contentTitle, .contentTitle2{color:#000;}
+.depth2, .depth1 .depth2 a:hover span, .tableViewBox ul li.title, .tableViewBox ul li.titleT, .tableStitle, table tr td a:hover.preview, .writefrm table tr td a:hover, .tableWrite a.btnBg:hover{color:#333;}
+.depth1 .depth2 a span, input, select, button, textarea, .tableWrite a.btnBg, .depth1TabMenuLayerBox ul li a, .depth1TabMenuLayerBox .category1s>ul>li>a{color:#666;}
+.location, .txtContent, .tabMenuBox ul li a{color:#888;}
+.menuBox .depth1 a{color:#aaa;}
+.menuBox .depth1 a:hover, .depth2 a.on, .depth2 a:hover.on{color:#fff;}
+.pointTxt, .menuBox .depth1 a.on, .depth3 .on, .txtOff, a:hover.txtOff, .btnBg.on:hover, .btnBg.on {color:#da0601;}
+table tr td a, table tr td a:hover, .tableWrite a, .tableWrite a:hover, .txtPoint, .txtInlinePoint, .txtOn, a:hover.txtOn{color:#0089f2;}
+
+/* layout */
+.loginBox dl, 
+.searchGrpLogo, 
+.searchGrpLogo>a{display:inline-block;}
+.clearfix:after{display:block; clear:both; content:'.'; visibility:hidden; height:0;}
+.searchGrpLnb,
+.searchGrpLnbTitle,
+.depth2Box>ul a, 
+.depth2Box ul ul, 
+.titleBox,
+.searchGrpContent, 
+.tableWriteBox ul li, 
+.tableViewBox ul li, 
+table tr td,
+input[type=text], 
+textarea, 
+.topContent,
+.popTableBox,
+.popTable .inputTopics,
+.popPreviewContent,
+.progressBox,
+.sub_content,
+.sub_table,
+.btnBg, .btnBg2{-webkit-box-sizing:border-box; -moz-box-sizing:border-box; box-sizing:border-box;}
+.fltL{float:left;}
+.fltR{float:right;}
+.clearB{clear:both !important;}
+
+/* Logo */
+.searchGrpLogo{float:left; display:inline-block; width:330px; height:31px; background:url('../images/plus_cms_logo.png') no-repeat 0 0;}
+.searchGrpLogo>a{width:330px; height:31px;}
+
+/* Head */
+.searchGrpHead{position:absolute; left:0; top:0; clear:both; min-width:1200px; width:100%; height:73px; background-color:#fff; border-bottom:3px solid #ed2a25; z-index:2;}
+.searchGrpHeadBox{position:relative; width:100%; height:73px;}
+.searchGrpHeadBox .searchGrpLogo{position:absolute; top:50%; margin-top:-16px; margin-left:10px;}
+.searchGrpUser{position:absolute; right:15px; top:50%; margin-top:-11px; width:70%; text-align:right;}
+.userNameBox{display:inline; max-width:400px; vertical-align:baseline; font-weight:800;}
+.searchGrpUser span + .btnBg{margin-left:10px;}
+
+/* Menu */
+.searchGrpLnbWrap, .searchGrpLnb{float:left; position:relative; width:270px; z-index:1;}
+/***/
+.menuBox{clear:both; position:relative; width:270px; margin-top:77px;}
+.menuBox>ul{clear:both; width:84px;}
+/***/
+.menuBox>ul>li>a{clear:both; display:block; width:84px; padding:10px 0; color:#cdcdcd; text-align:center; border-bottom:1px solid #111; border-top:1px solid #444;}
+.menuBox>ul:first-child>li>a{border-top:0; padding:31px 0 10px;}
+.menuBox>ul:last-child>li>a{border-bottom:0 !important;}
+.menuTxt{display:inline-block; width:84px; padding:5px 0 0; text-align:center;}
+a.on, a:hover .menuTxt{color:#fff;}
+a.on .menuTxt, .depth2Box ul ul li a.on, .depth2Box ul ul li a:hover{color:#da0601;}
+.depth2Box ul ul li a.on{font-weight:700;}
+.icon1,.icon2,.icon3,.icon4,.icon5,.icon6,.icon7,.icon8{display:block; margin:0 auto; width:42px; height:35px; font-size:0; background:url('../images/iconmenu.png'); background-repeat:no-repeat; -webkit-background-size:126px 280px; -moz-background-size:126px 280px; background-size:126px 280px;}
+.icon1{background-position:0 0;}
+.icon2{background-position:0 -35px;}
+.icon3{background-position:0 -70px;}
+.icon4{background-position:0 -105px;}
+.icon5{background-position:0 -140px;}
+.icon6{background-position:0 -175px;}
+.icon7{background-position:0 -210px;}
+.icon8{background-position:0 -245px;}
+a:hover .icon1{background-position:-42px 0;}
+a:hover .icon2{background-position:-42px -35px;}
+a:hover .icon3{background-position:-42px -70px;}
+a:hover .icon4{background-position:-42px -105px;}
+a:hover .icon5{background-position:-42px -140px;}
+a:hover .icon6{background-position:-42px -175px;}
+a:hover .icon7{background-position:-42px -210px;}
+a:hover .icon8{background-position:-42px -245px;}
+a.on .icon1{background-position:-84px 0;}
+a.on .icon2{background-position:-84px -35px;}
+a.on .icon3{background-position:-84px -70px;}
+a.on .icon4{background-position:-84px -105px;}
+a.on .icon5{background-position:-84px -140px;}
+a.on .icon6{background-position:-84px -175px;}
+a.on .icon7{background-position:-84px -210px;}
+a.on .icon8{background-position:-84px -245px;}
+a.off{display:block;}
+/***/
+.searchGrpLnbTitle{display:table-cell; height:61px; padding-top:25px; padding-left:7px; padding-bottom:10px; vertical-align:middle; line-height:25px; letter-spacing:-0.07em;}
+/***/
+.depth2Box{position:absolute; left:94px; top:0; width:164px; padding-bottom:40px;}
+.depth2Box>ul{float:left; display:block; width:100%; margin-top:5px;}
+.depth2Box>ul>li>a{float:left; display:block; width:100%; padding:8px 10px 10px; text-align:justify; background:#eaeaea; border-radius:5px;}
+.depth2Box>ul>li>a.on{background:#da0601;}
+.depth2Box>ul>li>a.off{background:#eaeaea;}
+.depth2Box>ul>li>a.plus{font-weight:bold; background:#eaeaea url('../images/blt_plus.png') no-repeat 145px center;}
+.depth2Box>ul>li>a.minus{font-weight:bold; background:#eaeaea url('../images/blt_minus.png') no-repeat 145px center;}
+.depth2Box ul ul{float:left; display:block; width:100%; padding-bottom:10px; background:#fff;}
+.depth2Box>ul>li>a.minusOn{color:#fff; font-weight:bold; background:#da0601 url('../images/blt_minus_on.png') no-repeat 145px center;}
+.depth2Box>ul>li>a.plusOn{color:#fff; font-weight:bold; background:#da0601 url('../images/blt_plus_on.png') no-repeat 145px center;}
+.depth2Box ul ul{float:left; display:block; width:100%; padding-bottom:10px; background:#fff;}
+.depth2Box ul ul li{margin:0 5px; padding:0; border-top:1px solid #eaeaea;}
+.depth2Box ul ul li:first-child{border-top:0;}
+.depth2Box ul ul li a{display:block; padding:10px 0 10px 15px; background:#fff url('../images/blt_menu.png') no-repeat 5px 13px;}
+
+/*토글버튼*/
+.bg_body{background:url(../images/bg.png) repeat-y -260px 0;}
+.searchGrpToggle{position:absolute; left:270px; top:300px; z-index:2; width:13px; height:143px;}
+.btnToggle{display:block; margin-left:-5px; width:13px; height:143px; z-index:100; background:url(../images/toggle_close.png) no-repeat 0 0;}
+.toggle_open{background:url(../images/toggle_open.png) no-repeat 0 0 !important;}
+.clearLnbWrap{left:-266px;}
+.clearToggle{left:10px}
+
+/* Content */
+.searchGrpContent{float:left; position:relative; display:block; width:100%; height:100%; min-height:500px; margin-left:-270px; padding:83px 15px 0 300px;}
+.searchGrpContent.fullScreen{padding-left:30px;}
+
+/***/
+.searchGrpContentBox{clear:both; position:relative; display:block; padding-bottom:50px;}
+	/* Content-title */
+	.titleBox{clear:both; position:relative; display:block; padding:19px 0 0 0; height:60px;}
+	.contentTitle{padding-left:2px;}
+	.location{position:absolute; right:0; top:26px;}
+
+/*footer*/
+.footer{}
+
+/* jquery ****************************************/
+/* button */
+.btnBg, .btnBg2{position:relative; display:inline-block; padding:6px; line-height:0.87; text-decoration:none; vertical-align:middle; border:1px solid #d3d3d3; background:#fff url('../js/images/ui-bg_glass_75_e6e6e6_1x400.png') 50% 50% repeat-x; font-weight:normal; color:#555; border-top-left-radius:2px; border-top-right-radius:2px; border-bottom-left-radius:2px; border-bottom-right-radius:2px; overflow:hidden;}
+.btnBg:hover{border:1px solid #999; background:#dadada url('../js/images/ui-bg_glass_75_dadada_1x400.png') 50% 50% repeat-x; font-weight:normal; color:#212121; text-decoration:none;}
+.btnBg.on {border:1px solid #de2a2f;}
+.icon_reset/*초기화*/, .icon_searchs/*상세검색*/{position:relative !important; display:inline-block; vertical-align:middle !important;}
+/* icon */
+.icon_partnerid/*파트너ID정보변경*/,
+.icon_logout/*로그아웃*/,
+.icon_selectdel/*선택삭제*/,
+.icon_alldel/*전체삭제*/,
+.icon_use/*선택항목 사용*/,
+.icon_unused/*선택항목 미사용*/,
+.icon_alllist/*전체목록*/,
+.icon_del/*키워드삭제*/,
+.icon_ok/*확인*/,
+.icon_write/*등록*/,
+.icon_save/*저장*/,
+.icon_search/*검색*/,
+.icon_modify/*수정*/,
+.icon_copy/*복사*/,
+.icon_delete/*삭제*/,
+.icon_list/*목록*/,
+.icon_cancel/*취소*/,
+.icon_excelupload/*Excel 등록*/,
+.icon_exceldownload/*Excel 다운로드*/,
+.icon_htmldownload/*HTML 다운로드*/,
+.icon_utility/*유틸리티 등록*/,
+.icon_batch/*Menu Path 일괄처리*/,
+.icon_bul/*title 블릿*/,
+.icon_preview/*미리보기*/,
+.icon_html/*HTML샘플*/,
+.icon_image/*이미지등록*/,
+.icon_link/*발급*/,
+.icon_sort/*순서*/,
+.icon_sortUp/*순서 위*/,
+.icon_sortDown/*순서 아래*/,
+.icon_tree/*카테고리*/,
+.icon_plus/*추가(플러스)*/,
+.icon_minus/*제거(마이너스)*/,
+.icon_up/*위로*/,
+.icon_down/*아래로*/,
+.icon_pre/*이전*/,
+.icon_next/*다음*/,
+.icon_reset/*초기화*/,
+.icon_searchs/*상세검색*/,
+.icon_back/*뒤로가기*/,
+.icon_closePop/*팝업닫기*/{padding:0 .7em; vertical-align:middle; background-image:url('../js/images/ui-icons_888888_256x240.png');}
+.btnBg:hover .icon_partnerid/*파트너ID정보변경*/,
+.btnBg:hover .icon_logout/*로그아웃*/,
+.btnBg:hover .icon_selectdel/*선택삭제*/,
+.btnBg:hover .icon_alldel/*전체삭제*/,
+.btnBg:hover .icon_use/*선택항목 사용*/,
+.btnBg:hover .icon_unused/*선택항목 미사용*/,
+.btnBg:hover .icon_alllist/*전체목록*/,
+.btnBg:hover .icon_del/*키워드삭제*/,
+.btnBg:hover .icon_ok/*확인*/,
+.btnBg:hover .icon_write/*등록*/,
+.btnBg:hover .icon_save/*저장*/,
+.btnBg:hover .icon_search/*검색*/,
+.btnBg:hover .icon_modify/*수정*/,
+.btnBg:hover .icon_copy/*복사*/,
+.btnBg:hover .icon_delete/*삭제*/,
+.btnBg:hover .icon_list/*목록*/,
+.btnBg:hover .icon_cancel/*취소*/,
+.btnBg:hover .icon_excelupload/*Excel 등록*/,
+.btnBg:hover .icon_exceldownload/*Excel 다운로드*/,
+.btnBg:hover .icon_htmldownload/*HTML 다운로드*/,
+.btnBg:hover .icon__utility/*유틸리티 등록*/,
+.btnBg:hover .icon_batch/*Menu Path 일괄처리*/,
+.btnBg:hover .icon_bul/*title 블릿*/,
+.btnBg:hover .icon_preview/*미리보기*/,
+.btnBg:hover .icon_html/*HTML샘플*/
+.btnBg:hover .icon_image/*이미지등록*/,
+.btnBg:hover .icon_link/*발급*/,
+.btnBg:hover .icon_sort/*순서*/,
+.btnBg:hover .icon_sortUp/*순서 위*/,
+.btnBg:hover .icon_sortDown/*순서 아래*/,
+.btnBg:hover .icon_tree/*카테고리*/,
+.btnBg:hover .icon_plus/*추가(플러스)*/,
+.btnBg:hover .icon_minus/*제거(마이너스)*/,
+.btnBg:hover .icon_up/*위로*/,
+.btnBg:hover .icon_down/*아래로*/,
+.btnBg:hover .icon_pre/*이전*/,
+.btnBg:hover .icon_next/*다음*/,
+a:hover .icon_pre/*페이징 이전*/,
+a:hover .icon_next/*페이징 다음*/,
+a:hover .icon_reset/*초기화*/,
+a:hover .icon_searchs/*상세검색*/,
+a .icon_searchs.on/*상세검색 선택*/,
+.btnBg:hover .icon_back/*뒤로가기*/,
+.btnBg:hover .icon_closePop/*팝업닫기*/{background-image:url('../js/images/ui-icons_454545_256x240.png')}
+
+
+.btnBg.on .icon_partnerid/*파트너ID정보변경*/,
+.btnBg.on .icon_logout/*로그아웃*/,
+.btnBg.on .icon_selectdel/*선택삭제*/,
+.btnBg.on .icon_alldel/*전체삭제*/,
+.btnBg.on .icon_use/*선택항목 사용*/,
+.btnBg.on .icon_unused/*선택항목 미사용*/,
+.btnBg.on .icon_alllist/*전체목록*/,
+.btnBg.on .icon_del/*키워드삭제*/,
+.btnBg.on .icon_ok/*확인*/,
+.btnBg.on .icon_write/*등록*/,
+.btnBg.on .icon_save/*저장*/,
+.btnBg.on .icon_search/*검색*/,
+.btnBg.on .icon_modify/*수정*/,
+.btnBg.on .icon_copy/*복사*/,
+.btnBg.on .icon_delete/*삭제*/,
+.btnBg.on .icon_list/*목록*/,
+.btnBg.on .icon_cancel/*취소*/,
+.btnBg.on .icon_excelupload/*Excel 등록*/,
+.btnBg.on .icon_exceldownload/*Excel 다운로드*/,
+.btnBg.on .icon_htmldownload/*HTML 다운로드*/,
+.btnBg.on .icon_utility/*유틸리티 등록*/,
+.btnBg.on .icon_batch/*Menu Path 일괄처리*/,
+.btnBg.on .icon_bul/*title 블릿*/,
+.btnBg.on .icon_preview/*미리보기*/,
+.btnBg.on .icon_html/*HTML샘플*/
+.btnBg.on .icon_image/*이미지등록*/,
+.btnBg.on .icon_link/*발급*/,
+.btnBg.on .icon_sort/*순서*/,
+.btnBg.on .icon_sortUp/*순서 위*/,
+.btnBg.on .icon_sortDown/*순서 아래*/,
+.btnBg.on .icon_tree/*카테고리*/,
+.btnBg.on .icon_plus/*추가(플러스)*/,
+.btnBg.on .icon_minus/*제거(마이너스)*/,
+.btnBg.on .icon_up/*위로*/,
+.btnBg.on .icon_down/*아래로*/,
+.btnBg.on .icon_pre/*이전*/,
+.btnBg.on .icon_next/*다음*/,
+a.on .icon_reset/*초기화*/,
+a.on .icon_searchs/*상세검색*/,
+a .icon_searchs.on/*상세검색 선택*/,
+.btnBg.on .icon_back/*뒤로가기*/,
+.btnBg.on .icon_closePop/*팝업닫기*/{background-image:url('../js/images/ui-icons_cd0a0a_256x240.png')}
+
+.icon_partnerid/*파트너ID정보변경*/ {background-position:-145px -98px;}
+.icon_logout/*로그아웃*/ {background-position:-209px -98px;}
+.icon_bul/*title 블릿*/ {background-position:-33px -3px;}
+.icon_utility/*유틸리티 등록*/ {background-position:-193px -49px;}
+.icon_excelupload/*Excel 등록*/{background-position:-178px -145px;}
+.icon_exceldownload/*Excel 다운로드*/{background-position:-162px -146px;}
+.icon_htmldownload/*HTML 다운로드*/, .icon_html/*HTML샘플*/{background-position:-194px -146px;}
+.icon_use/*선택항목 사용*/ {background-position:-33px -81px;}
+.icon_selectdel/*선택삭제*/,.icon_alldel/*전체삭제*/, .icon_delete/*삭제*/{background-position:-176px -98px;}
+.icon_del/*키워드삭제*/{background-position:-97px -209px;}
+.icon_ok/*확인*/{background-position: -66px -146px;}
+.icon_write/*등록*/ {background-position:-66px -112px;}
+.icon_save/*저장*/ {background-position:-98px -113px;}
+.icon_search/*검색*/, .icon_preview/*미리보기*/ {background-position:-161px -114px;}
+.icon_unused/*선택항목 미사용*/ {background-position:-1px -129px;}
+.icon_cancel/*취소*/ {background-position:-97px -129px;}
+.icon_modify/*수정*/ {background-position:-145px -129px;}
+.icon_copy/*복사*/ {background-position:-178px -130px;}
+.icon_batch/*Menu Path 일괄처리*/ {background-position:-193px -129px;}
+.icon_image/*이미지등록*/ {background-position:-210px -130px;}
+.icon_alllist/*전체목록*/{background-position:-49px -226px;}
+.icon_list/*목록*/ {background-position:-66px -225px;}
+.icon_link/*발급*/ {background-position:-241px -114px}
+.icon_sort/*순서*/ {background-position: -98px -82px;}
+.icon_sortUp/*순서 위*/ {background-position: -130px -81px;}
+.icon_sortDown/*순서 아래*/ {background-position: -145px -81px;}
+.icon_tree/*카테고리*/{background-position: -80px 0;}
+.icon_plus/*추가(플러스)*/{background-position: -16px -129px;}
+.icon_minus/*제거(마이너스)*/{background-position: -49px -130px;}
+.icon_up/*위로*/{background-position: 1px -17px;}
+.icon_down/*아래로*/{background-position: -65px -17px;}
+.icon_pre/*이전*/{background-position: -100px -18px;}
+.icon_next/*다음*/{background-position: -37px -18px;}
+.icon_reset/*초기화*/{background-position: -193px -212px;}
+.icon_searchs/*상세검색*/{background-position: -125px -212px;}
+a .icon_searchs.on/*상세검색 선택*/{background-position: -125px -212px;},
+.icon_back/*뒤로가기*/{background-position: 0 -65px;}
+.icon_closePop/*팝업닫기*/{background-position:-97px -129px;}

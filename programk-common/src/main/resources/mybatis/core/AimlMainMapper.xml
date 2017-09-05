@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016 KT, Inc.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of KT
+  ~ , Inc. You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with KT.
+  ~
+  ~ Revision History
+  ~ Author              Date                  Description
+  ~ Seo Jong Hwa        2016 . 6 . 22
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.core.AimlMainMapper">
+    <resultMap id="BaseResultMap" type="AimlMain">
+        <result column="cate_id" jdbcType="INTEGER" property="cateId"/>
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="input" jdbcType="VARCHAR" property="input"/>
+        <result column="that_id" jdbcType="INTEGER" property="thatId"/>
+        <result column="reply" jdbcType="VARCHAR" property="reply"/>
+        <result column="cate_name" jdbcType="VARCHAR" property="cateName"/>
+        <result column="cp_id" jdbcType="VARCHAR" property="cpId"/>
+    </resultMap>
+    
+    <!-- 검색시 where 조건 -->
+    <sql id="whereSearch">
+		WHERE  (0 = 0		
+		<if test='cpId != null and cpId != 0'>
+            AND t2.cp_id = #{cpId}
+        </if>
+		<if test='cateName != null and cateName != ""'>
+            AND LOWER(t2.name) LIKE '%'|| LOWER(#{cateName}) ||'%'
+        </if>
+		<if test='input != null and input != ""'>
+            AND LOWER(t1.input) LIKE '%'|| LOWER(#{input}) ||'%'
+        </if>
+        <if test='reply != null and reply != ""'>
+            AND LOWER(t1.reply) LIKE '%'|| LOWER(#{reply}) ||'%'
+        </if>
+        <if test='cateId != null and cateId != 0'>
+            AND t1.cate_id = #{cateId}
+        </if>
+        <if test='id != null and id != 0'>
+            AND t1.id = #{id}
+        </if>  
+        <if test='testInput != null and testInput != ""'>
+            AND t1.id in (select main_id from aiml_test where LOWER(test_input) LIKE '%'|| LOWER(#{testInput}) ||'%')
+        </if>
+        )
+        <if test='userAuth == "CPA"'>
+        	OR (t2.restriction = 'all')
+        </if>      
+	</sql>
+	
+    <!-- 개수 조회 -->
+    <select id="countAll" parameterType="AimlCategory" resultType="java.lang.Integer" >
+        SELECT count(*)
+        FROM aiml_main AS t1
+        INNER JOIN aiml_category AS t2
+        ON t1.cate_id = t2.id
+        <include refid="whereSearch" />
+    </select>
+
+    <select id="countByCpId" parameterType="java.lang.Integer" resultType="java.lang.Integer" >
+        SELECT count(*)
+        FROM aiml_main AS t1
+        INNER JOIN aiml_category AS t2
+        ON t1.cate_id = t2.id
+        WHERE t2.cp_id = #{cpId}
+    </select>
+
+    <select id="countByCateName" parameterType="java.lang.String" resultType="java.lang.Integer" >
+        SELECT count(*)
+        FROM aiml_main AS t1
+        INNER JOIN aiml_category AS t2
+        ON t1.cate_id = t2.id
+        WHERE t2.name = #{name}
+    </select>
+
+    <select id="countByInput" parameterType="AimlMain" resultType="java.lang.Integer" >
+        SELECT count(*)
+        FROM aiml_main AS t1
+        INNER JOIN aiml_category AS t2
+        ON t1.cate_id = t2.id
+        WHERE t2.cp_id = #{cpId}
+        AND t1.input = #{input}
+        <if test='thatId != null'>
+        	AND that_id = #{thatId}
+        </if>
+        <if test='id != null and id != 0'>
+            AND t1.id != #{id}
+        </if>  
+    </select>
+
+    <select id="countByReply" parameterType="java.lang.String" resultType="java.lang.Integer" >
+        SELECT count(*)
+        FROM aiml_main AS t1
+        INNER JOIN aiml_category AS t2
+        ON t1.cate_id = t2.id
+        WHERE t1.reply = #{reply}
+    </select>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="AimlMain"
+            resultMap="BaseResultMap">
+        <![CDATA[
+            SELECT t1.cate_id, t1.id, t1.input, t1.reply, t1.that_id, t2.name as cate_name, t2.restriction, t2.cp_id
+            FROM aiml_main AS t1
+            INNER JOIN aiml_category AS t2
+            ON t1.cate_id = t2.id
+            WHERE t1.id = #{id};
+        ]]>
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectListAll" parameterType="AimlMain"
+            resultMap="BaseResultMap">
+        <if test="recordCountPerPage == 0">    
+           SELECT t1.id, t1.cate_id, t1.input, t1.reply, t2.name as cate_name, t2.restriction,
+           		  (
+           		   case  when t1.that_id = 0 then ''
+						 else (select input from aiml_main where id = t1.that_id)
+			  		end
+			  	   ) as thatInput
+           FROM aiml_main AS t1
+           INNER JOIN aiml_category AS t2
+           ON t1.cate_id = t2.id
+           <include refid="whereSearch" />
+           ORDER BY t1.id DESC
+        </if>
+    	<if test="recordCountPerPage != 0">
+           SELECT t1.cate_id, t1.id, t1.input, t1.reply, t1.that_id, t2.name as cate_name, t2.restriction, t2.cp_id
+           FROM aiml_main AS t1
+           INNER JOIN aiml_category AS t2
+           ON t1.cate_id = t2.id
+           <include refid="whereSearch" />
+           ORDER BY t1.id DESC
+           offset ${firstRecordIndex} limit ${recordCountPerPage};
+        </if>
+    </select>
+
+    <select id="selectListByCpId" parameterType="hashmap" resultMap="BaseResultMap">
+        <![CDATA[
+            SELECT t1.cate_id, t1.id, t1.input, t1.reply, t1.that_id
+            FROM aiml_main AS t1
+            INNER JOIN aiml_category AS t2
+            ON t1.cate_id = t2.id
+            WHERE t2.cp_id = #{cpId}
+            offset ${firstRecordIndex} limit ${recordCountPerPage};
+        ]]>
+    </select>
+
+    <select id="selectListByCateName" parameterType="hashmap" resultMap="BaseResultMap">
+        <![CDATA[
+            SELECT t1.cate_id, t1.id, t1.input, t1.reply, t1.that_id
+            FROM aiml_main AS t1
+            INNER JOIN aiml_category AS t2
+            ON t1.cate_id = t2.id
+            WHERE t2.name = #{cateName}
+            offset ${firstRecordIndex} limit ${recordCountPerPage};
+        ]]>
+    </select>
+
+    <!-- 파일 배포때 사용 -->
+    <select id="selectListByCateId" parameterType="AimlMain" resultMap="BaseResultMap">
+            SELECT cate_id,id,input, reply, that_id
+            FROM aiml_main
+            WHERE cate_id = #{cateId}
+    </select>
+
+    <select id="selectListByInput" parameterType="hashmap" resultMap="BaseResultMap">
+        <![CDATA[
+            SELECT t1.cate_id, t1.id, t1.input, t1.reply, t1.that_id
+            FROM aiml_main AS t1
+            INNER JOIN aiml_category AS t2
+            ON t1.cate_id = t2.id
+            WHERE t1.input = #{input}
+            offset ${firstRecordIndex} limit ${recordCountPerPage};
+        ]]>
+    </select>
+
+    <select id="selectListByReply" parameterType="hashmap" resultMap="BaseResultMap">
+        <![CDATA[
+            SELECT t1.cate_id, t1.id, t1.input, t1.reply, t1.that_id
+            FROM aiml_main AS t1
+            INNER JOIN aiml_category AS t2
+            ON t1.cate_id = t2.id and t2.cp_id = #{cpId}
+            WHERE t1.reply = #{reply}
+            offset ${firstRecordIndex} limit ${recordCountPerPage};
+        ]]>
+    </select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="AimlMain">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select nextval('seq_aiml_main')
+        </selectKey>
+        <![CDATA[
+        INSERT INTO aiml_main(cate_id, id, input, reply, that_id)
+        VALUES (#{cateId},#{id}, #{input}, #{reply}, #{thatId});
+        ]]>
+    </insert>
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="AimlMain">
+    	 DELETE FROM aiml_main
+         WHERE cate_id = #{cateId} 
+         <if test='id != null and id != 0'>
+               AND id = #{id}
+         </if>
+    </delete>
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="AimlMain">
+        UPDATE aiml_main
+        <set>
+            <if test="input != null">
+                input = #{input},
+            </if>
+            <if test="reply != null">
+                reply = #{reply},
+            </if>
+            <if test="thatId != 0">
+                that_id = #{thatId},
+            </if>
+            <if test="cateId != 0">
+                cate_id = #{cateId},
+            </if>
+        </set>
+        WHERE id = #{id};
+    </update>
+
+</mapper>

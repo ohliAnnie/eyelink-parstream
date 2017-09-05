@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016 KT, Inc.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of KT
+  ~ , Inc. You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with KT.
+  ~
+  ~ Revision History
+  ~ Author              Date                  Description
+  ~ Seo Jong Hwa        2016 . 6 . 22
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.core.AimlPredMapper">
+    <resultMap id="BaseResultMap" type="AimlPred">
+        <result column="cate_id" jdbcType="INTEGER" property="cateId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="basic" jdbcType="VARCHAR" property="basic"/>
+        <result column="val" jdbcType="VARCHAR" property="val"/>
+        <result column="created" jdbcType="TIMESTAMP" property="created"/>
+        <result column="modified" jdbcType="TIMESTAMP" property="modified"/>
+        <result column="cate_name" jdbcType="VARCHAR" property="cateName"/>
+    </resultMap>
+
+    <!-- 검색시 where 조건 -->
+    <sql id="whereSearch">
+		WHERE  (0 = 0	
+		<if test='cpId != null and cpId != 0'>
+            AND t2.cp_id = #{cpId}
+        </if>
+		<if test='cateName != null and cateName != ""'>
+            AND LOWER(t2.name) LIKE '%'|| LOWER(#{cateName}) ||'%'
+        </if>
+		<if test='name != null and name != ""'>
+            AND LOWER(t1.name) LIKE '%'|| LOWER(#{name}) ||'%'
+        </if>
+        <if test='basic != null and basic != ""'>
+            AND LOWER(t1.basic) LIKE '%'|| LOWER(#{basic}) ||'%'
+        </if>
+        <if test='cateId != null and cateId != 0'>
+            AND t1.cate_id = #{cateId}
+        </if>
+        )
+        <if test='userAuth == "CPA"'>
+        	OR (t2.restriction = 'all')
+        </if>  
+	</sql>
+	
+	<!-- 검색시order 조건 -->
+    <sql id="orderSearch">
+		<if test='order == "nameDesc"'>
+            ORDER by t1.name DESC
+        </if>
+		<if test='order == "nameAsc"'>
+            ORDER by t1.name ASC
+        </if>
+        <if test='order == null or order == ""'>
+            ORDER by t2.restriction ASC, t1.created DESC
+        </if>
+	</sql>
+	
+	<!-- 카운트 조회 -->
+	<select id="countAll" parameterType="AimlPred" resultType="java.lang.Integer" >
+        SELECT count(*)
+	    FROM aiml_pred AS t1 INNER JOIN pred_category AS t2 on t1.cate_id = t2.id
+        <include refid="whereSearch" />
+    </select>	
+    
+    <select id="countByName" parameterType="AimlPred" resultType="java.lang.Integer" >
+        SELECT count(*)
+	    FROM aiml_pred AS t1 
+	    INNER JOIN pred_category AS t2 on t1.cate_id = t2.id
+	    WHERE t2.cp_id = #{cpId}
+        AND t1.name = #{name}
+    </select>	    
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="AimlPred"
+            resultMap="BaseResultMap">
+        <![CDATA[
+           SELECT cate_id, name, basic, val, created, modified
+           FROM aiml_pred
+           WHERE cate_id = #{cateId} AND name = #{name};
+        ]]>
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectList" parameterType="AimlPred"
+            resultMap="BaseResultMap">
+       	SELECT t1.cate_id, t1.name, t1.basic, t1.val, t1.created, t1.modified, t2.name as cate_name, t2.restriction, t2.cp_id
+	  	FROM aiml_pred AS t1 INNER JOIN pred_category AS t2 on t1.cate_id = t2.id
+	  	<include refid="whereSearch" />
+	  	<include refid="orderSearch" />
+	  	<if test="recordCountPerPage != 0">
+        offset ${firstRecordIndex} limit ${recordCountPerPage}
+        </if>
+    </select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="AimlPred">
+        <![CDATA[
+          INSERT INTO aiml_pred(cate_id, name, basic, val, created, modified)
+          VALUES (#{cateId}, #{name}, #{basic}, #{val},  now(), now());
+        ]]>
+    </insert>
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="AimlPred">
+         DELETE FROM aiml_pred
+         WHERE cate_id = #{cateId} 
+         <if test="name != null">
+               AND name = #{name}
+         </if>
+    </delete>
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="AimlPred">
+        UPDATE aiml_pred
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="basic != null">
+                basic = #{basic},
+            </if>
+            <if test="val != null">
+                val = #{val},
+            </if>
+            modified = now()
+        </set>
+        WHERE cate_id = #{cateId} AND name = #{name};
+    </update>
+
+</mapper>

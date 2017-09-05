@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.kt.programk.common.repository.deploy.DeployAimlCategoryMapper">
+    <resultMap id="BaseResultMap" type="DeployAimlCategory">
+        <result column="cp_id" jdbcType="INTEGER" property="cateId"/>
+        <result column="cate_id" jdbcType="INTEGER" property="cateId"/>
+    </resultMap>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="DeployAimlCategory"
+            resultMap="BaseResultMap">
+        <![CDATA[
+          SELECT cp_id,cate_id
+          FROM deploy_aiml_category
+          WHERE cp_id = #{cpId} AND cate_id = #{cateId};
+        ]]>
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectList" parameterType="DeployAimlCategory"
+            resultMap="BaseResultMap">
+        <![CDATA[
+          SELECT cp_id,cate_id
+          FROM deploy_aiml_category
+          offset ${firstRecordIndex} limit ${recordCountPerPage};
+        ]]>
+    </select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="DeployAimlCategory">
+        <![CDATA[
+          INSERT INTO deploy_aiml_category(cp_id, cate_id)
+          VALUES (#{cpId}, #{cateId});
+        ]]>
+    </insert>
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="DeployAimlCategory">
+        DELETE FROM deploy_aiml_category
+        WHERE cate_id = #{cateId}
+        <if test='cpId != null and cpId != 0'>
+        	AND cp_id = #{cpId}
+        </if>
+    </delete>
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="DeployAimlCategory">
+        UPDATE deploy_aiml_category
+        <set>
+            <if test="cpId != null">
+                cp_id = #{cpId},
+            </if>
+            <if test="cateId != null">
+                cate_id = #{cateId},
+            </if>
+        </set>
+        WHERE cp_id = #{cpId} AND cate_id = #{cateId};
+    </update>
+
+</mapper>

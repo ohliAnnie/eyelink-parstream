@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016 KT, Inc.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of KT
+  ~ , Inc. You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with KT.
+  ~
+  ~ Revision History
+  ~ Author              Date                  Description
+  ~ preludio        2016 . 12 . 05
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.stat.ChatLogProcessMapper">
+    <resultMap id="BaseResultMap" type="ChatLogProcess">
+    	<result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="cp_label" jdbcType="VARCHAR" property="cpLabel"/>
+        <result column="user_input" jdbcType="VARCHAR" property="userInput"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="created" jdbcType="TIMESTAMP" property="created"/>
+        <result column="input" jdbcType="VARCHAR" property="input"/>
+        <result column="cate_name" jdbcType="VARCHAR" property="cateName"/>
+        <result column="c" jdbcType="INTEGER" property="count"/>
+        <result column="m" jdbcType="TIMESTAMP" property="mdate"/>
+        <result column="x" jdbcType="TIMESTAMP" property="xdate"/>
+    </resultMap>
+    
+    <!-- 검색시 where 조건 -->
+    <sql id="whereSearch">
+		WHERE  0 = 0		
+		<if test='cpLabel != null and cpLabel != ""'>
+            AND cp_label = #{cpLabel}
+        </if>
+        <if test='userInput != null and userInput != ""'>
+            AND LOWER(user_input) LIKE '%'|| LOWER(#{userInput}) ||'%'
+        </if>
+        <if test='type != null and type != ""'>
+            AND type = #{type}
+        </if>
+        <if test='(sdate != null and sdate != "") and (edate != null and edate != "")'>
+            AND created::timestamp BETWEEN #{sdate}::timestamp AND #{edate}::timestamp
+        </if>
+	</sql>
+	
+	<!-- 개수 조회 -->
+<!--     <select id="countAll" parameterType="ChatLogProcess" resultType="java.lang.Integer" > -->
+<!--         SELECT count(*) FROM chat_log_process -->
+<!--         <include refid="whereSearch" /> -->
+<!--     </select> -->
+
+    <!-- chatlog 통합 개수 조회 -->
+    <select id="countAll" parameterType="ChatLogProcess" resultType="java.lang.Integer" >
+		SELECT count(*) FROM 
+			chat_log_process t2, 
+			( 
+				select distinct on (user_input) item.* from (
+					select log.user_input, log.cate_name, log.input, log.reply, cnt.c, m, x, created
+					from 
+						chat_log log,
+						( select user_input, count(*) as c, min(created) as m, max(created) as x from chat_log
+							where 1 = 1
+							<if test='userInput != null and userInput != ""'>
+	            			AND LOWER(user_input) LIKE '%'|| LOWER(#{userInput}) ||'%'
+	        				</if>
+	        		        <if test='(sdate != null and sdate != "") and (edate != null and edate != "")'>
+	            			AND created::timestamp BETWEEN #{sdate}::timestamp AND #{edate}::timestamp
+	        				</if>
+							group by user_input ) cnt
+					where log.user_input = cnt.user_input
+					<if test='userInput != null and userInput != ""'>
+		         	AND LOWER(log.user_input) LIKE '%'|| LOWER(#{userInput}) ||'%'
+		     		</if>
+	    		    <if test='(sdate != null and sdate != "") and (edate != null and edate != "")'>
+	        		AND log.created::timestamp BETWEEN #{sdate}::timestamp AND #{edate}::timestamp
+	    			</if>
+				) item
+			 ) t1
+		WHERE t1.user_input = t2.user_input
+		AND t2.cp_label = #{cpLabel}
+		<if test='type != null and type != ""'>
+        AND t2.type = #{type}
+        </if>
+    </select>
+
+    <!-- 로그 상세 조회 -->
+    <select id="select" parameterType="ChatLogProcess"
+            resultMap="BaseResultMap">
+           SELECT id, cp_label, user_input, type, created
+           FROM chat_log_process
+           <include refid="whereSearch" />
+    </select>
+    
+     <select id="selectCount" parameterType="ChatLogProcess"
+            resultType="java.lang.Integer">
+           SELECT count(id)
+           FROM chat_log_process
+           <include refid="whereSearch" />
+    </select>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="ChatLogProcess"
+            resultMap="BaseResultMap">
+        <![CDATA[
+           SELECT id, cp_label, user_input, type, created
+           FROM chat_log_process
+           WHERE id = #{id}
+        ]]>
+    </select>
+
+    <!-- 로그 상세 조회 -->
+    <select id="selectChatLogByPrimaryKey" parameterType="ChatLogProcess"
+            resultMap="BaseResultMap">
+        <![CDATA[
+			SELECT t1.user_input, cate_name, input, reply, type 
+			FROM chat_log t1, chat_log_process t2
+			WHERE t1.user_input = t2.user_input
+			AND t2.id = #{id}
+			AND t2.cp_label = #{cpLabel}
+			LIMIT 1
+        ]]>
+    </select>
+    
+    <!-- 로그 상세 조회 -->
+    <select id="selectNewChatLogProcess" parameterType="ChatLogProcess"
+            resultMap="BaseResultMap">
+        <![CDATA[
+			SELECT t2.id, t1.user_input, cate_name, input, reply
+			FROM chat_log t1, chat_log_process t2
+			WHERE t1.user_input = t2.user_input
+			AND t2.cp_label = #{cpLabel}
+			AND t2.type = 'S'
+			ORDER BY t1.created DESC
+			LIMIT 1
+        ]]>
+    </select>
+
+    <!-- 로그 리스트 조회 -->
+<!--     <select id="selectList" parameterType="ChatLogProcess" -->
+<!--             resultMap="BaseResultMap"> -->
+<!--         SELECT id, cp_label, user_input, type, created -->
+<!--         FROM chat_log_process -->
+<!--         <include refid="whereSearch" /> -->
+<!--         ORDER BY created DESC -->
+<!--         <if test="recordCountPerPage != 0"> -->
+<!--         offset ${firstRecordIndex} limit ${recordCountPerPage} -->
+<!--         </if> -->
+<!--     </select> -->
+
+    <!-- chatlog 통합 조회 -->
+    <select id="selectList" parameterType="ChatLogProcess"
+            resultMap="BaseResultMap">
+		SELECT t2.id, t2.cp_label, t1.user_input, t2.type, t1.cate_name, t1.input, t1.reply, t1.c, t1.m, t1.x
+		FROM 
+			chat_log_process t2, 
+			( 
+				select distinct on (user_input) item.* from (
+					select log.user_input, log.cate_name, log.input, log.reply, cnt.c, m, x, created
+					from 
+						chat_log log,
+						( select user_input, count(*) as c, min(created) as m, max(created) as x from chat_log
+							where 1 = 1
+							<if test='userInput != null and userInput != ""'>
+	            			AND LOWER(user_input) LIKE '%'|| LOWER(#{userInput}) ||'%'
+	        				</if>
+	        		        <if test='(sdate != null and sdate != "") and (edate != null and edate != "")'>
+	            			AND created::timestamp BETWEEN #{sdate}::timestamp AND #{edate}::timestamp
+	        				</if>
+							group by user_input ) cnt
+					where log.user_input = cnt.user_input
+					<if test='userInput != null and userInput != ""'>
+		         	AND LOWER(log.user_input) LIKE '%'|| LOWER(#{userInput}) ||'%'
+		     		</if>
+	    		    <if test='(sdate != null and sdate != "") and (edate != null and edate != "")'>
+	        		AND log.created::timestamp BETWEEN #{sdate}::timestamp AND #{edate}::timestamp
+	    			</if>
+				) item
+			 ) t1
+		WHERE t1.user_input = t2.user_input
+		AND t2.cp_label = #{cpLabel}
+		<if test='type != null and type != ""'>
+            AND t2.type = #{type}
+        </if>
+		ORDER BY t1.c desc, t2.id desc
+        <if test="recordCountPerPage != 0">
+        offset ${firstRecordIndex} limit ${recordCountPerPage}
+        </if>
+    </select>
+
+    <!-- 로그 저장 -->
+    <insert id="insert" parameterType="ChatLogProcess">
+        <![CDATA[
+          INSERT INTO chat_log_process (id, cp_label, user_input, type)
+          VALUES (nextval('seq_chat_log_process'), #{cpLabel}, #{userInput}, #{type})
+        ]]>
+    </insert>
+    
+    <!--  신규 데이터 입력 -->
+    <insert id="insertNewUserInput" parameterType="ChatLogProcess">
+		INSERT INTO chat_log_process (
+			SELECT nextval('seq_chat_log_process'), #{cpLabel} as cp_label, user_input, 'S' as type
+			FROM (
+				SELECT log.cp_label, log.user_input
+				FROM (
+					SELECT cp_label, user_input FROM chat_log
+					WHERE created::timestamp BETWEEN #{sdate}::timestamp AND #{edate}::timestamp AND cp_label = #{cpLabel}
+					GROUP BY cp_label, user_input
+				) log LEFT JOIN chat_log_process proc
+				ON log.cp_label = proc.cp_label AND log.user_input = proc.user_input
+				WHERE proc.user_input IS NULL ) A
+			LEFT JOIN
+				(
+					SELECT recommend_input FROM aiml_recommend WHERE main_id IN 
+					(
+						SELECT id FROM aiml_main WHERE cate_id IN (
+							SELECT id FROM aiml_category WHERE cp_id IN (
+								SELECT cp_id bot FROM bot WHERE sub_label = #{cpLabel} || '-01'
+							)
+						)
+					)
+				) B ON A.user_input = B.recommend_input
+			WHERE B.recommend_input IS NULL
+		)
+    </insert>
+
+    <!-- 상태 업데이트 -->
+    <update id="updateType" parameterType="ChatLogProcess">
+        UPDATE chat_log_process
+	        SET type = #{type}
+        <include refid="whereSearch" />
+    </update>
+
+    <!-- 상태 업데이트 -->
+    <update id="updateTypeByPrimaryKeySelective" parameterType="ChatLogProcess">
+        UPDATE chat_log_process
+	        SET type = #{type}
+    	    WHERE id = #{id};
+    </update>
+
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.core.AimlTopicMapper">
+    <resultMap id="BaseResultMap" type="AimlTopic">
+        <result column="cate_id" jdbcType="INTEGER" property="cateId"/>
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+    </resultMap>
+
+    <!-- 카운트 조회 -->
+    <select id="countByCateId" parameterType="Cp" resultType="java.lang.Integer" >
+        select count(*) from aiml_topic
+        WHERE cate_id = #{cateId}
+    </select>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="AimlTopic"
+            resultMap="BaseResultMap">
+        <![CDATA[
+           SELECT cate_id, id, name
+           FROM aiml_topic
+           WHERE cate_id = #{cateId} AND id = #{id};
+        ]]>
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectList" parameterType="AimlTopic"
+            resultMap="BaseResultMap">
+        <![CDATA[
+          SELECT cate_id, id, name
+           FROM aiml_topic
+           WHERE cate_id = #{cateId}
+           offset ${firstRecordIndex} limit ${recordCountPerPage};
+        ]]>
+    </select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="AimlTopic">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select nextval('seq_aiml_topic')
+        </selectKey>
+        <![CDATA[
+          INSERT INTO aiml_topic(cate_id, id, name)
+          VALUES (#{cateId}, #{id}, #{name});
+        ]]>
+    </insert>
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="AimlTopic">
+        <![CDATA[
+
+          DELETE FROM aiml_topic
+          WHERE cate_id = #{cateId} AND id = #{id};
+
+        ]]>
+    </delete>
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="AimlTopic">
+        UPDATE aiml_topic
+        SET name = #{name}
+        WHERE cate_id = #{cateId} AND id = #{id};
+    </update>
+
+</mapper>

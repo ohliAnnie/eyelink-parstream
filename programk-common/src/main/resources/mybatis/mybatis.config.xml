@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "HTTP://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <settings>
+        <setting name="cacheEnabled" value="false"/>
+        <setting name="useGeneratedKeys" value="true"/>
+        <setting name="defaultExecutorType" value="REUSE"/>
+    </settings>
+
+    <typeAliases>
+        <typeAlias type="com.kt.programk.common.domain.Sample" alias="sample"/>
+
+        <!-- Admin -->
+        <typeAlias type="com.kt.programk.common.domain.admin.CpUser" alias="CpUser"/>
+        <typeAlias type="com.kt.programk.common.domain.admin.Cp" alias="Cp"/>
+        <typeAlias type="com.kt.programk.common.domain.admin.AccessIp" alias="AccessIp"/>
+        <typeAlias type="com.kt.programk.common.domain.admin.AllowIp" alias="AllowIp"/>
+
+        <!-- Core -->
+        <typeAlias type="com.kt.programk.common.domain.core.AimlPredicate" alias="AimlPredicate"/>
+        <typeAlias type="com.kt.programk.common.domain.core.Bot" alias="Bot"/>
+        <typeAlias type="com.kt.programk.common.domain.core.BotFile" alias="BotFile"/>
+        <typeAlias type="com.kt.programk.common.domain.core.AimlMain" alias="AimlMain"/>
+        <typeAlias type="com.kt.programk.common.domain.core.AimlTopic" alias="AimlTopic"/>
+        <typeAlias type="com.kt.programk.common.domain.core.AimlSubs" alias="AimlSubs"/>
+        <typeAlias type="com.kt.programk.common.domain.core.AimlPred" alias="AimlPred"/>
+        <typeAlias type="com.kt.programk.common.domain.core.AimlProp" alias="AimlProp"/>
+        <typeAlias type="com.kt.programk.common.domain.core.AimlLink" alias="AimlLink"/>
+        <typeAlias type="com.kt.programk.common.domain.core.AimlImages" alias="AimlImages"/>
+        <typeAlias type="com.kt.programk.common.domain.core.AimlRecommend" alias="AimlRecommend"/>
+        <typeAlias type="com.kt.programk.common.domain.core.AimlTest" alias="AimlTest"/>
+        <typeAlias type="com.kt.programk.common.domain.core.AimlReply" alias="AimlReply"/>
+        <typeAlias type="com.kt.programk.common.domain.core.AimlOption" alias="AimlOption"/>
+		<typeAlias type="com.kt.programk.common.domain.core.AimlRepository" alias="AimlRepository"/>
+
+        <!--Category -->
+        <typeAlias type="com.kt.programk.common.domain.category.AimlCategory" alias="AimlCategory"/>
+        <typeAlias type="com.kt.programk.common.domain.category.SubsCategory" alias="SubsCategory"/>
+        <typeAlias type="com.kt.programk.common.domain.category.PredCategory" alias="PredCategory"/>
+        <typeAlias type="com.kt.programk.common.domain.category.PropCategory" alias="PropCategory"/>
+
+        <!-- Deploy -->
+        <typeAlias type="com.kt.programk.common.domain.deploy.DeployScheduler" alias="DeployScheduler"/>
+        <typeAlias type="com.kt.programk.common.domain.deploy.DeployNodeHistory" alias="DeployNodeHistory"/>
+        <typeAlias type="com.kt.programk.common.domain.deploy.DeployAimlCategory" alias="DeployAimlCategory"/>
+        <typeAlias type="com.kt.programk.common.domain.deploy.DeploySubsCategory" alias="DeploySubsCategory"/>
+        <typeAlias type="com.kt.programk.common.domain.deploy.DeployPropCategory" alias="DeployPropCategory"/>
+        <typeAlias type="com.kt.programk.common.domain.deploy.DeployPredCategory" alias="DeployPredCategory"/>
+        <typeAlias type="com.kt.programk.common.domain.deploy.DeployHistory" alias="DeployHistory"/>
+
+        <!--통계-->
+        <typeAlias type="com.kt.programk.common.domain.stat.ClickStat" alias="ClickStat"/>
+        <typeAlias type="com.kt.programk.common.domain.stat.ChatLog" alias="ChatLog"/>
+        <typeAlias type="com.kt.programk.common.domain.stat.ChatLogProcess" alias="ChatLogProcess"/>
+
+    </typeAliases>
+
+    <mappers>
+        <mapper resource="mybatis/sample.xml"/>
+        <!-- Admin -->
+        <mapper resource="mybatis/admin/CpUserMapper.xml"/>
+        <mapper resource="mybatis/admin/CpMapper.xml"/>
+        <mapper resource="mybatis/admin/AllowIpMapper.xml"/>
+        <mapper resource="mybatis/admin/AccessIpMapper.xml"/>
+
+        <!-- Core -->
+        <mapper resource="mybatis/core/AimlPredicateMapper.xml"/>
+        <mapper resource="mybatis/core/BotMapper.xml"/>
+        <mapper resource="mybatis/core/BotFileMapper.xml"/>
+        <mapper resource="mybatis/core/AimlMainMapper.xml"/>
+        <mapper resource="mybatis/core/AimlTopicMapper.xml"/>
+        <mapper resource="mybatis/core/AimlSubsMapper.xml"/>
+        <mapper resource="mybatis/core/AimlPropMapper.xml"/>
+        <mapper resource="mybatis/core/AimlPredMapper.xml"/>
+        <mapper resource="mybatis/core/AimlLinkMapper.xml"/>
+        <mapper resource="mybatis/core/AimlImagesMapper.xml"/>
+        <mapper resource="mybatis/core/AimlRecommendMapper.xml"/>
+        <mapper resource="mybatis/core/AimlTestMapper.xml"/>
+        <mapper resource="mybatis/core/AimlReplyMapper.xml"/>
+        <mapper resource="mybatis/core/AimlOptionMapper.xml"/>
+        <mapper resource="mybatis/core/AimlRepositoryMapper.xml"/>
+
+        <!--Category -->
+        <mapper resource="mybatis/category/AimlCategoryMapper.xml"/>
+        <mapper resource="mybatis/category/SubsCategoryMapper.xml"/>
+        <mapper resource="mybatis/category/PredCategoryMapper.xml"/>
+        <mapper resource="mybatis/category/PropCategoryMapper.xml"/>
+
+        <!-- Deploy -->
+        <mapper resource="mybatis/deploy/DeploySchedulerMapper.xml"/>
+        <mapper resource="mybatis/deploy/DeployNodeHistoryMapper.xml"/>
+        <mapper resource="mybatis/deploy/DeployAimlCategoryMapper.xml"/>
+        <mapper resource="mybatis/deploy/DeploySubsCategoryMapper.xml"/>
+        <mapper resource="mybatis/deploy/DeployPropCategoryMapper.xml"/>
+        <mapper resource="mybatis/deploy/DeployPredCategoryMapper.xml"/>
+        <mapper resource="mybatis/deploy/DeployProcessMapper.xml"/>
+        <mapper resource="mybatis/deploy/DeployHistoryMapper.xml"/>
+
+        <!--통게-->
+        <mapper resource="mybatis/stat/ClickStatMapper.xml"/>
+        <mapper resource="mybatis/stat/ChatLogMapper.xml"/>
+        <mapper resource="mybatis/stat/ChatLogProcessMapper.xml"/>
+    </mappers>
+
+</configuration>

@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>com.unus.programk</artifactId>
+        <groupId>programk</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>programk-cms</artifactId>
+    <packaging>war</packaging>
+
+    <properties>
+        <main.basedir>${project.basedir}</main.basedir>
+    </properties>
+
+ 	<repositories>
+		<repository>
+			<id>in-project</id>
+			<name>custom jars</name>
+			<url>file://${project.basedir}/lib</url>
+		</repository>
+	</repositories>
+	
+    <dependencies>
+    
+    	<dependency>
+			<groupId>JKTFCrypto</groupId>
+			<artifactId>JKTFCrypto</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+	    	
+        <dependency>
+            <groupId>programk</groupId>
+            <artifactId>programk-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>programk</groupId>
+            <artifactId>programk-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>programk</groupId>
+            <artifactId>programk-deploy</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- servlet -->
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>standard</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.9.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tiles</groupId>
+            <artifactId>tiles-extras</artifactId>
+            <version>3.0.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate-validator.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.validation</groupId>
+                    <artifactId>validation-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+            <version>${javax.el.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>javax.el</artifactId>
+            <version>${javax.el.version}</version>
+        </dependency>
+
+        <!-- web file upload-->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/net.sf.opencsv/opencsv -->
+        <dependency>
+            <groupId>net.sf.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>2.3</version>
+        </dependency>
+        
+        <!-- 암호화 -->
+		<!-- <dependency>
+			<groupId>JKTFCrypto</groupId>
+			<artifactId>JKTFCrypto</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${main.basedir}/lib/JKTFCrypto/JKTFCrypto/1.0.0/JKTFCrypto-1.0.0.jar</systemPath>
+		</dependency> -->
+		<!-- <dependency>
+			<groupId>JKTFCrypto</groupId>
+			<artifactId>JKTFCrypto</artifactId>
+			<version>1.0.0</version>
+		</dependency> -->
+
+		<!-- SafeDB 암호화 -->
+		<dependency>
+			<groupId>SafeDBCore</groupId>
+			<artifactId>SafeDBCore</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/Safedb/SafeDBCore_v3.2.9.jar</systemPath>
+		</dependency>
+		
+		<dependency>
+			<groupId>SafeDBCrypto</groupId>
+			<artifactId>SafeDBCrypto</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/Safedb/SafeDBCrypto_v3.2.9.jar</systemPath>
+		</dependency>
+		
+		<dependency>
+			<groupId>SafeDBSDK</groupId>
+			<artifactId>SafeDBSDK</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/Safedb/SafeDBSDK_v3.2.18.jar</systemPath>
+		</dependency>
+		
+		<dependency>
+			<groupId>xercesImpl</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/Safedb/xercesImpl.jar</systemPath>
+		</dependency>
+		
+		<dependency>
+			<groupId>xml-apis</groupId>
+			<artifactId>xml-apis</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/Safedb/xml-apis.jar</systemPath>
+		</dependency>
+		
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/Safedb/commons-beanutils-1.7.0.jar</systemPath>
+		</dependency>
+		
+		<dependency>
+			<groupId>ezmorph</groupId>
+			<artifactId>ezmorph</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/Safedb/ezmorph-1.0.6.jar</systemPath>
+		</dependency>
+		
+		<dependency>
+			<groupId>INICrypto</groupId>
+			<artifactId>INICrypto</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/Safedb/INICrypto_v4.1.4_ns.jar</systemPath>
+		</dependency>
+		
+		<dependency>
+			<groupId>INISAFECore</groupId>
+			<artifactId>INISAFECore</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/Safedb/INISAFECore_v2.2.7.jar</systemPath>
+		</dependency>
+		
+		<dependency>
+			<groupId>INISAFENet</groupId>
+			<artifactId>INISAFENet</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/Safedb/INISAFENet_v7.2.31_NS.jar</systemPath>
+		</dependency>
+		
+		<dependency>
+			<groupId>INISAFEPKI</groupId>
+			<artifactId>INISAFEPKI</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/Safedb/INISAFEPKI_v1.1.22.jar</systemPath>
+		</dependency>
+		
+		<dependency>
+			<groupId>json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<version>1.0.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/Safedb/json-lib-2.4.jar</systemPath>
+		</dependency>
+	
+		<!-- json -->
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+
+    </dependencies>
+
+    <build>
+        <finalName>programk-cms</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <warName>${cms.war.name}</warName>
+                    <outputDirectory>${cms.war.outputDirectory}</outputDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.8</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/lib</outputDirectory>
+                            <includeScope>system</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

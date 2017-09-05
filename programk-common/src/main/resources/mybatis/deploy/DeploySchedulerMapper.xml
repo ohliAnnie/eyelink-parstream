@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.deploy.DeploySchedulerMapper">
+    <resultMap id="BaseResultMap" type="DeployScheduler">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="cp_id" jdbcType="INTEGER" property="cpId"/>
+        <result column="deploy_date" jdbcType="TIMESTAMP" property="deployDate"/>
+        <result column="completed" jdbcType="VARCHAR" property="completed"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="sub_label" jdbcType="VARCHAR" property="subLabel"/>
+    </resultMap>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="DeployScheduler"
+            resultMap="BaseResultMap">
+        <![CDATA[
+           SELECT id, deploy_date, cp_id, file_type, completed, description, user_id, gubun, sub_label
+           FROM deploy_scheduler
+           WHERE id = #{id};
+        ]]>
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectList" parameterType="DeployScheduler"
+            resultMap="BaseResultMap">
+        <![CDATA[
+           SELECT id, deploy_date, cp_id, file_type, completed, description, user_id, gubun, sub_label
+           FROM deploy_scheduler
+           WHERE cp_id = #{cpId}
+           offset ${firstRecordIndex} limit ${recordCountPerPage};
+        ]]>
+    </select>
+
+	<!-- 마지막에 봇정리를 했는지 확인하기 위해 상태 조회 1:봇정리 0:기타 -->
+    <select id="cleanLastBotDeploy" parameterType="DeployScheduler" resultType="java.lang.Integer" >
+		SELECT count(*) FROM
+        ( SELECT * FROM deploy_scheduler WHERE cp_id = #{cpId} AND ( gubun = '정리' OR gubun = '배포' )ORDER BY deploy_date DESC LIMIT 1 ) as t
+        WHERE t.gubun = '정리'
+    </select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="DeployScheduler">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select  nextval('seq_deploy_scheduler')
+        </selectKey>
+        <![CDATA[
+          INSERT INTO deploy_scheduler(id, deploy_date, cp_id, completed, description, user_id, gubun, sub_label)
+          VALUES (#{id}, #{deployDate}::timestamp, #{cpId}, #{completed}, #{description}, #{userId}, #{gubun}, #{subLabel});
+        ]]>
+    </insert>
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="DeployScheduler">
+        <![CDATA[
+          DELETE FROM deploy_scheduler
+          WHERE id = #{id};
+        ]]>
+    </delete>
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="DeployScheduler">
+        UPDATE deploy_scheduler
+        <set>
+            <if test="deployDate != null">
+                deploy_date = #{deployDate},
+            </if>
+            <if test="cpId != null and cpId != 0">
+                cp_id = #{cpId},
+            </if>
+            <if test="completed != null">
+                completed = #{completed},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+        </set>
+        WHERE id = #{id};
+    </update>
+    
+    <!--샘플 수정 -->
+    <update id="updateBySubLabelSelective" parameterType="DeployScheduler">
+        UPDATE deploy_scheduler
+        <set>
+            <if test="completed != null">
+                completed = #{completed},
+            </if>
+        </set>
+        WHERE id = (SELECT id FROM deploy_scheduler WHERE sub_label = #{subLabel} and gubun = #{gubun} ORDER BY id DESC limit 1);
+    </update>
+
+</mapper>

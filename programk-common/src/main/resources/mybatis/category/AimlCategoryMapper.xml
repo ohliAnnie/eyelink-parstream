@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016 KT, Inc.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of KT
+  ~ , Inc. You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with KT.
+  ~
+  ~ Revision History
+  ~ Author              Date                  Description
+  ~ Seo Jong Hwa        2016 . 6 . 22
+  -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.category.AimlCategoryMapper">
+    <resultMap id="BaseResultMap" type="AimlCategory">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="created" jdbcType="TIMESTAMP" property="created"/>
+        <result column="modified" jdbcType="TIMESTAMP" property="modified"/>
+        <result column="restriction" jdbcType="VARCHAR" property="restriction"/>
+        <result column="cp_id" jdbcType="INTEGER" property="cpId"/>
+        <result column="topic" jdbcType="VARCHAR" property="topic"/>
+        <result column="topic_name" jdbcType="VARCHAR" property="topicName"/>
+        <result column="enabled" jdbcType="VARCHAR" property="enabled"/>
+        <result column="deploy" jdbcType="VARCHAR" property="deploy"/>
+        <result column="cp_label" jdbcType="VARCHAR" property="cpLabel"/>
+        <result column="count" jdbcType="VARCHAR" property="count"/>
+        <result column="upload_lock" jdbcType="VARCHAR" property="uploadLock"/>
+    </resultMap>
+    
+    <!-- 검색시 where 조건 -->
+    <sql id="whereSearch">
+		WHERE 0 = 0 
+		<if test='userAuth != "CPA" and cpId != null and cpId != 0'>
+            AND cp_id = #{cpId}
+        </if>
+		<if test='name != null and name != ""'>
+            AND LOWER(name) LIKE '%'|| LOWER(#{name}) ||'%'
+           </if>
+		<if test='restriction != null and restriction != ""'>
+            AND restriction = #{restriction}
+        </if>
+	</sql>
+	
+	<sql id="tableCategory"> 
+		<if test='userAuth == "CPA"'>
+		(
+			SELECT id, name, created, modified, restriction, cp_id, topic, topic_name, enabled, upload_lock
+			FROM aiml_category
+			WHERE restriction = 'all'
+			UNION ALL
+			SELECT id, name, created, modified, restriction, cp_id, topic, topic_name, enabled, upload_lock
+			FROM aiml_category
+			WHERE restriction = 'owner'
+			AND cp_id = #{cpId}
+		) AS t1
+		</if>
+		<if test='userAuth != "CPA"'>
+    	aiml_category AS t1
+		</if>
+    </sql>
+	
+	<sql id="columnDeploy"> 
+		<if test='userAuth == "CPA"'>
+		(
+			CASE WHEN (SELECT true FROM deploy_aiml_category WHERE cp_id = #{cpId} AND cate_id = t1.id) THEN 'Y'
+			ELSE 'N' 
+			END
+		) AS deploy
+		</if>
+		<if test='userAuth != "CPA"'>
+    	(
+			CASE WHEN (SELECT true FROM deploy_aiml_category WHERE cp_id = t1.cp_id AND cate_id = t1.id) THEN 'Y'
+			ELSE 'N' 
+			END
+		) AS deploy
+		</if>
+    </sql>
+    
+    <sql id="columnCpLabel"> 
+    	(
+			SELECT label FROM cp WHERE id = t1.cp_id
+		) AS cp_label
+    </sql>
+    
+    <sql id="columnCount"> 
+    	(
+			SELECT count(*) FROM aiml_main WHERE cate_id = t1.id
+		) AS count
+    </sql>
+	
+    <!-- 카운트 조회 -->
+    <select id="countAll" parameterType="AimlCategory" resultType="java.lang.Integer" >
+        select count(*) 
+        FROM 
+        <include refid="tableCategory" />
+        <include refid="whereSearch" />
+    </select>
+    
+    <select id="countByName" parameterType="AimlCategory" resultType="java.lang.Integer" >
+        select count(*) from aiml_category
+        WHERE 0 = 0
+        AND cp_id = #{cpId}
+        AND name = #{name}
+        <if test='id != null and id != 0'>
+            AND id != #{id}
+        </if>
+    </select>
+
+    <select id="countByCpId" parameterType="AimlCategory" resultType="java.lang.Integer" >
+        select count(*) from aiml_category
+        WHERE 0 = 0
+        AND cp_id = #{cpId}
+        OR restriction = 'all'
+    </select>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="AimlCategory"
+            resultMap="BaseResultMap">
+          SELECT id, name, created, modified, restriction, cp_id, topic, topic_name, enabled, upload_lock,
+          		<include refid="columnDeploy"/>
+          FROM aiml_category AS t1
+          WHERE id = #{id} ;
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectListAll" parameterType="AimlCategory"
+            resultMap="BaseResultMap">
+           SELECT id, name, created, modified, restriction, cp_id, topic, topic_name, enabled, upload_lock,
+           		<include refid="columnDeploy"/>,
+				<include refid="columnCpLabel"/>,
+				<include refid="columnCount"/>
+           FROM 
+           <include refid="tableCategory" />
+           <include refid="whereSearch" />
+           ORDER BY restriction ASC, id DESC
+           offset ${firstRecordIndex} limit ${recordCountPerPage};
+    </select>
+
+    <!-- 통계용 -->
+    <select id="selectByStat" parameterType="java.lang.Integer"
+            resultMap="BaseResultMap">
+         SELECT t1.id, t1.name
+         FROM aiml_category AS t1
+         INNER JOIN aiml_main As t2
+         ON t1.id = t2.cate_id
+         WHERE t2.id = #{id};
+    </select>
+
+    <select id="selectListByCpId" parameterType="AimlCategory"
+            resultMap="BaseResultMap">
+            SELECT id, name, created, modified, restriction, cp_id, topic, enabled, upload_lock
+            FROM aiml_category
+            WHERE 0 = 0
+            AND cp_id = #{cpId}
+            AND ( restriction = 'all' OR restriction = 'owner')
+            <if test="enabled != null">
+              AND enabled = #{enabled}
+            </if>
+            <if test="firstRecordIndex != null">
+              offset ${firstRecordIndex} limit ${recordCountPerPage};
+            </if>
+    </select>
+
+    <select id="selectListByName" parameterType="AimlCategory"
+            resultMap="BaseResultMap">
+        <![CDATA[
+            SELECT id, name, created, modified, restriction, cp_id, topic, enabled, upload_lock
+            FROM aiml_category
+            WHERE 0 = 0
+            AND cp_id = #{cpId}
+            AND name = #{name}
+            offset ${firstRecordIndex} limit ${recordCountPerPage};
+        ]]>
+    </select>
+
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="AimlCategory">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select nextval('seq_aiml_category')
+        </selectKey>
+        <![CDATA[
+        INSERT INTO aiml_category(id, name, created, modified, restriction, cp_id, topic, topic_name, enabled, upload_lock)
+        VALUES (#{id}, #{name}, now(), now(), #{restriction}, #{cpId}, #{topic}, #{topicName}, #{enabled}, #{uploadLock} );
+        ]]>
+    </insert>
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="AimlCategory">
+        <![CDATA[
+          DELETE FROM aiml_category
+          WHERE id = #{id};
+        ]]>
+    </delete>
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="AimlCategory">
+        UPDATE aiml_category
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="restriction != null">
+                restriction = #{restriction},
+            </if>
+            <if test="cpId != null">
+                cp_id = #{cpId},
+            </if>
+            <if test="topic != null">
+                topic = #{topic},
+            </if>
+            <if test="topicName != null">
+                topic_name = #{topicName},
+            </if>
+            <if test="enabled != null">
+                enabled = #{enabled},
+            </if>
+            <if test="uploadLock != null">
+                upload_lock = #{uploadLock},
+            </if>
+            modified = now()
+        </set>
+        WHERE id = #{id};
+    </update>
+
+	<!-- 업로드전 데이터 삭제 -->
+	<delete id="deleteAllNoLock" parameterType="AimlCategory">
+		DELETE FROM aiml_link      WHERE cate_id IN ( SELECT id FROM aiml_category WHERE cp_id = #{cpId} AND ( upload_lock IS NULL or upload_lock = 'N' ) );
+		DELETE FROM aiml_option    WHERE cate_id IN ( SELECT id FROM aiml_category WHERE cp_id = #{cpId} AND ( upload_lock IS NULL or upload_lock = 'N' ) );
+		DELETE FROM aiml_reply     WHERE cate_id IN ( SELECT id FROM aiml_category WHERE cp_id = #{cpId} AND ( upload_lock IS NULL or upload_lock = 'N' ) );
+		DELETE FROM aiml_test      WHERE cate_id IN ( SELECT id FROM aiml_category WHERE cp_id = #{cpId} AND ( upload_lock IS NULL or upload_lock = 'N' ) );
+		DELETE FROM aiml_recommend WHERE cate_id IN ( SELECT id FROM aiml_category WHERE cp_id = #{cpId} AND ( upload_lock IS NULL or upload_lock = 'N' ) );
+		DELETE FROM aiml_images    WHERE cate_id IN ( SELECT id FROM aiml_category WHERE cp_id = #{cpId} AND ( upload_lock IS NULL or upload_lock = 'N' ) );
+		DELETE FROM aiml_main      WHERE cate_id IN ( SELECT id FROM aiml_category WHERE cp_id = #{cpId} AND ( upload_lock IS NULL or upload_lock = 'N' ) );
+		DELETE FROM aiml_category  WHERE cp_id = #{cpId} AND ( upload_lock IS NULL or upload_lock = 'N' );
+	</delete>
+
+</mapper>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       ">
+
+    <import resource="/spring/context/context.xml"/>
+    <import resource="/spring/context/abstract.xml"/>
+    <import resource="/spring/context/context-datasource.xml"/>
+    <import resource="/spring/context/context-transaction.xml"/>
+    
+    <!-- 상용 장비는 cluster-->
+    <!--<import resource="/spring/context/context-cluster-redis.xml"/>-->
+    <!-- 개발 장비는 Single-->
+    <!--<import resource="/spring/context/context-single-redis.xml"/>-->
+    <!-- DB 사용 -->
+    <import resource="/spring/context/context-db.xml"/>
+
+    <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
+        <property name="location" value="classpath:config/commons/${env}/commons.properties,file:${config}"/>
+    </bean>
+
+    <bean id="childrenCache" class="com.kt.programk.scheduler.cache.ChildrenCache"/>
+
+    <!--봇 변경 -->
+    <bean id="botActiveChange" class="com.kt.programk.scheduler.process.BotActiveChange">
+        <constructor-arg index="0" ref="botDeployService"/>
+        <constructor-arg index="1" ref="botRepository"/>
+        <constructor-arg index="2" ref="childrenCache"/>
+    </bean>
+
+    <!-- 시간대별 통계 -->
+    <bean id="timeStatProcess" class="com.kt.programk.scheduler.process.TimeStatProcess">
+        <constructor-arg ref="clickStatMapper"/>
+    </bean>
+
+    <!-- 일별 통계 -->
+    <bean id="dayStatProcess" class="com.kt.programk.scheduler.process.DayStatProcess">
+        <constructor-arg ref="clickStatMapper"/>
+    </bean>
+
+    <!-- 월별 통계 -->
+    <bean id="monthStatProcess" class="com.kt.programk.scheduler.process.MonthStatProcess">
+        <constructor-arg ref="clickStatMapper"/>
+    </bean>
+
+
+    <!-- 카테고리별 통계 -->
+    <bean id="categoryStatProcess" class="com.kt.programk.scheduler.process.CategoryStatProcess">
+        <constructor-arg ref="clickStatMapper"/>
+    </bean>
+
+    <!-- 대화 통계 -->
+    <bean id="chatStatProcess" class="com.kt.programk.scheduler.process.ChatStatProcess">
+        <constructor-arg ref="clickStatMapper"/>
+    </bean>
+
+    <!-- 질문 통계 -->
+    <bean id="inputStatProcess" class="com.kt.programk.scheduler.process.InputStatProcess">
+        <constructor-arg ref="clickStatMapper"/>
+    </bean>
+
+    <!-- 사용자 통계 -->
+    <bean id="userStatProcess" class="com.kt.programk.scheduler.process.UserStatProcess">
+        <constructor-arg ref="clickStatMapper"/>
+    </bean>
+
+    <!-- predicate 백업 -->
+    <bean id="predicateProcess" class="com.kt.programk.scheduler.process.PredicateProcess">
+        <constructor-arg ref="config"/>
+        <constructor-arg ref="clickStatMapper"/>
+    </bean>
+
+    <bean id="predicateRoute" class="com.kt.programk.scheduler.route.PredicateRoute">
+        <property name="config" ref="config"/>
+    </bean>
+
+    <!--chat 로그 삭제-->
+    <bean id="chatLogProcess" class="com.kt.programk.scheduler.process.ChatLogProcess">
+        <constructor-arg ref="config"/>
+        <constructor-arg ref="clickStatMapper"/>
+    </bean>
+
+    <!-- 캐쉬 -->
+    <bean id="cache" class="com.kt.programk.scheduler.cache.ChildrenCache"/>
+
+    <camelContext id="schedulerCamel" xmlns="http://camel.apache.org/schema/spring">
+        <template id="schedulerProducer"/>
+        <consumerTemplate id="camelConsumer"/>
+
+        <routeBuilder ref="predicateRoute"/>
+
+        <onException>
+            <exception>java.lang.Exception</exception>
+            <redeliveryPolicy maximumRedeliveries="1" redeliveryDelay="5000"/>
+        </onException>
+
+
+        <!-- cron 스케줄 설정 방법은 아래 사이트 참조 -->
+        <!-- http://www.cronmaker.com/ -->
+        <route>
+            <!-- 1분마다 실행 -->
+            <from uri="quartz://bot?cron={{scheduler.cron.minute}}"/>
+            <log message="Bot change start"/>
+            <process ref="botActiveChange"/>
+<!--             <to uri="mock:result"/> -->
+        </route>
+
+        <route>
+            <!-- 매 시간 5분에 실행 -->
+            <from uri="quartz://hour?cron={{scheduler.cron.time}}"/>
+            <process ref="timeStatProcess"/>
+<!--             <to uri="mock:result"/> -->
+        </route>
+
+        <route>
+            <!-- 일 1시 0분에 실행 -->
+            <from uri="quartz://daily?cron={{scheduler.cron.day}}"/>
+            <process ref="dayStatProcess"/>
+            <process ref="categoryStatProcess"/>
+            <process ref="chatStatProcess"/>
+            <process ref="inputStatProcess"/>
+            <process ref="userStatProcess"/>
+<!--             <to uri="mock:result"/> -->
+        </route>
+
+        <route>
+            <!-- 매월 1일 1시에 실행 -->
+            <from uri="quartz://month?cron={{scheduler.cron.month}}"/>
+            <process ref="monthStatProcess"/>
+<!--             <to uri="mock:result"/> -->
+        </route>
+
+        <route>
+            <!-- 매월 1일 2시에 실행 -->
+            <from uri="quartz://chatlog?cron={{scheduler.cron.chatlog}}"/>
+            <process ref="chatLogProcess"/>
+<!--             <to uri="mock:result"/> -->
+        </route>
+
+        <route>
+            <!-- 매월 1일 3시에 실행 -->
+            <from uri="quartz://predicate?cron={{scheduler.cron.predicate}}"/>
+            <process ref="predicateProcess"/>
+<!--             <to uri="mock:result"/> -->
+        </route>
+
+
+    </camelContext>
+</beans>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.core.BotMapper">
+    <resultMap id="BaseResultMap" type="Bot">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="sub_label" jdbcType="VARCHAR" property="subLabel"/>
+        <result column="cp_id" jdbcType="INTEGER" property="cpId"/>
+        <result column="active" jdbcType="VARCHAR" property="active"/>
+        <result column="last_loaded" jdbcType="TIMESTAMP" property="lastLoaded"/>
+        <result column="deploy_date" jdbcType="TIMESTAMP" property="deployDate"/>
+    </resultMap>
+    
+    <!-- 검색시 where 조건 -->
+    <sql id="whereSearch">
+		WHERE  0 = 0		
+		<if test='cpId != null and cpId != 0'>
+            AND cp_id = #{cpId}
+        </if>  
+        <if test="cpGroup != null and cpGroup != ''">
+             AND cp_id IN (select unnest::integer as id from unnest(string_to_array(#{cpGroup},',')))
+        </if>
+	</sql>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="Bot"
+            resultMap="BaseResultMap">
+        <![CDATA[
+            SELECT id, cp_id, sub_label, active
+            FROM bot
+            WHERE 0 = 0
+            AND id = #{id};
+        ]]>
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectList" parameterType="Bot" resultMap="BaseResultMap">
+         SELECT id, cp_id, sub_label, active, 
+         		(SELECT last_loaded FROM bot_file WHERE bot_id = bot.id and file_type = 'aiml'),
+				(SELECT deploy_date FROM deploy_scheduler WHERE sub_label = bot.sub_label and completed = 'N' and gubun = 'BOT변경' ORDER BY id DESC limit 1)
+         FROM bot
+         <include refid="whereSearch" />
+         ORDER BY id ASC
+    </select>
+
+    <!-- 배포하기 위한 파일 경로 조회 -->
+    <select id="selectListPath" parameterType="Bot" resultType="com.kt.programk.common.domain.core.AimlBots">
+        SELECT
+            bot.sub_label as subLabel,
+            bot_file.path || '/' ||bot_file.file_name as fileName,
+            bot_file.file_type as fileType
+        FROM cp
+        INNER JOIN bot
+        ON cp.id = bot.cp_id
+        INNER JOIN bot_file
+        ON bot.id = bot_file.bot_id
+        WHERE cp.enabled = 'Y'
+        ORDER BY bot_file.id ASC
+    </select>
+
+    <!-- 토큰으로 봇 아이디 조회 -->
+    <select id="selectListByToken" parameterType="java.lang.String" resultType="com.kt.programk.common.db.domain.BotDTO">
+	    SELECT t1.sub_label AS "subLabel",t1.active as active, t2.token as token
+	    FROM bot as t1
+	    INNER JOIN CP as t2
+	    ON t1.cp_id = t2.id
+	    WHERE t2.token = #{token};
+    </select>
+
+    <select id="selectListByTokenAndLabel" parameterType="hashmap" resultType="com.kt.programk.common.db.domain.BotDTO">
+        SELECT t1.sub_label AS "subLabel",t1.active as active, t2.token as token
+        FROM bot as t1
+        INNER JOIN CP as t2
+        ON t1.cp_id = t2.id
+        WHERE t2.token = #{token}
+        AND t2.label = #{label};
+    </select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="Bot">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select nextval('seq_bot')
+        </selectKey>
+        <![CDATA[
+        INSERT INTO bot(id, cp_id, sub_label, active )
+        VALUES (#{id}, #{cpId}, #{subLabel}, #{active});
+        ]]>
+    </insert>
+
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="Bot">
+        <![CDATA[
+        DELETE FROM bot
+        WHERE 0 = 0
+            AND id = #{id}
+            AND cp_id = #{cpId}
+        ]]>
+    </delete>
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="Bot">
+        update bot
+        <set>
+            <if test="cpId != null">
+                cp_id = #{cpId},
+            </if>
+            <if test="subLabel != null">
+                sub_label = #{subLabel},
+            </if>
+            <if test="active != null">
+                active = #{active},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

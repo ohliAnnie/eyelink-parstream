@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2016 KT, Inc.
+  ~ All right reserved.
+  ~ This software is the confidential and proprietary information of KT
+  ~ , Inc. You shall not disclose such Confidential Information and
+  ~ shall use it only in accordance with the terms of the license agreement
+  ~ you entered into with KT.
+  ~
+  ~ Revision History
+  ~ Author              Date                  Description
+  ~ Seo Jong Hwa        2016 . 6 . 22
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kt.programk.common.repository.deploy.DeployHistoryMapper">
+    <resultMap id="BaseResultMap" type="DeployHistory">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="scheduler_id" jdbcType="INTEGER" property="schedulerId"/>
+        <result column="file_name" jdbcType="VARCHAR" property="fileName"/>
+        <result column="file_body" jdbcType="VARCHAR" property="fileBody"/>
+        <result column="file_type" jdbcType="VARCHAR" property="fileType"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="created" jdbcType="TIMESTAMP" property="created"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="gubun" jdbcType="VARCHAR" property="gubun"/>
+        <result column="cp_id" jdbcType="INTEGER" property="cpId"/>
+        <result column="sub_label" jdbcType="VARCHAR" property="subLabel"/>
+        <result column="file_info" jdbcType="VARCHAR" property="fileInfo"/>
+        <result column="deploy_date" jdbcType="VARCHAR" property="deployDate"/>
+    </resultMap>
+    
+    <!-- 검색시 where 조건 -->
+    <sql id="whereSearch">
+		WHERE  0 = 0	
+		<if test='cpId != null and cpId != 0'>
+            AND t1.cp_id = #{cpId}
+        </if>
+	</sql>
+	
+	<!-- 카운트 조회 -->
+    <select id="countAll" parameterType="DeployHistory" resultType="java.lang.Integer" >
+        SELECT count(*) 
+        FROM deploy_scheduler t1
+        <include refid="whereSearch" />
+    </select>
+
+    <!-- 샘플 상세 조회 -->
+    <select id="selectByPrimaryKey" parameterType="DeployHistory"
+            resultMap="BaseResultMap">
+        <![CDATA[
+          SELECT id, scheduler_id, file_name, file_body, file_type, created, description
+          FROM deploy_history
+          WHERE id = #{id}
+        ]]>
+    </select>
+
+    <!-- 해당 스케줄의 히스토리가 이미 있는지 확인-->
+    <select id="countByFileName" parameterType="DeployHistory"
+            resultType="java.lang.Integer">
+        <![CDATA[
+          SELECT count(*)
+          FROM deploy_history
+          WHERE scheduler_id = #{schedulerId}
+          AND file_name = #{fileName};
+        ]]>
+    </select>
+
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectList" parameterType="DeployHistory"
+            resultMap="BaseResultMap">
+         SELECT t1.id, t1.deploy_date, t1.cp_id, t1.completed, t1.description, t1.user_id, t1.gubun, t1.sub_label,
+         		case when t1.completed = 'Y'
+					then ''
+			    	else (select description from deploy_history where scheduler_id = t1.id limit 1)
+				end as message,
+				case when t1.completed = 'Y' and t1.gubun = '배포'
+					then (SELECT ARRAY_TO_STRING(ARRAY(select file_type || '|' || id from (select distinct on(file_type) * from deploy_history where scheduler_id = t1.id and file_type != 'bot' order by file_type ASC) as a ORDER BY id ASC), ','))
+			        else ''
+				end as file_info
+		 FROM deploy_scheduler t1	 
+         <include refid="whereSearch" />
+         ORDER BY t1.id DESC
+         offset ${firstRecordIndex} limit ${recordCountPerPage};
+    </select>
+
+    <!-- 샘플 저장 -->
+    <insert id="insert" parameterType="DeployHistory">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select nextval('seq_deploy_history')
+        </selectKey>
+        <![CDATA[
+          INSERT INTO deploy_history(id, scheduler_id, file_name, file_body, file_type, created, description)
+          VALUES (#{id}, #{schedulerId}, #{fileName}, #{fileBody}, #{fileType}, now(), #{description});
+        ]]>
+    </insert>
+
+    <!-- 중복되는 입력 방지 -->
+    <insert id="insertNotExist" parameterType="DeployHistory">
+        <![CDATA[
+          INSERT INTO deploy_history(id, scheduler_id, file_name, file_body, file_type, created, description)
+          SELECT nextval('seq_deploy_history'), #{schedulerId}, #{fileName}, #{fileBody}, #{fileType}, now(), #{description}
+          WHERE NOT EXISTS (SELECT 1 FROM deploy_history WHERE scheduler_id = #{schedulerId} AND file_name = #{fileName});
+        ]]>
+    </insert>
+
+    <!-- 샘플 삭제 -->
+    <delete id="deleteByPrimaryKey" parameterType="DeployHistory">
+        <![CDATA[
+          DELETE FROM deploy_history
+          WHERE id = #{id};
+        ]]>
+    </delete>
+
+    <!--샘플 수정 -->
+    <update id="updateByPrimaryKeySelective" parameterType="DeployHistory">
+        UPDATE deploy_history
+        <set>
+            <if test="schedulerId != null">
+                scheduler_id = #{schedulerId},
+            </if>
+            <if test="fileName != null">
+                file_name = #{fileName},
+            </if>
+            <if test="fileBody != null">
+                file_body = #{fileBody},
+            </if>
+            <if test="fileType != null">
+                file_Type = #{fileType},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+        </set>
+        WHERE id = #{id};
+    </update>
+
+</mapper>
