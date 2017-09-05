@@ -130,7 +130,7 @@ router.get('/sankey03', function(req, res, next) {
 // query Report
 router.get('/restapi/selectJiraAccess', function(req, res, next) {
   console.log('sample/restapi/selectJiraAccess');
-  var in_data = {};
+  var in_data = {   index : req.query.index };
   queryProvider.selectSingleQueryByID2("sample","selectJiraAccess", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');
