@@ -93,8 +93,7 @@ router.get('/restapi/selectJiraAccReq', function(req, res, next) {
 router.get('/restapi/selectJiraSankeyByLink', function(req, res, next) {
   console.log('dashboard/restapi/selectJiraAccReq');
   var in_data = {    index : req.query.index, START : req.query.START, END : req.query.END  };  
-  queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccReq", in_data, function(err, out_data, params) {
-    // console.log(out_datsa);
+  queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccReq", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -104,11 +103,15 @@ router.get('/restapi/selectJiraSankeyByLink', function(req, res, next) {
                     '#FF00DD', '#FF007F', '#FFA7A7', '#FFE08C', '#CEF279', '#B2EBF4', '#B5B2FF', '#FFB2F5', '#CC723D', '#008299'];  
  var reqCnt = 0, nodeCnt = 0, lineCnt = 0, lineNodeCnt = 0, idCnt = 0;        
  var nodeNo = 0;
- var nodeList = [];
- out_data.forEach(function(d) {        
-    var a = d._source.request.split('?');                         
-    var c = a[0].split('.');    
-    if(c[c.length-1]!='js'&&c[c.length-1]!='css'&&c[c.length-1]!='png'&&c[c.length-1]!='woff'&&c[c.length-1]!='json'&&c[c.length-1]!='jsp'&&c[c.length-1]!='ico'&&c[c.length-1]!='svg'&&c[c.length-1]!='gif'){     
+ var nodeList = []; 
+ out_data.forEach(function(d) {  
+  if(d._source.request != null) {
+  var a = d._source.request.split('?');                         
+  var c = a[0].split('.');    
+  if(c[c.length-1]!='js'&&c[c.length-1]!='css'&&c[c.length-1]!='png'&&c[c.length-1]!='woff'&&c[c.length-1]!='json'&&c[c.length-1]!='jsp'&&c[c.length-1]!='ico'&&c[c.length-1]!='svg'&&c[c.length-1]!='gif'&&c[c.length-1]!='navigation'){     
+    if(d._source.auth == null){
+     d._source.auth = 'visitor';
+    }      
     var b = a[0].split('/');
 
     if(req[a[0]] == null) {          
@@ -125,7 +128,7 @@ router.get('/restapi/selectJiraSankeyByLink', function(req, res, next) {
     
     if(node[nodeId] ==null){
       nodeList[nodeNo] = nodeId;
-      node[nodeId] ={ name : a[0], id : nodeId, no : nodeNo++ };          
+       node[nodeId] ={ name : a[0], id : nodeId, no : nodeNo++, errcnt : 0 };  
     }
     if(last[d._source.auth] != null){
       var from = last[d._source.auth];
@@ -149,11 +152,27 @@ router.get('/restapi/selectJiraSankeyByLink', function(req, res, next) {
           var source = node[from].no;
           var target = node[to].no;              
           if(line[source+'-'+target] == null) {                
-            line[source+'-'+target] = { no : lineCnt };               
-            lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1 };                
+            line[source+'-'+target] = { no : lineCnt };                           
+             if(d._source.response < 400){                           
+                lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 0 };                           
+              } else {                             
+                console.log(d._source)
+                lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 1, elist : d._id };
+                nodes[target].errcnt++;                                         
+             }  
           } else {                            
             lines[line[source+'-'+target].no].value += 0.0001;
             lines[line[source+'-'+target].no].cnt++;
+             if(d._source.response >= 400){
+              console.log(d._source )
+                 if(lines[line[source+'-'+target].no].errcnt == 0) {
+                    lines[line[source+'-'+target].no].elist = d._id;
+                 } else {
+                  lines[line[source+'-'+target].no].elist += ','+d._id;       
+                 }       
+               lines[line[source+'-'+target].no].errcnt++;             
+               nodes[target].errcnt++;                           
+            }
           }
         } else {                   
           lines[line[node[to].no+'-'+node[from].no].no].value += 0.0001;
@@ -168,10 +187,16 @@ router.get('/restapi/selectJiraSankeyByLink', function(req, res, next) {
       }
     }        
     last[d._source.auth] =  node[nodeId].id;       
+    }
   }
    });
+ nodes.forEach(function(d){
+  if(d.errcnt > 0){
+    d.name = '[Err:'+ d.errcnt + '] '+d.name;
+  }
+});
   var json = {"nodes" :nodes, "links" : lines };
-   }
+   }   
     res.json({rtnCode: rtnCode, rtnData: json, id : id});
   });
 });
@@ -191,8 +216,7 @@ router.get('/restapi/selectJiraSankeyByLinkForScatter', function(req, res, next)
     MIN : parseInt(req.query.min),
     MAX : parseInt(req.query.max)  
   };  
-  queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccReqMinMax", in_data, function(err, out_data, params) {
-      console.log(out_data);
+  queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccReqMinMax", in_data, function(err, out_data, params) {      
       var rtnCode = CONSTS.getErrData('0000');
       if (out_data == null) {
         rtnCode = CONSTS.getErrData('0001');
@@ -203,10 +227,14 @@ router.get('/restapi/selectJiraSankeyByLinkForScatter', function(req, res, next)
    var reqCnt = 0, nodeCnt = 0, lineCnt = 0, lineNodeCnt = 0, idCnt = 0;        
    var nodeNo = 0;
    var nodeList = [];
-   out_data.forEach(function(d) {        
-      var a = d._source.request.split('?');                         
-      var c = a[0].split('.');    
-      if(c[c.length-1]!='js'&&c[c.length-1]!='css'&&c[c.length-1]!='png'&&c[c.length-1]!='woff'&&c[c.length-1]!='json'&&c[c.length-1]!='jsp'&&c[c.length-1]!='ico'&&c[c.length-1]!='svg'&&c[c.length-1]!='gif'){     
+   out_data.forEach(function(d) {            
+    if(d._source.request != null) {
+    var a = d._source.request.split('?');                         
+    var c = a[0].split('.');    
+    if(c[c.length-1]!='js'&&c[c.length-1]!='css'&&c[c.length-1]!='png'&&c[c.length-1]!='woff'&&c[c.length-1]!='json'&&c[c.length-1]!='jsp'&&c[c.length-1]!='ico'&&c[c.length-1]!='svg'&&c[c.length-1]!='gif'&&c[c.length-1]!='eot'&&c[c.length-1]!='charts'&&c[c.length-1]!='da'&&c[c.length-1]!='gadget'){             
+      if(d._source.auth == null){
+        d._source.auth = 'visitor';
+      }
       var b = a[0].split('/');
 
       if(req[a[0]] == null) {          
@@ -267,12 +295,36 @@ router.get('/restapi/selectJiraSankeyByLinkForScatter', function(req, res, next)
       }        
       last[d._source.auth] =  node[nodeId].id;       
     }
+    }
      });
+
+   nodes.forEach(function(d){
+    if(d.errcnt > 0){
+    d.name = '[Err:'+ d.errcnt + '] '+d.name;
+    }
+  });
     var json = {"nodes" :nodes, "links" : lines };
      }
       res.json({rtnCode: rtnCode, rtnData: json, id : id});
     });
 });
+
+router.get('/sankey_pop', function(req, res, next) {
+  var in_data = {
+    index:  indexAcc+"*",    
+    type: "access",
+    id : req.query.link.split(',')
+  };
+  console.log(in_data);
+  queryProvider.selectSingleQueryByID2("dashboard","selectByIdList", in_data, function(err, out_data, params) {     
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }     
+    res.render('./dashboard/sankey_pop', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+  });  
+});
+
 
 router.get('/restapi/selectJiraAccScatter', function(req, res, next) {
   console.log('dashboard/restapi/selectJiraAccScatter');
@@ -326,7 +378,6 @@ router.get('/restapi/selectJiraAccDash', function(req, res, next) {
           });
         }
     });  
-
     res.json({rtnCode: rtnCode, rtnData: data, start : start, end : end });
   });
 });
