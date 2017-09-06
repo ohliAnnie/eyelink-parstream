@@ -203,7 +203,7 @@
   ]]></query>
   <query id='selectJiraAccReq'><![CDATA[
       {
-        "index" : [##index##],
+        "index" : #index#,
         "type" : "access",       
         "body" : {
           "size"   : 100000,
@@ -270,7 +270,7 @@
   ]]></query>    
   <query id='selectJiraAccDash'><![CDATA[
       {
-        "index" : [##index##],
+        "index" : #index#,
         "type" : "access",                    
         "body" : {       
           "size"   : 100000, 
@@ -305,7 +305,7 @@
   ]]></query>
    <query id='selectJiraAccMap'><![CDATA[
        {
-        "index" : [##index##],
+        "index" : #index#,
         "type" : "access",       
         "body" : {
           "size"   : 100000,
@@ -372,7 +372,7 @@
   ]]></query>
   <query id='selectScatterSection'><![CDATA[
       {
-        "index" : [##index##],
+        "index" : #index#,
         "type" : "access",                    
         "body" : {       
           "size"   : 100000, 
@@ -435,7 +435,7 @@
   ]]></query>
     <query id='selectJiraAccOneWeek'><![CDATA[
       {
-        "index" : [##index##],
+        "index" : #index#,
         "type" : "access",                    
         "body" : {       
           "size"   : 100000, 
@@ -444,7 +444,7 @@
           "query": {
             "bool" : {
               "must" : {
-                "match_all" : {}
+                "range" : {  "@timestamp": {    "gte": #start# } } 
               },
               "must_not" : {
                 "match": {
@@ -1004,7 +1004,7 @@
   ]]></query>
   <query id='selectJiraAccReq'><![CDATA[
       {
-        "index" : ["filebeat_jira_access-2017.08.31", "filebeat_jira_access-2017.09.01"],
+        "index" : "filebeat_jira_access-*",
         "type" : "access",       
         "body" : {
           "size"   : 100000,

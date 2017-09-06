@@ -11,7 +11,7 @@ function makeDatabyDay(day){
   var d =day.toString().split(' ');  
   var y = yDay.toString().split(' ');  
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var data = { index: [indexs+d[3]+"."+mon[d[1]]+"."+d[2], indexs+y[3]+"."+mon[y[1]]+"."+y[2]],
+  var data = { index: indexs+'*',
               START : y[3]+"-"+mon[y[1]]+"-"+y[2]+'T15:00:00', END : d[3]+"-"+mon[d[1]]+"-"+d[2]+"T15:00:00"};   
   getDash(data);    
   getMapData(data);
@@ -207,7 +207,7 @@ function getDataByToggle(gap) {
   var e = new Date(now).toString(' ').split(' ');
   var s = new Date(now-gap*60*1000).toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var data = { index: [indexs+d[3]+"."+mon[d[1]]+"."+d[2], indexs+y[3]+"."+mon[y[1]]+"."+y[2], indexs+yy[3]+"."+mon[yy[1]]+"."+yy[2]],
+  var data = { index: indexs+"*",
               START : s[3]+"-"+mon[s[1]]+"-"+s[2]+'T'+s[4], END : e[3]+"-"+mon[e[1]]+"-"+e[2]+"T"+e[4]};
   getDash(data);    
   getMapData(data);
@@ -619,8 +619,8 @@ function drawChart() {
       var b = a[0].split('/');
       var c = a[3].split(' ');
       var mon = {'Jan' : 1, 'Feb' : 2, 'Mar' : 3, 'Apr' : 4, 'May' : 5, 'Jun' : 6, 'Jul' : 7, 'Aug' : 8, 'Sep' : 9, 'Oct' : 10, 'Nov' : 11, 'Dec' : 12 };      
-      d.day=d3.time.day(new Date(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]));
-            
+      d.day=d3.time.day(new Date(new Date(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]).getTime()+9*60*60*1000));
+      console.log(d);              
     });
 
     // console.log(data);

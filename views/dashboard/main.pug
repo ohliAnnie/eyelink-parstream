@@ -51,33 +51,55 @@ block content
             a(href='#') Dashboard
           li.active Dashboard  
       .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Option
+            .portlet-body.form
+              form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .row
+                    label.control-label.col-md-2 Server                                        
+                    .col-md-2.form-inline
+                      select.form-control.input-small.select2me.form-md-line-input(name='server')
+                        soption(value='all') All
+                        option(value=15) 15min
+                        option(value=30) 30min
+                        option(value=60) 60min
+                        option(value=180) 3hour
+                        option(value=360) 6hour
+                    .col-md-3.form-inline
+                      button#btn_search.btn.blue
+                        i.fa.fa-search  Search
+                    .btn-group.actions(data-toggle='buttons')                    
+                      label.btn.btn-default
+                        input.toggle(type='radio' id='10min')
+                        |  Last 10m
+                      label.btn.btn-default
+                        input.toggle(type='radio' id='30min')
+                        |  Last 30m
+                      label.btn.btn-default
+                        input.toggle(type='radio' id ='1hour')
+                        |  Last 1h
+                      label.btn.btn-default
+                        input.toggle(type='radio' id ='3hour')
+                        |  Last 3h
+                      label.btn.btn-default
+                        input.toggle(type='radio' id ='6hour')
+                        |  Last 6h
+                      label.btn.btn-default
+                        input.toggle(type='radio' id ='12hour')
+                        |  Last 12h
+                      label.btn.btn-default
+                        input.toggle(type='radio' id ='24hour')
+                        |  Last 24h    
+      .row        
         .col-md-12      
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
                 span.caption-subject.bold.uppercase Server Map
-              .btn-group.actions(data-toggle='buttons')                    
-                label.btn.btn-default
-                  input.toggle(type='radio' id='10min')
-                  |  Last 10m
-                label.btn.btn-default
-                  input.toggle(type='radio' id='30min')
-                  |  Last 30m
-                label.btn.btn-default
-                  input.toggle(type='radio' id ='1hour')
-                  |  Last 1h
-                label.btn.btn-default
-                  input.toggle(type='radio' id ='3hour')
-                  |  Last 3h
-                label.btn.btn-default
-                  input.toggle(type='radio' id ='6hour')
-                  |  Last 6h
-                label.btn.btn-default
-                  input.toggle(type='radio' id ='12hour')
-                  |  Last 12h
-                label.btn.btn-default
-                  input.toggle(type='radio' id ='24hour')
-                  |  Last 24h
             .portlet-body(style='height:850px;  z-index: 2')
               a#btn_sankey.icon-btn.sankey-toggler.uppercase(style='z-index: 10; float: right;')
                 i.fa.fa-arrow-left                

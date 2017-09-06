@@ -460,7 +460,7 @@ router.get('/restapi/selectScatterSection', function(req, res, next) {
   console.log(start, end);
   
   var in_data = {
-    index:  [indexAcc+e[3]+"."+mon[e[1]]+"."+e[2],  indexAcc+s[3]+"."+mon[s[1]]+"."+s[2]],
+    index:  indexAcc+e[3]+"*",
     START : start,
     END : end,
     MIN : parseInt(req.query.min),
@@ -528,21 +528,18 @@ router.get('/restapi/countAccJiraError', function(req, res, next) {
 router.get('/restapi/getJiraAccOneWeek', function(req, res, next) {
   console.log('dashboard/restapi/getJiraAccOneWeek');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var week = [];
-  for(var i=0; i<7; i++)  {
-    var time = new Date().getTime() - i*24*60*60*1000;
-    var date = new Date(time).toString().split(' ');  
-    week[i] = indexAcc+date[3]+"."+mon[date[1]]+"."+date[2];
-  }  
+  var week = [];  
+  var s = new Date(new Date().getTime()-9*60*60*1000-7*24*60*60*1000).toString().split(' ');
   var in_data = {
-    index: week
+    index: indexAcc+"*",
+    start: s[3]+"-"+mon[s[1]]+"-"+s[2]+"T15:00:00"
   };
   queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccOneWeek", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    } 
+    }     
     var data = [];
     out_data.forEach(function(d) {              
       d._source.response = parseInt(d._source.response);
@@ -551,8 +548,10 @@ router.get('/restapi/getJiraAccOneWeek', function(req, res, next) {
       } else {
         d._source.event_type = 0;
       }
-      if(d._source.timestamp != null)
+      if(d._source.timestamp != null){        
         data.push(d._source);
+
+      }
     });       
     res.json({rtnCode: rtnCode, rtnData: data });
   });  
@@ -700,14 +699,14 @@ router.get('/restapi/getJiramapdata', function(req, res, next) {
 
 router.get('/restapi/getJiramapdataForScatter', function(req, res, next) {
   console.log('dashboard/restapi/getJiramapdata');    
-    var s = new Date(parseInt(req.query.start)).toString().split(' ');
+  var s = new Date(parseInt(req.query.start)).toString().split(' ');
   var e = new Date(parseInt(req.query.end)).toString().split(' ');  
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var start = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4];
   var end = e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4];  
   var date = new Date().toString().split(' ');  
   var in_data = {
-    index:  [indexAcc+e[3]+"."+mon[e[1]]+"."+e[2],  indexAcc+s[3]+"."+mon[s[1]]+"."+s[2]],
+    index:  indexAcc+"*",
     START : start,
     END : end,
     MIN : parseInt(req.query.min),
@@ -859,7 +858,7 @@ router.get('/restapi/getJvmSysData', function(req, res, next) {
 
 
 router.get('/restapi/getStatTransaction', function(req, res, next) {
-  console.log('dashboard/restapi/getHeapData');    
+  console.log('dashboard/restapi/getStatTransaction');    
   var in_data = {
     index : req.query.index,
     type : req.query.type,
@@ -874,6 +873,24 @@ router.get('/restapi/getStatTransaction', function(req, res, next) {
     res.json({rtnCode: rtnCode, rtnData: out_data });
   });
 });
+
+router.get('/restapi/getActiveTrace', function(req, res, next) {
+  console.log('dashboard/restapi/getActiveTrace');    
+  var in_data = {
+    index : req.query.index,
+    type : req.query.type,
+    gte : req.query.gte,
+    lte : req.query.lte
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","selectByTimestamp", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');        
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }        
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
 
 router.get('/restapi/getRestimeCount', function(req, res, next) {
   console.log('dashboard/restapi/getRestimeCount');    
