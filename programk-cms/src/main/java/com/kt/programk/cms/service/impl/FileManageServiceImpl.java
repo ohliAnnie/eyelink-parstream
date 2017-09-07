@@ -199,7 +199,7 @@ public class FileManageServiceImpl implements FileManageService {
 	private ChatLogProcessMapper chatLogProcessMapper;
 
 	/**
-	 * Upload aiml.
+	 * Upload aiml. 카카오톡 연동 용도로 추가 개발됨
 	 *
 	 * @param cpId
 	 *            the cp id
@@ -226,8 +226,9 @@ public class FileManageServiceImpl implements FileManageService {
 		String message = "";
 		Map<String, Integer> categoryMap = new HashMap<>();
 		List<String[]> dataError = new ArrayList<String[]>();
-
-		dataError.add(new String[] { "카테고리", "질문", "검증샘플", "답변", "이미지", "대체텍스트", "이전답변", "추천질문", "링크", "추가답변", "옵션1", "옵션2", "옵션3", "옵션4", "옵션5", "오류" });
+		// TODO : commented out for KakaoPlusFriend
+//		dataError.add(new String[] { "카테고리", "질문", "검증샘플", "답변", "이미지", "대체텍스트", "이전답변", "추천질문", "링크", "추가답변", "옵션1", "옵션2", "옵션3", "옵션4", "옵션5", "오류" });
+		dataError.add(new String[] { "카테고리", "질문", "검증샘플", "답변", "이미지", "이전답변", "추천질문", "링크", "오류" });
 
 		try {
 			AimlCategory aimlCategory = new AimlCategory();
@@ -239,16 +240,25 @@ public class FileManageServiceImpl implements FileManageService {
 
 				if (arr[0].trim().indexOf("SCDSA002") > -1) {
 					count = myEntries.size();
-					dataError.add(new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "등록 형식에 맞지 않습니다.(암호화 문서)" });
+					dataError.add(new String[] { null, null, null, null, null, null, null, null, "등록 형식에 맞지 않습니다.(암호화 문서)" });
 					break;
 				}
-
-				if (count != 1 && arr.length != 15) {
-					dataError.add(new String[] { null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, "등록 형식에 맞지 않습니다." });
+				// TODO : commented out for KakaoPlusFriend
+//				if (count != 1 && arr.length != 15) {
+				if (count != 1 && arr.length != 8) {
+					System.out.println("arr.length : " + arr.length);
+					for ( String a : arr) {
+						System.out.print(a);
+						System.out.print(":");
+					}
+					System.out.println();
+					dataError.add(new String[] { null, null, null, null, null, null, null, null, "등록 형식에 맞지 않습니다." });
 				}
 
 				// 헤더
-				if (count == 1 || arr.length != 15) {
+				// TODO : commented out for KakaoPlusFriend
+//				if (count == 1 || arr.length != 15) {
+				if (count == 1 || arr.length != 8) {
 					continue;
 				}
 				// 카테고리명
@@ -261,31 +271,35 @@ public class FileManageServiceImpl implements FileManageService {
 				String reply = arr[3].trim();
 				// 이미지
 				String image = arr[4].trim();
+				// TODO : commented out for KakaoPlusFriend
 				// 대체텍스트
-				String alt = arr[5].trim();
+//				String alt = arr[5].trim();
 				// that
-				String that = arr[6].trim();
-				// 추천질물
-				String recommend = arr[7].trim();
+				String that = arr[5].trim();
+				// 추천질문
+				String recommend = arr[6].trim();
 				// 링크
-				String link = arr[8].trim();
-				// 추가답변
-				String appendReply = arr[9].trim();
-				// 옵션1
-				String option1 = arr[10].trim();
-				// 옵션2
-				String option2 = arr[11].trim();
-				// 옵션3
-				String option3 = arr[12].trim();
-				// 옵션4
-				String option4 = arr[13].trim();
-				// 옵션5
-				String option5 = arr[14].trim();
-				// 옵션
-				String option = option1 + ";" + option2 + ";" + option3 + ";" + option4 + ";" + option5;
+				String link = arr[7].trim();
+				// TODO : commented out for KakaoPlusFriend
+//				// 추가답변
+//				String appendReply = arr[9].trim();
+//				// 옵션1
+//				String option1 = arr[10].trim();
+//				// 옵션2
+//				String option2 = arr[11].trim();
+//				// 옵션3
+//				String option3 = arr[12].trim();
+//				// 옵션4
+//				String option4 = arr[13].trim();
+//				// 옵션5
+//				String option5 = arr[14].trim();
+//				// 옵션
+//				String option = option1 + ";" + option2 + ";" + option3 + ";" + option4 + ";" + option5;
 
 				if ("".equals(cateName.trim())) {
-					dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "카테고리명이 없습니다." });
+					// TODO : commented out for KakaoPlusFriend
+//					dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "카테고리명이 없습니다." });
+					dataError.add(new String[] { cateName, input, test, reply, image, that, recommend, link, "카테고리명이 없습니다." });
 				} else {
 					AimlMain aimlMain = createAimlMain(categoryMap, cpId, cateName, input, reply, that);
 					if (aimlMain.getId() != 0) {
@@ -293,55 +307,63 @@ public class FileManageServiceImpl implements FileManageService {
 							createAimlTest(aimlMain, test);
 						} catch (Exception e) {
 							etcCount += 1;
-							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "검증샘플 등록 형식에 맞지 않습니다." });
+//							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "검증샘플 등록 형식에 맞지 않습니다." });
+							dataError.add(new String[] { cateName, input, test, reply, image, that, recommend, link, "검증샘플 등록 형식에 맞지 않습니다." });
 						}
-
-						try {
-							createAimlImage(aimlMain, image, alt);
-						} catch (Exception e) {
-							etcCount += 1;
-							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "이미지 등록 형식에 맞지 않습니다." });
-						}
+						// TODO : commented out for KakaoPlusFriend
+//						try {
+//							createAimlImage(aimlMain, image, alt);
+//						} catch (Exception e) {
+//							etcCount += 1;
+////							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "이미지 등록 형식에 맞지 않습니다." });
+//							dataError.add(new String[] { cateName, input, test, reply, image, that, recommend, link, "이미지 등록 형식에 맞지 않습니다." });
+//						}
 
 						try {
 							createAimlRecommend(aimlMain, recommend);
 						} catch (Exception e) {
 							etcCount += 1;
-							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "추천질문 등록 형식에 맞지 않습니다." });
+//							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "추천질문 등록 형식에 맞지 않습니다." });
+							dataError.add(new String[] { cateName, input, test, reply, image, that, recommend, link, "추천질문 등록 형식에 맞지 않습니다." });
 						}
 
 						try {
 							createAimlLink(aimlMain, link);
 						} catch (Exception e) {
 							etcCount += 1;
-							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "링크 등록 형식에 맞지 않습니다." });
+//							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "링크 등록 형식에 맞지 않습니다." });
+							dataError.add(new String[] { cateName, input, test, reply, image, that, recommend, link, "링크 등록 형식에 맞지 않습니다." });
 						}
-
-						try {
-							createAimlReply(aimlMain, appendReply);
-						} catch (Exception e) {
-							etcCount += 1;
-							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "추가답변 등록 형식에 맞지 않습니다." });
-						}
-
-						try {
-							createAimlOption(aimlMain, option);
-						} catch (Exception e) {
-							etcCount += 1;
-							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "옵션 등록 형식에 맞지 않습니다." });
-						}
+						// TODO : commented out for KakaoPlusFriend
+//						try {
+//							createAimlReply(aimlMain, appendReply);
+//						} catch (Exception e) {
+//							etcCount += 1;
+////							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "추가답변 등록 형식에 맞지 않습니다." });
+//							dataError.add(new String[] { cateName, input, test, reply, image, that, recommend, link, "추가답변 등록 형식에 맞지 않습니다." });
+//						}
+//
+//						try {
+//							createAimlOption(aimlMain, option);
+//						} catch (Exception e) {
+//							etcCount += 1;
+////							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "옵션 등록 형식에 맞지 않습니다." });
+//							dataError.add(new String[] { cateName, input, test, reply, image, that, recommend, link, "옵션 등록 형식에 맞지 않습니다." });
+//						}
 
 						// that 확인
 						if (that != null && !"".equals(that)) {
 							if (aimlMain.getThatId() == 0) {
 								etcCount += 1;
-								dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "이전답변(that)를 찾을수가 없습니다." });
+//								dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "이전답변(that)를 찾을수가 없습니다." });
+								dataError.add(new String[] { cateName, input, test, reply, image, that, recommend, link, "이전답변(that)를 찾을수가 없습니다." });
 							}
 						}
 
 						resultCount += 1;
 					} else {
-						dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "중복된 데이터이거나 질문,답변 입력값이 유효하지 않습니다." });
+//						dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "중복된 데이터이거나 질문,답변 입력값이 유효하지 않습니다." });
+						dataError.add(new String[] { cateName, input, test, reply, image, that, recommend, link, "중복된 데이터이거나 질문,답변 입력값이 유효하지 않습니다." });
 					}
 				}
 			}
@@ -358,6 +380,159 @@ public class FileManageServiceImpl implements FileManageService {
 
 		return message;
 	}
+	
+//	@Override
+//	public String uploadAiml(int cpId, String path) throws BizCheckedException, ApplicationException {
+//		if (cpId == 0) {
+//			throw new BizCheckedException(BizErrCode.ERR_0006, "cpId");
+//		}
+//
+//		if (path == null || "".equals(path)) {
+//			throw new BizCheckedException(BizErrCode.ERR_0001, "path");
+//		}
+//
+//		List<String[]> myEntries = readCsv(path);
+//
+//		LOG.info("총 행개수 = " + myEntries.size());
+//
+//		int count = 0;
+//		int resultCount = 0;
+//		int etcCount = 0;
+//		String message = "";
+//		Map<String, Integer> categoryMap = new HashMap<>();
+//		List<String[]> dataError = new ArrayList<String[]>();
+//		
+//		dataError.add(new String[] { "카테고리", "질문", "검증샘플", "답변", "이미지", "대체텍스트", "이전답변", "추천질문", "링크", "추가답변", "옵션1", "옵션2", "옵션3", "옵션4", "옵션5", "오류" });
+//
+//		try {
+//			AimlCategory aimlCategory = new AimlCategory();
+//			aimlCategory.setCpId(cpId);
+//			aimlCategoryMapper.deleteAllNoLock(aimlCategory);
+//
+//			for (String arr[] : myEntries) {
+//				count++;
+//
+//				if (arr[0].trim().indexOf("SCDSA002") > -1) {
+//					count = myEntries.size();
+//					dataError.add(new String[] { null, null, null, null, null, null, null, null, "등록 형식에 맞지 않습니다.(암호화 문서)" });
+//					break;
+//				}
+//
+//				if (count != 1 && arr.length != 15) {
+//					dataError.add(new String[] { null, null, null, null, null, null, null, null, "등록 형식에 맞지 않습니다." });
+//				}
+//
+//				// 헤더
+//				if (count == 1 || arr.length != 15) {
+//					continue;
+//				}
+//				// 카테고리명
+//				String cateName = arr[0].trim();
+//				// 질문
+//				String input = arr[1].trim();
+//				// 검증샘플
+//				String test = arr[2].trim();
+//				// 답변
+//				String reply = arr[3].trim();
+//				// 이미지
+//				String image = arr[4].trim();
+//				// 대체텍스트
+//				String alt = arr[5].trim();
+//				// that
+//				String that = arr[6].trim();
+//				// 추천질문
+//				String recommend = arr[7].trim();
+//				// 링크
+//				String link = arr[8].trim();
+//				// 추가답변
+//				String appendReply = arr[9].trim();
+//				// 옵션1
+//				String option1 = arr[10].trim();
+//				// 옵션2
+//				String option2 = arr[11].trim();
+//				// 옵션3
+//				String option3 = arr[12].trim();
+//				// 옵션4
+//				String option4 = arr[13].trim();
+//				// 옵션5
+//				String option5 = arr[14].trim();
+//				// 옵션
+//				String option = option1 + ";" + option2 + ";" + option3 + ";" + option4 + ";" + option5;
+//
+//				if ("".equals(cateName.trim())) {
+//					dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "카테고리명이 없습니다." });
+//				} else {
+//					AimlMain aimlMain = createAimlMain(categoryMap, cpId, cateName, input, reply, that);
+//					if (aimlMain.getId() != 0) {
+//						try {
+//							createAimlTest(aimlMain, test);
+//						} catch (Exception e) {
+//							etcCount += 1;
+//							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "검증샘플 등록 형식에 맞지 않습니다." });
+//						}
+//
+//						try {
+//							createAimlImage(aimlMain, image, alt);
+//						} catch (Exception e) {
+//							etcCount += 1;
+//							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "이미지 등록 형식에 맞지 않습니다." });
+//						}
+//
+//						try {
+//							createAimlRecommend(aimlMain, recommend);
+//						} catch (Exception e) {
+//							etcCount += 1;
+//							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "추천질문 등록 형식에 맞지 않습니다." });
+//						}
+//
+//						try {
+//							createAimlLink(aimlMain, link);
+//						} catch (Exception e) {
+//							etcCount += 1;
+//							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "링크 등록 형식에 맞지 않습니다." });
+//						}
+//
+//						try {
+//							createAimlReply(aimlMain, appendReply);
+//						} catch (Exception e) {
+//							etcCount += 1;
+//							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "추가답변 등록 형식에 맞지 않습니다." });
+//						}
+//
+//						try {
+//							createAimlOption(aimlMain, option);
+//						} catch (Exception e) {
+//							etcCount += 1;
+//							dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "옵션 등록 형식에 맞지 않습니다." });
+//						}
+//
+//						// that 확인
+//						if (that != null && !"".equals(that)) {
+//							if (aimlMain.getThatId() == 0) {
+//								etcCount += 1;
+//								dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "이전답변(that)를 찾을수가 없습니다." });
+//							}
+//						}
+//
+//						resultCount += 1;
+//					} else {
+//						dataError.add(new String[] { cateName, input, test, reply, image, alt, that, recommend, link, appendReply, option1, option2, option3, option4, option5, "중복된 데이터이거나 질문,답변 입력값이 유효하지 않습니다." });
+//					}
+//				}
+//			}
+//
+//			// 오류
+//			fileUtil.createErrorFile(path, dataError);
+//		} catch (DataAccessException ex) {
+//			throw new ApplicationException(String.valueOf(DbExceptionUtil.parseException(ex).getNumber()), ex);
+//		}
+//
+//		LOG.info("총 대화 개수 = " + count);
+//
+//		message = "총 " + (count - 1) + " 건이 완료 되었습니다.<br/>(성공 : " + resultCount + "건 / 실패 : " + (count - 1 - resultCount) + "건/ 기타오류 : " + etcCount + "건)";
+//
+//		return message;
+//	}
 
 	/**
 	 * CSV 전체 파일을 읽는다.
