@@ -87,7 +87,8 @@
 					</c:forEach>
 				</li>
 			</ul>
-			<ul>
+<!-- GS리테일 설치시 주석처리 함 (카톡에서 지원하지 않음)-->
+<!--		<ul>
 				<li class="title">이미지 대체 텍스트</li>
 				<li class="content">
 				    <c:forEach var="item" items="${images}" varStatus="status">
@@ -95,7 +96,7 @@
 					</c:forEach>
 				</li>
 			</ul>
-		</div>
+-->		</div>
 		
 		<h4 class="tableTitle2 lineT0">2. 텍스트 링크(선택)</h4>
 		<div class="tableWriteBox">
@@ -153,8 +154,9 @@
 		</div>
 		<!-- 테이블 끝 //-->
 
+<!-- GS리테일 설치시 주석처리 함 (카톡에서 지원하지 않음)-->
+<!--
 		<h4 class="tableTitle2 lineT0">4. 추가 답변 등록(선택)</h4>
-		<!--// 테이블 시작 -->
 		<div class="tableWriteBox">
 			<ul>
 				<li class="title w20p">답변 등록</li>
@@ -171,7 +173,6 @@
 		</div>
 		
 		<h4 class="tableTitle2 lineT0">5. 추가 옵션 등록(선택)</h4>
-		<!--// 테이블 시작 -->
 		<div class="tableWriteBox">
 			<c:forEach var="item" items="${option}" varStatus="status">
 			<ul>
@@ -182,7 +183,7 @@
 			</ul>
 			</c:forEach>
 		</div>
-		</form>
+-->		</form>
 		<!-- 테이블 끝 //-->
 
 		<!--// bottom button -->

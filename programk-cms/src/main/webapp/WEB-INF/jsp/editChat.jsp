@@ -114,7 +114,9 @@
 									</c:forEach>
 								</select>								
 							</li>
-							<li class="title">html</li>
+							
+<!-- GS리테일 설치시 주석처리 함 (카톡에서 지원하지 않음)-->
+<!--						<li class="title">html</li>
 							<li class="content">
 								<select class="selectmenu" id="htmlTag" name="htmlTag">
 									<option value="">선택</option>
@@ -133,7 +135,7 @@
 									</c:forEach>
 								</select>
 							</li>
-						</ul>
+-->						</ul>
 					</div>
 					<div class="memo">
 						<textarea name="reply" id="reply">${results.reply}</textarea>
@@ -158,7 +160,8 @@
 					</c:choose>
 				</li>
 			</ul>
-			<ul>
+<!-- GS리테일 설치시 주석처리 함 (카톡에서 지원하지 않음)-->
+<!--		<ul>
 				<li class="title">이미지 대체 텍스트</li>
 				<li class="content">
 					<c:choose>
@@ -173,7 +176,7 @@
 					</c:choose>
 				</li>
 			</ul>
-		</div>
+-->		</div>
 		
 		<h4 class="tableTitle2 lineT0">2. 텍스트 링크(선택)</h4>
 		<div class="txt mgnB7">
@@ -269,6 +272,8 @@
 			</ol>
 		</div>
 
+<!-- GS리테일 설치시 주석처리 함 (카톡에서 지원하지 않음)-->
+<!--
 		<h4 class="tableTitle2 lineT0">4. 추가 답변 등록(선택)</h4>
 		<div class="txt mgnB7">
 			<p>
@@ -330,7 +335,7 @@
 			</ul>
 			</c:forEach>
 		</div>
-		</form>
+-->		</form>
 		<!-- 테이블 끝 //-->
 
 		<!--// bottom button -->
@@ -750,6 +755,8 @@
 	//수정
 	function fnEdit(){
 		if($('#form').valid()){
+			
+			/*
 			if($("#form #imageUrl").val() != "" && $("#form #imageAlt").val().trim() == ""){
 				alert("이미지에 대한 대체 텍스트가 필요합니다.");
 				return false;
@@ -759,6 +766,7 @@
 				alert("이미지를 입력하세요.");
 				return false;
 			}
+			*/
 			
 			if($("#testInput").val() == ""){
 				alert("검증 샘플를 등록해주세요.");
