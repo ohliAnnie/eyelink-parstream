@@ -63,12 +63,9 @@ block content
                     label.control-label.col-md-2 Server                                        
                     .col-md-2.form-inline
                       select.form-control.input-small.select2me.form-md-line-input(name='server')
-                        soption(value='all') All
-                        option(value=15) 15min
-                        option(value=30) 30min
-                        option(value=60) 60min
-                        option(value=180) 3hour
-                        option(value=360) 6hour
+                        option(value='file') file
+                        each data in agent 
+                          option #{data._source.applicationName}
                     .col-md-3.form-inline
                       button#btn_search.btn.blue
                         i.fa.fa-search  Search

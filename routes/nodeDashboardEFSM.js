@@ -14,7 +14,15 @@ var indexAcc = global.config.es_index.es_jira;
 router.get('/', function(req, res, next) {
   mainmenu.dashboard = ' open selected';
   mainmenu.timeseries = '';
-  res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc }); 
+  var in_data = {    index:  "elagent_test-agent-2017.09.06", type: "AgentInfo"    };
+  queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    console.log(out_data);
+  res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: out_data }); 
+  });
 });
 
  router.get('/error_pop', function(req, res, next) { 
@@ -406,13 +414,11 @@ router.get('/selected_detail', function(req, res, next) {
   });  
 });                 
 
-/*
-router.get('/selected_detail', function(req, res, next) {    
+router.get('/selected_detail_agent', function(req, res, next) {    
   var point = new Date(parseInt(req.query.start)+9*60*60*1000).toString().split(' ');  
   console
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var in_data = {
-    index : "elagent_test-agent-"+point[3]+'.'+mon[point[1]]+'.'+point[2]
+  var in_data = {    index : "elagent_test-agent-2017.09.07", type : "TraceV2"
   };
   queryProvider.selectSingleQueryByID2("dashboard","getTransaction", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
@@ -428,24 +434,22 @@ router.get('/selected_detail', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }  
-    res.render('./dashboard/scatter_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : data, detail : detail });
+    res.render('./dashboard/scatter_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data, detail : detail });
   });  
-});        */
+});        
 
 router.get('/restapi/getTransactionDetail', function(req, res, next) {
-  console.log('dashboard/restapi/getTransactionDetail');    
-  
+  console.log('dashboard/restapi/getTransactionDetail');      
   var in_data = {
-    index : req.query.index ,
-    type : req.query.type,
-    id : req.query.id
+    index : req.query.index ,    type : req.query.type,
+    id : req.query.id,    value : req.query.value
   };
-  queryProvider.selectSingleQueryByID2("dashboard","getTransactionDetail", in_data, function(err, out_data, params) {     
+  queryProvider.selectSingleQueryByID2("dashboard","selectByIdValue", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
     }    
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]._source });
+    res.json({rtnCode: rtnCode, rtnData: out_data });
   });
 });
 
