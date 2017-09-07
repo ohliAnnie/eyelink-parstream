@@ -200,7 +200,8 @@
 									<li><input type="text" name="tmp_linkTitle" maxlength="100" value="${fn:escapeXml(item.title)}" /></li>
 									<li><input type="text" name="tmp_linkComment" maxlength="255" value="${fn:escapeXml(item.comment)}" /></li>
 									<li><input type="text" name="tmp_linkUrl" maxlength="255" value="${fn:escapeXml(item.url)}" /></li>
-									<li class="btn">
+	<!-- GS리테일 설치시 주석처리 함 ( 카톡 연동시 한 개 밖에 사용 못하기 때문 )-->								
+	<!--							<li class="btn">
 										<c:if test="${status.index eq 0}">
 										<a href="#" onclick="fnAddLinkOption();return false;" class="btnBg"><span class="icon_plus">추가</span></a>
 										</c:if>
@@ -208,7 +209,7 @@
 										<a href="javascript:;" class="icon_cancel" id="btnDelete">삭제</a>
 										</c:if>
 									</li>
-								</ul>
+	-->							</ul>
 								</c:forEach>
 							</c:when>
 							<c:otherwise>
