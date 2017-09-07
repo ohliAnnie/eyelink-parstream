@@ -700,8 +700,8 @@ COMMENT ON COLUMN chat_month_stat.user_count IS '유니크 사용자수';
 CREATE TABLE chat_time_stat
 (
   cp_label character varying(255) NOT NULL, -- 봇아이디
-  start_time character varying(14) NOT NULL, -- 시작시간
-  end_time character varying(14) NOT NULL, -- 종료 시간
+  start_time character varying(20) NOT NULL, -- 시작시간
+  end_time character varying(20) NOT NULL, -- 종료 시간
   search_count integer NOT NULL, -- 검색건수
   response_count integer NOT NULL, -- 응답건수
   success_percent numeric(19,10) NOT NULL, -- 응답률
@@ -731,8 +731,8 @@ CREATE TABLE chat_user_input_stat
 (
   cp_label character varying(255) NOT NULL,
   user_input character varying(255) NOT NULL,
-  start_time character varying(255) NOT NULL,
-  end_time character varying(255) NOT NULL,
+  start_time character varying(20) NOT NULL,
+  end_time character varying(20) NOT NULL,
   total_cnt integer NOT NULL,
   CONSTRAINT chat_user_input_stat_pkey PRIMARY KEY (cp_label, user_input, start_time)
 )
