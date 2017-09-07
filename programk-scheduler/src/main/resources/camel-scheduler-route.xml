@@ -109,6 +109,18 @@
             <log message="Bot change start"/>
             <process ref="botActiveChange"/>
 <!--             <to uri="mock:result"/> -->
+
+<!-- Test start (user only for test)-->
+			<!-- <process ref="timeStatProcess"/>
+			<process ref="dayStatProcess"/>
+            <process ref="categoryStatProcess"/>
+            <process ref="chatStatProcess"/>
+            <process ref="inputStatProcess"/>
+            <process ref="userStatProcess"/>
+			<process ref="monthStatProcess"/>
+			<process ref="chatLogProcess"/>
+			<process ref="predicateProcess"/> -->
+<!-- Test end -->
         </route>
 
         <route>
