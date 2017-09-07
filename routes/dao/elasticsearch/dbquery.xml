@@ -145,6 +145,36 @@
      ]]></query>
   </user>
   <dashboard>
+  <query id='selectByIndex'><![CDATA[      
+  {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {       
+          "size"   : 10000,          
+          "query" : { 
+
+          }
+       }
+    } 
+  ]]></query>   
+  <query id='selectByIdValue'><![CDATA[      
+  {
+        "index" : #index#,
+        "type" : #type#,        
+        "body" : {       
+          "size"   : 10000,          
+          "sort" : { "parentSpanId" : { "order" : "asc" } },
+          "query" : { 
+            "match" : {
+              #id# : {              
+                "query" :  #value#,
+                "operator" : "and"
+              }
+            }
+          }
+       }
+    } 
+  ]]></query>    
   <query id='selectByIdList'><![CDATA[      
    {
         "index" : #index#,
@@ -527,17 +557,8 @@
         "index" : #index#,        
         "type" : #type#,
         "body" : {            
-         }               
-       } 
-    ]]></query>
-  <query id='getTransactionDetail'><![CDATA[
-      {
-        "index" : #index#,
-        "type" : #type#,
-        "body" : {
-          "query": {
-              "term" : {    "_id": #id#    }
-           }            
+          "size" : 1000,  
+          "sort" : { "startTime" : { "order" : "asc" } }
          }               
        } 
     ]]></query>

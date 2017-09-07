@@ -1,19 +1,19 @@
-function getTransaction(id, date, app, agent) {  
-  console.log(id, date, app, agent);
-  var i = date.split('T');
-  i = i[0] .split('-');
-  var index = 'transactionlist-'+i[0]+'-'+i[1];
+function getTransaction(id, date) {    
+  console.log(id, date);
+  var point = new Date(parseInt(date)).toString().split(' ')
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   $.ajax({
     url: "/dashboard/restapi/getTransactionDetail" ,
     dataType: "json",
     type: "get",
     data: {
-      index : index,
-      id : id},
+      index : "elagent_test-agent-2017.09.07",
+      type : "TraceDetail",      id : "transactionId",
+      value : id
+    },
     success: function(result) {
-      if (result.rtnCode.code == "0000") {      
-        console.log(result)  ;
-        drawDetail(result.rtnData[0]._source, id, date, app, agent);        
+      if (result.rtnCode.code == "0000") {              
+        drawDetail(result.rtnData);        
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -25,38 +25,33 @@ function getTransaction(id, date, app, agent) {
   });
 }
 
-function drawDetail(detail, id, date, app, agent) {    
+function drawDetail(data) {      
+
   $('#call').empty();
   var sb = new StringBuffer();
   sb.append('<div class="row"><div class="col-md-12"><div class="portlet light bordered"><div class="portlet-body form">');
-  sb.append('<table class="table table-striped table-bordered table-hover"><tr>');
-  sb.append('<th>Application : '+app+'</th><th>TransactionId : '+id+'</th><th>AgentId : '+agent+'</th></tr></table>')
+  sb.append('<table class="table table-striped table-bordered table-hover"><tr>');  
+  sb.append('<th>Application : '+data[0]._source.rpc+'</th><th>TransactionId : '+data[0]._source.transactionId+'</th><th>AgentId : '+data[0]._source.agentId+'</th><th>ApplicationName : '+data[0]._source.applicationId+'</th></tr></table>')
   sb.append('<table class="table tree-2 table-bordered table-striped table-condensed">');
   sb.append('<tr><th>Method</th><th>Argument</th><th>Start Time</th><th>Gap(ms)</th>');
-  sb.append('<th>Exec(ms)</th><th>Exec(%)</th><th>Self(ms)</th><th>Class</th><th>API</th><th>Agent</th><th>Application</th></tr>');  
-  var level = 1;
-  detail.callstack.forEach(function(d){
-    if(d.start_time==null) {      d.start_time = '';    }    
-    if(d.gap_time==null) {      d.gap_time = '';    }
-    if(d.exec_time==null) {      d.exec_time = '';    }
-    if(d.self_time==null) {      d.self_time = '';    }
-    if(d.exec_class==null) {      d.exec_class = '';    }
-    if(d.exec_time==null) {      d.exec_time = '';    }
-    if(d.exec_api==null) {      d.exec_api = '';    }
-    if(d.agent_id==null) {      d.agent_id = '';    }
-    if(d.application_id==null) {      d.application_id = '';    }    
-    if(d.level == 1){
-      sb.append('<tr class="treegrid-'+d.seq+'">');
-      level = d.seq;
-    } else if(d.level != (level+1)){  
-      sb.append('<tr class="treegrid-'+d.seq+' treegrid-parent-'+level+'">');
-      level = d.seq;
-    } else {
-      sb.append('<tr class="treegrid-'+d.seq+' treegrid-parent-'+level+'">');
+  sb.append('<th>Exec(ms)</th><th>Exec(%)</th><th>Self(ms)</th><th>Class</th><th>API</th><th>Agent</th><th>Application</th></tr>');    
+  data.forEach(function(d){    
+    d = d._source;
+    console.log(d);
+    //d.depth += 1;
+  var tree = d.depth;
+  sb.append('<tr class="treegrid-'+ ++tree +'">');        
+    sb.append('<td>'+d.method+'</td><td>'+d.rpc+'</td><td>'+d.startTime+'</td><td>'+d.gap+'</td>')
+    sb.append('<td>'+d.exectionTime+'</td><td></td><td>'+d.self_time+'</td><td>'+d.execeptionClass+'</td>');
+    sb.append('<td>'+d.apiId+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');  
+  
+    for(i=0; i <d.spanEventBoList.length; i++){
+      sb.append('<tr class="treegrid-'+ ++tree +' treegrid-parent-'+d.spanEventBoList[i].depth+'">');        
+      sb.append('<td>'+d.method+'</td><td>'+d.spanEventBoList[i].rpc+'</td><td>'+d.startTime+'</td><td>'+d.gap+'</td>')
+      sb.append('<td>'+d.exectionTime+'</td><td></td><td>'+d.self_time+'</td><td>'+d.spanEventBoList[i].execeptionClass+'</td>');
+     sb.append('<td>'+d.spanEventBoList[i].apiId+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');  
     }
-    sb.append('<td>'+d.method+'</td><td>'+d.argument+'</td><td>'+d.start_time+'</td><td>'+d.gap_time+'</td>')
-    sb.append('<td>'+d.exec_time+'</td><td></td><td>'+d.self_time+'</td><td>'+d.exec_class+'</td>');
-    sb.append('<td>'+d.exec_api+'</td><td>'+d.agent_id+'</td><td>'+d.application_id+'</td></tr>');
+    
   });
   sb.append('</table></dir></dir></dir></dir>');  
   $('#call').append(sb.toString());  
