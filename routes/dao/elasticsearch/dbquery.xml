@@ -145,6 +145,36 @@
      ]]></query>
   </user>
   <dashboard>
+  <query id='selectByIndex'><![CDATA[      
+  {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {       
+          "size"   : 10000,          
+          "query" : { 
+
+          }
+       }
+    } 
+  ]]></query>   
+  <query id='selectByIdValue'><![CDATA[      
+  {
+        "index" : #index#,
+        "type" : #type#,        
+        "body" : {       
+          "size"   : 10000,          
+          "sort" : { "parentSpanId" : { "order" : "asc" } },
+          "query" : { 
+            "match" : {
+              #id# : {              
+                "query" :  #value#,
+                "operator" : "and"
+              }
+            }
+          }
+       }
+    } 
+  ]]></query>    
   <query id='selectByIdList'><![CDATA[      
    {
         "index" : #index#,
@@ -203,7 +233,7 @@
   ]]></query>
   <query id='selectJiraAccReq'><![CDATA[
       {
-        "index" : [##index##],
+        "index" : #index#,
         "type" : "access",       
         "body" : {
           "size"   : 100000,
@@ -270,7 +300,7 @@
   ]]></query>    
   <query id='selectJiraAccDash'><![CDATA[
       {
-        "index" : [##index##],
+        "index" : #index#,
         "type" : "access",                    
         "body" : {       
           "size"   : 100000, 
@@ -305,7 +335,7 @@
   ]]></query>
    <query id='selectJiraAccMap'><![CDATA[
        {
-        "index" : [##index##],
+        "index" : #index#,
         "type" : "access",       
         "body" : {
           "size"   : 100000,
@@ -372,7 +402,7 @@
   ]]></query>
   <query id='selectScatterSection'><![CDATA[
       {
-        "index" : [##index##],
+        "index" : #index#,
         "type" : "access",                    
         "body" : {       
           "size"   : 100000, 
@@ -435,7 +465,7 @@
   ]]></query>
     <query id='selectJiraAccOneWeek'><![CDATA[
       {
-        "index" : [##index##],
+        "index" : #index#,
         "type" : "access",                    
         "body" : {       
           "size"   : 100000, 
@@ -444,7 +474,7 @@
           "query": {
             "bool" : {
               "must" : {
-                "match_all" : {}
+                "range" : {  "@timestamp": {    "gte": #start# } } 
               },
               "must_not" : {
                 "match": {
@@ -527,17 +557,8 @@
         "index" : #index#,        
         "type" : #type#,
         "body" : {            
-         }               
-       } 
-    ]]></query>
-  <query id='getTransactionDetail'><![CDATA[
-      {
-        "index" : #index#,
-        "type" : #type#,
-        "body" : {
-          "query": {
-              "term" : {    "_id": #id#    }
-           }            
+          "size" : 1000,  
+          "sort" : { "startTime" : { "order" : "asc" } }
          }               
        } 
     ]]></query>
@@ -1004,7 +1025,7 @@
   ]]></query>
   <query id='selectJiraAccReq'><![CDATA[
       {
-        "index" : ["filebeat_jira_access-2017.08.31", "filebeat_jira_access-2017.09.01"],
+        "index" : "filebeat_jira_access-*",
         "type" : "access",       
         "body" : {
           "size"   : 100000,

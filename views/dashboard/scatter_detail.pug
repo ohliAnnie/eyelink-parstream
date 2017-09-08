@@ -59,16 +59,16 @@ html
     script.
       jQuery(document).ready(function() {  
         $('#sample_2 > tbody > tr').click(function(){                       
-          var values = $(this).find('td').map(function(){            
+          var values = $(this).find('td').map(function(){              
             return $(this).text();
-          }).get();          
-          getTransaction(values[6], values[0], values[1], values[4]);
+          }).get();                    
+          getTransaction(values[6], values[0]);
         });
          $('.tree-2').treegrid({
             expanderExpandedClass: 'glyphicon glyphicon-minus',
             expanderCollapsedClass: 'glyphicon glyphicon-plus'
           });
-      Metronic.init(); // init metronic core componets
+        Metronic.init(); // init metronic core componets
         eyelinkLayout.init(); // init layout
         QuickSidebar.init(); // init quick sidebar
         Layout.init(); // init layout
@@ -92,7 +92,7 @@ block content
               .portlet.light.bordered               
                 .portlet-body.form                                 
                   table#sample_2.table.table-striped.table-bordered.table-hover(style='text-align:center;')
-                    thead
+                    thea
                       tr                          
                         th(style='text-align:center;') Start Time
                         th(style='text-align:center;') Path
@@ -100,17 +100,15 @@ block content
                         th(style='text-align:center;') Exception
                         th(style='text-align:center;') Agent
                         th(style='text-align:center;') Client IP
-                        th(style='text-align:center;') Transaction                          
-                        th(style='text-align:center;') End Point
+                        th(style='text-align:center;') Transaction                                                  
                     tbody
                       each data in list                                                   
-                        tr.odd.gradeX                            
-                          td #{data.start_time}
-                          td(style='text-align:left;') #{data.application_url}
-                          td #{data.elapsed}
-                          td #{data.exception}
-                          td #{data.agent_id}
-                          td #{data.remote_addr}
-                          td #{data.transaction_id}
-                          td #{data.endpoint}
+                        tr.odd.gradeX(id=data._id)
+                          td #{data._source.startTime}
+                          td(style='text-align:left;') #{data._source.rpc}
+                          td #{data._source.elapsed}
+                          td #{data._source.exceptionId}
+                          td #{data._source.agentId}
+                          td #{data._source.endPoint}                          
+                          td #{data._source.transactionId}                          
           #call              
