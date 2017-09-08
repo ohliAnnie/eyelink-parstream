@@ -17,11 +17,19 @@ router.get('/', function(req, res, next) {
   var in_data = {    index:  "elagent_test-agent-2017.09.06", type: "AgentInfo"    };
   queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
+    var check = {}, list = [], cnt = 0;
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
+    } else {
+      out_data.forEach(function(d){
+        if(check[d._source.agentId]==null){
+          check[d._source.agentId] = { no : cnt++};
+          list.push({ id : d._source.agentId, name : d._source.applicationName })
+        } 
+      });
+      list.push({ id : 'test-file', name : 'JIRA' });
     }
-    console.log(out_data);
-  res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: out_data }); 
+  res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list }); 
   });
 });
 
@@ -418,23 +426,19 @@ router.get('/selected_detail_agent', function(req, res, next) {
   var point = new Date(parseInt(req.query.start)+9*60*60*1000).toString().split(' ');  
   console
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var in_data = {    index : "elagent_test-agent-2017.09.07", type : "TraceV2"
+  var in_data = {    index : "elagent_test-agent-2017.09.08", type : "TraceV2"
   };
   queryProvider.selectSingleQueryByID2("dashboard","getTransaction", in_data, function(err, out_data, params) {
-    // console.log(out_datsa);
-    var rtnCode = CONSTS.getErrData('0000');
-    var data = [], detail = [];
-    out_data.forEach(function(d){
-      if(d._type == 'transactionList') {
-        data.push(d._source);  
-      } else {
-        detail.push(d._source);
-      }      
-    });
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');    
+    out_data.forEach(function(d){                  
+      var s = new Date(new Date(d._source.startTime).getTime()).toString().split(' ');            
+      d._source.startTime = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4];            
+    });       
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }  
-    res.render('./dashboard/scatter_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data, detail : detail });
+    res.render('./dashboard/scatter_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });        
 

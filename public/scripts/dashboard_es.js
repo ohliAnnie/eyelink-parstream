@@ -619,8 +619,7 @@ function drawChart() {
       var b = a[0].split('/');
       var c = a[3].split(' ');
       var mon = {'Jan' : 1, 'Feb' : 2, 'Mar' : 3, 'Apr' : 4, 'May' : 5, 'Jun' : 6, 'Jul' : 7, 'Aug' : 8, 'Sep' : 9, 'Oct' : 10, 'Nov' : 11, 'Dec' : 12 };      
-      d.day=d3.time.day(new Date(new Date(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]).getTime()+9*60*60*1000));
-      console.log(d);              
+      d.day=d3.time.day(new Date(new Date(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]).getTime()+9*60*60*1000));      
     });
 
     // console.log(data);
