@@ -7,7 +7,8 @@ function getTransaction(id, date) {
     dataType: "json",
     type: "get",
     data: {
-      index : "elagent_test-agent-"+s[3]+'.'+mon[s[1]]+'.'+s[2],
+//      index : "elagent_test-agent-"+s[3]+'.'+mon[s[1]]+'.'+s[2],
+      index : "elagent_test-agent-2017.09.08",
       type : "TraceDetail",      id : "transactionId",
       value : id
     },
