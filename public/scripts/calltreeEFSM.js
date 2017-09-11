@@ -8,7 +8,7 @@ function getTransaction(id, date) {
     type: "get",
     data: {
 //      index : "elagent_test-agent-"+s[3]+'.'+mon[s[1]]+'.'+s[2],
-      index : "elagent_test-agent-2017.09.08",
+      index : "elagent_test-agent-2017.09.11",
       type : "TraceDetail",      id : "transactionId",
       value : id
     },
@@ -37,8 +37,7 @@ function drawDetail(data) {
   sb.append('<th>Exec(ms)</th><th>Exec(%)</th><th>Self(ms)</th><th>Class</th><th>API</th><th>Agent</th><th>Application</th></tr>');    
   var ano = 0, grid = 1, tree = 1;
   data.forEach(function(d){    
-    d = d._source;
-    console.log(d);
+    d = d._source;    
     var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
     var s =new Date(new Date(d.startTime).getTime()+9*60*60*1000).toString().split(' ');
     var sTime = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4];    
@@ -46,22 +45,18 @@ function drawDetail(data) {
     for(i=0; i <d.annotationBoList.length;i++){              
       var z = d.annotationBoList[i];      
       if(z.key === 10000014){
-        var a = z.value.split('\n');
-        console.log(a);
-        var b = a[1].split(':');
-        console.log(a[1]);
+        var a = z.value.split('\n');        
+        var b = a[1].split(':');       
         if(i==0 && tree==1){          
           sb.append('<tr class="treegrid-'+ grid +'">');        
         } else {                    
           sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
-        }
-        console.log(grid, tree);
+        }        
         sb.append('<td>'+b[0]+'</td><td>'+d.rpc+'</td><td>'+sTime+'</td><td>'+d.gap+'</td>')
         sb.append('<td>'+d.exectionTime+'</td><td></td><td>'+d.self_time+'</td><td>'+d.execeptionClass+'</td>');
         sb.append('<td>'+d.serviceType+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');  
         if(d.acceptorHost != null) {          
-          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
-          console.log(grid, tree);
+          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');                 
           sb.append('<td>'+'REMOTE ADDRESS'+'</td><td>'+d.acceptorHost+'</td><td>'+'</td><td>'+'</td>')
           sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
           sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');     
@@ -78,9 +73,11 @@ function drawDetail(data) {
           var a = y.value.split('\n');      
           var e = a[1].split('(');
           var b = e[0].split('.');
-          var c = a[1].split(b[b.length-2]);      
+          var c = a[1].split(b[b.length-2]);  
+          var t = c[1].substring(1).split(':')
+          console.log(t) ;
           sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
-          sb.append('<td>'+c[1].substring(1)+'</td><td>'+'</td><td>'+sTime+'</td><td>'+'</td>')
+          sb.append('<td>'+t[0]+'</td><td>'+'</td><td>'+sTime+'</td><td>'+'</td>')
           sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+b[4]+'</td>');
           sb.append('<td>'+z.serviceType+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');  
            tree = grid;  
@@ -101,9 +98,18 @@ function drawDetail(data) {
           sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');  
         }       
       }
+      console.log(z.hasException)
+      if(z.hasException === true){
+        console.log(z);
+        var x = z.exceptionMessage.split(':');
+        sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'" style="background-color:#FFA7A7">');        
+        sb.append('<td><i class="fa fa-bolt"></i>  '+x[0]+'</td><td>'+x[1]+'</td><td>'+'</td><td>'+'</td>')
+        sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
+        sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');  
+        console.log(z.exceptionMessage)
+      }
     }
-  }
-    
+  }  
     
   });
   sb.append('</table></dir></dir></dir></dir>');  
