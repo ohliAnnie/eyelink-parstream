@@ -610,7 +610,10 @@ public class FileManageServiceImpl implements FileManageService {
 			subsCa.setCpId(cpId);
 			subsCategoryMapper.deleteAll(subsCa);
 
-			for (String arr[] : myEntries) {
+			for (int index = myEntries.size() - 1; index > 0 ; index--) {
+				
+				String arr[] = myEntries.get(index);
+				
 				count++;
 
 				if (arr[0].trim().indexOf("SCDSA002") > -1) {
@@ -624,9 +627,9 @@ public class FileManageServiceImpl implements FileManageService {
 				}
 
 				// 헤더
-				if (count == 1 || arr.length != 3) {
-					continue;
-				}
+//				if (count == 1 || arr.length != 3) {
+//					continue;
+//				}
 
 				String categoryName = arr[0].trim();
 				String find = arr[1].trim();
@@ -686,7 +689,8 @@ public class FileManageServiceImpl implements FileManageService {
 
 		LOG.info("총 substitutions 개수 = " + count);
 
-		message = "총 " + (count - 1) + " 건이 완료 되었습니다.<br/>(성공 : " + resultCount + "건 / 실패 : " + (count - 1 - resultCount) + "건)";
+//		message = "총 " + (count - 1) + " 건이 완료 되었습니다.<br/>(성공 : " + resultCount + "건 / 실패 : " + (count - 1 - resultCount) + "건)";
+		message = "총 " + count + " 건이 완료 되었습니다.<br/>(성공 : " + resultCount + "건 / 실패 : " + (count - resultCount) + "건)";
 
 		return message;
 	}
