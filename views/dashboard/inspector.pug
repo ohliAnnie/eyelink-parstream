@@ -21,8 +21,12 @@ block script
       drawCountChart();      
 
       $('#btn_search').click(function() {
-        console.log(document.getElementById("server").selectedIndex);
-
+        if(document.getElementById("server").selectedIndex == 0){
+          location.href='/dashboard/timeseries_agent';
+        } else {
+          location.href='/dashboard/timeseries_file';
+        }
+        
         //- d3.selectAll("svg").remove()
         //- drawCountChart();        
       });

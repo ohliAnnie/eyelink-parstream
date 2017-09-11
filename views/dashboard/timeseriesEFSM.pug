@@ -25,11 +25,16 @@ block script
       drawTotalChart();
 
       $('#btn_search').click(function() {
-        d3.selectAll("svg").remove()
-        drawAccChart();
-        drawProcessChart();
-        drawTopChart();
-        drawTotalChart();
+        //- d3.selectAll("svg").remove()
+        //- drawAccChart();
+        //- drawProcessChart();
+        //- drawTopChart();
+        //- drawTotalChart();
+        if(document.getElementById("server").selectedIndex == 0){
+          location.href='/dashboard/timeseries_agent';
+        } else {
+          location.href='/dashboard/timeseries_file';
+        }
       });
 
     });
