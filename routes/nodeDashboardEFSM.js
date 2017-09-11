@@ -38,16 +38,48 @@ router.get('/', function(req, res, next) {
 });
 
 
-router.get('/timeseries', function(req, res, next) {
+router.get('/timeseries_file', function(req, res, next) {
   // console.log(_rawDataByDay);
   mainmenu.dashboard = '';
   mainmenu.timeseries = ' open selected';
-  res.render('./dashboard/timeseries'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc });
+  var in_data = {    index:  "elagent_test-agent-2017.09.06", type: "AgentInfo"    };
+  queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
+    var rtnCode = CONSTS.getErrData('0000');
+    var check = {}, list = [], cnt = 0;
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {
+      out_data.forEach(function(d){
+        if(check[d._source.agentId]==null){
+          check[d._source.agentId] = { no : cnt++};
+          list.push({ id : d._source.agentId, name : d._source.applicationName })
+        } 
+      });
+      list.push({ id : 'test-file', name : 'JIRA' });
+    }
+  res.render('./dashboard/timeseries'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, type : "JIRA" }); 
+});
 });
 
-router.get('/inspector', function(req, res, next) {
-  mainmenu.dashboard = ' open selected';  
-  res.render('./dashboard/inspector', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc });
+router.get('/timeseries_agent', function(req, res, next) {
+  mainmenu.timeseries = ' open selected';  
+  var in_data = {    index:  "elagent_test-agent-2017.09.06", type: "AgentInfo"    };
+  queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
+    var rtnCode = CONSTS.getErrData('0000');
+    var check = {}, list = [], cnt = 0;
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {
+      out_data.forEach(function(d){
+        if(check[d._source.agentId]==null){
+          check[d._source.agentId] = { no : cnt++};
+          list.push({ id : d._source.agentId, name : d._source.applicationName })
+        } 
+      });
+      list.push({ id : 'test-file', name : 'JIRA' });
+    }
+  res.render('./dashboard/inspector', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, type : "TESTAPP" });
+});
 });
 
 
@@ -144,7 +176,7 @@ router.get('/restapi/selectJiraSankeyByLink', function(req, res, next) {
     
     if(node[nodeId] ==null){
       nodeList[nodeNo] = nodeId;
-       node[nodeId] ={ name : a[0], id : nodeId, no : nodeNo++, errcnt : 0 };  
+       node[nodeId] ={ name : a[0], id : nodeId, no : nodeNo++, errcnt : 0, cnt : 1 };  
     }
     if(last[d._source.auth] != null){
       var from = last[d._source.auth];
@@ -168,17 +200,18 @@ router.get('/restapi/selectJiraSankeyByLink', function(req, res, next) {
           var source = node[from].no;
           var target = node[to].no;              
           if(line[source+'-'+target] == null) {                
-            line[source+'-'+target] = { no : lineCnt };                           
+            line[source+'-'+target] = { no : lineCnt };          
+            nodes[target].cnt++
              if(d._source.response < 400){                           
                 lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 0 };                           
               } else {                             
                 console.log(d._source)
-                lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 1, elist : d._id };
-                nodes[target].errcnt++;                                         
+                lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 1, elist : d._id };                                                
              }  
           } else {                            
             lines[line[source+'-'+target].no].value += 0.0001;
             lines[line[source+'-'+target].no].cnt++;
+             nodes[target].cnt++;                           
              if(d._source.response >= 400){
               console.log(d._source )
                  if(lines[line[source+'-'+target].no].errcnt == 0) {
@@ -207,8 +240,11 @@ router.get('/restapi/selectJiraSankeyByLink', function(req, res, next) {
   }
    });
  nodes.forEach(function(d){
+  console.log(d);
   if(d.errcnt > 0){
     d.name = '[Err:'+ d.errcnt + '] '+d.name;
+  } else {
+    d.name = d.name;
   }
 });
   var json = {"nodes" :nodes, "links" : lines };
@@ -248,77 +284,97 @@ router.get('/restapi/selectJiraSankeyByLinkForScatter', function(req, res, next)
     var a = d._source.request.split('?');                         
     var c = a[0].split('.');    
     if(c[c.length-1]!='js'&&c[c.length-1]!='css'&&c[c.length-1]!='png'&&c[c.length-1]!='woff'&&c[c.length-1]!='json'&&c[c.length-1]!='jsp'&&c[c.length-1]!='ico'&&c[c.length-1]!='svg'&&c[c.length-1]!='gif'&&c[c.length-1]!='eot'&&c[c.length-1]!='charts'&&c[c.length-1]!='da'&&c[c.length-1]!='gadget'){             
-      if(d._source.auth == null){
-        d._source.auth = 'visitor';
-      }
-      var b = a[0].split('/');
+    if(d._source.auth == null){
+     d._source.auth = 'visitor';
+    }      
+    var b = a[0].split('/');
 
-      if(req[a[0]] == null) {          
-        req[a[0]] = { no : reqCnt++, cnt : 1};
-      } else {
-        req[a[0]].cnt++;        
+    if(req[a[0]] == null) {          
+      req[a[0]] = { no : reqCnt++, cnt : 1};
+    } else {
+      req[a[0]].cnt++;        
+    }        
+    
+    if(id[b[b.length-1]] == null) {
+      id[b[b.length-1]] = colors[idCnt++%20];                   
+    }
+    
+    var nodeId = b[b.length-1]+'_'+req[a[0]].no;       
+    
+    if(node[nodeId] ==null){
+      nodeList[nodeNo] = nodeId;
+       node[nodeId] ={ name : a[0], id : nodeId, no : nodeNo++, errcnt : 0, cnt : 0 };  
+    }
+    if(last[d._source.auth] != null){
+      var from = last[d._source.auth];
+      var to = nodeId;  
+      if(node[from].no > node[to].no){
+        from = nodeId;
+        to = last[d._source.auth];
       }        
-      
-      if(id[b[b.length-1]] == null) {
-        id[b[b.length-1]] = colors[idCnt++%20];                   
-      }
-      
-      var nodeId = b[b.length-1]+'_'+req[a[0]].no;       
-      
-      if(node[nodeId] ==null){
-        nodeList[nodeNo] = nodeId;
-        node[nodeId] ={ name : a[0], id : nodeId, no : nodeNo++ };          
-      }
-      if(last[d._source.auth] != null){
-        var from = last[d._source.auth];
-        var to = nodeId;  
-        if(node[from].no > node[to].no){
-          from = nodeId;
-          to = last[d._source.auth];
-        }        
-        if(from != to){
-          if(line[node[to].no+'-'+node[from].no] == null){
-            if(lineNode[from] == null) {                
-              lineNode[from] = {};        
-              node[from].no = lineNodeCnt;        
-              nodes[lineNodeCnt++] = node[from];                        
-            }
-            if(lineNode[to] == null) {
-              lineNode[to] = {};    
-              node[to].no = lineNodeCnt;
-              nodes[lineNodeCnt++] = node[to];                                
-            }
-            var source = node[from].no;
-            var target = node[to].no;              
-            if(line[source+'-'+target] == null) {                
-              line[source+'-'+target] = { no : lineCnt };               
-              lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1 };                
-            } else {                            
-              lines[line[source+'-'+target].no].value += 0.0001;
-              lines[line[source+'-'+target].no].cnt++;
-            }
-          } else {                   
-            lines[line[node[to].no+'-'+node[from].no].no].value += 0.0001;
-            lines[line[node[to].no+'-'+node[from].no].no].cnt++;
+      if(from != to){
+        if(line[node[to].no+'-'+node[from].no] == null){
+          if(lineNode[from] == null) {                
+            lineNode[from] = {};        
+            node[from].no = lineNodeCnt;        
+            nodes[lineNodeCnt++] = node[from];                        
           }
-        } else {            
-         if(lineNode[to] == null) {
-            lineNode[to] = {};                  
-            node[to].no = lineNodeCnt;              
+          if(lineNode[to] == null) {
+            lineNode[to] = {};    
+            node[to].no = lineNodeCnt;
             nodes[lineNodeCnt++] = node[to];                                
-          }  
+          }
+          var source = node[from].no;
+          var target = node[to].no;              
+          if(line[source+'-'+target] == null) {                
+            line[source+'-'+target] = { no : lineCnt };          
+            nodes[target].cnt++
+             if(d._source.response < 400){                           
+                lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 0 };                           
+              } else {                             
+                console.log(d._source)
+                lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 1, elist : d._id };
+                nodes[target].errcnt++;                                         
+             }  
+          } else {                            
+            lines[line[source+'-'+target].no].value += 0.0001;
+            lines[line[source+'-'+target].no].cnt++;
+             nodes[target].cnt++;                           
+             if(d._source.response >= 400){
+              console.log(d._source )
+                 if(lines[line[source+'-'+target].no].errcnt == 0) {
+                    lines[line[source+'-'+target].no].elist = d._id;
+                 } else {
+                  lines[line[source+'-'+target].no].elist += ','+d._id;       
+                 }       
+               lines[line[source+'-'+target].no].errcnt++;             
+               nodes[target].errcnt++;                           
+            }
+          }
+        } else {                   
+          lines[line[node[to].no+'-'+node[from].no].no].value += 0.0001;
+          lines[line[node[to].no+'-'+node[from].no].no].cnt++;
         }
-      }        
-      last[d._source.auth] =  node[nodeId].id;       
+      } else {            
+       if(lineNode[to] == null) {
+          lineNode[to] = {};                  
+          node[to].no = lineNodeCnt;              
+          nodes[lineNodeCnt++] = node[to];                                
+        }  
+      }
+    }        
+    last[d._source.auth] =  node[nodeId].id;       
     }
-    }
-     });
-
-   nodes.forEach(function(d){
-    if(d.errcnt > 0){
+  }
+   });
+ nodes.forEach(function(d){
+  console.log(d);
+  if(d.errcnt > 0){
     d.name = '[Err:'+ d.errcnt + '] '+d.name;
-    }
-  });
+  } else {
+    d.name = d.name;
+  }
+});
     var json = {"nodes" :nodes, "links" : lines };
      }
       res.json({rtnCode: rtnCode, rtnData: json, id : id});
@@ -423,11 +479,11 @@ router.get('/selected_detail', function(req, res, next) {
 });                 
 
 router.get('/selected_detail_agent', function(req, res, next) {    
-  var point = new Date(parseInt(req.query.start)+9*60*60*1000).toString().split(' ');  
+  var d = new Date().toString().split(' ');  
   console
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var in_data = {    index : "elagent_test-agent-2017.09.08", type : "TraceV2"
-  };
+  //var in_data = {    index : "elagent_test-agent-"+d[3]+"."+mon[d[1]]+"."+d[2], type : "TraceV2"  };
+  var in_data = {    index : "elagent_test-agent-2017.09.11", type : "TraceV2"  };
   queryProvider.selectSingleQueryByID2("dashboard","getTransaction", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');    

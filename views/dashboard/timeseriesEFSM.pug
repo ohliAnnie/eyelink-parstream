@@ -44,7 +44,7 @@ block content
             a(href='#') Home
           li
             a(href='#') Timeseries
-          li.active File
+          li.active #{type}
       .row
         .col-md-12
           .portlet.light.bordered
@@ -64,13 +64,22 @@ block content
               form.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
                   .form-group.last
-                    label.control-label.col-md-2 Date Range
-                    .col-md-6
+                    label.control-label.col-md-1 Date Range
+                    .col-md-4
                       .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
                         input#sdate.form-control(type='text', name='from' value='')
                         span.input-group-addon to
-                        input#edate.form-control(type='text', name='to' value='')                    
-                    .col-md-4.form-inline                      
+                        input#edate.form-control(type='text', name='to' value='')
+                    label.control-label.col-md-1 Server                    
+                    .col-md-3.form-inline
+                      select#server.form-control.input-small.select2me.form-md-line-input(name='server')         
+                        each data in agent 
+                          #{type}
+                            if data.name==type
+                               option(value='', selected='selected') #{data.name}
+                            else                              
+                              option #{data.name}                    
+                    .col-md-2.form-inline                      
                       button#btn_search.btn.blue
                         i.fa.fa-search Search
       .row
