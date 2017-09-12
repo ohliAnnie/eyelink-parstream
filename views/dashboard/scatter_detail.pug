@@ -59,11 +59,14 @@ html
     script.
       jQuery(document).ready(function() {  
         $('#sample_2 > tbody > tr').click(function(){                       
+         $("table tr").css("background", "#fff"); //reset to original color
+         $(this).css("background", "#FAED7D"); //apply the new color
+         console.log($(this));
           var values = $(this).find('td').map(function(){              
             return $(this).text();
           }).get();                    
           getTransaction(values[6], values[0]);
-        });
+        });       
          $('.tree-2').treegrid({
             expanderExpandedClass: 'glyphicon glyphicon-minus',
             expanderCollapsedClass: 'glyphicon glyphicon-plus'
