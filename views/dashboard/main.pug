@@ -31,6 +31,17 @@ block script
         console.log('test');
         $( "#cy" ).slideToggle( "slide" );
       });
+      $( "#btn_search" ).click(function() {
+        console.log('test');
+        console.log($( "select[name=server]" ).val());
+      });
+      $("#btn_timeseries").click(function(){
+        if($("select[name=server]").val() == "TESTAPP") {
+          location.href='/dashboard/inspector';
+        } else if($("select[name=server]").val() == "JIRA") {
+          location.href='/dashboard/timeseries';
+        }
+      });  
       $('input[type="radio"]').on('click change', function(e) {
         var time = {'10min' : 10, '30min' : 30, '1hour' : 60, '3hour' : 3*60, '6hour' : 6*60, '12hour' : 12*60, '24hour' : 24*60 };
           getDataByToggle(time[e.target.id]);
@@ -51,33 +62,51 @@ block content
             a(href='#') Dashboard
           li.active Dashboard  
       .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Option
+            .portlet-body.form
+              form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .row
+                    label.control-label.col-md-2 Server                                        
+                    .col-md-2.form-inline
+                      select.form-control.input-small.select2me.form-md-line-input(name='server')                      
+                        each data in agent 
+                          option #{data.name}
+                    .col-md-3.form-inline
+                      button#btn_search.btn.blue
+                        i.fa.fa-search  Search
+                    .btn-group.actions(data-toggle='buttons')                    
+                      label.btn.btn-default
+                        input.toggle(type='radio' id='10min')
+                        |  Last 10m
+                      label.btn.btn-default
+                        input.toggle(type='radio' id='30min')
+                        |  Last 30m
+                      label.btn.btn-default
+                        input.toggle(type='radio' id ='1hour')
+                        |  Last 1h
+                      label.btn.btn-default
+                        input.toggle(type='radio' id ='3hour')
+                        |  Last 3h
+                      label.btn.btn-default
+                        input.toggle(type='radio' id ='6hour')
+                        |  Last 6h
+                      label.btn.btn-default
+                        input.toggle(type='radio' id ='12hour')
+                        |  Last 12h
+                      label.btn.btn-default
+                        input.toggle(type='radio' id ='24hour')
+                        |  Last 24h    
+      .row        
         .col-md-12      
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
                 span.caption-subject.bold.uppercase Server Map
-              .btn-group.actions(data-toggle='buttons')                    
-                label.btn.btn-default
-                  input.toggle(type='radio' id='10min')
-                  |  Last 10m
-                label.btn.btn-default
-                  input.toggle(type='radio' id='30min')
-                  |  Last 30m
-                label.btn.btn-default
-                  input.toggle(type='radio' id ='1hour')
-                  |  Last 1h
-                label.btn.btn-default
-                  input.toggle(type='radio' id ='3hour')
-                  |  Last 3h
-                label.btn.btn-default
-                  input.toggle(type='radio' id ='6hour')
-                  |  Last 6h
-                label.btn.btn-default
-                  input.toggle(type='radio' id ='12hour')
-                  |  Last 12h
-                label.btn.btn-default
-                  input.toggle(type='radio' id ='24hour')
-                  |  Last 24h
             .portlet-body(style='height:850px;  z-index: 2')
               a#btn_sankey.icon-btn.sankey-toggler.uppercase(style='z-index: 10; float: right;')
                 i.fa.fa-arrow-left                
@@ -94,7 +123,7 @@ block content
                           span.caption-subject.bold
                             | Summary
                         .actions
-                          a.btn.btn-sm.blue(href='#', onclick="location.href='/dashboard/inspector'")  Inspector
+                          button#btn_timeseries.btn.btn-sm.blue  Timeseries
                           a.btn.btn-sm.red(href='#', onclick="javascript_:window.open('error_pop','pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=1000,height=640,top=50,left=50');")  Error & History 
                           a.btn-icon-only.grey(href='#', title='도움말')
                             i.fa.fa-question-circle(data-toggle='modal', aria-hidden='true')

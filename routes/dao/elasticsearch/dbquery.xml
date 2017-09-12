@@ -145,6 +145,50 @@
      ]]></query>
   </user>
   <dashboard>
+  <query id='selectByIndex'><![CDATA[      
+  {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {       
+          "size"   : 10000,          
+          "query" : { 
+
+          }
+       }
+    } 
+  ]]></query>   
+  <query id='selectByIdValue'><![CDATA[      
+  {
+        "index" : #index#,
+        "type" : #type#,        
+        "body" : {       
+          "size"   : 10000,          
+          "sort" : { "parentSpanId" : { "order" : "asc" } },
+          "query" : { 
+            "match" : {
+              #id# : {              
+                "query" :  #value#,
+                "operator" : "and"
+              }
+            }
+          }
+       }
+    } 
+  ]]></query>    
+  <query id='selectByIdList'><![CDATA[      
+   {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {       
+          "size"   : 10000, 
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"], 
+          "query" : { 
+            "terms" : {  "_id" : [##id##]        }
+          }
+       }
+    } 
+  ]]></query>  
   <query id='selectByTimestamp'><![CDATA[
      {
         "index" : #index#,
@@ -179,7 +223,7 @@
               },
               "must_not" : {
                 "match": {
-                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
                  }  
               }
             }
@@ -189,12 +233,12 @@
   ]]></query>
   <query id='selectJiraAccReq'><![CDATA[
       {
-        "index" : [##index##],
+        "index" : #index#,
         "type" : "access",       
         "body" : {
           "size"   : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["request", "clientip", "auth"],
+          "_source" : ["request", "clientip", "auth", "response"],
           "query" : { 
             "bool" : {
               "must" : [      { "match_all": {} }        ],
@@ -214,7 +258,7 @@
               ],
               "must_not" : {
               "match": {
-                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
                }  
              }
             }
@@ -229,7 +273,7 @@
         "body" : {
           "size"   : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["request", "clientip", "auth"],
+          "_source" : ["request", "clientip", "auth", "response"],
           "query" : { 
             "bool" : {
               "must" :
@@ -246,7 +290,7 @@
                 },                   
               "must_not" : {
               "match": {
-                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
                }  
              }
             }
@@ -256,7 +300,7 @@
   ]]></query>    
   <query id='selectJiraAccDash'><![CDATA[
       {
-        "index" : [##index##],
+        "index" : #index#,
         "type" : "access",                    
         "body" : {       
           "size"   : 100000, 
@@ -278,7 +322,7 @@
                     ],
                     "must_not" : {
                       "match": {
-                       "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                       "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
                       }  
                     }
                   }                    
@@ -291,7 +335,7 @@
   ]]></query>
    <query id='selectJiraAccMap'><![CDATA[
        {
-        "index" : [##index##],
+        "index" : #index#,
         "type" : "access",       
         "body" : {
           "size"   : 100000,
@@ -316,7 +360,7 @@
               ],
               "must_not" : {
               "match": {
-                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
                }  
              }
             }
@@ -348,7 +392,7 @@
                 },                  
               "must_not" : {
               "match": {
-                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
                }  
              }
             }
@@ -358,7 +402,7 @@
   ]]></query>
   <query id='selectScatterSection'><![CDATA[
       {
-        "index" : [##index##],
+        "index" : #index#,
         "type" : "access",                    
         "body" : {       
           "size"   : 100000, 
@@ -380,7 +424,7 @@
                 },                            
                 "must_not" : {
                   "match": {
-                   "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                   "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
                   }  
                 }
             }
@@ -411,7 +455,7 @@
                 },                            
                 "must_not" : {
                   "match": {
-                   "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                   "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
                   }  
                 }
             }
@@ -421,7 +465,7 @@
   ]]></query>
     <query id='selectJiraAccOneWeek'><![CDATA[
       {
-        "index" : [##index##],
+        "index" : #index#,
         "type" : "access",                    
         "body" : {       
           "size"   : 100000, 
@@ -430,11 +474,11 @@
           "query": {
             "bool" : {
               "must" : {
-                "match_all" : {}
+                "range" : {  "@timestamp": {    "gte": #start# } } 
               },
               "must_not" : {
                 "match": {
-                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
                  }  
               }
             }
@@ -454,7 +498,7 @@
               },
               "must_not" : {
                 "match": {
-                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
                  }  
               }
             }
@@ -479,7 +523,7 @@
               },
               "must_not" : {
                 "match": {
-                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /oauth/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
                  }  
               }
             }
@@ -513,17 +557,8 @@
         "index" : #index#,        
         "type" : #type#,
         "body" : {            
-         }               
-       } 
-    ]]></query>
-  <query id='getTransactionDetail'><![CDATA[
-      {
-        "index" : #index#,
-        "type" : #type#,
-        "body" : {
-          "query": {
-              "term" : {    "_id": #id#    }
-           }            
+          "size" : 1000,  
+          "sort" : { "startTime" : { "order" : "asc" } }
          }               
        } 
     ]]></query>
@@ -952,27 +987,58 @@
     ]]></query>        
   </reports> 
   <sample>
-    <query id='selectJiraAccess'><![CDATA[
+  <query id='selectByIdList'><![CDATA[      
+   {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {       
+          "size"   : 10000, 
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"], 
+          "query" : { 
+            "terms" : {  "_id" : [##id##]        }
+          }
+       }
+    } 
+  ]]></query>
+    <query id='selectJiraAccess'><![CDATA[      
       {
-        "index" : "filebeat_jira_access-2017.06.01",
+        "index" : #index#,
         "type" : "access",                    
         "body" : {       
           "size"   : 10000, 
           "sort" : { "@timestamp" : { "order" : "asc" }},
-          "query" : { "match_all" : { }
+         "query": {
+            "bool" : {
+              "must" : {
+                "match_all" : {}
+              },
+              "must_not" : {
+                "match": {
+                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ /navigation .css .js .png .json .eot .gadget .charts"
+                 }  
               }
+            }
+          }         
            }
         } 
   ]]></query>
   <query id='selectJiraAccReq'><![CDATA[
       {
-        "index" : #index#,
+        "index" : "filebeat_jira_access-*",
         "type" : "access",       
         "body" : {
-          "size"   : 10000,
+          "size"   : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["request", "clientip", "auth"],
-          "query" : { "match_all" : { } }
+          "_source" : ["request", "clientip", "auth", "response"],
+          "query" : { 
+            "bool" : {
+              "must" : {   "match_all" : { }  },
+              "must_not" : {
+                "match": {      "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ /navigation .css .js .png .json .eot .gadget .charts"          }  
+              } 
+            }
+          }
         }
       } 
   ]]></query>
