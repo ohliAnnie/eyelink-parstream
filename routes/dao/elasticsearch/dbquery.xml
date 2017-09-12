@@ -1040,7 +1040,7 @@
         "id" : #ID#
       }
      ]]></query> 
-  <query id='selectByAnalysisTimestamp'><![CDATA[
+   <query id='selectByAnalysisTimestamp'><![CDATA[
      {
         "index" : #INDEX#,
         "type" : #TYPE#,                       
@@ -1097,37 +1097,6 @@
         } 
       }
      ]]></query>     
-    <query id='selectPatternList'><![CDATA[
-      {
-        "index" : #INDEX#,
-        "type" : #TYPE#,                    
-        "body" : {       
-          "size"   : 10000,
-          "_source" : ["pattern_data.creation_Date"],
-          "query" : { 
-            "bool" : {
-              "must" : { "match_all": {} },
-               "filter" : {
-                "range" : {
-                   "pattern_data.creation_Date" : { "gte" : #START_TIMESTAMP#, "lte" : #END_TIMESTAMP# }                    
-                  } 
-                }
-              }
-          }
-        } 
-      }
-     ]]></query>
-    <query id='selectPatterns'><![CDATA[
-      {
-        "index" : #INDEX#,
-        "type" : #TYPE#,               
-        "body" : {
-          "query" : {
-            "term" : {   "_id" : #ID#     }
-          }
-        }
-      }
-    ]]></query>
     <query id='selectDaClusterMasterByDadate'><![CDATA[      
       {
         "index" : #index#,
