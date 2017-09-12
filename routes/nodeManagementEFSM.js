@@ -15,7 +15,7 @@ var indexMenu = global.config.es_index.es_auth_menu;
 router.get('/users', function(req, res, next) {
   console.log('user/restapi/selectUserList');
   var in_data = { INDEX: indexUser, TYPE: "user" };
-  queryProvider.selectSingleQueryByID2("user", "selectList", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID2("management", "selectList", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -33,12 +33,12 @@ router.get('/users/:id', function(req, res) {
     res.render('./management/sign_up', { title: global.config.productname, mainmenu:mainmenu });
   } else { // 기존 사용자 정보 변경
     var in_data = {  INDEX: indexUser,  TYPE: "user",  ID : "user_id",  VALUE: req.params.id   };
-    queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {      
+    queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {      
       if (out_data[0] != null){
         var rtnCode = CONSTS.getErrData('0000');      
         var user = out_data[0];
         var in_data = {  INDEX: indexMap, TYPE: "map", ID : "user_id", VALUE: req.params.id   };
-        queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {      
+        queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {      
           if (out_data != null){
             var rtnCode = CONSTS.getErrData('0000');      
             var maps = out_data;          
@@ -69,7 +69,7 @@ router.post('/users/:id', function(req, res) {
     VALUE: req.body.userid       
   };
   console.log(in_data);
-  queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {        
+  queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {        
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');
       console.log(rtnCode);
@@ -91,7 +91,7 @@ router.post('/users/:id', function(req, res) {
         NOTE: req.body.note,
         DATE: d[3]+'-'+mon[d[1]]+'-'+d[2]+'T'+s[0]+':'+s[1]+':'+s[2]
       };      
-      queryProvider.insertQueryByID("user", "insertUser", in_data, function(err, out_data) {
+      queryProvider.insertQueryByID("management", "insertUser", in_data, function(err, out_data) {
         if(out_data.result == "created"){
           var rtnCode = CONSTS.getErrData("D001");        
           console.log(out_data.result);
@@ -118,7 +118,7 @@ router.put('/users/:id', function(req, res) {
     NOTE: req.body.note
   };
   console.log(in_data);
-  queryProvider.updateQueryByID("user", "updateUser", in_data, function(err, out_data) {    
+  queryProvider.updateQueryByID("management", "updateUser", in_data, function(err, out_data) {    
     if(out_data.result == "updated");
         var rtnCode = CONSTS.getErrData("D002");            
     if (err) { console.log(err);   }
@@ -132,12 +132,12 @@ router.delete('/users/:id', function(req, res) {
   console.log('deleteUser');
   console.log(req.body.id, req.params.id);
   var in_data = {  INDEX: indexUser,  TYPE: "user",  ID: req.body.id   };    
-  queryProvider.deleteQueryByID("user", "deleteById", in_data, function(err, out_data) {
+  queryProvider.deleteQueryByID("management", "deleteById", in_data, function(err, out_data) {
     if(out_data.result == "deleted");
       var rtnCode = CONSTS.getErrData("D003");
       var in_data = {  INDEX: indexMap, TYPE: "map",  ID: "user_id",  VALUE : req.params.id  };  
       console.log(in_data);
-      queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {      
+      queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {      
         if (out_data != null){
           var rtnCode = CONSTS.getErrData('0000');    
           console.log('map');          
@@ -146,7 +146,7 @@ router.delete('/users/:id', function(req, res) {
           for(i=0; i<out_data.length; i++){  
             var in_data = { INDEX : indexMap, TYPE: "map", ID : out_data[i]._id     }
             console.log(in_data);
-            queryProvider.deleteQueryByID("user", "deleteById", in_data, function(err, out_data) {  
+            queryProvider.deleteQueryByID("management", "deleteById", in_data, function(err, out_data) {  
               if(out_data.result == "deleted"){
                 var rtnCode = CONSTS.getErrData("D004");                          
               }
@@ -166,12 +166,12 @@ router.delete('/users/:id', function(req, res) {
 router.get('/user/:id', function(req, res) {
   console.log(req.params.id);
   var in_data = {  INDEX: indexUser,  TYPE: "user",  ID : "user_id",  VALUE: req.params.id   };
-  queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {      
+  queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {      
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('0000');      
       var user = out_data[0];
       var in_data = {  INDEX: indexMap, TYPE: "map", ID : "user_id", VALUE: req.params.id   };
-        queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {      
+        queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {      
           if (out_data != null){
             var rtnCode = CONSTS.getErrData('0000');      
             var maps = out_data;          
@@ -197,7 +197,7 @@ router.get('/user/:id', function(req, res) {
 router.get('/role', function(req, res, next) {
   console.log('role/restapi/selectRoleList');
   var in_data = { INDEX: indexRole, TYPE:"role" };
-  queryProvider.selectSingleQueryByID2("user", "selectList", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID2("management", "selectList", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -221,7 +221,7 @@ router.get('/role/:id', function(req, res) {
       ID: "role_id",
       VALUE: req.params.id
     };
-    queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {           
+    queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {           
       console.log(out_data[0]);
        if(out_data[0] != null){      
         var in_data = {
@@ -231,7 +231,7 @@ router.get('/role/:id', function(req, res) {
           VALUE: req.params.id
         };
         var role = out_data[0];
-           queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {                      
+           queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {                      
             var menu = out_data[0];
             console.log(role);
             console.log(menu);
@@ -253,7 +253,7 @@ router.post('/role/:id', function(req, res) {
     TYPE: "role",
     ID: "role_id",
     VALUE: req.body.roleid    };  
-  queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {        
+  queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {        
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');    
       res.json({rtnCode: rtnCode});
@@ -263,7 +263,7 @@ router.post('/role/:id', function(req, res) {
         ROLEID: req.body.roleid,
         NAME: req.body.rolename,        
       };        
-      queryProvider.insertQueryByID("user", "insertRole", in_data, function(err, out_data) {        
+      queryProvider.insertQueryByID("management", "insertRole", in_data, function(err, out_data) {        
         if(out_data.result == "created"){
           console.log(out_data);
           var rtnCode = CONSTS.getErrData("D001");        
@@ -278,7 +278,7 @@ router.post('/role/:id', function(req, res) {
             ANALYSIS: req.body.analysis,
             SETTING: req.body.setting
           };   
-          queryProvider.insertQueryByID("user", "insertAuthMenu", in_data, function(err, out_data) {              
+          queryProvider.insertQueryByID("management", "insertAuthMenu", in_data, function(err, out_data) {              
             if(out_data.result == "created"){
               console.log(out_data);
               var rtnCode = CONSTS.getErrData("D001");        
@@ -290,7 +290,7 @@ router.post('/role/:id', function(req, res) {
                 ID: "role_id",
                 VALUE: req.body.roleid
               };  
-              queryProvider.deleteQueryByID("user", "deleteById", in_data, function(err, out_data) {  
+              queryProvider.deleteQueryByID("management", "deleteById", in_data, function(err, out_data) {  
                 if(out_data.result == "deleted"){
                   var rtnCode = CONSTS.getErrData("D004");                          
                 }
@@ -317,7 +317,7 @@ router.put('/role/:id', function(req, res) {
       NAME: req.body.rolename,        
     };     
   console.log(in_data);
-  queryProvider.updateQueryByID("user", "updateRole", in_data, function(err, out_data) {    
+  queryProvider.updateQueryByID("management", "updateRole", in_data, function(err, out_data) {    
     if(out_data.result == "updated" || out_data.result == "noop"){
       var in_data = {         
             INDEX: indexMenu,        
@@ -331,7 +331,7 @@ router.put('/role/:id', function(req, res) {
             SETTING: req.body.setting
           };   
         var rtnCode = CONSTS.getErrData("D002");            
-        queryProvider.updateQueryByID("user", "updateAuthMenu", in_data, function(err, out_data) {    
+        queryProvider.updateQueryByID("management", "updateAuthMenu", in_data, function(err, out_data) {    
           if(out_data.result == "updated" || out_data.result == "noop"){
             var rtnCode = CONSTS.getErrData("D002");      
           }
@@ -350,14 +350,14 @@ router.delete('/role/:id', function(req, res) {
     TYPE: "role",
     ID: req.body.id  
   };  
-  queryProvider.deleteQueryByID("user", "deleteById", in_data, function(err, out_data) {
+  queryProvider.deleteQueryByID("management", "deleteById", in_data, function(err, out_data) {
     if(out_data.result == "deleted"){
      var in_data = {    INDEX: indexMenu,  TYPE: "menu",   ID: req.body.id   };  
-      queryProvider.deleteQueryByID("user", "deleteById", in_data, function(err, out_data) {
+      queryProvider.deleteQueryByID("management", "deleteById", in_data, function(err, out_data) {
         if(out_data.result == "deleted"){
             var rtnCode = CONSTS.getErrData("D003");        
             var in_data = {  INDEX: indexMap, TYPE: "map",  ID: "role_id",  VALUE : req.params.id  };  
-            queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {      
+            queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {      
               if (out_data != null){
                 var rtnCode = CONSTS.getErrData('0000');    
                 console.log('map');          
@@ -365,7 +365,7 @@ router.delete('/role/:id', function(req, res) {
                 for(i=0; i<out_data.length; i++){  
                   var in_data = { INDEX : indexMap, TYPE: "map", ID : out_data[i]._id     }
                   console.log(in_data);
-                  queryProvider.deleteQueryByID("user", "deleteById", in_data, function(err, out_data) {  
+                  queryProvider.deleteQueryByID("management", "deleteById", in_data, function(err, out_data) {  
                     if(out_data.result == "deleted"){
                     var rtnCode = CONSTS.getErrData("D003");                          
                   }
@@ -393,7 +393,7 @@ router.delete('/role/:id', function(req, res) {
 router.get('/memList/:id', function(req, res, next) {
   console.log('role/restapi/selectMemList');
   var in_data = { INDEX: indexMap, TYPE:"map", ID : "role_id", VALUE : req.params.id };
-  queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     console.log(rtnCode);
     console.log(out_data);
@@ -402,7 +402,7 @@ router.get('/memList/:id', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     }  else {
       var in_data = { INDEX: indexUser, TYPE: "user" };
-      queryProvider.selectSingleQueryByID2("user", "selectList", in_data, function(err, out_data, params) {
+      queryProvider.selectSingleQueryByID2("management", "selectList", in_data, function(err, out_data, params) {
         var rtnCode = CONSTS.getErrData('0000');
         if (out_data == null) {
           rtnCode = CONSTS.getErrData('0001');
@@ -428,7 +428,7 @@ router.get('/mem/:id', function(req, res) {
       ID: "role_id",
       VALUE: req.params.id
     };
-    queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {           
+    queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {           
       console.log(out_data[0]);
        if(out_data[0] != null){      
         var in_data = {
@@ -438,7 +438,7 @@ router.get('/mem/:id', function(req, res) {
           VALUE: req.params.id
         };
         var role = out_data[0];
-           queryProvider.selectSingleQueryByID2("user", "selectListById", in_data, function(err, out_data, params) {                      
+           queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {                      
             var menu = out_data[0];
 
             console.log(role);
@@ -463,7 +463,7 @@ router.post('/mem/:id', function(req, res) {
     TYPE: "map",
     ROLEID: req.params.id,
     USERID: req.body.userid    };  
-  queryProvider.selectSingleQueryByID2("user", "selectCheckMap", in_data, function(err, out_data, params) {        
+  queryProvider.selectSingleQueryByID2("management", "selectCheckMap", in_data, function(err, out_data, params) {        
     console.log(out_data);
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E006');    
@@ -474,7 +474,7 @@ router.post('/mem/:id', function(req, res) {
         ROLEID: req.params.id,
         USERID: req.body.userid      
       };        
-      queryProvider.insertQueryByID("user", "insertMap", in_data, function(err, out_data) {        
+      queryProvider.insertQueryByID("management", "insertMap", in_data, function(err, out_data) {        
         console.log(out_data);
         if(out_data.result == "created"){
           console.log(out_data);
@@ -495,12 +495,73 @@ router.delete('/mem/:id', function(req, res) {
     TYPE: "map",
     ID: req.params.id  
   };  
-  queryProvider.deleteQueryByID("user", "deleteById", in_data, function(err, out_data) {
+  queryProvider.deleteQueryByID("management", "deleteById", in_data, function(err, out_data) {
     if(out_data.result == "deleted");     
         var rtnCode = CONSTS.getErrData("D003");        
     if(err){ console.log(err);    }
     res.json({rtnCode: rtnCode});
   });
 });
+
+router.get('/menu', function(req, res, next) {
+  console.log('management/restapi/menu');        
+  mainmenu.management = ' open selected'; 
+  res.render('./management/menu', { title: global.config.productname, mainmenu:mainmenu });
+});
+  
+router.get('/menu_upper', function(req, res, next) {
+  console.log('menu/restapi/selectList');
+  var in_data = { INDEX: "management", TYPE:"upperMenu" };
+  queryProvider.selectSingleQueryByID2("management", "selectList", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }       
+    res.render('./management/menu_upper', { title: global.config.productname, mainmenu:mainmenu, list:out_data });
+  });
+});
+
+// mem 신규 등록
+router.post('/menu_upper/:code', function(req, res) {  
+  console.log(req.body);
+  var in_data = {    
+    INDEX: "management",
+    TYPE: "upperMenu",
+    CODE: req.params.code,
+    NAME: req.body.name    };  
+  queryProvider.selectSingleQueryByID2("management", "selectCheckUppermenu", in_data, function(err, out_data, params) {            
+    if (out_data[0] != null){
+      var rtnCode = CONSTS.getErrData('E006');    
+      res.json({rtnCode: rtnCode});
+    }  else  {
+      console.log(in_data);
+      queryProvider.insertQueryByID("management", "insertUppermenu", in_data, function(err, out_data) {        
+        if(out_data.result == "created"){
+          console.log(out_data);
+          var rtnCode = CONSTS.getErrData("D001");                   
+        }
+        if (err) { console.log(err) };                     
+        res.json({rtnCode: rtnCode});
+      });
+    }
+  });
+});
+
+// role 정보 삭제
+router.delete('/menu_upper/:id', function(req, res) {
+  console.log('delete menu_upper');
+  var in_data = {    
+    INDEX: "management",
+    TYPE: "upperMenu",
+    ID: req.params.id  
+  };  
+  queryProvider.deleteQueryByID("management", "deleteById", in_data, function(err, out_data) {
+    if(out_data.result == "deleted");     
+        var rtnCode = CONSTS.getErrData("D003");        
+    if(err){ console.log(err);    }
+    res.json({rtnCode: rtnCode});
+  });
+});
+
 
 module.exports = router;

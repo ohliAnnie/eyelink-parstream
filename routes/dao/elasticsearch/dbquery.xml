@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <queryList>
-  <user>
+  <management>
     <query id='selectList'><![CDATA[
      {
         "index" : #INDEX#,
@@ -153,7 +153,34 @@
         }
     }
      ]]></query>
-  </user>
+   <query id='selectCheckUppermenu'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : #TYPE#,        
+        "body" : {          
+          "query": {             
+            "bool": {
+              "must" : [
+                { "match": { "code" : #CODE#}},
+                { "match": { "name" : #NAME#}}
+              ]
+            }     
+          } 
+        }
+      }
+     ]]></query>  
+    <query id='insertUppermenu'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : #TYPE#,        
+        "id" : #CODE#,
+        "body" : {
+          "code" : #CODE#,          
+          "name" : #NAME#
+        }
+    }
+     ]]></query>
+  </management>
   <dashboard>
   <query id='selectByIndex'><![CDATA[      
   {
