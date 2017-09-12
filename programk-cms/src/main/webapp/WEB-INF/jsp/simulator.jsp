@@ -117,7 +117,8 @@ body{position:relative; margin:0; padding:0; font-family:"맑은 고딕", Malgun
 	<form id="formTest" method="post">
 	<input type="hidden" name="filename" id="filename"/>
 	<div class="popTitle">
-		<h1>안내</h1><a href="javascript:location.reload();" class="btnBg closePopBox" style="display:none;"><span class="icon_closePop">닫기</span></a>
+		<!--<h1>안내</h1><a href="javascript:location.reload();" class="btnBg closePopBox" style="display:none;"><span class="icon_closePop">닫기</span></a>-->
+		<h1>안내</h1><a href="#" onclick="fnClosePop();" class="btnBg closePopBox" style="display:none;"><span class="icon_closePop">닫기</span></a>
 	</div>
 	<div class="popContent" style="border-bottom:0;">
 		<div class="alert">
@@ -126,7 +127,8 @@ body{position:relative; margin:0; padding:0; font-family:"맑은 고딕", Malgun
 	</div>
 	<div class="bottomButton" style="display:none;">
 		<div class="right">
-			<a href="javascript:location.reload();" class="btnBg closeBtn"><span class="icon_cancel"></span>닫기</a>
+			<!--<a href="javascript:location.reload();" class="btnBg closeBtn"><span class="icon_cancel"></span>닫기</a>-->
+			<a href="#" onclick="fnClosePop();" class="btnBg closeBtn"><span class="icon_cancel"></span>닫기</a>
 		</div>
 	</div>
 	</form>
@@ -165,6 +167,12 @@ body{position:relative; margin:0; padding:0; font-family:"맑은 고딕", Malgun
 		$(obj).hide();
 	}
 	
+	function fnClosePop(){
+		$(".test .popTitle").hide();
+		$(".popContent").hide();
+		$(".bottomButton").hide();
+		$(".test").hide();
+	}
 	//링크 클릭시
 	function fnInput(input){
 		$("#input").val(input);
@@ -188,6 +196,7 @@ body{position:relative; margin:0; padding:0; font-family:"맑은 고딕", Malgun
 	        	data: "cpId="+cpId+"&label="+label, 
 	        	type: 'GET', 
 	        	success : function(response){ 
+	        	
 	        		if (response.status == 'FAIL') {
 	        			$(".test .pointTxt").html(response.message);		        			
 	                } else {
@@ -199,11 +208,19 @@ body{position:relative; margin:0; padding:0; font-family:"맑은 고딕", Malgun
 	            	$(".test .pointTxt").html(request.responseText);
 	            },
 	            beforeSend:function(){
+	            	$(".test .pointTxt").text("배포중입니다.");
 	            	$(".test").show();
+	            	
+	            	$(".test .popTitle").show();
+					$(".popContent").show();
+					
 	        		$(".test").center();
 	        		fnDisabled(1);
 	            },
 	            complete:function(){
+	            	
+					$(".bottomButton").show();
+					
 	            	$(".test .closePopBox").show();
 	            	$(".test .bottomButton").show();
 	            	$(".test").center();
