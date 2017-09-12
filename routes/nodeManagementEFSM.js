@@ -83,7 +83,12 @@ router.post('/users/:id', function(req, res) {
         NAME: req.body.username,
         USERID: req.body.userid,
         PASSWORD: req.body.password[0],
+        POSITION: req.body.position,
+        TEL: req.body.tel,
+        MOBILE: req.body.mobile,
+        USE: req.body.use,        
         EMAIL: req.body.email,        
+        NOTE: req.body.note,
         DATE: d[3]+'-'+mon[d[1]]+'-'+d[2]+'T'+s[0]+':'+s[1]+':'+s[2]
       };      
       queryProvider.insertQueryByID("user", "insertUser", in_data, function(err, out_data) {
@@ -105,7 +110,12 @@ router.put('/users/:id', function(req, res) {
     ID : req.body.id,
     NAME: req.body.username,  
     PASSWORD: req.body.password,
-    EMAIL: req.body.email    
+    POSITION: req.body.position,
+    TEL: req.body.tel,
+    MOBILE: req.body.mobile,
+    USE: req.body.use,        
+    EMAIL: req.body.email,        
+    NOTE: req.body.note
   };
   console.log(in_data);
   queryProvider.updateQueryByID("user", "updateUser", in_data, function(err, out_data) {    

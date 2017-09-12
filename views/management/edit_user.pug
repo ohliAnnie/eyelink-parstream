@@ -133,9 +133,33 @@ block content
                     .col-md-3
                       input#register_password_1.form-control.form-control-inline.input-large(size='16', type='password', value=user._source.user_pw, placeholder='password', name='password_1')
                   .form-group
+                    label.control-label.col-md-5 Position
+                    .col-md-3
+                      input#position.form-control.form-control-inline.input-large(size='16', type='text', value=user._source.position, placeholder='position', name='position')
+                  .form-group
+                    label.control-label.col-md-5 Tel
+                    .col-md-3
+                      input#tel.form-control.form-control-inline.input-large(size='16', type='text', value=user._source.tel, placeholder='tel', name='tel')
+                  .form-group
+                    label.control-label.col-md-5 Mobile
+                    .col-md-3
+                      input#mobile.form-control.form-control-inline.input-large(size='16', type='text', value=user._source.mobile, placeholder='mobile', name='mobile')
+                  .form-group
                     label.control-label.col-md-5 Email
                     .col-md-3
                       input#email.form-control.form-control-inline.input-large(size='16', type='text', value=user._source.user_email, placeholder='email', name='email')
+                  .form-group
+                    label.control-label.col-md-5 Whether or not
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Whether or not
+                      select#use.select2.form-control(data-show-subtext='true', name='use')
+                        option #{user._source.use}
+                        option Use
+                        option Not                                
+                  .form-group
+                    label.control-label.col-md-5 Note
+                    .col-md-5
+                      input#note.form-control.form-control-inline.input-large(size='100', type='text', value=user._source.note, placeholder='note', name='note')
                   .form-group
                     label.control-label.col-md-5 Atteched                    
                     .col-md-3

@@ -70,7 +70,11 @@ block content
                     th(style='text-align:center;') 
                     th(style='text-align:center;')  User ID
                     th(style='text-align:center;')  Name
-                    th(style='text-align:center;')  Email                    
+                    th(style='text-align:center;')  Position
+                    th(style='text-align:center;')  Tel
+                    th(style='text-align:center;')  Mobile
+                    th(style='text-align:center;')  Email  
+                    th(style='text-align:center;')  Use                  
                     th(style='text-align:center;')  Reg Date                    
                     th(style='text-align:center;')  Edit &amp; Delete
                 tbody
@@ -79,7 +83,11 @@ block content
                       td                        
                       td  #{user._source.user_id}                        
                       td  #{user._source.user_name}
+                      td  #{user._source.position}
+                      td  #{user._source.tel}
+                      td  #{user._source.mobile}
                       td  #{user._source.user_email}
+                      td  #{user._source.use}
                       td  #{user._source.reg_date}                      
                       td
                         a.btn.default.btn-xs.balck(href='/management/users/'+user._source.user_id)

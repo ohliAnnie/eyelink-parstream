@@ -168,6 +168,7 @@ router.post('/restapi/insertAnomalyPattern/:id', function(req, res, next) {
       });     
     }
      res.json({rtnCode: rtnCode});    
+     
   });
 });
 

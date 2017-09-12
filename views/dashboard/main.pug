@@ -37,9 +37,9 @@ block script
       });
       $("#btn_timeseries").click(function(){
         if($("select[name=server]").val() == "TESTAPP") {
-          location.href='/dashboard/inspector';
+          location.href='/dashboard/timeseries_agent';
         } else if($("select[name=server]").val() == "JIRA") {
-          location.href='/dashboard/timeseries';
+          location.href='/dashboard/timeseries_file';
         }
       });  
       $('input[type="radio"]').on('click change', function(e) {
@@ -73,10 +73,10 @@ block content
                   .row
                     label.control-label.col-md-2 Server                                        
                     .col-md-2.form-inline
-                      select.form-control.input-small.select2me.form-md-line-input(name='server')                      
+                      select.form-control.input-small.select2me.form-md-line-input(name='server')                                              
                         each data in agent 
                           option #{data.name}
-                    .col-md-3.form-inline
+                    .col-md-2.form-inline
                       button#btn_search.btn.blue
                         i.fa.fa-search  Search
                     .btn-group.actions(data-toggle='buttons')                    
