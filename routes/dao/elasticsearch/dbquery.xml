@@ -34,8 +34,13 @@
         "body" : {
           "user_id" : #USERID#,
           "user_pw" : #PASSWORD#,
-          "user_name" : #NAME#,          
+          "user_name" : #NAME#,
+          "position" : #POSITION#,
+          "tel" : #TEL#,
+          "mobile" : #MOBILE#,
+          "use" : #USE#,          
           "user_email" : #EMAIL#,
+          "note" : #NOTE#,
           "reg_date" : #DATE#
         }
     }
@@ -56,7 +61,12 @@
           "doc" : {            
             "user_pw" : #PASSWORD#,
             "user_name" : #NAME#,            
-            "user_email" : #EMAIL#            
+            "position" : #POSITION#,
+            "tel" : #TEL#,
+            "mobile" : #MOBILE#,
+            "use" : #USE#,          
+            "user_email" : #EMAIL#,
+            "note" : #NOTE#
           }
         }
       }
