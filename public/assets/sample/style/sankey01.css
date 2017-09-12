@@ -18,3 +18,16 @@ body {
         stroke: #000;
         stroke-opacity: .2;
       }
+    div.tooltip { 
+      color : white;
+      position: absolute;     
+      text-align: center;     
+      width: 60px;          
+      height: auto;         
+      padding: 2px;       
+      font: 12px sans-serif;    
+      background: red; 
+      border: 0px;    
+      border-radius: 8px;     
+      pointer-events: none;     
+      

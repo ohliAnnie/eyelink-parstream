@@ -4,14 +4,14 @@ function drawAccChart() {
   var s = sdate.split('-')
   var sindex =new Date(new Date(s[0], parseInt(s[1])-1, s[2]).getTime()-24*60*60*1000);
   var edate = $('#edate').val();
-  console.log(sdate, edate);
+  /*console.log(sdate, edate);*/
   var index = [], cnt = 0;
   var e = edate.split('-');
   for(i=sindex.getTime(); i < new Date(e[0], parseInt(e[1])-1, e[2]).getTime()+24*60*60*1000; i+=24*60*60*1000){    
     var day = new Date(i).toString().split(' ');    
     index[cnt++] = "filebeat_jira_access-"+day[3]+'.'+mon[day[1]]+'.'+day[2];    
   }  
-  console.log(index);
+  //console.log(index);
   var s = sindex.toString().split(' ');
   var gte = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T15:00:00.000Z';  
   var lte = edate+'T15:00:00.000Z';
@@ -52,8 +52,7 @@ function drawProcessChart() {
   var s = sindex.toString().split(' ');
   var gte = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T15:00:00.000Z';
   var e = edate.split('-');
-  var lte = e[0]+'-'+e[1]+'-'+e[2]+'T15:00:00.000Z';
-  console.log(index, gte, lte);
+  var lte = e[0]+'-'+e[1]+'-'+e[2]+'T15:00:00.000Z';  
   $.ajax({
     url: "/dashboard/restapi/getProcessTimeseries" ,
     dataType: "json",
@@ -80,7 +79,7 @@ function drawTopChart() {
   var s = sdate.split('-')
   var sindex =new Date(new Date(s[0], parseInt(s[1])-1, s[2]).getTime()-24*60*60*1000);
   var edate = $('#edate').val();
-  console.log(sdate, edate);
+  //console.log(sdate, edate);
   var index = [], cnt = 0;
   var e = edate.split('-');
   for(i=sindex.getTime(); i < new Date(e[0], parseInt(e[1])-1, e[2]).getTime()+24*60*60*1000; i+=24*60*60*1000){       
@@ -91,7 +90,7 @@ function drawTopChart() {
   var gte = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T15:00:00.000Z';
   var e = edate.split('-');
   var lte = e[0]+'-'+e[1]+'-'+e[2]+'T15:00:00.000Z';
-   console.log(index, gte, lte);
+   //console.log(index, gte, lte);
   $.ajax({
     url: "/dashboard/restapi/getTopTimeseries" ,
     dataType: "json",
@@ -118,7 +117,7 @@ function drawTotalChart() {
   var s = sdate.split('-')
   var sindex =new Date(new Date(s[0], parseInt(s[1])-1, s[2]).getTime()-24*60*60*1000);
   var edate = $('#edate').val();
-  console.log(sdate, edate);
+ //console.log(sdate, edate);
   var index = [], cnt = 0;
   var e = edate.split('-');
   for(i=sindex.getTime(); i < new Date(e[0], parseInt(e[1])-1, e[2]).getTime()+24*60*60*1000; i+=24*60*60*1000){       
@@ -129,7 +128,7 @@ function drawTotalChart() {
   var gte = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T15:00:00.000Z';
   var e = edate.split('-');
   var lte = e[0]+'-'+e[1]+'-'+e[2]+'T15:00:00.000Z';
-   console.log(index, gte, lte);
+   //console.log(index, gte, lte);
   $.ajax({
     url: "/dashboard/restapi/getTotalTimeseries" ,
     dataType: "json",
@@ -156,7 +155,7 @@ function drawMetricChart() {
   var s = sdate.split('-')
   var sindex =new Date(new Date(s[0], parseInt(s[1])-1, s[2]).getTime()-24*60*60*1000);
   var edate = $('#edate').val();
-  console.log(sdate, edate);
+  /*console.log(sdate, edate);*/
   var index = [], cnt = 0;
   var e = edate.split('-');
   for(i=sindex.getTime(); i < new Date(e[0], parseInt(e[1])-1, e[2]).getTime()+24*60*60*1000; i+=24*60*60*1000){       
@@ -167,7 +166,7 @@ function drawMetricChart() {
   var gte = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T15:00:00.000Z';
   var e = edate.split('-');
   var lte = e[0]+'-'+e[1]+'-'+e[2]+'T15:00:00.000Z';
-  console.log(index);
+  /*console.log(index);*/
   $.ajax({
     url: "/dashboard/restapi/getMetricTimeseries" ,
     dataType: "json",
@@ -177,7 +176,7 @@ function drawMetricChart() {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
         var data = result.rtnData;            
-        console.log(data);
+        /*console.log(data);*/
         drawMericTimeseries(data);
 
       } else {
@@ -240,7 +239,7 @@ function drawAccTimeseries(out_data) {
 }
 
 function drawProcessTimeseries(out_data){
-  console.log(out_data);
+  //console.log(out_data);
   var data = [];
   out_data.forEach(function(d) {      
       data.push({ timestamp : new Date(d._source.timestamp), cpu_total : d._source.system.process.cpu.total.pct, memory_rss : d._source.system.process.memory.rss.pct } );

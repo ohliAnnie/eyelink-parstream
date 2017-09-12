@@ -10,20 +10,25 @@ block script
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
   script(type='text/javascript', src="/scripts/util.js")
-  script(type='text/javascript', src="/scripts/d3_timeseries.js")
+  script(type='text/javascript', src="/scripts/d3_timeseries_5.js")
   script(type='text/javascript', src="/scripts/inspector.js")
   script.
     $(document).ready(function() {
       var dateFormat = 'YYYY-MM-DD';
       $('#sdate').val(moment().format(dateFormat));
-      $('#edate').val(moment().format(dateFormat));
-
+      $('#edate').val(moment().format(dateFormat));            
       // time series char를 그린다.
       drawCountChart();      
 
       $('#btn_search').click(function() {
-        d3.selectAll("svg").remove()
-        drawCountChart();        
+        if(document.getElementById("server").selectedIndex == 0){
+          location.href='/dashboard/timeseries_agent';
+        } else {
+          location.href='/dashboard/timeseries_file';
+        }
+        
+        //- d3.selectAll("svg").remove()
+        //- drawCountChart();        
       });
 
     });
@@ -32,13 +37,13 @@ block content
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 Inspector
+        h1 Agent Time series
         ol.breadcrumb
           li
             a(href='#') Home
           li
-            a(href='#') Inspector
-          li.active Inspector
+            a(href='#') Timeseries
+          li.active #{type}
       .row
         .col-md-12
           .portlet.light.bordered
@@ -59,12 +64,22 @@ block content
                 .form-body
                   .form-group.last
                     label.control-label.col-md-1 Date Range
-                    .col-md-5
+                    .col-md-4
                       .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
                         input#sdate.form-control(type='text', name='from' value='')
                         span.input-group-addon to
-                        input#edate.form-control(type='text', name='to' value='')                    
-                    .col-md-6.form-inline
+                        input#edate.form-control(type='text', name='to' value='')
+                    label.control-label.col-md-1 Server                    
+                    .col-md-3.form-inline
+                      select#server.form-control.input-small.select2me.form-md-line-input(name='server')                      
+                       each data in agent 
+                          #{type}
+                            if data.name==type
+                               option(value='', selected='selected') #{data.name}
+                            else                              
+                              option #{data.name}
+                    .col-md-2.form-inline    
+                    .col-md-2.form-inline
                       button#btn_search.btn.blue
                         i.fa.fa-search Search
       .row
@@ -125,3 +140,32 @@ block content
                 a.remove(href='javascript:;')
             .portlet-body
               .chart#ts-chart04
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Active Thread
+                span.caption-helper   Count
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart#ts-chart05
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Data Source
+                span.caption-helper   Connection
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart

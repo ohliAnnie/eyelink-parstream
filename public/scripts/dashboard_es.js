@@ -11,7 +11,7 @@ function makeDatabyDay(day){
   var d =day.toString().split(' ');  
   var y = yDay.toString().split(' ');  
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var data = { index: [indexs+d[3]+"."+mon[d[1]]+"."+d[2], indexs+y[3]+"."+mon[y[1]]+"."+y[2]],
+  var data = { index: indexs+'*',
               START : y[3]+"-"+mon[y[1]]+"-"+y[2]+'T15:00:00', END : d[3]+"-"+mon[d[1]]+"-"+d[2]+"T15:00:00"};   
   getDash(data);    
   getMapData(data);
@@ -22,8 +22,7 @@ function getMapData(data){
     dataType: "json",
     type: "get",
     data: data,
-    success: function(result) {      
-      console.log(result);
+    success: function(result) {            
       if (result.rtnCode.code == "0000") {          
         var elseJson = { nodes : result.nodes, edges : result.edges };      
         getServerMap(elseJson);             
@@ -160,10 +159,8 @@ function getDash(data) {
     type: "GET",    
     data: data,
     success: function(result) {
-      console.log(result)      ;
       if (result.rtnCode.code == "0000") {
         //- $("#successmsg").html(result.message);        
-        console.log(result);
         drawDash(result.rtnData, result.start, result.end);
       } else {
         //- $("#errormsg").html(result.message);
@@ -182,6 +179,7 @@ $.ajax({
     data: data,
     success: function(result) {      
       if (result.rtnCode.code == "0000") {                
+        console.log(result.rtnData);
         drawSankey({rtnData : result.rtnData, id : result.id});
       } else {
         //- $("#errormsg").html(result.message);
@@ -209,7 +207,7 @@ function getDataByToggle(gap) {
   var e = new Date(now).toString(' ').split(' ');
   var s = new Date(now-gap*60*1000).toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var data = { index: [indexs+d[3]+"."+mon[d[1]]+"."+d[2], indexs+y[3]+"."+mon[y[1]]+"."+y[2], indexs+yy[3]+"."+mon[yy[1]]+"."+yy[2]],
+  var data = { index: indexs+"*",
               START : s[3]+"-"+mon[s[1]]+"-"+s[2]+'T'+s[4], END : e[3]+"-"+mon[e[1]]+"-"+e[2]+"T"+e[4]};
   getDash(data);    
   getMapData(data);
@@ -290,7 +288,8 @@ function drawDash(data, start, end) {
         type: "get",
         data: { start:start, end:end, min:htXY.nYFrom, max:htXY.nYTo},
         success: function(result) {      
-          if (result.rtnCode.code == "0000") {                
+          if (result.rtnCode.code == "0000") {          
+            console.log(result.rtnData);      
             drawSankey({rtnData : result.rtnData, id : result.id});
           } else {
             //- $("#errormsg").html(result.message);
@@ -348,8 +347,7 @@ function summary(data, start, end) {
   
   var minDate = new Date(start); 
   var maxDate = new Date(end);
-  console.log(minDate, maxDate);
-  console.log(data);
+  console.log(minDate, maxDate);  
   var gap = (end-start)/(24 * 60 * 60 * 1000);
 
   var nyx = crossfilter(data);
@@ -529,8 +527,7 @@ function pdayCnt(day, mon){
     dataType: "json",
     type: "GET",    
     data: { index: indexs+day.getFullYear()+"."+mon[day.getMonth()]+"."+d[2]},
-    success: function(result) {
-       console.log(result);
+    success: function(result) {       
       if (result.rtnCode.code == "0000") {
         //- $("#successmsg").html(result.message);        /
         setStatus($('#dayCnt_status'), parseInt($('#dayCnt').text())/result.rtnData*100, 'day', result.rtnData);       
@@ -622,8 +619,7 @@ function drawChart() {
       var b = a[0].split('/');
       var c = a[3].split(' ');
       var mon = {'Jan' : 1, 'Feb' : 2, 'Mar' : 3, 'Apr' : 4, 'May' : 5, 'Jun' : 6, 'Jul' : 7, 'Aug' : 8, 'Sep' : 9, 'Oct' : 10, 'Nov' : 11, 'Dec' : 12 };      
-      d.day=d3.time.day(new Date(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]));
-            
+      d.day=d3.time.day(new Date(new Date(b[2], mon[b[1]]-1, b[0], a[1], a[2], c[0]).getTime()+9*60*60*1000));      
     });
 
     // console.log(data);
@@ -704,12 +700,15 @@ function clear(cvsId) {
 }
 
 function drawSankey(data){    
-  console.log(data);
-  
-  console.log(data.id);
+  console.log(data.rtnData);
   var colors = data.id;
   /*var json = JSON.parse(data.rtnData); 
   console.log(json);*/
+
+  var div = d3.select("body").append("div") 
+    .attr("class", "tooltip")       
+    .style("opacity", 0);
+
     var chart = d3.select("#sankey").append("svg").chart("Sankey.Path");
    chart
       .name(label)
@@ -728,6 +727,38 @@ function drawSankey(data){
       return node.name.replace(/\s*\(.*?\)$/, '');
     }
     
+    chart.on('link:mouseover', function(link) {  
+      if(link.errcnt != 0){
+              div.transition()    
+                    .duration(200)    
+                    .style("opacity", 1);    
+     //           div .html(formatTime(new Date(start+((i+1)*60*1000))) + "<br/>"  + d)  
+                div .html('ErrCnt</br>' + link.errcnt)  
+                    .style("left", (d3.event.pageX) + "px")   
+                    .style("top", (d3.event.pageY - 28) + "px");  
+      }
+        //alert('ErrCount : ' + link.errcnt);
+      });
+
+    chart.on('link:mouseout', function(link) {  
+      if(link.errcnt != 0){
+              div.transition()    
+                    .duration(500)    
+                    .style("opacity", 0); 
+      }
+        //alert('ErrCount : ' + link.errcnt);
+      });
+
+    chart.on('link:click', function(link) {  
+      console.log(link.errcnt)
+      console.log(link.elist);
+      if(link.errcnt != 0){
+        window.open('sankey_pop?link='+link.elist,'pop', 'menubar=no,status=no,scrollbars=no,resizable=no ,width=1000,height=640,top=50,left=50');
+      }
+        //alert('ErrCount : ' + link.errcnt);
+      });
+
+
     function color(node, depth) {
       var id = node.id.replace(/(_score)?(_\d+)?$/, '');
       if (colors[id]) {

@@ -1,19 +1,20 @@
-function getTransaction(id, date, app, agent) {  
-  console.log(id, date, app, agent);
-  var i = date.split('T');
-  i = i[0] .split('-');
-  var index = 'transactionlist-'+i[0]+'-'+i[1];
+function getTransaction(id, date) {    
+  console.log(id, date);
+  var s = new Date().toString().split(' ');
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   $.ajax({
     url: "/dashboard/restapi/getTransactionDetail" ,
     dataType: "json",
     type: "get",
     data: {
-      index : index,
-      id : id},
+//      index : "elagent_test-agent-"+s[3]+'.'+mon[s[1]]+'.'+s[2],
+      index : "elagent_test-agent-2017.09.11",
+      type : "TraceDetail",      id : "transactionId",
+      value : id
+    },
     success: function(result) {
-      if (result.rtnCode.code == "0000") {      
-        console.log(result)  ;
-        drawDetail(result.rtnData[0]._source, id, date, app, agent);        
+      if (result.rtnCode.code == "0000") {              
+        drawDetail(result.rtnData);        
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -25,38 +26,91 @@ function getTransaction(id, date, app, agent) {
   });
 }
 
-function drawDetail(detail, id, date, app, agent) {    
+function drawDetail(data) {        
   $('#call').empty();
   var sb = new StringBuffer();
   sb.append('<div class="row"><div class="col-md-12"><div class="portlet light bordered"><div class="portlet-body form">');
-  sb.append('<table class="table table-striped table-bordered table-hover"><tr>');
-  sb.append('<th>Application : '+app+'</th><th>TransactionId : '+id+'</th><th>AgentId : '+agent+'</th></tr></table>')
+  sb.append('<table class="table table-striped table-bordered table-hover"><tr>');  
+  sb.append('<th>Application : '+data[0]._source.rpc+'</th><th>TransactionId : '+data[0]._source.transactionId+'</th><th>AgentId : '+data[0]._source.agentId+'</th><th>ApplicationName : '+data[0]._source.applicationId+'</th></tr></table>')
   sb.append('<table class="table tree-2 table-bordered table-striped table-condensed">');
   sb.append('<tr><th>Method</th><th>Argument</th><th>Start Time</th><th>Gap(ms)</th>');
-  sb.append('<th>Exec(ms)</th><th>Exec(%)</th><th>Self(ms)</th><th>Class</th><th>API</th><th>Agent</th><th>Application</th></tr>');  
-  var level = 1;
-  detail.callstack.forEach(function(d){
-    if(d.start_time==null) {      d.start_time = '';    }    
-    if(d.gap_time==null) {      d.gap_time = '';    }
-    if(d.exec_time==null) {      d.exec_time = '';    }
-    if(d.self_time==null) {      d.self_time = '';    }
-    if(d.exec_class==null) {      d.exec_class = '';    }
-    if(d.exec_time==null) {      d.exec_time = '';    }
-    if(d.exec_api==null) {      d.exec_api = '';    }
-    if(d.agent_id==null) {      d.agent_id = '';    }
-    if(d.application_id==null) {      d.application_id = '';    }    
-    if(d.level == 1){
-      sb.append('<tr class="treegrid-'+d.seq+'">');
-      level = d.seq;
-    } else if(d.level != (level+1)){  
-      sb.append('<tr class="treegrid-'+d.seq+' treegrid-parent-'+level+'">');
-      level = d.seq;
-    } else {
-      sb.append('<tr class="treegrid-'+d.seq+' treegrid-parent-'+level+'">');
+  sb.append('<th>Exec(ms)</th><th>Exec(%)</th><th>Self(ms)</th><th>Class</th><th>API</th><th>Agent</th><th>Application</th></tr>');    
+  var ano = 0, grid = 1, tree = 1;
+  data.forEach(function(d){    
+    d = d._source;    
+    var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+    var s =new Date(new Date(d.startTime).getTime()+9*60*60*1000).toString().split(' ');
+    var sTime = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4];    
+   if(d.annotationBoList[0] != null){
+    for(i=0; i <d.annotationBoList.length;i++){              
+      var z = d.annotationBoList[i];      
+      if(z.key === 10000014){
+        var a = z.value.split('\n');        
+        var b = a[1].split(':');       
+        if(i==0 && tree==1){          
+          sb.append('<tr class="treegrid-'+ grid +'">');        
+        } else {                    
+          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
+        }        
+        sb.append('<td>'+b[0]+'</td><td>'+d.rpc+'</td><td>'+sTime+'</td><td>'+d.gap+'</td>')
+        sb.append('<td>'+d.exectionTime+'</td><td></td><td>'+d.self_time+'</td><td>'+d.execeptionClass+'</td>');
+        sb.append('<td>'+d.serviceType+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');  
+        if(d.acceptorHost != null) {          
+          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');                 
+          sb.append('<td>'+'REMOTE ADDRESS'+'</td><td>'+d.acceptorHost+'</td><td>'+'</td><td>'+'</td>')
+          sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
+          sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');     
+        } else {
+          tree =grid;
+        }
+      }
     }
-    sb.append('<td>'+d.method+'</td><td>'+d.argument+'</td><td>'+d.start_time+'</td><td>'+d.gap_time+'</td>')
-    sb.append('<td>'+d.exec_time+'</td><td></td><td>'+d.self_time+'</td><td>'+d.exec_class+'</td>');
-    sb.append('<td>'+d.exec_api+'</td><td>'+d.agent_id+'</td><td>'+d.application_id+'</td></tr>');
+    for(i=0; i <d.spanEventBoList.length; i++){
+      var z = d.spanEventBoList[i];  
+      for(j=0; j<z.annotationBoList.length;j++){                     
+        var y =  z.annotationBoList[j];        
+        if( y.key === 10000014){          
+          var a = y.value.split('\n');      
+          var e = a[1].split('(');
+          var b = e[0].split('.');
+          var c = a[1].split(b[b.length-2]);  
+          var t = c[1].substring(1).split(':')
+          console.log(t) ;
+          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
+          sb.append('<td>'+t[0]+'</td><td>'+'</td><td>'+sTime+'</td><td>'+'</td>')
+          sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+b[4]+'</td>');
+          sb.append('<td>'+z.serviceType+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');  
+           tree = grid;  
+        } else if( y.key === 40){
+          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
+          sb.append('<td>'+'</td><td>'+y.value+'</td><td>'+'</td><td>'+'</td>')
+          sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
+          sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');  
+        } else if(y.key === 46){
+          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
+          sb.append('<td>'+'http.status.code'+'</td><td>'+y.value+'</td><td>'+'</td><td>'+'</td>')
+          sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
+          sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');  
+        } else if( y.key === 49){
+          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
+          sb.append('<td>'+'http.info'+'</td><td>'+y.value+'</td><td>'+'</td><td>'+'</td>')
+          sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
+          sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');  
+        }       
+      }
+      console.log(z.hasException)
+      if(z.hasException === true){
+        console.log(z);
+        var x = z.exceptionMessage.split(':');
+        sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'" style="background-color:#FFA7A7">');        
+        sb.append('<td><i class="fa fa-bolt"></i>  '+x[0]+'</td><td>'+x[1]+'</td><td>'+'</td><td>'+'</td>')
+        sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
+        sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');  
+        console.log(z.exceptionMessage)
+      }
+    }
+  }  
+    
   });
   sb.append('</table></dir></dir></dir></dir>');  
   $('#call').append(sb.toString());  

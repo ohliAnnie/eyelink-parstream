@@ -16,6 +16,26 @@ router.get('/', function(req, res, next) {
   res.render('./sample/serverMap', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
 
+router.get('/test', function(req, res, next) {
+  res.render('./sample/test', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
+});
+
+router.get('/error_pop', function(req, res, next) {
+  var in_data = {
+    index:  indexAcc+"*",    
+    type: "access",
+    id : req.query.link.split(',')
+  };
+  console.log(in_data);
+  queryProvider.selectSingleQueryByID2("sample","selectByIdList", in_data, function(err, out_data, params) {     
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }     
+    res.render('./sample/error_pop', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+  });  
+});
+
 router.get('/samplePage', function(req, res, next) {
   res.render('./sample/samplePage', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu });
 });
@@ -110,7 +130,7 @@ router.get('/sankey03', function(req, res, next) {
 // query Report
 router.get('/restapi/selectJiraAccess', function(req, res, next) {
   console.log('sample/restapi/selectJiraAccess');
-  var in_data = {};
+  var in_data = {   index : req.query.index };
   queryProvider.selectSingleQueryByID2("sample","selectJiraAccess", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');

@@ -74,6 +74,25 @@ function drawCountChart() {
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
   });
+
+   $.ajax({
+    url: "/dashboard/restapi/getActiveTrace" ,
+    dataType: "json",
+    type: "get",
+    data: { index : "elagent_test-agent-*", type : "AgentStatActiveTrace", gte : gte+'T15:00:00' , lte : edate+'T15:00:00'},
+    success: function(result) {
+      console.log(result);
+      if (result.rtnCode.code == "0000") {        
+        drawActiveTrace(result.rtnData);
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
 }
 
 function drawHeap(out_data) {
@@ -191,4 +210,33 @@ function drawTransaction(out_data) {
 
     // console.log(chart01);
   chart04(chartName);
+}
+
+function drawActiveTrace(out_data) {
+  // 데이터 가공
+  console.log(out_data);
+  var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
+  var data = [];  
+  var min = null;
+  var sCnt = 0, eCnt = 0, rCnt = 0;
+  out_data.forEach(function(d) {
+    d = d._source;    
+    data.push({ "timestamp" : new Date(new Date(d.timestamp).getTime()+9*60*60*1000), "Fast" : d.activeTraceCounts.FAST, "Normal" : d.activeTraceCounts.NORMAL, "Slow" : d.activeTraceCounts.SLOW, "Very Slow" : d.activeTraceCounts.VERY_SLOW});
+  }); 
+
+  var chartName = '#ts-chart05';
+  chart05 = d3.timeseries()
+    .addSerie(data,{x:'timestamp',y:'Fast'},{interpolate:'step-before'})
+    .addSerie(data,{x:'timestamp',y:'Normal'},{interpolate:'linear'})        
+    .addSerie(data,{x:'timestamp',y:'Slow'},{interpolate:'linear'})
+    .addSerie(data,{x:'timestamp',y:'Very Slow'},{interpolate:'linear'})            
+    // .xscale.tickFormat(d3.time.format("%b %d"))
+    .width($(chartName).parent().width()-10)
+    .height(270)
+    // .yscale.tickFormat(french_locale.numberFormat(",f"))
+    .margin.left(0);
+
+    // console.log(chart01);
+  chart05(chartName);
 }

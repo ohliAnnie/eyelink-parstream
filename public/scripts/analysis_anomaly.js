@@ -1,7 +1,7 @@
 var liveValue = [];
  setInterval(function() { 
     now = new Date().getTime();    
-    var s = new Date(now-59*1000).toString().split(' ');
+    var s = new Date(now-60*1000).toString().split(' ');
     var e = new Date(now+1*1000).toString().split(' ');
     var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
     $.ajax({
@@ -9,11 +9,13 @@ var liveValue = [];
       dataType: "json",
       type: "get",
       data: { nodeId : "0002.00000039", startDate : s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4] , endDate : e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4] },
-      success: function(result) {
-        // console.log(result);
-        if (result.rtnCode.code == "0000") {        
-        liveValue = result.rtnData[0];
-        console.log(liveValue)
+      success: function(result) {        
+        if (result.rtnCode.code == "0000") {                
+          if(result.rtnData.length == 1){
+            liveValue = result.rtnData[0];            
+          } else {
+            console.log(new Date());
+          }
         } else {
           //- $("#errormsg").html(result.message);
         }
@@ -23,7 +25,7 @@ var liveValue = [];
         $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
       }
     });  
-  }, 30*1000);    
+  }, 5*1000);    
 
 function getData(){  
   var now = new Date().getTime();
@@ -38,14 +40,14 @@ function getData(){
       console.log(result)
       var point = result.point, start = point -50*60*1000, end = point+10*60*1000;      
       if (result.rtnCode.code == "0000") {                                              
-        drawChart(raw, result.anomaly.vdata, start, end, now, point, now-point, 'voltage', '#voltage', result.pattern);
-        drawChart(raw, result.anomaly.adata, start, end, now, point, now-point, 'ampere', '#ampere', result.pattern);
-        drawChart(raw, result.anomaly.apdata, start, end, now, point, now-point, 'active_power', '#active_power', result.pattern);
-        drawChart(raw, result.anomaly.pfdata, start, end, now, point, now-point, 'power_factor', '#power_factor', result.pattern);
-        console.log(new Date(start));
-        console.log(new Date(point));
-        console.log(new Date(now));
-        console.log(new Date(end));
+        drawChart(raw, result.anomaly.vdata, start, end, now, point, now-point, 'voltage', '#voltage', result.pattern, result.pt.vapt, result.pt.vcpt);
+        drawChart(raw, result.anomaly.adata, start, end, now, point, now-point, 'ampere', '#ampere', result.pattern, result.pt.aapt, result.pt.acpt);
+        drawChart(raw, result.anomaly.apdata, start, end, now, point, now-point, 'active_power', '#active_power', result.pattern, result.pt.apapt, result.pt.apcpt);
+        drawChart(raw, result.anomaly.pfdata, start, end, now, point, now-point, 'power_factor', '#power_factor', result.pattern, result.pt.pfapt, result.pt.pfcpt);
+        console.log('start\n'+new Date(start));
+        console.log('point\n'+new Date(point));
+        console.log('now\n'+new Date(now));
+        console.log('end\n'+new Date(end));
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -58,8 +60,9 @@ function getData(){
   
 }
 
-function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, pattern) {
+function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, pattern, apt, cpt) {
   oriEnd = end;  
+  console.log('raw'+new Date(raw[raw.length-1].event_time))
   var limit = 60,    duration = 1000;   
  var margin = {top: 10, right: 50, bottom: 30, left: 50},
   width = window.innerWidth*0.88 - margin.left - margin.right,
@@ -71,17 +74,18 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, patt
   } else if(pattern[id+'_status'] == "anomaly"){   
     var color = 'red';
   }
-
   liveValue = raw[raw.length-1];    
     var groups = {
       output: {
         value: liveValue[id],
-        color: 'red',
+        color: 'black',
         data: d3.range(0).map(function() {
           return 0
         })
       }
     }
+      now = new Date(liveValue.event_time).getTime();      
+
     var x = d3.time.scale()
      .domain([start, end])
     .range([0, width]);
@@ -107,9 +111,8 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, patt
     var line = d3.svg.line()
     .interpolate('basis')
     .x(function(d, i) {              
-      //return x(now)  })      
-    console.log(new Date(now - (limit - i -1) * (duration)));
-     return x(now - (limit - i -1) * (duration))  })    
+     //return x(now)  })          
+     return x(now + i*(duration)) })
     .y(function(d) {  return y(d)   })
 
   var valueline = d3.svg.line()
@@ -366,7 +369,7 @@ var div = d3.select("body").append("div")
         .attr("r", 5)   
         .attr('opacity', 0.5)
         .attr("cx", function(d) { console.log(d); return x(d.date); })     
-        .attr("cy", function(d) { return y(d.value); })   
+        .attr("cy", function(d) { return y(d.value); })           
         .on("mouseover", function(d) {    
             div.transition()    
                 .duration(200)    
@@ -381,6 +384,54 @@ var div = d3.select("body").append("div")
                 .style("opacity", 0); 
         });
 
+     var circle =svg.selectAll("dot4")
+        .data(cpt)
+        .enter().append('circle')
+        .attr("r", 3)   
+        .attr('opacity', 1)
+        .attr("cx", function(d) { console.log(d); return x(d.date); })     
+        .attr("cy", function(d) { return y(d.value); })   
+        .attr('class', 'cpt')
+        .attr("fill", "blue")
+        .on("mouseover", function(d) {    
+            div.transition()    
+                .duration(200)                    
+                .style("opacity", 1)
+                .style("fill", "yellow");    
+            div .html('caution</br>'+d.value)  
+                .style("left", (d3.event.pageX) + "px")   
+                .style("top", (d3.event.pageY - 28) + "px");  
+            })          
+        .on("mouseout", function(d) {   
+            div.transition()    
+                .duration(500)    
+                .style("opacity", 0); 
+        });   
+
+       var circle =svg.selectAll("dot5")
+        .data(apt)
+        .attr('class', 'apt')
+        .enter().append('circle')
+        .attr("r", 3)   
+        .attr('opacity', 0.1)
+        .attr("cx", function(d) { console.log(d); return x(d.date); })     
+        .attr("cy", function(d) { return y(d.value); })   
+        .attr("fill", "red")
+        .on("mouseover", function(d) {    
+            div.transition()    
+                .duration(200)                    
+                .style("opacity", 1);    
+            div .html('anomaly</br>'+d.value)  
+                .style("left", (d3.event.pageX) + "px")   
+                .style("top", (d3.event.pageY - 28) + "px");  
+            })          
+        .on("mouseout", function(d) {   
+            div.transition()    
+                .duration(500)    
+                .style("opacity", 0); 
+        });   
+
+
     var paths = svg.append('g');
 
     for (var name in groups) {
@@ -394,11 +445,8 @@ var div = d3.select("body").append("div")
   
   oriNow = now;
   function tick() {           
-    if(cnt++ == 0) {
-      now = point;
-    }
-    now = new Date().getTime();    
-    console.log(new Date(now));
+
+    now = new Date().getTime();        
     value = liveValue[id];            
     for (var name in groups) {
       var group = groups[name]
@@ -407,8 +455,11 @@ var div = d3.select("body").append("div")
         group.data.push(value)
         group.path.attr('d', line)        
       }      
-      ddata.push({ date:now, value:value});                 
-     x.domain([now-50*60*1000+gap, now+10*60*1000-gap]);
+      ddata.push({ date:now, value:value});     
+      var d = ddata[ddata.length-1];
+      //console.log(new Date(d.date));            
+     x.domain([now-50*60*1000+gap, now+10*60*1000-gap]);     
+     //console.log(new Date(now-50*60*1000+gap), new Date(now+10*60*1000-gap));     
      //x.domain([start,end]);
     // Slide paths left
       paths.attr('transform', null)
