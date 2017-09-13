@@ -508,34 +508,112 @@ router.get('/menu', function(req, res, next) {
   mainmenu.management = ' open selected'; 
   res.render('./management/menu', { title: global.config.productname, mainmenu:mainmenu });
 });
+
+router.get('/restapi/getMenuList', function(req, res, next) {  
+  console.log('/restapi/getMenuList');        
+  var in_data = {  INDEX: req.query.index, TYPE: req.query.type, ID: "code" };  
+  var rtnCode = CONSTS.getErrData('0000');
+  queryProvider.selectSingleQueryByID2("management", "selectSortList", in_data, function(err, out_data, params) {  
+    console.log(out_data);               
+    if (out_data.length == 0) {
+      rtnCode = CONSTS.getErrData('0001');          
+      res.json({rtnCode: rtnCode});
+    }
+    console.log('management/restapi/getMenuList -> length : %s', out_data.length);
+    res.json({rtnCode: rtnCode, rtnData: out_data });        
+  });        
+});
+
+router.get('/menu/:id', function(req, res) {
+  mainmenu.management = ' open selected'; 
+  console.log(req.params.id);
+  // 신규 등록
+  if (req.params.id === 'editMenu') {
+    var in_data = {
+      INDEX: "management",
+      TYPE: "menu",      
+      ID: "code"
+    };
+     queryProvider.selectSingleQueryByID2("management", "selectSortList", in_data, function(err, out_data, params) {                 
+      console.log(out_data);
+      var list = [];
+      out_data.forEach(function(d){        
+        if(parseInt(d._source.code)%1000 == 0 && d._source.code != "0000") {          
+          list.push(d._source);
+        }
+      });
+      res.render('./management/menu_edit', { title: global.config.productname, mainmenu:mainmenu, list:list });
+     });    
+  } 
+});
+
+// menu 신규 등록
+router.post('/menu/:id', function(req, res) {  
+  console.log(req.body);
+  var in_data = {    
+    INDEX: "management",
+    TYPE: "menu",    
+    ID : "_id",
+    VALUE: req.params.id,
+    NAME: req.body.name,
+    UPCODE: req.body.upcode   
+ };  
+  queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {        
+    console.log(out_data);
+    if (out_data[0] != null){
+      var rtnCode = CONSTS.getErrData('D005');    
+      res.json({rtnCode: rtnCode});
+    }  else  {
+      queryProvider.insertQueryByID("management", "insertMenu", in_data, function(err, out_data) {        
+        console.log(out_data);
+        if(out_data.result == "created"){
+          console.log(out_data);
+          var rtnCode = CONSTS.getErrData("D001");                   
+        }
+        if (err) { console.log(err) };                     
+        res.json({rtnCode: rtnCode});
+      });
+    }
+  });
+});
   
 router.get('/menu_upper', function(req, res, next) {
   console.log('menu/restapi/selectList');
-  var in_data = { INDEX: "management", TYPE:"upperMenu" };
+  var in_data = { INDEX: "management", TYPE:"menu" };
+  var list = [];
   queryProvider.selectSingleQueryByID2("management", "selectList", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');
-    }       
-    res.render('./management/menu_upper', { title: global.config.productname, mainmenu:mainmenu, list:out_data });
+      rtnCode = CONSTS.getErrData('0001');            
+    } else {
+      out_data.forEach(function(d){        
+        if(parseInt(d._source.code)%1000 == 0 && d._source.code != "0000"){
+          console.log(d);
+          list.push(d._source);
+        }
+      });            
+    }    
+    res.render('./management/menu_upper', { title: global.config.productname, mainmenu:mainmenu, list:list });
   });
 });
 
-// mem 신규 등록
+// menu_upper 신규 등록
 router.post('/menu_upper/:code', function(req, res) {  
   console.log(req.body);
   var in_data = {    
     INDEX: "management",
-    TYPE: "upperMenu",
-    CODE: req.params.code,
-    NAME: req.body.name    };  
-  queryProvider.selectSingleQueryByID2("management", "selectCheckUppermenu", in_data, function(err, out_data, params) {            
+    TYPE: "menu",
+    VALUE: req.params.code,
+    NAME: req.body.name,
+    ID : "_id",
+    UPCODE : "0000"   };  
+  queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {            
     if (out_data[0] != null){
-      var rtnCode = CONSTS.getErrData('E006');    
+      var rtnCode = CONSTS.getErrData('D005');    
       res.json({rtnCode: rtnCode});
     }  else  {
       console.log(in_data);
-      queryProvider.insertQueryByID("management", "insertUppermenu", in_data, function(err, out_data) {        
+      queryProvider.insertQueryByID("management", "insertMenu", in_data, function(err, out_data) {        
         if(out_data.result == "created"){
           console.log(out_data);
           var rtnCode = CONSTS.getErrData("D001");                   
@@ -547,12 +625,12 @@ router.post('/menu_upper/:code', function(req, res) {
   });
 });
 
-// role 정보 삭제
-router.delete('/menu_upper/:id', function(req, res) {
+// menu 정보 삭제
+router.delete('/menu/:id', function(req, res) {
   console.log('delete menu_upper');
   var in_data = {    
     INDEX: "management",
-    TYPE: "upperMenu",
+    TYPE: "menu",
     ID: req.params.id  
   };  
   queryProvider.deleteQueryByID("management", "deleteById", in_data, function(err, out_data) {

@@ -1,12 +1,34 @@
 <?xml version="1.0"?>
 <queryList>
   <management>
+    <query id='selectById'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : #TYPE#,           
+        "body" : {          
+          "query" : {
+            "match"  : { #ID# : #VALUE# }
+          }
+        }
+      }
+     ]]></query> 
     <query id='selectList'><![CDATA[
      {
         "index" : #INDEX#,
         "type" : #TYPE#,
         "body" : {
           "size" : 1000,
+          "query" : { "match_all" : { } }
+        }
+    }
+     ]]></query>
+    <query id='selectSortList'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size" : 1000,
+          "sort" : { #ID#: { "order" : "asc" } },
           "query" : { "match_all" : { } }
         }
     }
@@ -152,34 +174,19 @@
           "user_id" : #USERID#          
         }
     }
-     ]]></query>
-   <query id='selectCheckUppermenu'><![CDATA[
-     {
-        "index" : #INDEX#,
-        "type" : #TYPE#,        
-        "body" : {          
-          "query": {             
-            "bool": {
-              "must" : [
-                { "match": { "code" : #CODE#}},
-                { "match": { "name" : #NAME#}}
-              ]
-            }     
-          } 
-        }
-      }
      ]]></query>  
-    <query id='insertUppermenu'><![CDATA[
+   <query id='insertMenu'><![CDATA[
      {
         "index" : #INDEX#,
         "type" : #TYPE#,        
-        "id" : #CODE#,
+        "id" : #VALUE#,
         "body" : {
-          "code" : #CODE#,          
-          "name" : #NAME#
+          "code" : #VALUE#,          
+          "name" : #NAME#,
+          "upcode" : #UPCODE#
         }
     }
-     ]]></query>
+     ]]></query>  
   </management>
   <dashboard>
   <query id='selectByIndex'><![CDATA[      
