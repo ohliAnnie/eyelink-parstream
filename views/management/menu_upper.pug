@@ -25,7 +25,7 @@ block script
         // TODO 메시지 공통 영역으로
         if (confirm("등록 하시겠습니까? ")) {
           $.ajax({
-            url: "/management/menu_upper/" + code,
+            url: "/management/menu/" + code,
             dataType: "json",
             type: "POST",
             data: { code : code, name : name },
@@ -44,8 +44,7 @@ block script
       });
       $('a').click(function(event){
         //- event.preventDefault();
-        if ('deleteMenu' != $(this).attr('flag')) return;
-        var userid =$(this).attr('userid');
+        if ('deleteMenu' != $(this).attr('flag')) return;        
         var id = $(this).attr('id');
         if (id == "") {
           return false;
@@ -53,7 +52,7 @@ block script
         // TODO 메시지 공통 영역으로
         if (confirm("삭제 하시겠습니까? ")) {
           $.ajax({
-            url: "/management/menu_upper/" + id,
+            url: "/management/menu/" + id,
             dataType: "json",
             type: "DELETE",
             data: {id : id},
@@ -75,13 +74,13 @@ block content
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 Users
+        h1 Upper Menu
         ol.breadcrumb
           li
             a(href='#') Home
           li
             a(href='#') Management
-          li.active Users
+          li.active Upper Menu
       .row
         .col-md-12
           .portlet.light.bordered
@@ -118,8 +117,8 @@ block content
                   each menu in list
                     tr.odd.gradeX
                       td                        
-                      td  #{menu._source.code}                        
-                      td  #{menu._source.name}                  
+                      td  #{menu.code}                        
+                      td  #{menu.name}                  
                       td
                         a.btn.default.btn-xs.balck(flag='deleteMenu', id=''+menu._id)
                           i.fa.fa-trash-o
