@@ -52,6 +52,11 @@ router.get('/postTest', function(req, res, next) {
   res.render('./analysis/postTest', { title: global.config.productname, mainmenu:mainmenu});
 });
 
+router.get('/pattern_list', function(req, res, next) {
+  console.log(_rawDataByDay);
+  res.render('./analysis/pattern_list', { title: global.config.productname, mainmenu:mainmenu});
+});
+
 router.post('/restapi/insertAnomaly/:id', function(req, res, next) {  
   console.log('/analysis/restapi/insertAnomaly');    
   console.log(JSON.stringify(req.body));
