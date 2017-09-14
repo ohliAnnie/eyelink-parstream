@@ -17,18 +17,44 @@ block script
         //- event.preventDefault();        
         var code =$("#code").val();
         var name = $("#name").val();
-        console.log(code);
-        console.log(name);
-        if (code == "" || name == "") {
+        console.log(code , name)
+        
+        if (code == "") {
+          $("#code").focus();
+          $("#register_tnc_error").html("Code를 입력하세요.");
+          $("#register_tnc_error").show();
           return false;
-        }
+          }
+          if (9999<parseInt($("#code").val())||parseInt($("#code").val())<999) {
+            console.log(parseInt($("#code").val()));
+            $("#code").focus();
+            $("#register_tnc_error").html("Code는 4자리 숫자로 입력하세요");
+            $("#register_tnc_error").show();
+            return false;
+          }
+          if (parseInt($("#code").val())%1000 != 0) {
+            console.log(parseInt($("#code").val()));
+            $("#code").focus();
+            $("#register_tnc_error").html("Upper Menu Code는 천의 배수로 입력하세요");
+            $("#register_tnc_error").show();
+            return false;
+          }
+          if ($("#name").val() == "") {
+            $("#name").focus();
+            $("#register_tnc_error").html("Name을 입력하세요.");
+            $("#register_tnc_error").show();
+            return false;
+          }
+          if (code == "" || name == "") {
+            return false;
+          }
         // TODO 메시지 공통 영역으로
-        if (confirm("등록 하시겠습니까? ")) {
+        if (confirm("등록 하시겠습니까? ")) {          
           $.ajax({
             url: "/management/menu/" + code,
             dataType: "json",
             type: "POST",
-            data: { code : code, name : name },
+            data: { code : code, name : name, upcode : "0000" },
             success: function(result) {
               alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
               if (result.rtnCode.code == "D001") {
@@ -99,6 +125,8 @@ block content
                       input#name.form-control(type='text', name='name', value='', data-placeholder='name')                 
                     .col-md-1.form-inline
                       button#btn_add.btn.blue  Add
+                  .form-group
+                    #register_tnc_error(style='text-align:center;')      
       .row
         .col-md-12
           .portlet.light
