@@ -112,7 +112,7 @@ function drawDetail(data) {
   }  
     
   });
-  sb.append('</table></dir></dir></dir></dir>');  
+  sb.append('</table></div></div></div></div>');  
   $('#call').append(sb.toString());  
     $('.tree-2').treegrid({
     expanderExpandedClass: 'glyphicon glyphicon-minus',
