@@ -12,8 +12,8 @@ var mainmenu = {dashboard:'open selected', timeseries:'', reports:'', analysis:'
 var indexAcc = global.config.es_index.es_jira;
 
 router.get('/', function(req, res, next) {
-  mainmenu.dashboard = ' open selected';
-  mainmenu.timeseries = '';
+  mainmenu.dashboard = 'open selected';  
+  console.log(req.query)
   var in_data = {    index:  "elagent_test-agent-2017.09.06", type: "AgentInfo"    };
   queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
@@ -29,7 +29,7 @@ router.get('/', function(req, res, next) {
       });
       list.push({ id : 'test-file', name : 'JIRA' });
     }
-  res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list }); 
+  res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : req.query.server }); 
   });
 });
 
@@ -969,6 +969,64 @@ router.get('/restapi/getRestimeCount', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');      
     }    
     res.json({rtnCode: rtnCode, rtnData: out_data.group_by_timestamp.buckets });
+  });
+});
+
+// Agent
+router.get('/restapi/getAgentData', function(req, res, next) {
+  console.log('dashboard/restapi/getAgentData');    
+  var in_data = {
+    index : req.query.index,
+    type : req.query.type,
+    start : req.query.start,
+    id : req.query.id
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","selectByStart", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');    
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }       
+
+     var nodes = [], edges = [], nodekey = [], edgekey = [], nodeList = [];
+      var color = ["#d5d5d5", "#57a115", "#de9400", "#de3636"];
+      out_data.forEach(function(d){    
+        console.log(d);
+        console.log(d._source.applicationId);
+        if(nodekey[d._source.applicationId]!=null) {       
+          if(d._source.isError) {
+            nodekey[d._source.applicationId]++;
+          }
+        } else { 
+          nodekey[d._source.applicationId] = 0;                            
+          nodeList.push({ id : d._source.applicationId, status : 0 });
+          nodes.push({ data : { id : d._source.applicationId, name : d._source.applicationId, img : '../assets/sample/'+d._source.serviceTypeName+'.png', parent : 'p_'+d._source.applicationId }});      
+          if(d._source.isError) {
+            nodekey[d._source.applicationId]++;
+          }
+        }
+        if(edgekey[d._source.applicationId+'-'+d._source.toApplicationId] != null) {
+          edgekey[d._source.applicationId+'-'+d._source.toApplicationId]++
+        } else {
+          edgekey[d._source.applicationId+'-'+d._source.toApplicationId] = 1;
+        }        
+      });      
+      nodes.forEach(function(d){    
+        if(nodekey[d.data.id]!=0){
+          d.data.color = color[3];
+        } else {
+          d.data.color = color[1];
+        }
+      });      
+      for(key in nodekey) {
+        if(nodekey[key] != 0){
+          nodes.push({ data : { id : 'p_'+key, name : nodekey[key] ,img : '../assets/sample/back.png' }});      
+        }
+      }
+      for(key in edgekey) {
+        var id = key.split('-');    
+        edges.push({ data : { count : edgekey[key], source : id[0], target : id[1]} });
+      }      
+    res.json({rtnCode: rtnCode, nodes : nodes, edges : edges, nodeList : nodeList});
   });
 });
 
