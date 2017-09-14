@@ -27,7 +27,9 @@ function drawList(data){
   sb.append('<table class="table tree-2 table-bordered table-striped table-condensed">');
   data.forEach(function(d){    
     d = d._source;    
-    if(d.upcode != null){
+    if(d.upcode == "0000"){
+     sb.append('<tr class="treegrid-'+ parseInt(d.code) +' treegrid-parent-'+ parseInt(d.upcode)+'"><td>'+d.name+'</td><td>'+d.code+'</td><td></td></tr>');          
+    } else if(d.upcode != null){
         sb.append('<tr class="treegrid-'+ parseInt(d.code) +' treegrid-parent-'+ parseInt(d.upcode)+'"><td>'+d.name+'</td><td>'+d.code+'</td><td>');
         sb.append('<a class="btn default btn-xs balck" onclick="deleteMenu('+d.code+')"><i class="fa fa-trash-o"></i> Delete </a></td></tr>');         
     } else {
