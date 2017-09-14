@@ -5,7 +5,8 @@
      {
         "index" : #INDEX#,
         "type" : #TYPE#,           
-        "body" : {          
+        "body" : {     
+          "size" : 10000,
           "query" : {
             "match"  : { #ID# : #VALUE# }
           }
@@ -222,6 +223,25 @@
           }
        }
     } 
+  ]]></query>  
+  <query id='selectByStart'><![CDATA[
+     {
+        "index" : #index#,
+        "type" : #type#,                       
+        "body" : {
+          "size" : 10000,
+          "sort" : { #id# : { "order" : "asc"  } },
+          "query" : {
+           "bool": {
+             "must" : {
+               "range" : {
+                 #id# : {  "gte": #start#  }
+               }
+            }            
+          }
+        }
+      }
+    }
   ]]></query>  
   <query id='selectByTimestamp'><![CDATA[
      {
