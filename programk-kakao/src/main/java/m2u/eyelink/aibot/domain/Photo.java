@@ -3,8 +3,8 @@ package m2u.eyelink.aibot.domain;
 public class Photo {
 
 	private String url;
-	private int width = 640;
-	private int height = 480;
+	private int width = 720;
+	private int height = 630;
 	
 	public Photo(String url) {
 		this.url = url;
