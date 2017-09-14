@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import m2u.eyelink.aibot.component.KakaoRespGenerator;
+import m2u.eyelink.aibot.custom.kt.config.Config;
 import m2u.eyelink.aibot.domain.Friend;
 import m2u.eyelink.aibot.domain.Keyboard;
 import m2u.eyelink.aibot.domain.MessageIn;
@@ -27,6 +28,8 @@ public class InterfaceController {
 	
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
+	@Autowired
+	private Config config;
 	@Autowired
 	private InterfaceService is;
 	@Autowired
@@ -63,7 +66,13 @@ public class InterfaceController {
 		
 		logger.info("messageIn : {}", messageIn);
 		
-		String response = is.getResponse(messageIn);
+		String response = "";
+		
+		if ( !isAuthenticated(messageIn.getUser_key()) ){
+			messageIn = new MessageIn(messageIn.getUser_key(), messageIn.getType(), config.getConfigs().get(IConstants.Configs.Keys.AUTH_FAIL));
+		}
+		response = is.getResponse(messageIn);
+		
 		
 		logger.info("response : {}", response);
 		
@@ -72,6 +81,12 @@ public class InterfaceController {
 		return result;
 	}
 	
+	private boolean isAuthenticated(String user_key) {
+		// TODO : GS리테일에서 제공해주는 사용자 인증 API 호출
+		
+		return true;
+	}
+
 	/**
 	 * 사용자가 플러스 친구를 추가했을 때 호출되는 서비스
 	 * @param friend

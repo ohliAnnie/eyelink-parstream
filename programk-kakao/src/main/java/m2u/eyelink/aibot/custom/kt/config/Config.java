@@ -29,10 +29,10 @@ public class Config {
 		return this.configs;
 	}
 	public String getApiUrl() {
-		return (String)this.configs.get(IConstants.Configs.API_URL);
+		return (String)this.configs.get(IConstants.Configs.Keys.API_URL);
 	}
 	public String getToken() {
-		return (String)this.configs.get(IConstants.Configs.TOKEN);
+		return (String)this.configs.get(IConstants.Configs.Keys.TOKEN);
 	}
 	
 	@PostConstruct

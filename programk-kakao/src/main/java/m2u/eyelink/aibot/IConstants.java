@@ -7,9 +7,12 @@ public interface IConstants {
 	}
 	
 	interface Configs {
-		String CONFIG = "ifconfig";
-		String API_URL = "api.url";
-		String TOKEN = "token";
+		String CONFIG = "config";
+		interface Keys {
+			String API_URL = "api.url";	// AIBOT Core API 대화 URL
+			String TOKEN = "token";	// 생성한 CP의 토큰
+			String AUTH_FAIL = "auth.fail";	// 인증 실패시 사용자 메시지를 대체할 메시지(CMS에서 대화로 등록해서 내용을 변경할 수 있도록)
+		}
 	}
 	
 	interface Type {
