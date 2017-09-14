@@ -75,10 +75,11 @@ block script
         if (id == "") {
           return false;
         }
+        console.log(id);
         // TODO 메시지 공통 영역으로
         if (confirm("삭제 하시겠습니까? ")) {
           $.ajax({
-            url: "/management/menu/" + id,
+            url: "/management/menu_upper/" + id,
             dataType: "json",
             type: "DELETE",
             data: {id : id},
@@ -148,7 +149,7 @@ block content
                       td  #{menu.code}                        
                       td  #{menu.name}                  
                       td
-                        a.btn.default.btn-xs.balck(flag='deleteMenu', id=''+menu._id)
+                        a.btn.default.btn-xs.balck(flag='deleteMenu', id=''+menu.code)
                           i.fa.fa-trash-o
                           |  Delete          
               

@@ -1,10 +1,4 @@
 var nodeList = [];
-$(function(){ // on dom ready    
-  displayCount();
-  drawChart();      
-  makeDatabyDay(new Date());
-}); // on dom ready
-
 function makeDatabyDay(day){
   var yDay = new Date(day.getTime()-24*60*60*1000);    
   var indexs = $('#indexs').val();
