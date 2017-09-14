@@ -597,34 +597,6 @@ router.get('/menu_upper', function(req, res, next) {
   });
 });
 
-// menu_upper 신규 등록
-router.post('/menu_upper/:code', function(req, res) {  
-  console.log(req.body);
-  var in_data = {    
-    INDEX: "management",
-    TYPE: "menu",
-    VALUE: req.params.code,
-    NAME: req.body.name,
-    ID : "_id",
-    UPCODE : "0000"   };  
-  queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {            
-    if (out_data[0] != null){
-      var rtnCode = CONSTS.getErrData('D005');    
-      res.json({rtnCode: rtnCode});
-    }  else  {
-      console.log(in_data);
-      queryProvider.insertQueryByID("management", "insertMenu", in_data, function(err, out_data) {        
-        if(out_data.result == "created"){
-          console.log(out_data);
-          var rtnCode = CONSTS.getErrData("D001");                   
-        }
-        if (err) { console.log(err) };                     
-        res.json({rtnCode: rtnCode});
-      });
-    }
-  });
-});
-
 // menu 정보 삭제
 router.delete('/menu/:id', function(req, res) {
   console.log('delete menu_upper');

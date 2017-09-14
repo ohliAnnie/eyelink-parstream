@@ -31,7 +31,7 @@ function drawList(data){
     if(d.upcode != null){
         sb.append('<tr class="treegrid-'+ parseInt(d.code) +' treegrid-parent-'+ parseInt(d.upcode)+'"><td>'+d.name+'</td></tr>');         
     } else {
-       sb.append('<tr class="treegrid-'+ parseInt(d.code) +'"><td>'+d.name+'</td></tr>');         
+       sb.append('<tr class="treegrid-'+ parseInt(d.code) +'"><td></td></tr>');         
     }
     
   });

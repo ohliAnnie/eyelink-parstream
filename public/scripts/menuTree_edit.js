@@ -29,7 +29,7 @@ function drawList(data){
     d = d._source;    
     if(d.upcode != null){
         sb.append('<tr class="treegrid-'+ parseInt(d.code) +' treegrid-parent-'+ parseInt(d.upcode)+'"><td>'+d.name+'</td><td>'+d.code+'</td><td>');
-        sb.append('<a flag="deleteMenu" id="'+d.code+ '" class="btn default btn-xs balck"><i class="fa fa-trash-o"></i> Delete </a></td></tr>');         
+        sb.append('<a class="btn default btn-xs balck" onclick="deleteMenu('+d.code+')"><i class="fa fa-trash-o"></i> Delete </a></td></tr>');         
     } else {
        sb.append('<tr class="treegrid-'+ parseInt(d.code) +'"><td>name</td><td>code</td><td></td></tr>');         
     }     
@@ -41,4 +41,30 @@ function drawList(data){
     expanderExpandedClass: 'glyphicon glyphicon-minus',
     expanderCollapsedClass: 'glyphicon glyphicon-plus'
   }); 
+}
+
+function deleteMenu(id){
+  console.log('error');  
+  console.log(id)  
+
+  // TODO 메시지 공통 영역으로
+  if (confirm("삭제 하시겠습니까? ")) {
+    $.ajax({
+      url: "/management/menu/" + id,
+      dataType: "json",
+      type: "DELETE",
+      data: {id : id},
+      success: function(result) {
+        alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+        if (result.rtnCode.code == "D003") {
+          location.href = "/management/menu";
+        }
+      },
+      error: function(req, status, err) {
+
+        //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+      }
+    });
+  }
 }
