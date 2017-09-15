@@ -991,15 +991,15 @@ router.get('/restapi/getAgentData', function(req, res, next) {
       var color = ["#d5d5d5", "#57a115", "#de9400", "#de3636"];
       out_data.forEach(function(d){    
         console.log(d);
-        console.log(d._source.applicationId);
+        console.log(d._source.applicationId);                
         if(nodekey[d._source.applicationId]!=null) {       
           if(d._source.isError) {
             nodekey[d._source.applicationId]++;
           }
-        } else { 
+        } else {           
           nodekey[d._source.applicationId] = 0;                            
           nodeList.push({ id : d._source.applicationId, status : 0 });
-          nodes.push({ data : { id : d._source.applicationId, name : d._source.applicationId, img : '../assets/sample/'+d._source.serviceTypeName+'.png', parent : 'p_'+d._source.applicationId }});      
+          nodes.push({ data : { id : d._source.applicationId, name : d._source.applicationId, img : '../assets/sample/server-'+d._source.serviceTypeName+'.png', parent : 'p_'+d._source.applicationId }});      
           if(d._source.isError) {
             nodekey[d._source.applicationId]++;
           }
@@ -1007,6 +1007,11 @@ router.get('/restapi/getAgentData', function(req, res, next) {
         if(edgekey[d._source.applicationId+'-'+d._source.toApplicationId] != null) {
           edgekey[d._source.applicationId+'-'+d._source.toApplicationId]++
         } else {
+          if(nodekey[d._source.toApplicationId] == null){
+            nodekey[d._source.toApplicationId] = 0;                            
+            nodeList.push({ id : d._source.toApplicationId, status : 0 });
+            nodes.push({ data : { id : d._source.toApplicationId, name : d._source.toApplicationId, img : '../assets/sample/server-'+d._source.toServiceTypeName+'.png', parent : 'p_'+d._source.applicationId }});      
+          }
           edgekey[d._source.applicationId+'-'+d._source.toApplicationId] = 1;
         }        
       });      
@@ -1017,6 +1022,8 @@ router.get('/restapi/getAgentData', function(req, res, next) {
           d.data.color = color[1];
         }
       });      
+      console.log('nodekey');
+      console.log(nodekey);
       for(key in nodekey) {
         if(nodekey[key] != 0){
           nodes.push({ data : { id : 'p_'+key, name : nodekey[key] ,img : '../assets/sample/back.png' }});      
