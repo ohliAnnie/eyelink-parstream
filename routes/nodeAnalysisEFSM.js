@@ -134,7 +134,7 @@ router.get('/restapi/getAnomaly/:id', function(req, res, next) {
 // patterns
 router.get('/restapi/getPatterns', function(req, res, next) {
   console.log(req.query);
-  var in_data = {  INDEX: "analysis", TYPE: "anomaly" , ID: req.query._id}  
+  var in_data = {  INDEX: "analysis", TYPE: "pattern_info" , ID: req.query._id}  
   queryProvider.selectSingleQueryByID2("analysis", "selectPatterns", in_data, function(err, out_data, params) {
     console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');

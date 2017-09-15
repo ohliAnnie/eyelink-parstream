@@ -1170,6 +1170,7 @@
         "type" : #TYPE#,                    
         "body" : {       
           "size"   : 10000,
+          "sort" : { "pattern_data.creation_Date" : { "order" : "desc"  } },
           "_source" : ["pattern_data.creation_Date"],
           "query" : { 
             "bool" : {
