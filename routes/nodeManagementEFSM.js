@@ -578,7 +578,7 @@ router.post('/menu/:id', function(req, res) {
 });
   
 router.get('/menu_upper', function(req, res, next) {
-  console.log('menu/restapi/selectList');
+  console.log('menu/menu_upper');
   var in_data = { INDEX: "management", TYPE:"menu" };
   var list = [];
   queryProvider.selectSingleQueryByID2("management", "selectList", in_data, function(err, out_data, params) {
@@ -610,6 +610,21 @@ router.delete('/menu/:id', function(req, res) {
         var rtnCode = CONSTS.getErrData("D003");        
     if(err){ console.log(err);    }
     res.json({rtnCode: rtnCode});
+  });
+});
+
+// menu 정보 삭제
+router.get('/restapi/getCodeList', function(req, res) {
+  console.log('getCodeList');  
+  var in_data = {        
+    INDEX: "management",    TYPE: "menu",    ID: "upcode",
+    VALUE : req.query.id  };    
+  queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');            
+    }       
+    res.json({rtnCode: rtnCode, rtnData: out_data });
   });
 });
 
