@@ -9,6 +9,7 @@ block script
   script(type='text/javascript', src='/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
   script(type='text/javascript', src='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
   script(src='/assets/scripts/page/table-managed.js')
+  script(type='text/javascript', src='/scripts/menu_upper.js')  
   script.
     $(document).ready(function() {
       TableManaged.init();
@@ -17,8 +18,7 @@ block script
         //- event.preventDefault();        
         var code =$("#code").val();
         var name = $("#name").val();
-        console.log(code , name)
-        
+        console.log(code , name)        
         if (code == "") {
           $("#code").focus();
           $("#register_tnc_error").html("Code를 입력하세요.");
@@ -50,51 +50,20 @@ block script
           }
         // TODO 메시지 공통 영역으로
         if (confirm("등록 하시겠습니까? ")) {          
-          $.ajax({
-            url: "/management/menu/" + code,
-            dataType: "json",
-            type: "POST",
-            data: { code : code, name : name, upcode : "0000" },
-            success: function(result) {
-              alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
-              if (result.rtnCode.code == "D001") {
-                location.href = "/management/menu_upper";
-              }
-            },
-            error: function(req, status, err) {
-              //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-              $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-            }
-          });
+          insertUpperMenu(code, name, "0000")
         }
       });
       $('a').click(function(event){
         //- event.preventDefault();
-        if ('deleteMenu' != $(this).attr('flag')) return;        
-        var id = $(this).attr('id');
-        if (id == "") {
-          return false;
-        }
-        console.log(id);
-        // TODO 메시지 공통 영역으로
-        if (confirm("삭제 하시겠습니까? ")) {
-          $.ajax({
-            url: "/management/menu_upper/" + id,
-            dataType: "json",
-            type: "DELETE",
-            data: {id : id},
-            success: function(result) {
-              alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
-              if (result.rtnCode.code == "D003") {
-                location.href = "/management/menu_upper";
-              }
-            },
-            error: function(req, status, err) {
-              //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-              $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-            }
-          });
-        }
+        if ('deleteMenu' != $(this).attr('flag')){
+         return;        
+        } else {
+          var id = $(this).attr('id');
+          if (id == "") { return false;  }
+          if (confirm("삭제 하시겠습니까? ")) {
+            getList(id);
+          }
+        }        
       });
     });
 block content
@@ -141,7 +110,7 @@ block content
                     th(style='text-align:center;') 
                     th(style='text-align:center;')  Code
                     th(style='text-align:center;')  Name                  
-                    th(style='text-align:center;')  Delete                
+                    th(style='text-align:center;')  Edit &amp; Delete               
                 tbody
                   each menu in list
                     tr.odd.gradeX
@@ -149,7 +118,11 @@ block content
                       td  #{menu.code}                        
                       td  #{menu.name}                  
                       td
+                        a.btn.default.btn-xs.balck(onclick='drawUpdate('+menu.code+',"'+menu.name+'")')
+                          i.fa.fa-trash-o
+                          |  Update
                         a.btn.default.btn-xs.balck(flag='deleteMenu', id=''+menu.code)
                           i.fa.fa-trash-o
-                          |  Delete          
+                          |  Delete      
+    #call    
               

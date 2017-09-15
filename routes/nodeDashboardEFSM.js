@@ -995,6 +995,7 @@ router.get('/restapi/getAgentData', function(req, res, next) {
      var nodes = [], edges = [], nodekey = [], edgekey = [], nodeList = [];
       var color = ["#d5d5d5", "#57a115", "#de9400", "#de3636"];
       out_data.forEach(function(d){    
+
         console.log(d);
         console.log(d._source.applicationId);                
         if(nodekey[d._source.applicationId]!=null) {       
@@ -1027,8 +1028,6 @@ router.get('/restapi/getAgentData', function(req, res, next) {
           d.data.color = color[1];
         }
       });      
-      console.log('nodekey');
-      console.log(nodekey);
       for(key in nodekey) {
         if(nodekey[key] != 0){
           nodes.push({ data : { id : 'p_'+key, name : nodekey[key] ,img : '../assets/sample/back.png' }});      
