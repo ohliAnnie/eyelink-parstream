@@ -12,12 +12,12 @@ var mainmenu = {dashboard:'open selected', timeseries:'', reports:'', analysis:'
 var indexAcc = global.config.es_index.es_jira;
 
 router.get('/', function(req, res, next) {
-  mainmenu.dashboard = 'open selected';  
-  console.log(req.query)
+  mainmenu.dashboard = 'open selected';
+  var server = req.query.server;    
   var in_data = {    index:  "elagent_test-agent-2017.09.06", type: "AgentInfo"    };
   queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
-    var check = {}, list = [], cnt = 0;
+    var check = {}, list = [], cnt = 0;    
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {
@@ -29,7 +29,12 @@ router.get('/', function(req, res, next) {
       });
       list.push({ id : 'test-file', name : 'JIRA' });
     }
-  res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : req.query.server }); 
+    console.log(server);
+    if(server == undefined || server == ""){
+      server = list[0].name;
+    }
+    console.log(server);
+  res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : server }); 
   });
 });
 
@@ -990,16 +995,17 @@ router.get('/restapi/getAgentData', function(req, res, next) {
      var nodes = [], edges = [], nodekey = [], edgekey = [], nodeList = [];
       var color = ["#d5d5d5", "#57a115", "#de9400", "#de3636"];
       out_data.forEach(function(d){    
+
         console.log(d);
-        console.log(d._source.applicationId);
+        console.log(d._source.applicationId);                
         if(nodekey[d._source.applicationId]!=null) {       
           if(d._source.isError) {
             nodekey[d._source.applicationId]++;
           }
-        } else { 
+        } else {           
           nodekey[d._source.applicationId] = 0;                            
           nodeList.push({ id : d._source.applicationId, status : 0 });
-          nodes.push({ data : { id : d._source.applicationId, name : d._source.applicationId, img : '../assets/sample/'+d._source.serviceTypeName+'.png', parent : 'p_'+d._source.applicationId }});      
+          nodes.push({ data : { id : d._source.applicationId, name : d._source.applicationId, img : '../assets/sample/server-'+d._source.serviceTypeName+'.png', parent : 'p_'+d._source.applicationId }});      
           if(d._source.isError) {
             nodekey[d._source.applicationId]++;
           }
@@ -1007,6 +1013,11 @@ router.get('/restapi/getAgentData', function(req, res, next) {
         if(edgekey[d._source.applicationId+'-'+d._source.toApplicationId] != null) {
           edgekey[d._source.applicationId+'-'+d._source.toApplicationId]++
         } else {
+          if(nodekey[d._source.toApplicationId] == null){
+            nodekey[d._source.toApplicationId] = 0;                            
+            nodeList.push({ id : d._source.toApplicationId, status : 0 });
+            nodes.push({ data : { id : d._source.toApplicationId, name : d._source.toApplicationId, img : '../assets/sample/server-'+d._source.toServiceTypeName+'.png', parent : 'p_'+d._source.applicationId }});      
+          }
           edgekey[d._source.applicationId+'-'+d._source.toApplicationId] = 1;
         }        
       });      
