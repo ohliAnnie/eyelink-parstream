@@ -29,6 +29,7 @@ define("ERROR_CODE", {
 	"D002": "수정되었습니다.",
 	"D003": "삭제되었습니다.",
 	"D004": "등록에 실패하였습니다.",
+	"D005": "이미 등록된 코드입니다.",
 	"ER_DUP_ENTRY": "Duplicate entry for key 'PRIMARY'!!!",
 	"ER_BAD_NULL_ERROR": "Column 'user_id' cannot be null",
 });
