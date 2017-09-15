@@ -12,12 +12,12 @@ var mainmenu = {dashboard:'open selected', timeseries:'', reports:'', analysis:'
 var indexAcc = global.config.es_index.es_jira;
 
 router.get('/', function(req, res, next) {
-  mainmenu.dashboard = 'open selected';  
-  console.log(req.query)
+  mainmenu.dashboard = 'open selected';
+  var server = req.query.server;    
   var in_data = {    index:  "elagent_test-agent-2017.09.06", type: "AgentInfo"    };
   queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
-    var check = {}, list = [], cnt = 0;
+    var check = {}, list = [], cnt = 0;    
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {
@@ -29,7 +29,12 @@ router.get('/', function(req, res, next) {
       });
       list.push({ id : 'test-file', name : 'JIRA' });
     }
-  res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : req.query.server }); 
+    console.log(server);
+    if(server == undefined || server == ""){
+      server = list[0].name;
+    }
+    console.log(server);
+  res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : server }); 
   });
 });
 
