@@ -34,124 +34,13 @@ block script
         getPatternList() // pattern dataset
       });
       
-      var test = 13
-
-      var defaultData = [
-          {
-            text: 'Voltage',
-            href: '#voltage',
-            icon: "glyphicon glyphicon-copyright-mark",
-            tags: [test],
-            nodes: [
-              {
-                text: 'Normal',
-                href: '#v_normal',
-                color: 'green',
-                tags: ['0']
-              },
-              {
-                text: 'Anomaly',
-                href: '#v_anomaly',
-                color: 'red',
-                tags: ['0']
-              },
-              {
-                text: 'Undefined',
-                href: '#v_undefined',
-                color: 'gray',
-                tags: ['0']
-              }
-            ]
-          },
-          {
-            text: 'Ampere',
-            href: '#ampere',
-            icon: "glyphicon glyphicon-copyright-mark",
-            tags: ['120'],
-            nodes: [
-              {
-                text: 'Normal',
-                href: '#a_normal',
-                color: 'green',
-                tags: ['0']
-              },
-              {
-                text: 'Anomaly',
-                href: '#a_anomaly',
-                color: 'red',
-                tags: ['0']
-              },
-              {
-                text: 'Undefined',
-                href: '#a_undefined',
-                color: 'gray',
-                tags: ['0']
-              }
-            ]
-          },
-          {
-            text: 'Active Power',
-            href: '#active_power',
-            icon: "glyphicon glyphicon-copyright-mark",
-            tags: ['120'],
-            nodes: [
-              {
-                text: 'Normal',
-                href: '#ap_normal',
-                color: 'green',
-                tags: ['0']
-              },
-              {
-                text: 'Anomaly',
-                href: '#ap_anomaly',
-                color: 'red',
-                tags: ['0']
-              },
-              {
-                text: 'Undefined',
-                href: '#ap_undefined',
-                color: 'gray',
-                tags: ['0']
-              }
-            ]
-          },
-          {
-            text: 'Power Factor',
-            href: '#power_factor',
-            icon: "glyphicon glyphicon-copyright-mark",
-            tags: ['120'],
-            nodes: [
-              {
-                text: 'Normal',
-                href: '#pf_normal',
-                color: 'green',
-                tags: ['0']
-              },
-              {
-                text: 'Anomaly',
-                href: '#pf_anomaly',
-                color: 'red',
-                tags: ['0']
-              },
-              {
-                text: 'Undefined',
-                href: '#pf_undefined',
-                color: 'gray',
-                tags: ['0']
-              }
-            ]
-          },
-
-        ];
-
-      
       // Click creation date
       clickfunc = function(link) {
         var creationDate = link.innerText || link.textContent;
         $('#creationDate').val(creationDate);
         console.log(creationDate);
         d3.selectAll("svg").remove();
-        drawPatterns(creationDate);
+        loadPatternData(creationDate);
       };
 
     
@@ -227,7 +116,7 @@ block content
                     span.caption-subject.bold.uppercase.font-green-haze Patterns
                     span.caption-helper  Detail information about selected patterns
                 .portlet-body.form
-                  table#tblPatternList.table.table-striped.table-bordered.table-hover(style='text-align:center;')
+                  table#tblPatterns.table.table-striped.table-bordered.table-hover(style='text-align:center;')
                     thead
                       tr
                         th(style='text-align:center;')  Group
