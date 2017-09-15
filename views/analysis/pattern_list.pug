@@ -11,14 +11,13 @@ block script
   script(src='/assets/scripts/page/table-managed.js')
   script.
     $(document).ready(function() {
-      TableManaged.init();
-      $('a').click(function(event){ 
+
+      $('a').click(function(event){
         //- event.preventDefault();
         if ('deleteUser' != $(this).attr('flag')) return;
-        var userid =$(this).attr('userid');
 
-        var id = $(this).attr('id');
-        if (id == "") {
+        var userid = $(this).attr('userid');
+        if (userid == "") {
           return false;
         }
         // TODO 메시지 공통 영역으로
@@ -27,7 +26,7 @@ block script
             url: "/management/users/" + userid,
             dataType: "json",
             type: "DELETE",
-            data: {id : id},
+            data: {userid : userid},
             success: function(result) {
               alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
               if (result.rtnCode.code == "D003") {
@@ -42,6 +41,14 @@ block script
           });
         }
       });
+      Metronic.init(); // init metronic core componets
+      eyelinkLayout.init(); // init eyelinklayout
+      QuickSidebar.init(); // init quick sidebar
+      Layout.init(); // init layout
+      Demo.init(); // init index page
+      ComponentsPickers.init();
+      TableManaged.init();
+      ComponentsDropdowns.init();
     });
 block content
   .container-fluid
@@ -55,7 +62,8 @@ block content
             a(href='#') Management
           li.active Users
       .row
-        .col-md-12
+        .col-md-3
+        .col-md-6
           .portlet.light
             .portlet-title
               .caption
@@ -67,33 +75,34 @@ block content
               table#sample_2.table.table-striped.table-bordered.table-hover(style='text-align:center;')
                 thead
                   tr
-                    th(style='text-align:center;') 
                     th(style='text-align:center;')  User ID
                     th(style='text-align:center;')  Name
-                    th(style='text-align:center;')  Position
-                    th(style='text-align:center;')  Tel
-                    th(style='text-align:center;')  Mobile
-                    th(style='text-align:center;')  Email  
-                    th(style='text-align:center;')  Use                  
-                    th(style='text-align:center;')  Reg Date                    
+                    th(style='text-align:center;')  Email
+                    th(style='text-align:center;')  Role
+                    th(style='text-align:center;')  Reg Date
                     th(style='text-align:center;')  Edit &amp; Delete
                 tbody
-                  each user in users
-                    tr.odd.gradeX
-                      td                        
-                      td  #{user._source.user_id}                        
-                      td  #{user._source.user_name}
-                      td  #{user._source.position}
-                      td  #{user._source.tel}
-                      td  #{user._source.mobile}
-                      td  #{user._source.user_email}
-                      td  #{user._source.use}
-                      td  #{user._source.reg_date}                      
+                  //- each user in users
+                  //-   tr.odd.gradeX
+                  //-     td  #{user.user_id}
+
+                  //-     td  #{user.user_name}
+                  //-     td  #{user.user_email}
+                  //-     td
+                  //-       if user.user_role === 'Super Manager'
+                  //-         span.label.label-sm.label-danger #{user.user_role}
+                  //-       else if user.user_role === 'Zone Manager'
+                  //-         span.label.label-sm.label-primary #{user.user_role}
+                  //-       else if user.user_role === 'Asset Manager'
+                  //-         span.label.label-sm.label-info #{user.user_role}
+                  //-       else if user.user_role === 'User'
+                  //-         span.label.label-sm.label-default #{user.user_role}
+                  //-     td  #{user.reg_date}
                       td
-                        a.btn.default.btn-xs.balck(href='/management/users/'+user._source.user_id)
+                        a.btn.default.btn-xs.balck(href='/management/users/'+user.user_id)
                           i.fa.fa-edit
-                          |  Edit    
-                        a.btn.default.btn-xs.balck(flag='deleteUser', id=''+user._id, userid=''+user._source.user_id)
+                          |  Edit
+                        a.btn.default.btn-xs.balck(flag='deleteUser', userid=''+ user.user_id)
                           i.fa.fa-trash-o
                           |  Delete          
               

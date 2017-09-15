@@ -24,16 +24,24 @@ block script
   script(src='/assets/sample/js/sankey.js')
   script(src='/assets/sample/js/d3.chart.min.js')
   script(src='/assets/sample/js/d3.chart.sankey.min.js')    
-  script(type='text/javascript', src="/scripts/dashboard_es.js")  
+  script(type='text/javascript', src="/scripts/dashboard_file.js")  
+  script(type='text/javascript', src="/scripts/dashboard_agent.js")  
   script.
-    $(document).ready(function(e) {       
-      $( "#btn_sankey" ).click(function() {
-        console.log('test');
+    $(document).ready(function(e) {   
+      var server = $("#server").val();          
+      if(server === "TESTAPP"){
+        getAgentData();
+      } else if(server === "JIRA"){
+        displayCount();
+        drawChart();      
+        makeDatabyDay(new Date());
+      }
+      $( "#btn_sankey" ).click(function() {      
         $( "#cy" ).slideToggle( "slide" );
       });
-      $( "#btn_search" ).click(function() {
-        console.log('test');
-        console.log($( "select[name=server]" ).val());
+      $( "#btn_search" ).click(function() {  
+        console.log('/dashboard/?server='+$("select[name=server]").val());
+        location.href='/dashboard/?server='+$("select[name=server]").val();        
       });
       $("#btn_timeseries").click(function(){
         if($("select[name=server]").val() == "TESTAPP") {
@@ -50,6 +58,7 @@ block script
     });
 block content    
   input#indexs(type='hidden', name='indexs', value=indexs)
+  input#server(type='hidden', name='server', value=server)
   .container-fluid
     .page-content
       // BEGIN BREADCRUMBS
@@ -73,9 +82,13 @@ block content
                   .row
                     label.control-label.col-md-2 Server                                        
                     .col-md-2.form-inline
-                      select.form-control.input-small.select2me.form-md-line-input(name='server')                                              
+                      select#server.form-control.input-small.select2me.form-md-line-input(name='server')
                         each data in agent 
-                          option #{data.name}
+                          #{server}
+                            if data.name==server
+                             option(value='', selected='selected') #{data.name}
+                            else
+                             option #{data.name}                              
                     .col-md-2.form-inline
                       button#btn_search.btn.blue
                         i.fa.fa-search  Search

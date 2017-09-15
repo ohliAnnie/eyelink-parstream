@@ -1,12 +1,35 @@
 <?xml version="1.0"?>
 <queryList>
-  <user>
+  <management>
+    <query id='selectById'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : #TYPE#,           
+        "body" : {     
+          "size" : 10000,
+          "query" : {
+            "match"  : { #ID# : #VALUE# }
+          }
+        }
+      }
+     ]]></query> 
     <query id='selectList'><![CDATA[
      {
         "index" : #INDEX#,
         "type" : #TYPE#,
         "body" : {
           "size" : 1000,
+          "query" : { "match_all" : { } }
+        }
+    }
+     ]]></query>
+    <query id='selectSortList'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size" : 1000,
+          "sort" : { #ID#: { "order" : "asc" } },
           "query" : { "match_all" : { } }
         }
     }
@@ -142,8 +165,20 @@
           "user_id" : #USERID#          
         }
     }
-     ]]></query>
-  </user>
+     ]]></query>  
+   <query id='insertMenu'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : #TYPE#,        
+        "id" : #VALUE#,
+        "body" : {
+          "code" : #VALUE#,          
+          "name" : #NAME#,
+          "upcode" : #UPCODE#
+        }
+    }
+     ]]></query>  
+  </management>
   <dashboard>
   <query id='selectByIndex'><![CDATA[      
   {
@@ -188,6 +223,25 @@
           }
        }
     } 
+  ]]></query>  
+  <query id='selectByStart'><![CDATA[
+     {
+        "index" : #index#,
+        "type" : #type#,                       
+        "body" : {
+          "size" : 10000,
+          "sort" : { #id# : { "order" : "asc"  } },
+          "query" : {
+           "bool": {
+             "must" : {
+               "range" : {
+                 #id# : {  "gte": #start#  }
+               }
+            }            
+          }
+        }
+      }
+    }
   ]]></query>  
   <query id='selectByTimestamp'><![CDATA[
      {
