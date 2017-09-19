@@ -1250,6 +1250,22 @@
         }
       }
     ]]></query>
+    <query id='selectClusterPattern'><![CDATA[
+      {
+        "index" = #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "_source" : [#QUERY#],
+          "size" : 10000,
+          "query" : {
+            "bool" : {
+              "must" : { "match_all": {} }
+            }
+          }
+        }
+      }
+    ]]></query>
+
     <query id='selectDaClusterMasterByDadate'><![CDATA[      
       {
         "index" : #index#,
