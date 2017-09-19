@@ -220,28 +220,26 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
   $('.clickPattern').click(function(){
     var id = creationDate;
     var clickPattern = $(this);
-    var tr = clickPattern.parent().parent();
-    var td = tr.children();
+    //var tr = clickPattern.parent().parent();
+    //var td = tr.children();
+    var td = clickPattern.parent().parent().children()
+    var target = "pattern_data." + td.eq(1).text() + ".center." + td.eq(2).text();
 
-    var attr = td.eq(1).text();
-    var clusterNo = td.eq(2).text();
-    var state = td.eq(3).text();
-    console.log(factor, clusterNo, state);
+    //var state = td.eq(3).text();
+    console.log(target);
 
     $.ajax({
       url: "/analysis/restapi/getClusterPattern" ,
       dataType: "json",
       type: "get",
-      data: {id : creationDate, factor : attr, cluster : clusterNo},
+      data: {id : creationDate, target : target},
       success: function(result) {
         if (result.rtnCode.code == "0000") {
           console.log(result);
-          var d = result.rtnData.pattern_info;
-          var length = Object.keys(d.ampere).length;
-          console.log(length);
-          console.log(Object.keys(d));
-
-          drawPatternTree(creationDate, d);
+          // var d = result.rtnData.pattern_info;
+          // var length = Object.keys(d.ampere).length;
+          // console.log(length);
+          // console.log(Object.keys(d));
 
           // for (var key in d){
           //   console.log(key + '==>' + d[key]);

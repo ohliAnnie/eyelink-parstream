@@ -1255,11 +1255,13 @@
         "index" = #INDEX#,
         "type" : #TYPE#,
         "body" : {
-          "_source" : [#QUERY#],
+          "_source" : [#TARGET#],
           "size" : 10000,
           "query" : {
             "bool" : {
-              "must" : { "match_all": {} }
+              "must" : {
+                "match" : {"_id" : #ID# }
+              }
             }
           }
         }

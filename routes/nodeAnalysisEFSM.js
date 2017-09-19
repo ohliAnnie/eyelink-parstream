@@ -142,8 +142,9 @@ router.get('/restapi/getClusterPattern', function(req, res, next) {
   var in_data = {
       INDEX: "analysis", TYPE: "anomaly",
       ID: req.params.id,
-      QUERY: "pattern_data." + req.params.factor + ".center." + req.params.cluster,
+      TARGET: req.params.target
   };
+  console.log(in_data);
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterPattern", in_data, function(err, out_data, params) {
     console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
@@ -152,7 +153,7 @@ router.get('/restapi/getClusterPattern', function(req, res, next) {
       console.log('test');
       res.json({rtnCode: rtnCode});
     }
-    console.log('analysis/restapi/getDaClusterDetail -> length : %s', out_data.length);
+    console.log('analysis/restapi/getClusterPattern -> length : %s', out_data.length);
     res.json({rtnCode: rtnCode, rtnData: out_data[0]._source});
   })
 });
