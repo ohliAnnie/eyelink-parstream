@@ -1252,7 +1252,7 @@
     ]]></query>
     <query id='selectClusterPattern'><![CDATA[
       {
-        "index" = #INDEX#,
+        "index" : #INDEX#,
         "type" : #TYPE#,
         "body" : {
           "_source" : [#TARGET#],
