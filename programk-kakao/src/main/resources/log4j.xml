@@ -15,7 +15,7 @@
         <param name="Append" value="true"/>  
         <param name="DatePattern" value="'.'yyMMdd"/>  
         <layout class="org.apache.log4j.PatternLayout">  
-            <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss}] [%c{5}] [%L] [%p] %m %n"/>  
+            <param name="ConversionPattern" value="[%d{yyyy-MM-dd HH:mm:ss}] [%c:%L] [%p] %m %n"/>  
         </layout>  
 	</appender>
 	
