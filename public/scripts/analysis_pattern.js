@@ -187,7 +187,7 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
   sb.append('<tbody class="patternBody">');
 
   for (cno in patternData[parentNode]){
-    var selectTag = statusCheck(patternData[parentNode].cno)
+    var selectTag = statusCheck(patternData[parentNode][cno]);
     var dataTag = '<tr>' +
       '<td><input type="checkbox" name="patternChk" ></td>'+
       '<td>' + parentNode + '</td>' +
@@ -204,26 +204,45 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
 
   $(".updateBtn").click(function(){
     var updateBtn = $(this);
-    var tr = updateBtn.parent().parent();
-    var td = tr.children();
+    var td = updateBtn.parent().parent().children();
     console.log(td.eq(1).text());
+
+    if(confirm("저장 하시겠습니까?")) {
+      var id = creationDate;
+      var fG = td.eq(1).text();
+      var cN = td.eq(2).text();
+      var sV = td.eq(3).children().val();
+      // var sV = td.eq(3);
+      $.ajax({
+        url: "/analysis/pattern_info/" + id + "/_update",
+        dataType: "json",
+        type: "POST",
+        data:{ factorGroup : fG, clusterNo : cN, statusVal : sV },
+        success: function(result) {
+          alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+          if (result.rtnCode.code == "D002") {
+            //location.href = "/analysis/pattern";
+            // pattern tree data reload
+            loadPatternData(creationDate);
+          }
+        },
+        error: function(req, status, err) {
+
+          //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+          $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+        }
+      });
+    }
   });
-
-  // $('.patternBody tr').click(function(obj) {
-  //   if(obj.target.type == 'status') return;
-  //   var tr = $(this);
-  //   var td = tr.children();
-
-  //   console.log("모든데이터 : " + creationDate + td.eq(0).text());
-  // });
 
   $('.clickPattern').click(function(){
     var id = creationDate;
     var clickPattern = $(this);
-    //var tr = clickPattern.parent().parent();
-    //var td = tr.children();
-    var td = clickPattern.parent().parent().children()
-    var target = "pattern_data." + td.eq(1).text() + ".center." + td.eq(2).text();
+    var td = clickPattern.parent().parent().children();
+
+    var factGroup = td.eq(1).text();
+    var clusterNo = td.eq(2).text();
+    var target = "pattern_data." + factGroup + ".center." + clusterNo;
 
     //var state = td.eq(3).text();
     console.log(target);
@@ -236,16 +255,29 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
       success: function(result) {
         if (result.rtnCode.code == "0000") {
           console.log(result);
-          // var d = result.rtnData.pattern_info;
-          // var length = Object.keys(d.ampere).length;
-          // console.log(length);
-          // console.log(Object.keys(d));
+          var d = result.rtnData.pattern_data;
+          var graphData = d[factGroup]["center"][clusterNo];
+          var set = [];
+          var maxval = 0;
+          var minval = 1000;
 
-          // for (var key in d){
-          //   console.log(key + '==>' + d[key]);
-          // }
-          //console.log(d);
-          //drawCheckCluster(set, daDate, factor);
+          console.log(graphData);
+          for(i=0; i<graphData.length; i++){
+            set.push({ x : i, y : graphData[i]});
+            if(graphData[i] > maxval){
+              maxval = graphData[i];
+            }
+            else if(graphData[i] < minval){
+              minval = graphData[i];
+            }
+          };
+          console.log(set);
+          console.log(minval, maxval);
+
+          d3.selectAll("svg").remove();
+          drawPatternChart(set, minval, maxval);
+        } else {
+
         }
       },
       error: function(req, status, err) {
@@ -253,32 +285,84 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
         $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
       }
     });
-
-
-
   });
 }
 
+function drawPatternChart(dataset, minval, maxval) {
+  // 그래프를 그려야 함!!!!!
+  var margin = {top: 10, right: 20, bottom: 20, left: 40},
+    width = (window.innerWidth*0.3) - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
 
-      
+  var xScale = d3.scale.linear().range([0, width]);
 
+  var yScale = d3.scale.linear().range([height, 0]);
+
+  var xAxis = d3.svg.axis()
+      .scale(xScale)
+      .orient("bottom")
+      .innerTickSize(-height)
+      .outerTickSize(0)
+      .tickPadding(10);
+
+  var yAxis = d3.svg.axis()
+      .scale(yScale)
+      .orient("left")
+      .innerTickSize(-width)
+      .outerTickSize(0)
+      .tickPadding(10);
+
+  var line = d3.svg.line()
+      .x(function(d) { return xScale(d.x); })
+      .y(function(d) { return yScale(d.y); });
+
+  var svg = d3.select("#patternChart")
+      .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.left + margin.bottom)
+      .append("g")
+          .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+    xScale.domain([0, d3.max(dataset, function(d){ return d.x; })]);
+    yScale.domain([0, d3.max(dataset, function(d){ return d.y; })]);
+
+  // Add the X Axis
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    // Add the Y Axis
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+
+    svg.append("path")
+        .data([dataset])
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-linecap", "round")
+        .attr("stroke-width", 3)
+        .attr("d", line);
+}
 
 ///// status select option //////
-function statusCheck(status) {
+function statusCheck(statechk) {
   var optionTag;
-  if (status == 'normal'){
+  if (statechk === 'normal'){
     optionTag = '<option value="normal" selected>normal</option>' +
       '<option value="caution">caution</option>' +
       '<option value="anomaly">anomaly</option>' +
       '<option value="undefined">undefined</option></select>'
   }
-  else if (status == 'caution') {
+  else if (statechk === 'caution') {
     optionTag = '<option value="normal">normal</option>' +
       '<option value="caution" selected>caution</option>' +
       '<option value="anomaly">anomaly</option>' +
       '<option value="undefined">undefined</option></select>'
   }
-  else if (status == 'anomaly') {
+  else if (statechk === 'anomaly') {
     optionTag = '<option value="normal">normal</option>' +
       '<option value="caution">caution</option>' +
       '<option value="anomaly" selected>anomaly</option>' +

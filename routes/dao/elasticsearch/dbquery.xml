@@ -1267,8 +1267,21 @@
         }
       }
     ]]></query>
-
-    <query id='selectDaClusterMasterByDadate'><![CDATA[
+    <query id='updatePattern_info'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,       
+        "body" : {
+          "doc" : {            
+            "pattern_info" : {
+              #FACTOR# : { #CLUSTER# : #STATUS# }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDaClusterMasterByDadate'><![CDATA[      
       {
         "index" : #index#,
         "type" : #type#,
