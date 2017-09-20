@@ -168,14 +168,14 @@
             max(coalesce(user1.count, 0)) as userCount
         FROM cp as cp
             LEFT OUTER JOIN (
-                SELECT cp_label, count(*) as  count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},#{searchStart}) AND to_timestamp(#{searchEnd},#{searchEnd}) and cate_name not in('None','미응답') group by cp_label
+                SELECT cp_label, count(*) as  count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},'yyyy-mm-dd hh24:mi:ss') AND to_timestamp(#{searchEnd},'yyyy-mm-dd hh24:mi:ss') and cate_name not in('None','미응답') group by cp_label
                 ) as response
             ON cp.label = response.cp_label
             LEFT OUTER JOIN (
-                SELECT cp_label, count(*) as count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},#{searchStart}) AND to_timestamp(#{searchEnd},#{searchEnd}) group by cp_label) as search
+                SELECT cp_label, count(*) as count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},'yyyy-mm-dd hh24:mi:ss') AND to_timestamp(#{searchEnd},'yyyy-mm-dd hh24:mi:ss') group by cp_label) as search
             ON cp.label = search.cp_label
             LEFT OUTER JOIN (
-                SELECT cp_label, count(distinct user_id) as count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},#{searchStart}) and to_timestamp(#{searchEnd},#{searchEnd}) group by cp_label) as user1
+                SELECT cp_label, count(distinct user_id) as count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},'yyyy-mm-dd hh24:mi:ss') and to_timestamp(#{searchEnd},'yyyy-mm-dd hh24:mi:ss') group by cp_label) as user1
             ON CP.LABEL = user1.cp_label
         WHERE NOT EXISTS (SELECT 1 FROM chat_time_stat WHERE start_time = #{startTime} AND end_time = #{endTime})
         group by cp.label;
