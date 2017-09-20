@@ -216,14 +216,14 @@
         max(coalesce(user1.count, 0)) as userCount
         FROM cp as cp
         LEFT OUTER JOIN (
-        SELECT cp_label, count(*) as  count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},#{searchStart}) AND to_timestamp(#{searchEnd},#{searchEnd}) and cate_name not in('None','미응답') group by cp_label
+        SELECT cp_label, count(*) as  count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},'yyyy-mm-dd hh24:mi:ss') AND to_timestamp(#{searchEnd},'yyyy-mm-dd hh24:mi:ss') and cate_name not in('None','미응답') group by cp_label
         ) as response
         ON cp.label = response.cp_label
         LEFT OUTER JOIN (
-        SELECT cp_label, count(*) as count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},#{searchStart}) AND to_timestamp(#{searchEnd},#{searchEnd}) group by cp_label) as search
+        SELECT cp_label, count(*) as count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},'yyyy-mm-dd hh24:mi:ss') AND to_timestamp(#{searchEnd},'yyyy-mm-dd hh24:mi:ss') group by cp_label) as search
         ON cp.label = search.cp_label
         LEFT OUTER JOIN (
-        SELECT cp_label, count(distinct user_id) as count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},#{searchStart}) and to_timestamp(#{searchEnd},#{searchEnd}) group by cp_label) as user1
+        SELECT cp_label, count(distinct user_id) as count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},'yyyy-mm-dd hh24:mi:ss') and to_timestamp(#{searchEnd},'yyyy-mm-dd hh24:mi:ss') group by cp_label) as user1
         ON CP.LABEL = user1.cp_label
         WHERE NOT EXISTS (SELECT 1 FROM chat_day_stat WHERE start_time = #{startTime} AND end_time = #{endTime})
         group by cp.label;
@@ -265,14 +265,14 @@
         max(coalesce(user1.count, 0)) as userCount
         FROM cp as cp
         LEFT OUTER JOIN (
-        SELECT cp_label, count(*) as  count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},#{searchStart}) AND to_timestamp(#{searchEnd},#{searchEnd}) and cate_name not in('None','미응답') group by cp_label
+        SELECT cp_label, count(*) as  count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},'yyyy-mm-dd hh24:mi:ss') AND to_timestamp(#{searchEnd},'yyyy-mm-dd hh24:mi:ss') and cate_name not in('None','미응답') group by cp_label
         ) as response
         ON cp.label = response.cp_label
         LEFT OUTER JOIN (
-        SELECT cp_label, count(*) as count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},#{searchStart}) AND to_timestamp(#{searchEnd},#{searchEnd}) group by cp_label) as search
+        SELECT cp_label, count(*) as count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},'yyyy-mm-dd hh24:mi:ss') AND to_timestamp(#{searchEnd},'yyyy-mm-dd hh24:mi:ss') group by cp_label) as search
         ON cp.label = search.cp_label
         LEFT OUTER JOIN (
-        SELECT cp_label, count(distinct user_id) as count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},#{searchStart}) and to_timestamp(#{searchEnd},#{searchEnd}) group by cp_label) as user1
+        SELECT cp_label, count(distinct user_id) as count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},'yyyy-mm-dd hh24:mi:ss') and to_timestamp(#{searchEnd},'yyyy-mm-dd hh24:mi:ss') group by cp_label) as user1
         ON CP.LABEL = user1.cp_label
         WHERE NOT EXISTS (SELECT 1 FROM chat_month_stat WHERE start_time = #{startTime} AND end_time = #{endTime})
         group by cp.label;
@@ -315,11 +315,11 @@
 	        case when max(coalesce(response.count, 0)) = 0 then 0 else cast(max(coalesce(response.count, 0)) as numeric) * 100 / cast(max(coalesce(search.count, 0)) as numeric) end as searchPercent
         FROM cp as cp
             JOIN(
-                SELECT cp_label,user_id, count(*) as  count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},#{searchStart}) AND to_timestamp(#{searchEnd},#{searchEnd}) AND cate_name NOT IN('None','미응답') GROUP BY cp_label, user_id
+                SELECT cp_label,user_id, count(*) as  count FROM chat_log WHERE created BETWEEN to_timestamp(#{searchStart},'yyyy-mm-dd hh24:mi:ss') AND to_timestamp(#{searchEnd},'yyyy-mm-dd hh24:mi:ss') AND cate_name NOT IN('None','미응답') GROUP BY cp_label, user_id
                 ) as response
             ON cp.label = response.cp_label
             JOIN(
-                SELECT cp_label,user_id, count(*) as count from chat_log WHERE created BETWEEN to_timestamp(#{searchStart},#{searchStart}) AND to_timestamp(#{searchEnd},#{searchEnd}) GROUP BY cp_label, user_id
+                SELECT cp_label,user_id, count(*) as count from chat_log WHERE created BETWEEN to_timestamp(#{searchStart},'yyyy-mm-dd hh24:mi:ss') AND to_timestamp(#{searchEnd},'yyyy-mm-dd hh24:mi:ss') GROUP BY cp_label, user_id
                 ) as search
             on cp.label = search.cp_label AND response.user_id = search.user_id
         WHERE NOT EXISTS (SELECT 1 FROM chat_user_stat WHERE start_time = #{startTime} AND end_time = #{endTime})
@@ -358,7 +358,7 @@
             count(*) as count
         FROM chat_log
         WHERE 0 = 0
-        AND created BETWEEN to_timestamp(#{searchStart},#{searchStart}) AND  to_timestamp(#{searchEnd},#{searchEnd}) 
+        AND created BETWEEN to_timestamp(#{searchStart},'yyyy-mm-dd hh24:mi:ss') AND  to_timestamp(#{searchEnd},'yyyy-mm-dd hh24:mi:ss') 
         AND NOT EXISTS (SELECT 1 FROM chat_category_stat WHERE start_time = #{startTime} AND end_time = #{endTime})
         GROUP BY cp_label, cate_name
         ORDER BY count desc;
@@ -390,7 +390,7 @@
             count(*) as count
         FROM chat_log
         WHERE 0 = 0
-        AND created between to_timestamp(#{searchStart},#{searchStart}) AND  to_timestamp(#{searchEnd},#{searchEnd})
+        AND created between to_timestamp(#{searchStart},'yyyy-mm-dd hh24:mi:ss') AND  to_timestamp(#{searchEnd},'yyyy-mm-dd hh24:mi:ss')
         AND  NOT EXISTS (SELECT 1 FROM chat_input_stat WHERE start_time = #{startTime} AND end_time = #{endTime})
         GROUP BY cp_label, input
         ORDER BY count desc;
@@ -422,7 +422,7 @@
             count(*) as count
         FROM chat_log
         WHERE 0 = 0
-            AND created between to_timestamp(#{searchStart},#{searchStart}) AND  to_timestamp(#{searchEnd},#{searchEnd})
+            AND created between to_timestamp(#{searchStart},'yyyy-mm-dd hh24:mi:ss') AND  to_timestamp(#{searchEnd},'yyyy-mm-dd hh24:mi:ss')
             AND  NOT EXISTS (SELECT 1 FROM chat_user_input_stat WHERE start_time = #{startTime} AND end_time = #{endTime})
             GROUP BY cp_label, user_input
             ORDER BY count desc;
