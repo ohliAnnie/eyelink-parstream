@@ -4,15 +4,15 @@
     <query id='selectById'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : #TYPE#,           
-        "body" : {     
+        "type" : #TYPE#,
+        "body" : {
           "size" : 10000,
           "query" : {
             "match"  : { #ID# : #VALUE# }
           }
         }
       }
-     ]]></query> 
+     ]]></query>
     <query id='selectList'><![CDATA[
      {
         "index" : #INDEX#,
@@ -40,12 +40,12 @@
         "type" : #TYPE#,
         "body" : {
           "size" : 1000,
-          "query" : { 
+          "query" : {
             "bool": {
               "must" : [
-                { "match": { #ID# : #VALUE#}}                
+                { "match": { #ID# : #VALUE#}}
               ]
-            }     
+            }
           }
         }
     }
@@ -53,11 +53,11 @@
     <query id='insertUser'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : "user",        
+        "type" : "user",
         "body" : {
           "user_id" : #USERID#,
           "user_pw" : #PASSWORD#,
-          "user_name" : #NAME#,          
+          "user_name" : #NAME#,
           "user_email" : #EMAIL#,
           "reg_date" : #DATE#
         }
@@ -66,20 +66,20 @@
      <query id='deleteById'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : #TYPE#,        
+        "type" : #TYPE#,
         "id" : #ID#
       }
      ]]></query>
      <query id='updateUser'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : "user",        
+        "type" : "user",
         "id" : #ID#,
         "body" : {
-          "doc" : {            
+          "doc" : {
             "user_pw" : #PASSWORD#,
-            "user_name" : #NAME#,            
-            "user_email" : #EMAIL#            
+            "user_name" : #NAME#,
+            "user_email" : #EMAIL#
           }
         }
       }
@@ -87,20 +87,20 @@
      <query id='insertRole'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : "role",        
+        "type" : "role",
         "body" : {
-          "role_id" : #ROLEID#,          
-          "role_name" : #NAME#          
+          "role_id" : #ROLEID#,
+          "role_name" : #NAME#
         }
     }
      ]]></query>
      <query id='insertAuthMenu'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : "menu",        
+        "type" : "menu",
         "id" : #ID#,
         "body" : {
-          "role_id" : #ROLEID#,                    
+          "role_id" : #ROLEID#,
           "menu_dashboard" : #DASHBOARD#,
           "menu_timeseries" : #TIMESERIES#,
           "menu_report" : #REPORT#,
@@ -113,23 +113,23 @@
     <query id='updateRole'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : "role",        
+        "type" : "role",
         "id" : #ID#,
         "body" : {
-          "doc" : {                        
+          "doc" : {
             "role_name" : #NAME#
           }
         }
       }
-     ]]></query>  
+     ]]></query>
     <query id='updateAuthMenu'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : "menu",        
+        "type" : "menu",
         "id" : #ID#,
         "body" : {
           "doc" : {
-            "role_id" : #ROLEID#,                    
+            "role_id" : #ROLEID#,
             "menu_dashboard" : #DASHBOARD#,
             "menu_timeseries" : #TIMESERIES#,
             "menu_report" : #REPORT#,
@@ -139,95 +139,95 @@
           }
         }
     }
-     ]]></query>    
+     ]]></query>
      <query id='selectCheckMap'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : #TYPE#,        
-        "body" : {          
-          "query": {             
+        "type" : #TYPE#,
+        "body" : {
+          "query": {
             "bool": {
               "must" : [
                 { "match": { "role_id" : #ROLEID#}},
                 { "match": { "user_id" : #USERID#}}
               ]
-            }     
-          } 
+            }
+          }
         }
       }
      ]]></query>
   <query id='insertMap'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : "map",        
+        "type" : "map",
         "body" : {
-          "role_id" : #ROLEID#,          
-          "user_id" : #USERID#          
+          "role_id" : #ROLEID#,
+          "user_id" : #USERID#
         }
     }
-     ]]></query>  
+     ]]></query>
    <query id='insertMenu'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : #TYPE#,        
+        "type" : #TYPE#,
         "id" : #VALUE#,
         "body" : {
-          "code" : #VALUE#,          
+          "code" : #VALUE#,
           "name" : #NAME#,
           "upcode" : #UPCODE#
         }
     }
-     ]]></query>  
+     ]]></query>
   </management>
   <dashboard>
-  <query id='selectByIndex'><![CDATA[      
+  <query id='selectByIndex'><![CDATA[
   {
         "index" : #index#,
         "type" : #type#,
-        "body" : {       
-          "size"   : 10000,          
-          "query" : { 
+        "body" : {
+          "size"   : 10000,
+          "query" : {
 
           }
        }
-    } 
-  ]]></query>   
-  <query id='selectByIdValue'><![CDATA[      
+    }
+  ]]></query>
+  <query id='selectByIdValue'><![CDATA[
   {
         "index" : #index#,
-        "type" : #type#,        
-        "body" : {       
-          "size"   : 10000,          
+        "type" : #type#,
+        "body" : {
+          "size"   : 10000,
           "sort" : { "parentSpanId" : { "order" : "asc" } },
-          "query" : { 
+          "query" : {
             "match" : {
-              #id# : {              
+              #id# : {
                 "query" :  #value#,
                 "operator" : "and"
               }
             }
           }
        }
-    } 
-  ]]></query>    
-  <query id='selectByIdList'><![CDATA[      
+    }
+  ]]></query>
+  <query id='selectByIdList'><![CDATA[
    {
         "index" : #index#,
         "type" : #type#,
-        "body" : {       
-          "size"   : 10000, 
+        "body" : {
+          "size"   : 10000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"], 
-          "query" : { 
+          "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
+          "query" : {
             "terms" : {  "_id" : [##id##]        }
           }
        }
-    } 
-  ]]></query>  
+    }
+  ]]></query>
   <query id='selectByStart'><![CDATA[
      {
         "index" : #index#,
-        "type" : #type#,                       
+        "type" : #type#,
         "body" : {
           "size" : 10000,
           "sort" : { #id# : { "order" : "asc"  } },
@@ -237,16 +237,16 @@
                "range" : {
                  #id# : {  "gte": #start#  }
                }
-            }            
+            }
           }
         }
       }
     }
-  ]]></query>  
+  ]]></query>
   <query id='selectByTimestamp'><![CDATA[
      {
         "index" : #index#,
-        "type" : #type#,                       
+        "type" : #type#,
         "body" : {
           "size" : 10000,
           "sort" : { "timestamp" : { "order" : "asc"  } },
@@ -256,16 +256,16 @@
                "range" : {
                  "timestamp": {  "gte": #gte#, "lte" : #lte#  }
                }
-            }            
+            }
           }
         }
       }
     }
-  ]]></query>    
+  ]]></query>
   <query id='selectJiraAccId'><![CDATA[
       {
         "index" : #today#,
-        "type" : "access",       
+        "type" : "access",
         "body" : {
           "size"   : 10000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
@@ -278,96 +278,96 @@
               "must_not" : {
                 "match": {
                   "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-                 }  
+                 }
               }
             }
           }
         }
-      } 
+      }
   ]]></query>
   <query id='selectJiraAccReq'><![CDATA[
       {
         "index" : #index#,
-        "type" : "access",       
+        "type" : "access",
         "body" : {
           "size"   : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["request", "clientip", "auth", "response"],
-          "query" : { 
+          "query" : {
             "bool" : {
               "must" : [      { "match_all": {} }        ],
               "filter" : [
                 {
                   "bool" : {
                     "should" : [
-                      { "range" : 
+                      { "range" :
                         { "@timestamp" :
                           { "gte" : #START#,
                             "lte" : #END# }
                         }
                       }
                     ]
-                  }                    
-                }              
+                  }
+                }
               ],
               "must_not" : {
               "match": {
                 "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-               }  
+               }
              }
             }
           }
-        } 
-      }      
-  ]]></query>  
+        }
+      }
+  ]]></query>
 <query id='selectJiraAccReqMinMax'><![CDATA[
       {
         "index" : [##index##],
-        "type" : "access",       
+        "type" : "access",
         "body" : {
           "size"   : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["request", "clientip", "auth", "response"],
-          "query" : { 
+          "query" : {
             "bool" : {
               "must" :
-                { "range" : 
+                { "range" :
                   { "@timestamp" :
                       { "gte" : #START#, "lte" : #END# }
                   }
                 },
               "filter" :
-                { "range" : 
-                   { "responsetime" : 
-                       { "gte" : #MIN#,       "lte" : #MAX#  }                     
-                  }                    
-                },                   
+                { "range" :
+                   { "responsetime" :
+                       { "gte" : #MIN#,       "lte" : #MAX#  }
+                  }
+                },
               "must_not" : {
               "match": {
                 "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-               }  
+               }
              }
             }
           }
-        } 
+        }
       }
-  ]]></query>    
+  ]]></query>
   <query id='selectJiraAccDash'><![CDATA[
       {
         "index" : #index#,
-        "type" : "access",                    
-        "body" : {       
-          "size"   : 100000, 
+        "type" : "access",
+        "body" : {
+          "size"   : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "response", "responsetime"],
-          "query" : { 
+          "query" : {
             "bool" : {
               "must" : [      { "match_all": {} }        ],
               "filter" : [
                 {
                   "bool" : {
                     "should" : [
-                      { "range" : 
+                      { "range" :
                         { "@timestamp" :
                           { "gte" : #START#,
                             "lte" : #END# }
@@ -377,174 +377,174 @@
                     "must_not" : {
                       "match": {
                        "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-                      }  
+                      }
                     }
-                  }                    
-                }              
+                  }
+                }
               ]
             }
           }
-        } 
+        }
       }
   ]]></query>
    <query id='selectJiraAccMap'><![CDATA[
        {
         "index" : #index#,
-        "type" : "access",       
+        "type" : "access",
         "body" : {
           "size"   : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["response", "timestamp"],
-          "query" : { 
+          "query" : {
             "bool" : {
               "must" : [      { "match_all": {} }        ],
               "filter" : [
                 {
                   "bool" : {
                     "should" : [
-                      { "range" : 
+                      { "range" :
                         { "@timestamp" :
                           { "gte" : #START#,
                             "lte" : #END# }
                         }
                       }
                     ]
-                  }                    
-                }              
+                  }
+                }
               ],
               "must_not" : {
               "match": {
                 "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-               }  
+               }
              }
             }
           }
-        } 
+        }
       }
   ]]></query>
    <query id='selectJiraAccMapMinMax'><![CDATA[
        {
         "index" : [##index##],
-        "type" : "access",       
+        "type" : "access",
         "body" : {
           "size"   : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["response", "timestamp"],
-          "query" : { 
+          "query" : {
             "bool" : {
               "must" :
-                { "range" : 
+                { "range" :
                   { "@timestamp" :
                       { "gte" : #START#, "lte" : #END# }
                   }
                 },
               "filter" :
-                { "range" : 
-                   { "responsetime" : 
-                       { "gte" : #MIN#,       "lte" : #MAX#  }                     
-                  }                    
-                },                  
+                { "range" :
+                   { "responsetime" :
+                       { "gte" : #MIN#,       "lte" : #MAX#  }
+                  }
+                },
               "must_not" : {
               "match": {
                 "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-               }  
+               }
              }
             }
           }
-        } 
+        }
       }
   ]]></query>
   <query id='selectScatterSection'><![CDATA[
       {
         "index" : #index#,
-        "type" : "access",                    
-        "body" : {       
-          "size"   : 100000, 
+        "type" : "access",
+        "body" : {
+          "size"   : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
-          "query" : { 
+          "query" : {
             "bool" : {
               "must" :
-                { "range" : 
+                { "range" :
                   { "@timestamp" :
                       { "gte" : #START#, "lte" : #END# }
                   }
                 },
               "filter" :
-                { "range" : 
-                   { "responsetime" : 
-                       { "gte" : #MIN#,       "lte" : #MAX#  }                     
-                  }                    
-                },                            
+                { "range" :
+                   { "responsetime" :
+                       { "gte" : #MIN#,       "lte" : #MAX#  }
+                  }
+                },
                 "must_not" : {
                   "match": {
                    "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-                  }  
+                  }
                 }
             }
           }
-        } 
+        }
       }
   ]]></query>
   <query id='selectScatterSectionList'><![CDATA[
       {
         "index" : [##index##],
-        "type" : "access",                    
-        "body" : {       
-          "size"   : 100000, 
-          "sort" : { "@timestamp" : { "order" : "asc" }},          
-          "query" : { 
+        "type" : "access",
+        "body" : {
+          "size"   : 100000,
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "query" : {
             "bool" : {
               "must" :
-                { "range" : 
+                { "range" :
                   { "@timestamp" :
                       { "gte" : #START#, "lte" : #END# }
                   }
                 },
               "filter" :
-                { "range" : 
-                   { "responsetime" : 
-                       { "gte" : #MIN#,       "lte" : #MAX#  }                     
-                  }                    
-                },                            
+                { "range" :
+                   { "responsetime" :
+                       { "gte" : #MIN#,       "lte" : #MAX#  }
+                  }
+                },
                 "must_not" : {
                   "match": {
                    "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-                  }  
+                  }
                 }
             }
           }
-        } 
+        }
       }
   ]]></query>
     <query id='selectJiraAccOneWeek'><![CDATA[
       {
         "index" : #index#,
-        "type" : "access",                    
-        "body" : {       
-          "size"   : 100000, 
+        "type" : "access",
+        "body" : {
+          "size"   : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "response"],
           "query": {
             "bool" : {
               "must" : {
-                "range" : {  "@timestamp": {    "gte": #start# } } 
+                "range" : {  "@timestamp": {    "gte": #start# } }
               },
               "must_not" : {
                 "match": {
                   "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-                 }  
+                 }
               }
             }
           }
-        } 
+        }
       }
   ]]></query>
     <query id='countAccJira'><![CDATA[
       {
         "index" : #index#,
-        "type" : "access",                    
-        "body" : { 
+        "type" : "access",
+        "body" : {
           "query": {
             "bool" : {
               "must" : {
@@ -553,18 +553,18 @@
               "must_not" : {
                 "match": {
                   "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-                 }  
+                 }
               }
             }
-          }         
-         }               
-       } 
+          }
+         }
+       }
   ]]></query>
     <query id='countAccJiraError'><![CDATA[
       {
         "index" : #index#,
-        "type" : "access",                    
-        "body" : {  
+        "type" : "access",
+        "body" : {
           "query": {
             "bool": {
               "filter": {
@@ -578,22 +578,22 @@
               "must_not" : {
                 "match": {
                   "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-                 }  
+                 }
               }
             }
           }
-        }               
-       } 
+        }
+       }
   ]]></query>
   <query id='getMetricbeatToday'><![CDATA[
       {
         "index" : #index#,
-        "type" : "metricsets",                    
-        "body" : {  
-          "query": {            
+        "type" : "metricsets",
+        "body" : {
+          "query": {
            }
-         }               
-       } 
+         }
+       }
   ]]></query>
   <query id='getTransactionList'><![CDATA[
       {
@@ -602,63 +602,63 @@
         "body" : {
           "query": {
               "term" : {    "_id": #id#    }
-           }            
-         }               
-       } 
+           }
+         }
+       }
     ]]></query>
   <query id='getTransaction'><![CDATA[
       {
-        "index" : #index#,        
+        "index" : #index#,
         "type" : #type#,
-        "body" : {            
-          "size" : 1000,  
+        "body" : {
+          "size" : 1000,
           "sort" : { "startTime" : { "order" : "asc" } }
-         }               
-       } 
+         }
+       }
     ]]></query>
       <query id='getAccTimeseries'><![CDATA[
       {
-        "index" : [##index##],  
+        "index" : [##index##],
         "type"  : "access",
-        "body" : { 
-          "size"   : 100000, 
+        "body" : {
+          "size"   : 100000,
          "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["@timestamp", "timestamp", "responsetime", "response"],
-           "query" : { 
+           "query" : {
              "range" : {
               "@timestamp": {
                 "gte": #gte#,         "lte": #lte#
               }
-            } 
-          }     
-         }               
-       } 
+            }
+          }
+         }
+       }
     ]]></query>
     <query id='getProcessTimeseries'><![CDATA[
       {
-        "index" : [##index##],  
+        "index" : [##index##],
         "type"  : "metricsets",
-        "body" : { 
+        "body" : {
           "size" : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["system.process.cpu.total.pct", "system.process.memory.rss.pct", "timestamp"], 
-          "query": {   
+          "_source" : ["system.process.cpu.total.pct", "system.process.memory.rss.pct", "timestamp"],
+          "query": {
             "bool": {
               "must" : [
                 { "match": { "system.process.cmdline": "jira"}},
                 { "match": { "system.process.name": "java"}},
-                {  "range" : {  "@timestamp": {    "gte": #gte#,  "lte": #lte#    } } }     
+                {  "range" : {  "@timestamp": {    "gte": #gte#,  "lte": #lte#    } } }
               ]
-            }     
-          } 
+            }
+          }
         }
-      } 
-    ]]></query>    
+      }
+    ]]></query>
     <query id='getTopTimeseries'><![CDATA[
       {
-        "index" : [##index##],  
+        "index" : [##index##],
         "type"  : "metricsets",
-        "body" : { 
+        "body" : {
           "size" : 100000,
           "_source": ["system.process.name", "system.process.cpu.total.pct", "timestamp"],
           "sort" : [{ "timestamp" : { "order" : "asc" }},
@@ -678,16 +678,16 @@
               }
             }
           }
-        } 
+        }
     ]]></query>
     <query id='getTotalTimeseries'><![CDATA[
       {
-        "index" : [##index##],  
+        "index" : [##index##],
         "type"  : "metricsets",
-        "body" : { 
+        "body" : {
           "size" : 100000,
           "sort" : { "timestamp" : { "order" : "asc" }},
-          "_source": ["system.cpu.user.pct", "system.cpu.system.pct", "system.cpu.idle.pct", "system.memory.used.pct", "system.memory.actual.used.pct", "system.memory.swap.used.pct", "timestamp", "metricset.name"], 
+          "_source": ["system.cpu.user.pct", "system.cpu.system.pct", "system.cpu.idle.pct", "system.memory.used.pct", "system.memory.actual.used.pct", "system.memory.swap.used.pct", "timestamp", "metricset.name"],
           "query": {
             "bool": {
               "should" : [
@@ -700,15 +700,15 @@
             }
           }
         }
-      } 
-    ]]></query>    
+      }
+    ]]></query>
     <query id='getRestimeCount'><![CDATA[
       {
-        "index" : [##index##],  
+        "index" : [##index##],
         "type"  : "access",
-        "body" : {                     
+        "body" : {
           "size" : 0,
-          "query": {          
+          "query": {
             "bool": {
               "filter" : {
                "range" : {
@@ -720,48 +720,48 @@
               }
             }
           },
-            "aggs" : {  
-              "group_by_timestamp" : {                
-                "date_histogram" : {                  
-                  "field": "@timestamp",              
+            "aggs" : {
+              "group_by_timestamp" : {
+                "date_histogram" : {
+                  "field": "@timestamp",
                   "interval" : "60m"
                 },
-                "aggs": { 
-                  "group_by_time": {    
-                    "range": {  
-                      "field": "responsetime",          
+                "aggs": {
+                  "group_by_time": {
+                    "range": {
+                      "field": "responsetime",
                       "ranges" : [
-                        { "key" : "s1", "to" : "1000" },      
-                        { "key" : "s3", "from" : "1000", "to" : "3000" },               
-                        { "key" : "s5", "from" : "3000", "to" : "5000" }, 
+                        { "key" : "s1", "to" : "1000" },
+                        { "key" : "s3", "from" : "1000", "to" : "3000" },
+                        { "key" : "s5", "from" : "3000", "to" : "5000" },
                         { "key" : "slow", "from" : "5000" } ],
-                      "keyed" : true      
+                      "keyed" : true
                     }
                   }
                 }
               }
             }
           }
-        }      
-    ]]></query>    
+        }
+    ]]></query>
     <query id='selectAppmapdata'><![CDATA[
       {
-        "index" : #index#,  
+        "index" : #index#,
         "type"  : "applicationLinkData",
-        "body" : { 
-          "size"   : 10000,     
-          "query" : { "match_all" : { }     }                                              
-          }      
-        }       
+        "body" : {
+          "size"   : 10000,
+          "query" : { "match_all" : { }     }
+          }
+        }
     ]]></query>
   </dashboard>
   <reports>
   <query id='selectJiraAcc'><![CDATA[
       {
-        "index" : [##index##],  
+        "index" : [##index##],
         "type"  : "access",
-        "body" : { 
-          "size"   : 100000, 
+        "body" : {
+          "size"   : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "responsetime", "response"],
            "query" : {
@@ -770,19 +770,19 @@
                  "range" : {
                    "@timestamp": {     "gte": #gte#, "lte": #lte#                  }
                  }
-              }            
+              }
             }
-          }                       
-        }      
-      }       
-    ]]></query>    
+          }
+        }
+      }
+    ]]></query>
     <query id='selectCpuMemoryFilesystemAll'><![CDATA[
       {
-        "index" : [##index##],  
+        "index" : [##index##],
         "type"  : "metricsets",
-        "body" : { 
-          "size"   : 100000,    
-          "sort" : { "@timestamp" : { "order" : "asc" }},      
+        "body" : {
+          "size"   : 100000,
+          "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "system.cpu.system.pct", "system.memory.actual.used.pct", "system.filesystem.used.pct", "metricset.name"],
           "query": {
             "bool": {
@@ -792,7 +792,7 @@
                    "gte": #gte#,
                    "lte": #lte#
                   }
-                } 
+                }
               },
                "must_not" : [
                 { "match": { "metricset.name": "fsstat"}},
@@ -801,15 +801,15 @@
                 { "match": { "metricset.name": "network"}}
               ]
             }
-          }                     
-        }               
-      }     
-    ]]></query>      
+          }
+        }
+      }
+    ]]></query>
     <query id='selectProcessList'><![CDATA[
       {
-        "index" : [##index##],  
+        "index" : [##index##],
         "type"  : "metricsets",
-        "body" : { 
+        "body" : {
           "size" : 100000,
           "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "timestamp"],
           "sort" : [
@@ -823,7 +823,7 @@
                    "gte": #gte#,
                    "lte": #lte#
                   }
-                } 
+                }
               },
               "filter" : {
                 "term": {   "metricset.name": "process"    }
@@ -836,13 +836,13 @@
             }
           }
         }
-      } 
+      }
     ]]></query>
     <query id='selectProcessListByName'><![CDATA[
       {
-        "index" : [##index##],  
+        "index" : [##index##],
         "type"  : "metricsets",
-        "body" : { 
+        "body" : {
           "size" : 100000,
           "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "timestamp"],
           "sort" : [
@@ -865,13 +865,13 @@
             }
           }
         }
-      } 
-    ]]></query>    
+      }
+    ]]></query>
     <query id='selectProcess'><![CDATA[
       {
-        "index" : [##index##],  
+        "index" : [##index##],
         "type"  : "metricsets",
-        "body" : { 
+        "body" : {
           "size" : 100000,
           "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "system.filesystem.used.pct", "timestamp", "metricset.name"],
           "sort" : [
@@ -885,7 +885,7 @@
                      "gte": #gte#,
                      "lte": #lte#
                     }
-                  } 
+                  }
                  }
                 ],
                 "must_not" : [
@@ -895,19 +895,19 @@
                   { "match": { "metricset.name": "fsstat"}},
                   { "match": { "metricset.name": "network"}},
                   {"range" : { "system.process.cpu.total.pct" : {"lte" : 0 }}},
-                  {"range" : { "system.filesystem.used.pct" : {"lte" : 0 }}}                  
+                  {"range" : { "system.filesystem.used.pct" : {"lte" : 0 }}}
                 ]
               }
            }
         }
-      } 
+      }
     ]]></query>
-    
+
     <query id='selectProcessByName'><![CDATA[
       {
-        "index" : [##index##],  
+        "index" : [##index##],
         "type"  : "metricsets",
-        "body" : { 
+        "body" : {
           "size" : 100000,
           "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "system.filesystem.used.pct", "timestamp", "metricset.name"],
           "sort" : [
@@ -921,7 +921,7 @@
                      "gte": #gte#,
                      "lte": #lte#
                     }
-                  } 
+                  }
                  },
                  { "match": {
                    "system.process.name": #name#
@@ -934,21 +934,21 @@
                   { "match": { "metricset.name": "fsstat"}},
                   { "match": { "metricset.name": "network"}},
                   {"range" : { "system.process.cpu.total.pct" : {"lte" : 0 }}},
-                  {"range" : { "system.filesystem.used.pct" : {"lte" : 0 }}}                  
+                  {"range" : { "system.filesystem.used.pct" : {"lte" : 0 }}}
                 ]
               }
            }
         }
-      } 
+      }
     ]]></query>
     <query id='selectAccessError'><![CDATA[
-     { 
-       "index" : [##index##],  
+     {
+       "index" : [##index##],
        "type"  : "access",
-       "_source": ["timestamp", "geoip", "response"], 
-       "body" : { 
+       "_source": ["timestamp", "geoip", "response"],
+       "body" : {
          "size" : 100000,
-         "sort" : { "@timestamp" : { "order" : "asc" }},        
+         "sort" : { "@timestamp" : { "order" : "asc" }},
          "query" : {
            "bool": {
              "must" : {
@@ -963,14 +963,14 @@
             }
           }
         }
-      } 
-    }  
-    ]]></query>  
+      }
+    }
+    ]]></query>
     <query id='selectOneIndexCount'><![CDATA[
-     { 
-       "index" : #index#,  
-       "type"  : "access",       
-       "body" : {                   
+     {
+       "index" : #index#,
+       "type"  : "access",
+       "body" : {
          "size" : 0,
           "aggs": {
             "group_by_time": {
@@ -992,16 +992,16 @@
             }
           }
         }
-      }  
+      }
     ]]></query>
     <query id='selectMultiIndexCount'><![CDATA[
-     { 
-       "index" : [##index##],  
-       "type"  : "access",       
-       "body" : {                   
+     {
+       "index" : [##index##],
+       "type"  : "access",
+       "body" : {
          "size" : 0,
          "aggs" : {
-           "group_by_x" : { 
+           "group_by_x" : {
              "range": {
                "field": "@timestamp",
                "ranges":  [#range#],
@@ -1038,30 +1038,30 @@
             }
           }
         }
-      }  
-    ]]></query>        
-  </reports> 
+      }
+    ]]></query>
+  </reports>
   <sample>
-  <query id='selectByIdList'><![CDATA[      
+  <query id='selectByIdList'><![CDATA[
    {
         "index" : #index#,
         "type" : #type#,
-        "body" : {       
-          "size"   : 10000, 
+        "body" : {
+          "size"   : 10000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"], 
-          "query" : { 
+          "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
+          "query" : {
             "terms" : {  "_id" : [##id##]        }
           }
        }
-    } 
+    }
   ]]></query>
-    <query id='selectJiraAccess'><![CDATA[      
+    <query id='selectJiraAccess'><![CDATA[
       {
         "index" : #index#,
-        "type" : "access",                    
-        "body" : {       
-          "size"   : 10000, 
+        "type" : "access",
+        "body" : {
+          "size"   : 10000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
          "query": {
             "bool" : {
@@ -1071,74 +1071,74 @@
               "must_not" : {
                 "match": {
                   "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ /navigation .css .js .png .json .eot .gadget .charts"
-                 }  
+                 }
               }
             }
-          }         
+          }
            }
-        } 
+        }
   ]]></query>
   <query id='selectJiraAccReq'><![CDATA[
       {
         "index" : "filebeat_jira_access-*",
-        "type" : "access",       
+        "type" : "access",
         "body" : {
           "size"   : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["request", "clientip", "auth", "response"],
-          "query" : { 
+          "query" : {
             "bool" : {
               "must" : {   "match_all" : { }  },
               "must_not" : {
-                "match": {      "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ /navigation .css .js .png .json .eot .gadget .charts"          }  
-              } 
+                "match": {      "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ /navigation .css .js .png .json .eot .gadget .charts"          }
+              }
             }
           }
         }
-      } 
+      }
   ]]></query>
   <query id='selectScatterSection'><![CDATA[
       {
         "index" : "filebeat_jira_access-2017.06.01",
-        "type" : "access",                    
-        "body" : {       
-          "size"   : 10000, 
+        "type" : "access",
+        "body" : {
+          "size"   : 10000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
-          "query" : { 
+          "query" : {
             "bool" : {
               "must" : [      { "match_all": {} }        ],
               "filter" : [
                 {
                   "bool" : {
                     "should" : [
-                      { "range" : 
-                        { "responsetime" : 
+                      { "range" :
+                        { "responsetime" :
                           { "gte" : #MIN#,
-                            "lte" : #MAX#  } 
+                            "lte" : #MAX#  }
                         }
                       },
-                      { "range" : 
+                      { "range" :
                         { "timestamp" :
                           { "gte" : #START#,
                             "lte" : #END# }
                         }
                       }
                     ]
-                  }                    
-                }              
+                  }
+                }
               ]
             }
           }
-        } 
+        }
       }
-  ]]></query>  
+  ]]></query>
 </sample>
 <analysis>
   <query id='insertById'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : #TYPE#,        
+        "type" : #TYPE#,
         "id" : #ID#,
         "body" : #BODY#
     }
@@ -1146,7 +1146,7 @@
   <query id='selectById'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : #TYPE#,               
+        "type" : #TYPE#,
         "body" : {
           "query" : {
             "term" : {   "_id" : #ID#     }
@@ -1157,14 +1157,14 @@
   <query id='deleteById'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : #TYPE#,        
+        "type" : #TYPE#,
         "id" : #ID#
       }
-     ]]></query> 
+     ]]></query>
   <query id='selectByAnalysisTimestamp'><![CDATA[
      {
         "index" : #INDEX#,
-        "type" : #TYPE#,                       
+        "type" : #TYPE#,
         "body" : {
           "size" : 1,
           "sort" : { "analysis.timestamp" : { "order" : "desc"  } },
@@ -1174,75 +1174,75 @@
                "range" : {
                  "analysis.timestamp": {  "gte": #gte#, "lte" : #lte#  }
                }
-            }            
+            }
           }
         }
       }
     }
-  ]]></query>    
+  ]]></query>
     <query id='selectDaClusterMasterAll'><![CDATA[
       {
         "index" : #index#,
-        "type" : #type#,                    
-        "body" : {       
-          "size"   : 10000,                     
-          "query" : { 
+        "type" : #type#,
+        "body" : {
+          "size"   : 10000,
+          "query" : {
             "bool" : {
               "must" : { "match_all": {} },
                "filter" : {
                 "range" : {
-                   "master_result.da_time" : { "gte" : #START_TIMESTAMP#, "lte" : #END_TIMESTAMP# }                    
-                  } 
+                   "master_result.da_time" : { "gte" : #START_TIMESTAMP#, "lte" : #END_TIMESTAMP# }
+                  }
                 }
               }
           }
-        } 
+        }
       }
-     ]]></query>     
+     ]]></query>
     <query id='selectDaClusterMaster'><![CDATA[
       {
         "index" : #index#,
-        "type" : #type#,                    
-        "body" : {       
-          "size"   : 10000,                     
-          "query" : { 
+        "type" : #type#,
+        "body" : {
+          "size"   : 10000,
+          "query" : {
             "bool" : {
               "must" : { "match" : { interval : #INTERVAL#} },
                "filter" : {
                 "range" : {
-                   "master_result.da_time" : { "gte" : #START_TIMESTAMP#, "lte" : #END_TIMESTAMP# }                    
-                  } 
+                   "master_result.da_time" : { "gte" : #START_TIMESTAMP#, "lte" : #END_TIMESTAMP# }
+                  }
                 }
               }
           }
-        } 
+        }
       }
-     ]]></query>     
+     ]]></query>
     <query id='selectPatternList'><![CDATA[
       {
         "index" : #INDEX#,
-        "type" : #TYPE#,                    
-        "body" : {       
+        "type" : #TYPE#,
+        "body" : {
           "size"   : 10000,
           "sort" : { "pattern_data.creation_Date" : { "order" : "desc"  } },
           "_source" : ["pattern_data.creation_Date"],
-          "query" : { 
+          "query" : {
             "bool" : {
               "must" : { "match_all": {} },
                "filter" : {
                 "range" : {
-                   "pattern_data.creation_Date" : { "gte" : #START_TIMESTAMP#, "lte" : #END_TIMESTAMP# }                    
-                  } 
+                   "pattern_data.creation_Date" : { "gte" : #START_TIMESTAMP#, "lte" : #END_TIMESTAMP# }
+                  }
                 }
               }
           }
-        } 
+        }
       }
      ]]></query>
     <query id='selectPatterns'><![CDATA[
       {
         "index" : #INDEX#,
-        "type" : #TYPE#,               
+        "type" : #TYPE#,
         "body" : {
           "query" : {
             "term" : {   "_id" : #ID#     }
@@ -1268,48 +1268,48 @@
       }
     ]]></query>
 
-    <query id='selectDaClusterMasterByDadate'><![CDATA[      
+    <query id='selectDaClusterMasterByDadate'><![CDATA[
       {
         "index" : #index#,
-        "type" : #type#,                    
-        "body" : {       
-          "size"   : 10000,           
+        "type" : #type#,
+        "body" : {
+          "size"   : 10000,
           "query" : {
             "bool": {
               "must" : {
                 "match" : { "master_result.da_time" : #DADATE# }
                 }
               }
-            }            
+            }
           }
-        } 
+        }
     ]]></query>
     <query id='selectDaClusterDetail'><![CDATA[
      {
         "index" : #index#,
-        "type" : #type#,                    
-        "body" : {       
-          "size"   : 10000,           
+        "type" : #type#,
+        "body" : {
+          "size"   : 10000,
           "query" : {
             "bool": {
               "must" : {
                 "match" : { "_id" : #DADATE# }
               }
-            }            
+            }
           }
         }
-      } 
-     ]]></query>     
+      }
+     ]]></query>
 <!--  (vibration_x + vibration_y + vibration_z) / 3 as vibration 없음 -->
     <query id='selectClusterNodePower'><![CDATA[
      {
         "index" : "corecode-*",
         "type" : "corecode",
-        "body" : {       
-          "size" : 100000, 
+        "body" : {
+          "size" : 100000,
           "sort" : { "event_time" : { "order" : "asc" }},
           "_source" : ["event_time", "active_power", "ampere", "power_factor", "voltage", "node_id"],
-          "query" : { 
+          "query" : {
               "bool" : {
                 "must" : { "match": {
                   "event_type" : "1"
@@ -1319,86 +1319,97 @@
                   { "range" : { "event_time" :
                       { "gte" : #START_TIMESTAMP#,
                          "lte" : #END_TIMESTAMP# } }
-                   }   
+                   }
                 ]
               }
             }
           }
-        } 
-    ]]></query>    
+        }
+    ]]></query>
     <query id='selectClusterRawData'><![CDATA[
      {
         "index" : "corecode-*",
         "type" : "corecode",
-        "body" : {       
-          "size" : 100000, 
+        "body" : {
+          "size" : 100000,
           "_source" : ["event_time", "active_power", "ampere", "power_factor", "voltage", "node_id"],
-          "sort" : { "event_time" : { "order" : "asc" }},          
-          "query" : { 
+          "sort" : { "event_time" : { "order" : "asc" }},
+          "query" : {
               "bool" : {
                 "must" : { "match": {
                   "event_type" : "1"
                 } }  ,
-                "filter" : { 
-                  "range" : { 
+                "filter" : {
+                  "range" : {
                     "event_time" :
-                      { "gte" : #START_TIMESTAMP#,  "lte" : #END_TIMESTAMP# 
-                  }                     
-               }                   
+                      { "gte" : #START_TIMESTAMP#,  "lte" : #END_TIMESTAMP#
+                  }
+               }
              }
            }
          }
-      } 
+      }
     }
-    ]]></query>        
+    ]]></query>
     <query id='selectClusterRawDataByNode'><![CDATA[
      {
         "index" : "corecode-*",
-        "type" : "corecode",        
-        "body" : {       
-          "size" : 100000, 
-          "sort" : { "event_time" : { "order" : "asc" }},          
-          "query" : { 
+        "type" : "corecode",
+        "body" : {
+          "size" : 100000,
+          "sort" : { "event_time" : { "order" : "asc" }},
+          "query" : {
               "bool" : {
-                "must" : { 
+                "must" : {
                   "match" : {
                     "node_id" : #node#
                   }
                 },
-                "filter" : { 
-                  "range" : { 
+                "filter" : {
+                  "range" : {
                     "event_time" :
-                      { "gte" : #START_TIMESTAMP#,  "lte" : #END_TIMESTAMP# 
-                  }                     
-               }                   
+                      { "gte" : #START_TIMESTAMP#,  "lte" : #END_TIMESTAMP#
+                  }
+               }
              }
            }
          }
-      } 
+      }
     }
-    ]]></query>        
+    ]]></query>
       <query id='selectDataBySource'><![CDATA[
      {
         "index" : #index#,
         "type" : #type#,
-        "body" : {       
-          "size" : 100000, 
-          "sort" : { "event_time" : { "order" : "asc" }},          
+        "body" : {
+          "size" : 100000,
+          "sort" : { "event_time" : { "order" : "asc" }},
           "_source" : [##Source##],
-          "query" : {               
+          "query" : {
               "bool" : {
                 "must" : [   { "match_all": {} }  ],
-                "filter" : { 
-                  "range" : { 
+                "filter" : {
+                  "range" : {
                     "event_time" :
-                      { "gte" : #START_TIMESTAMP#,  "lte" : #END_TIMESTAMP# 
-                  }                     
-               }                   
+                      { "gte" : #START_TIMESTAMP#,  "lte" : #END_TIMESTAMP#
+                  }
+               }
              }
            }
          }
-      } 
+      }
     }
-    ]]></query>        
-</analysis>
+    ]]></query>
+  </analysis>
+  <scheduler>
+      <query id='selectApplicationInfo'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {
+       }
+      }
+      ]]></query>
+
+  </scheduler>
 </queryList>

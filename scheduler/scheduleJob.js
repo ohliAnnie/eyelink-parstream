@@ -11,7 +11,7 @@ new CronJob(global.config.schedule.application_info, function() {
   console.log('+++++++++++++++++++++++++++++++++++++++++++');
   console.log('    time : %s', d.toFormat('YYYY-MM-DD HH24:MI:SS'))
   console.log('    scheduler application_info');
-  schedule.process('tb_node_raw_simul.csv', false);
+  schedule.process();
 }, true, true, 'Asia/Seoul');
 
 // new CronJob(simulconfig.schedule.event, function() {
