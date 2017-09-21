@@ -5,7 +5,7 @@ var elesJson = {
     { data: { id: 'n2', name : 'USER', img: '../assets/images/user2.png' } },
     { data: { id: 'n3', name : 'FRONT-WEB', img: '../assets/sample/tomcat0.png' } },
     { data: { id: 'n4', name : 'BACKEND-WEB', img: '../assets/sample/tomcat3.png' } },
-    { data: { id: 'n5', name : 'BACKEND-API', img: '../assets/sample/tomcat1.png' } },
+    { data: { id: 'n5', name : 'BACKEND-API', img: '../assets/sample/microsoft-word-2013-logo.svg' } },
     { data: { id: 'n6', name : 'MEMCACHED', img: '../assets/sample/memcached.png' } },
     { data: { id: 'n7', name : 'XXX:YYY:ZZZ', img: '../assets/sample/cloud.png' } },
     { data: { id: 'n8', name : 'URL\t2740\nURL:XXX\t1974\nURL:AAA\t1370\n765', img: '../assets/sample/cloud.png' } },

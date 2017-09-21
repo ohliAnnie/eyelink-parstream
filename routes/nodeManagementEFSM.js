@@ -119,8 +119,9 @@ router.put('/users/:id', function(req, res) {
   };
   console.log(in_data);
   queryProvider.updateQueryByID("management", "updateUser", in_data, function(err, out_data) {    
-    if(out_data.result == "updated");
-        var rtnCode = CONSTS.getErrData("D002");            
+    if(out_data.result == "updated"){
+     var rtnCode = CONSTS.getErrData("D002");            
+    }
     if (err) { console.log(err);   }
     res.json({rtnCode: rtnCode});
   });
@@ -511,7 +512,7 @@ router.get('/menu', function(req, res, next) {
 
 router.get('/restapi/getMenuList', function(req, res, next) {  
   console.log('/restapi/getMenuList');        
-  var in_data = {  INDEX: req.query.index, TYPE: req.query.type, ID: "code" };  
+  var in_data = {  INDEX: req.query.index, TYPE: req.query.type, SORT: "code" };  
   var rtnCode = CONSTS.getErrData('0000');
   queryProvider.selectSingleQueryByID2("management", "selectSortList", in_data, function(err, out_data, params) {  
     console.log(out_data);               
@@ -532,7 +533,8 @@ router.get('/menu/:id', function(req, res) {
     var in_data = {
       INDEX: "management",
       TYPE: "menu",      
-      ID: "code"
+      ID: "code",
+      SORT : "code"
     };
      queryProvider.selectSingleQueryByID2("management", "selectSortList", in_data, function(err, out_data, params) {                 
       console.log(out_data);
@@ -548,23 +550,21 @@ router.get('/menu/:id', function(req, res) {
 });
 
 // menu 신규 등록
-router.post('/menu/:id', function(req, res) {  
-  console.log(req.body);
+router.post('/menu/:id', function(req, res) {      
   var in_data = {    
     INDEX: "management",
     TYPE: "menu",    
-    ID : "_id",
+    ID : "_id",    
     VALUE: req.params.id,
     NAME: req.body.name,
     UPCODE: req.body.upcode   
  };  
   queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {        
-    console.log(out_data);
-    if (out_data[0] != null){
+    if (out_data.length != 0){
       var rtnCode = CONSTS.getErrData('D005');    
       res.json({rtnCode: rtnCode});
     }  else  {
-      queryProvider.insertQueryByID("management", "insertMenu", in_data, function(err, out_data) {        
+    queryProvider.insertQueryByID("management", "insertMenu", in_data, function(err, out_data) {        
         console.log(out_data);
         if(out_data.result == "created"){
           console.log(out_data);
@@ -575,18 +575,19 @@ router.post('/menu/:id', function(req, res) {
       });
     }
   });
-});
+}); 
   
 router.get('/menu_upper', function(req, res, next) {
   console.log('menu/menu_upper');
-  var in_data = { INDEX: "management", TYPE:"menu" };
+  var in_data = { INDEX: "management", TYPE:"menu", SORT : "code" };
   var list = [];
-  queryProvider.selectSingleQueryByID2("management", "selectList", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID2("management", "selectSortList", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');            
     } else {
-      out_data.forEach(function(d){        
+      out_data.forEach(function(d){      
+        console.log(d);
         if(parseInt(d._source.code)%1000 == 0 && d._source.code != "0000"){
           console.log(d);
           list.push(d._source);
@@ -597,6 +598,20 @@ router.get('/menu_upper', function(req, res, next) {
   });
 });
 
+// update
+router.put('/menu_upper/:id', function(req, res, next) {
+  console.log('menu/menu_upper');
+  var in_data = { INDEX: "management", TYPE:"menu", CODE : req.body.code, NAME : req.body.name, UPCODE : "0000" };  
+  queryProvider.updateQueryByID("management", "updateMenuName", in_data, function(err, out_data, params) {
+    if(out_data.result == "updated"){
+      var rtnCode = CONSTS.getErrData("D002");            
+    }
+    if (err) { console.log(err);   }
+    res.json({rtnCode: rtnCode});
+  });
+});
+
+
 // menu 정보 삭제
 router.delete('/menu/:id', function(req, res) {
   console.log('delete menu_upper');
@@ -606,23 +621,36 @@ router.delete('/menu/:id', function(req, res) {
     ID: req.params.id  
   };  
   queryProvider.deleteQueryByID("management", "deleteById", in_data, function(err, out_data) {
-    if(out_data.result == "deleted");     
+    if(out_data.result == "deleted");     q
         var rtnCode = CONSTS.getErrData("D003");        
     if(err){ console.log(err);    }
     res.json({rtnCode: rtnCode});
   });
 });
 
-// menu 정보 삭제
 router.get('/restapi/getCodeList', function(req, res) {
   console.log('getCodeList');  
   var in_data = {        
-    INDEX: "management",    TYPE: "menu",    ID: "upcode",
+    INDEX: "management",    TYPE: "menu",  SORT : "code", ID: "upcode", 
     VALUE : req.query.id  };    
   queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');            
+    }       
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
+router.get('/restapi/getIdData', function(req, res) {
+  console.log('getCodeList');  
+  var in_data = {        
+    INDEX: "management",    TYPE: "menu",    ID: "_id", 
+    VALUE : req.query.id  };    
+  queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
+    rtnCode = CONSTS.getErrData('D005');            
+    if (out_data.length == 0) {      
+     rtnCode = CONSTS.getErrData('0001');            
     }       
     res.json({rtnCode: rtnCode, rtnData: out_data });
   });

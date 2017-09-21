@@ -50,7 +50,7 @@ block script
           }
         // TODO 메시지 공통 영역으로
         if (confirm("등록 하시겠습니까? ")) {          
-          insertUpperMenu(code, name, "0000")
+          insertMenu(code, name, "0000", true);
         }
       });
       $('a').click(function(event){
@@ -124,5 +124,5 @@ block content
                         a.btn.default.btn-xs.balck(flag='deleteMenu', id=''+menu.code)
                           i.fa.fa-trash-o
                           |  Delete      
-    #call    
+      #call    
               
