@@ -59,7 +59,12 @@
           "user_pw" : #PASSWORD#,
           "user_name" : #NAME#,
           "user_email" : #EMAIL#,
-          "reg_date" : #DATE#
+          "reg_date" : #DATE#,
+          "position" : #POSITION#,
+          "tel" : #TEL#,
+          "mobile" : #MOBILE#,
+          "use" : #USE#,
+          "note" : #NOTE#
         }
     }
      ]]></query>
@@ -79,7 +84,12 @@
           "doc" : {
             "user_pw" : #PASSWORD#,
             "user_name" : #NAME#,
-            "user_email" : #EMAIL#
+            "user_email" : #EMAIL#,
+            "position" : #POSITION#,
+            "tel" : #TEL#,
+            "mobile" : #MOBILE#,
+            "use" : #USE#,
+            "note" : #NOTE#
           }
         }
       }
