@@ -39,11 +39,13 @@ function drawPatternList(patternLists) {
       //sb.append('<tr><th>Creation Date</th><th></th></tr>');
       cnt++;
     }
-    sb.append('<tr><td><a href="#" onclick="clickLinkFunc(this)">' + d+'</td>');
+    sb.append('<tr><td><a onclick="clickLinkFunc(this)">' + d+'</td>');
     console.log("sb is" + sb);
     $('#patternList').append(sb.toString());
   });
 
+  $("#lblCreatedDate").empty();
+  $("#lblCreatedDate").append(createdDate);
   loadPatternData(createdDate);
 }
 
@@ -209,21 +211,24 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
 
     if(confirm("저장 하시겠습니까?")) {
       var id = creationDate;
+      var queryBody = {};
       var fG = td.eq(1).text();
       var cN = td.eq(2).text();
       var sV = td.eq(3).children().val();
-      // var sV = td.eq(3);
+      queryBody[cN] = sV;
+      queryBody = JSON.stringify(queryBody);
+      console.log(queryBody);
       $.ajax({
         url: "/analysis/pattern_info/" + id + "/_update",
         dataType: "json",
         type: "POST",
-        data:{ factorGroup : fG, clusterNo : cN, statusVal : sV },
+        data:{ factorGroup : fG, qBody : queryBody},
         success: function(result) {
           alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
           if (result.rtnCode.code == "D002") {
             //location.href = "/analysis/pattern";
             // pattern tree data reload
-            loadPatternData(creationDate);
+            loadPatternData(id);
           }
         },
         error: function(req, status, err) {
@@ -286,6 +291,10 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
       }
     });
   });
+}
+
+function updateCheckedAll() {
+  
 }
 
 function drawPatternChart(dataset, minval, maxval) {

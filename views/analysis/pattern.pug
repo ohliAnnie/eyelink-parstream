@@ -32,13 +32,67 @@ block script
         d3.selectAll("svg").remove();
         getPatternList() // pattern dataset
       });
+
+      $('#btnCheckedUpdate').click(function() {
+        console.log("checkbox test");
+        //updateCheckedAll();
+        var checkbox = $("input[name=patternChk]:checked");
+        var numOfCheck = $("input[name=patternChk]:checked").length;
+        console.log(numOfCheck);
+        
+        if(numOfCheck == 0) {
+          console.log("There is no checked item");
+        }
+        else{
+          if(confirm(numOfCheck + "개 항목에 대해 일괄저장 하시겠습니까?")){
+            var id = $('#lblCreatedDate').text();
+            var queryBody = {};
+            var tr = checkbox.parent().parent();
+            var fG = tr.children().eq(1).text();
+
+            checkbox.each(function(i) {
+              var td = tr.eq(i).children();
+              var cN = td.eq(2).text();
+              queryBody[cN] = td.eq(3).children().val();
+              });
+
+            queryBody = JSON.stringify(queryBody);
+            console.log(queryBody);
+            
+            $.ajax({
+              url: "/analysis/pattern_info/" + id + "/_update",
+              dataType: "json",
+              type: "POST",
+              data:{ factorGroup : fG, qBody : queryBody},
+              success: function(result) {
+                alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+                if (result.rtnCode.code == "D002") {
+                  //location.href = "/analysis/pattern";
+                  // pattern tree data reload
+                  loadPatternData(id);
+                }
+              },
+              error: function(req, status, err) {
+
+                //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+              }
+            });
+          }
+        }
+        //console.log(checkbox);
+      });
+
       
       // Click creation date
       clickLinkFunc = function(link) {
         $('#tblPatterns > tbody').empty();
         d3.selectAll("svg").remove();
         var creationDate = link.innerText || link.textContent;
-        $('#creationDate').val(creationDate);
+        //$('#creationDate').val(creationDate);
+        $("#lblCreatedDate").empty();
+        $("#lblCreatedDate").append(creationDate);
+
         console.log(creationDate);
         d3.selectAll("svg").remove();
         loadPatternData(creationDate);
@@ -103,7 +157,8 @@ block content
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Pattern Group
-                span.caption-helper  Tree view about defined patterns
+                span.caption-helper  Created Patterns at  
+                label#lblCreatedDate  
             .portlet-body
               #patternTree
         .col-md-4
@@ -112,6 +167,9 @@ block content
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Patterns
                 span.caption-helper  Detail information about selected patterns
+              .tools
+                button#btnCheckedUpdate.btn.blue
+                  i.fa  checked update
             .portlet-body
               .scroller(style='height: 600px;', data-always-visible='1', data-rail-visible='0')
                 table#tblPatterns.table.table-striped.table-bordered.table-hover

@@ -178,15 +178,13 @@ router.get('/restapi/getPatterns', function(req, res, next) {
 
 // pattern_info 정보 수정
 router.post('/pattern_info/:id/_update', function(req, res) {
-  console.log("=====test=======");
   console.log(req.body);
   var in_data = {
       INDEX: "analysis",
       TYPE: "pattern_info",
       ID: req.params.id,
       FACTOR: req.body.factorGroup,
-      CLUSTER: req.body.clusterNo,
-      STATUS: req.body.statusVal,
+      QUERYBODY: req.body.qBody,
   };
   console.log(in_data);
   queryProvider.updateQueryByID("analysis", "updatePattern_info", in_data, function(err, out_data) {
