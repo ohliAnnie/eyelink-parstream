@@ -20,10 +20,6 @@
 		"method" : "nodelib-es",
 		"#method" : "jdbc"
 	},
-	"schedule": {
-		"application_info" : "*/10 * * * * *",
-		"alarm" : "00 */30 * * * *"
-	},
 	"es_index" : {
 		"es_jira" : "filebeat_jira_access-",
 		"es_confluence" : "filebeat_confluence_acc-",

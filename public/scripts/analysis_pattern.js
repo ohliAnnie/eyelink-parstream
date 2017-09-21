@@ -39,11 +39,13 @@ function drawPatternList(patternLists) {
       //sb.append('<tr><th>Creation Date</th><th></th></tr>');
       cnt++;
     }
-    sb.append('<tr><td><a href="#" onclick="clickLinkFunc(this)">' + d+'</td>');
+    sb.append('<tr><td><a onclick="clickLinkFunc(this)">' + d+'</td>');
     console.log("sb is" + sb);
     $('#patternList').append(sb.toString());
   });
 
+  $("#lblCreatedDate").empty();
+  $("#lblCreatedDate").append(createdDate);
   loadPatternData(createdDate);
 }
 
@@ -186,19 +188,40 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
   sb.append(headTag);
   sb.append('<tbody class="patternBody">');
 
-  for (cno in patternData[parentNode]){
-    var selectTag = statusCheck(patternData[parentNode][cno]);
-    var dataTag = '<tr>' +
-      '<td><input type="checkbox" name="patternChk" ></td>'+
-      '<td>' + parentNode + '</td>' +
-      '<td><a href="#" class="clickPattern">' + cno + '</td>' +
-      '<td><select name="status" class="form-control input-small select2me form-md-line-input">' +
-      selectTag + '</td>' +
-      '<td><input type="button" class="updateBtn" value="update" /></td>' +
-    '</tr>';
-    sb.append(dataTag);
+  if(childNode == undefined) {
+    for (cno in patternData[parentNode]){
+      var selectTag = statusCheck(patternData[parentNode][cno]);
+      var dataTag = '<tr>' +
+        '<td><input type="checkbox" name="patternChk" ></td>'+
+        '<td>' + parentNode + '</td>' +
+        '<td><a href="#" class="clickPattern">' + cno + '</td>' +
+        '<td><select name="status" class="form-control input-small select2me form-md-line-input">' +
+        selectTag + '</td>' +
+        '<td><input type="button" class="updateBtn" value="update" /></td>' +
+      '</tr>';
+      sb.append(dataTag);
+    }
+    sb.append("</tbody>");
   }
-  sb.append("</tbody>");
+  else{
+    for (cno in patternData[parentNode]){
+      if (patternData[parentNode][cno] == childNode) {
+        var selectTag = statusCheck(patternData[parentNode][cno]);
+        var dataTag = '<tr>' +
+          '<td><input type="checkbox" name="patternChk" ></td>'+
+          '<td>' + parentNode + '</td>' +
+          '<td><a href="#" class="clickPattern">' + cno + '</td>' +
+          '<td><select name="status" class="form-control input-small select2me form-md-line-input">' +
+          selectTag + '</td>' +
+          '<td><input type="button" class="updateBtn" value="update" /></td>' +
+        '</tr>';
+        sb.append(dataTag);
+      }
+    }
+    sb.append("</tbody>");
+  }
+
+
     //sb.append('<tr><td>' + parentNode + '</td></tr>');
   $('#tblPatterns').append(sb.toString());
 
@@ -209,21 +232,24 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
 
     if(confirm("저장 하시겠습니까?")) {
       var id = creationDate;
+      var queryBody = {};
       var fG = td.eq(1).text();
       var cN = td.eq(2).text();
       var sV = td.eq(3).children().val();
-      // var sV = td.eq(3);
+      queryBody[cN] = sV;
+      queryBody = JSON.stringify(queryBody);
+      console.log(queryBody);
       $.ajax({
         url: "/analysis/pattern_info/" + id + "/_update",
         dataType: "json",
         type: "POST",
-        data:{ factorGroup : fG, clusterNo : cN, statusVal : sV },
+        data:{ factorGroup : fG, qBody : queryBody},
         success: function(result) {
           alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
           if (result.rtnCode.code == "D002") {
             //location.href = "/analysis/pattern";
             // pattern tree data reload
-            loadPatternData(creationDate);
+            loadPatternData(id);
           }
         },
         error: function(req, status, err) {
@@ -286,6 +312,10 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
       }
     });
   });
+}
+
+function updateCheckedAll() {
+  
 }
 
 function drawPatternChart(dataset, minval, maxval) {

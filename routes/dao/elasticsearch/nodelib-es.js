@@ -62,7 +62,7 @@ QueryProvider.prototype.selectQueryStringCount = function (qString, cb) {
   });
 }
 
-QueryProvider.prototype.insertQueryByID = function (type, queryId, datas, cb) {
+QueryProvider.prototype.insertQueryByID = function (type, queryId, datas, cb) {  
   console.log('queryId : '+queryId);
    // SQL 내 파라메타를 변경해준다.
   var sQueryString = Utils.replaceSql2(queryParser.getQuery(type, queryId), datas);
@@ -73,16 +73,16 @@ QueryProvider.prototype.insertQueryByID = function (type, queryId, datas, cb) {
 
   client.index(
     sQueryString
-  ).then(function (resp) {
+  ).then(function (resp) {      
       console.log(resp);
       cb(null, resp);
-  }, function (err) {
+  }, function (err) {      
       console.trace(err.message);
       cb(err.message);
   });
 }
 
-QueryProvider.prototype.deleteQueryByID = function (type, queryId, datas, cb) {
+QueryProvider.prototype.deleteQueryByID = function (type, queryId, datas, cb) {  
   console.log('queryId : '+queryId);
    // SQL 내 파라메타를 변경해준다.
   var sQueryString = Utils.replaceSql2(queryParser.getQuery(type, queryId), datas);
@@ -91,7 +91,7 @@ QueryProvider.prototype.deleteQueryByID = function (type, queryId, datas, cb) {
   sQueryString = JSON.parse(sQueryString);
   client.delete(
     sQueryString
-  ).then(function (resp) {
+  ).then(function (resp) {      
       console.log(resp);
       cb(null, resp);
   }, function (err) {
@@ -100,7 +100,7 @@ QueryProvider.prototype.deleteQueryByID = function (type, queryId, datas, cb) {
   });
 }
 
-QueryProvider.prototype.updateQueryByID = function (type, queryId, datas, cb) {
+QueryProvider.prototype.updateQueryByID = function (type, queryId, datas, cb) {  
   console.log('queryId : '+queryId);
    // SQL 내 파라메타를 변경해준다.
   var sQueryString = Utils.replaceSql2(queryParser.getQuery(type, queryId), datas);
@@ -109,7 +109,7 @@ QueryProvider.prototype.updateQueryByID = function (type, queryId, datas, cb) {
   sQueryString = JSON.parse(sQueryString);
   client.update(
     sQueryString
-  ).then(function (resp) {
+  ).then(function (resp) {      
       console.log(resp);
       cb(null, resp);
   }, function (err) {
@@ -164,11 +164,11 @@ QueryProvider.prototype.selectSingleQueryByID2 = function (type, queryId, datas,
     sQueryString
   ).then(function (resp) {
       //console.log(resp.hits);
-      var hits = resp.hits.hits;
+      var hits = resp.hits.hits;      
       console.log('nodelib-es/selectSingleQueryByID2 -> total : %d', resp.hits.total);
       cb(null, hits);
   }, function (err) {
-      console.trace(err.message);
+      console.trace(err.message);      
       cb(err.message);
   });
 }
@@ -191,7 +191,7 @@ QueryProvider.prototype.selectSingleQueryByID3 = function (type, queryId, datas,
   ).then(function (resp) {
       //console.log(resp.hits);
       console.log(resp);
-      var hits = resp.aggregations;
+      var hits = resp.aggregations;      
       console.log('nodelib-es/selectSingleQueryByID3 -> total : %d', resp.hits.total);
       cb(null, hits);
   }, function (err) {
@@ -217,7 +217,7 @@ QueryProvider.prototype.selectSingleQueryCount = function (type, queryId, datas,
     sQueryString
   ).then(function (resp) {
       //console.log(resp.hits);
-      var count = resp.count;
+      var count = resp.count;      
       console.log('nodelib-es/selectSingleQueryCount -> count : %d', resp.count);
       cb(null, count);
   }, function (err) {
@@ -313,22 +313,6 @@ QueryProvider.prototype.deleteDocForTest = function (cb) {
 
 }
 
-// search all index list in ES
-QueryProvider.prototype.getIndicesStats = function (indexName, cb) {
-  if (indexName == null)
-    indexName = "_all";
-
-  client.indices.stats({
-     index: indexName,
-     level: "indices"
-  }).then(function (resp) {
-      // console.log(resp)
-      cb(null, Object.keys(resp.indices).length, resp.indices);
-  }, function (err) {
-      console.trace(err.message);
-      cb(err.message, 0, null);
-  });
-}
 
 // var pageNum = request.params.page;
 // var perPage = request.params.per_page;
