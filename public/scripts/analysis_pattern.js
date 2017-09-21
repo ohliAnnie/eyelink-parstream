@@ -188,19 +188,40 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
   sb.append(headTag);
   sb.append('<tbody class="patternBody">');
 
-  for (cno in patternData[parentNode]){
-    var selectTag = statusCheck(patternData[parentNode][cno]);
-    var dataTag = '<tr>' +
-      '<td><input type="checkbox" name="patternChk" ></td>'+
-      '<td>' + parentNode + '</td>' +
-      '<td><a href="#" class="clickPattern">' + cno + '</td>' +
-      '<td><select name="status" class="form-control input-small select2me form-md-line-input">' +
-      selectTag + '</td>' +
-      '<td><input type="button" class="updateBtn" value="update" /></td>' +
-    '</tr>';
-    sb.append(dataTag);
+  if(childNode == undefined) {
+    for (cno in patternData[parentNode]){
+      var selectTag = statusCheck(patternData[parentNode][cno]);
+      var dataTag = '<tr>' +
+        '<td><input type="checkbox" name="patternChk" ></td>'+
+        '<td>' + parentNode + '</td>' +
+        '<td><a href="#" class="clickPattern">' + cno + '</td>' +
+        '<td><select name="status" class="form-control input-small select2me form-md-line-input">' +
+        selectTag + '</td>' +
+        '<td><input type="button" class="updateBtn" value="update" /></td>' +
+      '</tr>';
+      sb.append(dataTag);
+    }
+    sb.append("</tbody>");
   }
-  sb.append("</tbody>");
+  else{
+    for (cno in patternData[parentNode]){
+      if (patternData[parentNode][cno] == childNode) {
+        var selectTag = statusCheck(patternData[parentNode][cno]);
+        var dataTag = '<tr>' +
+          '<td><input type="checkbox" name="patternChk" ></td>'+
+          '<td>' + parentNode + '</td>' +
+          '<td><a href="#" class="clickPattern">' + cno + '</td>' +
+          '<td><select name="status" class="form-control input-small select2me form-md-line-input">' +
+          selectTag + '</td>' +
+          '<td><input type="button" class="updateBtn" value="update" /></td>' +
+        '</tr>';
+        sb.append(dataTag);
+      }
+    }
+    sb.append("</tbody>");
+  }
+
+
     //sb.append('<tr><td>' + parentNode + '</td></tr>');
   $('#tblPatterns').append(sb.toString());
 
