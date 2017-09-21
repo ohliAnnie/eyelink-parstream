@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www",
+    "schedule": "node ./scheduler/scheduleJob",
     "test": "mocha $(find ./test -name '*.elasticsearch.spec.js') --recursive -w"
   },
   "loglevel": "debug",
@@ -40,7 +41,7 @@
     "url": "git+https://github.com/tovenbae/eyelink-parstream.git"
   },
   "author": "M2U Technology",
-  "license": "Free",
+  "license": "M2U Licnese",
   "bugs": {
     "url": "https://github.com/tovenbae/eyelink-parstream/issues"
   },

@@ -136,10 +136,33 @@ router.get('/restapi/getAnomaly/:id', function(req, res, next) {
   })
 });
 
+// get pattern about selected cluster
+router.get('/restapi/getClusterPattern', function(req, res, next) {
+  console.log(req.query);
+  console.log("11111111111111")
+  var in_data = {
+      INDEX: "analysis", TYPE: "anomaly",
+      ID: req.query.id,
+      TARGET: req.query.target
+  };
+  console.log(in_data);
+  queryProvider.selectSingleQueryByID2("analysis", "selectClusterPattern", in_data, function(err, out_data, params) {
+    console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data.length == 0) {
+      rtnCode = CONSTS.getErrData('0001');
+      console.log('test');
+      res.json({rtnCode: rtnCode});
+    }
+    console.log('analysis/restapi/getClusterPattern -> length : %s', out_data.length);
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]._source});
+  })
+});
+
 // patterns
 router.get('/restapi/getPatterns', function(req, res, next) {
   console.log(req.query);
-  var in_data = {  INDEX: "analysis", TYPE: "pattern_info" , ID: req.query._id}  
+  var in_data = {  INDEX: "analysis", TYPE: "pattern_info" , ID: req.query.id}  
   queryProvider.selectSingleQueryByID2("analysis", "selectPatterns", in_data, function(err, out_data, params) {
     console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
@@ -153,6 +176,27 @@ router.get('/restapi/getPatterns', function(req, res, next) {
   })
 });
 
+// pattern_info 정보 수정
+router.post('/pattern_info/:id/_update', function(req, res) {
+  console.log("=====test=======");
+  console.log(req.body);
+  var in_data = {
+      INDEX: "analysis",
+      TYPE: "pattern_info",
+      ID: req.params.id,
+      FACTOR: req.body.factorGroup,
+      CLUSTER: req.body.clusterNo,
+      STATUS: req.body.statusVal,
+  };
+  console.log(in_data);
+  queryProvider.updateQueryByID("analysis", "updatePattern_info", in_data, function(err, out_data) {
+    if(out_data.result == "updated");
+      var rtnCode = CONSTS.getErrData("D002");
+    if (err) { console.log(err);   }
+    res.json({rtnCode: rtnCode});
+  });
+});
+/////////////////
 
 router.post('/restapi/insertAnomalyPattern/:id', function(req, res, next) {  
   console.log('/analysis/restapi/insertAnomalyPattern');    

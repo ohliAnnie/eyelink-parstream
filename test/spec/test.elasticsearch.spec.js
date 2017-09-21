@@ -50,7 +50,7 @@ describe('ElasticSearch, ', function () {
     });
 
     it('"bbb"가 존재하지 않는 Doc Qeury 테스트', function (done) {
-      var in_qparam = {q : 'bbb'};
+      var in_qparam = {q : 'aaa'};
       queryProvider.selectQueryString(in_qparam, function(err, count, datas) {
         if (err) { throw err; }
         expect(count).be.equals(0);
@@ -70,6 +70,38 @@ describe('ElasticSearch, ', function () {
       })
     });
 
+  })
+
+  describe.only("test Indices Stat", function() {
+    it('get Indices stat', function (done) {
+      var in_qparam = {};
+      queryProvider.getIndicesStats(null, function(err, count, datas) {
+        if (err) { throw err; }
+        console.log(count);
+        // console.log('--------------------------------------------')
+        // for(var k in datas) {
+        //   console.log(k);
+        // }
+
+        expect(count).be.above(0);
+        done();
+      })
+    });
+
+    it('get Indices stat by condition', function (done) {
+      var in_qparam = {};
+      queryProvider.getIndicesStats("*-2017.09.20", function(err, count, datas) {
+        if (err) { throw err; }
+        console.log(count);
+        // console.log('--------------------------------------------')
+        // for(var k in datas) {
+        //   console.log(k);
+        // }
+
+        expect(count).be.above(0);
+        done();
+      })
+    });
   })
 
   describe("Index Test", function() {
