@@ -1275,7 +1275,7 @@
         "body" : {
           "doc" : {            
             "pattern_info" : {
-              #FACTOR# : { #CLUSTER# : #STATUS# }
+              #FACTOR# : #QUERYBODY#
             }
           }
         }
