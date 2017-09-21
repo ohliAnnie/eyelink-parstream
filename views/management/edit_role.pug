@@ -77,49 +77,67 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Dashboard
                       select#dashboard.select2.form-control(name='dashboard')
-                        option #{menu._source.menu_dashboard}
-                        option No
-                        option Yes       
+                        if menu._source.menu_dashboard=='Yes'
+                          option(value='', selected='selected') #{menu._source.menu_dashboard}
+                          option No
+                        else
+                          option Yes                                
+                          option(value='', selected='selected') #{menu._source.menu_dashboard}
                   .form-group
                     label.control-label.col-md-5 Timeseries
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Timeseries
                       select#timeseries.select2.form-control(data-show-subtext='true', name='timeseries')
-                        option #{menu._source.menu_timeseries}
-                        option No
-                        option Yes                                
+                        if menu._source.menu_timeseries=='Yes'
+                          option(value='', selected='selected') #{menu._source.menu_timeseries}
+                          option No
+                        else
+                          option Yes                                
+                          option(value='', selected='selected') #{menu._source.menu_timeseries}
                   .form-group
                     label.control-label.col-md-5 Report
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Report                      
                       select#report.select2.form-control(name='report')
-                        option #{menu._source.menu_report}
-                        option No
-                        option Yes                                 
+                        if menu._source.menu_report=='Yes'
+                          option(value='', selected='selected') #{menu._source.menu_report}
+                          option No
+                        else
+                          option Yes                                
+                          option(value='', selected='selected') #{menu._source.menu_report}                          
                   .form-group
                     label.control-label.col-md-5 Management
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Management
                       select#management.select2.form-control(name='management')
-                        option #{menu._source.menu_management}
-                        option No
-                        option Yes                                                      
+                        if menu._source.menu_management=='Yes'
+                          option(value='', selected='selected') #{menu._source.menu_management}
+                          option No
+                        else
+                          option Yes                                
+                          option(value='', selected='selected') #{menu._source.menu_management}
                   .form-group
                     label.control-label.col-md-5 Analysis
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Analysis
                       select#analysis.select2.form-control(name='analysis')
-                        option #{menu._source.menu_analysis}
-                        option No
-                        option Yes
+                        if menu._source.menu_analysis=='Yes'
+                          option(value='', selected='selected') #{menu._source.menu_analysis}
+                          option No
+                        else
+                          option Yes                                
+                          option(value='', selected='selected') #{menu._source.menu_analysis}
                   .form-group
                     label.control-label.col-md-5 Setting
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Setting
                       select#setting.select2.form-control(name='setting')
-                        option #{menu._source.menu_setting}
-                        option No
-                        option Yes
+                        if menu._source.menu_setting=='Yes'
+                          option(value='', selected='selected') #{menu._source.menu_setting}
+                          option No
+                        else
+                          option Yes                                
+                          option(value='', selected='selected') #{menu._source.menu_setting}
                   .form-group
                     #register_tnc_error(style='text-align:center;')
                     .col-md-10
