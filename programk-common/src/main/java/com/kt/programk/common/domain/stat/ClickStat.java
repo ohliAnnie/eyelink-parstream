@@ -92,6 +92,18 @@ public class ClickStat extends PagingExample {
     private String order;
 
     /**
+     * 시간대별 통계의 시간을 저장하기 위함
+     */
+    private int time;
+    
+    public int getTime() {
+    	return time;
+    }
+    
+    public void setTime(int time) {
+    	this.time = time;
+    }
+    /**
      * Gets link id.
      *
      * @return the link id
@@ -100,7 +112,7 @@ public class ClickStat extends PagingExample {
         return linkId;
     }
 
-    /**
+	/**
      * Sets link id.
      *
      * @param linkId the link id

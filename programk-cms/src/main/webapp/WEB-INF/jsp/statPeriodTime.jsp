@@ -155,8 +155,11 @@
 							<c:forEach var="item" items="${results}" varStatus="status">
 							<tr>
 								<td>
-									<fmt:formatNumber minIntegerDigits="2" value="${status.index}"/>시~
-									<fmt:formatNumber minIntegerDigits="2" value="${status.count}"/>시
+									<fmt:formatNumber minIntegerDigits="2" value="${item.time}"/>시~
+									<fmt:formatNumber minIntegerDigits="2" value="${item.time+1}"/>시
+									
+									<!--<fmt:formatNumber minIntegerDigits="2" value="${status.index}"/>시~
+									<fmt:formatNumber minIntegerDigits="2" value="${status.count}"/>시 -->
 								</td>
 								<td>${item.searchCount}</td>
 								<td>${item.responseCount}</td>
