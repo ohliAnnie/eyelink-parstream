@@ -13,6 +13,19 @@
         }
       }
      ]]></query>
+    <query id='selectByIdSort'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size" : 10000,
+          "sort" : { #SORT#: { "order" : "asc" } },
+          "query" : {
+            "match"  : { #ID# : #VALUE# }
+          }
+        }
+      }
+     ]]></query> 
     <query id='selectList'><![CDATA[
      {
         "index" : #INDEX#,
@@ -29,7 +42,7 @@
         "type" : #TYPE#,
         "body" : {
           "size" : 1000,
-          "sort" : { #ID#: { "order" : "asc" } },
+          "sort" : { #SORT#: { "order" : "asc" } },
           "query" : { "match_all" : { } }
         }
     }
@@ -188,6 +201,18 @@
         }
     }
      ]]></query>
+   <query id='updateMenuName'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #CODE#,
+        "body" : {        
+          "doc" : {            
+            "name" : #NAME#          
+          }
+        }
+      }
+     ]]></query>  
   </management>
   <dashboard>
   <query id='selectByIndex'><![CDATA[
