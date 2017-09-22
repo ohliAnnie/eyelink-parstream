@@ -1,4 +1,4 @@
-function getList(id, flag){  
+function getList(id){  
   $.ajax({
     url: "/management/restapi/getCodeList",
     dataType: "json",
@@ -6,15 +6,11 @@ function getList(id, flag){
     data: {id : id},
     success: function(result) {
       if (result.rtnCode.code == "D003") {                
-      } else {
-        if(flag == "deleteMenu"){
-         result.rtnData.forEach(function(d){          
+      } else {        
+        result.rtnData.forEach(function(d){          
           deleteMenu(d._source.code, false);
-         });        
-         deleteMenu(id, true);
-        } else if(flag == "updateMenu"){
-
-        }
+        });        
+        deleteMenu(id, true);        
       }
     },
     error: function(req, status, err) {
@@ -100,27 +96,100 @@ function clickEdit(id){
   // TODO 메시지 공통 영역으로
   if (confirm("수정 하시겠습니까? ")) {          
     if(id != code){
-      getList(id, "updateData");
+      updateMenuCheck(id, code, name);
     } else {
-      console.log('수정');
+      updateMenuName(code, name);
     }
   }
 }
 
-function insertMenu(code, name){
+function insertMenu(code, name, upcode, status){
+  console.log('tests')
    $.ajax({
     url: "/management/menu/" + code,
     dataType: "json",
     type: "POST",
     data: { code : code, name : name, upcode : upcode },
     success: function(result) {
-      alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
-      if (result.rtnCode.code == "D001") {
+      console.log(result)
+      if(status){
+        alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+        if (result.rtnCode.code == "D001") {
+          location.href = "/management/menu_upper";
+        }
+      }
+      console.log(result)
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
+}
+
+
+function updateMenuName(code, name){
+   $.ajax({
+    url: "/management/menu_upper/" + code,
+    dataType: "json",
+    type: "PUT",
+    data: { code : code, name : name },
+    success: function(result) {      
+      console.log(result);
+      if (result.rtnCode.code == "D002") {
         location.href = "/management/menu_upper";
+      } else {
+        alert('수정할 내용이 없습니다.');
       }
     },
     error: function(req, status, err) {
       //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
+}
+
+function updateMenuCheck(id, code, name) {
+  console.log(id, code, name);
+  $.ajax({
+    url: "/management/restapi/getIdData",
+    dataType: "json",
+    type: "get",
+    data: {id : code},
+    success: function(result) {
+      console.log(result)
+      if (result.rtnData.length == 0) {             
+        getMenuList(id, code, name);
+      } else if (result.rtnCode.code == "D005") {
+        alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
+}
+
+function getMenuList(id, code, name){  
+  $.ajax({
+    url: "/management/restapi/getCodeList",
+    dataType: "json",
+    type: "get",
+    data: {id : id},
+    success: function(result) {
+     console.log(result);
+     result.rtnData.forEach(function(d){
+      var nCode = code.substr(0,1)+d._source.code.substr(1,3);    
+      console.log(nCode, d._source.name, code)
+      insertMenu(nCode, d._source.name, code, false);
+      deleteMenu(d._source.code, false)
+     });
+      insertMenu(code, name, "0000", false);
+      deleteMenu(id, false);
+      location.href = "/management/menu_upper";
+    },
+    error: function(req, status, err) {      
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
   });

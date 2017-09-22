@@ -153,9 +153,12 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Whether or not
                       select#use.select2.form-control(data-show-subtext='true', name='use')
-                        option #{user._source.use}
-                        option Use
-                        option Not                                
+                        if user._source.use=='Use'
+                          option(value='', selected='selected') #{user._source.use}
+                          option Not
+                        else
+                          option Use                                
+                          option(value='', selected='selected') #{user._source.use}
                   .form-group
                     label.control-label.col-md-5 Note
                     .col-md-5

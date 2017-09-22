@@ -14,7 +14,7 @@ var indexAcc = global.config.es_index.es_jira;
 router.get('/', function(req, res, next) {
   mainmenu.dashboard = 'open selected';
   var server = req.query.server;    
-  var in_data = {    index:  "elagent_test-agent-2017.09.06", type: "AgentInfo"    };
+  var in_data = {    index:  "elagent_test-agent-*", type: "AgentInfo"    };
   queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
     var check = {}, list = [], cnt = 0;    
@@ -28,12 +28,10 @@ router.get('/', function(req, res, next) {
         } 
       });
       list.push({ id : 'test-file', name : 'JIRA' });
-    }
-    console.log(server);
+    }    
     if(server == undefined || server == ""){
       server = list[0].name;
-    }
-    console.log(server);
+    }    
   res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : server }); 
   });
 });
@@ -191,7 +189,7 @@ router.get('/restapi/selectJiraSankeyByLink', function(req, res, next) {
         to = last[d._source.auth];
       }        
       if(from != to){
-        if(line[node[to].no+'-'+node[from].no] == null){
+        if(line[node[to].no+  +node[from].no] == null){
           if(lineNode[from] == null) {                
             lineNode[from] = {};        
             node[from].no = lineNodeCnt;        
@@ -217,8 +215,7 @@ router.get('/restapi/selectJiraSankeyByLink', function(req, res, next) {
             lines[line[source+'-'+target].no].value += 0.0001;
             lines[line[source+'-'+target].no].cnt++;
              nodes[target].cnt++;                           
-             if(d._source.response >= 400){
-              console.log(d._source )
+             if(d._source.response >= 400){              
                  if(lines[line[source+'-'+target].no].errcnt == 0) {
                     lines[line[source+'-'+target].no].elist = d._id;
                  } else {
@@ -336,8 +333,7 @@ router.get('/restapi/selectJiraSankeyByLinkForScatter', function(req, res, next)
             nodes[target].cnt++
              if(d._source.response < 400){                           
                 lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 0 };                           
-              } else {                             
-                console.log(d._source)
+              } else {                                             
                 lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 1, elist : d._id };
                 nodes[target].errcnt++;                                         
              }  
@@ -345,8 +341,7 @@ router.get('/restapi/selectJiraSankeyByLinkForScatter', function(req, res, next)
             lines[line[source+'-'+target].no].value += 0.0001;
             lines[line[source+'-'+target].no].cnt++;
              nodes[target].cnt++;                           
-             if(d._source.response >= 400){
-              console.log(d._source )
+             if(d._source.response >= 400){              
                  if(lines[line[source+'-'+target].no].errcnt == 0) {
                     lines[line[source+'-'+target].no].elist = d._id;
                  } else {
@@ -422,10 +417,12 @@ router.get('/restapi/selectJiraAccScatter', function(req, res, next) {
 });
 
 router.get('/restapi/selectJiraAccDash', function(req, res, next) {
-  console.log('dashboard/restapi/selectJiraAccDash');
-  var date = new Date().toString().split(' ');  
+  console.log('dashboard/restapi/selectJiraAccDash');  
   var in_data = {    index : req.query.index, START : req.query.START, END : req.query.END  };    
   queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccDash", in_data, function(err, out_data, params) {
+    console.log('tttttttt');
+    console.log(in_data);
+    console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -625,6 +622,32 @@ router.get('/restapi/getJiraAccOneWeek', function(req, res, next) {
     res.json({rtnCode: rtnCode, rtnData: data });
   });  
 });
+
+router.get('/restapi/getAgentOneWeek', function(req, res, next) {  
+   var in_data = {
+    index : req.query.index,
+    type : req.query.type,
+    start : req.query.start,
+    id : req.query.id
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","selectByStart", in_data, function(err, out_data, params) {
+    // console.log(out_datsa);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }     
+    var data = [];
+    out_data.forEach(function(d) {              
+      if(d._source.isError) {
+        data.push({ day : d._source.startTime, event_type : 1 });
+      } else {
+        data.push({ day : d._source.startTime, event_type : 0 });
+      }           
+    });       
+    res.json({rtnCode: rtnCode, rtnData: data });
+  });  
+});
+
 
 router.get('/restapi/getTransaction', function(req, res, next) {
   console.log('dashboard/restapi/getTransaction');  
@@ -978,8 +1001,8 @@ router.get('/restapi/getRestimeCount', function(req, res, next) {
 });
 
 // Agent
-router.get('/restapi/getAgentData', function(req, res, next) {
-  console.log('dashboard/restapi/getAgentData');    
+router.get('/restapi/getAgentMap', function(req, res, next) {
+  console.log('dashboard/restapi/getAgentMap');    
   var in_data = {
     index : req.query.index,
     type : req.query.type,
@@ -995,9 +1018,6 @@ router.get('/restapi/getAgentData', function(req, res, next) {
      var nodes = [], edges = [], nodekey = [], edgekey = [], nodeList = [];
       var color = ["#d5d5d5", "#57a115", "#de9400", "#de3636"];
       out_data.forEach(function(d){    
-
-        console.log(d);
-        console.log(d._source.applicationId);                
         if(nodekey[d._source.applicationId]!=null) {       
           if(d._source.isError) {
             nodekey[d._source.applicationId]++;
@@ -1010,15 +1030,16 @@ router.get('/restapi/getAgentData', function(req, res, next) {
             nodekey[d._source.applicationId]++;
           }
         }
-        if(edgekey[d._source.applicationId+'-'+d._source.toApplicationId] != null) {
-          edgekey[d._source.applicationId+'-'+d._source.toApplicationId]++
+        if(edgekey[d._source.applicationId+'>'+d._source.toApplicationId] != null) {
+          edgekey[d._source.applicationId+'>'+d._source.toApplicationId]++
         } else {
           if(nodekey[d._source.toApplicationId] == null){
             nodekey[d._source.toApplicationId] = 0;                            
             nodeList.push({ id : d._source.toApplicationId, status : 0 });
             nodes.push({ data : { id : d._source.toApplicationId, name : d._source.toApplicationId, img : '../assets/sample/server-'+d._source.toServiceTypeName+'.png', parent : 'p_'+d._source.applicationId }});      
           }
-          edgekey[d._source.applicationId+'-'+d._source.toApplicationId] = 1;
+          console.log(d._source.applicationId+'>'+d._source.toApplicationId); 
+          edgekey[d._source.applicationId+'>'+d._source.toApplicationId] = 1;
         }        
       });      
       nodes.forEach(function(d){    
@@ -1034,10 +1055,79 @@ router.get('/restapi/getAgentData', function(req, res, next) {
         }
       }
       for(key in edgekey) {
-        var id = key.split('-');    
+        var id = key.split('>');    
         edges.push({ data : { count : edgekey[key], source : id[0], target : id[1]} });
       }      
     res.json({rtnCode: rtnCode, nodes : nodes, edges : edges, nodeList : nodeList});
+  });
+});
+
+
+
+router.get('/restapi/getAgentData', function(req, res, next) {
+  console.log('dashboard/restapi/getAgentData');    
+  var in_data = {
+    index : req.query.index,
+    type : req.query.type,
+    start : req.query.start,
+    id : req.query.id
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","selectByStart", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');    
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }  
+    
+    var data = [], rtnData = [];
+    var start=new Date().getTime(), end=new Date(1990,0,0,0,0,0).getTime();    
+    var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+    out_data.forEach(function(d){
+      var date = new Date(d._source.startTime).getTime();
+      if(date < start){            
+        start = date;            
+      } else if(date > end){            
+        end = date;        
+      }       
+      rtnData.push(d._source);
+      data.push({
+        x : date,
+        y : d._source.elapsed,
+        date : new Date(date),
+        hour : new Date(date).getHours(),
+        type : d._source.isError ? 'Error' : (d._source.elapsed >= 300 ? 'Redirection' : 'Success'), 
+        term : d._source.isError ? 'Error' : (d._source.elapsed < 1000 ? '1s' : (d._source.elapsed < 3000 ? '3s' : (d._source.elapsed < 5000 ? '5s' : 'Slow'))),
+        index : d._source.isError ? 4 : (d._source.elapsed < 1000 ? 0 : (d._source.elapsed < 3000 ? 1 : (d._source.elapsed < 5000 ? 2 : 3)))
+      });
+    });    
+    res.json({rtnCode: rtnCode, rtnData : rtnData, data : data, start : start, end : end});
+  });
+});
+
+router.get('/restapi/countAgent', function(req, res, next) {
+  console.log('dashboard/restapi/countAgent');      
+  console.log(req.query.index);
+  var in_data = {    index : req.query.index, type : req.query.type, id : req.query.id, start : req.query.start    };  
+  queryProvider.selectSingleQueryCount("dashboard","countAgent", in_data, function(err, out_data, params) {
+    console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }    
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
+router.get('/restapi/countAgentError', function(req, res, next) {
+  console.log('dashboard/restapi/countAgentError');      
+  console.log(req.query.index);
+  var in_data = {    index : req.query.index, type : req.query.type, id : req.query.id, start : req.query.start    };  
+  queryProvider.selectSingleQueryCount("dashboard","countAgentError", in_data, function(err, out_data, params) {
+    console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }    
+    res.json({rtnCode: rtnCode, rtnData: out_data });
   });
 });
 
