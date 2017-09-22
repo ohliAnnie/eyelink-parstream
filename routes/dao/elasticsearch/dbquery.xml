@@ -620,6 +620,39 @@
         }
        }
     ]]></query>
+    <query id='countAgent'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {
+          "query" : {
+             "bool": {
+               "must" : {
+                 "range" : {
+                   #id# : {  "gte": #start#  }
+                 }
+              }
+            }
+         }
+       }
+      }
+    ]]></query>
+      <query id='countAgentError'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {
+          "query" : {
+             "bool": {
+               "must" : [
+                {"range" : { #id# : {  "gte": #start#  } } },
+                {"match" : { "isError" : true } }
+              ]
+            }
+         }
+       }
+      }
+    ]]></query>
     <query id='getMetricbeatToday'><![CDATA[
       {
         "index" : #index#,
