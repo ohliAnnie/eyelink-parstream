@@ -179,7 +179,7 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
   console.log(typeof(patternData));
   var sb = new StringBuffer();
   var headTag = '<thead><tr>' +
-    '<th style="text-align:center"></th>' +
+    '<th style="text-align:center"><input type="checkbox" name="chkAll" ></th>' +
     '<th style="text-align:center"> Group </th>' +
     '<th style="text-align:center"> Cluster No. </th>' +
     '<th width=0 style="text-align:center"> Status </th>' +
@@ -224,6 +224,10 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
 
     //sb.append('<tr><td>' + parentNode + '</td></tr>');
   $('#tblPatterns').append(sb.toString());
+
+  $('input[name=chkAll]').click(function(){
+    $('input:checkbox').not(this).prop('checked', this.checked);
+  })
 
   $(".updateBtn").click(function(){
     var updateBtn = $(this);
