@@ -7,6 +7,7 @@ function makeDatabyDay(day){
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var data = { index: indexs+'*',
               START : y[3]+"-"+mon[y[1]]+"-"+y[2]+'T15:00:00', END : d[3]+"-"+mon[d[1]]+"-"+d[2]+"T15:00:00"};   
+  console.log(data);
   getDash(data);    
   getMapData(data);
 }
@@ -17,7 +18,8 @@ function getMapData(data){
     type: "get",
     data: data,
     success: function(result) {            
-      if (result.rtnCode.code == "0000") {          
+      if (result.rtnCode.code == "0000") {
+        console.log(result);
         var elseJson = { nodes : result.nodes, edges : result.edges };      
         getServerMap(elseJson);             
         nodeLIst = result.nodeList;
@@ -153,7 +155,8 @@ function getDash(data) {
     type: "GET",    
     data: data,
     success: function(result) {
-      if (result.rtnCode.code == "0000") {
+      console.log(result)
+      if (result.rtnCode.code == "0000") {        
         //- $("#successmsg").html(result.message);        
         drawDash(result.rtnData, result.start, result.end);
       } else {
