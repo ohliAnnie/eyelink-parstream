@@ -621,7 +621,7 @@ router.delete('/menu/:id', function(req, res) {
     ID: req.params.id  
   };  
   queryProvider.deleteQueryByID("management", "deleteById", in_data, function(err, out_data) {
-    if(out_data.result == "deleted");     q
+    if(out_data.result == "deleted");     
         var rtnCode = CONSTS.getErrData("D003");        
     if(err){ console.log(err);    }
     res.json({rtnCode: rtnCode});
@@ -633,7 +633,7 @@ router.get('/restapi/getCodeList', function(req, res) {
   var in_data = {        
     INDEX: "management",    TYPE: "menu",  SORT : "code", ID: "upcode", 
     VALUE : req.query.id  };    
-  queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID2("management", "selectByIdSort", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');            
