@@ -179,27 +179,27 @@
         }
       }
      ]]></query>
-  <query id='insertMap'><![CDATA[
-     {
-        "index" : #INDEX#,
-        "type" : "map",
-        "body" : {
-          "role_id" : #ROLEID#,
-          "user_id" : #USERID#
-        }
-    }
-     ]]></query>
-   <query id='insertMenu'><![CDATA[
-     {
-        "index" : #INDEX#,
-        "type" : #TYPE#,
-        "id" : #VALUE#,
-        "body" : {
-          "code" : #VALUE#,
-          "name" : #NAME#,
-          "upcode" : #UPCODE#
-        }
-    }
+    <query id='insertMap'><![CDATA[
+       {
+          "index" : #INDEX#,
+          "type" : "map",
+          "body" : {
+            "role_id" : #ROLEID#,
+            "user_id" : #USERID#
+          }
+      }
+       ]]></query>
+     <query id='insertMenu'><![CDATA[
+       {
+          "index" : #INDEX#,
+          "type" : #TYPE#,
+          "id" : #VALUE#,
+          "body" : {
+            "code" : #VALUE#,
+            "name" : #NAME#,
+            "upcode" : #UPCODE#
+          }
+      }
      ]]></query>
    <query id='updateMenuName'><![CDATA[
      {
@@ -215,288 +215,319 @@
      ]]></query>  
   </management>
   <dashboard>
-  <query id='selectByIndex'><![CDATA[
-  {
-        "index" : #index#,
-        "type" : #type#,
-        "body" : {
-          "size"   : 10000,
-          "query" : {
+    <query id='selectByIndex'><![CDATA[
+    {
+          "index" : #index#,
+          "type" : #type#,
+          "body" : {
+            "size"   : 10000,
+            "query" : {
 
-          }
-       }
-    }
-  ]]></query>
-  <query id='selectByIdValue'><![CDATA[
-  {
-        "index" : #index#,
-        "type" : #type#,
-        "body" : {
-          "size"   : 10000,
-          "sort" : { "parentSpanId" : { "order" : "asc" } },
-          "query" : {
-            "match" : {
-              #id# : {
-                "query" :  #value#,
-                "operator" : "and"
+            }
+         }
+      }
+    ]]></query>
+    <query id='selectByIdValue'><![CDATA[
+    {
+          "index" : #index#,
+          "type" : #type#,
+          "body" : {
+            "size"   : 10000,
+            "sort" : { "parentSpanId" : { "order" : "asc" } },
+            "query" : {
+              "match" : {
+                #id# : {
+                  "query" :  #value#,
+                  "operator" : "and"
+                }
               }
             }
-          }
-       }
-    }
-  ]]></query>
-  <query id='selectByIdList'><![CDATA[
-   {
-        "index" : #index#,
-        "type" : #type#,
-        "body" : {
-          "size"   : 10000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
-          "query" : {
-            "terms" : {  "_id" : [##id##]        }
-          }
-       }
-    }
-  ]]></query>
-  <query id='selectByStart'><![CDATA[
-     {
-        "index" : #index#,
-        "type" : #type#,
-        "body" : {
-          "size" : 10000,
-          "sort" : { #id# : { "order" : "asc"  } },
-          "query" : {
-           "bool": {
-             "must" : {
-               "range" : {
-                 #id# : {  "gte": #start#  }
-               }
-            }
-          }
-        }
+         }
       }
-    }
-  ]]></query>
-  <query id='selectByTimestamp'><![CDATA[
+    ]]></query>
+    <query id='selectByIdList'><![CDATA[
      {
-        "index" : #index#,
-        "type" : #type#,
-        "body" : {
-          "size" : 10000,
-          "sort" : { "timestamp" : { "order" : "asc"  } },
-          "query" : {
-           "bool": {
-             "must" : {
-               "range" : {
-                 "timestamp": {  "gte": #gte#, "lte" : #lte#  }
-               }
+          "index" : #index#,
+          "type" : #type#,
+          "body" : {
+            "size"   : 10000,
+            "sort" : { "@timestamp" : { "order" : "asc" }},
+            "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
+            "query" : {
+              "terms" : {  "_id" : [##id##]        }
             }
-          }
-        }
+         }
       }
-    }
-  ]]></query>
-  <query id='selectJiraAccId'><![CDATA[
-      {
-        "index" : #today#,
-        "type" : "access",
-        "body" : {
-          "size"   : 10000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["request", "clientip", "auth"],
-          "query": {
-            "bool" : {
-              "must" : {
-                "match_all" : {}
-              },
-              "must_not" : {
-                "match": {
-                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+    ]]></query>
+    <query id='selectByStart'><![CDATA[
+       {
+          "index" : #index#,
+          "type" : #type#,
+          "body" : {
+            "size" : 10000,
+            "sort" : { #id# : { "order" : "asc"  } },
+            "query" : {
+             "bool": {
+               "must" : {
+                 "range" : {
+                   #id# : {  "gte": #start#  }
                  }
               }
             }
           }
         }
       }
-  ]]></query>
-  <query id='selectJiraAccReq'><![CDATA[
-      {
-        "index" : #index#,
-        "type" : "access",
-        "body" : {
-          "size"   : 100000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["request", "clientip", "auth", "response"],
-          "query" : {
-            "bool" : {
-              "must" : [      { "match_all": {} }        ],
-              "filter" : [
-                {
-                  "bool" : {
-                    "should" : [
-                      { "range" :
-                        { "@timestamp" :
-                          { "gte" : #START#,
-                            "lte" : #END# }
-                        }
-                      }
-                    ]
-                  }
+    ]]></query>
+    <query id='selectByTimestamp'><![CDATA[
+       {
+          "index" : #index#,
+          "type" : #type#,
+          "body" : {
+            "size" : 10000,
+            "sort" : { "timestamp" : { "order" : "asc"  } },
+            "query" : {
+             "bool": {
+               "must" : {
+                 "range" : {
+                   "timestamp": {  "gte": #gte#, "lte" : #lte#  }
+                 }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectJiraAccId'><![CDATA[
+        {
+          "index" : #today#,
+          "type" : "access",
+          "body" : {
+            "size"   : 10000,
+            "sort" : { "@timestamp" : { "order" : "asc" }},
+            "_source" : ["request", "clientip", "auth"],
+            "query": {
+              "bool" : {
+                "must" : {
+                  "match_all" : {}
+                },
+                "must_not" : {
+                  "match": {
+                    "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                   }
                 }
-              ],
-              "must_not" : {
-              "match": {
-                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-               }
-             }
+              }
             }
           }
         }
-      }
-  ]]></query>
-<query id='selectJiraAccReqMinMax'><![CDATA[
-      {
-        "index" : [##index##],
-        "type" : "access",
-        "body" : {
-          "size"   : 100000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["request", "clientip", "auth", "response"],
-          "query" : {
-            "bool" : {
-              "must" :
-                { "range" :
-                  { "@timestamp" :
-                      { "gte" : #START#, "lte" : #END# }
-                  }
-                },
-              "filter" :
-                { "range" :
-                   { "responsetime" :
-                       { "gte" : #MIN#,       "lte" : #MAX#  }
-                  }
-                },
-              "must_not" : {
-              "match": {
-                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-               }
-             }
-            }
-          }
-        }
-      }
-  ]]></query>
-  <query id='selectJiraAccDash'><![CDATA[
-      {
-        "index" : #index#,
-        "type" : "access",
-        "body" : {
-          "size"   : 100000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["timestamp", "response", "responsetime"],
-          "query" : {
-            "bool" : {
-              "must" : [      { "match_all": {} }        ],
-              "filter" : [
-                {
-                  "bool" : {
-                    "should" : [
-                      { "range" :
-                        { "@timestamp" :
-                          { "gte" : #START#,
-                            "lte" : #END# }
+    ]]></query>
+    <query id='selectJiraAccReq'><![CDATA[
+        {
+          "index" : #index#,
+          "type" : "access",
+          "body" : {
+            "size"   : 100000,
+            "sort" : { "@timestamp" : { "order" : "asc" }},
+            "_source" : ["request", "clientip", "auth", "response"],
+            "query" : {
+              "bool" : {
+                "must" : [      { "match_all": {} }        ],
+                "filter" : [
+                  {
+                    "bool" : {
+                      "should" : [
+                        { "range" :
+                          { "@timestamp" :
+                            { "gte" : #START#,
+                              "lte" : #END# }
+                          }
                         }
-                      }
-                    ],
-                    "must_not" : {
-                      "match": {
-                       "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                      ]
+                    }
+                  }
+                ],
+                "must_not" : {
+                "match": {
+                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                 }
+               }
+              }
+            }
+          }
+        }
+    ]]></query>
+    <query id='selectJiraAccReqMinMax'><![CDATA[
+        {
+          "index" : [##index##],
+          "type" : "access",
+          "body" : {
+            "size"   : 100000,
+            "sort" : { "@timestamp" : { "order" : "asc" }},
+            "_source" : ["request", "clientip", "auth", "response"],
+            "query" : {
+              "bool" : {
+                "must" :
+                  { "range" :
+                    { "@timestamp" :
+                        { "gte" : #START#, "lte" : #END# }
+                    }
+                  },
+                "filter" :
+                  { "range" :
+                     { "responsetime" :
+                         { "gte" : #MIN#,       "lte" : #MAX#  }
+                    }
+                  },
+                "must_not" : {
+                "match": {
+                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                 }
+               }
+              }
+            }
+          }
+        }
+    ]]></query>
+    <query id='selectJiraAccDash'><![CDATA[
+        {
+          "index" : #index#,
+          "type" : "access",
+          "body" : {
+            "size"   : 100000,
+            "sort" : { "@timestamp" : { "order" : "asc" }},
+            "_source" : ["timestamp", "response", "responsetime"],
+            "query" : {
+              "bool" : {
+                "must" : [      { "match_all": {} }        ],
+                "filter" : [
+                  {
+                    "bool" : {
+                      "should" : [
+                        { "range" :
+                          { "@timestamp" :
+                            { "gte" : #START#,
+                              "lte" : #END# }
+                          }
+                        }
+                      ],
+                      "must_not" : {
+                        "match": {
+                         "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                        }
                       }
                     }
                   }
-                }
-              ]
+                ]
+              }
             }
           }
         }
-      }
-  ]]></query>
-   <query id='selectJiraAccMap'><![CDATA[
-       {
-        "index" : #index#,
-        "type" : "access",
-        "body" : {
-          "size"   : 100000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["response", "timestamp"],
-          "query" : {
-            "bool" : {
-              "must" : [      { "match_all": {} }        ],
-              "filter" : [
-                {
-                  "bool" : {
-                    "should" : [
-                      { "range" :
-                        { "@timestamp" :
-                          { "gte" : #START#,
-                            "lte" : #END# }
+    ]]></query>
+     <query id='selectJiraAccMap'><![CDATA[
+         {
+          "index" : #index#,
+          "type" : "access",
+          "body" : {
+            "size"   : 100000,
+            "sort" : { "@timestamp" : { "order" : "asc" }},
+            "_source" : ["response", "timestamp"],
+            "query" : {
+              "bool" : {
+                "must" : [      { "match_all": {} }        ],
+                "filter" : [
+                  {
+                    "bool" : {
+                      "should" : [
+                        { "range" :
+                          { "@timestamp" :
+                            { "gte" : #START#,
+                              "lte" : #END# }
+                          }
                         }
-                      }
-                    ]
+                      ]
+                    }
                   }
-                }
-              ],
-              "must_not" : {
-              "match": {
-                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                ],
+                "must_not" : {
+                "match": {
+                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                 }
                }
-             }
+              }
             }
           }
         }
-      }
-  ]]></query>
-   <query id='selectJiraAccMapMinMax'><![CDATA[
-       {
+    ]]></query>
+     <query id='selectJiraAccMapMinMax'><![CDATA[
+         {
+          "index" : [##index##],
+          "type" : "access",
+          "body" : {
+            "size"   : 100000,
+            "sort" : { "@timestamp" : { "order" : "asc" }},
+            "_source" : ["response", "timestamp"],
+            "query" : {
+              "bool" : {
+                "must" :
+                  { "range" :
+                    { "@timestamp" :
+                        { "gte" : #START#, "lte" : #END# }
+                    }
+                  },
+                "filter" :
+                  { "range" :
+                     { "responsetime" :
+                         { "gte" : #MIN#,       "lte" : #MAX#  }
+                    }
+                  },
+                "must_not" : {
+                "match": {
+                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                 }
+               }
+              }
+            }
+          }
+        }
+    ]]></query>
+    <query id='selectScatterSection'><![CDATA[
+        {
+          "index" : #index#,
+          "type" : "access",
+          "body" : {
+            "size"   : 100000,
+            "sort" : { "@timestamp" : { "order" : "asc" }},
+            "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
+            "query" : {
+              "bool" : {
+                "must" :
+                  { "range" :
+                    { "@timestamp" :
+                        { "gte" : #START#, "lte" : #END# }
+                    }
+                  },
+                "filter" :
+                  { "range" :
+                     { "responsetime" :
+                         { "gte" : #MIN#,       "lte" : #MAX#  }
+                    }
+                  },
+                  "must_not" : {
+                    "match": {
+                     "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                    }
+                  }
+              }
+            }
+          }
+        }
+    ]]></query>
+    <query id='selectScatterSectionList'><![CDATA[
+      {
         "index" : [##index##],
         "type" : "access",
         "body" : {
           "size"   : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["response", "timestamp"],
-          "query" : {
-            "bool" : {
-              "must" :
-                { "range" :
-                  { "@timestamp" :
-                      { "gte" : #START#, "lte" : #END# }
-                  }
-                },
-              "filter" :
-                { "range" :
-                   { "responsetime" :
-                       { "gte" : #MIN#,       "lte" : #MAX#  }
-                  }
-                },
-              "must_not" : {
-              "match": {
-                "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-               }
-             }
-            }
-          }
-        }
-      }
-  ]]></query>
-  <query id='selectScatterSection'><![CDATA[
-      {
-        "index" : #index#,
-        "type" : "access",
-        "body" : {
-          "size"   : 100000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
           "query" : {
             "bool" : {
               "must" :
@@ -520,38 +551,7 @@
           }
         }
       }
-  ]]></query>
-  <query id='selectScatterSectionList'><![CDATA[
-      {
-        "index" : [##index##],
-        "type" : "access",
-        "body" : {
-          "size"   : 100000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
-          "query" : {
-            "bool" : {
-              "must" :
-                { "range" :
-                  { "@timestamp" :
-                      { "gte" : #START#, "lte" : #END# }
-                  }
-                },
-              "filter" :
-                { "range" :
-                   { "responsetime" :
-                       { "gte" : #MIN#,       "lte" : #MAX#  }
-                  }
-                },
-                "must_not" : {
-                  "match": {
-                   "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-                  }
-                }
-            }
-          }
-        }
-      }
-  ]]></query>
+    ]]></query>
     <query id='selectJiraAccOneWeek'><![CDATA[
       {
         "index" : #index#,
@@ -574,7 +574,7 @@
           }
         }
       }
-  ]]></query>
+    ]]></query>
     <query id='countAccJira'><![CDATA[
       {
         "index" : #index#,
@@ -594,7 +594,7 @@
           }
          }
        }
-  ]]></query>
+    ]]></query>
     <query id='countAccJiraError'><![CDATA[
       {
         "index" : #index#,
@@ -619,8 +619,8 @@
           }
         }
        }
-  ]]></query>
-  <query id='getMetricbeatToday'><![CDATA[
+    ]]></query>
+    <query id='getMetricbeatToday'><![CDATA[
       {
         "index" : #index#,
         "type" : "metricsets",
@@ -629,8 +629,8 @@
            }
          }
        }
-  ]]></query>
-  <query id='getTransactionList'><![CDATA[
+    ]]></query>
+    <query id='getTransactionList'><![CDATA[
       {
         "index" : #index#,
         "type" : #type#
@@ -641,7 +641,7 @@
          }
        }
     ]]></query>
-  <query id='getTransaction'><![CDATA[
+    <query id='getTransaction'><![CDATA[
       {
         "index" : #index#,
         "type" : #type#,
@@ -791,7 +791,7 @@
     ]]></query>
   </dashboard>
   <reports>
-  <query id='selectJiraAcc'><![CDATA[
+    <query id='selectJiraAcc'><![CDATA[
       {
         "index" : [##index##],
         "type"  : "access",
@@ -1077,144 +1077,144 @@
     ]]></query>
   </reports>
   <sample>
-  <query id='selectByIdList'><![CDATA[
-   {
-        "index" : #index#,
-        "type" : #type#,
-        "body" : {
-          "size"   : 10000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
-          "query" : {
-            "terms" : {  "_id" : [##id##]        }
+    <query id='selectByIdList'><![CDATA[
+     {
+          "index" : #index#,
+          "type" : #type#,
+          "body" : {
+            "size"   : 10000,
+            "sort" : { "@timestamp" : { "order" : "asc" }},
+            "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
+            "query" : {
+              "terms" : {  "_id" : [##id##]        }
+            }
+         }
+      }
+    ]]></query>
+      <query id='selectJiraAccess'><![CDATA[
+        {
+          "index" : #index#,
+          "type" : "access",
+          "body" : {
+            "size"   : 10000,
+            "sort" : { "@timestamp" : { "order" : "asc" }},
+           "query": {
+              "bool" : {
+                "must" : {
+                  "match_all" : {}
+                },
+                "must_not" : {
+                  "match": {
+                    "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ /navigation .css .js .png .json .eot .gadget .charts"
+                   }
+                }
+              }
+            }
+             }
           }
-       }
-    }
-  ]]></query>
-    <query id='selectJiraAccess'><![CDATA[
-      {
-        "index" : #index#,
-        "type" : "access",
-        "body" : {
-          "size"   : 10000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
-         "query": {
-            "bool" : {
-              "must" : {
-                "match_all" : {}
-              },
-              "must_not" : {
-                "match": {
-                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ /navigation .css .js .png .json .eot .gadget .charts"
+    ]]></query>
+    <query id='selectJiraAccReq'><![CDATA[
+        {
+          "index" : "filebeat_jira_access-*",
+          "type" : "access",
+          "body" : {
+            "size"   : 100000,
+            "sort" : { "@timestamp" : { "order" : "asc" }},
+            "_source" : ["request", "clientip", "auth", "response"],
+            "query" : {
+              "bool" : {
+                "must" : {   "match_all" : { }  },
+                "must_not" : {
+                  "match": {      "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ /navigation .css .js .png .json .eot .gadget .charts"          }
+                }
+              }
+            }
+          }
+        }
+    ]]></query>
+    <query id='selectScatterSection'><![CDATA[
+        {
+          "index" : "filebeat_jira_access-2017.06.01",
+          "type" : "access",
+          "body" : {
+            "size"   : 10000,
+            "sort" : { "@timestamp" : { "order" : "asc" }},
+            "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
+            "query" : {
+              "bool" : {
+                "must" : [      { "match_all": {} }        ],
+                "filter" : [
+                  {
+                    "bool" : {
+                      "should" : [
+                        { "range" :
+                          { "responsetime" :
+                            { "gte" : #MIN#,
+                              "lte" : #MAX#  }
+                          }
+                        },
+                        { "range" :
+                          { "timestamp" :
+                            { "gte" : #START#,
+                              "lte" : #END# }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+    ]]></query>
+  </sample>
+  <analysis>
+    <query id='insertById'><![CDATA[
+       {
+          "index" : #INDEX#,
+          "type" : #TYPE#,
+          "id" : #ID#,
+          "body" : #BODY#
+      }
+    ]]></query>
+    <query id='selectById'><![CDATA[
+       {
+          "index" : #INDEX#,
+          "type" : #TYPE#,
+          "body" : {
+            "query" : {
+              "term" : {   "_id" : #ID#     }
+            }
+          }
+      }
+    ]]></query>
+    <query id='deleteById'><![CDATA[
+       {
+          "index" : #INDEX#,
+          "type" : #TYPE#,
+          "id" : #ID#
+        }
+       ]]></query>
+    <query id='selectByAnalysisTimestamp'><![CDATA[
+       {
+          "index" : #INDEX#,
+          "type" : #TYPE#,
+          "body" : {
+            "size" : 1,
+            "sort" : { "analysis.timestamp" : { "order" : "desc"  } },
+            "query" : {
+             "bool": {
+               "must" : {
+                 "range" : {
+                   "analysis.timestamp": {  "gte": #gte#, "lte" : #lte#  }
                  }
               }
             }
           }
-           }
-        }
-  ]]></query>
-  <query id='selectJiraAccReq'><![CDATA[
-      {
-        "index" : "filebeat_jira_access-*",
-        "type" : "access",
-        "body" : {
-          "size"   : 100000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["request", "clientip", "auth", "response"],
-          "query" : {
-            "bool" : {
-              "must" : {   "match_all" : { }  },
-              "must_not" : {
-                "match": {      "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ /navigation .css .js .png .json .eot .gadget .charts"          }
-              }
-            }
-          }
         }
       }
-  ]]></query>
-  <query id='selectScatterSection'><![CDATA[
-      {
-        "index" : "filebeat_jira_access-2017.06.01",
-        "type" : "access",
-        "body" : {
-          "size"   : 10000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
-          "query" : {
-            "bool" : {
-              "must" : [      { "match_all": {} }        ],
-              "filter" : [
-                {
-                  "bool" : {
-                    "should" : [
-                      { "range" :
-                        { "responsetime" :
-                          { "gte" : #MIN#,
-                            "lte" : #MAX#  }
-                        }
-                      },
-                      { "range" :
-                        { "timestamp" :
-                          { "gte" : #START#,
-                            "lte" : #END# }
-                        }
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
-  ]]></query>
-</sample>
-<analysis>
-  <query id='insertById'><![CDATA[
-     {
-        "index" : #INDEX#,
-        "type" : #TYPE#,
-        "id" : #ID#,
-        "body" : #BODY#
-    }
-  ]]></query>
-  <query id='selectById'><![CDATA[
-     {
-        "index" : #INDEX#,
-        "type" : #TYPE#,
-        "body" : {
-          "query" : {
-            "term" : {   "_id" : #ID#     }
-          }
-        }
-    }
-  ]]></query>
-  <query id='deleteById'><![CDATA[
-     {
-        "index" : #INDEX#,
-        "type" : #TYPE#,
-        "id" : #ID#
-      }
-     ]]></query>
-  <query id='selectByAnalysisTimestamp'><![CDATA[
-     {
-        "index" : #INDEX#,
-        "type" : #TYPE#,
-        "body" : {
-          "size" : 1,
-          "sort" : { "analysis.timestamp" : { "order" : "desc"  } },
-          "query" : {
-           "bool": {
-             "must" : {
-               "range" : {
-                 "analysis.timestamp": {  "gte": #gte#, "lte" : #lte#  }
-               }
-            }
-          }
-        }
-      }
-    }
-  ]]></query>
+    ]]></query>
     <query id='selectDaClusterMasterAll'><![CDATA[
       {
         "index" : #index#,
@@ -1306,9 +1306,9 @@
       {
         "index" : #INDEX#,
         "type" : #TYPE#,
-        "id" : #ID#,       
+        "id" : #ID#,
         "body" : {
-          "doc" : {            
+          "doc" : {
             "pattern_info" : {
               #FACTOR# : #QUERYBODY#
             }
@@ -1316,7 +1316,7 @@
         }
       }
     ]]></query>
-    <query id='selectDaClusterMasterByDadate'><![CDATA[      
+    <query id='selectDaClusterMasterByDadate'><![CDATA[
       {
         "index" : #index#,
         "type" : #type#,
@@ -1348,7 +1348,7 @@
         }
       }
      ]]></query>
-<!--  (vibration_x + vibration_y + vibration_z) / 3 as vibration 없음 -->
+    <!--  (vibration_x + vibration_y + vibration_z) / 3 as vibration 없음 -->
     <query id='selectClusterNodePower'><![CDATA[
      {
         "index" : "corecode-*",
@@ -1450,14 +1450,17 @@
     ]]></query>
   </analysis>
   <scheduler>
-      <query id='selectApplicationInfo'><![CDATA[
-      {
-        "index" : #index#,
-        "type" : #type#,
-        "body" : {
-       }
+    <query id='selectApplicationInfo'><![CDATA[
+    {
+      "index" : #index#,
+      "type" : #type#,
+      "body" : {
       }
-      ]]></query>
-
+    }]]></query>
+    <query id='insertApplicationInfo'><![CDATA[
+      {
+          body : #BODY#
+      }
+    ]]></query>
   </scheduler>
 </queryList>
