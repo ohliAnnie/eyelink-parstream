@@ -54,8 +54,13 @@ block script
       });  
       $('input[type="radio"]').on('click change', function(e) {
         var time = {'10min' : 10, '30min' : 30, '1hour' : 60, '3hour' : 3*60, '6hour' : 6*60, '12hour' : 12*60, '24hour' : 24*60 };
+        var server = $("#server").val();      
+        if(server == "JIRA"){
           getDataByToggle(time[e.target.id]);
-          console.log(e.target.id);            
+        } else if(server == "TESTAPP") {        
+          toggleData(time[e.target.id]);
+        }
+        console.log(e.target.id);                    
       });
     });
 block content    
