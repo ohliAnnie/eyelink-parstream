@@ -484,14 +484,22 @@ router.get('/selected_detail_agent', function(req, res, next) {
   var d = new Date().toString().split(' ');  
   console
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  //var in_data = {    index : "elagent_test-agent-"+d[3]+"."+mon[d[1]]+"."+d[2], type : "TraceV2"  };
-  var in_data = {    index : "elagent_test-agent-2017.09.11", type : "TraceV2"  };
+  var in_data = {    index : "elagent_test-agent-"+d[3]+"."+mon[d[1]]+"."+d[2], type : "TraceDetail"  };
+ // var in_data  = {    index : "elagent_test-agent-2017.09.11", type : "TraceV2"  };
   queryProvider.selectSingleQueryByID2("dashboard","getTransaction", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');    
     out_data.forEach(function(d){                  
-      var s = new Date(new Date(d._source.startTime).getTime()).toString().split(' ');            
-      d._source.startTime = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4];            
+      var s = new Date(new Date(d._source.startTime).getTime()).toString().split(' ');    
+      var t = d._source.startTime.split('.');      
+      d._source.startTime = mon[s[1]]+'-'+s[2]+'T'+s[4]+"."+t[1];            
+      /*for(i=0; i<d._source.spanEventBoList.length; i++){
+        if(d._source.spanEventBoList[i].hasException){
+          d._source.hasException = true;
+          console.log(d._source.spanEventBoList[i])
+        }
+        console.log(d._source.hasException)
+      }*/
     });       
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
