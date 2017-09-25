@@ -5,14 +5,27 @@ function getAgentData(){
  var d = new Date().toString().split(' '); 
  var data = { index : "elagent_test-agent-*", type : "ApplicationLinkData",
  			  start : y[3]+"-"+mon[y[1]]+"-"+y[2]+"T15:00:00", id : "startTime" };
- $.ajax({
+ drawDashAgent(data);
+}
+
+function toggleData(gap){
+  d3.select("#test").select("svg").remove();
+  d3.select("#load").select("svg").remove();
+  d3.select("#sankey").select("svg").remove();  
+  var y = new Date(now-gap*60*1000).toString().split(' ');
+  var data = { index : "elagent_test-agent-*", type : "ApplicationLinkData",
+      start : y[3]+"-"+mon[y[1]]+"-"+y[2]+"T15:00:00", id : "startTime" };
+}
+
+function drawDashAgent(data){
+   $.ajax({
     url: "/dashboard/restapi/getAgentMap" ,
     dataType: "json",
     type: "get",
     data: data,
     success: function(result) {            
       if (result.rtnCode.code == "0000") {              
-      	var elseJson = { nodes : result.nodes, edges : result.edges };      
+        var elseJson = { nodes : result.nodes, edges : result.edges };      
         console.log(elseJson);
         getServerMap(elseJson);    
       } else {
@@ -42,10 +55,6 @@ function getAgentData(){
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
   });
-}
-
-function drawDashAgent(data, start, end){
-
 }
 
 function summaryAgent(data, start, end) {    
@@ -332,6 +341,106 @@ var type = ['success', 'error'];
         makeDatabyDay(d.x);        
       });  
     });    
-    dc.renderAll(markerName);
- 
+    dc.renderAll(markerName); 
+}
+
+function drawAgentScattor(){
+  if(Modernizr.canvas){
+    doBigScatterChart(start, end);
+  }
+  var oScatterChart;
+  function doBigScatterChart(start, end){
+    oScatterChart = new BigScatterChart({
+      sContainerId : 'chart1',
+      nWidth : window.innerWidth*0.42,
+      nHeight : 280,
+      nXMin: start, nXMax: end,
+      nYMin: 0, nYMax: 10000,
+      nZMin: 0, nZMax: 5,
+      nBubbleSize: 3,
+      nPaddingTop : 50,
+      nDefaultRadius : 3,
+      htTypeAndColor : {
+        'Success' :'#55c7c7',
+        'Redirection' : '#fcc666',
+        'Error' : '#fd7865'        
+      },
+      sXLabel : '(time)',
+      sYLabel : '(ms)',
+      htGuideLine : {
+        'nLineWidth' : 1,
+        'aLineDash' : [2, 7],
+        'nGlobalAlpha' : 0.2
+      },
+      sXLabel : '',
+      'fXAxisFormat' : function(nXStep, i){        
+        var nMilliseconds = (nXStep * i + this._nXMin),
+          sDay = new Date(nMilliseconds).toString().split(' '),
+          sDate = sDay[4].split(':');
+          
+        return sDate[0]+':'+sDate[1]; 
+      },
+      nPaddingRight : 5,
+      fOnSelect : function(htPosition, htXY){        
+        var aData = this.getDataByXY(htXY.nXFrom, htXY.nXTo, htXY.nYFrom, htXY.nYTo);
+        console.log(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
+        var start = parseInt(htXY.nXFrom)-9*60*60*1000;
+        var end = parseInt(htXY.nXTo)-9*60*60*1000;
+        var link = '/dashboard/selected_detail?start='+start+'&end='+end+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;
+        console.timeEnd('fOnSelect');
+        console.log('adata length', aData.length);
+        window.open(link, "EyeLink Service List", "menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50");        
+        $.ajax({
+          url: "/dashboard/restapi/selectScatterSection" ,
+          dataType: "json",
+          type: "get",
+          data: { start:start, end:end, min:htXY.nYFrom, max:htXY.nYTo},
+          success: function(result) {
+            if (result.rtnCode.code == "0000") {                      
+            console.log(result);
+            d3.select("#test").select("svg").remove();
+            d3.select("#load").select("svg").remove();       
+            d3.select("#sankey").select("svg").remove();       
+           summary(result.rtnData, parseInt(htXY.nXFrom), parseInt(htXY.nXTo));
+          } else {
+            //- $("#errormsg").html(result.message);
+          }
+        },
+        error: function(req, status, err) {
+          //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+          $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+        }
+      });            
+       $.ajax({
+          url: "/dashboard/restapi/getJiramapdataForScatter" ,
+          dataType: "json",
+          type: "get",
+          data: { start:start, end:end, min:htXY.nYFrom, max:htXY.nYTo},
+          success: function(result) {      
+            console.log(result);
+            if (result.rtnCode.code == "0000") {          
+              var elseJson = { nodes : result.nodes, edges : result.edges };      
+              getServerMap(elseJson);             
+              nodeLIst = result.nodeList;
+            } else {
+              //- $("#errormsg").html(result.message);
+            }
+          },
+          error: function(req, status, err) {
+            //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+          }
+        });
+      }
+    }); 
+      if(cnt != 0){         
+        oScatterChart._empty();
+        oScatterChart._redraw();      
+        summary(data, start, end);
+      }
+      oScatterChart.addBubbleAndDraw(data);         
+  }   
+   if(cnt++ == 0) {
+    summary(data, start, end);
+   }  
 }
