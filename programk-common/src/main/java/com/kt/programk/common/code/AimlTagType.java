@@ -43,15 +43,17 @@ public enum AimlTagType {
     /**
      * Tag 6 aiml tag type.
      */
-    TAG6("think", "&#60;think&#62;&#60;/think&#62;"),
+    TAG6("think", "&#60;think&#62;&#60;/think&#62;");
     /**
      * The Tag 7.
      */
-    TAG7("Input", "&#60;Input index=1/&#62;"),
+    // Commented out for Kakao (2017.09.14)
+//    TAG7("Input", "&#60;Input index=1/&#62;"),
     /**
      * Tag 8 aiml tag type.
      */
-    TAG8("javascript", "&#60;javascript&#62;&#60;![CDATA[  ]]&#62;&#60;/javascript&#62;");
+    // Commented out for Kakao (2017.09.14)
+//    TAG8("javascript", "&#60;javascript&#62;&#60;![CDATA[  ]]&#62;&#60;/javascript&#62;");
 
     /**
      * The Value.
