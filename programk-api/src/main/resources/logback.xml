@@ -26,39 +26,39 @@
 
     <!-- Configure APP LOG -->
     <appender name="APP" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/opt/aibot/log/api/app.log</file>
+        <file>/opt/aibot-kt/log/api/app.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/opt/aibot/log/api/app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>/opt/aibot-kt/log/api/app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
         <encoder>
             <charset>UTF-8</charset>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %class:%L %logger{36} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class:%L %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
     <appender name="SERVICE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/opt/aibot/log/api/service.log</file>
+        <file>/opt/aibot-kt/log/api/service.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/opt/aibot/log/api/service-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>/opt/aibot-kt/log/api/service-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
         <encoder>
             <charset>UTF-8</charset>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} %msg%n</pattern>
         </encoder>
     </appender>
 
     <!-- 통계용 로그 -->
     <appender name="STAT_APP" class="com.kt.programk.api.logging.FiveMinutesRollingAppender">
-        <file>/opt/aibot/log/stat/stat.log</file>
+        <file>/opt/aibot-kt/log/stat/stat.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
-            <fileNamePattern>/opt/aibot/log/stat/stat-%d{yyyyMMdd-HHmm}.log</fileNamePattern>
+            <fileNamePattern>/opt/aibot-kt/log/stat/stat-%d{yyyyMMdd-HHmm}.log</fileNamePattern>
         </rollingPolicy>
         <encoder>
             <charset>UTF-8</charset>

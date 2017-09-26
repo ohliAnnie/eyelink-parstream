@@ -13,28 +13,28 @@
 
     <!-- Configure APP LOG -->
     <appender name="APP" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/opt/aibot/log/deploy/app.log</file>
+        <file>/opt/aibot-kt/log/deploy/app.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/opt/aibot/log/deploy/app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>/opt/aibot-kt/log/deploy/app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %class:%L %logger{36} - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class:%L %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
     <appender name="SERVICE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/opt/aibot/log/deploy/service.log</file>
+        <file>/opt/aibot-kt/log/deploy/service.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/opt/aibot/log/deploy/service-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>/opt/aibot-kt/log/deploy/service-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} %msg%n</pattern>
         </encoder>
     </appender>
 

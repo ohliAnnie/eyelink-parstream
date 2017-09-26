@@ -13,9 +13,9 @@
 
     <!-- Configure APP LOG -->
     <appender name="APP" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/opt/aibot/log/cms/app.log</file>
+        <file>/opt/aibot-kt/log/cms/app.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/opt/aibot/log/cms/app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>/opt/aibot-kt/log/cms/app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
@@ -26,9 +26,9 @@
     </appender>
 
     <appender name="SERVICE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/opt/aibot/log/cms/service.log</file>
+        <file>/opt/aibot-kt/log/cms/service.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/opt/aibot/log/cms/service-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>/opt/aibot-kt/log/cms/service-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
