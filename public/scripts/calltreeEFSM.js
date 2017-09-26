@@ -1,4 +1,5 @@
 function getTransaction(id, date) {      
+  console.log(date);
   var t = date.split('T');
   var d = t[0].split('-');  
   var s = new Date().toString().split(' ');
@@ -60,8 +61,13 @@ function drawDetail(data) {
         } else {                    
           sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
         }        
-        sb.append('<td>'+b[0]+'</td><td>'+d.rpc+'</td><td>'+applicationId+'</td><td>'+d.gap+'</td>')
-        sb.append('<td>'+d.elapsed+'</td><td>'+Math.round(d.executionTime/d.elapsed*100)+'%</td><td>'+d.executionTime+'</td><td>'+d.execeptionClass+'</td>');
+        sb.append('<td>'+b[0]+'</td><td>'+d.rpc+'</td><td>'+d.applicationId+'</td><td>'+d.gap+'</td>')
+        sb.append('<td>'+d.elapsed+'</td><td>'+Math.round(d.executionTime/d.elapsed*100)+'%</td><td>'+d.executionTime+'</td>');
+        if(d.hasException){
+          sb.append('<td>'+d.execeptionClass+'</td>');
+        } else {
+          sb.append('<td></td>');
+        }
         sb.append('<td>'+d.serviceTypeName+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');  
         if(d.acceptorHost != null) {          
           sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');                 
@@ -109,7 +115,7 @@ function drawDetail(data) {
           ftime = msToTime(stime);
           sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
           sb.append('<td>'+t[0]+'</td><td>'+'</td><td>'+ftime+'</td><td>'+z.gap+'</td>')
-          sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+b[4]+'</td>');
+          sb.append('<td>'+z.elapsed+'</td><td>'+Math.round(z.executionTime/d.elapsed*100)+'%</td><td>'+z.executionTime+'</td><td>'+b[4]+'</td>');
           sb.append('<td>'+z.serviceTypeName+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');  
            tree = grid;  
         } else if( y.key === 10000013){

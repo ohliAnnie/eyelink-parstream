@@ -278,6 +278,26 @@
         }
       }
     ]]></query>
+    <query id='selectByRange'><![CDATA[
+       {
+          "index" : #index#,
+          "type" : #type#,
+          "body" : {
+            "size" : 10000,
+            "sort" : { #id# : { "order" : "asc"  } },
+            "query" : {
+             "bool": {
+               "must" : {
+                 "range" : {
+                   #id# : {  "gte": #start#,
+                        "lte" : #end#  }
+                 }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
     <query id='selectByTimestamp'><![CDATA[
        {
           "index" : #index#,
@@ -676,14 +696,30 @@
     ]]></query>
     <query id='getTransaction'><![CDATA[
       {
-        "index" : #index#,
+        "index" : [##index##],
         "type" : #type#,
         "body" : {
-          "size" : 1000,
-          "sort" : { "startTime" : { "order" : "asc" } }
+          "size" : 10000,  
+          "sort" : { "startTime" : { "order" : "asc" } },
+          "query" : {
+            "bool" : {
+              "must" :
+                { "range" :
+                  { "startTime" :
+                      { "gte" : #start#, "lte" : #end# }
+                  }
+                },
+              "filter" :
+                { "range" :
+                   { "elapsed" :
+                       { "gte" : #min#,  "lte" : #max#  }
+                  }
+                }
+              }
+            }
          }
        }
-    ]]></query>
+    ]]></query>        
       <query id='getAccTimeseries'><![CDATA[
       {
         "index" : [##index##],

@@ -14,20 +14,20 @@ var indexAcc = global.config.es_index.es_jira;
 router.get('/', function(req, res, next) {
   mainmenu.dashboard = 'open selected';
   var server = req.query.server;    
-  var in_data = {    index:  "elagent_test-agent-*", type: "AgentInfo"    };
+  var in_data = {    index:  "efsm_applicationinfo", type: "applicationInfo"    };
   queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
     var check = {}, list = [], cnt = 0;    
+    console.log(out_data);
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {
       out_data.forEach(function(d){
-        if(check[d._source.agentId]==null){
-          check[d._source.agentId] = { no : cnt++};
-          list.push({ id : d._source.agentId, name : d._source.applicationName })
+        if(check[d._source.applicationId]==null){
+          check[d._source.applicationId] = { no : cnt++};
+          list.push({ id : d._source.collection, name : d._source.applicationId })
         } 
-      });
-      list.push({ id : 'test-file', name : 'JIRA' });
+      });      
     }    
     if(server == undefined || server == ""){
       server = list[0].name;
@@ -481,10 +481,14 @@ router.get('/selected_detail', function(req, res, next) {
 });                 
 
 router.get('/selected_detail_agent', function(req, res, next) {    
-  var d = new Date().toString().split(' ');  
-  console
+  var s = new Date(parseInt(req.query.start)).toString().split(' ');  
+  var e = new Date(parseInt(req.query.end)).toString().split(' ');
+  var y = new Date(parseInt(req.query.end)-24*60*60*1000).toString().split(' ');     
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var in_data = {    index : "elagent_test-agent-"+d[3]+"."+mon[d[1]]+"."+d[2], type : "TraceDetail"  };
+  var start = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4];
+  var end = e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4];  
+  var in_data = {    index : ["elagent_test-agent-"+s[3]+'.'+mon[s[1]]+'.'+s[2],"elagent_test-agent-"+e[3]+'.'+mon[e[1]]+'.'+e[2]] , type : "TraceDetail",
+            start : start, end : end, min : parseInt(req.query.min), max : parseInt(req.query.max)  };
  // var in_data  = {    index : "elagent_test-agent-2017.09.11", type : "TraceV2"  };
   queryProvider.selectSingleQueryByID2("dashboard","getTransaction", in_data, function(err, out_data, params) {
     // console.log(out_data);
@@ -507,6 +511,7 @@ router.get('/selected_detail_agent', function(req, res, next) {
     res.render('./dashboard/scatter_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });        
+
 
 router.get('/restapi/getTransactionDetail', function(req, res, next) {
   console.log('dashboard/restapi/getTransactionDetail');      
@@ -1014,10 +1019,10 @@ router.get('/restapi/getAgentMap', function(req, res, next) {
   var in_data = {
     index : req.query.index,
     type : req.query.type,
-    start : req.query.start,
+    start : req.query.start, end : req.query.end,
     id : req.query.id
   };
-  queryProvider.selectSingleQueryByID2("dashboard","selectByStart", in_data, function(err, out_data, params) {    
+  queryProvider.selectSingleQueryByID2("dashboard","selectByRange", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');    
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
@@ -1078,9 +1083,10 @@ router.get('/restapi/getAgentData', function(req, res, next) {
     index : req.query.index,
     type : req.query.type,
     start : req.query.start,
+    end : req.query.end,
     id : req.query.id
   };
-  queryProvider.selectSingleQueryByID2("dashboard","selectByStart", in_data, function(err, out_data, params) {    
+  queryProvider.selectSingleQueryByID2("dashboard","selectByRange", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');    
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      

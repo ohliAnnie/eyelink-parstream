@@ -30,10 +30,10 @@ block script
     $(document).ready(function(e) {   
       var server = $("#server").val();      
       console.log(server);
-      if(server === "TESTAPP"){
-        getAgentData();
+      if(server === "test-agent"){
+        getAgentData(new Date);
         displayCountAgent();
-      } else if(server === "JIRA"){
+      } else if(server === "jira_access"){
         displayCount();
         drawChart();      
         makeDatabyDay(new Date());
@@ -46,9 +46,9 @@ block script
         location.href='/dashboard/?server='+$("select[name=server]").val();        
       });
       $("#btn_timeseries").click(function(){
-        if($("select[name=server]").val() == "TESTAPP") {
+        if($("select[name=server]").val() == "test-agent") {
           location.href='/dashboard/timeseries_agent';
-        } else if($("select[name=server]").val() == "JIRA") {
+        } else if($("select[name=server]").val() == "jira_access") {
           location.href='/dashboard/timeseries_file';
         }
       });  
@@ -57,7 +57,7 @@ block script
         var server = $("#server").val();      
         if(server == "JIRA"){
           getDataByToggle(time[e.target.id]);
-        } else if(server == "TESTAPP") {        
+        } else if(server == "test-agent") {        
           toggleData(time[e.target.id]);
         }
         console.log(e.target.id);                    
@@ -128,9 +128,11 @@ block content
               .caption.font-dark
                 span.caption-subject.bold.uppercase Server Map
             .portlet-body(style='height:850px;  z-index: 2')
-              a#btn_sankey.icon-btn.sankey-toggler.uppercase(style='z-index: 10; float: right;')
-                i.fa.fa-arrow-left                
-                div SANKEY  
+              #{server}
+                if server == "jira_access"
+                  a#btn_sankey.icon-btn.sankey-toggler.uppercase(style='z-index: 10; float: right;')
+                    i.fa.fa-arrow-left                
+                    div SANKEY  
               .chart(style='height:400px; z-index: 2')                 
                 #cy(style='height:400px; width:95%; z-index: 2')
                 #sankey(style='height:395px; width:95%;')
