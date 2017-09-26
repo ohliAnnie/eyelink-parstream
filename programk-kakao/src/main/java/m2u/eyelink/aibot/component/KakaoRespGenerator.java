@@ -73,8 +73,6 @@ public class KakaoRespGenerator {
 			Keyboard keyboard = new Keyboard(responses);
 			result.setKeyboard(keyboard);
 		}
-		logger.debug("");
-		
 		return result;
 	}
 
