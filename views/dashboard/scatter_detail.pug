@@ -55,7 +55,7 @@ html
         var old = '', oldValues = '';
         $('#sample_2 > tbody > tr').click(function(){                                
          if(old != ''){          
-          if(oldvalues[3] == "true"){
+          if(oldvalues[4] == "true"){
             old.css("background", "#FFA7A7"); //reset to original color
           } else {
             old.css("background", "#fff"); //reset to original color
@@ -67,7 +67,8 @@ html
           }).get();                 
           oldvalues = values;
           old = $(this);
-          getTransaction(values[6], values[0]);
+          console.log(values);
+          getTransaction(values[7], values[0]);
         });       
          $('.tree-2').treegrid({
           expanderExpandedClass: 'glyphicon glyphicon-minus',
@@ -97,6 +98,7 @@ block content
                   table#sample_2.table.table-striped.table-bordered.table-hover(style='text-align:center;')
                     thead
                       tr                          
+                        th #
                         th(style='text-align:center;') Start Time
                         th(style='text-align:center;') Path
                         th(style='text-align:center;') Res.(ms)
@@ -108,6 +110,7 @@ block content
                       each data in list      
                         if data._source.hasException                                             
                           tr.odd.gradeX(id=data._id, style='background-color:#FFA7A7')
+                            td
                             td #{data._source.startTime}
                             td(style='text-align:left;') #{data._source.rpc}
                             td #{data._source.elapsed}
@@ -117,6 +120,7 @@ block content
                             td #{data._source.transactionId}
                         else
                           tr.odd.gradeX(id=data._id)
+                            td
                             td #{data._source.startTime}
                             td(style='text-align:left;') #{data._source.rpc}
                             td #{data._source.elapsed}
