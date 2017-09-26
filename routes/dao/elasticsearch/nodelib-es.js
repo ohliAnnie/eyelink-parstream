@@ -1,3 +1,5 @@
+var Logger = require('../../log4js-utils').Logger;
+var logger = new Logger('nodelib-es');
 var Utils = require('../../util');
 var queryParser = require('../queryParser');
 var elasticsearch = require('elasticsearch');
@@ -178,13 +180,13 @@ QueryProvider.prototype.selectSingleQueryByID = function (type, queryId, datas, 
 // query.xml에 정의된 query를 이용한 query수행
 QueryProvider.prototype.selectSingleQueryByID2 = function (type, queryId, datas, cb) {
   var vTimeStamp = Date.now();
-  console.log('queryId : '+queryId);
+  logger.debug('queryId : '+queryId);
   console.time('nodelib-es/selectSingleQueryByID2-> '+ queryId +' total ');
-  console.log('nodelib-es/selectSingleQueryByID2 -> (%s) queryID', queryId);
+  logger.debug('selectSingleQueryByID2 -> (' + queryId + ') queryID', queryId);
 
   // SQL 내 파라메타를 변경해준다.
   var sQueryString = Utils.replaceSql2(queryParser.getQuery(type, queryId), datas);
-  console.log('nodelib-es/selectSingleQueryByID2 -> ' + sQueryString);
+  logger.debug('selectSingleQueryByID2 -> ' + sQueryString);
 
   sQueryString = JSON.parse(sQueryString);
 
@@ -193,8 +195,8 @@ QueryProvider.prototype.selectSingleQueryByID2 = function (type, queryId, datas,
   ).then(function (resp) {
       //console.log(resp.hits);
       var hits = resp.hits.hits;
-      console.log('nodelib-es/selectSingleQueryByID2 -> total : %d', resp.hits.total);
-      cb(null, hits);
+      logger.debug('selectSingleQueryByID2 -> total : ' + resp.hits.total);
+      cb(null, hits, resp.hits.total);
   }, function (err) {
       console.trace(err.message);
       cb(err.message);

@@ -78,9 +78,11 @@ html
     script(src='/assets/scripts/page/components-dropdowns.js', type='text/javascript')
     script(src='/assets/scripts/page/layout.js', type='text/javascript')
     script(src='/assets/scripts/page/demo.js', type='text/javascript')
+    script(src='/socket.io/socket.io.js', type='text/javascript')
     block style
     block script
     script.
+      var notLoad = true;
       jQuery(document).ready(function() {
         $('#menudashboard').addClass( '#{mainmenu.dashboard}');
         $('#menureports').addClass( '#{mainmenu.reports}');
@@ -102,7 +104,83 @@ html
         ComponentsPickers.init();
         ComponentsDropdowns.init();
 
+        initAlarm();
+
+        //- $('#header_notification_bar').addClass('open').trigger('classChange');
+
+        $("#header_notification_bar").on('click', function() {
+          console.log("#header_notification_bar click");
+        });
+
+        $("#header_notification_bar").on('mouseover', function() {
+          console.log('mouseover');
+          if (notLoad) {
+            notLoad = false;
+            displayAlarmData();
+          }
+        });
       });
+
+
+      function initAlarm() {
+        var socket = io.connect();
+        socket.on('returnAlarmData', function (data) {
+          console.log(data);
+          changeCount(data.count);
+        });
+
+        //- socket.emit('receiveAlarmData', 'initAlarm');
+      }
+
+      function changeCount(count) {
+          $("#alarmCount").html(count);
+          $("#alarmCount2").html(count + ' pending notifications');
+      }
+
+      function displayAlarmData() {
+        $.ajax({
+          url: "/management/restapi/getAlarmList" ,
+          dataType: "json",
+          type: "get",
+          data: {
+            index : "management",
+            type : "menu"
+          },
+          success: function(result) {
+            if (result.rtnCode.code == "0000") {
+              //- console.log(result.rtnData);
+              changeCount(result.rtnCount);
+              drawList(result.rtnData);
+            } else {
+              //- $("#errormsg").html(result.message);
+            }
+            notLoad = true;
+          },
+          error: function(req, status, err) {
+            //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+            notLoad = true;
+          }
+        });
+
+      }
+
+      function drawList(data){
+        $('#alarmList').empty();
+
+        var sb = new StringBuffer();
+        data.forEach(function(d){
+          d = d._source;
+          sb.append('<li><a>');
+          sb.append('<span class="details"><span class="label label-sm label-icon label-success"><i class="fa fa-plus"></i></span>');
+          sb.append(d.message);
+          sb.append('</span><span class="time">');
+          sb.append(d.timestamp);
+          sb.append('</sapn></a></li>');
+        });
+        console.log(sb.toString());
+        $('#alarmList').append(sb.toString());
+      }
   body.page-header-fixed.page-quick-sidebar-over-content
     .wrapper
       header.page-header
@@ -125,15 +203,14 @@ html
                 #header_notification_bar.btn-group-notification.btn-group
                   button.btn.btn-sm.dropdown-toggle(type='button', data-toggle='dropdown', data-hover='dropdown', data-close-others='true')
                     i.icon-bell
-                    span.badge 12
+                    span#alarmCount.badge 0
                   ul.dropdown-menu-v2
                     li.external
                       h3
-                        span.bold 12 pending
-                        | notifications
+                        span#alarmCount2.bold 0 pending notifications
                       a(href='#') view all
                     li
-                      ul.dropdown-menu-list.scroller(style='height: 250px; padding: 0;', data-handle-color='#637283')
+                      ul#alarmList.dropdown-menu-list.scroller(style='height: 250px; padding: 0;', data-handle-color='#637283')
                         li
                           a(href='javascript:;')
                             span.details
@@ -250,7 +327,7 @@ html
                     //-   a(href='#') Requested task
                 li#menutimeseries.dropdown.dropdown-fw
                   a(href='javascript:;') Time Series
-                  ul.dropdown-menu.dropdown-menu-fw                    
+                  ul.dropdown-menu.dropdown-menu-fw
                     li
                       a(href='/dashboard/timeseries_agent') Timeseries
                     //- li
@@ -292,7 +369,7 @@ html
                       a(href='/management/users') Users
                     li.active
                       a(href='/management/menu') Menu
-                li#menusettings.dropdown.dropdown-fw                  
+                li#menusettings.dropdown.dropdown-fw
                   a(href='javascript:;') Settings
                   ul.dropdown-menu.dropdown-menu-fw
                     li
@@ -311,13 +388,13 @@ html
                     li
                       a(href='/sample/serverMap1') serverMap1
                     li
-                      a(href='/sample/serverMap2') serverMap2              
-                    li                      
+                      a(href='/sample/serverMap2') serverMap2
+                    li
                       a(href='/sample/scatterTest01') scatterTest01
-                    li                      
+                    li
                       a(href='/sample/summary') summary
                     li
-                      a(href='/sample/sankey') sankey                      
+                      a(href='/sample/sankey') sankey
                     li
                       a(href='/sample/sankey01') sankey1
                     li

@@ -25,7 +25,7 @@
           }
         }
       }
-     ]]></query> 
+     ]]></query>
     <query id='selectList'><![CDATA[
      {
         "index" : #INDEX#,
@@ -201,18 +201,29 @@
           }
       }
      ]]></query>
-   <query id='updateMenuName'><![CDATA[
+    <query id='updateMenuName'><![CDATA[
      {
         "index" : #INDEX#,
         "type" : #TYPE#,
         "id" : #CODE#,
-        "body" : {        
-          "doc" : {            
-            "name" : #NAME#          
+        "body" : {
+          "doc" : {
+            "name" : #NAME#
           }
         }
       }
-     ]]></query>  
+     ]]></query>
+    <query id='selectAlarmList'><![CDATA[
+    {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size" : 10,
+          "sort" : { #SORT#: { "order" : "desc" } },
+          "query" : { "match_all" : { } }
+        }
+    }
+    ]]></query>
   </management>
   <dashboard>
     <query id='selectByIndex'><![CDATA[

@@ -10,7 +10,7 @@ var queryProvider = new QueryProvider();
 
 function loadQuery(callback) {
   var parser = new xml2js.Parser();
-  logger.info('initApps/loadQuery -> ' + __dirname + '/dao/' + global.config.fetchData.database + '/dbquery.xml')
+  logger.info('loadQuery -> ' + __dirname + '/dao/' + global.config.fetchData.database + '/dbquery.xml')
   fs.readFile(__dirname + '/dao/' + global.config.fetchData.database + '/dbquery.xml', function(err, data) {
     parser.parseString(data, function (err, result) {
     // console.log('initApps/loadQuery -> xml file');
@@ -106,14 +106,14 @@ var cleanXML = function(xml){
 // TO-DO 1시간전까지 데이터 적재 로직 보완 필요함.
 function loadData(callback) {
   var d = new Date();
-  logger.debug('initApps/loadData -> today : %s', Date.today());
+  logger.debug('loadData -> today : %s', Date.today());
 
   for (var i=0; i<global.config.loaddataonstartup.loading_day; i++) {
-    logger.debug('initApps/loadData -> day : %s', d.removeDays(1).toFormat('YYYY-MM-DD'));
+    logger.debug('loadData -> day : %s', d.removeDays(1).toFormat('YYYY-MM-DD'));
     var flag = 'R';
     if (i === (global.config.loaddataonstartup.loading_day-1))
       flag = 'C';
-    // console.log('initApps/loadData -> i :   %s, loadind day : %s, flag : %s', i, (CONSTS.CONFIG.LOADING_DAY-1), flag);
+    // console.log('loadData -> i :   %s, loadind day : %s, flag : %s', i, (CONSTS.CONFIG.LOADING_DAY-1), flag);
     var vDate = d.toFormat('YYYY-MM-DD');
     var in_data = {
       LOAD_DATE : vDate,
@@ -125,7 +125,7 @@ function loadData(callback) {
       _rawDataByDay[params.LOAD_DATE] = out_data[0];
       try {
         logger.debug('initApps/loadData -> load_date : %s, count : %s', params.LOAD_DATE, global._rawDataByDay[params.LOAD_DATE].length);
-        // console.log('initApps/loadData -> flag : %s', params['FLAG'], params.FLAG);
+        // console.log('loadData -> flag : %s', params['FLAG'], params.FLAG);
       } catch (e) {
       }
       callback(params);

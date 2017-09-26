@@ -7,8 +7,8 @@ var net = require('net');
 
 var io = require('socket.io-client');
 
-// var socketURL = 'http://localhost:5223';
-var socketURL = 'http://m2utech.eastus.cloudapp.azure.com:5223';
+var socketURL = 'http://localhost:5223';
+// var socketURL = 'http://m2utech.eastus.cloudapp.azure.com:5223';
 
 var options ={
   transports: ['websocket'],
@@ -83,7 +83,7 @@ describe("Socketio", function(){
       //   client1.emit('getEventListForAlarm', 0);
       // });
       var sendData = {
-        alarmType : 'ELAGENT/DATA_ANALYTIC',
+        applicationType : 'ELAGENT/DATA_ANALYTIC',
         agentId : 'test_app',
         timestamp : 'current timestamp',
         alarmType : 'CPU_70/MEMORY_70/DA_ANORMAL',
