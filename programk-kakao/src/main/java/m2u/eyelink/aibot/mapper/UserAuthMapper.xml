@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="m2u.eyelink.aibot.mapper.UserAuthMapper">
+    <!-- <resultMap id="BaseResultMap" type="UserAuth">
+        <result column="user_key" jdbcType="VARCHAR" property="userKey"/>
+        <result column="last_auth_dttm" jdbcType="VARCHAR" property="lastAuthDttm"/>
+        <result column="last_talk_dttm" jdbcType="VARCHAR" property="lastTalkDttm"/>
+    </resultMap> -->
+
+    <!-- 조회 -->
+    <select id="select" parameterType="UserAuth" resultType="UserAuth" >
+        select
+        	user_key as userKey
+        	, last_auth_dttm as lastAuthDttm
+        	, last_talk_dttm as lastTalkDttm
+        from user_auth
+        where user_key = #{userKey}
+    </select>
+
+    <!-- 저장 -->
+    <insert id="insert" parameterType="UserAuth">
+        INSERT INTO user_auth (user_key, last_auth_dttm, last_talk_dttm)
+        VALUES (#{userKey}, #{lastAuthDttm}, #{lastTalkDttm})
+    </insert>
+
+	<!-- 삭제 -->
+    <delete id="delete" parameterType="UserAuth">
+        DELETE FROM user_auth
+        WHERE user_key = #{userKey}
+    </delete>    
+
+    <!-- 수정 -->
+    <update id="update" parameterType="UserAuth">
+        update user_auth
+        <set>
+        	<if test="lastAuthDttm != null and lastAuthDttm != ''">
+        		last_auth_dttm = #{lastAuthDttm},
+        	</if>
+        	<if test="lastTalkDttm != null and lastTalkDttm != ''">
+                last_talk_dttm = #{lastTalkDttm}
+            </if>
+        </set>
+        where user_key = #{userKey}
+    </update>
+
+</mapper>

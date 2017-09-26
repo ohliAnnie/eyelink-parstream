@@ -25,7 +25,7 @@ public class InterfaceService {
 	
 	@Autowired
 	private Config config;
-
+	
 	public String getResponse(MessageIn messageIn) {
 
 		StringBuffer sb = null;
@@ -80,4 +80,5 @@ public class InterfaceService {
 		o.put("chat", messageIn.getContent());
 		return o.toString();
 	}
+	
 }
