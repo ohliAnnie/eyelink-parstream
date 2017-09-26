@@ -227,6 +227,23 @@
          }
       }
     ]]></query>
+    <query id='selectById'><![CDATA[
+    {
+          "index" : #index#,
+          "type" : #type#,
+          "body" : {
+            "size"   : 10000,            
+            "query" : {
+              "match" : {
+                #id# : {
+                  "query" :  #value#,
+                  "operator" : "and"
+                }
+              }
+            }
+         }
+      }
+    ]]></query>
     <query id='selectByIdValue'><![CDATA[
     {
           "index" : #index#,
@@ -857,6 +874,22 @@
           "query" : { "match_all" : { }     }
           }
         }
+    ]]></query>
+    <query id='selectBottleneckList'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {
+          "size" : 10000,
+          "sort" : {"timestamp" : { "order" : "asc" }},
+          "query": {
+            "bool": {
+              "filter": { "range": { #id# : { "gte": #value#  } } },
+              "must" : { "match": { "alarmType" : #list#  }   }
+            }
+          }
+        }
+      }
     ]]></query>
   </dashboard>
   <reports>

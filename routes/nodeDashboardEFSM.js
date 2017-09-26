@@ -85,6 +85,31 @@ router.get('/timeseries_agent', function(req, res, next) {
 });
 });
 
+router.get('/bottleneck', function(req, res, next) {
+  mainmenu.dashboard = 'open selected';
+  var server = req.query.server;    
+  var in_data = {    index:  "efsm_applicationinfo", type: "applicationInfo"    };
+  queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
+    var rtnCode = CONSTS.getErrData('0000');
+    var check = {}, list = [], cnt = 0;    
+    console.log(out_data);
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {
+      out_data.forEach(function(d){
+        if(check[d._source.applicationId]==null){
+          check[d._source.applicationId] = { no : cnt++};
+          list.push({ id : d._source.collection, name : d._source.applicationId })
+        } 
+      });      
+    }    
+    if(server == undefined || server == ""){
+      server = list[0].name;
+    }    
+  res.render('./dashboard/bottleneck', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : server }); 
+  });
+});
+
 
 router.get('/trenddata', function(req, res, next) {
   mainmenu.dashboard = ' open selected';
@@ -1117,6 +1142,7 @@ router.get('/restapi/getAgentData', function(req, res, next) {
   });
 });
 
+
 router.get('/restapi/countAgent', function(req, res, next) {
   console.log('dashboard/restapi/countAgent');      
   console.log(req.query.index);
@@ -1142,6 +1168,39 @@ router.get('/restapi/countAgentError', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     }    
     res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
+
+router.get('/restapi/getBottleneckList', function(req, res, next) {
+  console.log('dashboard/restapi/getBottleneckList');      
+  console.log(req.query.list);
+  var in_data = {
+    index : req.query.index,    type : req.query.type,
+    value : req.query.value,    id : req.query.id,
+    list : req.query.list
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","selectBottleneckList", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');    
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }        
+    res.json({rtnCode: rtnCode, rtnData : out_data});
+  });
+});
+
+router.get('/restapi/getBottleneck', function(req, res, next) {
+  console.log('dashboard/restapi/getBottleneck');        
+  var in_data = {
+    index : req.query.index,    type : req.query.type,
+    value : req.query.value,    id : req.query.id,    
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","selectById", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');    
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }        
+    res.json({rtnCode: rtnCode, rtnData : out_data[0]._source});
   });
 });
 
