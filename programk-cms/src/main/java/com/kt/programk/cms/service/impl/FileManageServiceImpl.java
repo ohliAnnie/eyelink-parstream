@@ -249,12 +249,12 @@ public class FileManageServiceImpl implements FileManageService {
 				// TODO : commented out for KakaoPlusFriend
 //				if (count != 1 && arr.length != 15) {
 				if (count != 1 && arr.length != 8) {
-					System.out.println("arr.length : " + arr.length);
-					for ( String a : arr) {
-						System.out.print(a);
-						System.out.print(":");
-					}
-					System.out.println();
+//					System.out.println("arr.length : " + arr.length);
+//					for ( String a : arr) {
+//						System.out.print(a);
+//						System.out.print(":");
+//					}
+//					System.out.println();
 					dataError.add(new String[] { null, null, null, null, null, null, null, null, "등록 형식에 맞지 않습니다." });
 				}
 
