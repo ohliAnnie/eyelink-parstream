@@ -41,7 +41,7 @@ public class Config {
 		String configFilePath = System.getProperty(IConstants.Configs.CONFIG);
 		
 		if ( configFilePath == null ) {
-			throw new RuntimeException("JVM option is required.  -Difconfig={config file path}") ;
+			throw new RuntimeException("JVM option is required.  -Dconfig={config file path}") ;
 		}
 		
 		while(!isSet) {
