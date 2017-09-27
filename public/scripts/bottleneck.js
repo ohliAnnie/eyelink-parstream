@@ -26,7 +26,7 @@ function getData(server, selected){
     },
     success: function(result) {
       if (result.rtnCode.code == "0000") {              
-        drawList(result.rtnData);        
+        drawBottleneckList(result.rtnData);        
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -39,7 +39,7 @@ function getData(server, selected){
   
 }
 
-function drawList(data){
+function drawBottleneckList(data){
   $('#list').empty();  
   var sb = new StringBuffer();    
   sb.append('<table class="sample_2 table table-striped table-bordered table-hover"><tr>'); 
@@ -54,6 +54,8 @@ function drawList(data){
   }else{
     sb.append('<td>데이터가 없습니다.</td></tr></table>');
   }  
+  console.log('test');
+  console.log(sb.toString());
   $('#list').append(sb.toString());    
 }
 
@@ -68,8 +70,7 @@ function clickTrEvent(id){
       id : "_id", value : id
     },
     success: function(result) {
-      if (result.rtnCode.code == "0000") {         
-        console.log(result);
+      if (result.rtnCode.code == "0000") {                 
         drawDetail(result);        
       } else {
         //- $("#errormsg").html(result.message);
@@ -114,6 +115,7 @@ function drawDetail(result){
     sb.append('<tr><td>데이터가 없습니다.</td></tr>');
   }
   sb.append('</table>');  
+  console.log(sb.toString());
   $('#detail').append(sb.toString());    
 }
 
