@@ -471,7 +471,7 @@ router.get('/restapi/selectJiraAccDash', function(req, res, next) {
             y : d._source.responsetime,
             date : new Date(date),
            hour : new Date(date).getHours(),
-            type : d._source.response >= 400? 'Error' : (d._source.responsetime >= 300 ? 'Redirection' : 'Success'), 
+            type : d._source.response >= 400? 'Error' : 'Success', 
             term : d._source.response >= 400? 'Error' : (d._source.responsetime < 1000 ? '1s' : (d._source.responsetime < 3000 ? '3s' : (d._source.responsetime < 5000 ? '5s' : 'Slow'))),
             index : d._source.response >= 400? 4 : (d._source.responsetime < 1000 ? 0 : (d._source.responsetime < 3000 ? 1 : (d._source.responsetime < 5000 ? 2 : 3)))
           });
@@ -1133,7 +1133,7 @@ router.get('/restapi/getAgentData', function(req, res, next) {
         y : d._source.elapsed,
         date : new Date(date),
         hour : new Date(date).getHours(),
-        type : d._source.isError ? 'Error' : (d._source.elapsed >= 300 ? 'Redirection' : 'Success'), 
+        type : d._source.isError ? 'Error' : 'Success', 
         term : d._source.isError ? 'Error' : (d._source.elapsed < 1000 ? '1s' : (d._source.elapsed < 3000 ? '3s' : (d._source.elapsed < 5000 ? '5s' : 'Slow'))),
         index : d._source.isError ? 4 : (d._source.elapsed < 1000 ? 0 : (d._source.elapsed < 3000 ? 1 : (d._source.elapsed < 5000 ? 2 : 3)))
       });

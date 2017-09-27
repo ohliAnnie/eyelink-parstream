@@ -212,6 +212,7 @@ function getDataByToggle(gap) {
 
 var cnt = 0;
 function drawDash(data, start, end) {  
+  console.log(data, start, end)
   var indexs = $('#indexs').val();
   if(Modernizr.canvas){
     doBigScatterChart(start, end);
@@ -229,9 +230,8 @@ function drawDash(data, start, end) {
       nPaddingTop : 50,
       nDefaultRadius : 3,
       htTypeAndColor : {
-        'Success' :'#55c7c7',
-        'Redirection' : '#fcc666',
-        'Error' : '#fd7865'        
+        'Success' : '#0100FF',        
+        'Error' : '#FF0000'          
       },
       sXLabel : '(time)',
       sYLabel : '(ms)',
@@ -258,7 +258,7 @@ function drawDash(data, start, end) {
         console.timeEnd('fOnSelect');
         console.log('adata length', aData.length);
         window.open(link, "EyeLink Service List", "menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50");        
-        $.ajax({
+        /*$.ajax({
           url: "/dashboard/restapi/selectScatterSection" ,
           dataType: "json",
           type: "get",
@@ -316,18 +316,18 @@ function drawDash(data, start, end) {
             //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
             $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
           }
-        });
+        });*/
       }
     }); 
       if(cnt != 0){         
         oScatterChart._empty();
         oScatterChart._redraw();      
-        summary(data, start, end);
+        //summary(data, start, end);
       }
       oScatterChart.addBubbleAndDraw(data);         
   }   
    if(cnt++ == 0) {
-    summary(data, start, end);
+    //summary(data, start, end);
    }  
 };  
 
