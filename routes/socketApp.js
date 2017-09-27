@@ -89,10 +89,11 @@ function saveAlarmData(io, data, cb) {
 function emitAlarmCount(io) {
   var management = require('./nodeManagement' + global.config.pcode);
   management.selectAlarmList(function(data) {
+    // count+1 => saveAlarmData에서 저장후 ES refresh 되기전 조회가 되므로 count가 반영되지 않음.
     var out_data = {
       code : '0000',
       message : 'SUCCESS',
-      count : data.rtnCount};
+      count : data.rtnCount+1};
     logger.debug('emitAlarmCount : data ' + JSON.stringify(out_data));
     io.sockets.emit('returnAlarmData', out_data);
   });
