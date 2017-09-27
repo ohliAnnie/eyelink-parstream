@@ -61,8 +61,7 @@ function initSocket(app, callback) {
     // recevie Alarm Data from Agent, Data Analytics
     socket.on('receiveAlarmData', function(data) {
       logger.debug('receiveAlarmData Sucess : data ' + JSON.stringify(data));
-      emitAlarmCount(app.io);
-
+      saveAlarmData(app.io, data);
     });
 
     // socket test module
@@ -75,6 +74,18 @@ function initSocket(app, callback) {
 
 }
 
+function saveAlarmData(io, data, cb) {
+  var management = require('./nodeManagement' + global.config.pcode);
+  management.saveAlarmData(data, function(odata) {
+    logger.debug(odata);
+    var out_data = {
+      code : odata.rtnCode.code,
+      message : odata.rtnCode.message};
+    logger.debug('saveAlarmData : data ' + JSON.stringify(out_data));
+    emitAlarmCount(io);
+  });
+}
+
 function emitAlarmCount(io) {
   var management = require('./nodeManagement' + global.config.pcode);
   management.selectAlarmList(function(data) {
@@ -82,7 +93,7 @@ function emitAlarmCount(io) {
       code : '0000',
       message : 'SUCCESS',
       count : data.rtnCount};
-    logger.debug('returnAlarmData : data ' + JSON.stringify(out_data));
+    logger.debug('emitAlarmCount : data ' + JSON.stringify(out_data));
     io.sockets.emit('returnAlarmData', out_data);
   });
 }

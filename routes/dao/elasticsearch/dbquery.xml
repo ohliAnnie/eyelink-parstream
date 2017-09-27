@@ -224,6 +224,13 @@
         }
     }
     ]]></query>
+    <query id='insertAlarmData'><![CDATA[
+    {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : #BODY#
+    }
+    ]]></query>
   </management>
   <dashboard>
     <query id='selectByIndex'><![CDATA[
@@ -243,7 +250,7 @@
           "index" : #index#,
           "type" : #type#,
           "body" : {
-            "size"   : 10000,            
+            "size"   : 10000,
             "query" : {
               "match" : {
                 #id# : {
@@ -727,7 +734,7 @@
         "index" : [##index##],
         "type" : #type#,
         "body" : {
-          "size" : 10000,  
+          "size" : 10000,
           "sort" : { "startTime" : { "order" : "asc" } },
           "query" : {
             "bool" : {
@@ -747,7 +754,7 @@
             }
          }
        }
-    ]]></query>        
+    ]]></query>
       <query id='getAccTimeseries'><![CDATA[
       {
         "index" : [##index##],

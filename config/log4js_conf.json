@@ -6,8 +6,8 @@
     {
       "type": "file",
       "filename": "./logs/eyelink.log",
-      "maxLogSize": 1024,
-      "backups": 3,
+      "maxLogSize": 1024000,
+      "backups": 5,
       "category": "eyelink"
     }
   ]

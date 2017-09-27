@@ -668,7 +668,7 @@ router.get('/restapi/getAlarmList', function(req, res, next) {
 function selectAlarmList(cb) {
   var d = new Date();
   var in_data = {
-    INDEX: 'elagent_test-agent-' + d.toFormat('YYYY.MM.DD'),
+    INDEX: CONSTS.SCHEMA.EFSM_ALARM.INDEX + d.toFormat('YYYY.MM.DD'),
     TYPE: 'AgentAlarm',
     SORT: "timestamp" };
   var rtnCode = CONSTS.getErrData('0000');
@@ -681,7 +681,32 @@ function selectAlarmList(cb) {
     logger.debug('selectAlarmList -> count : ' + count);
     cb({rtnCode: rtnCode, rtnData: out_data, rtnCount : count});
   });
-
 }
+
+function saveAlarmData(data, cb) {
+  logger.debug('start saveAlarmData');
+  var d = new Date();
+  var in_data = {
+    INDEX: CONSTS.SCHEMA.EFSM_ALARM.INDEX + d.toFormat('YYYY.MM.DD'),
+    TYPE: 'AgentAlarm',
+    BODY : JSON.stringify(data)};
+
+  queryProvider.insertQueryByID("management", "insertAlarmData", in_data, function(err, out_data) {
+    logger.debug(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (err) {
+      logger.debug(err)
+      rtnCode.code = 'UNDEFINED';
+      rtnCode.message = err;
+    };
+    if(out_data.result == "created"){
+      rtnCode = CONSTS.getErrData("D001");
+    }
+    logger.debug('end saveAlarmData');
+    cb({rtnCode: rtnCode});
+  });
+}
+
 module.exports = router;
 module.exports.selectAlarmList = selectAlarmList;
+module.exports.saveAlarmData = saveAlarmData;
