@@ -1307,6 +1307,27 @@
         }
       }
      ]]></query>
+    <query id='selectAnomaly_Pattern'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size"   : 10000,
+          "sort" : { "analysis.timestamp" : { "order" : "desc"  } },
+          "_source" : ["analysis.timestamp"],
+          "query" : {
+            "bool" : {
+              "must" : { "match_all": {} },
+               "filter" : {
+                "range" : {
+                   "analysis.timestamp" : { "gte" : #START_TIMESTAMP#, "lte" : #END_TIMESTAMP# }
+                  }
+                }
+              }
+          }
+        }
+      }
+    ]]></query>
     <query id='selectPatterns'><![CDATA[
       {
         "index" : #INDEX#,
