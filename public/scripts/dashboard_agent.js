@@ -381,9 +381,8 @@ function drawAgentScattor(data, start, end){
       nPaddingTop : 50,
       nDefaultRadius : 3,
       htTypeAndColor : {
-        'Success' :'#55c7c7',
-        'Redirection' : '#fcc666',
-        'Error' : '#fd7865'        
+        'Success' : '#0100FF',        
+        'Error' : '#FF0000'         
       },
       sXLabel : '(time)',
       sYLabel : '(ms)',
@@ -416,11 +415,11 @@ function drawAgentScattor(data, start, end){
       if(cnt != 0){         
         oScatterChart._empty();
         oScatterChart._redraw();      
-        summary(data, start, end);
+        summaryAgent(data, start, end);
       }
       oScatterChart.addBubbleAndDraw(data);         
   }   
    if(cnt++ == 0) {
-    summary(data, start, end);
+    summaryAgent(data, start, end);
    }  
 };

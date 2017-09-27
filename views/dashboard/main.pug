@@ -46,9 +46,10 @@ block script
         location.href='/dashboard/?server='+$("select[name=server]").val();        
       });
       $("#btn_timeseries").click(function(){
-        if($("select[name=server]").val() == "test-agent") {
+        console.log($("#server").val());
+        if($("#server").val() == "test-agent") {
           location.href='/dashboard/timeseries_agent';
-        } else if($("select[name=server]").val() == "jira_access") {
+        } else if($("#server").val() == "jira_access") {
           location.href='/dashboard/timeseries_file';
         }
       });  
@@ -89,11 +90,11 @@ block content
                   .row
                     label.control-label.col-md-2 Server                                        
                     .col-md-2.form-inline
-                      select#server.form-control.input-small.select2me.form-md-line-input(name='server')
+                      select#server.form-control.input-small.select2me.form-md-line-input(name='server' value=server)
                         each data in agent                           
                           #{server}
                             if data.name==server
-                             option(value='', selected='selected') #{data.name}
+                             option(value=data.name, selected='selected') #{data.name}
                             else
                              option #{data.name}                              
                     .col-md-2.form-inline
