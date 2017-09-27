@@ -1177,8 +1177,9 @@ router.get('/restapi/getBottleneckList', function(req, res, next) {
   console.log(req.query.list);
   var in_data = {
     index : req.query.index,    type : req.query.type,
-    value : req.query.value,    id : req.query.id,
-    list : req.query.list
+    start : req.query.start,    id : req.query.id,
+    end : req.query.end, list : req.query.list,
+    server : req.query.server
   };
   queryProvider.selectSingleQueryByID2("dashboard","selectBottleneckList", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');    
@@ -1189,18 +1190,53 @@ router.get('/restapi/getBottleneckList', function(req, res, next) {
   });
 });
 
-router.get('/restapi/getBottleneck', function(req, res, next) {
-  console.log('dashboard/restapi/getBottleneck');        
+router.get('/restapi/getBottleneckDetail', function(req, res, next) {
+  console.log('dashboard/restapi/getBottleneckDetail');        
   var in_data = {
     index : req.query.index,    type : req.query.type,
     value : req.query.value,    id : req.query.id,    
   };
   queryProvider.selectSingleQueryByID2("dashboard","selectById", in_data, function(err, out_data, params) {    
-    var rtnCode = CONSTS.getErrData('0000');    
+    var alarm = out_data[0]._source;    
+    var rtnCode = CONSTS.getErrData('0000');        
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
-    }        
-    res.json({rtnCode: rtnCode, rtnData : out_data[0]._source});
+    } else {
+      var iDate = alarm.timestamp.split('T');
+      var iDay = iDate[0].split('-')
+      var in_data = {
+        index : "elagent_"+alarm.agentId+"-"+iDay[0]+"."+iDay[1]+"."+iDay[2],    type : "AgentLifeCycle",
+        value :  alarm.timestamp,    id : "eventTimestamp"            
+      };  
+      queryProvider.selectSingleQueryByID2("dashboard","selectMatchRecent", in_data, function(err, out_data, params) {            
+        var rtnCode = CONSTS.getErrData('0000');    
+        if (out_data == null){
+          rtnCode = CONSTS.getErrData('0001');  
+          var life = [];
+        } else { 
+          var life = out_data;
+        var in_data = {
+          index : "elagent_"+alarm.agentId+"-*",    type : "AgentInfo",
+          value :  alarm.startTimestamp,    id : "startTime"            
+        };          
+        queryProvider.selectSingleQueryByID2("dashboard","selectMatchIdValue", in_data, function(err, out_data, params) {              
+          var rtnCode = CONSTS.getErrData('0000');    
+          if (out_data == null){
+            rtnCode = CONSTS.getErrData('0001');  
+            var info = [];
+          } else if(out_data.length == 0) {
+            rtnCode = CONSTS.getErrData('0001');      
+            var info = [];
+          } else {
+            var info = out_data[0]._source;
+          }                  
+          res.json({rtnCode: rtnCode, alarm: alarm, life: life, info : info});    
+        });       
+        }
+        res.json({rtnCode: rtnCode, alarm: alarm, life: life, info : info});    
+      });
+    }            
+    res.json({rtnCode: rtnCode, alarm: alarm, life: life, info : info});    
   });
 });
 

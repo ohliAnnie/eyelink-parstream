@@ -262,6 +262,33 @@
          }
       }
     ]]></query>
+    <query id='selectMatchIdValue'><![CDATA[
+    {
+      "index" : #index#,
+      "type" : #type#,
+      "body" : {
+        "size"   : 10000,            
+        "query" : {  "match" : { #id# : #value#  }       }
+      }         
+    }
+    ]]></query>
+    <query id='selectMatchRecent'><![CDATA[
+    {
+      "index" : #index#,
+      "type" : #type#,
+      "body" : {
+        "size"   : 10,            
+        "sort" : { #id# : { "order" : "desc" } },
+        "query" : {
+          "bool": {
+           "must" : {
+             "range" : { #id# : {  "lte": #value#  }}
+            }
+          }
+        }
+      }         
+    }
+    ]]></query>
     <query id='selectByIdValue'><![CDATA[
     {
           "index" : #index#,
@@ -902,8 +929,10 @@
           "sort" : {"timestamp" : { "order" : "asc" }},
           "query": {
             "bool": {
-              "filter": { "range": { #id# : { "gte": #value#  } } },
-              "must" : { "match": { "alarmType" : #list#  }   }
+              "filter": { "range": { 
+                 #id# : { "gte": #start#, "lte" : #end# } } },
+              "must" : [{ "match": { "agentId" : #server#  }   },
+              { "match": { "alarmType" : #list#  }   }]
             }
           }
         }
