@@ -25,7 +25,7 @@
           }
         }
       }
-     ]]></query> 
+     ]]></query>
     <query id='selectList'><![CDATA[
      {
         "index" : #INDEX#,
@@ -201,18 +201,36 @@
           }
       }
      ]]></query>
-   <query id='updateMenuName'><![CDATA[
+    <query id='updateMenuName'><![CDATA[
      {
         "index" : #INDEX#,
         "type" : #TYPE#,
         "id" : #CODE#,
-        "body" : {        
-          "doc" : {            
-            "name" : #NAME#          
+        "body" : {
+          "doc" : {
+            "name" : #NAME#
           }
         }
       }
-     ]]></query>  
+     ]]></query>
+    <query id='selectAlarmList'><![CDATA[
+    {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size" : 10,
+          "sort" : { #SORT#: { "order" : "desc" } },
+          "query" : { "match_all" : { } }
+        }
+    }
+    ]]></query>
+    <query id='insertAlarmData'><![CDATA[
+    {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : #BODY#
+    }
+    ]]></query>
   </management>
   <dashboard>
     <query id='selectByIndex'><![CDATA[
@@ -232,7 +250,7 @@
           "index" : #index#,
           "type" : #type#,
           "body" : {
-            "size"   : 10000,            
+            "size"   : 10000,
             "query" : {
               "match" : {
                 #id# : {
@@ -743,7 +761,7 @@
         "index" : [##index##],
         "type" : #type#,
         "body" : {
-          "size" : 10000,  
+          "size" : 10000,
           "sort" : { "startTime" : { "order" : "asc" } },
           "query" : {
             "bool" : {
@@ -763,7 +781,7 @@
             }
          }
        }
-    ]]></query>        
+    ]]></query>
       <query id='getAccTimeseries'><![CDATA[
       {
         "index" : [##index##],
@@ -1405,6 +1423,27 @@
         }
       }
      ]]></query>
+    <query id='selectAnomaly_Pattern'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size"   : 10000,
+          "sort" : { "analysis.timestamp" : { "order" : "desc"  } },
+          "_source" : ["analysis.timestamp"],
+          "query" : {
+            "bool" : {
+              "must" : { "match_all": {} },
+               "filter" : {
+                "range" : {
+                   "analysis.timestamp" : { "gte" : #START_TIMESTAMP#, "lte" : #END_TIMESTAMP# }
+                  }
+                }
+              }
+          }
+        }
+      }
+    ]]></query>
     <query id='selectPatterns'><![CDATA[
       {
         "index" : #INDEX#,
