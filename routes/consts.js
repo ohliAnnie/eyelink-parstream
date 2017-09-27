@@ -10,6 +10,11 @@ define("CONFIG", {
 						  relative: "/upload/office/"},
 });
 
+define("SCHEMA", {
+	"EFSM_ALARM": {'INDEX' : 'efsm_alarm-', 'TYPE' : 'AgentAlarm'},
+	"APPLICATION_INFO": {'INDEX' : 'efsm_applicationinfo', 'TYPE' : 'applicationInfo'}
+});
+
 define("APPLICATION_INFO", {
 	"ELAGENT": 'elagent',
 	"FILEBEAT": 'filebeat',

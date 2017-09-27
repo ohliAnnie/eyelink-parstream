@@ -5,10 +5,11 @@ var request = require("supertest");
 var expect = require("chai").expect;
 var net = require('net');
 
+require('date-utils');
 var io = require('socket.io-client');
 
-// var socketURL = 'http://localhost:5223';
-var socketURL = 'http://m2utech.eastus.cloudapp.azure.com:5223';
+var socketURL = 'http://localhost:5223';
+// var socketURL = 'http://m2utech.eastus.cloudapp.azure.com:5223';
 
 var options ={
   transports: ['websocket'],
@@ -82,13 +83,15 @@ describe("Socketio", function(){
 
       //   client1.emit('getEventListForAlarm', 0);
       // });
+      var d = new Date();
+      var regTimeStamp = d.toFormat('YYYY-MM-DDTHH24:MI:SS');
       var sendData = {
-        alarmType : 'ELAGENT/DATA_ANALYTIC',
+        applicationType : 'ELAGENT',
         agentId : 'test_app',
-        timestamp : 'current timestamp',
-        alarmType : 'CPU_70/MEMORY_70/DA_ANORMAL',
+        timestamp : regTimeStamp,
+        alarmType : 'CPU_90',
         alarmTypeName : '',
-        message : 'CPU over 70%'}
+        message : 'CPU over 90%'}
       client1.emit('receiveAlarmData', sendData);
 
       client1.on('returnAlarmData', function(data) {

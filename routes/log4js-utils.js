@@ -17,22 +17,22 @@ var logger = log4js.getLogger('eyelink');
 
 // log 기록 파일명을 추가하기 위해서 별도로 debug, info, error, fetal 추가함.
 Logger.prototype.debug = function(message) {
-  logger.debug('(' + this.jsfile + ') ' + message);
+  logger.debug('(' + this.jsfile + ') ' + JSON.stringify(message));
 }
 
 Logger.prototype.info = function(message) {
   // var logger = log4js.getLogger('eyelink');
-  logger.info('(' + this.jsfile + ') ' + message);
+  logger.info('(' + this.jsfile + ') ' + JSON.stringify(message));
 }
 
 Logger.prototype.error = function(message) {
   // var logger = log4js.getLogger('eyelink');
-  logger.error('(' + this.jsfile + ') ' + message);
+  logger.error('(' + this.jsfile + ') ' + JSON.stringify(message));
 }
 
 Logger.prototype.fetal = function(message) {
   // var logger = log4js.getLogger('eyelink');
-  logger.fetal('(' + this.jsfile + ') ' + message);
+  logger.fetal('(' + this.jsfile + ') ' + JSON.stringify(message));
 }
 
 exports.Logger = Logger;

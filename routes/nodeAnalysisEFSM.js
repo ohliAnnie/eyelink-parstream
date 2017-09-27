@@ -52,6 +52,11 @@ router.get('/pattern', function(req, res, next) {
   res.render('./analysis/pattern', { title: global.config.productname, mainmenu:mainmenu});
 });
 
+router.get('/patternMatching', function(req, res, next) {
+  console.log(_rawDataByDay);
+  res.render('./analysis/patternMatching', { title: global.config.productname, mainmenu:mainmenu});
+});
+
 router.get('/postTest', function(req, res, next) {
   console.log(_rawDataByDay);
   res.render('./analysis/postTest', { title: global.config.productname, mainmenu:mainmenu});
@@ -289,6 +294,27 @@ router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     }
     console.log('analysis/restapi/getAnomalyPatternList -> length : %s', out_data.length);
+    res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
+// pattern dataset
+router.get('/restapi/getAnomaly_Pattern', function(req, res, next) {
+  console.log(req.query);
+  var in_data = {
+      INDEX : "analysis", TYPE : "anomaly_pattern",
+      START_TIMESTAMP: req.query.startDate + 'T00:00:00',
+      END_TIMESTAMP: req.query.endDate + 'T23:59:59'};
+
+  var sql = "selectAnomaly_Pattern";
+
+  queryProvider.selectSingleQueryByID2("analysis", sql, in_data, function(err, out_data, params) {
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data === null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    console.log('analysis/restapi/getAnomaly_Pattern -> length : %s', out_data.length);
     res.json({rtnCode: rtnCode, rtnData: out_data });
   });
 });
