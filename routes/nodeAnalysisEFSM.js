@@ -298,13 +298,13 @@ router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
   });
 });
 
-// pattern dataset
+// anomaly pattern dataset by date range
 router.get('/restapi/getAnomaly_Pattern', function(req, res, next) {
   console.log(req.query);
   var in_data = {
       INDEX : "analysis", TYPE : "anomaly_pattern",
-      START_TIMESTAMP: req.query.startDate + 'T00:00:00',
-      END_TIMESTAMP: req.query.endDate + 'T23:59:59'};
+      START_TIMESTAMP: req.query.startTime,
+      END_TIMESTAMP: req.query.endTime};
 
   var sql = "selectAnomaly_Pattern";
 

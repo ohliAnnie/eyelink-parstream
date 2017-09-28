@@ -1313,8 +1313,13 @@
         "type" : #TYPE#,
         "body" : {
           "size"   : 10000,
-          "sort" : { "analysis.timestamp" : { "order" : "desc"  } },
-          "_source" : ["analysis.timestamp"],
+          "sort" : { "analysis.timestamp" : { "order" : "asc"  } },
+          "_source" : [
+              "analysis.timestamp",
+              "analysis.voltage", "analysis.voltage_status",
+              "analysis.ampere", "analysis.ampere_status",
+              "analysis.active_power", "analysis.active_power_status",
+              "analysis.power_factor", "analysis.power_factor_status"],
           "query" : {
             "bool" : {
               "must" : { "match_all": {} },
