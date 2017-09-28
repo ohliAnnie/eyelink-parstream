@@ -9,7 +9,7 @@ function getMenu(id, date) {
     },
     success: function(result) {
       if (result.rtnCode.code == "0000") {              
-        drawList(result.rtnData);        
+        drawMenuList(result.rtnData);        
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -21,7 +21,7 @@ function getMenu(id, date) {
   });
 }
 
-function drawList(data){
+function drawMenuList(data){
   $('#call').empty();
   var sb = new StringBuffer();
   sb.append('<div class="portlet light bordered">');
