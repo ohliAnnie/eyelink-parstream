@@ -109,11 +109,11 @@ html
         //- $('#header_notification_bar').addClass('open').trigger('classChange');
 
         $("#header_notification_bar").on('click', function() {
-          console.log("#header_notification_bar click");
+          //- console.log("#header_notification_bar click");
         });
 
         $("#header_notification_bar").on('mouseover', function() {
-          console.log('mouseover');
+          //- console.log('mouseover');
           if (notLoad) {
             notLoad = false;
             displayAlarmData();
@@ -121,18 +121,18 @@ html
         });
       });
 
-
       function initAlarm() {
         var socket = io.connect();
         socket.on('returnAlarmData', function (data) {
-          console.log(data);
-          changeCount(data.count);
+          //- alert(data);
+          //- console.log(data);
+          changeAlarmCount(data.count);
         });
 
         //- socket.emit('receiveAlarmData', 'initAlarm');
       }
 
-      function changeCount(count) {
+      function changeAlarmCount(count) {
           $("#alarmCount").html(count);
           $("#alarmCount2").html(count + ' pending notifications');
       }
@@ -149,8 +149,8 @@ html
           success: function(result) {
             if (result.rtnCode.code == "0000") {
               //- console.log(result.rtnData);
-              changeCount(result.rtnCount);
-              drawList(result.rtnData);
+              changeAlarmCount(result.rtnCount);
+              drawAlarmList(result.rtnData);
             } else {
               //- $("#errormsg").html(result.message);
             }
@@ -165,7 +165,7 @@ html
 
       }
 
-      function drawList(data){
+      function drawAlarmList(data){
         $('#alarmList').empty();
 
         var sb = new StringBuffer();

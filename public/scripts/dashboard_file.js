@@ -1,3 +1,4 @@
+var cyclick = '';
 var nodeList = [];
 function makeDatabyDay(day){
   var yDay = new Date(day.getTime()-24*60*60*1000);    
@@ -8,8 +9,11 @@ function makeDatabyDay(day){
   var data = { index: indexs+'*',
               START : y[3]+"-"+mon[y[1]]+"-"+y[2]+'T15:00:00', END : d[3]+"-"+mon[d[1]]+"-"+d[2]+"T15:00:00"};   
   console.log(data);
-  getDash(data);    
-  getMapData(data);
+  getDash(data);   
+  var server = $("#server").val();
+  if(server != "all") {
+    getMapData(data);
+  }
 }
 function getMapData(data){  
   $.ajax({
@@ -105,20 +109,7 @@ function getServerMap(elesJson) {
           'target-arrow-color': '#1593ff',
           'source-arrow-color': 'white',
           'opacity': 1
-        })
-        .selector('#a1')
-        .css({
-          'background-image': '../assets/images/user1.png'
-        })
-        .selector('#a2')
-        .css({
-          'background-image': '../assets/images/user2.png'
-
-        })
-        .selector('#b1')
-        .css({
-          'background-image': '../assets/sample/tomcat.png'
-        })
+        })        
         .selector('.multiline-manual')
         .css({
           'text-wrap' : 'wrap'
@@ -138,13 +129,43 @@ function getServerMap(elesJson) {
       // giddy up
     }
   });  
+
+  var defaults = {
+    container: document.getElementById('cynav')
+  , viewLiveFramerate: 0 // set false to update graph pan only on drag end; set 0 to do it instantly; set a number (frames per second) to update not more than N times per second
+  , thumbnailEventFramerate: 30 // max thumbnail's updates per second triggered by graph updates
+  , thumbnailLiveFramerate: false // max thumbnail's updates per second. Set false to disable
+  , dblClickDelay: 200 // milliseconds
+  , removeCustomContainer: true // destroy the container specified by user on plugin destroy
+  , rerenderDelay: 100 // ms to throttle rerender updates to the panzoom for performance
+};
+ var nav = cy.navigator ( defaults );
+
+  var server = $("#server").val();
+  if(server=="all"){
+    cy.$('#jira').json({ selected: true });
+    displayCount();
+    drawChart();      
+    makeDatabyDay(new Date());
+  }
   cy.on('click', 'node', function(evt){    
-     var id = this.id();
+    console.log(evt);
+    console.log(this.id());    
+    var server = $("#server").val();        
+    cyclick = this.id();    
+    if(server === 'all' && cyclick == 'jira'){
+      displayCount();
+      drawChart();      
+      makeDatabyDay(new Date());
+    } else if(server === 'all' && cyclick == 'TESTAPP') {
+      getAgentData(new Date);
+      displayCountAgent();
+    }
      nodeList.forEach(function(d){      
-      if(d.id == id){
+      if(d.id == cyclick){
          d.status = (d.status == 0) ?1 : 0
       }
-     });
+     });     
   });  
 };
 
@@ -154,11 +175,11 @@ function getDash(data) {
     dataType: "json",
     type: "GET",    
     data: data,
-    success: function(result) {
-      console.log(result)
+    success: function(result) {      
       if (result.rtnCode.code == "0000") {        
         //- $("#successmsg").html(result.message);        
         drawDash(result.rtnData, result.start, result.end);
+        summary(result.rtnData, result.start, result.end);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -175,8 +196,7 @@ $.ajax({
     type: "get",
     data: data,
     success: function(result) {      
-      if (result.rtnCode.code == "0000") {                
-        console.log(result.rtnData);
+      if (result.rtnCode.code == "0000") {                        
         drawSankey({rtnData : result.rtnData, id : result.id});
       } else {
         //- $("#errormsg").html(result.message);
@@ -412,7 +432,7 @@ function summary(data, start, end) {
     .round(d3.time.hour.round)
     .xUnits(function(){return 24;})
     .elasticY(true)
-    .centerBar(true)
+    .centerBar(false)
  //   .gap(gap)
      .colors(d3.scale.ordinal().range(["#57a115", "#0ecdb0", "#0e99cd", "#de9400", "#de3636"]));
     load.legend(dc.legend());

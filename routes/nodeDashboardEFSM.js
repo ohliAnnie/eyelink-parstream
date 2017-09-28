@@ -13,11 +13,13 @@ var indexAcc = global.config.es_index.es_jira;
 
 router.get('/', function(req, res, next) {
   mainmenu.dashboard = 'open selected';
+  mainmenu.timeseries = '';
   var server = req.query.server;    
   var in_data = {    index:  "efsm_applicationinfo", type: "applicationInfo"    };
   queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
     var check = {}, list = [], cnt = 0;    
+    list.push({ id : 'all', name : 'all' });
     console.log(out_data);
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -25,9 +27,9 @@ router.get('/', function(req, res, next) {
       out_data.forEach(function(d){
         if(check[d._source.applicationId]==null){
           check[d._source.applicationId] = { no : cnt++};
-          list.push({ id : d._source.collection, name : d._source.applicationId })
+          list.push({ id : d._source.collection, name : d._source.applicationId });
         } 
-      });      
+      });       
     }    
     if(server == undefined || server == ""){
       server = list[0].name;
@@ -66,6 +68,7 @@ router.get('/timeseries_file', function(req, res, next) {
 
 router.get('/timeseries_agent', function(req, res, next) {
   mainmenu.timeseries = ' open selected';  
+  mainmenu.timeseries = '';
   var in_data = {    index:  "elagent_test-agent-2017.09.06", type: "AgentInfo"    };
   queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
@@ -87,6 +90,7 @@ router.get('/timeseries_agent', function(req, res, next) {
 
 router.get('/bottleneck', function(req, res, next) {
   mainmenu.dashboard = 'open selected';
+  mainmenu.timeseries = '';
   var server = req.query.server;    
   var in_data = {    index:  "efsm_applicationinfo", type: "applicationInfo"    };
   queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
@@ -542,9 +546,10 @@ router.get('/restapi/getTransactionDetail', function(req, res, next) {
   console.log('dashboard/restapi/getTransactionDetail');      
   var in_data = {
     index : req.query.index ,    type : req.query.type,
-    id : req.query.id,    value : req.query.value
+    id : req.query.id,    value : req.query.value,
+    sort : "startTime"
   };
-  queryProvider.selectSingleQueryByID2("dashboard","selectByIdValue", in_data, function(err, out_data, params) {     
+  queryProvider.selectSingleQueryByID2("dashboard","selectByIdValueSort", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
@@ -784,8 +789,8 @@ router.get('/restapi/getJiramapdata', function(req, res, next) {
      nodekey['jira'] = 0
       var color = ["#d5d5d5", "#57a115", "#de9400", "#de3636"];
       out_data.forEach(function(d){            
-        d._source.application_id = 'users';
-        d._source.application_name = 'users';
+        d._source.application_id = 'USER';
+        d._source.application_name = 'USER';
         d._source.to_application_id = 'jira';        
         if(nodekey[d._source.application_id]!=null) {       
           if(parseInt(d._source.response) >=400 ) {
@@ -795,15 +800,15 @@ router.get('/restapi/getJiramapdata', function(req, res, next) {
           nodekey[d._source.application_id] = 0;                  
           var img = d._source.application_name.split(' ');
           nodeList.push({ id : d._source.application_id, status : 0 });
-          nodes.push({ data : { id : d._source.application_id, name : d._source.application_name, img : '../assets/sample/'+img[0]+'.png', parent : 'p_'+d._source.application_id }});      
+          nodes.push({ data : { id : d._source.application_id, name : d._source.application_name, img : '../assets/sample/server-'+img[0]+'.png', parent : 'p_'+d._source.application_id }});      
           if(parseInt(d._source.response) >= 400 ) {
             nodekey[d._source.application_id]++;
           }
         }        
-        if(edgekey[d._source.application_id+'-'+d._source.to_application_id] != null) {
-          edgekey[d._source.application_id+'-'+d._source.to_application_id]++
+        if(edgekey[d._source.application_id+'>'+d._source.to_application_id] != null) {
+          edgekey[d._source.application_id+'>'+d._source.to_application_id]++
         } else {
-          edgekey[d._source.application_id+'-'+d._source.to_application_id] = 1;
+          edgekey[d._source.application_id+'>'+d._source.to_application_id] = 1;
         }        
       });      
 
@@ -820,7 +825,7 @@ router.get('/restapi/getJiramapdata', function(req, res, next) {
         }
       }
       for(key in edgekey) {
-        var id = key.split('-');    
+        var id = key.split('>');    
         edges.push({ data : { count : edgekey[key], source : id[0], target : id[1]} });
       }       
     res.json({rtnCode: rtnCode, nodes : nodes, edges : edges, nodeList : nodeList});
@@ -852,8 +857,8 @@ router.get('/restapi/getJiramapdataForScatter', function(req, res, next) {
      nodekey['jira'] = 0
       var color = ["#d5d5d5", "#57a115", "#de9400", "#de3636"];
       out_data.forEach(function(d){            
-        d._source.application_id = 'users';
-        d._source.application_name = 'users';
+        d._source.application_id = 'USER';
+        d._source.application_name = 'USER';
         d._source.to_application_id = 'jira';        
         if(nodekey[d._source.application_id]!=null) {       
           if(parseInt(d._source.response) >=400 ) {
@@ -868,10 +873,10 @@ router.get('/restapi/getJiramapdataForScatter', function(req, res, next) {
             nodekey[d._source.application_id]++;
           }
         }        
-        if(edgekey[d._source.application_id+'-'+d._source.to_application_id] != null) {
-          edgekey[d._source.application_id+'-'+d._source.to_application_id]++
+        if(edgekey[d._source.application_id+'>'+d._source.to_application_id] != null) {
+          edgekey[d._source.application_id+'>'+d._source.to_application_id]++
         } else {
-          edgekey[d._source.application_id+'-'+d._source.to_application_id] = 1;
+          edgekey[d._source.application_id+'>'+d._source.to_application_id] = 1;
         }        
       });      
 
@@ -888,7 +893,7 @@ router.get('/restapi/getJiramapdataForScatter', function(req, res, next) {
         }
       }
       for(key in edgekey) {
-        var id = key.split('-');    
+        var id = key.split('>');    
         edges.push({ data : { count : edgekey[key], source : id[0], target : id[1]} });
       }       
     res.json({rtnCode: rtnCode, nodes : nodes, edges : edges, nodeList : nodeList});
@@ -951,6 +956,112 @@ router.get('/restapi/getAppmapdata', function(req, res, next) {
   });
 });
 */
+
+router.get('/restapi/getAllMapData', function(req, res, next) {
+  console.log('dashboard/restapi/getAllMapData');    
+ var in_data = {    index : req.query.index, START : req.query.start, END : req.query.end  };     
+  queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccMap", in_data, function(err, out_data, params) {             
+    var rtnCode = CONSTS.getErrData('0000');    
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }            
+     var nodes1 = [], edges1 = [], nodekey1 = [], edgekey1 = [], nodeList1 = [];     
+     nodes1.push({ data : { id : 'jira', name : 'jira', img : '../assets/sample/JIRA.png', parent : 'p_jira' }});      
+     nodekey1['jira'] = 0
+      var color = ["#d5d5d5", "#57a115", "#de9400", "#de3636"];
+      out_data.forEach(function(d){            
+        d._source.application_id = 'USER';
+        d._source.application_name = 'USER';
+        d._source.to_application_id = 'jira';        
+        if(nodekey1[d._source.application_id]!=null) {       
+          if(parseInt(d._source.response) >=400 ) {
+            nodekey1[d._source.to_application_id]++;
+          }
+        } else { 
+          nodekey1[d._source.application_id] = 0;                  
+          var img = d._source.application_name.split(' ');
+          nodeList1.push({ id : d._source.application_id, status : 0 });
+          nodes1.push({ data : { id : d._source.application_id, name : d._source.application_name, img : '../assets/sample/server-'+img[0]+'.png', parent : 'p_'+d._source.application_id }});      
+          if(parseInt(d._source.response) >= 400 ) {
+            nodekey1[d._source.to_application_id]++;
+          }
+        }        
+        if(edgekey1[d._source.application_id+'>'+d._source.to_application_id] != null) {
+          edgekey1[d._source.application_id+'>'+d._source.to_application_id]++
+        } else {
+          edgekey1[d._source.application_id+'>'+d._source.to_application_id] = 1;
+        }        
+      });      
+      nodes1.forEach(function(d){    
+        if(nodekey1[d.data.id]!=0){
+          d.data.color = color[3];
+        } else {
+          d.data.color = color[1];
+        }
+      });      
+    console.log('dashboard/restapi/getAgentMap');    
+    var in_data = {
+      index : "elagent_test-agent-*",
+      type : "ApplicationLinkData",
+      start : req.query.start, end : req.query.end,
+      id : req.query.id
+    };    
+    queryProvider.selectSingleQueryByID2("dashboard","selectByRange", in_data, function(err, out_data, params) {          
+      var rtnCode = CONSTS.getErrData('0000');    
+      if (out_data == null) {
+        rtnCode = CONSTS.getErrData('0001');      
+      }             
+        var nodes = nodes1, edges = edges1, nodekey = nodekey1, edgekey = edgekey1, nodeList = nodeList1;     
+        out_data.forEach(function(d){            
+        if(d._source.applicationId == 'USER'){
+
+          if(nodekey[d._source.applicationId]!=null) {       
+            if(d._source.isError) {
+              nodekey[d._source.toApplicationId]++;
+            }
+          } else {           
+            nodekey[d._source.applicationId] = 0;                            
+            nodeList.push({ id : d._source.applicationId, status : 0 });
+            nodes.push({ data : { id : d._source.applicationId, name : d._source.applicationId, img : '../assets/sample/server-'+d._source.serviceTypeName+'.png', parent : 'p_'+d._source.applicationId }});      
+            if(d._source.isError) {
+              nodekey[d._source.toApplicationId]++;
+              console.log(nodekey);
+            }
+          }
+          if(edgekey[d._source.applicationId+'>'+d._source.toApplicationId] != null) {
+            edgekey[d._source.applicationId+'>'+d._source.toApplicationId]++
+          } else {
+            if(nodekey[d._source.toApplicationId] == null){
+              nodekey[d._source.toApplicationId] = 0;                            
+              nodeList.push({ id : d._source.toApplicationId, status : 0 });
+              nodes.push({ data : { id : d._source.toApplicationId, name : d._source.toApplicationId, img : '../assets/sample/server-'+d._source.toServiceTypeName+'.png', parent : 'p_'+d._source.toApplicationId }});      
+            }
+            console.log(d._source.applicationId+'>'+d._source.toApplicationId); 
+            edgekey[d._source.applicationId+'>'+d._source.toApplicationId] = 1;
+          }
+        }        
+        });              
+        nodes.forEach(function(d){    
+          if(nodekey[d.data.id]!=0){
+            d.data.color = color[3];
+          } else {
+            d.data.color = color[1];
+          }
+        });      
+        for(key in nodekey) {
+          if(nodekey[key] != 0){
+            nodes.push({ data : { id : 'p_'+key, name : nodekey[key] ,img : '../assets/sample/back.png' }});      
+          }
+        }
+        for(key in edgekey) {
+          var id = key.split('>');    
+          edges.push({ data : { count : edgekey[key], source : id[0], target : id[1]} });
+        }              
+      res.json({rtnCode: rtnCode, nodes : nodes, edges : edges, nodeList : nodeList, nodekey : nodekey});
+    });       
+    res.json({rtnCode: rtnCode, nodes : nodes, edges : edges, nodeList : nodeList, nodekey : nodekey});
+  });
+});
 
 router.get('/restapi/getHeapData', function(req, res, next) {
   console.log('dashboard/restapi/getHeapData');    
@@ -1058,14 +1169,14 @@ router.get('/restapi/getAgentMap', function(req, res, next) {
       out_data.forEach(function(d){    
         if(nodekey[d._source.applicationId]!=null) {       
           if(d._source.isError) {
-            nodekey[d._source.applicationId]++;
+            nodekey[d._source.toApplicationId]++;
           }
         } else {           
           nodekey[d._source.applicationId] = 0;                            
           nodeList.push({ id : d._source.applicationId, status : 0 });
           nodes.push({ data : { id : d._source.applicationId, name : d._source.applicationId, img : '../assets/sample/server-'+d._source.serviceTypeName+'.png', parent : 'p_'+d._source.applicationId }});      
           if(d._source.isError) {
-            nodekey[d._source.applicationId]++;
+            nodekey[d._source.toApplicationId]++;
           }
         }
         if(edgekey[d._source.applicationId+'>'+d._source.toApplicationId] != null) {
@@ -1074,7 +1185,7 @@ router.get('/restapi/getAgentMap', function(req, res, next) {
           if(nodekey[d._source.toApplicationId] == null){
             nodekey[d._source.toApplicationId] = 0;                            
             nodeList.push({ id : d._source.toApplicationId, status : 0 });
-            nodes.push({ data : { id : d._source.toApplicationId, name : d._source.toApplicationId, img : '../assets/sample/server-'+d._source.toServiceTypeName+'.png', parent : 'p_'+d._source.applicationId }});      
+            nodes.push({ data : { id : d._source.toApplicationId, name : d._source.toApplicationId, img : '../assets/sample/server-'+d._source.toServiceTypeName+'.png', parent : 'p_'+d._source.toApplicationId }});      
           }
           console.log(d._source.applicationId+'>'+d._source.toApplicationId); 
           edgekey[d._source.applicationId+'>'+d._source.toApplicationId] = 1;

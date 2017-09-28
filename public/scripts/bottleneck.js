@@ -10,10 +10,9 @@ function getData(server, selected){
   var y = yDay.toString().split(' ');  
   var select = selected['CPU']+selected['MEMORY']+selected['SERVICE'];  
   var slist = select.split(',');  
-  var list = '';
-  for(i=0; i<slist.length; i++){    
-    list = list+' '+slist[i];   
-  }  
+  var list = selected['CPU']+selected['MEMORY']+selected['SERVICE'];
+  console.log(list);
+  
   $.ajax({
     url: "/dashboard/restapi/getBottleneckList" ,
     dataType: "json",
@@ -54,8 +53,6 @@ function drawBottleneckList(data){
   }else{
     sb.append('<td>데이터가 없습니다.</td></tr></table>');
   }  
-  console.log('test');
-  console.log(sb.toString());
   $('#list').append(sb.toString());    
 }
 
@@ -114,8 +111,7 @@ function drawDetail(result){
   }else{
     sb.append('<tr><td>데이터가 없습니다.</td></tr>');
   }
-  sb.append('</table>');  
-  console.log(sb.toString());
+  sb.append('</table>');    
   $('#detail').append(sb.toString());    
 }
 
