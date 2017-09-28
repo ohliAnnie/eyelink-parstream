@@ -307,6 +307,24 @@
          }
       }
     ]]></query>
+        <query id='selectByIdValueSort'><![CDATA[
+    {
+          "index" : #index#,
+          "type" : #type#,
+          "body" : {
+            "size"   : 10000,
+            "sort" : { #sort# : { "order" : "asc" } },
+            "query" : {
+              "match" : {
+                #id# : {
+                  "query" :  #value#,
+                  "operator" : "and"
+                }
+              }
+            }
+         }
+      }
+    ]]></query>
     <query id='selectByIdList'><![CDATA[
      {
           "index" : #index#,
@@ -926,7 +944,7 @@
         "type" : #type#,
         "body" : {
           "size" : 10000,
-          "sort" : {"timestamp" : { "order" : "asc" }},
+          "sort" : {"timestamp" : { "order" : "desc" }},
           "query": {
             "bool": {
               "filter": { "range": { 

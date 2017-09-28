@@ -16,7 +16,8 @@ function getTransaction(id, date) {
     },
     success: function(result) {
       if (result.rtnCode.code == "0000") {              
-        drawDetail(result.rtnData);        
+        drawDetail(result.rtnData);       
+        console.log(result.rtnData);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -43,16 +44,13 @@ function drawDetail(data) {
   sb.append('<th>Exec(ms)</th><th>Exec(%)</th><th>Self(ms)</th><th>Class</th><th>API</th><th>Agent</th><th>Application</th></tr>');    
   var ano = 0, grid = 1, tree = 1;
   data.forEach(function(d){    
-    d = d._source;    
-    console.log(d);
+    d = d._source;        
     var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
     var stime = new Date(d.startTime).getTime()+18*60*60*1000;      
-    var ftime = msToTime(stime);
-    console.log(ftime);
+    var ftime = msToTime(stime);    
    if(d.annotationBoList[0] != null){
     for(i=0; i <d.annotationBoList.length;i++){                    
-      var z = d.annotationBoList[i];      
-      console.log(z);
+      var z = d.annotationBoList[i];            
       if(z.key === 10000014){
         var a = z.value.split('\n');        
         var b = a[1].split(':');       
@@ -102,7 +100,6 @@ function drawDetail(data) {
     }
     for(i=0; i <d.spanEventBoList.length; i++){      
       var z = d.spanEventBoList[i];  
-      console.log(z);
       for(j=0; j<z.annotationBoList.length;j++){                     
         var y =  z.annotationBoList[j];        
         if( y.key === 10000014){          
@@ -164,7 +161,7 @@ function drawDetail(data) {
   });
   sb.append('</table></div></div></div></div>');  
   $('#call').append(sb.toString());  
-    $('.tree-2').treegrid({
+  $('.tree-2').treegrid({
     expanderExpandedClass: 'glyphicon glyphicon-minus',
     expanderCollapsedClass: 'glyphicon glyphicon-plus'
   }); 

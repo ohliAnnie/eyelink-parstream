@@ -13,6 +13,7 @@ var indexAcc = global.config.es_index.es_jira;
 
 router.get('/', function(req, res, next) {
   mainmenu.dashboard = 'open selected';
+  mainmenu.timeseries = '';
   var server = req.query.server;    
   var in_data = {    index:  "efsm_applicationinfo", type: "applicationInfo"    };
   queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
@@ -67,6 +68,7 @@ router.get('/timeseries_file', function(req, res, next) {
 
 router.get('/timeseries_agent', function(req, res, next) {
   mainmenu.timeseries = ' open selected';  
+  mainmenu.timeseries = '';
   var in_data = {    index:  "elagent_test-agent-2017.09.06", type: "AgentInfo"    };
   queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
@@ -88,6 +90,7 @@ router.get('/timeseries_agent', function(req, res, next) {
 
 router.get('/bottleneck', function(req, res, next) {
   mainmenu.dashboard = 'open selected';
+  mainmenu.timeseries = '';
   var server = req.query.server;    
   var in_data = {    index:  "efsm_applicationinfo", type: "applicationInfo"    };
   queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
@@ -543,9 +546,10 @@ router.get('/restapi/getTransactionDetail', function(req, res, next) {
   console.log('dashboard/restapi/getTransactionDetail');      
   var in_data = {
     index : req.query.index ,    type : req.query.type,
-    id : req.query.id,    value : req.query.value
+    id : req.query.id,    value : req.query.value,
+    sort : "startTime"
   };
-  queryProvider.selectSingleQueryByID2("dashboard","selectByIdValue", in_data, function(err, out_data, params) {     
+  queryProvider.selectSingleQueryByID2("dashboard","selectByIdValueSort", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
@@ -1008,7 +1012,9 @@ router.get('/restapi/getAllMapData', function(req, res, next) {
         rtnCode = CONSTS.getErrData('0001');      
       }             
         var nodes = nodes1, edges = edges1, nodekey = nodekey1, edgekey = edgekey1, nodeList = nodeList1;     
-        out_data.forEach(function(d){    
+        out_data.forEach(function(d){            
+        if(d._source.applicationId == 'USER'){
+
           if(nodekey[d._source.applicationId]!=null) {       
             if(d._source.isError) {
               nodekey[d._source.toApplicationId]++;
@@ -1032,7 +1038,8 @@ router.get('/restapi/getAllMapData', function(req, res, next) {
             }
             console.log(d._source.applicationId+'>'+d._source.toApplicationId); 
             edgekey[d._source.applicationId+'>'+d._source.toApplicationId] = 1;
-          }        
+          }
+        }        
         });              
         nodes.forEach(function(d){    
           if(nodekey[d.data.id]!=0){
