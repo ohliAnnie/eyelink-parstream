@@ -1,3 +1,4 @@
+var cyclick = '';
 var nodeList = [];
 function makeDatabyDay(day){
   var yDay = new Date(day.getTime()-24*60*60*1000);    
@@ -139,9 +140,19 @@ function getServerMap(elesJson) {
     }
   });  
   cy.on('click', 'node', function(evt){    
-     var id = this.id();
+    console.log(this.id());    
+    var server = $("#server").val();        
+    cyclick = this.id();    
+    if(server === 'all' && cyclick == 'jira'){
+      displayCount();
+      drawChart();      
+      makeDatabyDay(new Date())
+    } else if(server === 'all' && cyclick == 'TESTAPP') {
+      getAgentData(new Date);
+      displayCountAgent();
+    }
      nodeList.forEach(function(d){      
-      if(d.id == id){
+      if(d.id == cyclick){
          d.status = (d.status == 0) ?1 : 0
       }
      });
@@ -154,11 +165,11 @@ function getDash(data) {
     dataType: "json",
     type: "GET",    
     data: data,
-    success: function(result) {
-      console.log(result)
+    success: function(result) {      
       if (result.rtnCode.code == "0000") {        
         //- $("#successmsg").html(result.message);        
         drawDash(result.rtnData, result.start, result.end);
+        summary(result.rtnData, result.start, result.end);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -175,8 +186,7 @@ $.ajax({
     type: "get",
     data: data,
     success: function(result) {      
-      if (result.rtnCode.code == "0000") {                
-        console.log(result.rtnData);
+      if (result.rtnCode.code == "0000") {                        
         drawSankey({rtnData : result.rtnData, id : result.id});
       } else {
         //- $("#errormsg").html(result.message);

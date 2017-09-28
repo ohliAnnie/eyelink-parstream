@@ -26,6 +26,7 @@ block script
   script(src='/assets/sample/js/d3.chart.sankey.min.js')    
   script(type='text/javascript', src="/scripts/dashboard_file.js")  
   script(type='text/javascript', src="/scripts/dashboard_agent.js")  
+  script(type='text/javascript', src="/scripts/dashboard_all.js") 
   script.
     $(document).ready(function(e) {   
       var server = $("#server").val();      
@@ -37,6 +38,8 @@ block script
         displayCount();
         drawChart();      
         makeDatabyDay(new Date());
+      } else if(server === "all"){
+        getAllData(new Date());
       }
       $( "#btn_sankey" ).click(function() {      
         $( "#cy" ).slideToggle( "slide" );
@@ -51,7 +54,7 @@ block script
           location.href='/dashboard/timeseries_agent';
         } else if($("#server").val() == "jira_access") {
           location.href='/dashboard/timeseries_file';
-        }
+        }djaa
       });  
       $('input[type="radio"]').on('click change', function(e) {
         var time = {'10min' : 10, '30min' : 30, '1hour' : 60, '3hour' : 3*60, '6hour' : 6*60, '12hour' : 12*60, '24hour' : 24*60 };
@@ -96,7 +99,7 @@ block content
                             if data.name==server
                              option(value=data.name, selected='selected') #{data.name}
                             else
-                             option #{data.name}                              
+                             option #{data.name}                                                  
                     .col-md-2.form-inline
                       button#btn_search.btn.blue
                         i.fa.fa-search  Search
