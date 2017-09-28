@@ -109,20 +109,7 @@ function getServerMap(elesJson) {
           'target-arrow-color': '#1593ff',
           'source-arrow-color': 'white',
           'opacity': 1
-        })
-        .selector('#a1')
-        .css({
-          'background-image': '../assets/images/user1.png'
-        })
-        .selector('#a2')
-        .css({
-          'background-image': '../assets/images/user2.png'
-
-        })
-        .selector('#b1')
-        .css({
-          'background-image': '../assets/sample/tomcat.png'
-        })
+        })        
         .selector('.multiline-manual')
         .css({
           'text-wrap' : 'wrap'
@@ -142,14 +129,34 @@ function getServerMap(elesJson) {
       // giddy up
     }
   });  
+
+  var defaults = {
+    container: document.getElementById('cynav')
+  , viewLiveFramerate: 0 // set false to update graph pan only on drag end; set 0 to do it instantly; set a number (frames per second) to update not more than N times per second
+  , thumbnailEventFramerate: 30 // max thumbnail's updates per second triggered by graph updates
+  , thumbnailLiveFramerate: false // max thumbnail's updates per second. Set false to disable
+  , dblClickDelay: 200 // milliseconds
+  , removeCustomContainer: true // destroy the container specified by user on plugin destroy
+  , rerenderDelay: 100 // ms to throttle rerender updates to the panzoom for performance
+};
+ var nav = cy.navigator ( defaults );
+
+  var server = $("#server").val();
+  if(server=="all"){
+    cy.$('#jira').json({ selected: true });
+    displayCount();
+    drawChart();      
+    makeDatabyDay(new Date());
+  }
   cy.on('click', 'node', function(evt){    
+    console.log(evt);
     console.log(this.id());    
     var server = $("#server").val();        
     cyclick = this.id();    
     if(server === 'all' && cyclick == 'jira'){
       displayCount();
       drawChart();      
-      makeDatabyDay(new Date())
+      makeDatabyDay(new Date());
     } else if(server === 'all' && cyclick == 'TESTAPP') {
       getAgentData(new Date);
       displayCountAgent();
@@ -158,7 +165,7 @@ function getServerMap(elesJson) {
       if(d.id == cyclick){
          d.status = (d.status == 0) ?1 : 0
       }
-     });
+     });     
   });  
 };
 
@@ -425,7 +432,7 @@ function summary(data, start, end) {
     .round(d3.time.hour.round)
     .xUnits(function(){return 24;})
     .elasticY(true)
-    .centerBar(true)
+    .centerBar(false)
  //   .gap(gap)
      .colors(d3.scale.ordinal().range(["#57a115", "#0ecdb0", "#0e99cd", "#de9400", "#de3636"]));
     load.legend(dc.legend());
