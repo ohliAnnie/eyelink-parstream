@@ -415,11 +415,11 @@ function drawAgentScattor(data, start, end){
       if(cnt != 0){         
         oScatterChart._empty();
         oScatterChart._redraw();      
-        summaryAgent(data, start, end);
+        //summaryAgent(data, start, end);
       }
       oScatterChart.addBubbleAndDraw(data);         
   }   
    if(cnt++ == 0) {
-    summaryAgent(data, start, end);
+    //summaryAgent(data, start, end);
    }  
 };
