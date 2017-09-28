@@ -95,10 +95,6 @@ function test(matchingList){
   });
 }
 
-function clickPattern(factor,timestamp,clusterNo){
-  console.log(factor, timestamp, clusterNo);
-}
-
 function drawMatchingHistory(matchingList) {
   "use strict";
   var seatvar = document.getElementsByClassName("matchingList");
@@ -135,35 +131,132 @@ function drawMatchingHistory(matchingList) {
   });
   sb.append("</tbody>");
   $('#matchingList').append(sb.toString());
+}
 
-  $('.clickStatus').click(function(){
-      // var th = $('#matchingList th').eq($(this).index());
+function clickPattern(factor,timestamp,clusterNo){
+  console.log(factor, timestamp, clusterNo);
+  var creationDate = timestamp.split('T')[0];
+  var target = "pattern_data." + factor + ".center." + clusterNo;
+  $.ajax({
+    url: "/analysis/restapi/getClusterPattern",
+    dataType: "json",
+    type: "get",
+    data: {id : creationDate, target : target},
+    success: function(result) {
+        if (result.rtnCode.code == "0000") {
+          console.log(result);
+          var matchData = result.rtnData.pattern_data[factor]['center'][clusterNo];
+          console.log(matchData);
+          // var pCenter = result.rtnData.pattern_data[factor]['center'][clusterNo];
+          // var pMin = result.rtnData.pattern_data[factor]['min_value'][clusterNo];
+          // var pMax = result.rtnData.pattern_data[factor]['max_value'][clusterNo];
+          // var pLower = result.rtnData.pattern_data[factor]['lower'][clusterNo];
+          // var pUpper = result.rtnData.pattern_data[factor]['upper'][clusterNo];
+          // console.log(pCenter, pMin, pMax, pLower, pUpper);
 
-      // console.log(th.text());
-      // console.log($(this).index())
+          // var listVal = [];
+          // listVal.push(Math.max.apply(Math, pCenter));
+          // listVal.push(Math.min.apply(Math, pCenter));
+          // listVal.push(Math.max.apply(Math, pMax));
+          // listVal.push(Math.min.apply(Math, pMin));
 
-      var clickStatus = $(this);
-      var col = clickStatus.parent().children().index($(this));
-      var row = clickStatus.parent().parent().children().index($(this).parent());
-      var title = clickStatus.closest("table").find("th").eq(row).text();
+          var minval = Math.min.apply(Math, matchData);
+          var maxval = Math.max.apply(Math, matchData);
+          var stime = new Date(Date.parse(timestamp) - (1000*60*110));
+          var set = [];
+          console.log(stime);
 
-//      var name = clickStatus.html()
-      console.log(col);
-      console.log(row);
-      console.log(title);
+          for(i=0; i<matchData.length; i++){
+            set.push({ind : i, x : stime-(i-120)*60*1000, y : matchData[i]});
+          }
 
-      //console.log(col)
+          console.log(set);
 
-      // var td0 = td.eq(0).text();
-      // var td1 = td.eq(1).text();
-      // var td2 = td.eq(2).text();
-      // var td3 = td.eq(3).text();
-      // var td4 = td.eq(4).text();
-      // var td5 = td.eq(5).text();
-      // var td6 = td.eq(6).text();
-      // //var state = td.eq(3).text();
-      // console.log(td0, td1, td2, td3, td4, td5, td6);
+          d3.selectAll("svg").remove();
+          drawPatternChart(stime, set, minval, maxval);
+        } else {
+          console.log("failure!!!!!!!");
+        }
+      },
+      error: function(req, status, err) {
+        //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+      }
   });
+}
 
+function drawPatternChart(stime, matchData, minval, maxval){
+  var etime = new Date(Date.parse(stime) + (1000*60*120));
+
+
+
+  console.log(stime, etime);
+  // var timeRange = $('select[name=timeRange').val();
+  // var startDt = new Date(Date.parse(basetime) - (1000*60*timeRange));
+  // var endDt = new Date(Date.parse(basetime) + (1000*60*timeRange));
+  // var stime = dateConvert(startDt)
+  // var etime = dateConvert(endDt)
+  // var stime = new Data(parseInt)
+
+  //////////////////////////////
+  var margin = {top: 10, right: 20, bottom: 20, left: 40},
+    width = (window.innerWidth*0.44) - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
+
+  var xScale = d3.time.scale()
+    .domain([stime, etime])
+    .range([0, width]);
+
+
+  var yScale = d3.scale.linear()
+    .domain([0, maxval])
+    .range([height, 0]);
+
+  var xAxis = d3.svg.axis()
+      .scale(xScale)
+      .orient("bottom")
+      .innerTickSize(-height)
+      .outerTickSize(0)
+      .tickPadding(10);
+
+  var yAxis = d3.svg.axis()
+      .scale(yScale)
+      .orient("left")
+      .innerTickSize(-width)
+      .outerTickSize(0)
+      .tickPadding(10);
+
+  var line = d3.svg.line()
+      .x(function(d) { return xScale(d.x); })
+      .y(function(d) { return yScale(d.y); });
+
+  var svg = d3.select("#patternChart")
+      .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.left + margin.bottom)
+      .append("g")
+          .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+    
+
+  // Add the X Axis
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    // Add the Y Axis
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+
+    svg.append("path")
+        .data([matchData])
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-linecap", "round")
+        .attr("stroke-width", 3)
+        .attr("d", line);
 }
 

@@ -144,7 +144,6 @@ router.get('/restapi/getAnomaly/:id', function(req, res, next) {
 // get pattern about selected cluster
 router.get('/restapi/getClusterPattern', function(req, res, next) {
   console.log(req.query);
-  console.log("11111111111111")
   var in_data = {
       INDEX: "analysis", TYPE: "anomaly",
       ID: req.query.id,
