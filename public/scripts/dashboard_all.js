@@ -7,18 +7,17 @@ function getAllData(day){
  var n = now.toString().split(' ');
  var indexs = $('#indexs').val();
  var data = { index : indexs+'*', type : "access",
- 			  start : y[3]+"-"+mon[y[1]]+"-"+y[2]+"T15:00:00",
+        start : y[3]+"-"+mon[y[1]]+"-"+y[2]+"T15:00:00",
         end : n[3]+"-"+mon[n[1]]+"-"+n[2]+"T15:00:00", id : "startTime" };
  $.ajax({
     url: "/dashboard/restapi/getAllMapData",
     dataType: "json",
     type: "GET",    
     data: data,
-    success: function(result) {
-      console.log(result)
+    success: function(result) {      
       if (result.rtnCode.code == "0000") {        
         //- $("#successmsg").html(result.message);        
-        console.log(result);
+        
         var elseJson = { nodes : result.nodes, edges : result.edges };              
         getServerMap(elseJson);
       } else {
@@ -32,7 +31,6 @@ function getAllData(day){
   }); 
 }
 
-function drawAllServerMap(data){
-
+function timeseriesCall(){
+  console.log(cyclick);
 }
-

@@ -42,6 +42,8 @@ function RangeData(start, end){
 }
 
 function drawDashAgent(data){
+  var server = $("#server").val();  
+  if(server != 'all') {
    $.ajax({
     url: "/dashboard/restapi/getAgentMap" ,
     dataType: "json",
@@ -60,6 +62,7 @@ function drawDashAgent(data){
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
   });
+}
   $.ajax({
     url: "/dashboard/restapi/getAgentData" ,
     dataType: "json",
@@ -398,17 +401,15 @@ function drawAgentScattor(data, start, end){
           sDate = sDay[4].split(':');
           
         return sDate[0]+':'+sDate[1]; 
-      },
-      nPaddingRight : 5,
+      },      nPaddingRight : 5,
+
       fOnSelect : function(htPosition, htXY){        
         var aData = this.getDataByXY(htXY.nXFrom, htXY.nXTo, htXY.nYFrom, htXY.nYTo);
         console.log(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
         var start = parseInt(htXY.nXFrom)-9*60*60*1000;
         var end = parseInt(htXY.nXTo)-9*60*60*1000;
-        var link = '/dashboard/selected_detail_agent?start='+start+'&end='+end+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;
-        console.timeEnd('fOnSelect');
-        console.log('adata length', aData.length);
-        RangeData(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
+        var link = '/dashboard/selected_detail_agent?start='+start+'&end='+end+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;        
+        //RangeData(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
         window.open(link, "EyeLink Service List", "menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50");        
       }
     }); 

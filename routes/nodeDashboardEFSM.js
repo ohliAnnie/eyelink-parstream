@@ -18,6 +18,7 @@ router.get('/', function(req, res, next) {
   queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
     var check = {}, list = [], cnt = 0;    
+    list.push({ id : 'all', name : 'all' });
     console.log(out_data);
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -27,8 +28,7 @@ router.get('/', function(req, res, next) {
           check[d._source.applicationId] = { no : cnt++};
           list.push({ id : d._source.collection, name : d._source.applicationId });
         } 
-      }); 
-      list.push({ id : 'all', name : 'all' });
+      });       
     }    
     if(server == undefined || server == ""){
       server = list[0].name;
@@ -796,7 +796,7 @@ router.get('/restapi/getJiramapdata', function(req, res, next) {
           nodekey[d._source.application_id] = 0;                  
           var img = d._source.application_name.split(' ');
           nodeList.push({ id : d._source.application_id, status : 0 });
-          nodes.push({ data : { id : d._source.application_id, name : d._source.application_name, img : '../assets/sample/'+img[0]+'.png', parent : 'p_'+d._source.application_id }});      
+          nodes.push({ data : { id : d._source.application_id, name : d._source.application_name, img : '../assets/sample/server-'+img[0]+'.png', parent : 'p_'+d._source.application_id }});      
           if(parseInt(d._source.response) >= 400 ) {
             nodekey[d._source.application_id]++;
           }
