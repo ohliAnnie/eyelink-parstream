@@ -9,8 +9,11 @@ function makeDatabyDay(day){
   var data = { index: indexs+'*',
               START : y[3]+"-"+mon[y[1]]+"-"+y[2]+'T15:00:00', END : d[3]+"-"+mon[d[1]]+"-"+d[2]+"T15:00:00"};   
   console.log(data);
-  getDash(data);    
-  getMapData(data);
+  getDash(data);   
+  var server = $("#server").val();
+  if(server != "all") {
+    getMapData(data);
+  }
 }
 function getMapData(data){  
   $.ajax({
