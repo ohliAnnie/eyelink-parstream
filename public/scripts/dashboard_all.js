@@ -31,6 +31,3 @@ function getAllData(day){
   }); 
 }
 
-function timeseriesCall(){
-  console.log(cyclick);
-}

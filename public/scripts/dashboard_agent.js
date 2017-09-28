@@ -164,7 +164,7 @@ function summaryAgent(data, start, end) {
     .round(d3.time.hour.round)
     .xUnits(function(){return 24;})
     .elasticY(true)
-    .centerBar(true)
+    .centerBar(false)
  //   .gap(gap)
      .colors(d3.scale.ordinal().range(["#57a115", "#0ecdb0", "#0e99cd", "#de9400", "#de3636"]));
     load.legend(dc.legend());
