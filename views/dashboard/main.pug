@@ -30,10 +30,10 @@ block script
     $(document).ready(function(e) {   
       var server = $("#server").val();      
       console.log(server);
-      if(server === "TESTAPP"){
-        getAgentData();
+      if(server === "test-agent"){
+        getAgentData(new Date);
         displayCountAgent();
-      } else if(server === "JIRA"){
+      } else if(server === "jira_access"){
         displayCount();
         drawChart();      
         makeDatabyDay(new Date());
@@ -46,16 +46,22 @@ block script
         location.href='/dashboard/?server='+$("select[name=server]").val();        
       });
       $("#btn_timeseries").click(function(){
-        if($("select[name=server]").val() == "TESTAPP") {
+        console.log($("#server").val());
+        if($("#server").val() == "test-agent") {
           location.href='/dashboard/timeseries_agent';
-        } else if($("select[name=server]").val() == "JIRA") {
+        } else if($("#server").val() == "jira_access") {
           location.href='/dashboard/timeseries_file';
         }
       });  
       $('input[type="radio"]').on('click change', function(e) {
         var time = {'10min' : 10, '30min' : 30, '1hour' : 60, '3hour' : 3*60, '6hour' : 6*60, '12hour' : 12*60, '24hour' : 24*60 };
+        var server = $("#server").val();      
+        if(server == "jira_access"){
           getDataByToggle(time[e.target.id]);
-          console.log(e.target.id);            
+        } else if(server == "test-agent") {        
+          toggleData(time[e.target.id]);
+        }
+        console.log(e.target.id);                    
       });
     });
 block content    
@@ -84,11 +90,11 @@ block content
                   .row
                     label.control-label.col-md-2 Server                                        
                     .col-md-2.form-inline
-                      select#server.form-control.input-small.select2me.form-md-line-input(name='server')
+                      select#server.form-control.input-small.select2me.form-md-line-input(name='server' value=server)
                         each data in agent                           
                           #{server}
                             if data.name==server
-                             option(value='', selected='selected') #{data.name}
+                             option(value=data.name, selected='selected') #{data.name}
                             else
                              option #{data.name}                              
                     .col-md-2.form-inline
@@ -123,9 +129,11 @@ block content
               .caption.font-dark
                 span.caption-subject.bold.uppercase Server Map
             .portlet-body(style='height:850px;  z-index: 2')
-              a#btn_sankey.icon-btn.sankey-toggler.uppercase(style='z-index: 10; float: right;')
-                i.fa.fa-arrow-left                
-                div SANKEY  
+              #{server}
+                if server == "jira_access"
+                  a#btn_sankey.icon-btn.sankey-toggler.uppercase(style='z-index: 10; float: right;')
+                    i.fa.fa-arrow-left                
+                    div SANKEY  
               .chart(style='height:400px; z-index: 2')                 
                 #cy(style='height:400px; width:95%; z-index: 2')
                 #sankey(style='height:395px; width:95%;')

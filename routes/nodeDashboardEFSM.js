@@ -14,20 +14,20 @@ var indexAcc = global.config.es_index.es_jira;
 router.get('/', function(req, res, next) {
   mainmenu.dashboard = 'open selected';
   var server = req.query.server;    
-  var in_data = {    index:  "elagent_test-agent-*", type: "AgentInfo"    };
+  var in_data = {    index:  "efsm_applicationinfo", type: "applicationInfo"    };
   queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
     var check = {}, list = [], cnt = 0;    
+    console.log(out_data);
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {
       out_data.forEach(function(d){
-        if(check[d._source.agentId]==null){
-          check[d._source.agentId] = { no : cnt++};
-          list.push({ id : d._source.agentId, name : d._source.applicationName })
+        if(check[d._source.applicationId]==null){
+          check[d._source.applicationId] = { no : cnt++};
+          list.push({ id : d._source.collection, name : d._source.applicationId })
         } 
-      });
-      list.push({ id : 'test-file', name : 'JIRA' });
+      });      
     }    
     if(server == undefined || server == ""){
       server = list[0].name;
@@ -83,6 +83,31 @@ router.get('/timeseries_agent', function(req, res, next) {
     }
   res.render('./dashboard/inspector', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, type : "TESTAPP" });
 });
+});
+
+router.get('/bottleneck', function(req, res, next) {
+  mainmenu.dashboard = 'open selected';
+  var server = req.query.server;    
+  var in_data = {    index:  "efsm_applicationinfo", type: "applicationInfo"    };
+  queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
+    var rtnCode = CONSTS.getErrData('0000');
+    var check = {}, list = [], cnt = 0;    
+    console.log(out_data);
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {
+      out_data.forEach(function(d){
+        if(check[d._source.applicationId]==null){
+          check[d._source.applicationId] = { no : cnt++};
+          list.push({ id : d._source.collection, name : d._source.applicationId })
+        } 
+      });      
+    }    
+    if(server == undefined || server == ""){
+      server = list[0].name;
+    }    
+  res.render('./dashboard/bottleneck', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : server }); 
+  });
 });
 
 
@@ -446,7 +471,7 @@ router.get('/restapi/selectJiraAccDash', function(req, res, next) {
             y : d._source.responsetime,
             date : new Date(date),
            hour : new Date(date).getHours(),
-            type : d._source.response >= 400? 'Error' : (d._source.responsetime >= 300 ? 'Redirection' : 'Success'), 
+            type : d._source.response >= 400? 'Error' : 'Success', 
             term : d._source.response >= 400? 'Error' : (d._source.responsetime < 1000 ? '1s' : (d._source.responsetime < 3000 ? '3s' : (d._source.responsetime < 5000 ? '5s' : 'Slow'))),
             index : d._source.response >= 400? 4 : (d._source.responsetime < 1000 ? 0 : (d._source.responsetime < 3000 ? 1 : (d._source.responsetime < 5000 ? 2 : 3)))
           });
@@ -481,17 +506,29 @@ router.get('/selected_detail', function(req, res, next) {
 });                 
 
 router.get('/selected_detail_agent', function(req, res, next) {    
-  var d = new Date().toString().split(' ');  
-  console
+  var s = new Date(parseInt(req.query.start)).toString().split(' ');  
+  var e = new Date(parseInt(req.query.end)).toString().split(' ');
+  var y = new Date(parseInt(req.query.end)-24*60*60*1000).toString().split(' ');     
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  //var in_data = {    index : "elagent_test-agent-"+d[3]+"."+mon[d[1]]+"."+d[2], type : "TraceV2"  };
-  var in_data = {    index : "elagent_test-agent-2017.09.11", type : "TraceV2"  };
+  var start = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4];
+  var end = e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4];  
+  var in_data = {    index : ["elagent_test-agent-"+s[3]+'.'+mon[s[1]]+'.'+s[2],"elagent_test-agent-"+e[3]+'.'+mon[e[1]]+'.'+e[2]] , type : "TraceDetail",
+            start : start, end : end, min : parseInt(req.query.min), max : parseInt(req.query.max)  };
+ // var in_data  = {    index : "elagent_test-agent-2017.09.11", type : "TraceV2"  };
   queryProvider.selectSingleQueryByID2("dashboard","getTransaction", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');    
     out_data.forEach(function(d){                  
-      var s = new Date(new Date(d._source.startTime).getTime()).toString().split(' ');            
-      d._source.startTime = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4];            
+      var s = new Date(new Date(d._source.startTime).getTime()).toString().split(' ');    
+      var t = d._source.startTime.split('.');      
+      d._source.startTime = mon[s[1]]+'-'+s[2]+'T'+s[4]+"."+t[1];            
+      /*for(i=0; i<d._source.spanEventBoList.length; i++){
+        if(d._source.spanEventBoList[i].hasException){
+          d._source.hasException = true;
+          console.log(d._source.spanEventBoList[i])
+        }
+        console.log(d._source.hasException)
+      }*/
     });       
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -499,6 +536,7 @@ router.get('/selected_detail_agent', function(req, res, next) {
     res.render('./dashboard/scatter_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });        
+
 
 router.get('/restapi/getTransactionDetail', function(req, res, next) {
   console.log('dashboard/restapi/getTransactionDetail');      
@@ -1006,10 +1044,10 @@ router.get('/restapi/getAgentMap', function(req, res, next) {
   var in_data = {
     index : req.query.index,
     type : req.query.type,
-    start : req.query.start,
+    start : req.query.start, end : req.query.end,
     id : req.query.id
   };
-  queryProvider.selectSingleQueryByID2("dashboard","selectByStart", in_data, function(err, out_data, params) {    
+  queryProvider.selectSingleQueryByID2("dashboard","selectByRange", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');    
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
@@ -1070,9 +1108,10 @@ router.get('/restapi/getAgentData', function(req, res, next) {
     index : req.query.index,
     type : req.query.type,
     start : req.query.start,
+    end : req.query.end,
     id : req.query.id
   };
-  queryProvider.selectSingleQueryByID2("dashboard","selectByStart", in_data, function(err, out_data, params) {    
+  queryProvider.selectSingleQueryByID2("dashboard","selectByRange", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');    
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
@@ -1094,7 +1133,7 @@ router.get('/restapi/getAgentData', function(req, res, next) {
         y : d._source.elapsed,
         date : new Date(date),
         hour : new Date(date).getHours(),
-        type : d._source.isError ? 'Error' : (d._source.elapsed >= 300 ? 'Redirection' : 'Success'), 
+        type : d._source.isError ? 'Error' : 'Success', 
         term : d._source.isError ? 'Error' : (d._source.elapsed < 1000 ? '1s' : (d._source.elapsed < 3000 ? '3s' : (d._source.elapsed < 5000 ? '5s' : 'Slow'))),
         index : d._source.isError ? 4 : (d._source.elapsed < 1000 ? 0 : (d._source.elapsed < 3000 ? 1 : (d._source.elapsed < 5000 ? 2 : 3)))
       });
@@ -1102,6 +1141,7 @@ router.get('/restapi/getAgentData', function(req, res, next) {
     res.json({rtnCode: rtnCode, rtnData : rtnData, data : data, start : start, end : end});
   });
 });
+
 
 router.get('/restapi/countAgent', function(req, res, next) {
   console.log('dashboard/restapi/countAgent');      
@@ -1128,6 +1168,75 @@ router.get('/restapi/countAgentError', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     }    
     res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
+
+router.get('/restapi/getBottleneckList', function(req, res, next) {
+  console.log('dashboard/restapi/getBottleneckList');      
+  console.log(req.query.list);
+  var in_data = {
+    index : req.query.index,    type : req.query.type,
+    start : req.query.start,    id : req.query.id,
+    end : req.query.end, list : req.query.list,
+    server : req.query.server
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","selectBottleneckList", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');    
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    }        
+    res.json({rtnCode: rtnCode, rtnData : out_data});
+  });
+});
+
+router.get('/restapi/getBottleneckDetail', function(req, res, next) {
+  console.log('dashboard/restapi/getBottleneckDetail');        
+  var in_data = {
+    index : req.query.index,    type : req.query.type,
+    value : req.query.value,    id : req.query.id,    
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","selectById", in_data, function(err, out_data, params) {    
+    var alarm = out_data[0]._source;    
+    var rtnCode = CONSTS.getErrData('0000');        
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');      
+    } else {
+      var iDate = alarm.timestamp.split('T');
+      var iDay = iDate[0].split('-')
+      var in_data = {
+        index : "elagent_"+alarm.agentId+"-"+iDay[0]+"."+iDay[1]+"."+iDay[2],    type : "AgentLifeCycle",
+        value :  alarm.timestamp,    id : "eventTimestamp"            
+      };  
+      queryProvider.selectSingleQueryByID2("dashboard","selectMatchRecent", in_data, function(err, out_data, params) {            
+        var rtnCode = CONSTS.getErrData('0000');    
+        if (out_data == null){
+          rtnCode = CONSTS.getErrData('0001');  
+          var life = [];
+        } else { 
+          var life = out_data;
+        var in_data = {
+          index : "elagent_"+alarm.agentId+"-*",    type : "AgentInfo",
+          value :  alarm.startTimestamp,    id : "startTime"            
+        };          
+        queryProvider.selectSingleQueryByID2("dashboard","selectMatchIdValue", in_data, function(err, out_data, params) {              
+          var rtnCode = CONSTS.getErrData('0000');    
+          if (out_data == null){
+            rtnCode = CONSTS.getErrData('0001');  
+            var info = [];
+          } else if(out_data.length == 0) {
+            rtnCode = CONSTS.getErrData('0001');      
+            var info = [];
+          } else {
+            var info = out_data[0]._source;
+          }                  
+          res.json({rtnCode: rtnCode, alarm: alarm, life: life, info : info});    
+        });       
+        }
+        res.json({rtnCode: rtnCode, alarm: alarm, life: life, info : info});    
+      });
+    }            
+    res.json({rtnCode: rtnCode, alarm: alarm, life: life, info : info});    
   });
 });
 

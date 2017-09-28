@@ -10,6 +10,18 @@ define("CONFIG", {
 						  relative: "/upload/office/"},
 });
 
+define("SCHEMA", {
+	"EFSM_ALARM": {'INDEX' : 'efsm_alarm-', 'TYPE' : 'AgentAlarm'},
+	"APPLICATION_INFO": {'INDEX' : 'efsm_applicationinfo', 'TYPE' : 'applicationInfo'}
+});
+
+define("APPLICATION_INFO", {
+	"ELAGENT": 'elagent',
+	"FILEBEAT": 'filebeat',
+	"COLLECTION" : {"LOG" : "LOG", "AGENT": "AGENT"},
+	"INDEX" : {"INDEX_NAME" : "efsm_applicationinfo", "TYPE_NAME" : "applicationInfo"}
+});
+
 define(	"CODE", {
 	"OFFICE_TYPE" : {"P": "개인병원", "T": "종합병원", "G": "국가기관"},
 	"MEMBER_TYPE" : {"B": "PERSONAL", "C": "OFFICE"}

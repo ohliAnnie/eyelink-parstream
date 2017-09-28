@@ -25,7 +25,7 @@
           }
         }
       }
-     ]]></query> 
+     ]]></query>
     <query id='selectList'><![CDATA[
      {
         "index" : #INDEX#,
@@ -201,18 +201,36 @@
           }
       }
      ]]></query>
-   <query id='updateMenuName'><![CDATA[
+    <query id='updateMenuName'><![CDATA[
      {
         "index" : #INDEX#,
         "type" : #TYPE#,
         "id" : #CODE#,
-        "body" : {        
-          "doc" : {            
-            "name" : #NAME#          
+        "body" : {
+          "doc" : {
+            "name" : #NAME#
           }
         }
       }
-     ]]></query>  
+     ]]></query>
+    <query id='selectAlarmList'><![CDATA[
+    {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size" : 10,
+          "sort" : { #SORT#: { "order" : "desc" } },
+          "query" : { "match_all" : { } }
+        }
+    }
+    ]]></query>
+    <query id='insertAlarmData'><![CDATA[
+    {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : #BODY#
+    }
+    ]]></query>
   </management>
   <dashboard>
     <query id='selectByIndex'><![CDATA[
@@ -226,6 +244,50 @@
             }
          }
       }
+    ]]></query>
+    <query id='selectById'><![CDATA[
+    {
+          "index" : #index#,
+          "type" : #type#,
+          "body" : {
+            "size"   : 10000,
+            "query" : {
+              "match" : {
+                #id# : {
+                  "query" :  #value#,
+                  "operator" : "and"
+                }
+              }
+            }
+         }
+      }
+    ]]></query>
+    <query id='selectMatchIdValue'><![CDATA[
+    {
+      "index" : #index#,
+      "type" : #type#,
+      "body" : {
+        "size"   : 10000,            
+        "query" : {  "match" : { #id# : #value#  }       }
+      }         
+    }
+    ]]></query>
+    <query id='selectMatchRecent'><![CDATA[
+    {
+      "index" : #index#,
+      "type" : #type#,
+      "body" : {
+        "size"   : 10,            
+        "sort" : { #id# : { "order" : "desc" } },
+        "query" : {
+          "bool": {
+           "must" : {
+             "range" : { #id# : {  "lte": #value#  }}
+            }
+          }
+        }
+      }         
+    }
     ]]></query>
     <query id='selectByIdValue'><![CDATA[
     {
@@ -271,6 +333,26 @@
                "must" : {
                  "range" : {
                    #id# : {  "gte": #start#  }
+                 }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectByRange'><![CDATA[
+       {
+          "index" : #index#,
+          "type" : #type#,
+          "body" : {
+            "size" : 10000,
+            "sort" : { #id# : { "order" : "asc"  } },
+            "query" : {
+             "bool": {
+               "must" : {
+                 "range" : {
+                   #id# : {  "gte": #start#,
+                        "lte" : #end#  }
                  }
               }
             }
@@ -676,11 +758,27 @@
     ]]></query>
     <query id='getTransaction'><![CDATA[
       {
-        "index" : #index#,
+        "index" : [##index##],
         "type" : #type#,
         "body" : {
-          "size" : 1000,
-          "sort" : { "startTime" : { "order" : "asc" } }
+          "size" : 10000,
+          "sort" : { "startTime" : { "order" : "asc" } },
+          "query" : {
+            "bool" : {
+              "must" :
+                { "range" :
+                  { "startTime" :
+                      { "gte" : #start#, "lte" : #end# }
+                  }
+                },
+              "filter" :
+                { "range" :
+                   { "elapsed" :
+                       { "gte" : #min#,  "lte" : #max#  }
+                  }
+                }
+              }
+            }
          }
        }
     ]]></query>
@@ -821,6 +919,24 @@
           "query" : { "match_all" : { }     }
           }
         }
+    ]]></query>
+    <query id='selectBottleneckList'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {
+          "size" : 10000,
+          "sort" : {"timestamp" : { "order" : "asc" }},
+          "query": {
+            "bool": {
+              "filter": { "range": { 
+                 #id# : { "gte": #start#, "lte" : #end# } } },
+              "must" : [{ "match": { "agentId" : #server#  }   },
+              { "match": { "alarmType" : #list#  }   }]
+            }
+          }
+        }
+      }
     ]]></query>
   </dashboard>
   <reports>

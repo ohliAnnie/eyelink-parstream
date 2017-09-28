@@ -8,7 +8,7 @@
 	"username": "root",
 	"password": "foot",
 	"loaddataonstartup": {
-		"active": true,
+		"active": false,
 		"loading_day": 5,
 		"loading_time": 1
 	},
@@ -19,6 +19,10 @@
 		"database" : "elasticsearch",
 		"method" : "nodelib-es",
 		"#method" : "jdbc"
+	},
+	"schedule": {
+		"application_info" : "*/10 * * * * *",
+		"alarm" : "00 */30 * * * *"
 	},
 	"es_index" : {
 		"es_jira" : "filebeat_jira_access-",

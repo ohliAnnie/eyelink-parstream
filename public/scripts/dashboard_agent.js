@@ -1,19 +1,55 @@
-function getAgentData(){
+function getAgentData(day){
  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
- var yDay = new Date(new Date().getTime() - 24*60*60*1000);
+ var yDay = new Date(day.getTime() - 24*60*60*1000);
  var y = yDay.toString().split(' ');
- var d = new Date().toString().split(' '); 
+ var d = day.toString().split(' '); 
+ var now = new Date();
+ var n = now.toString().split(' ');
  var data = { index : "elagent_test-agent-*", type : "ApplicationLinkData",
- 			  start : y[3]+"-"+mon[y[1]]+"-"+y[2]+"T15:00:00", id : "startTime" };
- $.ajax({
+ 			  start : y[3]+"-"+mon[y[1]]+"-"+y[2]+"T15:00:00",
+        end : n[3]+"-"+mon[n[1]]+"-"+n[2]+"T15:00:00", id : "startTime" };
+ drawDashAgent(data);
+}
+
+
+function toggleData(gap){
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  d3.select("#test").select("svg").remove();
+  d3.select("#load").select("svg").remove();  
+  var now = new Date(new Date().getTime()-9*60*60*1000);
+  var n = now.toString().split(' ');  
+  var y = new Date(now.getTime()-gap*60*1000).toString().split(' ');
+  var data = { index : "elagent_test-agent-*", type : "ApplicationLinkData",
+      start : y[3]+"-"+mon[y[1]]+"-"+y[2]+"T"+y[4],
+      end : n[3]+"-"+mon[n[1]]+"-"+n[2]+"T"+n[4], id : "startTime" };
+  console.log(data);
+  drawDashAgent(data);      
+}
+
+function RangeData(start, end){
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  d3.select("#test").select("svg").remove();
+  d3.select("#load").select("svg").remove();   
+  var start = new Date(start.getTime()-9*60*60*1000);
+  var s = start.toString().split(' ');  
+  var end = new Date(end.getTime()-9*60*60*1000)
+  var e = end.toString().split(' ');
+  var data = { index : "elagent_test-agent-*", type : "ApplicationLinkData",
+      start : s[3]+"-"+mon[s[1]]+"-"+s[2]+"T"+s[4],
+      end : e[3]+"-"+mon[e[1]]+"-"+e[2]+"T"+e[4], id : "startTime" };
+  console.log(data);
+  drawDashAgent(data);      
+}
+
+function drawDashAgent(data){
+   $.ajax({
     url: "/dashboard/restapi/getAgentMap" ,
     dataType: "json",
     type: "get",
     data: data,
     success: function(result) {            
       if (result.rtnCode.code == "0000") {              
-      	var elseJson = { nodes : result.nodes, edges : result.edges };      
-        console.log(elseJson);
+        var elseJson = { nodes : result.nodes, edges : result.edges };              
         getServerMap(elseJson);    
       } else {
         //- $("#errormsg").html(result.message);
@@ -30,9 +66,9 @@ function getAgentData(){
     type: "get",
     data: data,
     success: function(result) {            
-      if (result.rtnCode.code == "0000") {                      
-        console.log(result.rtnData);        
+      if (result.rtnCode.code == "0000") {                              
         summaryAgent(result.data, result.start, result.end);
+        drawAgentScattor(result.data, result.start, result.end);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -42,10 +78,6 @@ function getAgentData(){
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
   });
-}
-
-function drawDashAgent(data, start, end){
-
 }
 
 function summaryAgent(data, start, end) {    
@@ -253,8 +285,7 @@ function displayCountAgent() {
   });         
 }
 
-function drawAgentWeekly(data) {
-  console.log(data);
+function drawAgentWeekly(data) {  
   var markerName = "dashboardChart";
   var volumeChart = dc.barChart('#volumn-chart', markerName);
 
@@ -321,17 +352,74 @@ var type = ['success', 'error'];
 
     volumeChart.on("renderlet.somename", function(chart) {
       chart.selectAll('rect').on("click", function(d) {
-       
-    
         d3.select("#test").select("svg").remove();
-        d3.select("#load").select("svg").remove();
-        d3.select("#sankey").select("svg").remove();
+        d3.select("#load").select("svg").remove();        
         //d3.select("#cy").select("svg").remove();
-        /*document.createElement('chart1');*/
-        console.log(d.x);
-        makeDatabyDay(d.x);        
+        /*document.createElement('chart1');*/        
+        getAgentData(d.x);        
       });  
     });    
-    dc.renderAll(markerName);
- 
+    dc.renderAll(markerName); 
 }
+
+
+function drawAgentScattor(data, start, end){
+  console.log(data, start, end);
+  if(Modernizr.canvas){
+    doBigScatterChart(start, end);
+  }
+  var oScatterChart;
+  function doBigScatterChart(start, end){
+    oScatterChart = new BigScatterChart({
+      sContainerId : 'chart1',
+      nWidth : window.innerWidth*0.42,
+      nHeight : 280,
+      nXMin: start, nXMax: end,
+      nYMin: 0, nYMax: 10000,
+      nZMin: 0, nZMax: 5,
+      nBubbleSize: 3,
+      nPaddingTop : 50,
+      nDefaultRadius : 3,
+      htTypeAndColor : {
+        'Success' : '#0100FF',        
+        'Error' : '#FF0000'         
+      },
+      sXLabel : '(time)',
+      sYLabel : '(ms)',
+      htGuideLine : {
+        'nLineWidth' : 1,
+        'aLineDash' : [2, 7],
+        'nGlobalAlpha' : 0.2
+      },
+      sXLabel : '',
+      'fXAxisFormat' : function(nXStep, i){        
+        var nMilliseconds = (nXStep * i + this._nXMin),
+          sDay = new Date(nMilliseconds).toString().split(' '),
+          sDate = sDay[4].split(':');
+          
+        return sDate[0]+':'+sDate[1]; 
+      },
+      nPaddingRight : 5,
+      fOnSelect : function(htPosition, htXY){        
+        var aData = this.getDataByXY(htXY.nXFrom, htXY.nXTo, htXY.nYFrom, htXY.nYTo);
+        console.log(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
+        var start = parseInt(htXY.nXFrom)-9*60*60*1000;
+        var end = parseInt(htXY.nXTo)-9*60*60*1000;
+        var link = '/dashboard/selected_detail_agent?start='+start+'&end='+end+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;
+        console.timeEnd('fOnSelect');
+        console.log('adata length', aData.length);
+        RangeData(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
+        window.open(link, "EyeLink Service List", "menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50");        
+      }
+    }); 
+      if(cnt != 0){         
+        oScatterChart._empty();
+        oScatterChart._redraw();      
+        summaryAgent(data, start, end);
+      }
+      oScatterChart.addBubbleAndDraw(data);         
+  }   
+   if(cnt++ == 0) {
+    summaryAgent(data, start, end);
+   }  
+};

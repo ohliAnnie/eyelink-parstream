@@ -16,7 +16,6 @@ block script
         //- event.preventDefault();
         if ('deleteUser' != $(this).attr('flag')) return;
         var userid =$(this).attr('userid');
-
         var id = $(this).attr('id');
         if (id == "") {
           return false;
@@ -81,7 +80,7 @@ block content
                   each user in users
                     tr.odd.gradeX
                       td                        
-                      td  #{user._source.user_id}                        
+                      td  #{user._source.user_id}
                       td  #{user._source.user_name}
                       td  #{user._source.position}
                       td  #{user._source.tel}
