@@ -19,7 +19,7 @@ var dashboard = require('./routes/nodeDashboard' + global.config.pcode);
 var reports = require('./routes/nodeReport' + global.config.pcode);
 var analysis = require('./routes/nodeAnalysis' + global.config.pcode);
 var initapps = require('./routes/initApp');
-var socketapps = require('./routes/socketApp');
+var socketapp = require('./routes/socketApp');
 var node = require('./routes/nodeCon');
 var management = require('./routes/nodeManagement' + global.config.pcode);
 var sample = require('./routes/nodeSample');
@@ -59,6 +59,7 @@ app.use('/management', management);
 app.use('/sample', sample);
 app.use('/simulator', simulator);
 app.use('/dashboardes', dashboardes);
+app.use('/socketapp', socketapp);
 
 global._rawDataByDay = {};
 // dbquery.xml 파일 내용을 loading
@@ -69,7 +70,7 @@ initapps.loadQuery(function() {
 });
 
 // Client로 Data를 Push 하기위한 Socket 초기화.
-socketapps.initSocket(app, function() {});
+socketapp.initSocket(app, function() {});
 
 // catch 404 and forward to error handler
 // app.use(function(req, res, next) {

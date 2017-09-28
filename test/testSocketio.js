@@ -72,7 +72,7 @@ describe("Socketio", function(){
   describe.only("Alarm Test -> ", function() {
     // it('login', login());
 
-    it('send/receive', function(done) {
+    it('socket.io send/receive', function(done) {
       var client1 = io.connect(socketURL, options);
       // var count = 0;
       // client1.on('refreshData', function(data){
@@ -84,7 +84,7 @@ describe("Socketio", function(){
       //   client1.emit('getEventListForAlarm', 0);
       // });
       var d = new Date();
-      var regTimeStamp = d.toFormat('YYYY-MM-DDTHH24:MI:SS');
+      var regTimeStamp = d.removeDays(1).toFormat('YYYY-MM-DDTHH24:MI:SS');
       var sendData = {
         applicationType : 'ELAGENT',
         agentId : 'test_app',
@@ -99,7 +99,6 @@ describe("Socketio", function(){
         done();
       })
     })
-
   });
 
   describe("Python -> ", function() {
