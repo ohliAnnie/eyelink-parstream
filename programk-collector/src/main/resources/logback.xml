@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<configuration>
+<configuration scan="true" scanPeriod="30 seconds">
 
     <!-- Configure Console -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -19,6 +19,7 @@
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>10</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class:%L %logger{36} - %msg%n</pattern>
@@ -32,6 +33,7 @@
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>10</maxHistory>
         </rollingPolicy>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %msg%n</pattern>
@@ -40,11 +42,14 @@
 
     <logger name="com.kt.programk.common.logs.CLogger" level="debug" additivity="false">
         <appender-ref ref="SERVICE" />
-        <appender-ref ref="STDOUT" />
+        <!-- <appender-ref ref="STDOUT" /> -->
     </logger>
-
-   <root level="debug">
-        <appender-ref ref="APP" />
-		<appender-ref ref="STDOUT"/>
-    </root>
+	<logger name="com.kt.programk.collector" level="debug" additivity="false">
+		<appender-ref ref="APP" />
+		<!-- <appender-ref ref="STDOUT" /> -->
+	</logger>
+	<root level="info">
+		<appender-ref ref="APP" />
+		<!-- <appender-ref ref="STDOUT"/> -->
+	</root>
 </configuration>

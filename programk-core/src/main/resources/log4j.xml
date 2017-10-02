@@ -121,16 +121,16 @@
     <!--General activity (including chat)
         Set level to debug if you want to see more details.-->
     <logger name="programd">
-        <level value="debug"/>
-        <appender-ref ref="stdout"/>
-        <appender-ref ref="stderr"/>
+        <level value="info"/>
+        <!-- <appender-ref ref="stdout"/> -->
+        <!-- <appender-ref ref="stderr"/> -->
         <appender-ref ref="activitylog"/>
     </logger>
 
     <!--Logging for listeners.-->
     <logger name="programd.listener" additivity="false">
         <level value="info"/>
-        <appender-ref ref="listener-console"/>
+        <!-- <appender-ref ref="listener-console"/>  -->
         <appender-ref ref="listener-log"/>
     </logger>
 
