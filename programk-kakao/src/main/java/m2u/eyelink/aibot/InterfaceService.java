@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import m2u.eyelink.aibot.custom.kt.config.Config;
+import m2u.eyelink.aibot.component.Config;
 import m2u.eyelink.aibot.domain.MessageIn;
 
 @Service

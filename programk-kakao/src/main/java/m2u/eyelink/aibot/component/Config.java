@@ -1,4 +1,4 @@
-package m2u.eyelink.aibot.custom.kt.config;
+package m2u.eyelink.aibot.component;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,17 +8,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
-import m2u.eyelink.aibot.InterfaceController;
 import m2u.eyelink.aibot.IConstants;
+import m2u.eyelink.aibot.InterfaceController;
+import m2u.eyelink.aibot.IConstants.Configs;
+import m2u.eyelink.aibot.IConstants.Configs.Keys;
 
 @Component
-public class Config {
+public class Config implements InitializingBean{
 
 	private static final Logger logger = LoggerFactory.getLogger(InterfaceController.class);
 
@@ -35,7 +36,7 @@ public class Config {
 		return (String)this.configs.get(IConstants.Configs.Keys.TOKEN);
 	}
 	
-	@PostConstruct
+//	@PostConstruct
 	private void init() throws IOException, InterruptedException {
 		
 		String configFilePath = System.getProperty(IConstants.Configs.CONFIG);
@@ -60,6 +61,10 @@ public class Config {
 				Thread.sleep(10000);
 			}
 		}
+	}
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		init();
 	}
 	
 }

@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import m2u.eyelink.aibot.component.Config;
 import m2u.eyelink.aibot.component.KakaoRespGenerator;
 import m2u.eyelink.aibot.component.UserAuthManager;
-import m2u.eyelink.aibot.custom.kt.config.Config;
 import m2u.eyelink.aibot.domain.Friend;
 import m2u.eyelink.aibot.domain.Keyboard;
 import m2u.eyelink.aibot.domain.MessageIn;
@@ -28,13 +28,13 @@ public class InterfaceController {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
-	private UserAuthManager uaManager;
+	private Config config;
 	@Autowired
 	private InterfaceService is;
 	@Autowired
 	private KakaoRespGenerator kakaoRespGenerator;
 	@Autowired
-	private Config config;
+	private UserAuthManager uaManager;
 	
 	/**
 	 * 사용자가 채팅방에 최초로 들어오거나 재진입했을 때 호출되는 서비스
