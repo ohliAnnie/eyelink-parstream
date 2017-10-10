@@ -447,7 +447,7 @@
                 ],
                 "must_not" : {
                 "match": {
-                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
                  }
                }
               }

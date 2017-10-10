@@ -19,8 +19,7 @@ router.get('/', function(req, res, next) {
   queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
     var check = {}, list = [], cnt = 0;    
-    list.push({ id : 'all', name : 'all' });
-    console.log(out_data);
+    list.push({ id : 'all', name : 'all' });    
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {
@@ -171,7 +170,7 @@ router.get('/restapi/selectJiraAccReq', function(req, res, next) {
 });
 
 router.get('/restapi/selectJiraSankeyByLink', function(req, res, next) {
-  console.log('dashboard/restapi/selectJiraAccReq');
+  console.log('dashboard/restapi/selectJiraSankeyByLink');
   var in_data = {    index : req.query.index, START : req.query.START, END : req.query.END  };  
   queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccReq", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');
@@ -186,92 +185,96 @@ router.get('/restapi/selectJiraSankeyByLink', function(req, res, next) {
  var nodeList = []; 
  out_data.forEach(function(d) {  
   if(d._source.request != null) {
-  var a = d._source.request.split('?');                         
-  var c = a[0].split('.');    
-  if(c[c.length-1]!='js'&&c[c.length-1]!='css'&&c[c.length-1]!='png'&&c[c.length-1]!='woff'&&c[c.length-1]!='json'&&c[c.length-1]!='jsp'&&c[c.length-1]!='ico'&&c[c.length-1]!='svg'&&c[c.length-1]!='gif'&&c[c.length-1]!='navigation'){     
-    if(d._source.auth == null){
-     d._source.auth = 'visitor';
-    }      
-    var b = a[0].split('/');
+    var a = d._source.request.split('?');                         
+    var c = a[0].split('.');    
+    if(c[c.length-1]!='js'&&c[c.length-1]!='css'&&c[c.length-1]!='png'&&c[c.length-1]!='woff'&&c[c.length-1]!='json'&&c[c.length-1]!='jsp'&&c[c.length-1]!='ico'&&c[c.length-1]!='svg'&&c[c.length-1]!='gif'&&c[c.length-1]!='navigation'){     
+      if(d._source.auth == null){
+        d._source.auth = 'visitor';
+      }      
+      var b = a[0].split('/');
 
-    if(req[a[0]] == null) {          
-      req[a[0]] = { no : reqCnt++, cnt : 1};
-    } else {
-      req[a[0]].cnt++;        
-    }        
-    
-    if(id[b[b.length-1]] == null) {
-      id[b[b.length-1]] = colors[idCnt++%20];                   
-    }
-    
-    var nodeId = b[b.length-1]+'_'+req[a[0]].no;       
-    
-    if(node[nodeId] ==null){
-      nodeList[nodeNo] = nodeId;
-       node[nodeId] ={ name : a[0], id : nodeId, no : nodeNo++, errcnt : 0, cnt : 1 };  
-    }
-    if(last[d._source.auth] != null){
-      var from = last[d._source.auth];
-      var to = nodeId;  
-      if(node[from].no > node[to].no){
-        from = nodeId;
-        to = last[d._source.auth];
+      if(req[a[0]] == null) {          
+        req[a[0]] = { no : reqCnt++, cnt : 1};
+      } else {
+        req[a[0]].cnt++;        
       }        
-      if(from != to){
-        if(line[node[to].no+  +node[from].no] == null){
-          if(lineNode[from] == null) {                
-            lineNode[from] = {};        
-            node[from].no = lineNodeCnt;        
-            nodes[lineNodeCnt++] = node[from];                        
-          }
-          if(lineNode[to] == null) {
-            lineNode[to] = {};    
-            node[to].no = lineNodeCnt;
-            nodes[lineNodeCnt++] = node[to];                                
-          }
-          var source = node[from].no;
-          var target = node[to].no;              
-          if(line[source+'-'+target] == null) {                
-            line[source+'-'+target] = { no : lineCnt };          
-            nodes[target].cnt++
-             if(d._source.response < 400){                           
-                lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 0 };                           
-              } else {                             
-                console.log(d._source)
-                lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 1, elist : d._id };                                                
-             }  
-          } else {                            
-            lines[line[source+'-'+target].no].value += 0.0001;
-            lines[line[source+'-'+target].no].cnt++;
-             nodes[target].cnt++;                           
-             if(d._source.response >= 400){              
+    
+      if(id[b[b.length-1]] == null) {
+        id[b[b.length-1]] = colors[idCnt++%20];                   
+      }
+      
+      var nodeId = b[b.length-1]+'_'+req[a[0]].no;       
+      
+      if(node[nodeId] ==null){
+        nodeList[nodeNo] = nodeId;
+        node[nodeId] ={ name : a[0], id : nodeId, no : nodeNo++, errcnt : 0, cnt : 1 };  
+      }
+      if(last[d._source.auth] != null){
+        var from = last[d._source.auth];
+        var to = nodeId;  
+        if(node[from].no > node[to].no){
+          from = nodeId;
+          to = last[d._source.auth];
+        }        
+        if(from != to){
+          if(line[node[to].no+'-'+node[from].no] == null){
+            if(lineNode[from] == null) {                
+              lineNode[from] = {};        
+              node[from].no = lineNodeCnt;        
+              nodes[lineNodeCnt++] = node[from];                        
+            }
+            if(lineNode[to] == null) {
+              lineNode[to] = {};    
+              node[to].no = lineNodeCnt;
+              nodes[lineNodeCnt++] = node[to];                                
+            }
+            var source = node[from].no;
+            var target = node[to].no;              
+            if(line[source+'-'+target] == null) {                
+              line[source+'-'+target] = { no : lineCnt };          
+              nodes[target].cnt++              
+              if(d._source.response < 400){                           
+                  lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 0 };                           
+                } else {                                             
+                  lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 1, elist : d._id };                                                
+                  nodes[node[nodeId].no].errcnt++;                   
+                  console.log(d._source);
+                 console.log(nodes[node[nodeId].no]); 
+               }  
+            } else {                            
+              lines[line[source+'-'+target].no].value += 0.0001;
+              lines[line[source+'-'+target].no].cnt++;
+               nodes[target].cnt++;                           
+               
+               if(d._source.response >= 400){              
                  if(lines[line[source+'-'+target].no].errcnt == 0) {
-                    lines[line[source+'-'+target].no].elist = d._id;
+                  lines[line[source+'-'+target].no].elist = d._id;
                  } else {
                   lines[line[source+'-'+target].no].elist += ','+d._id;       
                  }       
-               lines[line[source+'-'+target].no].errcnt++;             
-               nodes[target].errcnt++;                           
+                 lines[line[source+'-'+target].no].errcnt++;             
+                 nodes[node[nodeId].no].errcnt++;                           
+                 console.log(d._source);
+                 console.log(nodes[node[nodeId].no]);
+              }
             }
+          } else {                   
+            lines[line[node[to].no+'-'+node[from].no].no].value += 0.0001;
+            lines[line[node[to].no+'-'+node[from].no].no].cnt++;
           }
-        } else {                   
-          lines[line[node[to].no+'-'+node[from].no].no].value += 0.0001;
-          lines[line[node[to].no+'-'+node[from].no].no].cnt++;
+        } else {            
+         if(lineNode[to] == null) {
+            lineNode[to] = {};                  
+            node[to].no = lineNodeCnt;              
+            nodes[lineNodeCnt++] = node[to];                                
+          }  
         }
-      } else {            
-       if(lineNode[to] == null) {
-          lineNode[to] = {};                  
-          node[to].no = lineNodeCnt;              
-          nodes[lineNodeCnt++] = node[to];                                
-        }  
-      }
-    }        
-    last[d._source.auth] =  node[nodeId].id;       
+      }        
+      last[d._source.auth] =  node[nodeId].id;       
     }
   }
-   });
- nodes.forEach(function(d){
-  console.log(d);
+ });
+ nodes.forEach(function(d){  
   if(d.errcnt > 0){
     d.name = '[Err:'+ d.errcnt + '] '+d.name;
   } else {
@@ -448,10 +451,7 @@ router.get('/restapi/selectJiraAccScatter', function(req, res, next) {
 router.get('/restapi/selectJiraAccDash', function(req, res, next) {
   console.log('dashboard/restapi/selectJiraAccDash');  
   var in_data = {    index : req.query.index, START : req.query.START, END : req.query.END  };    
-  queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccDash", in_data, function(err, out_data, params) {
-    console.log('tttttttt');
-    console.log(in_data);
-    console.log(out_data);
+  queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccDash", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -491,8 +491,7 @@ router.get('/selected_detail', function(req, res, next) {
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var start = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4];
   var end = e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4];  
-  var date = new Date().toString().split(' ');
-  console.log(start, end);  
+  var date = new Date().toString().split(' ');  
   var in_data = {
     index:  [indexAcc+e[3]+"."+mon[e[1]]+"."+e[2],  indexAcc+s[3]+"."+mon[s[1]]+"."+s[2]],
     START : start,
@@ -525,7 +524,7 @@ router.get('/selected_detail_agent', function(req, res, next) {
     out_data.forEach(function(d){                  
       var s = new Date(new Date(d._source.startTime).getTime()).toString().split(' ');    
       var t = d._source.startTime.split('.');      
-      d._source.startTime = mon[s[1]]+'-'+s[2]+'T'+s[4]+"."+t[1];            
+      d._source.startTime = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4]+"."+t[1];            
       /*for(i=0; i<d._source.spanEventBoList.length; i++){
         if(d._source.spanEventBoList[i].hasException){
           d._source.hasException = true;
