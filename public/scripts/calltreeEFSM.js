@@ -2,7 +2,7 @@ function getTransaction(id, date) {
   console.log(date);
   var t = date.split('T');
   var d = t[0].split('-');  
-  var s = new Date().toString().split(' ');
+  var s = new Date(date).toString().split(' ');
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   $.ajax({
     url: "/dashboard/restapi/getTransactionDetail" ,
@@ -42,125 +42,186 @@ function drawDetail(data) {
   sb.append('<table class="table tree-2 table-bordered table-striped table-condensed">');
   sb.append('<tr><th>Method</th><th>Argument</th><th>Start Time</th><th>Gap(ms)</th>');
   sb.append('<th>Exec(ms)</th><th>Exec(%)</th><th>Self(ms)</th><th>Class</th><th>API</th><th>Agent</th><th>Application</th></tr>');    
-  var ano = 0, grid = 1, tree = 1;
-  data.forEach(function(d){    
-    d = d._source;        
+  var ano = 0, grid = 1, tree = 1, depth = 0, dCnt = 0, maxDepth = 0, treeList = [];
+  for(n=0; n<data.length; n++){
+    d = data[n]._source;        
     var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
     var stime = new Date(d.startTime).getTime()+18*60*60*1000;      
-    var ftime = msToTime(stime);    
-   if(d.annotationBoList[0] != null){
-    for(i=0; i <d.annotationBoList.length;i++){                    
-      var z = d.annotationBoList[i];            
-      if(z.key === 10000014){
-        var a = z.value.split('\n');        
-        var b = a[1].split(':');       
-        if(i==0 && tree==1){          
-          sb.append('<tr class="treegrid-'+ grid +'">');        
-        } else {                    
-          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
-        }        
-        sb.append('<td>'+b[0]+'</td><td>'+d.rpc+'</td><td>'+d.applicationId+'</td><td>'+d.gap+'</td>')
-        sb.append('<td>'+d.elapsed+'</td><td>'+Math.round(d.executionTime/d.elapsed*100)+'%</td><td>'+d.executionTime+'</td>');
-        if(d.hasException){
-          sb.append('<td>'+d.execeptionClass+'</td>');
-        } else {
-          sb.append('<td></td>');
-        }
-        sb.append('<td>'+d.serviceTypeName+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');  
-        if(d.acceptorHost != null) {          
-          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');                 
-          sb.append('<td>'+'REMOTE ADDRESS'+'</td><td>'+d.acceptorHost+'</td><td>'+'</td><td>'+'</td>')
-          sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
-          sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');     
-        } else {
-          tree =grid;
-        }
-      } else if(z.key === 10000013){        
-        if(i==0 && tree==1){          
-          sb.append('<tr class="treegrid-'+ grid +'">');        
-        } else {                    
-          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
-        }        
-        stime += d.gap;
-        ftime = msToTime(stime);
-        sb.append('<td>'+z.value+'</td><td>'+d.rpc+'</td><td>'+ftime+'</td><td>'+d.gap+'</td>')
-        sb.append('<td>'+d.elapsed+'</td><td>'+Math.round(d.executionTime/d.elapsed*100)+'%</td><td>'+d.executionTime+'</td><td></td>');
-        sb.append('<td>'+d.serviceTypeName+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');  
-        if(d.remoteAddr != null) {          
-          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');                 
-          sb.append('<td>'+'REMOTE ADDRESS'+'</td><td>'+d.remoteAddr+'</td><td>'+'</td><td>'+'</td>')
-          sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
-          sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');     
-        } else {
-          tree =grid;
-        }
-      } else {
-        console.log(z.key)
+    var ftime = msToTime(stime); 
+    maxDepth = depth;
+    if(d.depth != -1){          
+      d.depth += maxDepth;          
+      if(depth < d.depth) {
+        depth = d.depth;
+        treeList[depth] = grid;
+      } else if(d.depth == 0) {
+        treeList[d.depth] = 1;        
       }
-    }
-    for(i=0; i <d.spanEventBoList.length; i++){      
-      var z = d.spanEventBoList[i];  
-      for(j=0; j<z.annotationBoList.length;j++){                     
-        var y =  z.annotationBoList[j];        
-        if( y.key === 10000014){          
-          var a = y.value.split('\n');      
-          var e = a[1].split('(');
-          var b = e[0].split('.');  
-          var c = a[1].split(b[b.length-2]);  
-          var t = c[1].substring(1).split(':')          
-          stime += z.gap;          
+      tree = treeList[d.depth];
+    }    
+    if(d.annotationBoList[0] != null){
+      for(i=0; i <d.annotationBoList.length;i++){       
+        var z = d.annotationBoList[i];            
+        if(z.key === 10000014){
+          var a = z.value.split('\n');        
+          var b = a[1].split(':');                 
+          if(i==0 && tree==1){                           
+            sb.append('<tr class="treegrid-'+ tree +'">');        
+          } else {             
+            console.log('<tr class="treegrid-'+ grid +' treegrid-parent-'+tree+'">');               
+            sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
+          }        
+          sb.append('<td>'+b[0]+'</td><td>'+d.rpc+'</td><td>'+d.applicationId+'</td><td>'+d.gap+'</td>')
+          sb.append('<td>'+d.elapsed+'</td><td>'+Math.round(d.executionTime/d.elapsed*100)+'%</td><td>'+d.executionTime+'</td>');
+          if(d.hasException){
+            sb.append('<td>'+d.execeptionClass+'</td>');
+          } else {
+            sb.append('<td></td>');
+          }
+          sb.append('<td>'+d.serviceTypeName+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');  
+          if(d.remoteAddr != null) {                
+            sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');                 
+            console.log('<tr class="treegrid-'+ grid +' treegrid-parent-'+tree+'">');              
+            sb.append('<td>'+'REMOTE ADDRESS'+'</td><td>'+d.remoteAddr+'</td><td>'+'</td><td>'+'</td>')
+            sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
+            sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');     
+          } else {
+            tree =grid;
+          }
+        } else if(z.key === 10000013){        
+          if(i==0 && tree==1){          
+            sb.append('<tr class="treegrid-'+ grid +'">');        
+          } else {                    
+            sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
+          }        
+          stime += d.gap;
           ftime = msToTime(stime);
-          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
-          sb.append('<td>'+t[0]+'</td><td>'+'</td><td>'+ftime+'</td><td>'+z.gap+'</td>')
-          sb.append('<td>'+z.elapsed+'</td><td>'+Math.round(z.executionTime/d.elapsed*100)+'%</td><td>'+z.executionTime+'</td><td>'+b[4]+'</td>');
-          sb.append('<td>'+z.serviceTypeName+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');  
-           tree = grid;  
-        } else if( y.key === 10000013){
-          stime += z.gap;
-          ftime = msToTime(stime);
-          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
-          sb.append('<td>'+y.value+'</td><td>'+'</td><td>'+ftime+'</td><td>'+z.gap+'</td>')
-          sb.append('<td>'+z.elapsed+'</td><td>'+Math.round(z.executionTime/d.elapsed*100)+'%</td><td>'+z.executionTime+'</td><td></td>');
-          sb.append('<td>'+z.serviceTypeName+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');  
-          tree = grid;
-        } else if( y.key === 40){            
-          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
-          sb.append('<td>'+'</td><td>'+y.value+'</td><td>'+'</td><td>'+'</td>')
-          sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
-          sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');  
-        } else if(y.key === 46){
-          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
-          sb.append('<td>'+'http.status.code'+'</td><td>'+y.value+'</td><td>'+'</td><td>'+'</td>')
-          sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
-          sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');  
-        } else if( y.key === 49){
-          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
-          sb.append('<td>'+'http.info'+'</td><td>'+y.value+'</td><td>'+'</td><td>'+'</td>')
-          sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
-          sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');  
-        } else if( y.key === 48){
-          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
-          sb.append('<td>'+'REMOTE_ADDRESS'+'</td><td>'+y.value+'</td><td>'+'</td><td>'+'</td>')
-          sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
-          sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');  
-        }        
+          sb.append('<td>'+z.value+'</td><td>'+d.rpc+'</td><td>'+ftime+'</td><td>'+d.gap+'</td>')
+          sb.append('<td>'+d.elapsed+'</td><td>'+Math.round(d.executionTime/d.elapsed*100)+'%</td><td>'+d.executionTime+'</td><td></td>');
+          sb.append('<td>'+d.serviceTypeName+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');  
+          if(d.remoteAddr != null) {                          
+            sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');                 
+            console.log('<tr class="treegrid-'+ grid +' treegrid-parent-'+tree+'">');    
+            sb.append('<td>'+'REMOTE ADDRESS'+'</td><td>'+d.remoteAddr+'</td><td>'+'</td><td>'+'</td>')
+            sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
+            sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');     
+          } 
+        } else {
+          console.log(z.key);
+        }
+      }
+      for(i=0; i <d.spanEventBoList.length; i++){      
+        var z = d.spanEventBoList[i];         
+        if(z.depth != -1){          
+          z.depth += maxDepth;          
+          if(depth < z.depth) {
+            depth = z.depth;
+            treeList[depth] = grid;
+            if(z.depth == 1){
+              treeList[depth] = tree;
+            }
+          }         
+          tree = treeList[z.depth];
+        }
+        
+        console.log(depth, z.depth, grid);        
 
-      }      
-      if(z.hasException === true){
-        console.log(z);
-        var x = z.exceptionMessage.split(':');
-        sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'" style="background-color:#FFA7A7">');        
-        sb.append('<td><i class="fa fa-bolt"></i>  '+z.exceptionClass+'</td><td>'+z.exceptionMessage+'</td><td>'+'</td><td>'+'</td>')
-        sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
-        sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');  
-        console.log(z.exceptionMessage)
+        for(j=0; j<z.annotationBoList.length;j++){                     
+          var y =  z.annotationBoList[j];        
+          if( y.key === 10000014){          
+            var a = y.value.split('\n');      
+            var e = a[1].split('(');
+            var b = e[0].split('.');  
+            var c = a[1].split(b[b.length-2]);  
+            var t = c[1].substring(1).split(':')          
+            stime += z.gap;          
+            ftime = msToTime(stime);                   
+            sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
+            console.log('<tr class="treegrid-'+ grid +' treegrid-parent-'+tree+'">'); 
+            sb.append('<td>'+t[0]+'</td><td>'+'</td><td>'+ftime+'</td><td>'+z.gap+'</td>')
+            sb.append('<td>'+z.elapsed+'</td><td>'+Math.round(z.executionTime/d.elapsed*100)+'%</td><td>'+z.executionTime+'</td><td>'+b[4]+'</td>');
+            sb.append('<td>'+z.serviceTypeName+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');                        
+          } else if( y.key === 10000013){
+            stime += z.gap;
+            ftime = msToTime(stime);                   
+            sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
+            console.log('<tr class="treegrid-'+ grid +' treegrid-parent-'+tree+'">'); 
+            sb.append('<td>'+y.value+'</td><td>'+'</td><td>'+ftime+'</td><td>'+z.gap+'</td>')
+            sb.append('<td>'+z.elapsed+'</td><td>'+Math.round(z.executionTime/d.elapsed*100)+'%</td><td>'+z.executionTime+'</td><td></td>');
+            sb.append('<td>'+z.serviceTypeName+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');              
+          } else if( y.key === 40){                              
+            var yy =  z.annotationBoList[++j];
+            var yyy =  z.annotationBoList[++j];
+            var yyyy =  z.annotationBoList[++j];                        
+            var a = yyyy.value.split('\n');      
+            var e = a[1].split('(');
+            var b = e[0].split('.');  
+            var c = a[1].split(b[b.length-2]);  
+            var t = c[1].substring(1).split(':')          
+            stime += z.gap;          
+            ftime = msToTime(stime);                   
+            sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
+            console.log('<tr class="treegrid-'+ grid +' treegrid-parent-'+tree+'">'); 
+            sb.append('<td>'+t[0]+'</td><td>'+y.value+'</td><td>'+ftime+'</td><td>'+z.gap+'</td>')
+            sb.append('<td>'+z.elapsed+'</td><td>'+Math.round(z.executionTime/d.elapsed*100)+'%</td><td>'+z.executionTime+'</td><td>'+b[4]+'</td>');
+            sb.append('<td>'+z.serviceTypeName+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');  
+            treeList[++depth] = grid;
+            tree = treeList[depth];
+            sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+ tree+'">');                    
+            console.log('<tr class="treegrid-'+ grid +' treegrid-parent-'+tree+'">');        
+            sb.append('<td>'+'http.status.code'+'</td><td>'+yy.value+'</td><td>'+'</td><td>'+'</td>')
+            sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
+            sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');  
+            sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
+            console.log('<tr class="treegrid-'+ grid +' treegrid-parent-'+tree+'">');        
+            sb.append('<td>'+'http.info'+'</td><td>'+yyy.value+'</td><td>'+'</td><td>'+'</td>')
+            sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
+            sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');  
+          } else if(y.key === 46){          
+            sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
+            console.log('<tr class="treegrid-'+ grid +' treegrid-parent-'+tree+'">');        
+            sb.append('<td>'+'http.status.code'+'</td><td>'+y.value+'</td><td>'+'</td><td>'+'</td>')
+            sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
+            sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');              
+          } else if( y.key === 49){            
+            sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
+            console.log('<tr class="treegrid-'+ grid +' treegrid-parent-'+tree+'">');        
+            sb.append('<td>'+'http.info'+'</td><td>'+y.value+'</td><td>'+'</td><td>'+'</td>')
+            sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
+            sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');  
+          } else if( y.key === 48){      
+            var yy =  z.annotationBoList[++j];     
+            var a = yy.value.split('\n');      
+            var e = a[1].split('(');
+            var b = e[0].split('.');  
+            var c = a[1].split(b[b.length-2]);  
+            var t = c[1].substring(1).split(':')          
+            stime += z.gap;          
+            ftime = msToTime(stime);                   
+            sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');        
+            console.log('<tr class="treegrid-'+ grid +' treegrid-parent-'+tree+'">'); 
+            sb.append('<td>'+t[0]+'</td><td>'+y.value+'</td><td>'+ftime+'</td><td>'+z.gap+'</td>')
+            sb.append('<td>'+z.elapsed+'</td><td>'+Math.round(z.executionTime/d.elapsed*100)+'%</td><td>'+z.executionTime+'</td><td>'+b[4]+'</td>');
+            sb.append('<td>'+z.serviceTypeName+'</td><td>'+d.agentId+'</td><td>'+d.applicationId+'</td></tr>');                 
+          }        
+
+        }      
+        if(z.hasException === true){
+          console.log(z);
+          var x = z.exceptionMessage.split(':');          
+          sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'" style="background-color:#FFA7A7">');        
+          console.log('<tr class="treegrid-'+ grid +' treegrid-parent-'+tree+'" style="background-color:#FFA7A7">');        
+          sb.append('<td><i class="fa fa-bolt"></i>  '+z.exceptionClass+'</td><td>'+z.exceptionMessage+'</td><td>'+'</td><td>'+'</td>')
+          sb.append('<td>'+'</td><td></td><td>'+'</td><td>'+'</td>');
+          sb.append('<td>'+'</td><td>'+'</td><td>'+'</td></tr>');  
+          console.log(z.exceptionMessage)
+        }
       }
-    }
-  }  
-    
-  });
+    }  
+    dCnt++;  
+  };
   sb.append('</table></div></div></div></div>');  
-  $('#call').append(sb.toString());  
+  $('#call').append(sb.toString());    
   $('.tree-2').treegrid({
     expanderExpandedClass: 'glyphicon glyphicon-minus',
     expanderCollapsedClass: 'glyphicon glyphicon-plus'
