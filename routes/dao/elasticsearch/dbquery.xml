@@ -621,6 +621,33 @@
           }
         }
     ]]></query>
+    <query id='selectJiraErrorList'><![CDATA[
+        {
+          "index" : [##index##],
+          "type" : "access",
+          "body" : {
+            "size"   : 100000,
+            "sort" : { "@timestamp" : { "order" : "asc" }},
+            "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
+            "query" : {
+              "bool" : {
+                "must" :
+                  { "range" :
+                    { "@timestamp" :
+                        { "gte" : #START#, "lte" : #END# }
+                    }
+                  },
+                "filter" :
+                  { "range" :
+                     { "response" :
+                         { "gte" : #MIN# }
+                    }
+                  }                  
+              }
+            }
+          }
+        }
+    ]]></query>
     <query id='selectScatterSectionList'><![CDATA[
       {
         "index" : [##index##],

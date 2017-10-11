@@ -42,6 +42,59 @@ router.get('/', function(req, res, next) {
 });
 
 
+router.get('/error_pop_jira', function(req, res, next) {      
+  var s = new Date(new Date().getTime()-3*24*60*60*1000).toString().split(' ');
+  var e = new Date().toString().split(' ');  
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  var start = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T15:00:00';
+  var end = e[3]+'-'+mon[e[1]]+'-'+e[2]+'T15:00:00';  
+  var date = new Date().toString().split(' ');  
+  var in_data = {
+    index:  [indexAcc+e[3]+"."+mon[e[1]]+"."+e[2],  indexAcc+s[3]+"."+mon[s[1]]+"."+s[2]],
+    START : start,
+    END : end,
+    MIN : 399
+  };
+  queryProvider.selectSingleQueryByID2("dashboard","selectJiraErrorList", in_data, function(err, out_data, params) {     
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {
+      var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+      out_data.forEach(function(d){
+        var a = d._source.timestamp.split(' ');        
+        var b = a[0].split(':');
+        var c = b[0].split('/');
+        d._source.timestamp = c[2]+'-'+mon[c[1]]+'-'+c[0]+'T'+b[1]+':'+b[2]+':'+b[3];        
+      });
+    }
+    res.render('./dashboard/error_pop_jira', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+  });  
+});                 
+
+router.get('/error_pop_agent', function(req, res, next) {    
+  var s = new Date(new Date().getTime()-24*60*60*1000).toString().split(' ');
+  var e = new Date().toString().split(' ');  
+  
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  var start = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4];
+  var end = e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4];  
+  var in_data = {    index : ["elagent_test-agent-"+s[3]+'.'+mon[s[1]]+'.'+s[2],"elagent_test-agent-"+e[3]+'.'+mon[e[1]]+'.'+e[2]] , type : "TraceDetail",
+            start : start, end : end, min : parseInt(req.query.min)  }; 
+  queryProvider.selectSingleQueryByID2("dashboard","getTransaction", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');    
+    out_data.forEach(function(d){                  
+      var s = new Date(new Date(d._source.startTime).getTime()).toString().split(' ');    
+      var t = d._source.startTime.split('.');      
+      d._source.startTime = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4]+"."+t[1];              
+    });       
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }  
+    res.render('./dashboard/error_pop_agent', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+  });  
+});     
+
 router.get('/timeseries_file', function(req, res, next) {
   // console.log(_rawDataByDay);
   mainmenu.dashboard = '';
@@ -503,7 +556,15 @@ router.get('/selected_detail', function(req, res, next) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    }     
+    } else {
+      var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+      out_data.forEach(function(d){
+        var a = d._source.timestamp.split(' ');
+        var b = a[0].split(':');
+        var c = b[0].split('/');
+        d._source.timestamp = c[2]+'-'+mon[c[1]]+'-'+c[0]+'T'+b[1]+':'+b[2]+':'+b[3];
+      });
+    }
     res.render('./dashboard/scatter_detail_jira', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });                 
@@ -539,7 +600,6 @@ router.get('/selected_detail_agent', function(req, res, next) {
     res.render('./dashboard/scatter_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });        
-
 
 router.get('/restapi/getTransactionDetail', function(req, res, next) {
   console.log('dashboard/restapi/getTransactionDetail');      
