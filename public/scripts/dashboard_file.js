@@ -38,6 +38,7 @@ function getMapData(data){
   });
 }
 function getServerMap(elesJson) {    
+  console.log(elesJson)
   var cy = cytoscape({
     container: document.getElementById('cy'),
      style: cytoscape.stylesheet()
@@ -148,19 +149,28 @@ function getServerMap(elesJson) {
     drawChart();      
     makeDatabyDay(new Date());
   }
+  var timeStamp = 0;
   cy.on('click', 'node', function(evt){    
-    console.log(evt);
-    console.log(this.id());    
+    console.log(this.id());        
     var server = $("#server").val();        
     cyclick = this.id();    
-    if(server === 'all' && cyclick == 'jira'){
-      displayCount();
-      drawChart();      
-      makeDatabyDay(new Date());
-    } else if(server === 'all' && cyclick == 'TESTAPP') {
-      getAgentData(new Date);
-      displayCountAgent();
+    if((evt.timeStamp-timeStamp)<500){
+      if(server === 'all' && cyclick == 'jira'){
+        location.href='/dashboard/?server='+'jira_access';
+      } else if(server === 'all' && cyclick == 'TESTAPP') {
+        location.href='/dashboard/?server='+'test-agent';
+      }
+    } else {
+      if(server === 'all' && cyclick == 'jira'){
+        displayCount();
+        drawChart();      
+        makeDatabyDay(new Date());
+      } else if(server === 'all' && cyclick == 'TESTAPP') {
+        getAgentData(new Date);
+        displayCountAgent();
+      }
     }
+    timeStamp = evt.timeStamp;
      nodeList.forEach(function(d){      
       if(d.id == cyclick){
          d.status = (d.status == 0) ?1 : 0

@@ -30,24 +30,27 @@ block script
   script(type='text/javascript', src="/scripts/dashboard_agent.js")  
   script(type='text/javascript', src="/scripts/dashboard_all.js") 
   script.
-    $(document).ready(function(e) { 
+    $(document).ready(function(e) {     
       var server = $("#server").val();      
+      if(cyclick == ''){
+        cyclick = "jira";
+      }
+      var now = new Date();
       console.log(server);
       if(server === "test-agent"){
-        getAgentData(new Date);
+        getAgentData(now);
         displayCountAgent();
       } else if(server === "jira_access"){
         displayCount();
         drawChart();      
-        makeDatabyDay(new Date());
+        makeDatabyDay(now);
       } else if(server === "all"){
         getAllData(new Date());
       }
       $( "#btn_sankey" ).click(function() {      
         $( "#cy" ).slideToggle( "slide" );
       });
-      $( "#btn_search" ).click(function() {  
-        console.log('/dashboard/?server='+$("select[name=server]").val());
+      $( "#btn_search" ).click(function() {          
         location.href='/dashboard/?server='+$("select[name=server]").val();        
       });
       $("#btn_timeseries").click(function(){
@@ -73,8 +76,13 @@ block script
           getDataByToggle(time[e.target.id]);
         } else if(server == "test-agent") {        
           toggleData(time[e.target.id]);
-        }
-        console.log(e.target.id);                    
+        } else if(server == "all") { 
+          if(cyclick == "jira") {
+            getDataByToggle(time[e.target.id]);
+          } else if(cyclick == "TESTAPP") {
+            toggleData(time[e.target.id]);
+          }
+        }        
       });
     });
 block content    

@@ -21,8 +21,7 @@ function toggleData(gap){
   var y = new Date(now.getTime()-gap*60*1000).toString().split(' ');
   var data = { index : "elagent_test-agent-*", type : "ApplicationLinkData",
       start : y[3]+"-"+mon[y[1]]+"-"+y[2]+"T"+y[4],
-      end : n[3]+"-"+mon[n[1]]+"-"+n[2]+"T"+n[4], id : "startTime" };
-  console.log(data);
+        end : n[3]+"-"+mon[n[1]]+"-"+n[2]+"T"+n[4], id : "startTime" };
   drawDashAgent(data);      
 }
 
