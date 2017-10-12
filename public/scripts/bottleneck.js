@@ -34,8 +34,7 @@ function getData(server, selected){
       //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
-  });
-  
+  });  
 }
 
 function drawBottleneckList(data){
