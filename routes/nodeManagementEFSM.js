@@ -707,6 +707,12 @@ function saveAlarmData(data, cb) {
   });
 }
 
+router.get('/authority', function(req, res, next) {
+  console.log('management/restapi/authority');
+  mainmenu.management = ' open selected';
+  res.render('./management/authority', { title: global.config.productname, mainmenu:mainmenu });
+});
+
 module.exports = router;
 module.exports.selectAlarmList = selectAlarmList;
 module.exports.saveAlarmData = saveAlarmData;

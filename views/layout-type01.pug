@@ -23,6 +23,7 @@ html
     link(rel='stylesheet', type='text/css', href='/assets/plugins/bootstrap-select/bootstrap-select.min.css')
     link(rel='stylesheet', type='text/css', href='/assets/plugins/select2/select2.css')
     link(rel='stylesheet', type='text/css', href='/assets/plugins/jquery-multi-select/css/multi-select.css')
+    link(src='/assets/plugins/jquery-ui/jquery-ui.css', type='text/javascript')
     link#style_components(href='/assets/css/eyelink-components.css', rel='stylesheet', type='text/css')
     link(href='/assets/css/plugins.css', rel='stylesheet', type='text/css')
     link(href='/assets/css/eyelink-layout.css', rel='stylesheet', type='text/css')
@@ -371,8 +372,10 @@ html
                       a(href='/management/role') Role
                     li.active
                       a(href='/management/users') Users
-                    li.active
+                    li.active                      
                       a(href='/management/menu') Menu
+                    li.active
+                      a(href='/management/authority') Authority
                 li#menusettings.dropdown.dropdown-fw
                   a(href='javascript:;') Settings
                   ul.dropdown-menu.dropdown-menu-fw
