@@ -12,7 +12,9 @@ var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis:'', management
 var indexUser = global.config.es_index.es_user;
 var indexRole = global.config.es_index.es_role;
 var indexMap = global.config.es_index.es_auth_map;
-var indexMenu = global.config.es_index.es_auth_menu;
+var indexAuthMenu = global.config.es_index.es_auth_menu;
+var indexMenu = global.config.es_index.es_menu;
+var indexAuth = global.config.es_index.es_authority;
 
 router.get('/users', function(req, res, next) {
   console.log('user/restapi/selectUserList');
@@ -272,7 +274,7 @@ router.post('/role/:id', function(req, res) {
           var rtnCode = CONSTS.getErrData("D001");
           var in_data = {
             ID: out_data._id,
-            INDEX: indexMenu,
+            INDEX: indexAuthMenu,
             ROLEID: req.body.roleid,
             DASHBOARD: req.body.dashboard,
             TIMESERIES: req.body.timeseries,
@@ -323,7 +325,7 @@ router.put('/role/:id', function(req, res) {
   queryProvider.updateQueryByID("management", "updateRole", in_data, function(err, out_data) {
     if(out_data.result == "updated" || out_data.result == "noop"){
       var in_data = {
-            INDEX: indexMenu,
+            INDEX: indexRole,
             ID : req.body.id,
             ROLEID: req.body.roleid,
             DASHBOARD: req.body.dashboard,
@@ -514,7 +516,7 @@ router.get('/menu', function(req, res, next) {
 
 router.get('/restapi/getMenuList', function(req, res, next) {
   console.log('/restapi/getMenuList');
-  var in_data = {  INDEX: req.query.index, TYPE: req.query.type, SORT: "code" };
+  var in_data = {  INDEX: indexMenu, TYPE: req.query.type, SORT: "code" };
   var rtnCode = CONSTS.getErrData('0000');
   queryProvider.selectSingleQueryByID2("management", "selectSortList", in_data, function(err, out_data, params) {
     console.log(out_data);
@@ -533,7 +535,7 @@ router.get('/menu/:id', function(req, res) {
   // 신규 등록
   if (req.params.id === 'editMenu') {
     var in_data = {
-      INDEX: "management",
+      INDEX: indexMenu,
       TYPE: "menu",
       ID: "code",
       SORT : "code"
@@ -554,7 +556,7 @@ router.get('/menu/:id', function(req, res) {
 // menu 신규 등록
 router.post('/menu/:id', function(req, res) {
   var in_data = {
-    INDEX: "management",
+    INDEX: indexMenu,
     TYPE: "menu",
     ID : "_id",
     VALUE: req.params.id,
@@ -581,7 +583,7 @@ router.post('/menu/:id', function(req, res) {
 
 router.get('/menu_upper', function(req, res, next) {
   console.log('menu/menu_upper');
-  var in_data = { INDEX: "management", TYPE:"menu", SORT : "code" };
+  var in_data = { INDEX: indexMenu, TYPE:"menu", SORT : "code" };
   var list = [];
   queryProvider.selectSingleQueryByID2("management", "selectSortList", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
@@ -603,7 +605,7 @@ router.get('/menu_upper', function(req, res, next) {
 // update
 router.put('/menu_upper/:id', function(req, res, next) {
   console.log('menu/menu_upper');
-  var in_data = { INDEX: "management", TYPE:"menu", CODE : req.body.code, NAME : req.body.name, UPCODE : "0000" };
+  var in_data = { INDEX: indexMenu, TYPE:"menu", CODE : req.body.code, NAME : req.body.name, UPCODE : "0000" };
   queryProvider.updateQueryByID("management", "updateMenuName", in_data, function(err, out_data, params) {
     if(out_data.result == "updated"){
       var rtnCode = CONSTS.getErrData("D002");
@@ -618,7 +620,7 @@ router.put('/menu_upper/:id', function(req, res, next) {
 router.delete('/menu/:id', function(req, res) {
   console.log('delete menu_upper');
   var in_data = {
-    INDEX: "management",
+    INDEX: indexMenu,
     TYPE: "menu",
     ID: req.params.id
   };
@@ -633,7 +635,7 @@ router.delete('/menu/:id', function(req, res) {
 router.get('/restapi/getCodeList', function(req, res) {
   console.log('getCodeList');
   var in_data = {
-    INDEX: "management",    TYPE: "menu",  SORT : "code", ID: "upcode",
+    INDEX: indexMenu,    TYPE: "menu",  SORT : "code", ID: "upcode",
     VALUE : req.query.id  };
   queryProvider.selectSingleQueryByID2("management", "selectByIdSort", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
@@ -647,7 +649,7 @@ router.get('/restapi/getCodeList', function(req, res) {
 router.get('/restapi/getIdData', function(req, res) {
   console.log('getCodeList');
   var in_data = {
-    INDEX: "management",    TYPE: "menu",    ID: "_id",
+    INDEX: indexMenu,    TYPE: "menu",    ID: "_id",
     VALUE : req.query.id  };
   queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
     rtnCode = CONSTS.getErrData('D005');
@@ -655,6 +657,33 @@ router.get('/restapi/getIdData', function(req, res) {
      rtnCode = CONSTS.getErrData('0001');
     }
     res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
+
+router.get('/restapi/getRoleMenu', function(req, res) {
+  console.log('getRoleMenu');
+  var in_data = {
+    INDEX: indexAuth,    TYPE: "authority", SORT : "role", ID : "code", VALUE : req.query.code };
+  queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
+    console.log(out_data)
+    var rtnCode = CONSTS.getErrData('0000');    
+    var menusList = out_data;
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    var in_data = {  INDEX: indexRole,    TYPE: "role" };
+    queryProvider.selectSingleQueryByID2("management", "selectList", in_data, function(err, out_data, params) {
+      console.log(out_data)
+      var rtnCode = CONSTS.getErrData('0000');        
+      if (out_data == null) {
+        rtnCode = CONSTS.getErrData('0001');
+      } 
+      var roleList = out_data;              
+      //res.json({rtnCode: rtnCode, menuList : menuList, roleList : roleList });
+    });      
+    console.log(roleList, menuList);
+    res.json({rtnCode: rtnCode, menuList : menuList, roleList : roleList });
   });
 });
 
