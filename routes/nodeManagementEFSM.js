@@ -12,7 +12,9 @@ var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis:'', management
 var indexUser = global.config.es_index.es_user;
 var indexRole = global.config.es_index.es_role;
 var indexMap = global.config.es_index.es_auth_map;
-var indexMenu = global.config.es_index.es_auth_menu;
+var indexAuthMenu = global.config.es_index.es_auth_menu;
+var indexMenu = global.config.es_index.es_menu;
+
 
 router.get('/users', function(req, res, next) {
   console.log('user/restapi/selectUserList');
@@ -269,41 +271,7 @@ router.post('/role/:id', function(req, res) {
       queryProvider.insertQueryByID("management", "insertRole", in_data, function(err, out_data) {
         if(out_data.result == "created"){
           console.log(out_data);
-          var rtnCode = CONSTS.getErrData("D001");
-          var in_data = {
-            ID: out_data._id,
-            INDEX: indexMenu,
-            ROLEID: req.body.roleid,
-            DASHBOARD: req.body.dashboard,
-            TIMESERIES: req.body.timeseries,
-            REPORT: req.body.report,
-            MANAGEMENT: req.body.management,
-            ANALYSIS: req.body.analysis,
-            SETTING: req.body.setting
-          };
-          queryProvider.insertQueryByID("management", "insertAuthMenu", in_data, function(err, out_data) {
-            if(out_data.result == "created"){
-              console.log(out_data);
-              var rtnCode = CONSTS.getErrData("D001");
-              console.log('auth menu : '+out_data.result);
-            } else {
-              var in_data = {
-                INDEX: indexRole,
-                TYPE: "role",
-                ID: "role_id",
-                VALUE: req.body.roleid
-              };
-              queryProvider.deleteQueryByID("management", "deleteById", in_data, function(err, out_data) {
-                if(out_data.result == "deleted"){
-                  var rtnCode = CONSTS.getErrData("D004");
-                }
-                if(err){ console.log(err);    }
-                res.json({rtnCode: rtnCode});
-              });
-            }
-            if (err) { console.log(err) };
-            res.json({rtnCode: rtnCode});
-          });
+          var rtnCode = CONSTS.getErrData("D001");          
         }
         if (err) { console.log(err) };
         res.json({rtnCode: rtnCode});
@@ -311,7 +279,6 @@ router.post('/role/:id', function(req, res) {
     }
   });
 });
-
 // ROLE 정보 수정
 router.put('/role/:id', function(req, res) {
     var in_data = {
@@ -322,23 +289,7 @@ router.put('/role/:id', function(req, res) {
   console.log(in_data);
   queryProvider.updateQueryByID("management", "updateRole", in_data, function(err, out_data) {
     if(out_data.result == "updated" || out_data.result == "noop"){
-      var in_data = {
-            INDEX: indexMenu,
-            ID : req.body.id,
-            ROLEID: req.body.roleid,
-            DASHBOARD: req.body.dashboard,
-            TIMESERIES: req.body.timeseries,
-            REPORT: req.body.report,
-            MANAGEMENT: req.body.management,
-            ANALYSIS: req.body.analysis,
-            SETTING: req.body.setting
-          };
-        var rtnCode = CONSTS.getErrData("D002");
-        queryProvider.updateQueryByID("management", "updateAuthMenu", in_data, function(err, out_data) {
-          if(out_data.result == "updated" || out_data.result == "noop"){
-            var rtnCode = CONSTS.getErrData("D002");
-          }
-        });
+      var rtnCode = CONSTS.getErrData("D002");     
     }
     if (err) { console.log(err);   }
     res.json({rtnCode: rtnCode});
@@ -514,7 +465,7 @@ router.get('/menu', function(req, res, next) {
 
 router.get('/restapi/getMenuList', function(req, res, next) {
   console.log('/restapi/getMenuList');
-  var in_data = {  INDEX: req.query.index, TYPE: req.query.type, SORT: "code" };
+  var in_data = {  INDEX: indexMenu, TYPE: req.query.type, SORT: "code" };
   var rtnCode = CONSTS.getErrData('0000');
   queryProvider.selectSingleQueryByID2("management", "selectSortList", in_data, function(err, out_data, params) {
     console.log(out_data);
@@ -533,7 +484,7 @@ router.get('/menu/:id', function(req, res) {
   // 신규 등록
   if (req.params.id === 'editMenu') {
     var in_data = {
-      INDEX: "management",
+      INDEX: indexMenu,
       TYPE: "menu",
       ID: "code",
       SORT : "code"
@@ -554,7 +505,7 @@ router.get('/menu/:id', function(req, res) {
 // menu 신규 등록
 router.post('/menu/:id', function(req, res) {
   var in_data = {
-    INDEX: "management",
+    INDEX: indexMenu,
     TYPE: "menu",
     ID : "_id",
     VALUE: req.params.id,
@@ -565,13 +516,29 @@ router.post('/menu/:id', function(req, res) {
     if (out_data.length != 0){
       var rtnCode = CONSTS.getErrData('D005');
       res.json({rtnCode: rtnCode});
-    }  else  {
-    queryProvider.insertQueryByID("management", "insertMenu", in_data, function(err, out_data) {
+    }  else  {      
+      queryProvider.insertQueryByID("management", "insertMenu", in_data, function(err, out_data) {
         console.log(out_data);
         if(out_data.result == "created"){
           console.log(out_data);
           var rtnCode = CONSTS.getErrData("D001");
-        }
+          if(parseInt(req.params.id)%1000 != 0){
+            var in_data = {
+              INDEX: indexAuthMenu,
+              TYPE: "auth",
+              ID : req.params.id                          
+           };       
+            queryProvider.insertQueryByID("management", "insertAuthMenu", in_data, function(err, out_data) {
+              console.log(out_data);
+              if(out_data.result == "created"){
+                console.log(out_data);
+                var rtnCode = CONSTS.getErrData("D001");
+              }
+              if (err) { console.log(err) };
+              res.json({rtnCode: rtnCode});
+            });
+          }
+        }        
         if (err) { console.log(err) };
         res.json({rtnCode: rtnCode});
       });
@@ -581,7 +548,7 @@ router.post('/menu/:id', function(req, res) {
 
 router.get('/menu_upper', function(req, res, next) {
   console.log('menu/menu_upper');
-  var in_data = { INDEX: "management", TYPE:"menu", SORT : "code" };
+  var in_data = { INDEX: indexMenu, TYPE:"menu", SORT : "code" };
   var list = [];
   queryProvider.selectSingleQueryByID2("management", "selectSortList", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
@@ -603,8 +570,27 @@ router.get('/menu_upper', function(req, res, next) {
 // update
 router.put('/menu_upper/:id', function(req, res, next) {
   console.log('menu/menu_upper');
-  var in_data = { INDEX: "management", TYPE:"menu", CODE : req.body.code, NAME : req.body.name, UPCODE : "0000" };
+  var in_data = { INDEX: indexMenu, TYPE:"menu", CODE : req.body.code, NAME : req.body.name, UPCODE : "0000" };
   queryProvider.updateQueryByID("management", "updateMenuName", in_data, function(err, out_data, params) {
+    if(out_data.result == "updated"){
+      var rtnCode = CONSTS.getErrData("D002");
+    }
+    if (err) { console.log(err);   }
+    res.json({rtnCode: rtnCode});
+  });
+});
+
+// update
+router.put('/menu_auth/:id', function(req, res, next) {
+  console.log('updateAuthMenu');
+  if(req.body.role == undefined){
+    var query = "updateAuthMenuNone";
+    var in_data = { INDEX: indexAuthMenu, TYPE:"auth", ID : req.body.code };
+  } else {
+    query = "updateAuthMenu";
+    var in_data = { INDEX: indexAuthMenu, TYPE:"auth", ID : req.body.code, ROLE : req.body.role };
+  }  
+  queryProvider.updateQueryByID("management", query, in_data, function(err, out_data, params) {
     if(out_data.result == "updated"){
       var rtnCode = CONSTS.getErrData("D002");
     }
@@ -618,13 +604,24 @@ router.put('/menu_upper/:id', function(req, res, next) {
 router.delete('/menu/:id', function(req, res) {
   console.log('delete menu_upper');
   var in_data = {
-    INDEX: "management",
+    INDEX: indexMenu,
     TYPE: "menu",
     ID: req.params.id
   };
   queryProvider.deleteQueryByID("management", "deleteById", in_data, function(err, out_data) {
     if(out_data.result == "deleted");
-        var rtnCode = CONSTS.getErrData("D003");
+      var rtnCode = CONSTS.getErrData("D003");
+      var in_data = {
+        INDEX: indexAuthMenu,
+        TYPE: "auth",
+        ID: req.params.id
+      };
+      queryProvider.deleteQueryByID("management", "deleteById", in_data, function(err, out_data) {
+        if(out_data.result == "deleted");
+            var rtnCode = CONSTS.getErrData("D003");
+        if(err){ console.log(err);    }
+        res.json({rtnCode: rtnCode});
+      });
     if(err){ console.log(err);    }
     res.json({rtnCode: rtnCode});
   });
@@ -633,7 +630,7 @@ router.delete('/menu/:id', function(req, res) {
 router.get('/restapi/getCodeList', function(req, res) {
   console.log('getCodeList');
   var in_data = {
-    INDEX: "management",    TYPE: "menu",  SORT : "code", ID: "upcode",
+    INDEX: indexMenu,    TYPE: "menu",  SORT : "code", ID: "upcode",
     VALUE : req.query.id  };
   queryProvider.selectSingleQueryByID2("management", "selectByIdSort", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
@@ -647,7 +644,7 @@ router.get('/restapi/getCodeList', function(req, res) {
 router.get('/restapi/getIdData', function(req, res) {
   console.log('getCodeList');
   var in_data = {
-    INDEX: "management",    TYPE: "menu",    ID: "_id",
+    INDEX: indexMenu,    TYPE: "menu",    ID: "_id",
     VALUE : req.query.id  };
   queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
     rtnCode = CONSTS.getErrData('D005');
@@ -655,6 +652,31 @@ router.get('/restapi/getIdData', function(req, res) {
      rtnCode = CONSTS.getErrData('0001');
     }
     res.json({rtnCode: rtnCode, rtnData: out_data });
+  });
+});
+
+
+router.get('/restapi/getAuthMenu', function(req, res) {
+  console.log('getAuthRole');
+  var in_data = {  INDEX: indexRole,    TYPE: "role" };  
+  queryProvider.selectSingleQueryByID2("management", "selectList", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');        
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {
+      var in_data = {      
+        INDEX: indexAuthMenu,    TYPE: "auth", SORT : "role", ID : "code", VALUE : req.query.code };
+      var roleList = out_data;
+      queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
+        var rtnCode = CONSTS.getErrData('0000');        
+        if (out_data == null) {
+          rtnCode = CONSTS.getErrData('0001');
+        } 
+        var menuAuth = out_data[0]._source;                      
+       res.json({rtnCode: rtnCode, menuAuth : menuAuth, roleList : roleList });
+      });      
+    }    
+    res.json({rtnCode: rtnCode, menuAuth : menuAuth, roleList : roleList });
   });
 });
 
