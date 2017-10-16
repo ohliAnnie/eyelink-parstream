@@ -72,72 +72,72 @@ block content
                     label.control-label.col-md-5 Name
                     .col-md-3
                       input#rolename.form-control.form-control-inline.input-large(size='16', type='text', value=role._source.role_name, placeholder='rolename', name='rolename')
-                  .form-group
-                    label.control-label.col-md-5 Dashboard
-                    .col-md-3
-                      label.control-label.visible-ie8.visible-ie9 Dashboard
-                      select#dashboard.select2.form-control(name='dashboard')
-                        if menu._source.menu_dashboard=='Yes'
-                          option(value='', selected='selected') #{menu._source.menu_dashboard}
-                          option No
-                        else
-                          option Yes                                
-                          option(value='', selected='selected') #{menu._source.menu_dashboard}
-                  .form-group
-                    label.control-label.col-md-5 Timeseries
-                    .col-md-3
-                      label.control-label.visible-ie8.visible-ie9 Timeseries
-                      select#timeseries.select2.form-control(data-show-subtext='true', name='timeseries')
-                        if menu._source.menu_timeseries=='Yes'
-                          option(value='', selected='selected') #{menu._source.menu_timeseries}
-                          option No
-                        else
-                          option Yes                                
-                          option(value='', selected='selected') #{menu._source.menu_timeseries}
-                  .form-group
-                    label.control-label.col-md-5 Report
-                    .col-md-3
-                      label.control-label.visible-ie8.visible-ie9 Report                      
-                      select#report.select2.form-control(name='report')
-                        if menu._source.menu_report=='Yes'
-                          option(value='', selected='selected') #{menu._source.menu_report}
-                          option No
-                        else
-                          option Yes                                
-                          option(value='', selected='selected') #{menu._source.menu_report}                          
-                  .form-group
-                    label.control-label.col-md-5 Management
-                    .col-md-3
-                      label.control-label.visible-ie8.visible-ie9 Management
-                      select#management.select2.form-control(name='management')
-                        if menu._source.menu_management=='Yes'
-                          option(value='', selected='selected') #{menu._source.menu_management}
-                          option No
-                        else
-                          option Yes                                
-                          option(value='', selected='selected') #{menu._source.menu_management}
-                  .form-group
-                    label.control-label.col-md-5 Analysis
-                    .col-md-3
-                      label.control-label.visible-ie8.visible-ie9 Analysis
-                      select#analysis.select2.form-control(name='analysis')
-                        if menu._source.menu_analysis=='Yes'
-                          option(value='', selected='selected') #{menu._source.menu_analysis}
-                          option No
-                        else
-                          option Yes                                
-                          option(value='', selected='selected') #{menu._source.menu_analysis}
-                  .form-group
-                    label.control-label.col-md-5 Setting
-                    .col-md-3
-                      label.control-label.visible-ie8.visible-ie9 Setting
-                      select#setting.select2.form-control(name='setting')
-                        if menu._source.menu_setting=='Yes'
-                          option(value='', selected='selected') #{menu._source.menu_setting}
-                          option No
-                        else
-                          option Yes                                
-                          option(value='', selected='selected') #{menu._source.menu_setting}
+                  //- .form-group
+                  //-   label.control-label.col-md-5 Dashboard
+                  //-   .col-md-3
+                  //-     label.control-label.visible-ie8.visible-ie9 Dashboard
+                  //-     select#dashboard.select2.form-control(name='dashboard')
+                  //-       if menu._source.menu_dashboard=='Yes'
+                  //-         option(value='', selected='selected') #{menu._source.menu_dashboard}
+                  //-         option No
+                  //-       else
+                  //-         option Yes                                
+                  //-         option(value='', selected='selected') #{menu._source.menu_dashboard}
+                  //- .form-group
+                  //-   label.control-label.col-md-5 Timeseries
+                  //-   .col-md-3
+                  //-     label.control-label.visible-ie8.visible-ie9 Timeseries
+                  //-     select#timeseries.select2.form-control(data-show-subtext='true', name='timeseries')
+                  //-       if menu._source.menu_timeseries=='Yes'
+                  //-         option(value='', selected='selected') #{menu._source.menu_timeseries}
+                  //-         option No
+                  //-       else
+                  //-         option Yes                                
+                  //-         option(value='', selected='selected') #{menu._source.menu_timeseries}
+                  //- .form-group
+                  //-   label.control-label.col-md-5 Report
+                  //-   .col-md-3
+                  //-     label.control-label.visible-ie8.visible-ie9 Report                      
+                  //-     select#report.select2.form-control(name='report')
+                  //-       if menu._source.menu_report=='Yes'
+                  //-         option(value='', selected='selected') #{menu._source.menu_report}
+                  //-         option No
+                  //-       else
+                  //-         option Yes                                
+                  //-         option(value='', selected='selected') #{menu._source.menu_report}                          
+                  //- .form-group
+                  //-   label.control-label.col-md-5 Management
+                  //-   .col-md-3
+                  //-     label.control-label.visible-ie8.visible-ie9 Management
+                  //-     select#management.select2.form-control(name='management')
+                  //-       if menu._source.menu_management=='Yes'
+                  //-         option(value='', selected='selected') #{menu._source.menu_management}
+                  //-         option No
+                  //-       else
+                  //-         option Yes                                
+                  //-         option(value='', selected='selected') #{menu._source.menu_management}
+                  //- .form-group
+                  //-   label.control-label.col-md-5 Analysis
+                  //-   .col-md-3
+                  //-     label.control-label.visible-ie8.visible-ie9 Analysis
+                  //-     select#analysis.select2.form-control(name='analysis')
+                  //-       if menu._source.menu_analysis=='Yes'
+                  //-         option(value='', selected='selected') #{menu._source.menu_analysis}
+                  //-         option No
+                  //-       else
+                  //-         option Yes                                
+                  //-         option(value='', selected='selected') #{menu._source.menu_analysis}
+                  //- .form-group
+                  //-   label.control-label.col-md-5 Setting
+                  //-   .col-md-3
+                  //-     label.control-label.visible-ie8.visible-ie9 Setting
+                  //-     select#setting.select2.form-control(name='setting')
+                  //-       if menu._source.menu_setting=='Yes'
+                  //-         option(value='', selected='selected') #{menu._source.menu_setting}
+                  //-         option No
+                  //-       else
+                  //-         option Yes                                
+                  //-         option(value='', selected='selected') #{menu._source.menu_setting}
                   .form-group
                     #register_tnc_error(style='text-align:center;')
                     .col-md-10
