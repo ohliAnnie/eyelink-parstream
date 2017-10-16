@@ -15,8 +15,6 @@ import org.springframework.stereotype.Component;
 
 import m2u.eyelink.aibot.IConstants;
 import m2u.eyelink.aibot.InterfaceController;
-import m2u.eyelink.aibot.IConstants.Configs;
-import m2u.eyelink.aibot.IConstants.Configs.Keys;
 
 @Component
 public class Config implements InitializingBean{
