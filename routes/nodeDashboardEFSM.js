@@ -538,7 +538,7 @@ router.get('/restapi/selectJiraAccDash', function(req, res, next) {
   });
 });
 
-router.get('/selected_detail', function(req, res, next) {      
+router.get('/selected_detail_jira', function(req, res, next) {      
   var s = new Date(parseInt(req.query.start)).toString().split(' ');
   var e = new Date(parseInt(req.query.end)).toString().split(' ');  
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
@@ -565,6 +565,7 @@ router.get('/selected_detail', function(req, res, next) {
         d._source.timestamp = c[2]+'-'+mon[c[1]]+'-'+c[0]+'T'+b[1]+':'+b[2]+':'+b[3];
       });
     }
+    console.log(out_data);
     res.render('./dashboard/scatter_detail_jira', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });                 
@@ -597,7 +598,7 @@ router.get('/selected_detail_agent', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }  
-    res.render('./dashboard/scatter_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+    res.render('./dashboard/scatter_detail_agent', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });        
 

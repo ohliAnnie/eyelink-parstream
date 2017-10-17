@@ -284,7 +284,7 @@ function drawDash(data, start, end) {
         console.log(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
         var start = parseInt(htXY.nXFrom)-9*60*60*1000;
         var end = parseInt(htXY.nXTo)-9*60*60*1000;
-        var link = '/dashboard/selected_detail?start='+start+'&end='+end+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;
+        var link = '/dashboard/selected_detail_jira?start='+start+'&end='+end+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;
         console.timeEnd('fOnSelect');
         console.log('adata length', aData.length);
         window.open(link, "EyeLink Service List", "menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50");        
