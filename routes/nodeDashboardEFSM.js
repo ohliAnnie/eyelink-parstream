@@ -570,9 +570,9 @@ router.get('/selected_detail', function(req, res, next) {
 });                 
 
 router.get('/selected_detail_agent', function(req, res, next) {    
-  var s = new Date(parseInt(req.query.start)).toString().split(' ');  
-  var e = new Date(parseInt(req.query.end)).toString().split(' ');
-  var y = new Date(parseInt(req.query.end)-24*60*60*1000).toString().split(' ');     
+  var s = new Date(parseInt(req.query.start)-9*60*60*1000).toString().split(' ');  
+  var e = new Date(parseInt(req.query.end)-9*60*60*1000).toString().split(' ');
+  var y = new Date(parseInt(req.query.end)-(9+24)*60*60*1000).toString().split(' ');     
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var start = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4];
   var end = e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4];  
@@ -1287,7 +1287,7 @@ router.get('/restapi/getAgentData', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');      
     }  
     
-    var data = [], rtnData = [];
+    var data = [], rtnData = [], max = 0;
     var start=new Date().getTime(), end=new Date(1990,0,0,0,0,0).getTime();    
     var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
     out_data.forEach(function(d){
@@ -1296,7 +1296,10 @@ router.get('/restapi/getAgentData', function(req, res, next) {
         start = date;            
       } else if(date > end){            
         end = date;        
-      }       
+      }             
+      if(max < d._source.elapsed){
+        max = d._source.elapsed;        
+      }
       rtnData.push(d._source);
       data.push({
         x : date,
@@ -1308,7 +1311,10 @@ router.get('/restapi/getAgentData', function(req, res, next) {
         index : d._source.isError ? 4 : (d._source.elapsed < 1000 ? 0 : (d._source.elapsed < 3000 ? 1 : (d._source.elapsed < 5000 ? 2 : 3)))
       });
     });    
-    res.json({rtnCode: rtnCode, rtnData : rtnData, data : data, start : start, end : end});
+    start -= 5*60*1000;
+    end += 5*60*1000;      
+    max = Math.ceil(max/1000)*1000;
+    res.json({ rtnCode: rtnCode, rtnData : rtnData, data : data, start : start, end : end, max : max });
   });
 });
 

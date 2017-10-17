@@ -1,11 +1,11 @@
 
 div#fieldChooser {
-    width: 300px;
+    width: 'auto';
     height: 520px;
 }
 
 .fc-field {
-    width: 360px;
+    width: 'auto';
     height: 30px;
     margin: 5px;
     margin-bottom: 10px;
@@ -27,7 +27,7 @@ div#fieldChooser {
 }
 
 .fc-field-list {
-    width: 400px;
+    width: 'auto';
     height: 500px;
     margin: 0px;
     padding: 3px;

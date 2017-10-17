@@ -35,9 +35,7 @@ function drawMenuList(data){
     if(d.upcode == "0000"){
      sb.append('<tr class="treegrid-'+ parseInt(d.code) +' treegrid-parent-'+ parseInt(d.upcode)+'"><td>'+d.name+'</td></tr>');
     } else if(d.upcode != null && (parseInt(d.code)%1000 != 0)){
-      sb.append('<tr class="treegrid-'+ parseInt(d.code) +' treegrid-parent-'+ parseInt(d.upcode)+'"><td onclick="javascript:clickTrEvent('+d.code+')">'+d.name+'</td></tr>');
-    } else if(d.upcode != null && (parseInt(d.code)%1000 != 0)){
-      sb.append('<tr class="treegrid-'+ parseInt(d.code) +' treegrid-parent-'+ parseInt(d.upcode)+'"><td>'+d.name+'</td></tr>');
+      sb.append('<tr class="treegrid-'+ parseInt(d.code) +' treegrid-parent-'+ parseInt(d.upcode)+'"><td id="click" onclick="javascript:clickTrEvent('+d.code+')">'+d.name+'</td></tr>');    
     } else {
        sb.append('<tr class="treegrid-'+ parseInt(d.code) +'"><td></td></tr>');         
     }     
@@ -49,19 +47,28 @@ function drawMenuList(data){
     expanderExpandedClass: 'glyphicon glyphicon-minus',
     expanderCollapsedClass: 'glyphicon glyphicon-plus'
   }); 
-  $('td').click( function() {
+  var old = '';
+  $('td#click').click( function() {
+    if(old != ''){
+       old.css("background", "#fff"); //reset to original color
+    }
     console.log($(this).css);
-    $(this).css('background', 'yellow')  
+    $(this).css('background', "#FAED7D");
+    old = $(this);
   });
 
 }
 
 function clickTrEvent(code){
   
-  $('td').click( function() {
-    console.log($(this));
-    $(this).css('background', 'yellow')  
-  });  
+  $('td#click').click( function() {
+    if(old != ''){
+       old.css("background", "#fff"); //reset to original color
+    }
+    console.log($(this).css);
+    $(this).css('background', "#FAED7D");
+    old = $(this);
+  });
   $.ajax({
     url: "/management/restapi/getAuthMenu" ,
     dataType: "json",
