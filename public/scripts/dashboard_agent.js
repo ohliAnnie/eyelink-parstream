@@ -405,7 +405,7 @@ function drawAgentScattor(data, start, end, max){
       fOnSelect : function(htPosition, htXY){        
         var aData = this.getDataByXY(htXY.nXFrom, htXY.nXTo, htXY.nYFrom, htXY.nYTo);
         console.log(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
-        var link = '/dashboard/selected_detail_agent?start='+start+'&end='+end+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;        
+        var link = '/dashboard/selected_detail_agent?start='+htXY.nXFrom+'&end='+htXY.nXTo+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;        
         //RangeData(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
         window.open(link, "EyeLink Service List", "menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50");        
       }
