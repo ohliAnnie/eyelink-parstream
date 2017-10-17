@@ -70,7 +70,7 @@ function drawDashAgent(data){
     success: function(result) {            
       if (result.rtnCode.code == "0000") {                              
         summaryAgent(result.data, result.start, result.end);
-        drawAgentScattor(result.data, result.start, result.end);
+        drawAgentScattor(result.data, result.start, result.end, result.max);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -365,7 +365,7 @@ var type = ['success', 'error'];
 }
 
 
-function drawAgentScattor(data, start, end){
+function drawAgentScattor(data, start, end, max){  
   console.log(data, start, end);
   if(Modernizr.canvas){
     doBigScatterChart(start, end);
@@ -377,7 +377,7 @@ function drawAgentScattor(data, start, end){
       nWidth : window.innerWidth*0.42,
       nHeight : 280,
       nXMin: start, nXMax: end,
-      nYMin: 0, nYMax: 10000,
+      nYMin: 0, nYMax: max,
       nZMin: 0, nZMax: 5,
       nBubbleSize: 3,
       nPaddingTop : 50,
@@ -405,8 +405,6 @@ function drawAgentScattor(data, start, end){
       fOnSelect : function(htPosition, htXY){        
         var aData = this.getDataByXY(htXY.nXFrom, htXY.nXTo, htXY.nYFrom, htXY.nYTo);
         console.log(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
-        var start = parseInt(htXY.nXFrom)-9*60*60*1000;
-        var end = parseInt(htXY.nXTo)-9*60*60*1000;
         var link = '/dashboard/selected_detail_agent?start='+start+'&end='+end+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;        
         //RangeData(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
         window.open(link, "EyeLink Service List", "menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50");        
