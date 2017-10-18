@@ -294,65 +294,6 @@ function drawScatter(data, start, end, max) {
         console.timeEnd('fOnSelect');
         console.log('adata length', aData.length);
         window.open(link, "EyeLink Service List", "menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50");        
-        /*$.ajax({
-          url: "/dashboard/restapi/selectScatterSection" ,
-          dataType: "json",
-          type: "get",
-          data: { start:start, end:end, min:htXY.nYFrom, max:htXY.nYTo},
-          success: function(result) {
-            if (result.rtnCode.code == "0000") {                      
-            console.log(result);
-            d3.select("#test").select("svg").remove();
-            d3.select("#load").select("svg").remove();       
-            d3.select("#sankey").select("svg").remove();       
-           summary(result.rtnData, parseInt(htXY.nXFrom), parseInt(htXY.nXTo));
-          } else {
-            //- $("#errormsg").html(result.message);
-          }
-        },
-        error: function(req, status, err) {
-          //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-          $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-        }
-      });          
-      $.ajax({
-        url: "/dashboard/restapi/selectJiraSankeyByLinkForScatter" ,
-        dataType: "json",
-        type: "get",
-        data: { start:start, end:end, min:htXY.nYFrom, max:htXY.nYTo},
-        success: function(result) {      
-          if (result.rtnCode.code == "0000") {          
-            console.log(result.rtnData);      
-            drawSankey({rtnData : result.rtnData, id : result.id});
-          } else {
-            //- $("#errormsg").html(result.message);
-          }
-        },
-        error: function(req, status, err) {
-          //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-          $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-        }
-      });                  
-       $.ajax({
-          url: "/dashboard/restapi/getJiramapdataForScatter" ,
-          dataType: "json",
-          type: "get",
-          data: { start:start, end:end, min:htXY.nYFrom, max:htXY.nYTo},
-          success: function(result) {      
-            console.log(result);
-            if (result.rtnCode.code == "0000") {          
-              var elseJson = { nodes : result.nodes, edges : result.edges };      
-              getServerMap(elseJson);             
-              nodeLIst = result.nodeList;
-            } else {
-              //- $("#errormsg").html(result.message);
-            }
-          },
-          error: function(req, status, err) {
-            //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-            $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-          }
-        });*/
       }
     }); 
       if(cnt != 0){         
