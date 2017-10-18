@@ -53,7 +53,7 @@ router.get('/error_pop_jira', function(req, res, next) {
     index:  [indexAcc+e[3]+"."+mon[e[1]]+"."+e[2],  indexAcc+s[3]+"."+mon[s[1]]+"."+s[2]],
     START : start,
     END : end,
-    MIN : 399
+    MIN : 400
   };
   queryProvider.selectSingleQueryByID2("dashboard","selectJiraErrorList", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
@@ -68,20 +68,22 @@ router.get('/error_pop_jira', function(req, res, next) {
         d._source.timestamp = c[2]+'-'+mon[c[1]]+'-'+c[0]+'T'+b[1]+':'+b[2]+':'+b[3];        
       });
     }
-    res.render('./dashboard/error_pop_jira', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+    res.render('./dashboard/scatter_detail_jira', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });                 
 
 router.get('/error_pop_agent', function(req, res, next) {    
   var s = new Date(new Date().getTime()-24*60*60*1000).toString().split(' ');
   var e = new Date().toString().split(' ');  
-  
+  console.log(s);
+  console.log(e);
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var start = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4];
   var end = e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4];  
+  console.log(start, end);
   var in_data = {    index : ["elagent_test-agent-"+s[3]+'.'+mon[s[1]]+'.'+s[2],"elagent_test-agent-"+e[3]+'.'+mon[e[1]]+'.'+e[2]] , type : "TraceDetail",
-            start : start, end : end, min : parseInt(req.query.min)  }; 
-  queryProvider.selectSingleQueryByID2("dashboard","getTransaction", in_data, function(err, out_data, params) {    
+            start : start, end : end  }; 
+  queryProvider.selectSingleQueryByID2("dashboard","getAgentError", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');    
     out_data.forEach(function(d){                  
       var s = new Date(new Date(d._source.startTime).getTime()).toString().split(' ');    
@@ -91,7 +93,7 @@ router.get('/error_pop_agent', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }  
-    res.render('./dashboard/error_pop_agent', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+    res.render('./dashboard/scatter_detail_agent', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });     
 
@@ -340,131 +342,6 @@ router.get('/restapi/selectJiraSankeyByLink', function(req, res, next) {
   });
 });
 
-router.get('/restapi/selectJiraSankeyByLinkForScatter', function(req, res, next) {
-  console.log('dashboard/restapi/selectJiraSankeyByLinkForScatter');
-  var s = new Date(parseInt(req.query.start)).toString().split(' ');
-  var e = new Date(parseInt(req.query.end)).toString().split(' ');  
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var start = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4];
-  var end = e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4];  
-  var date = new Date().toString().split(' ');  
-  var in_data = {
-    index:  [indexAcc+e[3]+"."+mon[e[1]]+"."+e[2],  indexAcc+s[3]+"."+mon[s[1]]+"."+s[2]],
-    START : start,
-    END : end,
-    MIN : parseInt(req.query.min),
-    MAX : parseInt(req.query.max)  
-  };  
-  queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccReqMinMax", in_data, function(err, out_data, params) {      
-      var rtnCode = CONSTS.getErrData('0000');
-      if (out_data == null) {
-        rtnCode = CONSTS.getErrData('0001');
-       } else {
-          var node={}, nodes = [], line = {}, lines = [], req={},  last = {}, lineNode = {}, id={};
-   var colors=['#FF0000', '#FF5E00', '#FFBB00', '#FFE400', '#ABF200', '#1DDB16', '#00D8FF', '#0054FF', '#0100FF', '#5F00FF',
-                      '#FF00DD', '#FF007F', '#FFA7A7', '#FFE08C', '#CEF279', '#B2EBF4', '#B5B2FF', '#FFB2F5', '#CC723D', '#008299'];  
-   var reqCnt = 0, nodeCnt = 0, lineCnt = 0, lineNodeCnt = 0, idCnt = 0;        
-   var nodeNo = 0;
-   var nodeList = [];
-   out_data.forEach(function(d) {            
-    if(d._source.request != null) {
-    var a = d._source.request.split('?');                         
-    var c = a[0].split('.');    
-    if(c[c.length-1]!='js'&&c[c.length-1]!='css'&&c[c.length-1]!='png'&&c[c.length-1]!='woff'&&c[c.length-1]!='json'&&c[c.length-1]!='jsp'&&c[c.length-1]!='ico'&&c[c.length-1]!='svg'&&c[c.length-1]!='gif'&&c[c.length-1]!='eot'&&c[c.length-1]!='charts'&&c[c.length-1]!='da'&&c[c.length-1]!='gadget'){             
-    if(d._source.auth == null){
-     d._source.auth = 'visitor';
-    }      
-    var b = a[0].split('/');
-
-    if(req[a[0]] == null) {          
-      req[a[0]] = { no : reqCnt++, cnt : 1};
-    } else {
-      req[a[0]].cnt++;        
-    }        
-    
-    if(id[b[b.length-1]] == null) {
-      id[b[b.length-1]] = colors[idCnt++%20];                   
-    }
-    
-    var nodeId = b[b.length-1]+'_'+req[a[0]].no;       
-    
-    if(node[nodeId] ==null){
-      nodeList[nodeNo] = nodeId;
-       node[nodeId] ={ name : a[0], id : nodeId, no : nodeNo++, errcnt : 0, cnt : 0 };  
-    }
-    if(last[d._source.auth] != null){
-      var from = last[d._source.auth];
-      var to = nodeId;  
-      if(node[from].no > node[to].no){
-        from = nodeId;
-        to = last[d._source.auth];
-      }        
-      if(from != to){
-        if(line[node[to].no+'-'+node[from].no] == null){
-          if(lineNode[from] == null) {                
-            lineNode[from] = {};        
-            node[from].no = lineNodeCnt;        
-            nodes[lineNodeCnt++] = node[from];                        
-          }
-          if(lineNode[to] == null) {
-            lineNode[to] = {};    
-            node[to].no = lineNodeCnt;
-            nodes[lineNodeCnt++] = node[to];                                
-          }
-          var source = node[from].no;
-          var target = node[to].no;              
-          if(line[source+'-'+target] == null) {                
-            line[source+'-'+target] = { no : lineCnt };          
-            nodes[target].cnt++
-             if(d._source.response < 400){                           
-                lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 0 };                           
-              } else {                                             
-                lines[lineCnt++] = {  source:  source , target: target, value : 0.0001, cnt :  1, errcnt : 1, elist : d._id };
-                nodes[target].errcnt++;                                         
-             }  
-          } else {                            
-            lines[line[source+'-'+target].no].value += 0.0001;
-            lines[line[source+'-'+target].no].cnt++;
-             nodes[target].cnt++;                           
-             if(d._source.response >= 400){              
-                 if(lines[line[source+'-'+target].no].errcnt == 0) {
-                    lines[line[source+'-'+target].no].elist = d._id;
-                 } else {
-                  lines[line[source+'-'+target].no].elist += ','+d._id;       
-                 }       
-               lines[line[source+'-'+target].no].errcnt++;             
-               nodes[target].errcnt++;                           
-            }
-          }
-        } else {                   
-          lines[line[node[to].no+'-'+node[from].no].no].value += 0.0001;
-          lines[line[node[to].no+'-'+node[from].no].no].cnt++;
-        }
-      } else {            
-       if(lineNode[to] == null) {
-          lineNode[to] = {};                  
-          node[to].no = lineNodeCnt;              
-          nodes[lineNodeCnt++] = node[to];                                
-        }  
-      }
-    }        
-    last[d._source.auth] =  node[nodeId].id;       
-    }
-  }
-   });
- nodes.forEach(function(d){
-  console.log(d);
-  if(d.errcnt > 0){
-    d.name = '[Err:'+ d.errcnt + '] '+d.name;
-  } else {
-    d.name = d.name;
-  }
-});
-    var json = {"nodes" :nodes, "links" : lines };
-     }
-      res.json({rtnCode: rtnCode, rtnData: json, id : id});
-    });
-});
 
 router.get('/sankey_pop', function(req, res, next) {
   var in_data = {
@@ -481,7 +358,6 @@ router.get('/sankey_pop', function(req, res, next) {
     res.render('./dashboard/sankey_pop', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });
-
 
 router.get('/restapi/selectJiraAccScatter', function(req, res, next) {
   console.log('dashboard/restapi/selectJiraAccScatter');
@@ -509,7 +385,7 @@ router.get('/restapi/selectJiraAccDash', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }        
-    var data = [];
+    var data = [], max = 0;
     var start=new Date().getTime(), end=new Date(1990,0,0,0,0,0).getTime();    
     var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
     out_data.forEach(function(d){          
@@ -523,6 +399,9 @@ router.get('/restapi/selectJiraAccDash', function(req, res, next) {
         } else if(date > end){            
           end = date;        
         }          
+        if(max < d._source.responsetime){
+          max = d._source.responsetime;
+        }
           data.push({
             x : date,
             y : d._source.responsetime,
@@ -533,12 +412,18 @@ router.get('/restapi/selectJiraAccDash', function(req, res, next) {
             index : d._source.response >= 400? 4 : (d._source.responsetime < 1000 ? 0 : (d._source.responsetime < 3000 ? 1 : (d._source.responsetime < 5000 ? 2 : 3)))
           });
         }
-    });  
-    res.json({rtnCode: rtnCode, rtnData: data, start : start, end : end });
+    });      
+    start -= start%(10*60*1000);
+    end += (10*60*1000 - end%(10*60*1000));
+    max = Math.ceil(max/1000)*1000;
+    if(max < 1000){
+      max = 1000;
+    }
+    res.json({rtnCode: rtnCode, rtnData: data, start : start, end : end, max : max });
   });
 });
 
-router.get('/selected_detail', function(req, res, next) {      
+router.get('/selected_detail_jira', function(req, res, next) {      
   var s = new Date(parseInt(req.query.start)).toString().split(' ');
   var e = new Date(parseInt(req.query.end)).toString().split(' ');  
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
@@ -565,6 +450,7 @@ router.get('/selected_detail', function(req, res, next) {
         d._source.timestamp = c[2]+'-'+mon[c[1]]+'-'+c[0]+'T'+b[1]+':'+b[2]+':'+b[3];
       });
     }
+    console.log(out_data);
     res.render('./dashboard/scatter_detail_jira', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });                 
@@ -597,7 +483,7 @@ router.get('/selected_detail_agent', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }  
-    res.render('./dashboard/scatter_detail', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+    res.render('./dashboard/scatter_detail_agent', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });        
 
@@ -891,73 +777,7 @@ router.get('/restapi/getJiramapdata', function(req, res, next) {
   });
 });
 
-router.get('/restapi/getJiramapdataForScatter', function(req, res, next) {
-  console.log('dashboard/restapi/getJiramapdata');    
-  var s = new Date(parseInt(req.query.start)).toString().split(' ');
-  var e = new Date(parseInt(req.query.end)).toString().split(' ');  
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var start = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4];
-  var end = e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4];  
-  var date = new Date().toString().split(' ');  
-  var in_data = {
-    index:  indexAcc+"*",
-    START : start,
-    END : end,
-    MIN : parseInt(req.query.min),
-    MAX : parseInt(req.query.max)  
-  };   
-  queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccMapMinMax", in_data, function(err, out_data, params) {        
-    var rtnCode = CONSTS.getErrData('0000');    
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');      
-    }        
-     var nodes = [], edges = [], nodekey = [], edgekey = [], nodeList = [];
-     nodes.push({ data : { id : 'jira', name : 'jira', img : '../assets/sample/JIRA.png', parent : 'p_jira' }});      
-     nodekey['jira'] = 0
-      var color = ["#d5d5d5", "#57a115", "#de9400", "#de3636"];
-      out_data.forEach(function(d){            
-        d._source.application_id = 'USER';
-        d._source.application_name = 'USER';
-        d._source.to_application_id = 'jira';        
-        if(nodekey[d._source.application_id]!=null) {       
-          if(parseInt(d._source.response) >=400 ) {
-            nodekey[d._source.to_application_id]++;
-          }
-        } else { 
-          nodekey[d._source.application_id] = 0;                  
-          var img = d._source.application_name.split(' ');
-          nodeList.push({ id : d._source.application_id, status : 0 });
-          nodes.push({ data : { id : d._source.application_id, name : d._source.application_name, img : '../assets/sample/'+img[0]+'.png', parent : 'p_'+d._source.application_id }});      
-          if(parseInt(d._source.response) >= 400 ) {
-            nodekey[d._source.application_id]++;
-          }
-        }        
-        if(edgekey[d._source.application_id+'>'+d._source.to_application_id] != null) {
-          edgekey[d._source.application_id+'>'+d._source.to_application_id]++
-        } else {
-          edgekey[d._source.application_id+'>'+d._source.to_application_id] = 1;
-        }        
-      });      
 
-      nodes.forEach(function(d){    
-        if(nodekey[d.data.id]!=0){
-          d.data.color = color[3];
-        } else {
-          d.data.color = color[1];
-        }
-      });      
-      for(key in nodekey) {
-        if(nodekey[key] != 0){
-          nodes.push({ data : { id : 'p_'+key, name : nodekey[key] ,img : '../assets/sample/back.png' }});      
-        }
-      }
-      for(key in edgekey) {
-        var id = key.split('>');    
-        edges.push({ data : { count : edgekey[key], source : id[0], target : id[1]} });
-      }       
-    res.json({rtnCode: rtnCode, nodes : nodes, edges : edges, nodeList : nodeList});
-  });
-});
 
 /*
 router.get('/restapi/getAppmapdata', function(req, res, next) {
@@ -1310,9 +1130,10 @@ router.get('/restapi/getAgentData', function(req, res, next) {
         term : d._source.isError ? 'Error' : (d._source.elapsed < 1000 ? '1s' : (d._source.elapsed < 3000 ? '3s' : (d._source.elapsed < 5000 ? '5s' : 'Slow'))),
         index : d._source.isError ? 4 : (d._source.elapsed < 1000 ? 0 : (d._source.elapsed < 3000 ? 1 : (d._source.elapsed < 5000 ? 2 : 3)))
       });
-    });    
-    start -= 5*60*1000;
-    end += 5*60*1000;      
+    });        
+    start -= start%(10*60*1000);
+    end += (10*60*1000 - end%(10*60*1000));
+    console.log(new Date(start), new Date(end));
     max = Math.ceil(max/1000)*1000;
     res.json({ rtnCode: rtnCode, rtnData : rtnData, data : data, start : start, end : end, max : max });
   });

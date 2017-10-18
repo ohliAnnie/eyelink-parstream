@@ -133,8 +133,8 @@ function getServerMap(elesJson) {
 
   var defaults = {
     container: document.getElementById('cynav')
-  , viewLiveFramerate: 0 // set false to update graph pan only on drag end; set 0 to do it instantly; set a number (frames per second) to update not more than N times per second
-  , thumbnailEventFramerate: 30 // max thumbnail's updates per second triggered by graph updates
+  , viewLiveFramerate: 0 // set false to update cy pan only on drag end; set 0 to do it instantly; set a number (frames per second) to update not more than N times per second
+  , thumbnailEventFramerate: 30 // max thumbnail's updates per second triggered by cy updates
   , thumbnailLiveFramerate: false // max thumbnail's updates per second. Set false to disable
   , dblClickDelay: 200 // milliseconds
   , removeCustomContainer: true // destroy the container specified by user on plugin destroy
@@ -150,6 +150,10 @@ function getServerMap(elesJson) {
     makeDatabyDay(new Date());
   }
   var timeStamp = 0;
+
+  cy.maxZoom(1);        
+  cy.minZoom(1);
+
   cy.on('click', 'node', function(evt){    
     console.log(this.id());        
     var server = $("#server").val();        
@@ -186,9 +190,10 @@ function getDash(data) {
     type: "GET",    
     data: data,
     success: function(result) {      
+      console.log(result);
       if (result.rtnCode.code == "0000") {        
         //- $("#successmsg").html(result.message);        
-        drawDash(result.rtnData, result.start, result.end);
+        drawScatter(result.rtnData, result.start, result.end, result.max);
         summary(result.rtnData, result.start, result.end);
       } else {
         //- $("#errormsg").html(result.message);
@@ -241,7 +246,7 @@ function getDataByToggle(gap) {
 }
 
 var cnt = 0;
-function drawDash(data, start, end) {  
+function drawScatter(data, start, end, max) {  
   console.log(data, start, end)
   var indexs = $('#indexs').val();
   if(Modernizr.canvas){
@@ -254,9 +259,11 @@ function drawDash(data, start, end) {
       nWidth : window.innerWidth*0.42,
       nHeight : 280,
       nXMin: start, nXMax: end,
-      nYMin: 0, nYMax: 10000,
+      nYMin: 0, nYMax: max,
       nZMin: 0, nZMax: 5,
       nBubbleSize: 3,
+      nXSteps: 6,
+      nYSteps: 5,
       nPaddingTop : 50,
       nDefaultRadius : 3,
       htTypeAndColor : {
@@ -274,8 +281,7 @@ function drawDash(data, start, end) {
       'fXAxisFormat' : function(nXStep, i){        
         var nMilliseconds = (nXStep * i + this._nXMin),
           sDay = new Date(nMilliseconds).toString().split(' '),
-          sDate = sDay[4].split(':');
-          
+          sDate = sDay[4].split(':');          
         return sDate[0]+':'+sDate[1]; 
       },
       nPaddingRight : 5,
@@ -284,69 +290,10 @@ function drawDash(data, start, end) {
         console.log(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
         var start = parseInt(htXY.nXFrom)-9*60*60*1000;
         var end = parseInt(htXY.nXTo)-9*60*60*1000;
-        var link = '/dashboard/selected_detail?start='+start+'&end='+end+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;
+        var link = '/dashboard/selected_detail_jira?start='+start+'&end='+end+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;
         console.timeEnd('fOnSelect');
         console.log('adata length', aData.length);
         window.open(link, "EyeLink Service List", "menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50");        
-        /*$.ajax({
-          url: "/dashboard/restapi/selectScatterSection" ,
-          dataType: "json",
-          type: "get",
-          data: { start:start, end:end, min:htXY.nYFrom, max:htXY.nYTo},
-          success: function(result) {
-            if (result.rtnCode.code == "0000") {                      
-            console.log(result);
-            d3.select("#test").select("svg").remove();
-            d3.select("#load").select("svg").remove();       
-            d3.select("#sankey").select("svg").remove();       
-           summary(result.rtnData, parseInt(htXY.nXFrom), parseInt(htXY.nXTo));
-          } else {
-            //- $("#errormsg").html(result.message);
-          }
-        },
-        error: function(req, status, err) {
-          //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-          $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-        }
-      });          
-      $.ajax({
-        url: "/dashboard/restapi/selectJiraSankeyByLinkForScatter" ,
-        dataType: "json",
-        type: "get",
-        data: { start:start, end:end, min:htXY.nYFrom, max:htXY.nYTo},
-        success: function(result) {      
-          if (result.rtnCode.code == "0000") {          
-            console.log(result.rtnData);      
-            drawSankey({rtnData : result.rtnData, id : result.id});
-          } else {
-            //- $("#errormsg").html(result.message);
-          }
-        },
-        error: function(req, status, err) {
-          //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-          $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-        }
-      });                  
-       $.ajax({
-          url: "/dashboard/restapi/getJiramapdataForScatter" ,
-          dataType: "json",
-          type: "get",
-          data: { start:start, end:end, min:htXY.nYFrom, max:htXY.nYTo},
-          success: function(result) {      
-            console.log(result);
-            if (result.rtnCode.code == "0000") {          
-              var elseJson = { nodes : result.nodes, edges : result.edges };      
-              getServerMap(elseJson);             
-              nodeLIst = result.nodeList;
-            } else {
-              //- $("#errormsg").html(result.message);
-            }
-          },
-          error: function(req, status, err) {
-            //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-            $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-          }
-        });*/
       }
     }); 
       if(cnt != 0){         

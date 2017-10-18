@@ -188,14 +188,14 @@ function clickUpdate(id){
   var name = $("#ename").val();
   var upcode = $("#eupcode").val();
   $.ajax({
-    url: "/management/menu/" + code,
+    url: "/management/menuupdate/" + code,
     dataType: "json",
     type: "POST",
     data: { code : code, name : name, upcode : upcode },
     success: function(result) {
       console.log(result);
-      if (result.rtnCode.code == "D001") {
-       alert("update 되었습니다.");
+      if (result.rtnCode.code == "D002") {
+       alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
        location.href = "/management/menu/editMenu";
       }    
     },

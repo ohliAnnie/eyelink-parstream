@@ -558,70 +558,6 @@
           }
         }
     ]]></query>
-     <query id='selectJiraAccMapMinMax'><![CDATA[
-         {
-          "index" : [##index##],
-          "type" : "access",
-          "body" : {
-            "size"   : 100000,
-            "sort" : { "@timestamp" : { "order" : "asc" }},
-            "_source" : ["response", "timestamp"],
-            "query" : {
-              "bool" : {
-                "must" :
-                  { "range" :
-                    { "@timestamp" :
-                        { "gte" : #START#, "lte" : #END# }
-                    }
-                  },
-                "filter" :
-                  { "range" :
-                     { "responsetime" :
-                         { "gte" : #MIN#,       "lte" : #MAX#  }
-                    }
-                  },
-                "must_not" : {
-                "match": {
-                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-                 }
-               }
-              }
-            }
-          }
-        }
-    ]]></query>
-    <query id='selectScatterSection'><![CDATA[
-        {
-          "index" : #index#,
-          "type" : "access",
-          "body" : {
-            "size"   : 100000,
-            "sort" : { "@timestamp" : { "order" : "asc" }},
-            "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
-            "query" : {
-              "bool" : {
-                "must" :
-                  { "range" :
-                    { "@timestamp" :
-                        { "gte" : #START#, "lte" : #END# }
-                    }
-                  },
-                "filter" :
-                  { "range" :
-                     { "responsetime" :
-                         { "gte" : #MIN#,       "lte" : #MAX#  }
-                    }
-                  },
-                  "must_not" : {
-                    "match": {
-                     "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-                    }
-                  }
-              }
-            }
-          }
-        }
-    ]]></query>
     <query id='selectJiraErrorList'><![CDATA[
         {
           "index" : [##index##],
@@ -643,8 +579,13 @@
                      { "response" :
                          { "gte" : #MIN# }
                     }
-                  }                  
-              }
+                  },
+                "must_not" : {
+                  "match": {
+                   "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                  }
+                }
+               }
             }
           }
         }
@@ -828,6 +769,24 @@
          }
        }
     ]]></query>
+    <query id='getAgentError'><![CDATA[
+      {
+        "index" : [##index##],
+        "type" : #type#,
+        "body" : {
+          "size" : 10000,
+          "sort" : { "startTime" : { "order" : "asc" } },
+          "query" : {
+            "bool" : {
+              "must" : [
+                { "range" : { "startTime" : { "gte" : #start#, "lte" : #end# }}},
+                { "term" : { "hasException" : { "value" : "true" } } }
+              ]
+            }
+          }
+        }
+      }
+    ]]></query>
       <query id='getAccTimeseries'><![CDATA[
       {
         "index" : [##index##],
@@ -843,8 +802,8 @@
               }
             }
           }
-         }
-       }
+        }
+      }
     ]]></query>
     <query id='getProcessTimeseries'><![CDATA[
       {
@@ -1322,42 +1281,6 @@
                 "must_not" : {
                   "match": {      "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ /navigation .css .js .png .json .eot .gadget .charts"          }
                 }
-              }
-            }
-          }
-        }
-    ]]></query>
-    <query id='selectScatterSection'><![CDATA[
-        {
-          "index" : "filebeat_jira_access-2017.06.01",
-          "type" : "access",
-          "body" : {
-            "size"   : 10000,
-            "sort" : { "@timestamp" : { "order" : "asc" }},
-            "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
-            "query" : {
-              "bool" : {
-                "must" : [      { "match_all": {} }        ],
-                "filter" : [
-                  {
-                    "bool" : {
-                      "should" : [
-                        { "range" :
-                          { "responsetime" :
-                            { "gte" : #MIN#,
-                              "lte" : #MAX#  }
-                          }
-                        },
-                        { "range" :
-                          { "timestamp" :
-                            { "gte" : #START#,
-                              "lte" : #END# }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                ]
               }
             }
           }
