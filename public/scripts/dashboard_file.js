@@ -133,8 +133,8 @@ function getServerMap(elesJson) {
 
   var defaults = {
     container: document.getElementById('cynav')
-  , viewLiveFramerate: 0 // set false to update graph pan only on drag end; set 0 to do it instantly; set a number (frames per second) to update not more than N times per second
-  , thumbnailEventFramerate: 30 // max thumbnail's updates per second triggered by graph updates
+  , viewLiveFramerate: 0 // set false to update cy pan only on drag end; set 0 to do it instantly; set a number (frames per second) to update not more than N times per second
+  , thumbnailEventFramerate: 30 // max thumbnail's updates per second triggered by cy updates
   , thumbnailLiveFramerate: false // max thumbnail's updates per second. Set false to disable
   , dblClickDelay: 200 // milliseconds
   , removeCustomContainer: true // destroy the container specified by user on plugin destroy
@@ -150,6 +150,12 @@ function getServerMap(elesJson) {
     makeDatabyDay(new Date());
   }
   var timeStamp = 0;
+
+  cy.maxZoom(6);        
+  cy.minZoom(0.5);
+
+
+
   cy.on('click', 'node', function(evt){    
     console.log(this.id());        
     var server = $("#server").val();        
