@@ -262,6 +262,8 @@ function drawScatter(data, start, end, max) {
       nYMin: 0, nYMax: max,
       nZMin: 0, nZMax: 5,
       nBubbleSize: 3,
+      nXSteps: 6,
+      nYSteps: 5,
       nPaddingTop : 50,
       nDefaultRadius : 3,
       htTypeAndColor : {
@@ -279,8 +281,7 @@ function drawScatter(data, start, end, max) {
       'fXAxisFormat' : function(nXStep, i){        
         var nMilliseconds = (nXStep * i + this._nXMin),
           sDay = new Date(nMilliseconds).toString().split(' '),
-          sDate = sDay[4].split(':');
-          
+          sDate = sDay[4].split(':');          
         return sDate[0]+':'+sDate[1]; 
       },
       nPaddingRight : 5,

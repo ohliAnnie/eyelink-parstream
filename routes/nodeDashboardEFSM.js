@@ -53,7 +53,7 @@ router.get('/error_pop_jira', function(req, res, next) {
     index:  [indexAcc+e[3]+"."+mon[e[1]]+"."+e[2],  indexAcc+s[3]+"."+mon[s[1]]+"."+s[2]],
     START : start,
     END : end,
-    MIN : 399
+    MIN : 400
   };
   queryProvider.selectSingleQueryByID2("dashboard","selectJiraErrorList", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
@@ -68,7 +68,7 @@ router.get('/error_pop_jira', function(req, res, next) {
         d._source.timestamp = c[2]+'-'+mon[c[1]]+'-'+c[0]+'T'+b[1]+':'+b[2]+':'+b[3];        
       });
     }
-    res.render('./dashboard/error_pop_jira', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+    res.render('./dashboard/scatter_detail_jira', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });                 
 
@@ -93,7 +93,7 @@ router.get('/error_pop_agent', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }  
-    res.render('./dashboard/error_pop_agent', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+    res.render('./dashboard/scatter_detail_agent', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });     
 
@@ -538,13 +538,9 @@ router.get('/restapi/selectJiraAccDash', function(req, res, next) {
             index : d._source.response >= 400? 4 : (d._source.responsetime < 1000 ? 0 : (d._source.responsetime < 3000 ? 1 : (d._source.responsetime < 5000 ? 2 : 3)))
           });
         }
-    });  
-    var sDate = new Date(start);    
-    var eDate = new Date(end+60*60*1000);    
-    console.log(sDate, eDate);
-    start = new Date(sDate.getFullYear(), sDate.getMonth(), sDate.getDate (), sDate.getHours(), 0, 0).getTime();
-    end = new Date(eDate.getFullYear(), eDate.getMonth(), eDate.getDate (), eDate.getHours(), 0, 0).getTime();
-    console.log(new Date(start), new Date(end));
+    });      
+    start -= start%(10*60*1000);
+    end += (10*60*1000 - end%(10*60*1000));
     max = Math.ceil(max/1000)*1000;
     if(max < 1000){
       max = 1000;
@@ -1327,11 +1323,8 @@ router.get('/restapi/getAgentData', function(req, res, next) {
         index : d._source.isError ? 4 : (d._source.elapsed < 1000 ? 0 : (d._source.elapsed < 3000 ? 1 : (d._source.elapsed < 5000 ? 2 : 3)))
       });
     });        
-    var sDate = new Date(start);    
-    var eDate = new Date(end+60*60*1000);    
-    console.log(sDate, eDate);
-    start = new Date(sDate.getFullYear(), sDate.getMonth(), sDate.getDate (), sDate.getHours(), 0, 0).getTime();
-    end = new Date(eDate.getFullYear(), eDate.getMonth(), eDate.getDate (), eDate.getHours(), 0, 0).getTime();
+    start -= start%(10*60*1000);
+    end += (10*60*1000 - end%(10*60*1000));
     console.log(new Date(start), new Date(end));
     max = Math.ceil(max/1000)*1000;
     res.json({ rtnCode: rtnCode, rtnData : rtnData, data : data, start : start, end : end, max : max });
