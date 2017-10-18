@@ -13,9 +13,9 @@
 
     <!-- Configure APP LOG -->
     <appender name="APP" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/opt/aibot-kt/log/deploy/app.log</file>
+        <file>/chatbot/aibot/log/deploy/app.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/opt/aibot-kt/log/deploy/app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>/chatbot/aibot/log/deploy/app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
@@ -27,9 +27,9 @@
     </appender>
 
     <appender name="SERVICE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/opt/aibot-kt/log/deploy/service.log</file>
+        <file>/chatbot/aibot/log/deploy/service.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>/opt/aibot-kt/log/deploy/service-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>/chatbot/aibot/log/deploy/service-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>100MB</maxFileSize>
             </timeBasedFileNamingAndTriggeringPolicy>
@@ -42,16 +42,14 @@
 
     <logger name="com.kt.programk.common.logs.CLogger" level="debug" additivity="false">
         <appender-ref ref="SERVICE" />
-        <!-- <appender-ref ref="STDOUT" /> -->
     </logger>
 
 	<logger name="com.kt.programk.deploy" level="debug" additivity="false">
         <appender-ref ref="APP" />
-        <!-- <appender-ref ref="STDOUT" /> -->
     </logger>
     
     <root level="info">
         <appender-ref ref="APP" />
-        <!-- <appender-ref ref="STDOUT" /> -->
+        <appender-ref ref="STDOUT" />
     </root>
 </configuration>

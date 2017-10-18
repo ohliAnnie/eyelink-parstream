@@ -169,7 +169,7 @@ GENERAL NOTES
     -->
     
     <!--The directory in which to execute <system> commands. [URL: ..]-->
-    <entry key="programd.system-interpreter.directory">file:/opt/aibot-kt/log</entry>
+    <entry key="programd.system-interpreter.directory">file:/chatbot/aibot/log</entry>
     
     <!--The string to prepend to all <system> calls (platform-specific). [String: ]
          * Windows requires something like "cmd /c "; Linux doesn't (just comment out)-->

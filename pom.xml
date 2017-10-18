@@ -94,40 +94,40 @@
         <org.codehaus.jackson.verison>1.9.13</org.codehaus.jackson.verison>
 
         <!-- api build information -->
-        <api.war.outputDirectory>/opt/aibot/service/api/webapps</api.war.outputDirectory>
+        <api.war.outputDirectory>/chatbot/aibot/service/api/webapps</api.war.outputDirectory>
         <api.war.name>programk-api</api.war.name>
 
         <!-- cms build information -->
-        <cms.war.outputDirectory>/opt/aibot/service/cms/webapps</cms.war.outputDirectory>
+        <cms.war.outputDirectory>/chatbot/aibot/service/cms/webapps</cms.war.outputDirectory>
         <cms.war.name>programk-cms</cms.war.name>
 
         <!-- error build information -->
-        <error.war.outputDirectory>/opt/aibot/service/error/webapps</error.war.outputDirectory>
+        <error.war.outputDirectory>/chatbot/aibot/service/error/webapps</error.war.outputDirectory>
         <error.war.name>programk-error</error.war.name>
 
         <!-- core build information -->
         <core.jar.main.class>org.aitools.programd.configurations.SimpleGUIConsole</core.jar.main.class>
-        <core.jar.out.dir>/opt/aibot/service/core</core.jar.out.dir>
+        <core.jar.out.dir>/chatbot/aibot/service/core</core.jar.out.dir>
         <core.jar.libs.classpath.prefix>libs</core.jar.libs.classpath.prefix>
 
         <!-- deploy build information -->
         <deploy.jar.main.class>com.kt.programk.deploy.CamelMain</deploy.jar.main.class>
-        <deploy.jar.out.dir>/opt/aibot/service/deploy</deploy.jar.out.dir>
+        <deploy.jar.out.dir>/chatbot/aibot/service/deploy</deploy.jar.out.dir>
         <deploy.jar.libs.classpath.prefix>libs</deploy.jar.libs.classpath.prefix>
 
         <!-- collector build information -->
         <collecotr.jar.main.class>com.kt.programk.collector.CamelMain</collecotr.jar.main.class>
-        <collecotr.jar.out.dir>/opt/aibot/service/collector</collecotr.jar.out.dir>
+        <collecotr.jar.out.dir>/chatbot/aibot/service/collector</collecotr.jar.out.dir>
         <collecotr.jar.libs.classpath.prefix>libs</collecotr.jar.libs.classpath.prefix>
 
         <!-- redis build information -->
         <redis.jar.main.class>com.kt.programk.redis.CamelMain</redis.jar.main.class>
-        <redis.jar.out.dir>/opt/aibot/service/redis</redis.jar.out.dir>
+        <redis.jar.out.dir>/chatbot/aibot/service/redis</redis.jar.out.dir>
         <redis.jar.libs.classpath.prefix>libs</redis.jar.libs.classpath.prefix>
 
         <!-- scheduler build information -->
         <scheduler.jar.main.class>com.kt.programk.scheduler.CamelMain</scheduler.jar.main.class>
-        <scheduler.jar.out.dir>/opt/aibot/service/scheduler</scheduler.jar.out.dir>
+        <scheduler.jar.out.dir>/chatbot/aibot/service/scheduler</scheduler.jar.out.dir>
         <scheduler.jar.libs.classpath.prefix>libs</scheduler.jar.libs.classpath.prefix>
 
         <!-- redis -->
@@ -369,8 +369,11 @@
         <profile>
             <id>all</id>
             <modules>
-                <module>programk-common</module>
+            	<module>programk-common</module>
                 <module>programk-core</module>
+                <module>programk-deploy</module>
+                <module>programk-collector</module>
+                <module>programk-scheduler</module>
                 <module>programk-api</module>
                 <module>programk-cms</module>
             </modules>

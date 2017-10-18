@@ -60,7 +60,8 @@
                             <mainClass>${deploy.jar.main.class}</mainClass>
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>${deploy.jar.libs.classpath.prefix}/JKTFCrypto-1.0.0.jar</Class-Path>
+                            <!-- <Class-Path>${deploy.jar.libs.classpath.prefix}/JKTFCrypto-1.0.0.jar</Class-Path> -->
+                            <Class-Path>${deploy.jar.libs.classpath.prefix}/jasypt-1.2.9.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>

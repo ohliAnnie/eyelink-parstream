@@ -59,7 +59,8 @@
                             <mainClass>${collecotr.jar.main.class}</mainClass>
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>${collecotr.jar.libs.classpath.prefix}/JKTFCrypto-1.0.0.jar</Class-Path>
+                            <!-- <Class-Path>${collecotr.jar.libs.classpath.prefix}/JKTFCrypto-1.0.0.jar</Class-Path> -->
+                            <Class-Path>${collecotr.jar.libs.classpath.prefix}/jasypt-1.2.9.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
