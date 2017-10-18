@@ -10,7 +10,7 @@ public class Keyboard {
 	private List<String> buttons;
 
 	public Keyboard(String type) {
-		this.type = IConstants.Type.Keyboard.TEXT;
+		this.type = type;
 	}
 	public Keyboard(List<String> buttons) {
 		this.type = IConstants.Type.Keyboard.BUTTONS;

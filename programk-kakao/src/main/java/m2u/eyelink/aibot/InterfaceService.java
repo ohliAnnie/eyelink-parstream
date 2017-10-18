@@ -26,27 +26,29 @@ public class InterfaceService {
 	@Autowired
 	private Config config;
 	
-	public String getResponse(MessageIn messageIn) {
+	public String getResponse(MessageIn messageIn) throws IOException {
 
 		StringBuffer sb = null;
+		HttpURLConnection conn = null;
+		DataOutputStream wr = null;
+		
 		try {
 
 			URL url = new URL(config.getApiUrl());
 
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Accept", "application/json");
 			conn.setRequestProperty("Content-Type", "application/json;charset=" + IConstants.Charset.DFLT_CHARSET);
 
 			// Send post request
 			conn.setDoOutput(true);
-			DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
+			wr = new DataOutputStream(conn.getOutputStream());
 
 			String jsonMsg = generateProgramkRequest(messageIn);
 			logger.debug("Sending message to ProgramK api. msg: {}", jsonMsg);
 			wr.write(jsonMsg.getBytes(Charset.defaultCharset()));
 			wr.flush();
-			wr.close();
 
 			if (conn.getResponseCode() != 200) {
 				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
@@ -60,14 +62,14 @@ public class InterfaceService {
 			while ((output = br.readLine()) != null) {
 				sb.append(output);
 			}
-			conn.disconnect();
 
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
 			logger.error(e.getMessage());
-		} catch (IOException e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
+		} finally {
+			if ( conn != null )
+				conn.disconnect();
+			if ( wr != null )
+				wr.close();
 		}
 		return sb.toString();
 	}
@@ -80,5 +82,5 @@ public class InterfaceService {
 		o.put("chat", messageIn.getContent());
 		return o.toString();
 	}
-	
+
 }

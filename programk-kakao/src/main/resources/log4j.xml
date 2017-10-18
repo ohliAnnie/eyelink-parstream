@@ -11,7 +11,7 @@
 	</appender>
 	
 	<appender name="file" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="file" value="{aibot-home}/log/kakao/kakao.log"/>  
+		<param name="file" value="/chatbot/aibot/log/kakao/kakao.log"/>  
         <param name="Append" value="true"/>  
         <param name="DatePattern" value="'.'yyMMdd"/>  
         <layout class="org.apache.log4j.PatternLayout">  
@@ -21,7 +21,7 @@
 	
 	<!-- Application Loggers -->
 	<logger name="m2u.eyelink.aibot">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 	
 	<!-- 3rdparty Loggers -->
@@ -45,8 +45,8 @@
 	<root>
 		<priority value="info" />
 		<!-- Use file instead of console in production -->
-		<appender-ref ref="console" />
-		<!-- <appender-ref ref="file" /> -->
+		<!-- <appender-ref ref="console" /> -->
+		<appender-ref ref="file" />
 	</root>
 	
 </log4j:configuration>

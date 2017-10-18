@@ -1,5 +1,6 @@
 package m2u.eyelink.aibot;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,8 @@ public class InterfaceController {
 	@Autowired
 	private UserAuthManager uaManager;
 	
+	private Keyboard keyboard;
+	
 	/**
 	 * 사용자가 채팅방에 최초로 들어오거나 재진입했을 때 호출되는 서비스
 	 * <p>이용자가 최초로 채팅방에 들어올 때 기본으로 키보드 영역에 표시될 자동응답 명령어의 목록을 호출하는 API입니다.
@@ -47,13 +50,14 @@ public class InterfaceController {
 	@ResponseBody
 	public Keyboard getKeyboard() {
 		
-		logger.info("Getting keyboard...");
-		List<String> buttons = new ArrayList<>();
-//		buttons.add("1st 버튼");
-//		buttons.add("두번째 버튼");
-		Keyboard result = kakaoRespGenerator.createKakaoKeyboard(buttons);
-		
-		return result;
+		logger.debug("Getting keyboard...");
+		if ( keyboard == null ) {
+			List<String> buttons = new ArrayList<>();
+	//		buttons.add("1st 버튼");
+	//		buttons.add("두번째 버튼");
+			keyboard = kakaoRespGenerator.createKakaoKeyboard(buttons);
+		}
+		return keyboard;
 	}
 	
 	/**
@@ -65,21 +69,29 @@ public class InterfaceController {
 	@ResponseBody
 	public MessageOut getMessage(@RequestBody MessageIn messageIn) {
 		
-		logger.info("messageIn : {}", messageIn);
+		logger.info("Message received. user_key : {}", messageIn.getUser_key());
 		
 		UserAuth userAuth = uaManager.authenticateUser(messageIn);
-		if ( userAuth.getStatus() == 0 ) {
-			messageIn = new MessageIn(messageIn.getUser_key(), messageIn.getType(),
-					config.getConfigs().get(IConstants.Configs.Keys.AUTH_FAIL));
+		
+		if ( userAuth.getStatus() == 1 ) {
+			messageIn.setContent(config.getConfigs().get(IConstants.Configs.Keys.AUTH_FAIL));
 		}
-		logger.debug("UserAuth after authenticateUser() : {}", userAuth);
 		
-		String response = is.getResponse(messageIn);
-		logger.info("response : {}", response);
+		String response = null;
+		try {
+			logger.debug("messageIn: {}", messageIn);
+			response = is.getResponse(messageIn);
+			logger.debug("response : {}", response);
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+		}
 
-		uaManager.checkLastTalkDttmAndUpdate(userAuth, messageIn.getUser_key());
+		uaManager.checkUpdateLastTalkDttm(userAuth);
 		
-		MessageOut result = kakaoRespGenerator.programkToKakaoMessage(response);
+		MessageOut result = null;
+		if ( response != null ) {
+			result = kakaoRespGenerator.programkToKakaoMessage(response);
+		}
 		
 		return result;
 	}
@@ -104,6 +116,8 @@ public class InterfaceController {
 	public void friendBlockedMe(@PathVariable("user_key")String user_key) {
 		
 		logger.info("A friend blocked you. user_key : {}", user_key);
+		
+		uaManager.remove(user_key);
 	}
 	
 	/**
@@ -115,5 +129,7 @@ public class InterfaceController {
 	public void friendLeftChatRoom(@PathVariable("user_key")String user_key) {
 		
 		logger.info("A friend left the chat room. user_key : {}", user_key);
+		
+		uaManager.remove(user_key);
 	}
 }
