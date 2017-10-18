@@ -151,10 +151,8 @@ function getServerMap(elesJson) {
   }
   var timeStamp = 0;
 
-  cy.maxZoom(6);        
-  cy.minZoom(0.5);
-
-
+  cy.maxZoom(1);        
+  cy.minZoom(1);
 
   cy.on('click', 'node', function(evt){    
     console.log(this.id());        
@@ -192,9 +190,10 @@ function getDash(data) {
     type: "GET",    
     data: data,
     success: function(result) {      
+      console.log(result);
       if (result.rtnCode.code == "0000") {        
         //- $("#successmsg").html(result.message);        
-        drawDash(result.rtnData, result.start, result.end);
+        drawScatter(result.rtnData, result.start, result.end, result.max);
         summary(result.rtnData, result.start, result.end);
       } else {
         //- $("#errormsg").html(result.message);
@@ -247,7 +246,7 @@ function getDataByToggle(gap) {
 }
 
 var cnt = 0;
-function drawDash(data, start, end) {  
+function drawScatter(data, start, end, max) {  
   console.log(data, start, end)
   var indexs = $('#indexs').val();
   if(Modernizr.canvas){
@@ -260,7 +259,7 @@ function drawDash(data, start, end) {
       nWidth : window.innerWidth*0.42,
       nHeight : 280,
       nXMin: start, nXMax: end,
-      nYMin: 0, nYMax: 10000,
+      nYMin: 0, nYMax: max,
       nZMin: 0, nZMax: 5,
       nBubbleSize: 3,
       nPaddingTop : 50,

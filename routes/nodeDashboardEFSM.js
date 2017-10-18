@@ -75,13 +75,15 @@ router.get('/error_pop_jira', function(req, res, next) {
 router.get('/error_pop_agent', function(req, res, next) {    
   var s = new Date(new Date().getTime()-24*60*60*1000).toString().split(' ');
   var e = new Date().toString().split(' ');  
-  
+  console.log(s);
+  console.log(e);
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
   var start = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4];
   var end = e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4];  
+  console.log(start, end);
   var in_data = {    index : ["elagent_test-agent-"+s[3]+'.'+mon[s[1]]+'.'+s[2],"elagent_test-agent-"+e[3]+'.'+mon[e[1]]+'.'+e[2]] , type : "TraceDetail",
-            start : start, end : end, min : parseInt(req.query.min)  }; 
-  queryProvider.selectSingleQueryByID2("dashboard","getTransaction", in_data, function(err, out_data, params) {    
+            start : start, end : end  }; 
+  queryProvider.selectSingleQueryByID2("dashboard","getAgentError", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');    
     out_data.forEach(function(d){                  
       var s = new Date(new Date(d._source.startTime).getTime()).toString().split(' ');    
@@ -509,7 +511,7 @@ router.get('/restapi/selectJiraAccDash', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }        
-    var data = [];
+    var data = [], max = 0;
     var start=new Date().getTime(), end=new Date(1990,0,0,0,0,0).getTime();    
     var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
     out_data.forEach(function(d){          
@@ -523,6 +525,9 @@ router.get('/restapi/selectJiraAccDash', function(req, res, next) {
         } else if(date > end){            
           end = date;        
         }          
+        if(max < d._source.responsetime){
+          max = d._source.responsetime;
+        }
           data.push({
             x : date,
             y : d._source.responsetime,
@@ -534,7 +539,17 @@ router.get('/restapi/selectJiraAccDash', function(req, res, next) {
           });
         }
     });  
-    res.json({rtnCode: rtnCode, rtnData: data, start : start, end : end });
+    var sDate = new Date(start);    
+    var eDate = new Date(end+60*60*1000);    
+    console.log(sDate, eDate);
+    start = new Date(sDate.getFullYear(), sDate.getMonth(), sDate.getDate (), sDate.getHours(), 0, 0).getTime();
+    end = new Date(eDate.getFullYear(), eDate.getMonth(), eDate.getDate (), eDate.getHours(), 0, 0).getTime();
+    console.log(new Date(start), new Date(end));
+    max = Math.ceil(max/1000)*1000;
+    if(max < 1000){
+      max = 1000;
+    }
+    res.json({rtnCode: rtnCode, rtnData: data, start : start, end : end, max : max });
   });
 });
 
@@ -1311,9 +1326,13 @@ router.get('/restapi/getAgentData', function(req, res, next) {
         term : d._source.isError ? 'Error' : (d._source.elapsed < 1000 ? '1s' : (d._source.elapsed < 3000 ? '3s' : (d._source.elapsed < 5000 ? '5s' : 'Slow'))),
         index : d._source.isError ? 4 : (d._source.elapsed < 1000 ? 0 : (d._source.elapsed < 3000 ? 1 : (d._source.elapsed < 5000 ? 2 : 3)))
       });
-    });    
-    start -= 5*60*1000;
-    end += 5*60*1000;      
+    });        
+    var sDate = new Date(start);    
+    var eDate = new Date(end+60*60*1000);    
+    console.log(sDate, eDate);
+    start = new Date(sDate.getFullYear(), sDate.getMonth(), sDate.getDate (), sDate.getHours(), 0, 0).getTime();
+    end = new Date(eDate.getFullYear(), eDate.getMonth(), eDate.getDate (), eDate.getHours(), 0, 0).getTime();
+    console.log(new Date(start), new Date(end));
     max = Math.ceil(max/1000)*1000;
     res.json({ rtnCode: rtnCode, rtnData : rtnData, data : data, start : start, end : end, max : max });
   });
