@@ -546,6 +546,50 @@ router.post('/menu/:id', function(req, res) {
   });
 });
 
+// menu update
+router.post('/menuupdate/:id', function(req, res) {
+  var in_data = {
+    INDEX: indexMenu,
+    TYPE: "menu",
+    ID : "_id",
+    VALUE: req.params.id,
+    NAME: req.body.name,
+    UPCODE: req.body.upcode
+ };
+  queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
+    if (out_data.length != 0){
+      var rtnCode = CONSTS.getErrData('D005');
+      res.json({rtnCode: rtnCode});
+    }  else  {      
+      queryProvider.insertQueryByID("management", "insertMenu", in_data, function(err, out_data) {
+        console.log(out_data);
+        if(out_data.result == "created"){
+          console.log(out_data);
+          var rtnCode = CONSTS.getErrData("D002");
+          if(parseInt(req.params.id)%1000 != 0){
+            var in_data = {
+              INDEX: indexAuthMenu,
+              TYPE: "auth",
+              ID : req.params.id                          
+           };       
+            queryProvider.insertQueryByID("management", "insertAuthMenu", in_data, function(err, out_data) {
+              console.log(out_data);
+              if(out_data.result == "created"){
+                console.log(out_data);
+                var rtnCode = CONSTS.getErrData("D002");
+              }
+              if (err) { console.log(err) };
+              res.json({rtnCode: rtnCode});
+            });
+          }
+        }        
+        if (err) { console.log(err) };
+        res.json({rtnCode: rtnCode});
+      });
+    }
+  });
+});
+
 router.get('/menu_upper', function(req, res, next) {
   console.log('menu/menu_upper');
   var in_data = { INDEX: indexMenu, TYPE:"menu", SORT : "code" };
