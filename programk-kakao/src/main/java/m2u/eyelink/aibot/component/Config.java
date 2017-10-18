@@ -51,6 +51,7 @@ public class Config implements InitializingBean{
 				
 				logger.info("Setting initial properties......");
 				for (Object key : props.keySet() ) {
+					logger.info((String)key + " = " + (String)props.get(key));
 					configs.put((String)key, (String)props.get(key));
 				}
 				isSet = true;
