@@ -5,7 +5,6 @@ var expect = require("chai").expect;
 // var app = require("../app.js");
 // var svr = "http://localhost:5223";
 var http = require('http');
-require('date-utils');
 var CONSTS = require('../routes/consts');
 var Utils = require('../routes/util');
 
@@ -33,7 +32,7 @@ describe("Util.js", function(){
 
   });
 
-  describe.only("SQL Query -> ", function() {
+  describe("SQL Query -> ", function() {
     // it('login', login());
 
     it('Parstream Query내 파라메타 변환 처리(replaceSql)', function(done) {
@@ -98,7 +97,7 @@ describe("Util.js", function(){
              + ' { "key" : "slow", "from" : "5000" } ], "keyed" : true }, "aggs" : { "by_response" : { '
              + ' "range" : { "field": "response", "ranges" : [{ "key" : "cnt", "to" : 400 }] } } } }, '
              + ' "aggs" : { "range" : { "field": "response", "ranges" : [{ "key" : "error", "from" : 400 }] } } } } } } } ';
-    
+
       // console.log("sql : %s ", sql);
 
       var params = {
@@ -117,7 +116,7 @@ describe("Util.js", function(){
              + ' "aggs" : { "range" : { "field": "response", "ranges" : [{ "key" : "error", "from" : 400 }] } } } } } } } ');
       done();
 
-      
+
     })
   });
 
@@ -185,6 +184,150 @@ describe("Util.js", function(){
       should.exist(num);
       done();
     })
+  });
+
+  describe("오늘 날짜 조회 (Utils.getToday()) 테스트 -> ", function() {
+    var fmt1 = CONSTS.DATEFORMAT.DATE;
+    var fmt2 = CONSTS.DATEFORMAT.DATETIME;
+    var fmt3 =  CONSTS.DATEFORMAT.DATETIMEMILLI;
+    it('오늘날짜 조회', function(done) {
+      var desc = '오늘날짜 조회';
+      var curDate = Utils.getToday();
+      console.log('%s - 포맷 미지정 : %s', desc, curDate);
+      curDate = Utils.getToday(fmt2);
+      console.log('%s : format(%s), %s', desc, fmt2, curDate);
+      curDate = Utils.getToday(fmt3);
+      console.log('%s : format(%s), %s', desc, fmt3, curDate);
+      should.exist(curDate);
+      done();
+    })
+
+    it('오늘날짜를 UTC 시간(-9시간)으로 조회', function(done) {
+      var desc = '오늘날짜를 UTC 시간(-9시간)으로 조회';
+      var curDate = Utils.getToday(fmt1, 'Y');
+      console.log('%s : format(%s), %s', desc, fmt1, curDate);
+      curDate = Utils.getToday(fmt2, 'Y');
+      console.log('%s : format(%s), %s', desc, fmt2, curDate);
+      curDate = Utils.getToday(fmt3, 'Y');
+      console.log('%s : format(%s), %s', desc, fmt2, curDate);
+      should.exist(curDate);
+      done();
+    })
+
+    it('오늘날짜를 LocalTime ISO 유형으로 조회', function(done) {
+      var desc = '오늘날짜를 LocalTime ISO 유형으로 조회';
+      var curDate = Utils.getToday(fmt1, 'N', 'Y');
+      console.log('%s : format(%s), %s', desc, fmt1, curDate);
+      curDate = Utils.getToday(fmt2, 'N', 'Y');
+      console.log('%s : format(%s), %s', desc, fmt2, curDate);
+      curDate = Utils.getToday(fmt3, 'N', 'Y');
+      console.log('%s : format(%s), %s', desc, fmt3, curDate);
+      should.exist(curDate);
+      done();
+    })
+
+    it('오늘날짜를 UTC 시간(-9시간) ISO 유형으로 조회', function(done) {
+      var desc = '오늘날짜를 UTC 시간(-9시간) ISO 유형으로 조회';
+      var curDate = Utils.getToday(fmt1, 'Y', 'Y');
+      console.log('%s : format(%s), %s', desc, fmt1, curDate);
+      curDate = Utils.getToday(fmt2, 'Y', 'Y');
+      console.log('%s : format(%s), %s', desc, fmt2, curDate);
+      curDate = Utils.getToday(fmt3, 'Y', 'Y');
+      console.log('%s : format(%s), %s', desc, fmt3, curDate);
+      should.exist(curDate);
+      done();
+    })
+  });
+
+  describe("날짜 변환 조회 (Utils.getDateLocal2UTC()) LocalTime -> UTC로 변환 테스트", function() {
+    var testLocalDate = '2017-10-18 08:26:40';
+    var fmt1 = CONSTS.DATEFORMAT.DATE;
+    var fmt2 = CONSTS.DATEFORMAT.DATETIME;
+    var fmt3 =  CONSTS.DATEFORMAT.DATETIMEMILLI;
+
+    it('지정날짜를 UTC 시간(-9시간)으로 조회', function(done) {
+      var testLocalDate = '2017-10-18 08:26:40';
+      var desc = '지정날짜를 UTC 시간(-9시간)으로 조회';
+      var curDate = Utils.getDateLocal2UTC(testLocalDate, fmt1);
+      console.log('%s(%s) : format(%s), %s', desc, testLocalDate, fmt1, curDate);
+      curDate = Utils.getDateLocal2UTC(testLocalDate, fmt2);
+      console.log('%s(%s) : format(%s), %s', desc, testLocalDate, fmt2, curDate);
+      testLocalDate = '2017-10-18T08:26:40';
+      curDate = Utils.getDateLocal2UTC(testLocalDate, fmt2);
+      console.log('%s(%s) : format(%s), %s', desc, testLocalDate, fmt2, curDate);
+      curDate.should.be.equal('2017-10-17 23:26:40');
+      done();
+    })
+
+    it('지정날짜를 UTC 시간(-9시간) ISO 유형으로 조회', function(done) {
+      var testLocalDate = '2017-10-18 08:26:40';
+      var desc = '지정날짜를 UTC 시간(-9시간) ISO 유형으로 조회';
+      var curDate = Utils.getDateLocal2UTC(testLocalDate, fmt1, 'Y');
+      console.log('%s(%s) : format(%s), %s', desc, testLocalDate, fmt1, curDate);
+      curDate = Utils.getDateLocal2UTC(testLocalDate, fmt2, 'Y');
+      console.log('%s(%s) : format(%s), %s', desc, testLocalDate, fmt2, curDate);
+      curDate = Utils.getDateLocal2UTC(testLocalDate, fmt3, 'Y');
+      console.log('%s(%s) : format(%s), %s', desc, testLocalDate, fmt2, curDate);
+      curDate.should.be.equal('2017-10-17T23:26:40.000Z');
+      done();
+    })
+  });
+
+  describe("날짜 변환 조회 (Utils.getDateUTC2Local()) UTC Time -> LocalTime 변환 테스트", function() {
+    var testUTCDate = '2017-10-17 22:26:40';
+    var fmt1 = CONSTS.DATEFORMAT.DATE;
+    var fmt2 = CONSTS.DATEFORMAT.DATETIME;
+    var fmt3 = CONSTS.DATEFORMAT.DATETIMEMILLI;
+
+    it('지정 UTC 날짜를 Local 시간(+9시간)으로 조회', function(done) {
+      var testUTCDate = '2017-10-17 22:26:40';
+      var desc = '지정 UTC 날짜를 Local 시간(+9시간)으로 조회';
+      var curDate = Utils.getDateUTC2Local(testUTCDate, fmt1);
+      console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt1, curDate);
+      curDate = Utils.getDateUTC2Local(testUTCDate, fmt2);
+      console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt2, curDate);
+      testUTCDate = '2017.10.17T22:26:40';
+      curDate = Utils.getDateUTC2Local(testUTCDate, fmt2);
+      console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt2, curDate);
+      curDate.should.be.equal('2017-10-18 07:26:40');
+      done();
+    })
+
+    it('지정 UTC 날짜를 Local 시간(+9시간) ISO 유형으로 조회', function(done) {
+      var testUTCDate = '2017-10-17 22:26:40';
+      var desc = '지정 UTC 날짜를 Local 시간(+9시간) ISO 유형으로 조회';
+      var curDate = Utils.getDateUTC2Local(testUTCDate, fmt1, 'Y');
+      console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt1, curDate);
+      curDate = Utils.getDateUTC2Local(testUTCDate, fmt2, 'Y');
+      console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt2, curDate);
+      curDate = Utils.getDateUTC2Local(testUTCDate, fmt3, 'Y');
+      console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt2, curDate);
+      curDate.should.be.equal('2017-10-18T07:26:40.000Z');
+      done();
+    })
+  });
+
+  describe("날짜 차이 계산 (Utils.getDate()) 테스트", function() {
+    var testDate = '2017-10-17 22:26:40';
+    var fmt1 = CONSTS.DATEFORMAT.DATE;
+    var fmt2 = CONSTS.DATEFORMAT.DATETIME;
+    var fmt3 = CONSTS.DATEFORMAT.DATETIMEMILLI;
+
+    it('지정날짜에서 가감 결과 조회', function(done) {
+      var curDate = Utils.getDate(testDate, fmt1, -2, 0, 0, 0);
+      console.log('지정날짜(%s)에서 -2일 결과 조회 : format(%s), %s', testDate, fmt1, curDate);
+      curDate.should.be.equal('2017-10-15');
+
+      var curDate = Utils.getDate(testDate, fmt2, -2, -1, -10, -15);
+      console.log('지정날짜(%s)에서 -2일 결과 조회 : format(%s), %s', testDate, fmt2, curDate);
+      curDate.should.be.equal('2017-10-15 21:16:25');
+
+      var curDate = Utils.getDate(testDate, fmt2, 2, 1, 10, 15);
+      console.log('지정날짜(%s)에서 +2일 결과 조회 : format(%s), %s', testDate, fmt2, curDate);
+      curDate.should.be.equal('2017-10-19 23:36:55');
+      done();
+    })
+
   });
 });
 
