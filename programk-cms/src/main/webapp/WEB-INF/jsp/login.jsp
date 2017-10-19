@@ -36,7 +36,7 @@
 <script type="text/javascript" src="<c:url value='/js/jquery-ui.min.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/jquery.base64.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/common.js'/>"></script>
-<link rel="shortcut icon" type="image/x-icon" href="<c:url value='/images/favicon_olleh.ico'/>" />
+<link rel="shortcut icon" type="image/x-icon" href="<c:url value='/images/favicon_gs.ico'/>" />
 </head>
 <body>
 

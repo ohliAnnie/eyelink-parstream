@@ -71,7 +71,8 @@ textarea,
 .clearB{clear:both !important;}
 
 /* Logo */
-.searchGrpLogo{float:left; display:inline-block; width:330px; height:31px; background:url('../images/plus_cms_logo.png') no-repeat 0 0;}
+.searchGrpLogo{float:left; display:inline-block; width:330px; height:31px; background:url('../images/cms_logo_gs.png') no-repeat 0 0;}
+/* .searchGrpLogo{float:left; display:inline-block; width:330px; height:31px; background:url('../images/cms_logo_kt.png') no-repeat 0 0;} */
 /* .searchGrpLogo{float:left; display:inline-block; width:330px; height:31px; margin-top:5px; background:url('../images/eyelink_logo.png') no-repeat 0 0;} */
 .searchGrpLogo>a{width:360px; height:31px;}
 

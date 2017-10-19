@@ -428,7 +428,7 @@
 	</div>
 	<div class="popPreviewContent">
 		<ul>
-			<li class="ktConsultant"><img src="./images/kt_logo.png" alt="kt로고"/></li>
+			<li class="ktConsultant"><img src="./images/gs_logo.png" alt="kt로고"/></li>
 			<li class="consultation">
 				<div class="answer">
 					<p class="top">질문입니다</p>

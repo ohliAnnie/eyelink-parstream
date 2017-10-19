@@ -3,7 +3,7 @@
 <script type="text/template" id="TemplateOut">
 {{each(i,OUT) OUT}}
 <ul>
-	<li class="ktConsultant"><img src="./images/kt_logo.png" alt="kt로고"/></li>	
+	<li class="ktConsultant"><img src="./images/gs_logo.png" alt="kt로고"/></li>	
 	<li class="consultation">
 		<div class="answer">			
 			<p class="top">{{html OUT.body}}</p>
@@ -61,7 +61,7 @@
 
 <script type="text/template" id="TemplateFail">
 <ul>
-	<li class="ktConsultant"><img src="./images/kt_logo.png" alt="kt로고"/></li>
+	<li class="ktConsultant"><img src="./images/gs_logo.png" alt="kt로고"/></li>
 	<li class="consultation">
 		<div class="answer">
 			<p class="top">{{html OUT}}</p>

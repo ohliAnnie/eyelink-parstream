@@ -34,7 +34,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 <link type="text/css" href="<c:url value='/css/popup.css'/>" rel="stylesheet" />
 <link type="text/css" href="<c:url value='/js/jquery-ui.min.css'/>" rel="stylesheet"/>
-<link rel="shortcut icon" type="image/x-icon" href="<c:url value='/images/favicon_olleh.ico'/>" />
+<link rel="shortcut icon" type="image/x-icon" href="<c:url value='/images/favicon_gs.ico'/>" />
 <script type="text/javascript" src="<c:url value='/js/jquery-1.10.2.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/jquery-ui.min.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/jquery-ui.js'/>"></script>

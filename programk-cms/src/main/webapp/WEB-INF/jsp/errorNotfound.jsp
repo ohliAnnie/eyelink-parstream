@@ -28,7 +28,7 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Cache-Control" content="No-Cache" />
 <meta http-equiv="content-Type" content="text/html; charset=utf-8" />
-<link rel="shortcut icon" type="image/x-icon" href="./images/error/favicon_olleh.ico" />
+<link rel="shortcut icon" type="image/x-icon" href="./images/error/favicon_gs.ico" />
 <style type="text/css">
 	html,body {position:relative;width:100%;height:100%;min-height:600px;margin:0;padding:0;font-family:"Malgun Gothic","Dotum","Arial";}
 	a,img{border:0;}
