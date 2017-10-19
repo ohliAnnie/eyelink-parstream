@@ -1,3 +1,63 @@
+$(function() {
+  getMenu();    
+  $("#register-submit-btn").click(function() {
+    if ($("#upcode").val() == "") {          
+      $("#register_tnc_error").html("Upper Menu를 먼저 등록하세요.");
+      $("#register_tnc_error").show();
+      return false;
+    }
+    if ($("#code").val() == "") {
+      $("#code").focus();
+      $("#register_tnc_error").html("Code를 입력하세요.");
+      $("#register_tnc_error").show();
+      return false;
+    }
+    if (9999<parseInt($("#code").val())||parseInt($("#code").val())<999) {
+      console.log(parseInt($("#code").val()));
+      $("#code").focus();
+      $("#register_tnc_error").html("Code는 4자리 숫자로 입력하세요");
+      $("#register_tnc_error").show();
+      return false;
+    }
+    if (($("#code").val()).substring(0,1)/1000 != ($("#upcode").val()).substring(0,1)/1000) {
+      console.log(($("#code").val()).substring(0,1));
+      console.log(parseInt($("#upcode").val()));
+      $("#code").focus();
+      $("#register_tnc_error").html("첫자리는 Upper Menu code와 동일하게 입력해주세요");
+      $("#register_tnc_error").show();
+      return false;
+    }        
+    if ($("#name").val() == "") {
+      $("#name").focus();
+      $("#register_tnc_error").html("Name을 입력하세요.");
+      $("#register_tnc_error").show();
+      return false;
+    }      
+
+    // TODO 메시지 공통 영역으로
+    if (confirm("등록 하시겠습니까? ")) {
+      var code = $("#code").val();      
+      $.ajax({
+        url: "/management/menu/" + code,
+        dataType: "json",
+        type: "POST",
+        data:$('#create_account').serialize(),
+        success: function(result) {
+          console.log(result)
+          alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+          if (result.rtnCode.code == "D001") {
+            location.href = "/management/menu/editMenu";
+          }
+         },
+        error: function(req, status, err) {
+          //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+          $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+        }
+      });
+    }
+  });         
+});
+
 function getMenu() {        
   $.ajax({
     url: "/management/restapi/getMenuList" ,
@@ -9,7 +69,7 @@ function getMenu() {
     },
     success: function(result) {
       if (result.rtnCode.code == "0000") {              
-        drawList(result.rtnData);        
+        drawMenuList(result.rtnData);        
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -21,25 +81,22 @@ function getMenu() {
   });
 }
 
-function drawList(data){
+function drawMenuList(data){
   $('#call').empty();
   var sb = new StringBuffer();  
   sb.append('<table class="table tree-2 table-bordered table-striped table-condensed">');
-  data.forEach(function(d){    
-    d = d._source;    
-    var name = d.name;
-    if(d.upcode == "0000"){
-     sb.append('<tr class="treegrid-'+ parseInt(d.code) +' treegrid-parent-'+ parseInt(d.upcode)+'"><td>'+d.name+'</td><td>'+d.code+'</td><td></td></tr>');          
-    } else if(d.upcode != null){
-      sb.append('<tr class="treegrid-'+ parseInt(d.code) +' treegrid-parent-'+ parseInt(d.upcode)+'"><td>'+d.name+'</td><td>'+d.code+'</td><td>');
-      sb.append('<a class="btn default btn-xs balck" onclick="getUpdate('+d.code+')"><i class="fa fa-edit"></i> Update </a>');         
-      sb.append('<a class="btn default btn-xs balck" onclick="clickDelete('+d.code+',true)"><i class="fa fa-trash-o"></i> Delete </a></td></tr>');         
+  data.forEach(function(d){      
+    if(d._source.upcode == "0000"){
+     sb.append('<tr class="treegrid-'+ parseInt(d._source.code) +' treegrid-parent-'+ parseInt(d._source.upcode)+'"><td>'+d._source.name+'</td><td>'+d._source.code+'</td><td></td></tr>');          
+    } else if(d._source.upcode != null){
+      sb.append('<tr class="treegrid-'+ parseInt(d._source.code) +' treegrid-parent-'+ parseInt(d._source.upcode)+'"><td>'+d._source.name+'</td><td>'+d._source.code+'</td><td>');
+      sb.append('<a class="btn default btn-xs balck" onclick="drawUpdate('+"'"+d._id+"',"+d._source.code+",'"+d._source.name+"',"+d._source.upcode+')"><i class="fa fa-edit"></i> Update </a>');         
+      sb.append('<a class="btn default btn-xs balck" onclick="clickDelete('+"'"+d._id+"'"+')"><i class="fa fa-trash-o"></i> Delete </a></td></tr>');         
     } else {
-       sb.append('<tr class="treegrid-'+ parseInt(d.code) +'"><td>name</td><td>code</td><td></td></tr>');         
+       sb.append('<tr class="treegrid-'+ parseInt(d._source.code) +'"><td>name</td><td>code</td><td></td></tr>');         
     }     
   });
   sb.append('</table></div>');  
-  console.log(sb.toString());
   $('#call').append(sb.toString());  
     $('.tree-2').treegrid({
     expanderExpandedClass: 'glyphicon glyphicon-minus',
@@ -49,84 +106,35 @@ function drawList(data){
 
 function clickDelete(id){
   if (confirm("삭제 하시겠습니까? ")) {
-    deleteMenu(id, true)
+    deleteMenu(id, true);    
   }
 }
 
-function deleteMenu(id, status){  
-  // TODO 메시지 공통 영역으로
+function deleteMenu(id, status){
   $.ajax({
-  url: "/management/menu/" + id,
-  dataType: "json",
-  type: "DELETE",
-  data: {id : id},
-  success: function(result) {
-    if(status){
-      alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
-      if (result.rtnCode.code == "D003") {
-        location.href = "/management/menu/editMenu";
-      }
-    }
-  },
-  error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
-  });
-}
-
-function getUpdate(id) {
-  console.log('update')  
-  $.ajax({
-    url: "/management/restapi/getIdData",
+    url: "/management/menu/" + id,
     dataType: "json",
-    type: "get",
-    data: {
-      index : "management",
-      type : "menu",
-      id : id
-    },
+    type: "DELETE",
+    data: {id : id},
     success: function(result) {
-      console.log(result);
-      if (result.rtnData.length == 1) {
-        var d = result.rtnData[0]._source;
-        getMenuUpper(d.code, d.name, d.upcode);
-      } else {
-        $("#errormsg").html(result.message);
+      if(status){
+        alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+        if (result.rtnCode.code == "D003") {
+         location.href = "/management/menu/editMenu";     
+        }
       }
     },
     error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
-  });
-}
-
-function getMenuUpper(id, name, upcode) {        
-  $.ajax({
-    url: "/management/restapi/getCodeList" ,
-    dataType: "json",
-    type: "get",
-    data: {
-      id : "0000"
-    },
-    success: function(result) {
-      if (result.rtnCode.code == "0000") {    
-        console.log(result);
-        drawUpdate(result.rtnData, id, name, upcode);        
-      } else {
-        //- $("#errormsg").html(result.message);
+        //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
       }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
-  });
+   });
 }
 
-function drawUpdate(list, id, name, upcode){
+function drawUpdate(id, code, name, upcode){
   console.log(id, name);
+  var list = JSON.parse($('#upList').val());
+  console.log(list);
   $('#edit').empty();
   var sb = new StringBuffer();
   sb.append('<div class="row"><div class="col-md-12"><div class="portlet light bordered">');
@@ -136,8 +144,7 @@ function drawUpdate(list, id, name, upcode){
   sb.append('<div class="form-body"><div class="form-group"><label class="control-label col-md-5">Upper Menu</label>');
   sb.append('<div class="col-md-3"><label class="control-label visible-ie8 visible-ie9">Uppser Menu</label>');
   sb.append('<select id="eupcode" name="eupcode" class="select2 form-control">');
-  list.forEach(function(d){
-    var d = d._source;
+  list.forEach(function(d){    
     if(upcode == d.code){
       sb.append('<option value="'+d.code+'" selected>'+d.code+'-'+d.name+'</option>');
     } else {
@@ -145,12 +152,12 @@ function drawUpdate(list, id, name, upcode){
     }
   })
   sb.append('</select></div><label class="control-label col-md-5">Code</label><div class="col-md-3"><label class="control-label visible-ie8 visible-ie9">Code</label>');
-  sb.append('<div class="input-icon"><i class="fa fa-role"></i><input id="ecode" type="text" autocomplete="off" placeholder="Code" name="ecode" value="'+id+'" class="form-control placeholder-no-fix"/>');
+  sb.append('<div class="input-icon"><i class="fa fa-role"></i><input id="ecode" type="text" autocomplete="off" placeholder="Code" name="ecode" value="'+code+'" class="form-control placeholder-no-fix"/>');
   sb.append('</div></div><label class="control-label col-md-5">Name</label><div class="col-md-3">');
   sb.append('<label class="control-label visible-ie8 visible-ie9">Name</label><div class="input-icon">');
   sb.append('<input id="ename" type="text" placeholder="Name" name="ename" value="'+name+'" class="form-control placeholder-no-fix"/></div>');
   sb.append('</div><div class="col-md-12" id="register_tnc_eerror" style="text-align:center;"></div>');
-  sb.append('<div class="col-md-11"><button id="register-submit-btn2" class="btn green pull-right" onclick="clickUpdate('+id+')">Update</button>');
+  sb.append('<div class="col-md-11"><button id="register-submit-btn2" class="btn green pull-right" onclick="clickUpdate('+"'"+id+"'"+')">Update</button>');
   sb.append('</div></div></form></div></div></div></div>');  
   $('#edit').append(sb.toString());     
 }
@@ -182,27 +189,26 @@ function clickUpdate(id){
     $("#register_tnc_eerror").html("Name을 입력하세요.");
     $("#register_tnc_eerror").show();
     return false;
-  }
-  deleteMenu(id, false);
-  var code = $("#ecode").val();
-  var name = $("#ename").val();
-  var upcode = $("#eupcode").val();
-  $.ajax({
-    url: "/management/menuupdate/" + code,
-    dataType: "json",
-    type: "POST",
-    data: { code : code, name : name, upcode : upcode },
-    success: function(result) {
-      console.log(result);
-      if (result.rtnCode.code == "D002") {
-       alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
-       location.href = "/management/menu/editMenu";
-      }    
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
-  });
+  }  
 
+  if (confirm("수정 하시겠습니까? ")) {
+    var code = $("#ecode").val();
+    var upcode = $("#eupcode").val();
+    var name = $("#ename").val();    
+    console.log(id, code, upcode, name);
+    $.ajax({
+      url: "/management/menu/" + code,
+      dataType: "json",
+      type: "PUT",
+      data: { id : id, code : code, name : name, upcode : upcode },
+      success: function(result) {                  
+        alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+        location.href = "/management/menu/editMenu";        
+      },
+      error: function(req, status, err) {
+        //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+      }
+    });    
+  }
 }
