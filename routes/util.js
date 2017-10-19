@@ -1,3 +1,6 @@
+require('date-utils');
+var dateFormat = require('dateformat');
+
 function replaceSql(sql, params) {
   // var params = {ID : 'AAAA', DATE: '2016-12-12', NUM: 5};
   for (var key in params) {
@@ -52,7 +55,7 @@ function replaceSql2(sql, params) {
 
     // 먼저 배열 parameter를 처리한다.
     var re = new RegExp("#" + key + "#","g");
-    var re1 = new RegExp("##" + key + "##","g");    
+    var re1 = new RegExp("##" + key + "##","g");
     if (typeof params[key] === 'object') {
       if (typeof params[key][0] === 'string') {
         var tsql = '';
@@ -76,10 +79,10 @@ function replaceSql2(sql, params) {
       }
     } else if (typeof params[key] === 'string') {
        if(params[key].substring(0,1) == '{'){
-       sql = sql.replace(re, params[key]); 
+       sql = sql.replace(re, params[key]);
       } else {
         sql = sql.replace(re, '"' + params[key] + '"');
-      }      
+      }
     } else if (typeof params[key] === 'number') {
       sql = sql.replace(re, params[key]);
     } else {
@@ -126,7 +129,95 @@ function generateRandom (min, max) {
   return ranNum;
 }
 
+function convertDateFormat(fmt, utcYN, isoYN) {
+
+ if (fmt == null || fmt == '')
+    fmt = 'yyyy-mm-dd';
+
+  fmt = fmt.trim();
+  fmt = fmt.replace('YYYY', 'yyyy');
+  fmt = fmt.replace('-MM', '-mm');
+  fmt = fmt.replace('DD', 'dd');
+  fmt = fmt.replace(':SS', ':ss');
+  fmt = fmt.replace('.L', '.l');
+
+  if (utcYN == 'Y') {
+    fmt = 'UTC:' + fmt;
+    if (isoYN == 'Y') {
+      fmt = fmt.replace(' ', '\'T\'') + (fmt.length > 19 ? '\'Z\'':'');
+    }
+  } else {
+    if (isoYN == 'Y') {
+      fmt = fmt.replace(' ', '\'T\'') + (fmt.length > 19 ? '\'Z\'':'');
+    }
+  }
+  return fmt;
+}
+
+function getTimezoneOffset() {
+
+  var currentTime = new Date();
+  var currentTimezone = currentTime.getTimezoneOffset();
+  currentTimezone = (currentTimezone/60) * -1;
+
+  if (currentTimezone !== 0)
+  {
+    // utc = currentTimezone > 0 ? ' +' : ' ';
+    utc = currentTimezone * 60 * 60 * 1000;
+  }
+  return utc;
+}
+
+function getToday(fmt, utcYN, isoYN) {
+  var d = new Date();
+
+  fmt = convertDateFormat(fmt, utcYN, isoYN);
+
+  return dateFormat(d, fmt);
+}
+
+function getDateLocal2UTC(cur, fmt, isoYN) {
+  cur = cur.replace('T', ' ');
+  var d = new Date(cur);
+
+  fmt = convertDateFormat(fmt, 'Y', isoYN);
+
+  return dateFormat(d, fmt);
+}
+
+function getDateUTC2Local(cur, fmt, isoYN) {
+
+// console.log(cur);
+  cur = cur.replace('T', ' ');
+  var d = new Date(cur);
+// console.log(d);
+  d.setTime(d.getTime() + getTimezoneOffset());
+// console.log(d);
+
+  fmt = convertDateFormat(fmt, 'N', isoYN);
+
+  return dateFormat(d, fmt);
+}
+
+function getDate(dt, fmt, d, h, m, s) {
+  dt = dt.replace('T', ' ');
+  var dt = new Date(dt);
+
+  fmt = convertDateFormat(fmt, 'N', 'N');
+
+  dt = dt.addDays(d);
+  dt = dt.addHours(h);
+  dt = dt.addMinutes(m);
+  dt = dt.addSeconds(s);
+
+  return dateFormat(dt, fmt);
+}
+
 module.exports.replaceSql = replaceSql;
-module.exports.replaceSql2 = replaceSql2; 
+module.exports.replaceSql2 = replaceSql2;
 module.exports.mergeLoadedData = mergeLoadedData;
 module.exports.generateRandom = generateRandom;
+module.exports.getToday = getToday;
+module.exports.getDate = getDate;
+module.exports.getDateLocal2UTC = getDateLocal2UTC;
+module.exports.getDateUTC2Local = getDateUTC2Local;
