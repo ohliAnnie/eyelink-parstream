@@ -169,11 +169,19 @@ public class UserAuthManager {
 
 		int delayDays = Integer.valueOf(config.getConfigs().get(IConstants.Configs.Keys.AUTH_DAYS));
 
-		if (DateUtils.instance.daysPassed(userAuth.getLastAuthDttm(), delayDays) > 0) {
-			logger.debug("마지막 인증 후 {}일 이상 경과함. 마지막 인증 일시 : {}", delayDays, userAuth.getLastAuthDttm());
-			return true;
+		if ( delayDays > 0 ) {
+			if (DateUtils.instance.daysPassed(userAuth.getLastAuthDttm(), delayDays) > 0) {
+				logger.debug("마지막 인증 후 {}일 이상 경과함. 마지막 인증 일시 : {}", delayDays, userAuth.getLastAuthDttm());
+				return true;
+			}
+			logger.debug("마지막 인증 후 {}일 이내임. 마지막 인증 일시 : {}", delayDays, userAuth.getLastAuthDttm());
+		} else {
+			if (DateUtils.instance.minutesPassed(userAuth.getLastAuthDttm(), IConstants.Auth.Test.MINUTES) > 0) {
+				logger.debug("마지막 인증 후 {}분 이상 경과함. 마지막 인증 일시 : {}", IConstants.Auth.Test.MINUTES, userAuth.getLastAuthDttm());
+				return true;
+			}
+			logger.debug("마지막 인증 후 {}분 이내임. 마지막 인증 일시 : {}", IConstants.Auth.Test.MINUTES, userAuth.getLastAuthDttm());
 		}
-		logger.debug("마지막 인증 후 {}일 이내임. 마지막 인증 일시 : {}", delayDays, userAuth.getLastAuthDttm());
 		return false;
 	}
 

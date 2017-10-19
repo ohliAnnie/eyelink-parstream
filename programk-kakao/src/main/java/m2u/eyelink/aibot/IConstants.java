@@ -69,5 +69,8 @@ public interface IConstants {
 	
 	interface Auth {
 		String CACHE_NAME = "userCache";
+		interface Test {
+			int MINUTES = 5;
+		}
 	}
 }
