@@ -296,11 +296,11 @@ describe("Util.js", function(){
     it('지정 UTC 날짜를 Local 시간(+9시간) ISO 유형으로 조회', function(done) {
       var testUTCDate = '2017-10-17 22:26:40';
       var desc = '지정 UTC 날짜를 Local 시간(+9시간) ISO 유형으로 조회';
-      var curDate = Utils.getDateUTC2Local(testUTCDate, fmt1, 'Y', 'Y');
+      var curDate = Utils.getDateUTC2Local(testUTCDate, fmt1, 'Y');
       console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt1, curDate);
-      curDate = Utils.getDateUTC2Local(testUTCDate, fmt2, 'Y', 'Y');
+      curDate = Utils.getDateUTC2Local(testUTCDate, fmt2, 'Y');
       console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt2, curDate);
-      curDate = Utils.getDateUTC2Local(testUTCDate, fmt3, 'Y', 'Y');
+      curDate = Utils.getDateUTC2Local(testUTCDate, fmt3, 'Y');
       console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt2, curDate);
       curDate.should.be.equal('2017-10-18T07:26:40.000Z');
       done();
