@@ -49,15 +49,13 @@ function drawMenuList(data){
   $('td#click').click( function() {
     if(old != ''){
        old.css("background", "#fff"); //reset to original color
-    }
-    console.log($(this).css);
+    }    
     $(this).css('background', "#FAED7D");
     old = $(this);
   });
 }
 
-function clickTrEvent(code, id){
-  
+function clickTrEvent(code, id){  
   $('td#click').click( function() {
     if(old != ''){
        old.css("background", "#fff"); //reset to original color
@@ -98,7 +96,7 @@ function drawRoleList(menuAuth, roleList, code, id){
     for(i=0; i<menuAuth.role.length;i++){
       if(menuAuth.role[i] == d._source.role_id){                
         sbMenu.append('<div>'+d._source.role_id+'-'+d._source.role_name+'</div>');    
-        print = false
+        print = false;
       }; 
     }
     if(print){
@@ -129,7 +127,7 @@ function saveMenuAuth(id, code){
     url: "/management/menu_auth/"+code,
     dataType: "json",
     type: "put",
-    data: {   id : id,    role : role   },
+    data: { id : id, role : role },
     success: function(result) {
       console.log(result);
       if (result.rtnCode.code == "D002") {        
