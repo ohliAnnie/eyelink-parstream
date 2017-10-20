@@ -1,5 +1,6 @@
 package m2u.eyelink.aibot.component;
 
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.ehcache.Cache;
@@ -109,7 +110,7 @@ public class UserAuthManager {
 					} else {
 						// 실패일 경우
 						logger.debug("Failed authentication process for user : {}", userKey);
-						userAuth.setStatus(0);
+						userAuth.setStatus(1);
 					}
 					break;
 				default:
@@ -207,7 +208,12 @@ public class UserAuthManager {
 			return null;
 		}
 		//------------------------------------------
-		
+		// TODO : delete
+		Random r = new Random();
+		if ( r.nextBoolean() ) {
+			System.out.println("Returning NULL !!!!! ");
+			return null;
+		}		
 		return userAuth.getUserKey();
 	}
 	
