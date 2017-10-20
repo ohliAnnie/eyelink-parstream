@@ -153,6 +153,16 @@
         }
     }
     ]]></query>
+    <query id='updateAuthMenuCode'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,
+        "body" : {
+          "doc" : {  "code" : #CODE#  }
+        }
+    }
+    ]]></query>
      <query id='selectCheckMap'><![CDATA[
      {
         "index" : #INDEX#,
@@ -182,8 +192,7 @@
      <query id='insertMenu'><![CDATA[
        {
           "index" : #INDEX#,
-          "type" : #TYPE#,
-          "id" : #VALUE#,
+          "type" : #TYPE#,          
           "body" : {
             "code" : #VALUE#,
             "name" : #NAME#,
@@ -194,21 +203,23 @@
      <query id='insertAuthMenu'><![CDATA[
        {
           "index" : #INDEX#,
-          "type" : #TYPE#,
+          "type" : #TYPE#,      
           "id" : #ID#,
           "body" : {
-            "code" : #ID#,            
+            "code" : #CODE#,
             "role" : []
           }
       }
      ]]></query>
-    <query id='updateMenuName'><![CDATA[
+    <query id='updateMenu'><![CDATA[
      {
         "index" : #INDEX#,
         "type" : #TYPE#,
-        "id" : #CODE#,
+        "id" : #ID#,
         "body" : {
           "doc" : {
+            "upcode" : #UPCODE#,
+            "code" : #CODE#,
             "name" : #NAME#
           }
         }

@@ -11,66 +11,6 @@ block script
   script(type='text/javascript', src='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
   script(src='/assets/scripts/page/table-managed.js')
   script(type='text/javascript', src='/scripts/menuTree_edit.js')
-  script.
-    $(document).ready(function() {      
-      getMenu();
-      $("#register-submit-btn").click(function() {
-        if ($("#upcode").val() == "") {          
-          $("#register_tnc_error").html("Upper Menu를 먼저 등록하세요.");
-          $("#register_tnc_error").show();
-          return false;
-        }
-        if ($("#code").val() == "") {
-          $("#code").focus();
-          $("#register_tnc_error").html("Code를 입력하세요.");
-          $("#register_tnc_error").show();
-          return false;
-        }
-        if (9999<parseInt($("#code").val())||parseInt($("#code").val())<999) {
-          console.log(parseInt($("#code").val()));
-          $("#code").focus();
-          $("#register_tnc_error").html("Code는 4자리 숫자로 입력하세요");
-          $("#register_tnc_error").show();
-          return false;
-        }
-        if (($("#code").val()).substring(0,1)/1000 != ($("#upcode").val()).substring(0,1)/1000) {
-          console.log(($("#code").val()).substring(0,1));
-          console.log(parseInt($("#upcode").val()));
-          $("#code").focus();
-          $("#register_tnc_error").html("첫자리는 Upper Menu code와 동일하게 입력해주세요");
-          $("#register_tnc_error").show();
-          return false;
-        }        
-        if ($("#name").val() == "") {
-          $("#name").focus();
-          $("#register_tnc_error").html("Name을 입력하세요.");
-          $("#register_tnc_error").show();
-          return false;
-        }      
-
-        // TODO 메시지 공통 영역으로
-        if (confirm("등록 하시겠습니까? ")) {
-          var code = $("#code").val();
-          $.ajax({
-            url: "/management/menu/" + code,
-            dataType: "json",
-            type: "POST",
-            data:$('#create_account').serialize(),
-            success: function(result) {
-              alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
-              if (result.rtnCode.code == "D001") {
-                location.href = "/management/menu/editMenu";
-              }
-             },
-            error: function(req, status, err) {
-              //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-              $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-            }
-          });
-        }
-      });              
-    });
-
 block content
   .container-fluid
     .page-content
@@ -104,6 +44,7 @@ block content
                     label.control-label.col-md-5 Upper Menu
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Uppser Menu
+                      input#upList(type='hidden', name='upList', value=list)
                       select#upcode.select2.form-control(name='upcode')
                         each up in list
                          option(value=''+up.code) #{up.code}-#{up.name}     

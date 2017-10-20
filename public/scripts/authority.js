@@ -1,7 +1,7 @@
 $(function() {
   getMenu();    
 });
-
+var old = '';
 
 function getMenu() {        
   $.ajax({
@@ -30,18 +30,16 @@ function drawMenuList(data){
   var sb = new StringBuffer();  
   sb.append('<table class="table tree-2 table-bordered table-striped table-condensed">');
   data.forEach(function(d){    
-    d = d._source;    
-    var name = d.name;
-    if(d.upcode == "0000"){
-     sb.append('<tr class="treegrid-'+ parseInt(d.code) +' treegrid-parent-'+ parseInt(d.upcode)+'"><td>'+d.name+'</td></tr>');
-    } else if(d.upcode != null && (parseInt(d.code)%1000 != 0)){
-      sb.append('<tr class="treegrid-'+ parseInt(d.code) +' treegrid-parent-'+ parseInt(d.upcode)+'"><td id="click" onclick="javascript:clickTrEvent('+d.code+')">'+d.name+'</td></tr>');    
+    var name = d._source.name;
+    if(d._source.upcode == "0000"){
+     sb.append('<tr class="treegrid-'+ parseInt(d._source.code) +' treegrid-parent-'+ parseInt(d._source.upcode)+'"><td>'+d._source.name+'</td></tr>');
+    } else if(d._source.upcode != null && (parseInt(d._source.code)%1000 != 0)){
+      sb.append('<tr class="treegrid-'+ parseInt(d._source.code) +' treegrid-parent-'+ parseInt(d._source.upcode)+'"><td id="click" onclick="javascript:clickTrEvent('+d._source.code+",'"+d._id+"'"+')">'+d._source.name+'</td></tr>');    
     } else {
-       sb.append('<tr class="treegrid-'+ parseInt(d.code) +'"><td></td></tr>');         
+       sb.append('<tr class="treegrid-'+ parseInt(d._source.code) +'"><td></td></tr>');         
     }     
   });
   sb.append('</table></div>');  
-  console.log(sb.toString());
   $('#call').append(sb.toString());  
     $('.tree-2').treegrid({
     expanderExpandedClass: 'glyphicon glyphicon-minus',
@@ -51,16 +49,13 @@ function drawMenuList(data){
   $('td#click').click( function() {
     if(old != ''){
        old.css("background", "#fff"); //reset to original color
-    }
-    console.log($(this).css);
+    }    
     $(this).css('background', "#FAED7D");
     old = $(this);
   });
-
 }
 
-function clickTrEvent(code){
-  
+function clickTrEvent(code, id){  
   $('td#click').click( function() {
     if(old != ''){
        old.css("background", "#fff"); //reset to original color
@@ -73,10 +68,10 @@ function clickTrEvent(code){
     url: "/management/restapi/getAuthMenu" ,
     dataType: "json",
     type: "get",
-    data: {  code : code   },
+    data: {  code : code, id : id   },
     success: function(result) {      
       if (result.rtnCode.code == "0000") {     
-        drawRoleList(result.menuAuth, result.roleList, code);
+        drawRoleList(result.menuAuth, result.roleList, code, id);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -88,7 +83,7 @@ function clickTrEvent(code){
   });
 }
 
-function drawRoleList(menuAuth, roleList, code){  
+function drawRoleList(menuAuth, roleList, code, id){  
   $('#menu').empty();
   $('#role').empty();
   var sbMenu = new StringBuffer();    
@@ -101,7 +96,7 @@ function drawRoleList(menuAuth, roleList, code){
     for(i=0; i<menuAuth.role.length;i++){
       if(menuAuth.role[i] == d._source.role_id){                
         sbMenu.append('<div>'+d._source.role_id+'-'+d._source.role_name+'</div>');    
-        print = false
+        print = false;
       }; 
     }
     if(print){
@@ -109,7 +104,7 @@ function drawRoleList(menuAuth, roleList, code){
     }    
   });  
   sbMenu.append('</div></div>');
-  sbMenu.append('<button onclick="saveMenuAuth('+code+')" type="button" class="btn btn-info">Save</button>');  
+  sbMenu.append('<button onclick="saveMenuAuth('+"'"+id+"',"+code+')" type="button" class="btn btn-info">Save</button>');  
   sbRole.append('</div></div>');  
   $('#menu').append(sbMenu.toString());  
   $('#role').append(sbRole.toString());  
@@ -119,7 +114,7 @@ function drawRoleList(menuAuth, roleList, code){
   var $chooser = $("#fieldChooser").fieldChooser(sourceFields, destinationFields);    
 }
 
-function saveMenuAuth(code){
+function saveMenuAuth(id, code){
   var $sourceFields = $("#sourceFields");
   var $destinationFields = $("#destinationFields");
   var $chooser = $("#fieldChooser").fieldChooser(sourceFields, destinationFields);          
@@ -127,13 +122,12 @@ function saveMenuAuth(code){
   var role = [];
   for(i=0; i<$destinationFields[0].children.length;i++){        
     role[i] = $destinationFields[0].children[i].innerText.split('-')[0];    
-  } 
-  console.log(menu, code)  
+  }   
   $.ajax({
     url: "/management/menu_auth/"+code,
     dataType: "json",
     type: "put",
-    data: {   code : code,    role : role   },
+    data: { id : id, role : role },
     success: function(result) {
       console.log(result);
       if (result.rtnCode.code == "D002") {        
