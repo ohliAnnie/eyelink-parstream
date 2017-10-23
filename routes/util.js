@@ -176,6 +176,14 @@ function getToday(fmt, utcYN, isoYN) {
   return dateFormat(d, fmt);
 }
 
+function getMs2Date(cur, fmt, isoYN) {
+  var d = new Date(cur);
+
+  fmt = convertDateFormat(fmt, 'Y', isoYN);
+
+  return dateFormat(d, fmt);
+}
+
 function getDateLocal2UTC(cur, fmt, isoYN) {
   cur = cur.replace('T', ' ');
   var d = new Date(cur);
@@ -219,5 +227,6 @@ module.exports.mergeLoadedData = mergeLoadedData;
 module.exports.generateRandom = generateRandom;
 module.exports.getToday = getToday;
 module.exports.getDate = getDate;
+module.exports.getMs2Date = getMs2Date;
 module.exports.getDateLocal2UTC = getDateLocal2UTC;
 module.exports.getDateUTC2Local = getDateUTC2Local;
