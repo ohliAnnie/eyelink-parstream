@@ -501,11 +501,11 @@
     ]]></query>
     <query id='selectJiraAccDash'><![CDATA[
         {
-          "index" : #index#,
+          "index" : [##index##],
           "type" : "access",
           "body" : {
             "size"   : 100000,
-            "sort" : { "@timestamp" : { "order" : "asc" }},
+            "sort" : { "timestamp" : { "order" : "asc" }},
             "_source" : ["timestamp", "response", "responsetime"],
             "query" : {
               "bool" : {
@@ -515,7 +515,7 @@
                     "bool" : {
                       "should" : [
                         { "range" :
-                          { "@timestamp" :
+                          { "timestamp" :
                             { "gte" : #START#,
                               "lte" : #END# }
                           }
@@ -607,12 +607,12 @@
         "type" : "access",
         "body" : {
           "size"   : 100000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "sort" : { "timestamp" : { "order" : "asc" }},
           "query" : {
             "bool" : {
               "must" :
                 { "range" :
-                  { "@timestamp" :
+                  { "timestamp" :
                       { "gte" : #START#, "lte" : #END# }
                   }
                 },
