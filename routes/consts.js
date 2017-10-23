@@ -28,10 +28,15 @@ define(	"CODE", {
 });
 
 define("DATEFORMAT", {
-	"DATE" : "YYYY-MM-DD",
+	"DATE" : "YYYY-MM-DD",	
 	"DATETIME" : "YYYY-MM-DD HH:MM:SS",
-	"DATETIMEMILLI" : "YYYY-MM-DD HH:MM:SS.L"
+	"DATETIMEMILLI" : "YYYY-MM-DD HH:MM:SS.L",
+	"INDEXDATE" : "YYYY.mm.DD"
 });
+
+define("STARTTIME", {
+	"KOREA" : "T15:00:00"
+})
 
 define("ERROR_CODE", {
 	"0000": "SUCCESS!!!",
