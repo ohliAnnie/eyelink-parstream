@@ -32,7 +32,9 @@
 		"es_role" :  "efsm_role",		
 		"es_auth_map" : "efsm_auth_map",
 		"es_auth_menu" : "efsm_auth_menu",
-		"es_menu" : "efsm_menu"
+		"es_menu" : "efsm_menu",
+		"es_appinfo" : "efsm_applicationinfo",
+		"es_elagent" : "elagent_test-agent-"
 	},
 	"analysis": {
 		"#host" : "localhost",
