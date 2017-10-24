@@ -1,10 +1,4 @@
 var should = require('should');
-var assert = require("assert")
-var request = require("supertest");
-var expect = require("chai").expect;
-// var app = require("../app.js");
-// var svr = "http://localhost:5223";
-var http = require('http');
 var CONSTS = require('../routes/consts');
 var Utils = require('../routes/util');
 
