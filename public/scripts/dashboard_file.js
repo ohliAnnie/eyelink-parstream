@@ -376,15 +376,15 @@ function summary(data, start, end) {
 function displayCount() {  
   var day = new Date().getTime();
   $.ajax({
-    url: "/dashboard/restapi/countAccJira",
+    url: "/dashboard/restapi/countAccJiraDay",
     dataType: "json",
     type: "GET",    
-    data: { date : day, gap : 'day' },
+    data: { date : day },
     success: function(result) {
       if (result.rtnCode.code == "0000") {
-        //- $("#successmsg").html(result.message);        
-         $('#dayCnt').text(result.rtnData);               
-         pdayCnt(day-24*60*60*1000);
+        //- $("#successmsg").html(result.message);                
+         $('#dayCnt').text(result.today);
+         setStatus($('#dayCnt_status'), result.today/result.yday*100, 'day', result.yday);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -396,16 +396,15 @@ function displayCount() {
   });
 
   $.ajax({
-    url: "/dashboard/restapi/countAccJira",
+    url: "/dashboard/restapi/countAccJiraMon",
     dataType: "json",
     type: "GET",    
-    data: { date : day, gap : 'mon' },
+    data: { date : day },
     success: function(result) {
-      // console.log(result);
       if (result.rtnCode.code == "0000") {
-        //- $("#successmsg").html(result.message);        
-        $('#monCnt').text(result.rtnData);                
-        pmonCnt(new Date(day-new Date().getDate()*24*60*60*1000).getTime());
+        //- $("#successmsg").html(result.message);                
+         $('#monCnt').text(result.tmon);
+         setStatus($('#monCnt_status'), result.tmon/result.ymon*100, 'mon', result.ymon);                
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -424,9 +423,9 @@ function displayCount() {
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
-        //- $("#successmsg").html(result.message);        
-        $('#errCnt').text(result.rtnData);               
-        pdayCnt(day-24*60*60*1000);
+        //- $("#successmsg").html(result.message);                        
+        $('#errCnt').text(result.today);
+         setStatus($('#errCnt_status'), result.today/result.yday*100, 'day', result.yday);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -448,50 +447,6 @@ function setStatus(obj, percent, msg, cnt) {
 function repVal(str) {
   str *= 1
   return str.toFixed(2);
-}
-
-function pdayCnt(day){  
-  $.ajax({
-    url: "/dashboard/restapi/countAccJira",
-    dataType: "json",
-    type: "GET",    
-    data: { date : day, gap : 'day' },
-    success: function(result) {
-      // console.log(result);
-      if (result.rtnCode.code == "0000") {
-        //- $("#successmsg").html(result.message);
-        setStatus($('#dayCnt_status'), parseInt($('#dayCnt').text())/result.rtnData*100, 'day', result.rtnData); 
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
-  });
-}
-
-function pmonCnt(day){  
-  $.ajax({
-    url: "/dashboard/restapi/countAccJira",
-    dataType: "json",
-    type: "GET",    
-    data: { date : day, gap : 'mon' },
-    success: function(result) {
-      // console.log(result);
-      if (result.rtnCode.code == "0000") {
-        //- $("#successmsg").html(result.message);
-        setStatus($('#monCnt_status'), parseInt($('#monCnt').text())/result.rtnData*100, 'month', result.rtnData); 
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
-  });
 }
 
 function perrCnt(day){
