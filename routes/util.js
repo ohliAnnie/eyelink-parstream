@@ -208,11 +208,11 @@ function getDateUTC2Local(cur, fmt, delimYN) {
   return dateFormat(d, fmt);
 }
 
-function getDate(dt, fmt, d, h, m, s) {
+function getDate(dt, fmt, d, h, m, s, delimYN) {
   dt = dt.replace('T', ' ');
   var dt = new Date(dt);
 
-  fmt = convertDateFormat(fmt, 'N', 'N');
+  fmt = convertDateFormat(fmt, 'N', delimYN);
 
   dt = dt.addDays(d);
   dt = dt.addHours(h);
