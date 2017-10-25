@@ -439,7 +439,7 @@
           "body" : {
             "size"   : 100000,
             "sort" : { "timestamp" : { "order" : "asc" }},
-            "_source" : ["request", "clientip", "auth", "response"],
+            "_source" : ["request", "clientip", "auth", "response", "timestamp"],
             "query" : {
               "bool" : {
                 "must" : [      { "match_all": {} }        ],
@@ -576,12 +576,12 @@
           "body" : {
             "size"   : 100000,
             "sort" : { "@timestamp" : { "order" : "asc" }},
-            "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
+            "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host", "offset", "bytes"],
             "query" : {
               "bool" : {
                 "must" :
                   { "range" :
-                    { "@timestamp" :
+                    { "timestamp" :
                         { "gte" : #START#, "lte" : #END# }
                     }
                   },
@@ -762,9 +762,10 @@
     <query id='getTransaction'><![CDATA[
       {
         "index" : [##index##],
-        "type" : #type#,
+        "type" : #type#,        
         "body" : {
           "size" : 10000,
+          "_source" : ["startTime", "rpc", "elapsed", "hasException", "agentId", "remoteAddr", "transactionId"],
           "sort" : { "startTime" : { "order" : "asc" } },
           "query" : {
             "bool" : {
@@ -951,7 +952,7 @@
           "query": {
             "bool": {
               "filter": { "range": { 
-                 #id# : { "gte": #start#, "lte" : #end# } } },
+                "timestamp" : { "gte": #start#, "lte" : #end# } } },
               "must" : [{ "match": { "agentId" : #server#  }   },
               { "match": { "alarmType" : #list#  }   }]
             }
@@ -1289,8 +1290,8 @@
           "type" : "access",
           "body" : {
             "size"   : 100000,
-            "sort" : { "@timestamp" : { "order" : "asc" }},
-            "_source" : ["request", "clientip", "auth", "response"],
+            "sort" : { "timestamp" : { "order" : "asc" }},
+            "_source" : ["request", "clientip", "auth", "response". "timestamp"],
             "query" : {
               "bool" : {
                 "must" : {   "match_all" : { }  },
