@@ -129,7 +129,7 @@ function generateRandom (min, max) {
   return ranNum;
 }
 
-function convertDateFormat(fmt, utcYN, isoYN) {
+function convertDateFormat(fmt, utcYN, delimYN) {
 
  if (fmt == null || fmt == '')
     fmt = 'yyyy-mm-dd';
@@ -143,12 +143,13 @@ function convertDateFormat(fmt, utcYN, isoYN) {
 
   if (utcYN == 'Y') {
     fmt = 'UTC:' + fmt;
-    if (isoYN == 'Y') {
-      fmt = fmt.replace(' ', '\'T\'') + (fmt.length > 19 ? '\'Z\'':'');
+    if (delimYN == 'Y') {
+      fmt = fmt.replace(' ', '\'T\'');
     }
+    fmt = fmt  + (fmt.length > 19 ? '\'Z\'':'');
   } else {
-    if (isoYN == 'Y') {
-      fmt = fmt.replace(' ', '\'T\'') + (fmt.length > 19 ? '\'Z\'':'');
+    if (delimYN == 'Y') {
+      fmt = fmt.replace(' ', '\'T\'');
     }
   }
   return fmt;
@@ -168,41 +169,41 @@ function getTimezoneOffset() {
   return utc;
 }
 
-function getToday(fmt, utcYN, isoYN) {
+function getToday(fmt, utcYN, delimYN) {
   var d = new Date();
 
-  fmt = convertDateFormat(fmt, utcYN, isoYN);
+  fmt = convertDateFormat(fmt, utcYN, delimYN);
 
   return dateFormat(d, fmt);
 }
 
-function getMs2Date(cur, fmt, isoYN) {
+function getMs2Date(cur, fmt, delimYN) {
   var d = new Date(cur);
 
-  fmt = convertDateFormat(fmt, 'Y', isoYN);
+  fmt = convertDateFormat(fmt, 'Y', delimYN);
 
   return dateFormat(d, fmt);
 }
 
-function getDateLocal2UTC(cur, fmt, isoYN) {
+function getDateLocal2UTC(cur, fmt, delimYN) {
   cur = cur.replace('T', ' ');
   var d = new Date(cur);
 
-  fmt = convertDateFormat(fmt, 'Y', isoYN);
+  fmt = convertDateFormat(fmt, 'Y', delimYN);
 
   return dateFormat(d, fmt);
 }
 
-function getDateUTC2Local(cur, fmt, isoYN) {
+function getDateUTC2Local(cur, fmt, delimYN) {
 
-// console.log(cur);
   cur = cur.replace('T', ' ');
-  var d = new Date(cur);
-// console.log(d);
-d.setTime(d.getTime() + getTimezoneOffset());
-// console.log(d);
+  if (cur.indexOf('Z') < 0)
+    cur += 'Z';
 
-  fmt = convertDateFormat(fmt, 'N', isoYN);
+  var d = new Date(cur);
+  d.setTime(d.getTime());
+
+  fmt = convertDateFormat(fmt, 'N', delimYN);
 
   return dateFormat(d, fmt);
 }

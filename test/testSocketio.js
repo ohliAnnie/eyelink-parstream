@@ -69,7 +69,7 @@ describe("Socketio", function(){
 
   });
 
-  describe.only("Alarm Test -> ", function() {
+  describe("Alarm Test -> ", function() {
     // it('login', login());
 
     it('socket.io send/receive', function(done) {
@@ -124,7 +124,7 @@ describe("Socketio", function(){
 function getConnection(connName, callback){
   // var pUrl = '192.168.10.27';
   var pUrl = 'localhost';
-  var pPort = 5225;
+  var pPort = 5226;
   var client = net.connect({port: pPort, host:pUrl}, function() {
     console.log(connName + ' Connected: ');
     console.log('   local = %s:%s', this.localAddress, this.localPort);

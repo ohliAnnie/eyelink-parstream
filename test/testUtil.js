@@ -1,10 +1,4 @@
 var should = require('should');
-var assert = require("assert")
-var request = require("supertest");
-var expect = require("chai").expect;
-// var app = require("../app.js");
-// var svr = "http://localhost:5223";
-var http = require('http');
 var CONSTS = require('../routes/consts');
 var Utils = require('../routes/util');
 
@@ -214,8 +208,8 @@ describe("Util.js", function(){
       done();
     })
 
-    it('오늘날짜를 LocalTime ISO 유형으로 조회', function(done) {
-      var desc = '오늘날짜를 LocalTime ISO 유형으로 조회';
+    it('오늘날짜를 LocalTime "T" 유형으로 조회', function(done) {
+      var desc = '오늘날짜를 LocalTime "T" 유형으로 조회';
       var curDate = Utils.getToday(fmt1, 'N', 'Y');
       console.log('%s : format(%s), %s', desc, fmt1, curDate);
       curDate = Utils.getToday(fmt2, 'N', 'Y');
@@ -226,8 +220,8 @@ describe("Util.js", function(){
       done();
     })
 
-    it('오늘날짜를 UTC 시간(-9시간) ISO 유형으로 조회', function(done) {
-      var desc = '오늘날짜를 UTC 시간(-9시간) ISO 유형으로 조회';
+    it('오늘날짜를 UTC 시간(-9시간) "T" 유형으로 조회', function(done) {
+      var desc = '오늘날짜를 UTC 시간(-9시간) "T" 유형으로 조회';
       var curDate = Utils.getToday(fmt1, 'Y', 'Y');
       console.log('%s : format(%s), %s', desc, fmt1, curDate);
       curDate = Utils.getToday(fmt2, 'Y', 'Y');
@@ -255,13 +249,13 @@ describe("Util.js", function(){
       testLocalDate = '2017-10-18T08:26:40';
       curDate = Utils.getDateLocal2UTC(testLocalDate, fmt2);
       console.log('%s(%s) : format(%s), %s', desc, testLocalDate, fmt2, curDate);
-      curDate.should.be.equal('2017-10-17 23:26:40');
+      curDate.should.be.equal('2017-10-17 23:26:40Z');
       done();
     })
 
-    it('지정날짜를 UTC 시간(-9시간) ISO 유형으로 조회', function(done) {
+    it('지정날짜를 UTC 시간(-9시간) "T" 유형으로 조회', function(done) {
       var testLocalDate = '2017-10-18 08:26:40';
-      var desc = '지정날짜를 UTC 시간(-9시간) ISO 유형으로 조회';
+      var desc = '지정날짜를 UTC 시간(-9시간) "T" 유형으로 조회';
       var curDate = Utils.getDateLocal2UTC(testLocalDate, fmt1, 'Y');
       console.log('%s(%s) : format(%s), %s', desc, testLocalDate, fmt1, curDate);
       curDate = Utils.getDateLocal2UTC(testLocalDate, fmt2, 'Y');
@@ -273,36 +267,36 @@ describe("Util.js", function(){
     })
   });
 
-  describe.only("날짜 변환 조회 (Utils.getDateUTC2Local()) UTC Time -> LocalTime 변환 테스트", function() {
-    var testUTCDate = '2017-10-24T03:48:53.000Z';
+  describe("날짜 변환 조회 (Utils.getDateUTC2Local()) UTC Time -> LocalTime 변환 테스트", function() {
+    var testUTCDate = '2017-10-24T03:48:53Z';
     var fmt1 = CONSTS.DATEFORMAT.DATE;
     var fmt2 = CONSTS.DATEFORMAT.DATETIME;
     var fmt3 = CONSTS.DATEFORMAT.DATETIMEMILLI;
 
     it('지정 UTC 날짜를 Local 시간(+9시간)으로 조회', function(done) {
-      var testUTCDate = '2017-10-24T03:48:53.000Z';
       var desc = '지정 UTC 날짜를 Local 시간(+9시간)으로 조회';
       var curDate = Utils.getDateUTC2Local(testUTCDate, fmt1);
       console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt1, curDate);
-      curDate = Utils.getDateUTC2Local(testUTCDate, fmt2);
-      console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt2, curDate);
-      testUTCDate = '2017-10-24T03:48:53.000Z';
+      curDate.should.be.equal('2017-10-24');
       curDate = Utils.getDateUTC2Local(testUTCDate, fmt2);
       console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt2, curDate);
       curDate.should.be.equal('2017-10-24 12:48:53');
+      curDate = Utils.getDateUTC2Local(testUTCDate, fmt3);
+      console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt2, curDate);
+      curDate.should.be.equal('2017-10-24 12:48:53.000');
       done();
     })
 
-    it('지정 UTC 날짜를 Local 시간(+9시간) ISO 유형으로 조회', function(done) {
-      var testUTCDate = '2017-10-24T03:48:53.000Z';
+    it('지정 UTC 날짜를 Local 시간(+9시간) "T" 유형으로 조회', function(done) {
+      var testUTCDate = '2017-10-17 22:26:40';
       var desc = '지정 UTC 날짜를 Local 시간(+9시간) ISO 유형으로 조회';
       var curDate = Utils.getDateUTC2Local(testUTCDate, fmt1, 'Y');
       console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt1, curDate);
       curDate = Utils.getDateUTC2Local(testUTCDate, fmt2, 'Y');
       console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt2, curDate);
       curDate = Utils.getDateUTC2Local(testUTCDate, fmt3, 'Y');
-      console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt2, curDate);
-      curDate.should.be.equal('2017-10-24T12:48:53.000Z');
+      console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt3, curDate);
+      curDate.should.be.equal('2017-10-18T07:26:40.000');
       done();
     })
   });
