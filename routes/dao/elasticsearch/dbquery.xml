@@ -424,7 +424,7 @@
                 },
                 "must_not" : {
                   "match": {
-                    "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                    "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"  
                    }
                 }
               }
@@ -434,11 +434,11 @@
     ]]></query>
     <query id='selectJiraAccReq'><![CDATA[
         {
-          "index" : #index#,
-          "type" : "access",
+          "index" : [##index##],
+          "type" : #type#,
           "body" : {
             "size"   : 100000,
-            "sort" : { "@timestamp" : { "order" : "asc" }},
+            "sort" : { "timestamp" : { "order" : "asc" }},
             "_source" : ["request", "clientip", "auth", "response"],
             "query" : {
               "bool" : {
@@ -448,7 +448,7 @@
                     "bool" : {
                       "should" : [
                         { "range" :
-                          { "@timestamp" :
+                          { "timestamp" :
                             { "gte" : #START#,
                               "lte" : #END# }
                           }
@@ -459,7 +459,7 @@
                 ],
                 "must_not" : {
                 "match": {
-                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
                  }
                }
               }
@@ -502,7 +502,7 @@
     <query id='selectJiraAccDash'><![CDATA[
         {
           "index" : [##index##],
-          "type" : "access",
+          "type" : #type#,
           "body" : {
             "size"   : 100000,
             "sort" : { "timestamp" : { "order" : "asc" }},
@@ -536,11 +536,11 @@
     ]]></query>
      <query id='selectJiraAccMap'><![CDATA[
          {
-          "index" : #index#,
-          "type" : "access",
+          "index" : [##index##],
+          "type" : #type#,
           "body" : {
             "size"   : 100000,
-            "sort" : { "@timestamp" : { "order" : "asc" }},
+            "sort" : { "timestamp" : { "order" : "asc" }},
             "_source" : ["response", "timestamp"],
             "query" : {
               "bool" : {
@@ -550,7 +550,7 @@
                     "bool" : {
                       "should" : [
                         { "range" :
-                          { "@timestamp" :
+                          { "timestamp" :
                             { "gte" : #START#,
                               "lte" : #END# }
                           }
@@ -635,15 +635,15 @@
     <query id='selectJiraAccOneWeek'><![CDATA[
       {
         "index" : #index#,
-        "type" : "access",
+        "type" : #type#,
         "body" : {
           "size"   : 100000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "sort" : { "timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "response"],
           "query": {
             "bool" : {
               "must" : {
-                "range" : {  "@timestamp": {    "gte": #start# } }
+                "range" : {  "timestamp": {    "gte": #start# } }
               },
               "must_not" : {
                 "match": {
@@ -658,12 +658,13 @@
     <query id='countAccJira'><![CDATA[
       {
         "index" : #index#,
-        "type" : "access",
+        "type" : #type#,
         "body" : {
           "query": {
             "bool" : {
               "must" : {
-                "match_all" : {}
+                "range" :
+                  { "timestamp" : { "gte" : #START#, "lte" : #END# } }                
               },
               "must_not" : {
                 "match": {
@@ -678,10 +679,14 @@
     <query id='countAccJiraError'><![CDATA[
       {
         "index" : #index#,
-        "type" : "access",
+        "type" : #type#,
         "body" : {
           "query": {
             "bool": {
+              "must" : {
+                "range" :
+                  { "timestamp" : { "gte" : #START#, "lte" : #END# } }                
+              },
               "filter": {
                 "range": {
                   "response": {
@@ -706,15 +711,15 @@
         "type" : #type#,
         "body" : {
           "query" : {
-             "bool": {
-               "must" : {
-                 "range" : {
-                   #id# : {  "gte": #start#  }
-                 }
+            "bool": {
+              "must" : {
+                "range" : {
+                  "startTime" : { "gte" : #START#, "lte" : #END#  }
+                }
               }
             }
-         }
-       }
+          }
+        }
       }
     ]]></query>
       <query id='countAgentError'><![CDATA[
@@ -725,7 +730,7 @@
           "query" : {
              "bool": {
                "must" : [
-                {"range" : { #id# : {  "gte": #start#  } } },
+                {"range" : { "startTime" : {  "gte": #start#  } } },
                 {"match" : { "isError" : true } }
               ]
             }

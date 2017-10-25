@@ -1,67 +1,30 @@
 function getAgentData(day){
- var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
- var yDay = new Date(day.getTime() - 24*60*60*1000);
- var y = yDay.toString().split(' ');
- var d = day.toString().split(' '); 
- var now = new Date();
- var n = now.toString().split(' ');
- var data = { index : "elagent_test-agent-*", type : "ApplicationLinkData",
- 			  start : y[3]+"-"+mon[y[1]]+"-"+y[2]+"T15:00:00",
-        end : n[3]+"-"+mon[n[1]]+"-"+n[2]+"T15:00:00", id : "startTime" };
- drawDashAgent(data);
-}
-
-
-function toggleData(gap){
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  d3.select("#test").select("svg").remove();
-  d3.select("#load").select("svg").remove();  
-  var now = new Date(new Date().getTime()-9*60*60*1000);
-  var n = now.toString().split(' ');  
-  var y = new Date(now.getTime()-gap*60*1000).toString().split(' ');
-  var data = { index : "elagent_test-agent-*", type : "ApplicationLinkData",
-      start : y[3]+"-"+mon[y[1]]+"-"+y[2]+"T"+y[4],
-        end : n[3]+"-"+mon[n[1]]+"-"+n[2]+"T"+n[4], id : "startTime" };
-  drawDashAgent(data);      
-}
-
-function RangeData(start, end){
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  d3.select("#test").select("svg").remove();
-  d3.select("#load").select("svg").remove();   
-  var start = new Date(start.getTime()-9*60*60*1000);
-  var s = start.toString().split(' ');  
-  var end = new Date(end.getTime()-9*60*60*1000)
-  var e = end.toString().split(' ');
-  var data = { index : "elagent_test-agent-*", type : "ApplicationLinkData",
-      start : s[3]+"-"+mon[s[1]]+"-"+s[2]+"T"+s[4],
-      end : e[3]+"-"+mon[e[1]]+"-"+e[2]+"T"+e[4], id : "startTime" };
-  console.log(data);
-  drawDashAgent(data);      
+  var data = { date : day.getTime(), gap : 0 }
+  drawDashAgent(data);
 }
 
 function drawDashAgent(data){
   var server = $("#server").val();  
   if(server != 'all') {
-   $.ajax({
-    url: "/dashboard/restapi/getAgentMap" ,
-    dataType: "json",
-    type: "get",
-    data: data,
-    success: function(result) {            
-      if (result.rtnCode.code == "0000") {              
-        var elseJson = { nodes : result.nodes, edges : result.edges };              
-        getServerMap(elseJson);    
-      } else {
-        //- $("#errormsg").html(result.message);
+     $.ajax({
+      url: "/dashboard/restapi/getAgentMap" ,
+      dataType: "json",
+      type: "get",
+      data: data,
+      success: function(result) {            
+        if (result.rtnCode.code == "0000") {              
+          var elseJson = { nodes : result.nodes, edges : result.edges };              
+          getServerMap(elseJson);    
+        } else {
+          //- $("#errormsg").html(result.message);
+        }
+      },
+      error: function(req, status, err) {
+        //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
       }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
-  });
-}
+    });
+  }
   $.ajax({
     url: "/dashboard/restapi/getAgentData" ,
     dataType: "json",
@@ -158,57 +121,41 @@ function summaryAgent(data, start, end) {
     .group(stackGroup, term[0], sel_stack('0'))
     .mouseZoomable(true)
     .renderHorizontalGridLines(true)
-    .x(d3.scale.linear().domain([0, 23]))
-    //.x(d3.time.scale().domain([minDate, maxDate]))
+    .x(d3.scale.linear().domain([0, 23]))    
     .round(d3.time.hour.round)
     .xUnits(function(){return 24;})
     .elasticY(true)
-    .centerBar(false)
- //   .gap(gap)
-     .colors(d3.scale.ordinal().range(["#57a115", "#0ecdb0", "#0e99cd", "#de9400", "#de3636"]));
-    load.legend(dc.legend());
-    dc.override(load, 'legendables', function() {
-      var items = load._legendables();
-      return items.reverse();
-    });
-    for(var i = 1; i<term.length; ++i){
-      load.stack(stackGroup, term[i], sel_stack(i));
-    }  
-    /*  dc.barChart('#eventBar')  */
+    .centerBar(false) 
+    .colors(d3.scale.ordinal().range(["#57a115", "#0ecdb0", "#0e99cd", "#de9400", "#de3636"]));
+  load.legend(dc.legend());
+  dc.override(load, 'legendables', function() {
+    var items = load._legendables();
+    return items.reverse();
+  });
+  for(var i = 1; i<term.length; ++i){
+    load.stack(stackGroup, term[i], sel_stack(i));
+  }  
+  /*  dc.barChart('#eventBar')  */
   function sel_stack(i) {
-      return function(d) {            
-          return d.value[i]?d.value[i]:0;
-      };
+    return function(d) {            
+      return d.value[i]?d.value[i]:0;
+    };
   }
- dc.renderAll();
+  dc.renderAll();
 }
 
 function displayCountAgent() {      
-  var indexs = "elagent_test-agent-";
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var day = new Date();
-  var d = day.toString().split(' ');  
-  var pday = new Date(day.getTime() - 24*60*60*1000);
-  var p = pday.toString().split(' ')
-  var today = p[3]+"-"+mon[p[1]]+"-"+p[2]+'T15:00:00';
-  var wday = new Date(day.getTime() - 7*24*60*60*1000);
-  var w = wday.toString().split(' ');
-  var week = w[3]+"-"+mon[w[1]]+"-"+w[2]+'T15:00:00';
-  var mday = new Date(day.getTime() - parseInt(d[2])*24*60*60*1000);
-  var m = mday.toString().split(' ');
-  var month = m[3]+"-"+mon[m[1]]+"-"+m[2]+'T15:00:00';
-  pday = new Date(pday);      
-    $.ajax({
+  var day = new Date().getTime();
+  $.ajax({
     url: "/dashboard/restapi/countAgent",
     dataType: "json",
     type: "GET",    
-    data: { index: indexs+"*", type :  "ApplicationLinkData"
-    , start : today, id : "startTime"},
+    data: { date : day, gap : 'day' },
     success: function(result) {
       if (result.rtnCode.code == "0000") {
         //- $("#successmsg").html(result.message);        
          $('#dayCnt').text(result.rtnData);               
-         setStatus($('#dayCnt_status'), parseInt($('#dayCnt').text())/result.rtnData*100, 'day', result.rtnData);       
+         pdayCntAget(day-24*60*60*1000);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -223,15 +170,13 @@ function displayCountAgent() {
     url: "/dashboard/restapi/countAgent",
     dataType: "json",
     type: "GET",    
-    data: { index: indexs+"*", type :  "ApplicationLinkData"
-    , start : month, id : "startTime"},
+    data: { date : day, gap : 'mon' },
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
         //- $("#successmsg").html(result.message);        
         $('#monCnt').text(result.rtnData);        
-        setStatus($('#monCnt_status'), parseInt($('#monCnt').text())/result.rtnData*100, 'month', result.rtnData); 
-    
+        pmonCntAgent(new Date(day-new Date().getDate()*24*60*60*1000).getTime());
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -246,14 +191,13 @@ function displayCountAgent() {
     url: "/dashboard/restapi/countAgentError",
     dataType: "json",
     type: "GET",    
-    data: { index: indexs+"*", type :  "ApplicationLinkData"
-    , start : today, id : "startTime"},
+    data: { date : day },
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
         //- $("#successmsg").html(result.message);        
          $('#errCnt').text(result.rtnData);                       
-         setStatus($('#errCnt_status'), parseInt($('#errCnt').text())/result.rtnData*100, 'day', result.rtnData);       
+         pdayCntAget(day-24*60*60*1000);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -268,8 +212,7 @@ function displayCountAgent() {
     url: "/dashboard/restapi/getAgentOneWeek",
     dataType: "json",
     type: "GET",    
-    data: { index: indexs+"*", type :  "ApplicationLinkData"
-    , start : week, id : "startTime"},
+    data: {},
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {
@@ -285,6 +228,71 @@ function displayCountAgent() {
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
   });         
+}
+
+function pdayCntAget(day){  
+  $.ajax({
+    url: "/dashboard/restapi/countAgent",
+    dataType: "json",
+    type: "GET",    
+    data: { date : day, gap : 'day' },
+    success: function(result) {
+      // console.log(result);
+      if (result.rtnCode.code == "0000") {
+        //- $("#successmsg").html(result.message);
+        setStatus($('#dayCnt_status'), parseInt($('#dayCnt').text())/result.rtnData*100, 'day', result.rtnData); 
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
+}
+
+function pmonCntAgent(day){  
+  $.ajax({
+    url: "/dashboard/restapi/countAgent",
+    dataType: "json",
+    type: "GET",    
+    data: { date : day, gap : 'mon' },
+    success: function(result) {
+      // console.log(result);
+      if (result.rtnCode.code == "0000") {
+        //- $("#successmsg").html(result.message);
+        setStatus($('#monCnt_status'), parseInt($('#monCnt').text())/result.rtnData*100, 'month', result.rtnData); 
+      } else {
+        //- $("#errormsg").html(result.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
+}
+
+function perrCntAgent(day){
+  $.ajax({
+    url: "/dashboard/restapi/countAgentError",
+    dataType: "json",
+    type: "GET",    
+    data: { date : day },
+    success: function(result) {      
+      if (result.rtnCode.code == "0000") {
+        //- $("#successmsg").html(result.message);
+        setStatus($('#errCnt_status'), parseInt($('#errCnt').text())/result.rtnData*100, 'day', result.rtnData);       
+      } else {
+        //- $("#errormsg").html(rsuelt.message);
+      }
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });
 }
 
 function drawAgentWeekly(data) {  
@@ -407,7 +415,6 @@ function drawAgentScattor(data, start, end, max){
         var aData = this.getDataByXY(htXY.nXFrom, htXY.nXTo, htXY.nYFrom, htXY.nYTo);
         console.log(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
         var link = '/dashboard/selected_detail_agent?start='+htXY.nXFrom+'&end='+htXY.nXTo+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;        
-        //RangeData(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
         window.open(link, "EyeLink Service List", "menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50");        
       }
     }); 
