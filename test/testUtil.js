@@ -273,28 +273,28 @@ describe("Util.js", function(){
     })
   });
 
-  describe("날짜 변환 조회 (Utils.getDateUTC2Local()) UTC Time -> LocalTime 변환 테스트", function() {
-    var testUTCDate = '2017-10-17 22:26:40';
+  describe.only("날짜 변환 조회 (Utils.getDateUTC2Local()) UTC Time -> LocalTime 변환 테스트", function() {
+    var testUTCDate = '2017-10-24T03:48:53.000Z';
     var fmt1 = CONSTS.DATEFORMAT.DATE;
     var fmt2 = CONSTS.DATEFORMAT.DATETIME;
     var fmt3 = CONSTS.DATEFORMAT.DATETIMEMILLI;
 
     it('지정 UTC 날짜를 Local 시간(+9시간)으로 조회', function(done) {
-      var testUTCDate = '2017-10-17 22:26:40';
+      var testUTCDate = '2017-10-24T03:48:53.000Z';
       var desc = '지정 UTC 날짜를 Local 시간(+9시간)으로 조회';
       var curDate = Utils.getDateUTC2Local(testUTCDate, fmt1);
       console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt1, curDate);
       curDate = Utils.getDateUTC2Local(testUTCDate, fmt2);
       console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt2, curDate);
-      testUTCDate = '2017.10.17T22:26:40';
+      testUTCDate = '2017-10-24T03:48:53.000Z';
       curDate = Utils.getDateUTC2Local(testUTCDate, fmt2);
       console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt2, curDate);
-      curDate.should.be.equal('2017-10-18 07:26:40');
+      curDate.should.be.equal('2017-10-24 12:48:53');
       done();
     })
 
     it('지정 UTC 날짜를 Local 시간(+9시간) ISO 유형으로 조회', function(done) {
-      var testUTCDate = '2017-10-17 22:26:40';
+      var testUTCDate = '2017-10-24T03:48:53.000Z';
       var desc = '지정 UTC 날짜를 Local 시간(+9시간) ISO 유형으로 조회';
       var curDate = Utils.getDateUTC2Local(testUTCDate, fmt1, 'Y');
       console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt1, curDate);
@@ -302,7 +302,7 @@ describe("Util.js", function(){
       console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt2, curDate);
       curDate = Utils.getDateUTC2Local(testUTCDate, fmt3, 'Y');
       console.log('%s(%s) : format(%s), %s', desc, testUTCDate, fmt2, curDate);
-      curDate.should.be.equal('2017-10-18T07:26:40.000Z');
+      curDate.should.be.equal('2017-10-24T12:48:53.000Z');
       done();
     })
   });
