@@ -199,7 +199,7 @@ function getDateUTC2Local(cur, fmt, isoYN) {
   cur = cur.replace('T', ' ');
   var d = new Date(cur);
 // console.log(d);
-  d.setTime(d.getTime() + getTimezoneOffset());
+d.setTime(d.getTime() + getTimezoneOffset());
 // console.log(d);
 
   fmt = convertDateFormat(fmt, 'N', isoYN);
