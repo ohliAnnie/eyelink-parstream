@@ -1,27 +1,16 @@
 var stamp = "";
 
 function getData(server, selected){
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  console.log(server, selected)
-  var date = $("#date").val();
-  var now = new Date(date);
-  var n = now.toString().split(' ');  
-  var yDay = new Date(now.getTime()-24*60*60*1000);
-  var y = yDay.toString().split(' ');  
-  var select = selected['CPU']+selected['MEMORY']+selected['SERVICE'];  
-  var slist = select.split(',');  
+  var date = $("#date").val();    
   var list = selected['CPU']+selected['MEMORY']+selected['SERVICE'];
-  console.log(list);
-  
+  console.log(list);  
   $.ajax({
     url: "/dashboard/restapi/getBottleneckList" ,
     dataType: "json",
     type: "get",
     data: {
-      index : "efsm_alarm-*", type : "AgentAlarm", server : server,
-      id : "timestamp", start : y[3]+"-"+mon[y[1]]+"-"+y[2]+"T15:00:00",
-      end : date+"T15:00:00",
-      list : list
+      date : new Date(date).getTime(),
+      server : server, list : list
     },
     success: function(result) {
       if (result.rtnCode.code == "0000") {              
@@ -61,10 +50,7 @@ function clickTrEvent(id){
     url: "/dashboard/restapi/getBottleneckDetail" ,
     dataType: "json",
     type: "get",
-    data: {
-      index : "efsm_alarm-*", type : "AgentAlarm",     
-      id : "_id", value : id
-    },
+    data: { id : "_id", value : id },
     success: function(result) {
       if (result.rtnCode.code == "0000") {                 
         drawDetail(result);        
@@ -84,6 +70,7 @@ function drawDetail(result){
   var sb = new StringBuffer();    
   sb.append('<table class="table table-striped table-bordered table-hover">'); 
   var alarm = result.alarm, life = result.life, info = result.info;
+  stamp = alarm.timestamp;
   if(alarm.length != 0){    
     var agentId = alarm.agentId, apptype = alarm.applicationType, alarmType = alarm.alarmType, 
       message = alarm.message;
@@ -95,15 +82,10 @@ function drawDetail(result){
     if(info.length != 0){
       hostname = info.hostName, appName = info.applicationName, ip = info.ip, agentVersion = info.agentVersion
       endStatus = info.endStatus, pid = info.pid, jvmVersion = info.jvmInfo.jvmVersion, gcTypeName = info.jvmInfo.gcTypeName;
-    }
-    stamp = alarm.timestamp;
-    var day = new Date(new Date(alarm.timestamp).getTime()+9*60*60*1000);    
-    var date = day.getFullYear()+'-'+pad(day.getMonth()+1,2)+'-'+pad(day.getDate(),2)+' '+pad(day.getHours(),2)+':'+pad(day.getMinutes(),2)+':'+day.getSeconds()+'.'+pad(day.getMilliseconds(),3);    
-    var sday = new Date(new Date(alarm.startTimestamp).getTime()+9*60*60*1000);    
-    var start = sday.getFullYear()+'-'+pad(sday.getMonth()+1,2)+'-'+pad(sday.getDate(),2)+' '+pad(sday.getHours(),2)+':'+pad(sday.getMinutes(),2)+':'+sday.getSeconds()+'.'+pad(sday.getMilliseconds(),3);     
+    } 
     sb.append('<tr><td><strong>AgentId</strong></td><td>'+agentId+'</td><td><strong>State</strong></td><td>'+state+'</td><td><strong>AgentVersion</strong></td><td>'+agentVersion+'</td></tr>');    
-    sb.append('<tr><td><strong>AppName</strong></td><td>'+appName+'</td><td><strong>Apptype</strong></td><td>'+apptype+'</td><td><strong/>StartTime<strong></td><td>'+start+'</td></tr>');    
-    sb.append('<tr><td><strong>HostName</strong></td><td colspan="3">'+hostname+'</td><td><strong>EventTime</strong></td><td>'+date+'</td></tr>');    
+    sb.append('<tr><td><strong>AppName</strong></td><td>'+appName+'</td><td><strong>Apptype</strong></td><td>'+apptype+'</td><td><strong/>StartTime<strong></td><td>'+alarm.startLocal+'</td></tr>');    
+    sb.append('<tr><td><strong>HostName</strong></td><td colspan="3">'+hostname+'</td><td><strong>EventTime</strong></td><td>'+alarm.timestampLocal+'</td></tr>');    
     sb.append('<tr><td><strong>Ip</strong></td><td colspan="3">'+ip+'</td><td><strong>EndStatus</strong></td><td>'+endStatus+'</td></tr>');                
     sb.append('<tr><td><strong>Pid</strong></td><td>'+pid+'</td><td><strong>JvmVersion</strong></td><td>'+jvmVersion+'</td><td><strong>GcTypeName</strong></td><td>'+gcTypeName+'</td></tr>');    
     sb.append('<tr><td><strong>AlarmType</strong></td><td>'+alarmType+'</td><td><strong>Message</strong></td><td colspan="3">'+message+'</td></tr>');                
@@ -120,25 +102,16 @@ function pad(n, width) {
 }
 
 function getChartData(range){  
-  d3.selectAll("svg").remove();
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var Day = new Date(stamp).getTime();
-  var s = new Date(Day-range*60*1000).toString().split(' ');
-  var start = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4];
-  var e = new Date(Day+range*60*1000).toString().split(' ');
-  var end = e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4];  
-  var data = { index : "elagent_test-agent-*", type : "ApplicationLinkData",
-        start : start,
-        end : end, id : "startTime" }; 
+  d3.selectAll("svg").remove();   
   $.ajax({
     url: "/dashboard/restapi/getHeapData" ,
     dataType: "json",
     type: "get",
-    data: { index : "elagent_test-agent-*", type : "AgentStatJvmGc", gte : start , lte : end },
+    data: { gap : range , end : stamp },
     success: function(result) {      
-      if (result.rtnCode.code == "0000") {        
-        drawHeap(result.rtnData);
-        drawPermgen(result.rtnData);
+      if (result.rtnCode.code == "0000") {                
+        drawHeap(result.heap);
+        drawPermgen(result.perm);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -152,11 +125,10 @@ function getChartData(range){
     url: "/dashboard/restapi/getJvmSysData" ,
     dataType: "json",
     type: "get",
-    data: { index : "elagent_test-agent-*", type : "AgentStatCpuLoad", gte : start , lte : end },
+    data: { gap : range , end : stamp },
     success: function(result) {      
       if (result.rtnCode.code == "0000") {        
         drawJvmSys(result.rtnData);
-
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -170,7 +142,7 @@ function getChartData(range){
     url: "/dashboard/restapi/getAgentData" ,
     dataType: "json",
     type: "get",
-    data: data,
+    data: { date : stamp, gap : 'range', range : range },
     success: function(result) {            
       if (result.rtnCode.code == "0000") {                              
         summaryAgent(result.data, result.start, result.end);
@@ -183,27 +155,15 @@ function getChartData(range){
       //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
-  });
-}
+  });}
 
-function drawHeap(out_data) {
-  // 데이터 가공  
-  var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
-  var data = [];  
-  var min = null;
-  var sCnt = 0, eCnt = 0, rCnt = 0;
-  out_data.forEach(function(d) {
-    d = d._source;    
-    data.push({ "timestamp" : new Date(new Date(d.timestamp).getTime()+9*60*60*1000), "max" : d.heapMax, "used" : d.heapUsed });
-      
-  }); 
-
+function drawHeap(data) {
+  // 데이터 가공    
   var chartName = '#ts-chart01';
   chart01 = d3.timeseries()
     .addSerie(data,{x:'timestamp',y:'max'},{interpolate:'step-before'})
     .addSerie(data,{x:'timestamp',y:'used'},{interpolate:'linear'})        
-    // .xscale.tickFormat(d3.time.format("%b %d"))
+    .xscale.tickFormat(d3.time.format("%H:%M"))
     .width($(chartName).parent().width()-10)
     .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
@@ -213,27 +173,13 @@ function drawHeap(out_data) {
   chart01(chartName);
 }
 
-function drawPermgen(out_data) {
-  // 데이터 가공  
-  var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
-  var data = [];  
-  var min = null;
-  var sCnt = 0, eCnt = 0, rCnt = 0;
-  out_data.forEach(function(d) {
-    d = d._source;
-    if(d.nonHeapMax != -1){
-      data.push({ "timestamp" : new Date(new Date(d.timestamp).getTime()+9*60*60*1000), "max" : d.nonHeapMax, "used" : d.nonHeapUsed });
-    } else {
-       data.push({ "timestamp" : new Date(new Date(d.timestamp).getTime()+9*60*60*1000), "max" : d.nonHeapMax, "used" : d.nonHeapUsed });
-    }
-  }); 
-
-  var chartName = '#ts-chart02';
+function drawPermgen(data) {
+  // 데이터 가공    
+  var chartName = '#ts-chart02';  
   chart02 = d3.timeseries()
     .addSerie(data,{x:'timestamp',y:'max'},{interpolate:'step-before'})
     .addSerie(data,{x:'timestamp',y:'used'},{interpolate:'linear'})        
-    // .xscale.tickFormat(d3.time.format("%b %d"))
+    .xscale.tickFormat(d3.time.format("%H:%M"))
     .width($(chartName).parent().width()-10)
     .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
@@ -243,23 +189,13 @@ function drawPermgen(out_data) {
   chart02(chartName);
 }
 
-function drawJvmSys(out_data) {
-  // 데이터 가공  
-  var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
-  var data = [];  
-  var min = null;
-  var sCnt = 0, eCnt = 0, rCnt = 0;
-  out_data.forEach(function(d) {
-    d = d._source;        
-    data.push({ "timestamp" : new Date(new Date(d.timestamp).getTime()+9*60*60*1000), "jvm" : d.jvmCpuLoad*100, "system" : d.systemCpuLoad*100 });
-  }); 
-
+function drawJvmSys(data) {
+  // 데이터 가공         
   var chartName = '#ts-chart03';
   chart03 = d3.timeseries()
     .addSerie(data,{x:'timestamp',y:'jvm'},{interpolate:'step-before'})
     .addSerie(data,{x:'timestamp',y:'system'},{interpolate:'linear'})        
-    // .xscale.tickFormat(d3.time.format("%b %d"))
+    .xscale.tickFormat(d3.time.format("%H:%M"))
     .width($(chartName).parent().width()-10)
     .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
@@ -307,10 +243,8 @@ function drawAgentScattor(data, start, end){
       nPaddingRight : 5,
       fOnSelect : function(htPosition, htXY){        
         var aData = this.getDataByXY(htXY.nXFrom, htXY.nXTo, htXY.nYFrom, htXY.nYTo);
-        console.log(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
-        var start = parseInt(htXY.nXFrom)-9*60*60*1000;
-        var end = parseInt(htXY.nXTo)-9*60*60*1000;
-        var link = '/dashboard/selected_detail_agent?start='+start+'&end='+end+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;
+        console.log(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));        
+        var link = '/dashboard/selected_detail_agent?start='+htXY.nXFrom+'&end='+htXY.nXTo+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;        
         window.open(link, "EyeLink Service List", "menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50");        
       }
     }); 
