@@ -32,9 +32,9 @@ block script
   script.
     $(document).ready(function(e) {
       var server = $("#server").val();      
+      var type = $("#type").val();   
       if(cyclick == ''){ cyclick = "jira";  }
-      var now = new Date();
-      console.log(server);
+      var now = new Date();      
       if(server === "test-agent"){
         getAgentData(now);
         displayCountAgent();        
@@ -51,20 +51,17 @@ block script
       $( "#btn_search" ).click(function() {          
         location.href='/dashboard/?server='+$("select[name=server]").val();        
       });
-      $("#btn_timeseries").click(function(){
-        console.log($("#server").val());
-        var server = $("#server").val();
-        console.log(cyclick);
-        if(server == "test-agent") {
-          location.href='/dashboard/timeseries_agent';
-        } else if(server == "jira_access") {
-          location.href='/dashboard/timeseries_file';
-        } else {
+      $("#btn_timeseries").click(function(){        
+        var server = $("#server").val();        
+        var type = $("#type").val();                   
+        if(server=="all"){
           if(cyclick == "TESTAPP") {
-            location.href='/dashboard/timeseries_agent';
-          } else if(click == "jira") {
-            location.href='/dashboard/timeseries_file';
+            location.href='/dashboard/timeseriesAgent?server=test-agent';
+          } else if(cyclick == "jira") {
+            location.href='/dashboard/timeseriesLog?server=jira_access';
           }
+        } else {
+          location.href='/dashboard/timeseries'+type+'?server='+server;
         }
       });  
       $('input[type="radio"]').on('click change', function(e) {
@@ -73,11 +70,12 @@ block script
         var data = { date : new Date().getTime(), gap : time[e.target.id] };
         if(server == "jira_access"){          
           getDash(data);
+          getMap(data);
         } else if(server == "test-agent") {        
           drawDashAgent(data);
         } else if(server == "all") { 
           if(cyclick == "jira") {
-            getDash(data);
+            getDash(data);            
           } else if(cyclick == "TESTAPP") {
             drawDashAgent(data);
           }
@@ -86,6 +84,7 @@ block script
     });
 block content      
   input#server(type='hidden', name='server', value=server)
+  input#type(type='hidden', name='type', value=type)
   .container-fluid
     .page-content
       // BEGIN BREADCRUMBS
@@ -110,7 +109,7 @@ block content
                     label.control-label.col-md-2 Server                                        
                     .col-md-2.form-inline
                       select#server.form-control.input-small.select2me.form-md-line-input(name='server' value=server)
-                        each data in agent                           
+                        each data in agent    
                           #{server}
                             if data.name==server
                              option(value=data.name, selected='selected') #{data.name}
