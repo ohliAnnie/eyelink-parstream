@@ -22,7 +22,7 @@ var fmt4 = CONSTS.DATEFORMAT.INDEXDATE; // "YYYY.mm.DD",
 router.get('/', function(req, res, next) {
   mainmenu.dashboard = 'open selected';
   mainmenu.timeseries = '';
-  var server = req.query.server;    
+  var server = req.query.server, type = '';
   var in_data = {    index:  indexAppinfo, type: "applicationInfo"    };  
   queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
@@ -33,15 +33,19 @@ router.get('/', function(req, res, next) {
     } else {
       out_data.forEach(function(d){
         if(check[d._source.applicationId]==null){
-          check[d._source.applicationId] = { no : cnt++};
-          list.push({ id : d._source.collection, name : d._source.applicationId });
+          check[d._source.applicationId] = { no : cnt++};          
+          list.push({ id : d._source.collection, name : d._source.applicationId, type : d._source.collection });
+          if(server == d._source.applicationId){
+            type = d._source.collection;
+          }
         } 
       });       
     }    
     if(server == undefined || server == ""){
       server = list[0].name;
+      type = list[0].type;
     }    
-    res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : server }); 
+    res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : server, type : type }); 
   });
 });
 
@@ -90,56 +94,87 @@ router.get('/error_pop_agent', function(req, res, next) {
   });  
 });     
 
-router.get('/timeseries_file', function(req, res, next) {
-  var today = Utils.getToday(fmt1);  
+router.get('/timeseriesAGENT', function(req, res, next) {  
   mainmenu.dashboard = '';
-  mainmenu.timeseries = ' open selected';
-  var in_data = {    index:  indexElagent+Utils.getToday(fmt4), type: "AgentInfo",
-    start : Utils.getDate(today, fmt1, -1, 0, 0, 0)+startTime,
-    end : today+startTime,
-    id : "startTimestamp"   };
-  queryProvider.selectSingleQueryByID2("dashboard","selectByRange", in_data, function(err, out_data, params) {     
+  mainmenu.timeseries = ' open selected';    
+  var server = req.query.server, type = '';
+  var in_data = {    index:  indexAppinfo, type: "applicationInfo"    };  
+  queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
-    var check = {}, list = [], cnt = 0;
+    var check = {}, list = [], cnt = 0;        
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {
       out_data.forEach(function(d){
-        if(check[d._source.agentId]==null){
-          check[d._source.agentId] = { no : cnt++};
-          list.push({ id : d._source.agentId, name : d._source.applicationName })
+        if(check[d._source.applicationId]==null){
+          check[d._source.applicationId] = { no : cnt++};
+          list.push({ id : d._source.collection, name : d._source.applicationId, type : d._source.collection });
+          if(server == d._source.applicationId){
+            type = d._source.collection;
+          }          
         } 
-      });
-      list.push({ id : 'test-file', name : 'JIRA' });
-    }
-  res.render('./dashboard/timeseries'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, type : "JIRA" }); 
-});
+      });       
+    }    
+    if(server == undefined || server == ""){
+      server = list[0].name;
+      type = list[0].type
+    }    
+    res.render('./dashboard/inspector', { title: global.config.productname, mainmenu:mainmenu, agent: list, server : server, type : type });
+  });
 });
 
-router.get('/timeseries_agent', function(req, res, next) {
-  var today = Utils.getToday(fmt1);  
-  mainmenu.timeseries = ' open selected';  
-  mainmenu.timeseries = '';
-  var in_data = {    index:  indexElagent+Utils.getToday(fmt4), type: "AgentInfo",
-    start : Utils.getDate(today, fmt1, -1, 0, 0, 0)+startTime,
-    end : today+startTime,
-    id : "startTimestamp"   };
-  queryProvider.selectSingleQueryByID2("dashboard","selectByRange", in_data, function(err, out_data, params) {     
+router.get('/timeseriesLOG', function(req, res, next) {    
+  mainmenu.dashboard = '';
+  mainmenu.timeseries = 'open selected';
+  var server = req.query.server, type = '';
+  var in_data = {    index:  indexAppinfo, type: "applicationInfo"    };  
+  queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
-    var check = {}, list = [], cnt = 0;
+    var check = {}, list = [], cnt = 0;        
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {
       out_data.forEach(function(d){
-        if(check[d._source.agentId]==null){
-          check[d._source.agentId] = { no : cnt++};
-          list.push({ id : d._source.agentId, name : d._source.applicationName })
+        if(check[d._source.applicationId]==null){
+          check[d._source.applicationId] = { no : cnt++};
+          list.push({ id : d._source.collection, name : d._source.applicationId, type : d._source.collection });
+          if(server == d._source.applicationId){
+            type = d._source.collection;
+          }          
         } 
-      });
-      list.push({ id : 'test-file', name : 'JIRA' });
-    }
-  res.render('./dashboard/inspector', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, type : "TESTAPP" });
+      });       
+    }    
+    if(server == undefined || server == ""){
+      server = list[0].name;
+      type = list[0].type;
+    }    
+    res.render('./dashboard/timeseries'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, agent: list, server : server, type : req.query.server }); 
+  });
 });
+
+router.get('/timeseries_agent', function(req, res, next) {  
+  mainmenu.dashboard = '';
+  mainmenu.timeseries = ' open selected';    
+  var server = req.query.server;
+  var in_data = {    index:  indexAppinfo, type: "applicationInfo"    };    
+  queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
+    var rtnCode = CONSTS.getErrData('0000');
+    var check = {}, list = [], cnt = 0;        
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {
+      out_data.forEach(function(d){
+        if(check[d._source.applicationId]==null){
+          check[d._source.applicationId] = { no : cnt++};
+          list.push({ id : d._source.collection, name : d._source.applicationId, type : d._source.collection });
+        } 
+      });       
+    }    
+    if(server == undefined || server == ""){
+      server = list[0].name;
+    }    
+    res.render('./dashboard/inspector', { title: global.config.productname, mainmenu:mainmenu, agent: list, server : server });
+  });
 });
 
 router.get('/bottleneck', function(req, res, next) {
@@ -599,15 +634,43 @@ router.get('/restapi/getAgentOneWeek', function(req, res, next) {
 });
 
 router.get('/restapi/getAccTimeseries', function(req, res, next) {
-  console.log('dashboard/restapi/getAccTimeseries');        
-  var in_data = {
-    index : req.query.index, gte : req.query.gte, lte : req.query.lte
-  };
-  queryProvider.selectSingleQueryByID2("dashboard","getAccTimeseries", in_data, function(err, out_data, params) {    
+  console.log('dashboard/restapi/getAccTimeseries');  
+  var end = Utils.getMs2Date(req.query.date,fmt1,'Y');  
+  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0);  
+  var in_data = { index : [indexAcc+Utils.getDate(start, fmt4), indexAcc+Utils.getDate(end, fmt4)], type : "access",
+                  gte : start+startTime, lte : end+startTime };
+  queryProvider.selectSingleQueryByID3("dashboard","getAccTimeseries", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');  
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
-    }    
+    } else {
+      console.log(out_data.group_by_timestamp);
+      var data = [];
+          // 데이터 가공            
+      var data = [];  
+      var min = null;
+      var sCnt = 0, eCnt = 0, rCnt = 0;
+      /*out_data.forEach(function(d) {
+        d._source.response = parseInt(d._source.response);     
+        d._source.responsetime = parseInt(d._source.responsetime);
+        if(d._source.timestamp.substring(0,17) == min){
+          if(d._source.response >= 400) {
+            eCnt++;
+          } else if(d._source.responsetime > 5000){
+            sCnt++;
+          } else {
+            rCnt++;
+          }
+        } else if (d._source.timestamp.substring(0,17) != min){
+          if(min != null){           
+            data.push({ timestamp : time, res_time : rCnt, error : eCnt, slow : sCnt });
+            sCnt = 0, eCnt = 0, rCnt = 0;
+          } 
+          min = d._source.timestamp.substring(0,17);   
+        }  
+          
+      }); */
+    }   
     res.json({rtnCode: rtnCode, rtnData: out_data });
   });
 });
@@ -829,20 +892,23 @@ router.get('/restapi/getAllMapData', function(req, res, next) {
   });
 });
 
-router.get('/restapi/getHeapData', function(req, res, next) {
-  console.log('dashboard/restapi/getHeapData');    
-  var in_data = {
-    index : indexElagent+'*',  type : "AgentStatJvmGc",
-    gte : Utils.getDate(req.query.end, fmt2, 0, 0, -parseInt(req.query.gap), 0, 'Y'),
-    lte : Utils.getDate(req.query.end, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y')
-  };  
+router.get('/restapi/getHeapData', function(req, res, next) {  
+  console.log('dashboard/restapi/getHeapData');   
+  if(req.query.type == 'range') {
+    var gte = Utils.getDate(req.query.end, fmt2, 0, 0, -parseInt(req.query.gap), 0, 'Y');
+    var lte = Utils.getDate(req.query.end, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y');
+  } else if(req.query.type == 'normal') {  
+    var lte = Utils.getMs2Date(req.query.date, fmt1, 'N')+startTime;      
+    var gte = Utils.getDate(lte, fmt2, -1, 0, 0, 0, 'Y');
+  }
+  var in_data = { index : indexElagent+'*', type : "AgentStatJvmGc", gte : gte, lte : lte };    
   queryProvider.selectSingleQueryByID2("dashboard","selectByTimestamp", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');        
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
     } else {
       var heap = [], perm = [];
-      out_data.forEach(function(d) {
+      out_data.forEach(function(d) {    
         d = d._source;
         heap.push({ "timestamp" : new Date(Utils.getDateUTC2Local(d.timestamp,fmt2)).getTime(), "max" : d.heapMax, "used" : d.heapUsed });      
         perm.push({ "timestamp" : new Date(Utils.getDateUTC2Local(d.timestamp,fmt2)).getTime(), "max" : d.nonHeapMax, "used" : d.nonHeapUsed });      
@@ -854,19 +920,23 @@ router.get('/restapi/getHeapData', function(req, res, next) {
 
 router.get('/restapi/getJvmSysData', function(req, res, next) {
   console.log('dashboard/restapi/getHeapData');    
-  var in_data = {
-    index : indexElagent+'*',  type : "AgentStatCpuLoad",
-    gte : Utils.getDate(req.query.end, fmt2, 0, 0, -parseInt(req.query.gap), 0, 'Y'),
-    lte : Utils.getDate(req.query.end, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y')
-  };  
+  if(req.query.type == 'range') {    
+    var gte = Utils.getDate(req.query.end, fmt2, 0, 0, -parseInt(req.query.gap), 0, 'Y');
+    var lte = Utils.getDate(req.query.end, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y');
+  } else if(req.query.type == 'normal') {  
+    var lte = Utils.getMs2Date(req.query.date, fmt1, 'N')+startTime;      
+    var gte = Utils.getDate(lte, fmt2, -1, 0, 0, 0, 'Y');
+  }
+  var in_data = { index : indexElagent+'*', type : "AgentStatCpuLoad",gte : gte, lte : lte };  
   queryProvider.selectSingleQueryByID2("dashboard","selectByTimestamp", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');        
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
     } else {
       var data = []
-      out_data.forEach(function(d) {
-        d = d._source;        
+      out_data.forEach(function(d) {        
+        d = d._source;
+        console.log(d);
         data.push({ "timestamp" : new Date(Utils.getDateUTC2Local(d.timestamp,fmt2)).getTime(), "jvm" : d.jvmCpuLoad*100, "system" : d.systemCpuLoad*100 });
       });
     }
@@ -877,46 +947,70 @@ router.get('/restapi/getJvmSysData', function(req, res, next) {
 
 router.get('/restapi/getStatTransaction', function(req, res, next) {
   console.log('dashboard/restapi/getStatTransaction');    
-  var in_data = {
-    index : req.query.index,
-    type : req.query.type,
-    gte : req.query.gte,
-    lte : req.query.lte
-  };
+  if(req.query.type == 'range') {
+    var gte = Utils.getDate(req.query.end, fmt2, 0, 0, -parseInt(req.query.gap), 0, 'Y');
+    var lte = Utils.getDate(req.query.end, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y');
+  } else if(req.query.type == 'normal') {  
+    var lte = Utils.getMs2Date(req.query.date, fmt1, 'N')+startTime;      
+    var gte = Utils.getDate(lte, fmt2, -1, 0, 0, 0, 'Y');
+  }
+  var in_data = { index : indexElagent+'*', type : "AgentStatTransaction", gte : gte, lte : lte };
   queryProvider.selectSingleQueryByID2("dashboard","selectByTimestamp", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');        
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
-    }        
-    res.json({rtnCode: rtnCode, rtnData: out_data });
+    } else {
+      var data = [];        
+      out_data.forEach(function(d) {
+        d = d._source;    
+        data.push({ "timestamp" :  new Date(Utils.getDateUTC2Local(d.timestamp,fmt2)).getTime(), "S.C" : d.sampledContinuationCount, "S.N" : d.sampledNewCount, "U.C" : d.unsampledContinuationCount, "U.N" : d.unsampledNewCount, "Total" : d.sampledContinuationCount+d.sampledNewCount+d.unsampledContinuationCount+d.unsampledNewCount });
+      }); 
+    }       
+    res.json({rtnCode: rtnCode, rtnData: data });
   });
 });
 
 router.get('/restapi/getActiveTrace', function(req, res, next) {
   console.log('dashboard/restapi/getActiveTrace');    
-  var in_data = {
-    index : req.query.index,
-    type : req.query.type,
-    gte : req.query.gte,
-    lte : req.query.lte
-  };
+  if(req.query.type == 'range') {
+    var gte = Utils.getDate(req.query.end, fmt2, 0, 0, -parseInt(req.query.gap), 0, 'Y');
+    var lte = Utils.getDate(req.query.end, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y');
+  } else if(req.query.type == 'normal') {  
+    var lte = Utils.getMs2Date(req.query.date, fmt1, 'N')+startTime;      
+    var gte = Utils.getDate(lte, fmt2, -1, 0, 0, 0, 'Y');
+  }
+  var in_data = { index : indexElagent+'*', type : "AgentStatActiveTrace", gte : gte, lte : lte };
   queryProvider.selectSingleQueryByID2("dashboard","selectByTimestamp", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');        
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
-    }        
-    res.json({rtnCode: rtnCode, rtnData: out_data });
+    } else {
+      var data = [];
+      out_data.forEach(function(d) {        
+        d = d._source;
+        data.push({ "timestamp" : new Date(Utils.getDateUTC2Local(d.timestamp,fmt2)).getTime(), "Fast" : d.activeTraceCounts.FAST, "Normal" : d.activeTraceCounts.NORMAL, "Slow" : d.activeTraceCounts.SLOW, "Very Slow" : d.activeTraceCounts.VERY_SLOW});
+      }); 
+
+    }       
+    res.json({rtnCode: rtnCode,  rtnData: data });
   });
 });
 
 
 router.get('/restapi/getRestimeCount', function(req, res, next) {
   console.log('dashboard/restapi/getRestimeCount');    
+  var today = Utils.getToday(fmt1);  
   var in_data = {
+    index:  [indexAcc+Utils.getDate(today, fmt4, -1, 0, 0, 0),  indexAcc+Utils.getToday(fmt4)],
+    gte : Utils.getDate(today, fmt1, -1, 0, 0, 0)+startTime,
+    lte : today+startTime,
+    MIN : 400
+  };  
+  /*var in_data = {
     index : req.query.index,
     gte : req.query.gte,
     lte : req.query.lte
-  };
+  };*/
   queryProvider.selectSingleQueryByID3("dashboard","getRestimeCount", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');    
     if (out_data == null) {

@@ -804,20 +804,74 @@
         }
       }
     ]]></query>
-      <query id='getAccTimeseries'><![CDATA[
+    <query id='getAccTimeseries'><![CDATA[
       {
         "index" : [##index##],
-        "type"  : "access",
+        "type"  : #type#,
         "body" : {
-          "size"   : 100000,
-         "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["@timestamp", "timestamp", "responsetime", "response"],
-           "query" : {
-             "range" : {
-              "@timestamp": {
-                "gte": #gte#,         "lte": #lte#
+          "size" : 0,
+          "query": {
+            "bool": {
+              "filter" : {
+               "range" : {
+                 "timestamp" : {
+                    "gte" : #gte#,
+                    "lte" : #lte#
+                 }
+                }
               }
             }
+          },
+            "aggs" : {
+              "group_by_timestamp" : {
+                "date_histogram" : {
+                  "field": "timestamp",
+                  "interval" : "60s"
+                },
+                "aggs": {
+                  "group_by_time": {
+                    "range": {
+                      "field": "responsetime",
+                      "ranges" : [
+                        { "key" : "res_time", "to" : "5000" },
+                        { "key" : "slow", "from" : "5000" } ],
+                      "keyed" : true
+                      },
+                    "aggs" : {
+                      "group_by_code" : {                          
+                        "range": {
+                          "field": "responsetime",
+                            "ranges" : [ { "key" : "error", "from" : "400" } ],
+                            "keyed" : true
+                        }                        
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]]></query>
+      <query id='getAccTimeseries2'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+          "size"   : 100000,
+          "sort" : { "timestamp" : { "order" : "asc" }},
+          "_source" : ["timestamp", "timestamp", "responsetime", "response"], 
+          "query": {
+            "bool": {
+              "must" : {
+                "range" : { "timestamp" : { "gte" : #gte#, "lte" : #lte# } }                
+              },
+              "must_not" : {
+                "match": {
+                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                }
+              }
+            }            
           }
         }
       }
