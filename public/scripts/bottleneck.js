@@ -107,7 +107,7 @@ function getChartData(range){
     url: "/dashboard/restapi/getHeapData" ,
     dataType: "json",
     type: "get",
-    data: { gap : range , end : stamp },
+    data: { gap : range, end : stamp, type : 'range' },
     success: function(result) {      
       if (result.rtnCode.code == "0000") {                
         drawHeap(result.heap);
@@ -125,7 +125,7 @@ function getChartData(range){
     url: "/dashboard/restapi/getJvmSysData" ,
     dataType: "json",
     type: "get",
-    data: { gap : range , end : stamp },
+    data: { gap : range , end : stamp, type : 'range' },
     success: function(result) {      
       if (result.rtnCode.code == "0000") {        
         drawJvmSys(result.rtnData);
@@ -157,8 +157,7 @@ function getChartData(range){
     }
   });}
 
-function drawHeap(data) {
-  // 데이터 가공    
+function drawHeap(data) {  
   var chartName = '#ts-chart01';
   chart01 = d3.timeseries()
     .addSerie(data,{x:'timestamp',y:'max'},{interpolate:'step-before'})
@@ -169,12 +168,10 @@ function drawHeap(data) {
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);
 
-    // console.log(chart01);
   chart01(chartName);
 }
 
-function drawPermgen(data) {
-  // 데이터 가공    
+function drawPermgen(data) {  
   var chartName = '#ts-chart02';  
   chart02 = d3.timeseries()
     .addSerie(data,{x:'timestamp',y:'max'},{interpolate:'step-before'})
@@ -185,12 +182,10 @@ function drawPermgen(data) {
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);
 
-    // console.log(chart01);
   chart02(chartName);
 }
 
-function drawJvmSys(data) {
-  // 데이터 가공         
+function drawJvmSys(data) {  
   var chartName = '#ts-chart03';
   chart03 = d3.timeseries()
     .addSerie(data,{x:'timestamp',y:'jvm'},{interpolate:'step-before'})
@@ -201,7 +196,6 @@ function drawJvmSys(data) {
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);
 
-    // console.log(chart01);
   chart03(chartName);
 }
 
@@ -226,7 +220,7 @@ function drawAgentScattor(data, start, end){
         'Error' : '#FF0000'        
       },
       sXLabel : '(time)',
-      sYLabel : '(ms)',
+        sYLabel : '(ms)',
       htGuideLine : {
         'nLineWidth' : 1,
         'aLineDash' : [2, 7],
