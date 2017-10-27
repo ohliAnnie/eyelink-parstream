@@ -424,7 +424,7 @@
                 },
                 "must_not" : {
                   "match": {
-                    "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                    "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"  
                    }
                 }
               }
@@ -434,12 +434,12 @@
     ]]></query>
     <query id='selectJiraAccReq'><![CDATA[
         {
-          "index" : #index#,
-          "type" : "access",
+          "index" : [##index##],
+          "type" : #type#,
           "body" : {
             "size"   : 100000,
-            "sort" : { "@timestamp" : { "order" : "asc" }},
-            "_source" : ["request", "clientip", "auth", "response"],
+            "sort" : { "timestamp" : { "order" : "asc" }},
+            "_source" : ["request", "clientip", "auth", "response", "timestamp"],
             "query" : {
               "bool" : {
                 "must" : [      { "match_all": {} }        ],
@@ -448,7 +448,7 @@
                     "bool" : {
                       "should" : [
                         { "range" :
-                          { "@timestamp" :
+                          { "timestamp" :
                             { "gte" : #START#,
                               "lte" : #END# }
                           }
@@ -459,7 +459,7 @@
                 ],
                 "must_not" : {
                 "match": {
-                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
+                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
                  }
                }
               }
@@ -501,11 +501,11 @@
     ]]></query>
     <query id='selectJiraAccDash'><![CDATA[
         {
-          "index" : #index#,
-          "type" : "access",
+          "index" : [##index##],
+          "type" : #type#,
           "body" : {
             "size"   : 100000,
-            "sort" : { "@timestamp" : { "order" : "asc" }},
+            "sort" : { "timestamp" : { "order" : "asc" }},
             "_source" : ["timestamp", "response", "responsetime"],
             "query" : {
               "bool" : {
@@ -515,7 +515,7 @@
                     "bool" : {
                       "should" : [
                         { "range" :
-                          { "@timestamp" :
+                          { "timestamp" :
                             { "gte" : #START#,
                               "lte" : #END# }
                           }
@@ -536,11 +536,11 @@
     ]]></query>
      <query id='selectJiraAccMap'><![CDATA[
          {
-          "index" : #index#,
-          "type" : "access",
+          "index" : [##index##],
+          "type" : #type#,
           "body" : {
             "size"   : 100000,
-            "sort" : { "@timestamp" : { "order" : "asc" }},
+            "sort" : { "timestamp" : { "order" : "asc" }},
             "_source" : ["response", "timestamp"],
             "query" : {
               "bool" : {
@@ -550,7 +550,7 @@
                     "bool" : {
                       "should" : [
                         { "range" :
-                          { "@timestamp" :
+                          { "timestamp" :
                             { "gte" : #START#,
                               "lte" : #END# }
                           }
@@ -576,12 +576,12 @@
           "body" : {
             "size"   : 100000,
             "sort" : { "@timestamp" : { "order" : "asc" }},
-            "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host"],
+            "_source" : ["timestamp", "response", "responsetime", "request", "clientip", "host", "offset", "bytes"],
             "query" : {
               "bool" : {
                 "must" :
                   { "range" :
-                    { "@timestamp" :
+                    { "timestamp" :
                         { "gte" : #START#, "lte" : #END# }
                     }
                   },
@@ -607,12 +607,12 @@
         "type" : "access",
         "body" : {
           "size"   : 100000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "sort" : { "timestamp" : { "order" : "asc" }},
           "query" : {
             "bool" : {
               "must" :
                 { "range" :
-                  { "@timestamp" :
+                  { "timestamp" :
                       { "gte" : #START#, "lte" : #END# }
                   }
                 },
@@ -635,15 +635,15 @@
     <query id='selectJiraAccOneWeek'><![CDATA[
       {
         "index" : #index#,
-        "type" : "access",
+        "type" : #type#,
         "body" : {
           "size"   : 100000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "sort" : { "timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "response"],
           "query": {
             "bool" : {
               "must" : {
-                "range" : {  "@timestamp": {    "gte": #start# } }
+                "range" : {  "timestamp": {    "gte": #start# } }
               },
               "must_not" : {
                 "match": {
@@ -658,12 +658,13 @@
     <query id='countAccJira'><![CDATA[
       {
         "index" : #index#,
-        "type" : "access",
+        "type" : #type#,
         "body" : {
           "query": {
             "bool" : {
               "must" : {
-                "match_all" : {}
+                "range" :
+                  { "timestamp" : { "gte" : #START#, "lte" : #END# } }                
               },
               "must_not" : {
                 "match": {
@@ -678,10 +679,14 @@
     <query id='countAccJiraError'><![CDATA[
       {
         "index" : #index#,
-        "type" : "access",
+        "type" : #type#,
         "body" : {
           "query": {
             "bool": {
+              "must" : {
+                "range" :
+                  { "timestamp" : { "gte" : #START#, "lte" : #END# } }                
+              },
               "filter": {
                 "range": {
                   "response": {
@@ -706,15 +711,15 @@
         "type" : #type#,
         "body" : {
           "query" : {
-             "bool": {
-               "must" : {
-                 "range" : {
-                   #id# : {  "gte": #start#  }
-                 }
+            "bool": {
+              "must" : {
+                "range" : {
+                  "startTime" : { "gte" : #START#, "lte" : #END#  }
+                }
               }
             }
-         }
-       }
+          }
+        }
       }
     ]]></query>
       <query id='countAgentError'><![CDATA[
@@ -725,7 +730,7 @@
           "query" : {
              "bool": {
                "must" : [
-                {"range" : { #id# : {  "gte": #start#  } } },
+                {"range" : { "startTime" : {  "gte": #start#  } } },
                 {"match" : { "isError" : true } }
               ]
             }
@@ -757,9 +762,10 @@
     <query id='getTransaction'><![CDATA[
       {
         "index" : [##index##],
-        "type" : #type#,
+        "type" : #type#,        
         "body" : {
           "size" : 10000,
+          "_source" : ["startTime", "rpc", "elapsed", "hasException", "agentId", "remoteAddr", "transactionId"],
           "sort" : { "startTime" : { "order" : "asc" } },
           "query" : {
             "bool" : {
@@ -798,28 +804,60 @@
         }
       }
     ]]></query>
-      <query id='getAccTimeseries'><![CDATA[
+    <query id='getAccTimeseries'><![CDATA[
       {
         "index" : [##index##],
-        "type"  : "access",
+        "type"  : #type#,
         "body" : {
-          "size"   : 100000,
-         "sort" : { "@timestamp" : { "order" : "asc" }},
-          "_source" : ["@timestamp", "timestamp", "responsetime", "response"],
-           "query" : {
-             "range" : {
-              "@timestamp": {
-                "gte": #gte#,         "lte": #lte#
+          "size" : 100000,
+          "query": {
+            "bool": {
+              "filter" : {
+               "range" : {
+                 "timestamp" : {
+                    "gte" : #gte#,
+                    "lte" : #lte#
+                 }
+                }
+              }
+            }
+          },
+            "aggs" : {
+              "group_by_timestamp" : {
+                "date_histogram" : {
+                  "field": "timestamp",
+                  "interval" : #interval#
+                },
+                "aggs": {
+                  "group_by_code" : {                          
+                    "range": {
+                      "field": "responsetime",
+                      "ranges" : [ { "key" : "ok", "to" : "400" },
+                                { "key" : "error", "from" : "400" } ],
+                      "keyed" : true                  
+                    },
+                    "aggs" : {
+                      "group_by_time": {
+                        "range": {
+                          "field": "responsetime",
+                          "ranges" : [
+                            { "key" : "res_time", "to" : "5000" },
+                            { "key" : "slow", "from" : "5000" } ],
+                          "keyed" : true
+                        }                        
+                      }
+                    }
+                  }
+                }
               }
             }
           }
         }
-      }
-    ]]></query>
+      ]]></query>
     <query id='getProcessTimeseries'><![CDATA[
       {
         "index" : [##index##],
-        "type"  : "metricsets",
+        "type"  : #type#,
         "body" : {
           "size" : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
@@ -839,7 +877,7 @@
     <query id='getTopTimeseries'><![CDATA[
       {
         "index" : [##index##],
-        "type"  : "metricsets",
+        "type"  : #type#,
         "body" : {
           "size" : 100000,
           "_source": ["system.process.name", "system.process.cpu.total.pct", "timestamp"],
@@ -865,7 +903,7 @@
     <query id='getTotalTimeseries'><![CDATA[
       {
         "index" : [##index##],
-        "type"  : "metricsets",
+        "type"  : #type#,
         "body" : {
           "size" : 100000,
           "sort" : { "timestamp" : { "order" : "asc" }},
@@ -946,7 +984,7 @@
           "query": {
             "bool": {
               "filter": { "range": { 
-                 #id# : { "gte": #start#, "lte" : #end# } } },
+                "timestamp" : { "gte": #start#, "lte" : #end# } } },
               "must" : [{ "match": { "agentId" : #server#  }   },
               { "match": { "alarmType" : #list#  }   }]
             }
@@ -1284,8 +1322,8 @@
           "type" : "access",
           "body" : {
             "size"   : 100000,
-            "sort" : { "@timestamp" : { "order" : "asc" }},
-            "_source" : ["request", "clientip", "auth", "response"],
+            "sort" : { "timestamp" : { "order" : "asc" }},
+            "_source" : ["request", "clientip", "auth", "response". "timestamp"],
             "query" : {
               "bool" : {
                 "must" : {   "match_all" : { }  },

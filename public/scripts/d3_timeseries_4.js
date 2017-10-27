@@ -49,7 +49,7 @@ function(d3,d3tip)
             return '<tr><td style="color:'+d.options.color+'">'+d.options.label+' </td>'+
                   '<td style="color:#333333;text-align:right">'+yscale.setformat(d.item[d.aes.y])+'</td></tr>'
           }).join('')+'</table>'
-        var format = d3.time.format('%H:%M:%S')
+        var format = d3.time.format("%H:%M:%S")
         return '<h4 style="color:#333333;text-align:center">'+format(date)+'</h4>'+spans
       }
 
@@ -299,7 +299,6 @@ function(d3,d3tip)
         chart02.updateAllMousevlineFocusRingTip(x, visible);
         chart03.updateAllMousevlineFocusRingTip(x, visible);
         chart04.updateAllMousevlineFocusRingTip(x, visible);
-        chart05.updateAllMousevlineFocusRingTip(x, visible);        
       }
     }
 
@@ -313,7 +312,6 @@ function(d3,d3tip)
         chart02.brushedAll(_brush);
         chart03.brushedAll(_brush);
         chart04.brushedAll(_brush);
-        chart05.brushedAll(_brush);
       } else {
         var aextent = d3.selectAll('.d3_timeseries.brush > rect.extent')
           .style("visibility", "");
@@ -544,7 +542,7 @@ function(d3,d3tip)
 
     chart.yscale = scaleGetSet(yscale)
     chart.xscale = scaleGetSet(xscale)
-
+    
     chart.addSerie = function(data,aes,options){
       if(!data && series.length>0)
         data = series[0].data

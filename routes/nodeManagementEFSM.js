@@ -26,8 +26,10 @@ router.get('/users', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-    var users = out_data;
-    res.render('./management/users'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, users:users });
+    out_data.forEach(function(d){
+      d._source.reg_date = Utils.getDateUTC2Local(d._source.reg_date, fmt2);
+    });
+    res.render('./management/users'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, users:out_data });
   });
 });
 
@@ -84,7 +86,7 @@ router.post('/users/:id', function(req, res) {
         USE: req.body.use,
         EMAIL: req.body.email,
         NOTE: req.body.note,
-        DATE: Utils.getToday(fmt2, 'N', 'Y')
+        DATE: Utils.getToday(fmt2, 'Y', 'Y')
       };
       queryProvider.insertQueryByID("management", "insertUser", in_data, function(err, out_data) {
         if(out_data.result == "created"){
@@ -169,8 +171,6 @@ router.get('/user/:id', function(req, res) {
           var rtnCode = CONSTS.getErrData('0001');
           var maps = [];
         }
-        logger.debug(user);
-        logger.debug(maps);
         res.render('./management/user_info', { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps});
       });
     } else {
@@ -189,8 +189,6 @@ router.get('/role', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-    logger.debug(rtnCode);
-    logger.debug(out_data);
     var roles = out_data;
     res.render('./management/role_list', { title: global.config.productname, mainmenu:mainmenu, roles:roles });
   });
@@ -209,8 +207,6 @@ router.get('/role/:id', function(req, res) {
         var role = out_data[0];
         queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
           var menu = out_data[0];
-          logger.debug(role);
-          logger.debug(menu);
           res.render('./management/edit_role', { title: global.config.productname,   mainmenu:mainmenu,   role:role, menu:menu});
         });
       }
@@ -331,8 +327,6 @@ router.get('/mem/:id', function(req, res) {
         var role = out_data[0];
         queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
           var menu = out_data[0];
-          logger.debug(role);
-          logger.debug(menu);
           res.render('./management/edit_role', { title: global.config.productname, mainmenu:mainmenu, role:role, menu:menu});
         });
       }

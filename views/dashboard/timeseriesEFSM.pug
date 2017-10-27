@@ -10,36 +10,24 @@ block script
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
   script(type='text/javascript', src="/scripts/util.js")
-  script(type='text/javascript', src="/scripts/d3_timeseries.js")
+  script(type='text/javascript', src="/scripts/d3_timeseries_4.js")
   script(type='text/javascript', src="/scripts/timeseries_es.js")
   script.
     $(document).ready(function() {
       var dateFormat = 'YYYY-MM-DD';
-      $('#sdate').val(moment().format(dateFormat));
-      $('#edate').val(moment().format(dateFormat));
+      $('#sdate').val(moment().format(dateFormat));1      
 
       // time series char를 그린다.
-      drawAccChart();
-      drawProcessChart();
-      drawTopChart();
-      drawTotalChart();
+      getData();
 
-      $('#btn_search').click(function() {
-        //- d3.selectAll("svg").remove()
-        //- drawAccChart();
-        //- drawProcessChart();
-        //- drawTopChart();
-        //- drawTotalChart();
-        if(document.getElementById("server").selectedIndex == 0){
-          location.href='/dashboard/timeseries_agent';
-        } else {
-          location.href='/dashboard/timeseries_file';
-        }
+      $('#btn_search').click(function() {        
+        var server = $('#server').val().split('&');
+        console.log(server)
+        console.log('/dashboard/timeseries'+server[0]+'?server='+server[1]);
+        location.href='/dashboard/timeseries'+server[0]+'?server='+server[1];    
       });
-
     });
-block content
-  input#indexs(type='hidden', name='indexs', value=indexs)
+block content  
   .container-fluid
     .page-content
       .breadcrumbs
@@ -69,21 +57,20 @@ block content
               form.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
                   .form-group.last
+                    .col-md-2
                     label.control-label.col-md-1 Date Range
-                    .col-md-4
+                    .col-md-2
                       .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
-                        input#sdate.form-control(type='text', name='from' value='')
-                        span.input-group-addon to
-                        input#edate.form-control(type='text', name='to' value='')
+                        input#sdate.form-control(type='text', name='from' value='' style='width:140px')
                     label.control-label.col-md-1 Server                    
                     .col-md-3.form-inline
                       select#server.form-control.input-small.select2me.form-md-line-input(name='server')
                         each data in agent 
-                          #{type}
-                            if data.name==type
-                               option(value='', selected='selected') #{data.name}
+                          #{server}
+                            if data.name==server
+                               option(value=data.type+'&'+data.name, selected='selected') #{data.name}
                             else
-                              option #{data.name} 
+                              option(value=data.type+'&'+data.name) #{data.name} 
                     .col-md-2.form-inline                      
                       button#btn_search.btn.blue
                         i.fa.fa-search Search
