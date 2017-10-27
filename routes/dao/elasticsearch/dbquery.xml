@@ -809,7 +809,7 @@
         "index" : [##index##],
         "type"  : #type#,
         "body" : {
-          "size" : 0,
+          "size" : 100000,
           "query": {
             "bool": {
               "filter" : {
@@ -826,23 +826,24 @@
               "group_by_timestamp" : {
                 "date_histogram" : {
                   "field": "timestamp",
-                  "interval" : "60s"
+                  "interval" : #interval#
                 },
                 "aggs": {
-                  "group_by_time": {
+                  "group_by_code" : {                          
                     "range": {
                       "field": "responsetime",
-                      "ranges" : [
-                        { "key" : "res_time", "to" : "5000" },
-                        { "key" : "slow", "from" : "5000" } ],
-                      "keyed" : true
-                      },
+                      "ranges" : [ { "key" : "ok", "to" : "400" },
+                                { "key" : "error", "from" : "400" } ],
+                      "keyed" : true                  
+                    },
                     "aggs" : {
-                      "group_by_code" : {                          
+                      "group_by_time": {
                         "range": {
                           "field": "responsetime",
-                            "ranges" : [ { "key" : "error", "from" : "400" } ],
-                            "keyed" : true
+                          "ranges" : [
+                            { "key" : "res_time", "to" : "5000" },
+                            { "key" : "slow", "from" : "5000" } ],
+                          "keyed" : true
                         }                        
                       }
                     }
@@ -853,33 +854,10 @@
           }
         }
       ]]></query>
-      <query id='getAccTimeseries2'><![CDATA[
-      {
-        "index" : [##index##],
-        "type"  : #type#,
-        "body" : {
-          "size"   : 100000,
-          "sort" : { "timestamp" : { "order" : "asc" }},
-          "_source" : ["timestamp", "timestamp", "responsetime", "response"], 
-          "query": {
-            "bool": {
-              "must" : {
-                "range" : { "timestamp" : { "gte" : #gte#, "lte" : #lte# } }                
-              },
-              "must_not" : {
-                "match": {
-                  "request": "/s/ /download /api/ /gadgets/ /xboard/ /bootstap /1.0/ /icons/ /issueNav/ /projectavatar /osd.jsp /static-assets/ .css .js .png"
-                }
-              }
-            }            
-          }
-        }
-      }
-    ]]></query>
     <query id='getProcessTimeseries'><![CDATA[
       {
         "index" : [##index##],
-        "type"  : "metricsets",
+        "type"  : #type#,
         "body" : {
           "size" : 100000,
           "sort" : { "@timestamp" : { "order" : "asc" }},
@@ -899,7 +877,7 @@
     <query id='getTopTimeseries'><![CDATA[
       {
         "index" : [##index##],
-        "type"  : "metricsets",
+        "type"  : #type#,
         "body" : {
           "size" : 100000,
           "_source": ["system.process.name", "system.process.cpu.total.pct", "timestamp"],
@@ -925,7 +903,7 @@
     <query id='getTotalTimeseries'><![CDATA[
       {
         "index" : [##index##],
-        "type"  : "metricsets",
+        "type"  : #type#,
         "body" : {
           "size" : 100000,
           "sort" : { "timestamp" : { "order" : "asc" }},
