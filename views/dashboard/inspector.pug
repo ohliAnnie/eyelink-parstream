@@ -21,9 +21,7 @@ block script
       drawCountChart();      
 
       $('#btn_search').click(function() {        
-        var server = $('#server').val().split('&');
-        console.log(server)
-        console.log('/dashboard/timeseries'+server[0]+'?server='+server[1]);
+        var server = $('#server').val().split('&');        
         location.href='/dashboard/timeseries'+server[0]+'?server='+server[1];
       });
     });
