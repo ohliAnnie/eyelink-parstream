@@ -1369,12 +1369,12 @@
           "type" : #TYPE#,
           "body" : {
             "size" : 1,
-            "sort" : { "analysis.timestamp" : { "order" : "desc"  } },
+            "sort" : { "da_result.timestamp" : { "order" : "desc"  } },
             "query" : {
              "bool": {
                "must" : {
                  "range" : {
-                   "analysis.timestamp": {  "gte": #gte#, "lte" : #lte#  }
+                   "da_result.timestamp": {  "gte": #gte#, "lte" : #lte#  }
                  }
               }
             }
@@ -1467,6 +1467,18 @@
         }
       }
     ]]></query>
+    <query id='selectAnomalyMatch'><![CDATA[
+       {
+          "index" : #INDEX#,
+          "type" : #TYPE#,          
+          "body" : {
+            "_source" : [##list##],
+            "query" : {
+              "term" : {   "_id" : #ID#     }
+            }
+          }
+      }
+    ]]></query>
     <query id='selectPatterns'><![CDATA[
       {
         "index" : #INDEX#,
@@ -1544,7 +1556,7 @@
     <!--  (vibration_x + vibration_y + vibration_z) / 3 as vibration 없음 -->
     <query id='selectClusterNodePower'><![CDATA[
      {
-        "index" : "corecode-*",
+        "index" : #index#,
         "type" : "corecode",
         "body" : {
           "size" : 100000,
