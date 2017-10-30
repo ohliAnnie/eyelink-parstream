@@ -35,7 +35,9 @@
 		"es_menu" : "efsm_menu",
 		"es_appinfo" : "efsm_applicationinfo",
 		"es_elagent" : "elagent_test-agent-",
-		"es_alarm" : "efsm_alarm-"
+		"es_alarm" : "efsm_alarm-",
+		"es_corecode" : "corecode-",
+		"es_anomaly" : "analysis"
 	},
 	"analysis": {
 		"#host" : "localhost",

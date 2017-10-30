@@ -1,3 +1,5 @@
+var Logger = require('./log4js-utils').Logger;
+var logger = new Logger('nodeDashboardEFSM');
 var CONSTS = require('./consts');
 var Utils = require('./util');
 var express = require('express');
@@ -234,7 +236,7 @@ router.get('/restapi/getDashboardRawData', function(req, res, next) {
 
       // console.log('dashboard/restapi/getReportRawData -> out_data : %s', out_data);
       // console.log('dashboard/restapi/getReportRawData -> out_data : %s', out_data[0]);
-      console.log('dashboard/restapi/getDashboardRawData -> length : %s', out_data.length);
+      logger.debug('dashboard/restapi/getDashboardRawData -> length : %s', out_data.length);
       res.json({rtnCode: rtnCode, rtnData: out_data});
     });
   } else {  // false 인 경우는 현재일자부터 7일전 리스트를 조회.
@@ -245,7 +247,7 @@ router.get('/restapi/getDashboardRawData', function(req, res, next) {
 });
 
 router.get('/restapi/selectJiraAccReq', function(req, res, next) {
-  console.log('dashboard/restapi/selectJiraAccReq');
+  logger.debug('dashboard/restapi/selectJiraAccReq');
   var in_data = { index : req.query.index, START : req.query.START, END : req.query.END  };  
   queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccReq", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
@@ -258,7 +260,7 @@ router.get('/restapi/selectJiraAccReq', function(req, res, next) {
 });
 
 router.get('/restapi/selectJiraSankeyByLink', function(req, res, next) {
-  console.log('dashboard/restapi/selectJiraSankeyByLink');
+  logger.debug('dashboard/restapi/selectJiraSankeyByLink');
   if(req.query.gap == 0){
     var day = Utils.getMs2Date(parseInt(req.query.date), fmt1, 'N');
     var from = Utils.getDate(day, fmt1, -1, 0, 0, 0);    
@@ -485,7 +487,7 @@ router.get('/selected_detail_agent', function(req, res, next) {
 });        
 
 router.get('/restapi/getTransactionDetail', function(req, res, next) {
-  console.log('dashboard/restapi/getTransactionDetail');      
+  logger.debug('dashboard/restapi/getTransactionDetail');      
   var in_data = {
     index : indexElagent+Utils.getMs2Date(new Date(req.query.date),fmt4) ,
     type : "TraceDetail",
@@ -502,7 +504,7 @@ router.get('/restapi/getTransactionDetail', function(req, res, next) {
 });
 
 router.get('/restapi/countAccJiraDay', function(req, res, next) {
-  console.log('dashboard/restapi/countAccJiraDay');   
+  logger.debug('dashboard/restapi/countAccJiraDay');   
   var end = Utils.getMs2Date(parseInt(req.query.date),fmt1,'Y')+startTime;  
   var start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;      
   var in_data = {    index : indexAcc+"*", type : "access", START : start , END : end };  
@@ -528,7 +530,7 @@ router.get('/restapi/countAccJiraDay', function(req, res, next) {
 });
 
 router.get('/restapi/countAccJiraMon', function(req, res, next) {
-  console.log('dashboard/restapi/countAccJiraMon');   
+  logger.debug('dashboard/restapi/countAccJiraMon');   
   var end = Utils.getMs2Date(parseInt(req.query.date),fmt1,'Y')+startTime;    
   var start = Utils.getDate(end, fmt1, -(new Date(parseInt(req.query.date)).getDate()), 0, 0, 0)+startTime;    
   var in_data = {    index : indexAcc+"*", type : "access", START : start , END : end };  
@@ -555,7 +557,7 @@ router.get('/restapi/countAccJiraMon', function(req, res, next) {
 });
 
 router.get('/restapi/countAccJiraError', function(req, res, next) {
-  console.log('dashboard/restapi/countAccJiraError');      
+  logger.debug('dashboard/restapi/countAccJiraError');      
   var end = Utils.getMs2Date(parseInt(req.query.date),fmt1,'Y')+startTime;  
   var start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;  
   var in_data = {    index : indexAcc+"*", type : "access", START : start , END : end };  
@@ -581,7 +583,7 @@ router.get('/restapi/countAccJiraError', function(req, res, next) {
 });
 
 router.get('/restapi/getJiraAccOneWeek', function(req, res, next) {
-  console.log('dashboard/restapi/getJiraAccOneWeek');  
+  logger.debug('dashboard/restapi/getJiraAccOneWeek');  
   var in_data = {
     index: indexAcc+"*", type : "access",
     start: Utils.getDate(Utils.getToday(fmt2,'N','Y'), fmt1, -7, 0, 0, 0)+startTime  
@@ -635,7 +637,7 @@ router.get('/restapi/getAgentOneWeek', function(req, res, next) {
 });
 
 router.get('/restapi/getAccTimeseries', function(req, res, next) {
-  console.log('dashboard/restapi/getAccTimeseries');  
+  logger.debug('dashboard/restapi/getAccTimeseries');  
   var end = Utils.getMs2Date(req.query.date,fmt1,'Y');  
   var start = Utils.getDate(end, fmt1, -1, 0, 0, 0);  
   var in_data = { index : [indexAcc+Utils.getDate(start, fmt4), indexAcc+Utils.getDate(end, fmt4)], type : "access",
@@ -657,7 +659,7 @@ router.get('/restapi/getAccTimeseries', function(req, res, next) {
 });
 
 router.get('/restapi/getProcessTimeseries', function(req, res, next) {
-  console.log('dashboard/restapi/getProcessTimeseries');    
+  logger.debug('dashboard/restapi/getProcessTimeseries');    
   var end = Utils.getMs2Date(req.query.date,fmt1,'Y');  
   var start = Utils.getDate(end, fmt1, -1, 0, 0, 0); 
   var in_data = { index : [indexMetric+Utils.getDate(start, fmt4), indexMetric+Utils.getDate(end, fmt4)], 
@@ -678,7 +680,7 @@ router.get('/restapi/getProcessTimeseries', function(req, res, next) {
 });
 
 router.get('/restapi/getTopTimeseries', function(req, res, next) {
-  console.log('dashboard/restapi/getTopTimeseries');    
+  logger.debug('dashboard/restapi/getTopTimeseries');    
   var end = Utils.getMs2Date(req.query.date,fmt1,'Y');  
   var start = Utils.getDate(end, fmt1, -1, 0, 0, 0); 
   var in_data = { index : [indexMetric+Utils.getDate(start, fmt4), indexMetric+Utils.getDate(end, fmt4)], 
@@ -712,7 +714,7 @@ router.get('/restapi/getTopTimeseries', function(req, res, next) {
 });
 
 router.get('/restapi/getTotalTimeseries', function(req, res, next) {
-  console.log('dashboard/restapi/getTotalTimeseries');    
+  logger.debug('dashboard/restapi/getTotalTimeseries');    
   var end = Utils.getMs2Date(req.query.date,fmt1,'Y');  
   var start = Utils.getDate(end, fmt1, -1, 0, 0, 0); 
   var in_data = { index : [indexMetric+Utils.getDate(start, fmt4), indexMetric+Utils.getDate(end, fmt4)], 
@@ -744,11 +746,10 @@ router.get('/restapi/getTotalTimeseries', function(req, res, next) {
 });
 
 router.get('/restapi/getJiramapdata', function(req, res, next) {
-  console.log('dashboard/restapi/getJiramapdata');
+  logger.debug('dashboard/restapi/getJiramapdata');
   if(req.query.gap == 0){
     var day = Utils.getMs2Date(parseInt(req.query.date), fmt1, 'N');
-    var from = Utils.getDate(day, fmt1, -1, 0, 0, 0);    
-    console.log(day, from);
+    var from = Utils.getDate(day, fmt1, -1, 0, 0, 0);        
     var in_data = {
       //index:  [indexAcc+Utils.getDate(from, fmt4, 0, 0, 0, 0),  indexAcc+Utils.getDate(day, fmt4, 0, 0, 0, 0)],
       index : [indexAcc+'*'], type : "access", START : from+startTime,  END : day+startTime  };   
@@ -810,7 +811,7 @@ router.get('/restapi/getJiramapdata', function(req, res, next) {
 });
 
 router.get('/restapi/getAllMapData', function(req, res, next) {
-  console.log('dashboard/restapi/getAllMapData');    
+  logger.debug('dashboard/restapi/getAllMapData');    
   var day = Utils.getMs2Date(parseInt(req.query.date), fmt1, 'N');
   var from = Utils.getDate(day, fmt1, -1, 0, 0, 0);    
   var in_data = {  index : [indexAcc+'*'], type : "access", START : from+startTime,  END : day+startTime  };   
@@ -853,7 +854,7 @@ router.get('/restapi/getAllMapData', function(req, res, next) {
           d.data.color = color[1];
         }
       });      
-    console.log('dashboard/restapi/getAgentMap');    
+    logger.debug('dashboard/restapi/getAgentMap');    
     var in_data = {
       index : indexElagent+"*",
       type : "ApplicationLinkData",
@@ -916,7 +917,7 @@ router.get('/restapi/getAllMapData', function(req, res, next) {
 });
 
 router.get('/restapi/getHeapData', function(req, res, next) {  
-  console.log('dashboard/restapi/getHeapData');   
+  logger.debug('dashboard/restapi/getHeapData');   
   if(req.query.type == 'range') {
     var gte = Utils.getDate(req.query.end, fmt2, 0, 0, -parseInt(req.query.gap), 0, 'Y');
     var lte = Utils.getDate(req.query.end, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y');
@@ -942,7 +943,7 @@ router.get('/restapi/getHeapData', function(req, res, next) {
 });
 
 router.get('/restapi/getJvmSysData', function(req, res, next) {
-  console.log('dashboard/restapi/getHeapData');    
+  logger.debug('dashboard/restapi/getHeapData');    
   if(req.query.type == 'range') {    
     var gte = Utils.getDate(req.query.end, fmt2, 0, 0, -parseInt(req.query.gap), 0, 'Y');
     var lte = Utils.getDate(req.query.end, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y');
@@ -958,8 +959,7 @@ router.get('/restapi/getJvmSysData', function(req, res, next) {
     } else {
       var data = []
       out_data.forEach(function(d) {        
-        d = d._source;
-        console.log(d);
+        d = d._source;        
         data.push({ "timestamp" : new Date(Utils.getDateUTC2Local(d.timestamp,fmt2)).getTime(), "jvm" : d.jvmCpuLoad*100, "system" : d.systemCpuLoad*100 });
       });
     }
@@ -969,7 +969,7 @@ router.get('/restapi/getJvmSysData', function(req, res, next) {
 
 
 router.get('/restapi/getStatTransaction', function(req, res, next) {
-  console.log('dashboard/restapi/getStatTransaction');    
+  logger.debug('dashboard/restapi/getStatTransaction');    
   if(req.query.type == 'range') {
     var gte = Utils.getDate(req.query.end, fmt2, 0, 0, -parseInt(req.query.gap), 0, 'Y');
     var lte = Utils.getDate(req.query.end, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y');
@@ -994,7 +994,7 @@ router.get('/restapi/getStatTransaction', function(req, res, next) {
 });
 
 router.get('/restapi/getActiveTrace', function(req, res, next) {
-  console.log('dashboard/restapi/getActiveTrace');    
+  logger.debug('dashboard/restapi/getActiveTrace');    
   if(req.query.type == 'range') {
     var gte = Utils.getDate(req.query.end, fmt2, 0, 0, -parseInt(req.query.gap), 0, 'Y');
     var lte = Utils.getDate(req.query.end, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y');
@@ -1021,7 +1021,7 @@ router.get('/restapi/getActiveTrace', function(req, res, next) {
 
 
 router.get('/restapi/getRestimeCount', function(req, res, next) {
-  console.log('dashboard/restapi/getRestimeCount');    
+  logger.debug('dashboard/restapi/getRestimeCount');    
   var today = Utils.getToday(fmt1);  
   var in_data = {
     index:  [indexAcc+Utils.getDate(today, fmt4, -1, 0, 0, 0),  indexAcc+Utils.getToday(fmt4)],
@@ -1029,11 +1029,6 @@ router.get('/restapi/getRestimeCount', function(req, res, next) {
     lte : today+startTime,
     MIN : 400
   };  
-  /*var in_data = {
-    index : req.query.index,
-    gte : req.query.gte,
-    lte : req.query.lte
-  };*/
   queryProvider.selectSingleQueryByID3("dashboard","getRestimeCount", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');    
     if (out_data == null) {
@@ -1045,7 +1040,7 @@ router.get('/restapi/getRestimeCount', function(req, res, next) {
 
 // Agent
 router.get('/restapi/getAgentMap', function(req, res, next) {
-  console.log('dashboard/restapi/getAgentMap');    
+  logger.debug('dashboard/restapi/getAgentMap');    
   if(req.query.gap == 0){
     var day = Utils.getMs2Date(parseInt(req.query.date), fmt1, 'N');
     var from = Utils.getDate(day, fmt1, -1, 0, 0, 0);    
@@ -1112,7 +1107,7 @@ router.get('/restapi/getAgentMap', function(req, res, next) {
 });
 
 router.get('/restapi/getAgentData', function(req, res, next) {
-  console.log('dashboard/restapi/getAgentData');    
+  logger.debug('dashboard/restapi/getAgentData');    
   if(req.query.gap == 0){
     var end = Utils.getMs2Date(parseInt(req.query.date), fmt1, 'N')+startTime;
     var start = Utils.getDate(end, fmt1, -1, 0, 0, 0) + startTime;            
@@ -1126,8 +1121,6 @@ router.get('/restapi/getAgentData', function(req, res, next) {
   var in_data = { 
       index : indexElagent+'*', type : "ApplicationLinkData",
       start : start,  end : end, id : "startTime" };  
-  console.log(req.query)
-  console.log(in_data)
   queryProvider.selectSingleQueryByID2("dashboard","selectByRange", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');    
     if (out_data == null) {
@@ -1157,15 +1150,14 @@ router.get('/restapi/getAgentData', function(req, res, next) {
       });
     });        
     start -= start%(10*60*1000);
-    end += (10*60*1000 - end%(10*60*1000));
-    console.log(new Date(start), new Date(end));
+    end += (10*60*1000 - end%(10*60*1000));    
     max = Math.ceil(max/1000)*1000;
     res.json({ rtnCode: rtnCode, rtnData : rtnData, data : data, start : start, end : end, max : max });
   });
 });
 
 router.get('/restapi/countAgentDay', function(req, res, next) {
-  console.log('dashboard/restapi/countAgent');      
+  logger.debug('dashboard/restapi/countAgent');      
   var end = Utils.getMs2Date(parseInt(req.query.date),fmt1,'Y')+startTime;  
   var start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;  
   var in_data = { index : indexElagent+'*', type : "ApplicationLinkData", START : start, END : end  };  
@@ -1192,7 +1184,7 @@ router.get('/restapi/countAgentDay', function(req, res, next) {
 });
 
 router.get('/restapi/countAgentMon', function(req, res, next) {
-  console.log('dashboard/restapi/countAgent');      
+  logger.debug('dashboard/restapi/countAgent');      
   var end = Utils.getMs2Date(parseInt(req.query.date),fmt1,'Y')+startTime;  
   var start = Utils.getDate(end, fmt1, -(new Date(parseInt(req.query.date)).getDate()), 0, 0, 0)+startTime;    
   var in_data = { index : indexElagent+'*', type : "ApplicationLinkData", START : start, END : end  };  
@@ -1244,7 +1236,7 @@ router.get('/restapi/countAgentError', function(req, res, next) {
 
 
 router.get('/restapi/getBottleneckList', function(req, res, next) {
-  console.log('dashboard/restapi/getBottleneckList');     
+  logger.debug('dashboard/restapi/getBottleneckList');     
   var end = Utils.getMs2Date(parseInt(req.query.date),fmt1,'Y')+startTime;  
   var start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;       
   var in_data = {
@@ -1263,7 +1255,7 @@ router.get('/restapi/getBottleneckList', function(req, res, next) {
 });
 
 router.get('/restapi/getBottleneckDetail', function(req, res, next) {
-  console.log('dashboard/restapi/getBottleneckDetail');        
+  logger.debug('dashboard/restapi/getBottleneckDetail');        
   var in_data = {
     index : indexAlarm+'*',    type : "AgentAlarm",
     value : req.query.value,    id : req.query.id,    

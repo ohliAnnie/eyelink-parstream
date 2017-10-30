@@ -1,14 +1,10 @@
 var liveValue = [];
  setInterval(function() { 
-    now = new Date().getTime();    
-    var s = new Date(now-60*1000).toString().split(' ');
-    var e = new Date(now+1*1000).toString().split(' ');
-    var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
     $.ajax({
-      url: "/analysis/restapi/getClusterNodePower" ,
+      url: "/analysis/restapi/getClusterNodeLive" ,
       dataType: "json",
       type: "get",
-      data: { nodeId : "0002.00000039", startDate : s[3]+'-'+mon[s[1]]+'-'+s[2]+'T'+s[4] , endDate : e[3]+'-'+mon[e[1]]+'-'+e[2]+'T'+e[4] },
+      data: { },
       success: function(result) {        
         if (result.rtnCode.code == "0000") {                
           if(result.rtnData.length == 1){
@@ -27,19 +23,19 @@ var liveValue = [];
     });  
   }, 5*1000);    
 
-function getData(){  
-  var now = new Date().getTime();
+function getData(){    
   $.ajax({
    // url: "/analysis/restapi/getAnomalyPattern/2017-08-23T15:50:00",
     url: "/analysis/restapi/getAnomalyChartData",
     dataType: "json",
     type: "get",
-    data: { now : now },
+    data: { },
     success: function(result) {      
-      var raw = result.raw;
-      console.log(result)
-      var point = result.point, start = point -50*60*1000, end = point+10*60*1000;      
+      var raw = result.raw;      
+      var point = new Date(result.pattern.timestamp).getTime(), start = point -50*60*1000, end = point+10*60*1000;      
+      var now = new Date().getTime();      
       if (result.rtnCode.code == "0000") {                                              
+        console.log(result);
         drawChart(raw, result.anomaly.vdata, start, end, now, point, now-point, 'voltage', '#voltage', result.pattern, result.pt.vapt, result.pt.vcpt);
         drawChart(raw, result.anomaly.adata, start, end, now, point, now-point, 'ampere', '#ampere', result.pattern, result.pt.aapt, result.pt.acpt);
         drawChart(raw, result.anomaly.apdata, start, end, now, point, now-point, 'active_power', '#active_power', result.pattern, result.pt.apapt, result.pt.apcpt);
@@ -61,18 +57,19 @@ function getData(){
 }
 
 function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, pattern, apt, cpt) {
-  oriEnd = end;  
-  console.log('raw'+new Date(raw[raw.length-1].event_time))
+  oriEnd = end;    
   var limit = 60,    duration = 1000;   
  var margin = {top: 10, right: 50, bottom: 30, left: 50},
   width = window.innerWidth*0.88 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;  
-  if(pattern[id+'_status'] == "normal"){
+  if(pattern[id].status == "normal"){
     var color = 'green';    
-  } else if(pattern[id+'_status'] == "caution"){ 
+  } else if(pattern[id].status == "caution"){ 
     var color = 'blue';    
-  } else if(pattern[id+'_status'] == "anomaly"){   
+  } else if(pattern[id].status == "anomaly"){   
     var color = 'red';
+  } else {
+    var color = 'gray';
   }
   liveValue = raw[raw.length-1];    
     var groups = {
@@ -259,9 +256,9 @@ var statusWidth  = 63, statusHeight = 55;
     .attr('height', statusHeight);
 
     status.append('text')
-    .attr('x', 15)
+    .attr('x', 10)
     .attr('y', 15)
-    .text(pattern[id+'_status']);
+    .text(pattern[id].status);
 
     status.append('circle')    
     .attr('class', 'sign')
@@ -389,7 +386,7 @@ var div = d3.select("body").append("div")
         .enter().append('circle')
         .attr("r", 3)   
         .attr('opacity', 1)
-        .attr("cx", function(d) { console.log(d); return x(d.date); })     
+        .attr("cx", function(d) { return x(d.date); })     
         .attr("cy", function(d) { return y(d.value); })   
         .attr('class', 'cpt')
         .attr("fill", "blue")
@@ -471,18 +468,15 @@ var div = d3.select("body").append("div")
       if(oriEnd<=now){
          if(now > oriEnd+3*60*1000) {
                 console.log('reload');
-                window.location.reload(true);
+               // window.location.reload(true);
         }
         if(now >= (end+2*60*1000)){
           end += 2*60*1000;
         }
         if((now-oriNow) > 10*1000) {
-          oriNow = now;
-        console.log(new Date(end));
-        var day = new Date(end).toString().split(' ');
-        var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-        $.ajax({
-          url: "/analysis/restapi/getAnomalyPatternCheck/"+day[3]+'-'+mon[day[1]]+'-'+day[2]+'T'+day[4],
+          oriNow = now;        
+        /*$.ajax({
+          url: "/analysis/restapi/getAnomalyPatternCheck/",
           dataType: "json",
           type: "get",
           data: {},
@@ -499,7 +493,7 @@ var div = d3.select("body").append("div")
             //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
             $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
           }
-        });
+        });*/
         }        
       }    
 
