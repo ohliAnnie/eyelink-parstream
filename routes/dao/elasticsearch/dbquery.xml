@@ -1000,13 +1000,13 @@
         "type"  : "access",
         "body" : {
           "size"   : 100000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "sort" : { "timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "responsetime", "response"],
            "query" : {
              "bool": {
                "must" : {
                  "range" : {
-                   "@timestamp": {     "gte": #gte#, "lte": #lte#                  }
+                   "timestamp": {     "gte": #gte#, "lte": #lte#                  }
                  }
               }
             }
