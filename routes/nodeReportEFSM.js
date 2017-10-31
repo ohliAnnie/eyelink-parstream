@@ -237,16 +237,7 @@ router.get('/restapi/getOneIndexCount', function(req, res, next) {
 router.get('/restapi/getMultiIndexCount', function(req, res, next) {
   console.log('reports/restapi/getMultiIndexCount');  
   var lte = Utils.getMs2Date(req.query.edate, fmt1)+startTime;    
-  var indexs = [], cnt = 0, ranges = [], xValue = [];
-  console.log('^^^^^^^^^^^^')
-  console.log(req.query.type)
-  console.log(lte)
-  var settingDate = new Date(lte);
-  console.log(settingDate)
-  settingDate.setDate(settingDate.getDate()-1); //하루 전
-  console.log(settingDate)
-  settingDate.setMonth(settingDate.getMonth()-1); //한달 전
-  console.log(settingDate)
+  var indexs = [], cnt = 0, ranges = [], xValue = [];    
   if(req.query.type == "#day"){
     var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
     for(i=new Date(gte).getTime(); i<=new Date(lte).getTime(); i+= 24*60*60*1000){
@@ -278,12 +269,21 @@ router.get('/restapi/getMultiIndexCount', function(req, res, next) {
   }
   var in_data = {    index : indexs, range : ranges.toString()   };
   queryProvider.selectSingleQueryByID3("reports","selectMultiIndexCount", in_data, function(err, out_data, params) {
-    // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
+    } else {
+      var data = [], max = 0;
+      for(i=0; i<xValue.length; i++) {        
+        var d = out_data.group_by_x.buckets[xValue[i]];
+        var e = d.aggs.buckets[0] ;    
+        data.push({ "date" : xValue[i], "1s" : d.by_type.buckets.s1.doc_count, "3s" : d.by_type.buckets.s3.doc_count, "5s" : d.by_type.buckets.s5.doc_count, "slow" : d.by_type.buckets.slow.doc_count, "error" : e.doc_count});
+        if(max < e.doc_count){
+          max = e.doc_count;
+        }
+      }        
     }
-    res.json({rtnCode: rtnCode, rtnData: out_data, xValue : xValue});
+    res.json({rtnCode: rtnCode, rtnData: data, max: max});
   });
 });
 
