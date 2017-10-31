@@ -1182,16 +1182,16 @@
     <query id='selectAccessError'><![CDATA[
      {
        "index" : [##index##],
-       "type"  : "access",
-       "_source": ["timestamp", "geoip", "response"],
+       "type"  : "access",       
        "body" : {
          "size" : 100000,
-         "sort" : { "@timestamp" : { "order" : "asc" }},
+         "_source": ["timestamp", "geoip", "response"],
+         "sort" : { "timestamp" : { "order" : "asc" }},
          "query" : {
            "bool": {
              "must" : {
                "range" : {
-                 "@timestamp": {     "gte": #gte#, "lte": #lte#                  }
+                 "timestamp": {     "gte": #gte#, "lte": #lte#                  }
                }
             },
             "must_not": {

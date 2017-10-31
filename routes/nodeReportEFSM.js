@@ -54,7 +54,7 @@ router.get('/test', function(req, res, next) {
 
 // query Report
 router.get('/restapi/getJiraAcc', function(req, res, next) {
-  console.log('reports/restapi/getJiraAcc');    
+  logger.debug('reports/restapi/getJiraAcc');    
   var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
   var lte = Utils.getMs2Date(req.query.edate, fmt1);  
   var indexs = [], cnt = 0;
@@ -110,7 +110,7 @@ router.get('/restapi/getJiraAcc', function(req, res, next) {
 
 // query Report
 router.get('/restapi/getCpuMemoryFilesystemAll', function(req, res, next) {
-  console.log('reports/restapi/getCpuMemoryFilesystemAll');
+  logger.debug('reports/restapi/getCpuMemoryFilesystemAll');
   var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
   var lte = Utils.getMs2Date(req.query.edate, fmt1);  
   var indexs = [], cnt = 0;
@@ -147,7 +147,7 @@ router.get('/restapi/getCpuMemoryFilesystemAll', function(req, res, next) {
 
 // query Report
 router.get('/restapi/getProcessList', function(req, res, next) {
-  console.log('reports/restapi/getProcessList');
+  logger.debug('reports/restapi/getProcessList');
    var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
   var lte = Utils.getMs2Date(req.query.edate, fmt1);  
   var indexs = [], cnt = 0;
@@ -156,7 +156,6 @@ router.get('/restapi/getProcessList', function(req, res, next) {
   }
   var in_data = { index : indexs, gte : gte+startTime, lte : lte+startTime  };
   queryProvider.selectSingleQueryByID2("reports","selectProcessList", in_data, function(err, out_data, params) {
-    // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -167,7 +166,7 @@ router.get('/restapi/getProcessList', function(req, res, next) {
 
 // query Report
 router.get('/restapi/getProcessListByName', function(req, res, next) {
-  console.log('reports/restapi/getProcessListByName');
+  logger.debug('reports/restapi/getProcessListByName');
   var in_data = {
     index : req.query.index,
     gte : req.query.gte,
@@ -175,7 +174,6 @@ router.get('/restapi/getProcessListByName', function(req, res, next) {
     name : req.query.name
   };
   queryProvider.selectSingleQueryByID2("reports","selectProcessListByName", in_data, function(err, out_data, params) {
-    // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -186,7 +184,7 @@ router.get('/restapi/getProcessListByName', function(req, res, next) {
 
 // query Report
 router.get('/restapi/getProcess', function(req, res, next) {
-  console.log('reports/restapi/getProcess');
+  logger.debug('reports/restapi/getProcess');
   var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
   var lte = Utils.getMs2Date(req.query.edate, fmt1);  
   var indexs = [], cnt = 0;
@@ -194,8 +192,7 @@ router.get('/restapi/getProcess', function(req, res, next) {
     indexs[cnt++] = indexMetric+Utils.getMs2Date(i, fmt4)
   }
   var in_data = { index : indexs, gte : gte+startTime, lte : lte+startTime  };
-  queryProvider.selectSingleQueryByID2("reports","selectProcess", in_data, function(err, out_data, params) {
-    // console.log(out_data);
+  queryProvider.selectSingleQueryByID2("reports","selectProcess", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -218,7 +215,7 @@ router.get('/restapi/getProcess', function(req, res, next) {
 
 // query Report
 router.get('/restapi/getProcessByName', function(req, res, next) {
-  console.log('reports/restapi/getProcessByName');
+  logger.debug('reports/restapi/getProcessByName');
   var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
   var lte = Utils.getMs2Date(req.query.edate, fmt1);  
   var indexs = [], cnt = 0;
@@ -227,7 +224,6 @@ router.get('/restapi/getProcessByName', function(req, res, next) {
   }
   var in_data = { index : indexs, gte : gte+startTime, lte : lte+startTime, name : req.query.name };
   queryProvider.selectSingleQueryByID2("reports","selectProcessByName", in_data, function(err, out_data, params) {
-    // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -248,31 +244,37 @@ router.get('/restapi/getProcessByName', function(req, res, next) {
   });
 });
 
-
 // query Report
 router.get('/restapi/getAccessError', function(req, res, next) {
-  console.log('reports/restapi/getAccessError');
-  var in_data = {
-    index : req.query.index,
-    gte : req.query.gte,
-    lte : req.query.lte
-  };
+  logger.debug('reports/restapi/getAccessError');
+  var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
+  var lte = Utils.getMs2Date(req.query.edate, fmt1);  
+  var indexs = [], cnt = 0;
+  for(i=new Date(gte).getTime(); i<=new Date(lte).getTime(); i+= 24*60*60*1000){
+    indexs[cnt++] = indexAcc+Utils.getMs2Date(i, fmt4)
+  }
+  var in_data = { index : indexs, gte : gte+startTime, lte : lte+startTime };
   queryProvider.selectSingleQueryByID2("reports","selectAccessError", in_data, function(err, out_data, params) {
-    // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    }           
-    res.json({rtnCode: rtnCode, rtnData: out_data});
+    } else {
+      var data = [];
+      out_data.forEach(function(d){        
+        if(d._source.timestamp != null) {          
+          data.push({ timestamp : Utils.getDateUTC2Local(d._source.timestamp, fmt2), type : d._source.response, geo : d._source.geoip.latitude+','+d._source.geoip.longitude });
+        }
+      });
+    }
+    res.json({rtnCode: rtnCode, rtnData: data});
   });
 });
 
 // query Report
 router.get('/restapi/getOneIndexCount', function(req, res, next) {
-  console.log('reports/restapi/getOneIndexCount');
+  logger.debug('reports/restapi/getOneIndexCount');
   var in_data = {    index : req.query.index   };
   queryProvider.selectSingleQueryByID3("reports","selectOneIndexCount", in_data, function(err, out_data, params) {
-     console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -283,7 +285,7 @@ router.get('/restapi/getOneIndexCount', function(req, res, next) {
 
 // query Report
 router.get('/restapi/getMultiIndexCount', function(req, res, next) {
-  console.log('reports/restapi/getMultiIndexCount');  
+  logger.debug('reports/restapi/getMultiIndexCount');  
   var lte = Utils.getMs2Date(req.query.edate, fmt1)+startTime;    
   var indexs = [], cnt = 0, ranges = [], xValue = [];    
   if(req.query.type == "#day"){
