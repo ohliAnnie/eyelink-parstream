@@ -1020,7 +1020,7 @@
         "type"  : "metricsets",
         "body" : {
           "size"   : 100000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "sort" : { "timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "system.cpu.system.pct", "system.memory.actual.used.pct", "system.filesystem.used.pct", "metricset.name"],
           "query": {
             "bool": {
@@ -1114,7 +1114,7 @@
           "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "system.filesystem.used.pct", "timestamp", "metricset.name"],
           "sort" : [
             { "timestamp" : { "order" : "asc" }},
-            {"system.process.cpu.total.pct": "desc"}],
+            { "system.process.cpu.total.pct": "desc"}],
           "query": {
              "bool": {
                 "must" : [
@@ -1150,7 +1150,7 @@
           "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "system.filesystem.used.pct", "timestamp", "metricset.name"],
           "sort" : [
             { "timestamp" : { "order" : "asc" }},
-            {"system.process.cpu.total.pct": "desc"}],
+            { "system.process.cpu.total.pct": "desc"}],
           "query": {
              "bool": {
                 "must" : [
@@ -1182,16 +1182,16 @@
     <query id='selectAccessError'><![CDATA[
      {
        "index" : [##index##],
-       "type"  : "access",
-       "_source": ["timestamp", "geoip", "response"],
+       "type"  : "access",       
        "body" : {
          "size" : 100000,
-         "sort" : { "@timestamp" : { "order" : "asc" }},
+         "_source": ["timestamp", "geoip", "response"],
+         "sort" : { "timestamp" : { "order" : "asc" }},
          "query" : {
            "bool": {
              "must" : {
                "range" : {
-                 "@timestamp": {     "gte": #gte#, "lte": #lte#                  }
+                 "timestamp": {     "gte": #gte#, "lte": #lte#                  }
                }
             },
             "must_not": {
@@ -1241,7 +1241,7 @@
          "aggs" : {
            "group_by_x" : {
              "range": {
-               "field": "@timestamp",
+               "field": "timestamp",
                "ranges":  [#range#],
                 "keyed" : true
               },

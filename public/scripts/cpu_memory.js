@@ -1,30 +1,16 @@
-function getData() {
-  var indexs = $('#indexs').val();  
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
-  var sdate = $('#sdate').val();  
-  var s = sdate.split('-')
-  var sindex =new Date(new Date(s[0], parseInt(s[1])-1, s[2]).getTime()-24*60*60*1000);
+function getData() {  
+  var sdate = $('#sdate').val();    
   var edate = $('#edate').val();  
-
-  var index = [], cnt = 0;
-  var e = edate.split('-');
-  for(i=sindex.getTime(); i <= new Date(e[0], parseInt(e[1])-1, e[2]).getTime(); i+=24*60*60*1000){    
-    var day = new Date(i).toString().split(' ');    
-    index[cnt++] = indexs+day[3]+'.'+mon[day[1]]+'.'+day[2];    
-  }    
-  var s = sindex.toString().split(' ');
-  var gte = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T15:00:00.000Z';
-  var lte = edate+'T15:00:00.000Z';
-  console.log(index, gte, lte);
+  
   $.ajax({
     url: "/reports/restapi/getCpuMemoryFilesystemAll" ,
     dataType: "json",
     type: "get",
-    data: { index : index, gte : gte , lte : lte},
+    data: { sdate : sdate, edate : edate },
     success: function(result) {
-      // console.log(result);
-      if (result.rtnCode.code == "0000") {        
-        drawChart(result.rtnData, sdate, edate);
+      console.log(result);
+      if (result.rtnCode.code == "0000") {              
+        drawChart(result.rtnData);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -39,11 +25,11 @@ function getData() {
     url: "/reports/restapi/getProcessList" ,
     dataType: "json",
     type: "get",
-    data: { index : index, gte : gte , lte : lte},
+    data: { sdate : sdate, edate : edate },
     success: function(result) {
       // console.log(result);
       if (result.rtnCode.code == "0000") {        
-        drawTable(result.rtnData, sdate, edate);
+        drawTable(result.rtnData);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -55,38 +41,19 @@ function getData() {
   });
 }
 
-function drawChart(rtnData, sdate, edate) {  
-  var s = sdate.split('-');
-  var minDate = new Date(s[0], parseInt(s[1])-1, s[2], 0, 0, 0);
-    
+function drawChart(data) {    
+  var minDate = new Date(data[0].timestamp);
+  var maxDate = new Date(data[data.length-1].timestamp);
+  console.log(minDate, maxDate);
   var cpuChart = dc.compositeChart("#cpuChart");
   var memoryChart = dc.compositeChart("#memoryChart");
   var filesystemChart = dc.compositeChart("#filesystemChart");
-
-  var data = [];
-  var cpu = 0, memory = 0, filesystem = 0;  
-  var maxDate = minDate.getTime();
-  rtnData.forEach(function(d){        
-    if(d._source.metricset.name == "cpu") {
-      cpu = d._source.system.cpu.system.pct * 100;
-    } else if(d._source.metricset.name == "memory") {
-      memory = d._source.system.memory.actual.used.pct * 100;
-    } else if(d._source.metricset.name == "filesystem") {
-      filesystem = d._source.system.filesystem.used.pct * 100;
-    }    
-    var date = new Date(d._source.timestamp);
-    data.push({ timestamp : date, hour : d3.time.hour(date), cpu : cpu, memory : memory, filesystem : filesystem, guide9 : 90, guide7 : 70 });
-    if(date.getTime() > maxDate){
-      maxDate = date.getTime();
-    }
-  });
-  maxDate = new Date(maxDate);
 
   var nyx = crossfilter(data);
   var all = nyx.groupAll();
 
   var timeDim = nyx.dimension(function(d) {    
-    return d.timestamp; });
+    return new Date(d.timestamp); });
 
   var cpuGroup = timeDim.group().reduce(
     function(p, v){      
@@ -170,7 +137,6 @@ function drawChart(rtnData, sdate, edate) {
     }
   );
 
-console.log(minDate, maxDate);
   cpuChart
     .width(window.innerWidth*0.28)
     .height(380)
@@ -189,18 +155,18 @@ console.log(minDate, maxDate);
     })
     .legend(dc.legend().x(20).y(10).itemHeight(13).gap(5))
     .compose([
-        dc.lineChart(cpuChart).group(cpuGroup, "cpu")
-          .valueAccessor(function(d){ 
-           return d.value.avg; })          
-          .colors("green"),
-        dc.lineChart(cpuChart).group(guide9Group, "guide")
-          .valueAccessor(function(d){
-           return d.value.avg; })          
-          .colors("red")
-          .dashStyle([2,2])
-      ]);
+      dc.lineChart(cpuChart).group(cpuGroup, "cpu")
+        .valueAccessor(function(d){ 
+         return d.value.avg; })          
+        .colors("green"),
+      dc.lineChart(cpuChart).group(guide9Group, "guide")
+        .valueAccessor(function(d){
+         return d.value.avg; })          
+        .colors("red")
+        .dashStyle([2,2])
+    ]);
 
-    memoryChart
+  memoryChart
     .width(window.innerWidth*0.28)
     .height(380)
      .margins({top: 20, right: 20, bottom: 40, left: 110})
@@ -218,18 +184,18 @@ console.log(minDate, maxDate);
     })
     .legend(dc.legend().x(20).y(10).itemHeight(13).gap(5))
     .compose([
-        dc.lineChart(memoryChart).group(memoryGroup, "memory")
-          .valueAccessor(function(d){                        
-           return d.value.avg; })          
-          .colors("blue"),
-        dc.lineChart(memoryChart).group(guide9Group, "guide")
-          .valueAccessor(function(d){            
-           return d.value.avg; })          
-          .colors("red")
-          .dashStyle([2,2])
-      ]);
+      dc.lineChart(memoryChart).group(memoryGroup, "memory")
+        .valueAccessor(function(d){                        
+         return d.value.avg; })          
+        .colors("blue"),
+      dc.lineChart(memoryChart).group(guide9Group, "guide")
+        .valueAccessor(function(d){            
+         return d.value.avg; })          
+        .colors("red")
+        .dashStyle([2,2])
+    ]);
 
-    filesystemChart
+  filesystemChart
     .width(window.innerWidth*0.28)
     .height(380)
      .margins({top: 20, right: 20, bottom: 40, left: 100})
@@ -247,20 +213,20 @@ console.log(minDate, maxDate);
     })
     .legend(dc.legend().x(20).y(10).itemHeight(13).gap(5))
     .compose([
-        dc.lineChart(filesystemChart).group(filesystemGroup, "filesystem")
-          .valueAccessor(function(d){                        
-           return d.value.avg; })          
-          .colors("#FFB2F5"),
-        dc.lineChart(filesystemChart).group(guide7Group, "guide")
-          .valueAccessor(function(d){            
-           return d.value.avg; })          
-          .colors("red")
-          .dashStyle([2,2])
-      ]);
+      dc.lineChart(filesystemChart).group(filesystemGroup, "filesystem")
+        .valueAccessor(function(d){                        
+         return d.value.avg; })          
+        .colors("#FFB2F5"),
+      dc.lineChart(filesystemChart).group(guide7Group, "guide")
+        .valueAccessor(function(d){            
+         return d.value.avg; })          
+        .colors("red")
+        .dashStyle([2,2])
+    ]);
   cpuChart.rangeChart(filesystemChart);
   memoryChart.rangeChart(cpuChart);  
   filesystemChart.rangeChart(memoryChart);
- dc.renderAll();
+  dc.renderAll();
 }
 
 function drawTable(data) {    

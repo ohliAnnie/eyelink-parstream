@@ -54,7 +54,7 @@ router.get('/test', function(req, res, next) {
 
 // query Report
 router.get('/restapi/getJiraAcc', function(req, res, next) {
-  console.log('reports/restapi/getJiraAcc');    
+  logger.debug('reports/restapi/getJiraAcc');    
   var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
   var lte = Utils.getMs2Date(req.query.edate, fmt1);  
   var indexs = [], cnt = 0;
@@ -110,32 +110,52 @@ router.get('/restapi/getJiraAcc', function(req, res, next) {
 
 // query Report
 router.get('/restapi/getCpuMemoryFilesystemAll', function(req, res, next) {
-  console.log('reports/restapi/getCpuMemoryFilesystemAll');
-  var in_data = {
-    index : req.query.index,
-    gte : req.query.gte,
-    lte : req.query.lte
-  };
+  logger.debug('reports/restapi/getCpuMemoryFilesystemAll');
+  var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
+  var lte = Utils.getMs2Date(req.query.edate, fmt1);  
+  var indexs = [], cnt = 0;
+  for(i=new Date(gte).getTime(); i<=new Date(lte).getTime(); i+= 24*60*60*1000){
+    indexs[cnt++] = indexMetric+Utils.getMs2Date(i, fmt4)
+  }
+  var in_data = { index : indexs, gte : gte+startTime, lte : lte+startTime  };
   queryProvider.selectSingleQueryByID2("reports","selectCpuMemoryFilesystemAll", in_data, function(err, out_data, params) {
-    // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    }       
-    res.json({rtnCode: rtnCode, rtnData: out_data});
+    } else {      
+      var data = [];
+      var cpu = 0, memory = 0, filesystem = 0;  
+      var oldDate = '';
+      out_data.forEach(function(d){        
+        if(d._source.metricset.name == "cpu") {
+          cpu = d._source.system.cpu.system.pct * 100;
+        } else if(d._source.metricset.name == "memory") {
+          memory = d._source.system.memory.actual.used.pct * 100;
+        } else if(d._source.metricset.name == "filesystem") {
+          filesystem = d._source.system.filesystem.used.pct * 100;
+        }    
+        var date = Utils.getDateUTC2Local(d._source.timestamp, fmt2);        
+        if(date != oldDate){          
+          data.push({ timestamp : date, cpu : cpu, memory : memory, filesystem : filesystem, guide9 : 90, guide7 : 70 });        
+          oldDate=date;
+        }
+      });
+    }
+    res.json({rtnCode: rtnCode, rtnData: data});
   });
 });
 
 // query Report
 router.get('/restapi/getProcessList', function(req, res, next) {
-  console.log('reports/restapi/getProcessList');
-  var in_data = {
-    index : req.query.index,
-    gte : req.query.gte,
-    lte : req.query.lte
-  };
+  logger.debug('reports/restapi/getProcessList');
+   var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
+  var lte = Utils.getMs2Date(req.query.edate, fmt1);  
+  var indexs = [], cnt = 0;
+  for(i=new Date(gte).getTime(); i<=new Date(lte).getTime(); i+= 24*60*60*1000){
+    indexs[cnt++] = indexMetric+Utils.getMs2Date(i, fmt4)
+  }
+  var in_data = { index : indexs, gte : gte+startTime, lte : lte+startTime  };
   queryProvider.selectSingleQueryByID2("reports","selectProcessList", in_data, function(err, out_data, params) {
-    // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -146,7 +166,7 @@ router.get('/restapi/getProcessList', function(req, res, next) {
 
 // query Report
 router.get('/restapi/getProcessListByName', function(req, res, next) {
-  console.log('reports/restapi/getProcessListByName');
+  logger.debug('reports/restapi/getProcessListByName');
   var in_data = {
     index : req.query.index,
     gte : req.query.gte,
@@ -154,7 +174,6 @@ router.get('/restapi/getProcessListByName', function(req, res, next) {
     name : req.query.name
   };
   queryProvider.selectSingleQueryByID2("reports","selectProcessListByName", in_data, function(err, out_data, params) {
-    // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -165,66 +184,97 @@ router.get('/restapi/getProcessListByName', function(req, res, next) {
 
 // query Report
 router.get('/restapi/getProcess', function(req, res, next) {
-  console.log('reports/restapi/getProcess');
-  var in_data = {
-    index : req.query.index,
-    gte : req.query.gte,
-    lte : req.query.lte
-  };
-  queryProvider.selectSingleQueryByID2("reports","selectProcess", in_data, function(err, out_data, params) {
-    // console.log(out_data);
+  logger.debug('reports/restapi/getProcess');
+  var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
+  var lte = Utils.getMs2Date(req.query.edate, fmt1);  
+  var indexs = [], cnt = 0;
+  for(i=new Date(gte).getTime(); i<=new Date(lte).getTime(); i+= 24*60*60*1000){
+    indexs[cnt++] = indexMetric+Utils.getMs2Date(i, fmt4)
+  }
+  var in_data = { index : indexs, gte : gte+startTime, lte : lte+startTime  };
+  queryProvider.selectSingleQueryByID2("reports","selectProcess", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    }       
-    res.json({rtnCode: rtnCode, rtnData: out_data});
+    } else {
+      var data = [];
+      var filesystem = 0;  
+      var maxDate = gte, minDate = lte;
+      out_data.forEach(function(d){          
+        if(d._source.metricset.name == "process")  {                              
+          var date = Utils.getDateUTC2Local(d._source.timestamp, fmt2);
+          data.push({ timestamp : date, cpu : d._source.system.process.cpu.total.pct * 100, memory : d._source.system.process.memory.rss.pct * 100, filesystem : filesystem, guide9 : 90, guide7 : 70, pgid : d._source.system.process.pgid, name : d._source.system.process.name });         
+        } else if(d._source.metricset.name == "filesystem") {
+          filesystem = d._source.system.filesystem.used.pct * 100;
+        }        
+      });      
+    }      
+    res.json({rtnCode: rtnCode, rtnData: data});
   });
 });
 
 // query Report
 router.get('/restapi/getProcessByName', function(req, res, next) {
-  console.log('reports/restapi/getProcessByName');
-  var in_data = {
-    index : req.query.index,
-    gte : req.query.gte,
-    lte : req.query.lte,
-    name : req.query.name
-  };
+  logger.debug('reports/restapi/getProcessByName');
+  var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
+  var lte = Utils.getMs2Date(req.query.edate, fmt1);  
+  var indexs = [], cnt = 0;
+  for(i=new Date(gte).getTime(); i<=new Date(lte).getTime(); i+= 24*60*60*1000){
+    indexs[cnt++] = indexMetric+Utils.getMs2Date(i, fmt4)
+  }
+  var in_data = { index : indexs, gte : gte+startTime, lte : lte+startTime, name : req.query.name };
   queryProvider.selectSingleQueryByID2("reports","selectProcessByName", in_data, function(err, out_data, params) {
-    // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    }       
-    res.json({rtnCode: rtnCode, rtnData: out_data});
+    } else {
+      var data = [];
+      var filesystem = 0;  
+      var maxDate = gte, minDate = lte;
+      out_data.forEach(function(d){          
+        if(d._source.metricset.name == "process")  {                              
+          var date = Utils.getDateUTC2Local(d._source.timestamp, fmt2);          
+          data.push({ timestamp : date, cpu : d._source.system.process.cpu.total.pct * 100, memory : d._source.system.process.memory.rss.pct * 100, filesystem : filesystem, guide9 : 90, guide7 : 70, pgid : d._source.system.process.pgid, name : d._source.system.process.name });         
+        } else if(d._source.metricset.name == "filesystem") {
+          filesystem = d._source.system.filesystem.used.pct * 100;
+        }        
+      });      
+    }      
+    res.json({rtnCode: rtnCode, rtnData: data});
   });
 });
 
-
 // query Report
 router.get('/restapi/getAccessError', function(req, res, next) {
-  console.log('reports/restapi/getAccessError');
-  var in_data = {
-    index : req.query.index,
-    gte : req.query.gte,
-    lte : req.query.lte
-  };
+  logger.debug('reports/restapi/getAccessError');
+  var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
+  var lte = Utils.getMs2Date(req.query.edate, fmt1);  
+  var indexs = [], cnt = 0;
+  for(i=new Date(gte).getTime(); i<=new Date(lte).getTime(); i+= 24*60*60*1000){
+    indexs[cnt++] = indexAcc+Utils.getMs2Date(i, fmt4)
+  }
+  var in_data = { index : indexs, gte : gte+startTime, lte : lte+startTime };
   queryProvider.selectSingleQueryByID2("reports","selectAccessError", in_data, function(err, out_data, params) {
-    // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    }           
-    res.json({rtnCode: rtnCode, rtnData: out_data});
+    } else {
+      var data = [];
+      out_data.forEach(function(d){        
+        if(d._source.timestamp != null) {          
+          data.push({ timestamp : Utils.getDateUTC2Local(d._source.timestamp, fmt2), type : d._source.response, geo : d._source.geoip.latitude+','+d._source.geoip.longitude });
+        }
+      });
+    }
+    res.json({rtnCode: rtnCode, rtnData: data});
   });
 });
 
 // query Report
 router.get('/restapi/getOneIndexCount', function(req, res, next) {
-  console.log('reports/restapi/getOneIndexCount');
+  logger.debug('reports/restapi/getOneIndexCount');
   var in_data = {    index : req.query.index   };
   queryProvider.selectSingleQueryByID3("reports","selectOneIndexCount", in_data, function(err, out_data, params) {
-     console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -235,15 +285,55 @@ router.get('/restapi/getOneIndexCount', function(req, res, next) {
 
 // query Report
 router.get('/restapi/getMultiIndexCount', function(req, res, next) {
-  console.log('reports/restapi/getMultiIndexCount');
-  var in_data = {    index : req.query.index, range : req.query.range   };
+  logger.debug('reports/restapi/getMultiIndexCount');  
+  var lte = Utils.getMs2Date(req.query.edate, fmt1)+startTime;    
+  var indexs = [], cnt = 0, ranges = [], xValue = [];    
+  if(req.query.type == "#day"){
+    var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
+    for(i=new Date(gte).getTime(); i<=new Date(lte).getTime(); i+= 24*60*60*1000){
+      indexs[cnt] = indexAcc+Utils.getMs2Date(i, fmt4);
+      xValue[cnt] = Utils.getMs2Date(i, "mm/DD");
+      if(i != new Date(gte).getTime()){
+        ranges[cnt] = '{"key" : "'+xValue[cnt++]+'", "from" : "'+Utils.getMs2Date(i-24*60*60*1000, fmt1, "Y")+startTime+'", "to" : "'+Utils.getMs2Date(i, fmt1, "Y")+startTime+'" }';
+      }
+    }
+  } else if(req.query.type == "#week") {
+    var gte = Utils.getDate(lte, fmt1, parseInt(req.query.sdate)*(-7)+1, 0, 0, 0);    
+    for(i=new Date(gte).getTime(); i<new Date(lte).getTime(); i+= 7*24*60*60*1000){      
+      xValue[cnt] = Utils.getMs2Date(i, "mm/DD")+'-'+Utils.getMs2Date(i+6*24*60*60*1000, "mm/DD");      
+      ranges[cnt] = '{"key" : "'+xValue[cnt++]+'", "from" : "'+Utils.getMs2Date(i-24*60*60*1000, fmt1, "Y")+startTime+'", "to" : "'+Utils.getMs2Date(i+6*24*60*60*1000, fmt1, "Y")+startTime+'" }';      
+    }
+    indexs[0] = indexAcc+Utils.getDate(gte, "YYYY.mm.*", -1, 0, 0, 0);
+    indexs[1] = indexAcc+Utils.getMs2Date(lte, "YYYY.mm.*");    
+  } else if(req.query.type == "#month") {    
+    var mNum = parseInt(req.query.sdate);
+    var end = new Date(lte), start = new Date(lte);
+    for(i=0; i<mNum; i++){         
+      start.setMonth(start.getMonth()-1);      
+      indexs[mNum-i-1] = indexAcc+Utils.getMs2Date(end, "YYYY.mm")+"*";      
+      xValue[mNum-i-1] = Utils.getMs2Date(end, "YYYY.mm")  ;      
+      ranges[mNum-i-1] = '{"key" : "'+xValue[mNum-i-1]+'", "from" : "'+Utils.getMs2Date(start,fmt2,"Y")+'", "to" : "'+Utils.getMs2Date(end,fmt2,"Y")+'" }';      
+      end = new Date(start);
+    }    
+    indexs[mNum] = indexAcc+Utils.getMs2Date(start, "YYYY.mm")+"*";      
+  }
+  var in_data = {    index : indexs, range : ranges.toString()   };
   queryProvider.selectSingleQueryByID3("reports","selectMultiIndexCount", in_data, function(err, out_data, params) {
-    // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    }           
-    res.json({rtnCode: rtnCode, rtnData: out_data});
+    } else {
+      var data = [], max = 0;
+      for(i=0; i<xValue.length; i++) {        
+        var d = out_data.group_by_x.buckets[xValue[i]];
+        var e = d.aggs.buckets[0] ;    
+        data.push({ "date" : xValue[i], "1s" : d.by_type.buckets.s1.doc_count, "3s" : d.by_type.buckets.s3.doc_count, "5s" : d.by_type.buckets.s5.doc_count, "slow" : d.by_type.buckets.slow.doc_count, "error" : e.doc_count});
+        if(max < e.doc_count){
+          max = e.doc_count;
+        }
+      }        
+    }
+    res.json({rtnCode: rtnCode, rtnData: data, max: max});
   });
 });
 
