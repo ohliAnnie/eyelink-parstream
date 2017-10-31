@@ -33,6 +33,9 @@ public class Config implements InitializingBean{
 	public String getToken() {
 		return (String)this.configs.get(IConstants.Configs.Keys.TOKEN);
 	}
+	public String getAuthUrl() {
+		return (String)this.configs.get(IConstants.Configs.Keys.AUTH_URL);
+	}
 	
 //	@PostConstruct
 	private void init() throws IOException, InterruptedException {
@@ -56,7 +59,7 @@ public class Config implements InitializingBean{
 				}
 				isSet = true;
 			}catch (Exception e) {
-				logger.error("{}", e.getMessage());
+				logger.error(e.getMessage(), e);
 				Thread.sleep(10000);
 			}
 		}

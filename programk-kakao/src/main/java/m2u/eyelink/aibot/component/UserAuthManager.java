@@ -1,6 +1,5 @@
 package m2u.eyelink.aibot.component;
 
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.ehcache.Cache;
@@ -10,10 +9,13 @@ import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.ehcache.expiry.Duration;
 import org.ehcache.expiry.Expirations;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import m2u.eyelink.aibot.IConstants;
 import m2u.eyelink.aibot.domain.MessageIn;
@@ -30,6 +32,8 @@ public class UserAuthManager {
 	UserAuthMapper userAuthMapper;
 	@Autowired
 	private Config config;
+	@Autowired
+	private HttpRequester httpRequester;
 	
 	private final int authStatusDone = 4;
 	
@@ -99,9 +103,9 @@ public class UserAuthManager {
 					userAuth.setEmpId(messageIn.getContent());
 					messageIn.setContent(makeItSecret(userAuthStatus, messageIn.getContent()));
 					
-					String authResult = callGSAuth(userAuth);
-
-					if (userKey.equals(authResult)) {
+					String savedUserKey = callGSAuth(userAuth);
+					
+					if (userKey.equals(savedUserKey)) {
 						// 성공일 경우 마지막 인증 시간 업데이트
 						logger.debug("Successful authentication process for user : {}", userKey);
 						userAuth.setLastAuthDttm(DateUtils.instance.getCurrentDttm(null));
@@ -201,20 +205,28 @@ public class UserAuthManager {
 
 		logger.debug("Calling GS User Auth API for user : {}", userAuth.getUserKey());
 		
-		// TODO : GS 사용자 인증 API 호출 및 결과 return
-		
-		// Test logic
-		if ( userAuth.getEmpId() == null || userAuth.getUserName() == null ) {
-			return null;
+		if ( !StringUtils.isEmpty(userAuth.getEmpId()) && !StringUtils.isEmpty(userAuth.getUserName())) {
+			
+			JSONObject o = new JSONObject();
+			o.put("empId", userAuth.getEmpId());
+			o.put("empNm", userAuth.getUserName());
+			o.put("userKey", userAuth.getUserKey());
+			
+			try {
+				String response = httpRequester.sendPostRequest(o.toString(), config.getAuthUrl());
+				
+				JSONObject authResult = new JSONObject(response);
+				JSONObject body = (JSONObject)authResult.get("body");
+				JSONArray obj1 = (JSONArray) body.get("procRsltVal");
+				JSONObject obj2 = (JSONObject) obj1.get(0);
+				String userKey = obj2.get("userKey").toString();
+				
+				return userKey;
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+			}
 		}
-		//------------------------------------------
-		// TODO : delete
-		Random r = new Random();
-		if ( r.nextBoolean() ) {
-			System.out.println("Returning NULL !!!!! ");
-			return null;
-		}		
-		return userAuth.getUserKey();
+		return null;
 	}
 	
 	private int updateLastAuthDttm(UserAuth userAuth) {
@@ -240,9 +252,15 @@ public class UserAuthManager {
 			show = content.substring(0, 1);
 			secret = content.substring(1).replaceAll(".", "*");
 		}else if ( status == 3 ) {
-			show = content.substring(0, 3);
-			secret = content.substring(3).replaceAll(".", "*");
+			int contentLen = content.length();
+			int secretLen = 3;
+			if ( contentLen <= 4 ) {
+				secretLen = contentLen/2;
+			}
+			show = content.substring(0, secretLen);
+			secret = content.substring(secretLen).replaceAll(".", "*");
 		}
 		return show + secret;
 	}
+	
 }

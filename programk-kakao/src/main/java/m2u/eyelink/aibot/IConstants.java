@@ -14,8 +14,9 @@ public interface IConstants {
 			String AUTH_FAIL = "auth.fail";	// 인증 실패시 사용자 메시지를 대체할 메시지(CMS에서 대화로 등록해서 내용을 변경할 수 있도록)
 			String AUTH_DAYS = "auth.days";
 			String AUTH_DELAY = "auth.delay";	// 일 단위 인증 시간 전후로 사용자가 대화를 진행 중인 경우 인증하지 않도록하기 위한 시간(분) 설정
-			String CACHE_TTI = "auth.cache.tti";	// time to idel for user auth cache
+			String CACHE_TTI = "auth.cache.tti";	// time to idle for user auth cache
 			Object HEAP_SIZE = "auth.cache.heap";
+			String AUTH_URL = "auth.url";
 		}
 	}
 	
@@ -45,6 +46,13 @@ public interface IConstants {
 			interface Keyboard {
 				String TYPE = "type";
 				String BUTTONS = "buttons";
+			}
+			interface Photo {
+				int DFLT_WIDTH = 720;
+				int DFLT_HEIGHT = 630;
+			}
+			interface MessageButton {
+				String LABEL = "이미지 상세 보기";
 			}
 		}
 	}

@@ -83,7 +83,7 @@ public class InterfaceController {
 			response = is.getResponse(messageIn);
 			logger.debug("response : {}", response);
 		} catch (IOException e) {
-			logger.error(e.getMessage());
+			logger.error(e.getMessage(), e);
 		}
 
 		uaManager.checkUpdateLastTalkDttm(userAuth);

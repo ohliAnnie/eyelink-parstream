@@ -47,11 +47,11 @@ public class KakaoRespGenerator {
 			message.setMessage_button(new MessageButton(p.getString("title"), p.getString("url")));
 		}
 			
-		// Image Uri (only one, but wrapped in an array)
+		// Image URL (only one, but wrapped in an array)
 		JSONArray imgArr = (JSONArray) o.get(IConstants.ProgramkFields.Out.IMAGE);
 		if ( imgArr.length() > 0 ) {
-			String image =  imgArr.getString(0);
-			Photo photo = new Photo(image);
+			String imageUrl =  imgArr.getString(0);
+			Photo photo = new Photo(imageUrl);
 			message.setPhoto(photo);
 		}
 		

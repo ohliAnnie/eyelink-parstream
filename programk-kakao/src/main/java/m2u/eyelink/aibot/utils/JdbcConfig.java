@@ -143,11 +143,10 @@ public class JdbcConfig {
 		}
 		return rv;
 	}
-public static void main(String[] args) {
-	StandardPBEStringEncryptor enc = new StandardPBEStringEncryptor();
-	enc.setAlgorithm("PBEWITHMD5ANDDES");
-	enc.setPassword("key for encrypt passwd");
-	System.out.println( enc.encrypt("gs2017#") );
-	System.out.println( enc.encrypt("qwer!@34") );
-}
+	public static void main(String[] args) {
+		StandardPBEStringEncryptor enc = new StandardPBEStringEncryptor();
+		enc.setAlgorithm("PBEWITHMD5ANDDES");
+		enc.setPassword("key for encrypt passwd");
+		System.out.println(enc.encrypt(args[0]));
+	}
 }
