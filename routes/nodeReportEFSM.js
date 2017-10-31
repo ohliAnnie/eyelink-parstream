@@ -235,15 +235,55 @@ router.get('/restapi/getOneIndexCount', function(req, res, next) {
 
 // query Report
 router.get('/restapi/getMultiIndexCount', function(req, res, next) {
-  console.log('reports/restapi/getMultiIndexCount');
-  var in_data = {    index : req.query.index, range : req.query.range   };
+  console.log('reports/restapi/getMultiIndexCount');  
+  var lte = Utils.getMs2Date(req.query.edate, fmt1)+startTime;    
+  var indexs = [], cnt = 0, ranges = [], xValue = [];
+  console.log('^^^^^^^^^^^^')
+  console.log(req.query.type)
+  console.log(lte)
+  var settingDate = new Date(lte);
+  console.log(settingDate)
+  settingDate.setDate(settingDate.getDate()-1); //하루 전
+  console.log(settingDate)
+  settingDate.setMonth(settingDate.getMonth()-1); //한달 전
+  console.log(settingDate)
+  if(req.query.type == "#day"){
+    var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
+    for(i=new Date(gte).getTime(); i<=new Date(lte).getTime(); i+= 24*60*60*1000){
+      indexs[cnt] = indexAcc+Utils.getMs2Date(i, fmt4);
+      xValue[cnt] = Utils.getMs2Date(i, "mm/DD");
+      if(i != new Date(gte).getTime()){
+        ranges[cnt] = '{"key" : "'+xValue[cnt++]+'", "from" : "'+Utils.getMs2Date(i-24*60*60*1000, fmt1, "Y")+startTime+'", "to" : "'+Utils.getMs2Date(i, fmt1, "Y")+startTime+'" }';
+      }
+    }
+  } else if(req.query.type == "#week") {
+    var gte = Utils.getDate(lte, fmt1, parseInt(req.query.sdate)*(-7)+1, 0, 0, 0);    
+    for(i=new Date(gte).getTime(); i<new Date(lte).getTime(); i+= 7*24*60*60*1000){      
+      xValue[cnt] = Utils.getMs2Date(i, "mm/DD")+'-'+Utils.getMs2Date(i+6*24*60*60*1000, "mm/DD");      
+      ranges[cnt] = '{"key" : "'+xValue[cnt++]+'", "from" : "'+Utils.getMs2Date(i-24*60*60*1000, fmt1, "Y")+startTime+'", "to" : "'+Utils.getMs2Date(i+6*24*60*60*1000, fmt1, "Y")+startTime+'" }';      
+    }
+    indexs[0] = indexAcc+Utils.getDate(gte, "YYYY.mm.*", -1, 0, 0, 0);
+    indexs[1] = indexAcc+Utils.getMs2Date(lte, "YYYY.mm.*");    
+  } else if(req.query.type == "#month") {    
+    var mNum = parseInt(req.query.sdate);
+    var end = new Date(lte), start = new Date(lte);
+    for(i=0; i<mNum; i++){         
+      start.setMonth(start.getMonth()-1);      
+      indexs[mNum-i-1] = indexAcc+Utils.getMs2Date(end, "YYYY.mm")+"*";      
+      xValue[mNum-i-1] = Utils.getMs2Date(end, "YYYY.mm")  ;      
+      ranges[mNum-i-1] = '{"key" : "'+xValue[mNum-i-1]+'", "from" : "'+Utils.getMs2Date(start,fmt2,"Y")+'", "to" : "'+Utils.getMs2Date(end,fmt2,"Y")+'" }';      
+      end = new Date(start);
+    }    
+    indexs[mNum] = indexAcc+Utils.getMs2Date(start, "YYYY.mm")+"*";      
+  }
+  var in_data = {    index : indexs, range : ranges.toString()   };
   queryProvider.selectSingleQueryByID3("reports","selectMultiIndexCount", in_data, function(err, out_data, params) {
     // console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    }           
-    res.json({rtnCode: rtnCode, rtnData: out_data});
+    }
+    res.json({rtnCode: rtnCode, rtnData: out_data, xValue : xValue});
   });
 });
 

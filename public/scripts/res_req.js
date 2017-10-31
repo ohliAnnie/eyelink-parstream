@@ -1,28 +1,22 @@
-function makeIndex(){      
-  var indexs = $('#indexs').val();  
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
-  var monS = ['01','02','03','04','05','06','07','08','09','10','11','12']  ;
+function makeIndex(){        
   var sdate = $('#sdate').val();  
-  var s = sdate.split('-')
-  var minDate = new Date(s[0], parseInt(s[1])-1, s[2], 0, 0, 0);
   var edate = $('#edate').val();
-  var e = edate.split('-');
-  var maxDate = new Date(e[0], parseInt(e[1])-1, e[2], 0, 0, 0);
-  console.log(sdate, edate);
-  var indexD = [], rangeD = [], xD = [], cnt = 0;    
-  for(i=minDate.getTime(); i < maxDate.getTime()+24*60*60*1000; i+=24*60*60*1000){    
-    var day = new Date(i).toString().split(' ');    
-    indexD[cnt] = indexs+day[3]+'.'+mon[day[1]]+'.'+day[2];    
-    xD[cnt] = mon[day[1]]+'/'+day[2];
-    var day2 = new Date(i+24*60*60*1000).toString().split(' ');         
-    rangeD[cnt++] ='{"key" : "'+mon[day[1]]+'/'+day[2] +'", "from" : "'+day[3]+'-'+mon[day[1]]+'-'+day[2]+'T00:00:00.000Z", "to" : "'+day2[3]+'-'+mon[day2[1]]+'-'+day2[2]+'T00:00:00.000Z" }';  
-  }    
-  getData(indexD, xD, rangeD.toString(), "#day");  
- 
-  var indexW = [], rangeW = [], xW = [], cnt = 0;   
   var weeks = parseInt($('#weeks').val());
+  var months = parseInt($('#months').val());
+//getData(indexD, xD, rangeD.toString(), "#day");  
+  getData(sdate, edate, "#day")
+  getData(weeks, edate, "#week")
+  getData(months, edate, "#month")
+  var indexW = [], rangeW = [], xW = [], cnt = 0;   
+
+var settingDate = new Date();
+console.log(settingDate); 
+settingDate.setMonth(settingDate.getMonth()-1); //한달 전
+console.log(settingDate); 
+
+
   var wNum = weeks * 7 - 1;
-  for(i=wNum; i>=0; i--) {
+ /* for(i=wNum; i>=0; i--) {
     var day = new Date(maxDate.getTime()-i*24*60*60*1000).toString().split(' ');    
     if(i%7 == 6){      
       var day2 = new Date(maxDate.getTime()-(i-6)*24*60*60*1000).toString().split(' ');         
@@ -38,9 +32,9 @@ function makeIndex(){
       wMon = 12;      
     } 
   } 
-  getData(indexW, xW, rangeW.toString(), "#week");  
+  getData(indexW, xW, rangeW.toString(), "#week");  */
   
-  var indexM = [],  rangeM = [], xM = [], eYear = maxDate.getFullYear(), eMon = maxDate.getMonth();  
+/*  var indexM = [],  rangeM = [], xM = [], eYear = maxDate.getFullYear(), eMon = maxDate.getMonth();  
   var months = parseInt($('#months').val());
   var mNum = months - 1;  
   for(i=mNum; i>=0; i--){
@@ -57,22 +51,22 @@ function makeIndex(){
       eYear--;
     }    
   }
-  getData(indexM, xM, rangeM.toString(), "#month");    
+  getData(indexM, xM, rangeM.toString(), "#month");    */
 
   console.log(weeks, months);
 }
 
-function getData(index, x, range, name) {    
+function getData(sdate, edate, name) {    
    $.ajax({
     url: "/reports/restapi/getMultiIndexCount" ,
     dataType: "json",
     type: "get",
-    data: { index : index, range : range  },
+    data: { sdate : sdate, edate : edate, type : name },
     success: function(result) {
-      // console.log(result);        
+      console.log(result);        
       if (result.rtnCode.code == "0000") {                            
         console.log(result.rtnData);
-        drawChart(result.rtnData.group_by_x.buckets, x, name);          
+        drawChart(result.rtnData.group_by_x.buckets, result.xValue, name);          
       } else {
         //- $("#errormsg").html(result.message);
       }
