@@ -1020,7 +1020,7 @@
         "type"  : "metricsets",
         "body" : {
           "size"   : 100000,
-          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "sort" : { "timestamp" : { "order" : "asc" }},
           "_source" : ["timestamp", "system.cpu.system.pct", "system.memory.actual.used.pct", "system.filesystem.used.pct", "metricset.name"],
           "query": {
             "bool": {
