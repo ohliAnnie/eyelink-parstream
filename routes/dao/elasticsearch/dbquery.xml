@@ -1114,7 +1114,7 @@
           "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "system.filesystem.used.pct", "timestamp", "metricset.name"],
           "sort" : [
             { "timestamp" : { "order" : "asc" }},
-            {"system.process.cpu.total.pct": "desc"}],
+            { "system.process.cpu.total.pct": "desc"}],
           "query": {
              "bool": {
                 "must" : [
@@ -1150,7 +1150,7 @@
           "_source": ["system.process.name", "system.process.cpu.total.pct", "system.process.pgid", "system.process.memory.rss.pct", "system.filesystem.used.pct", "timestamp", "metricset.name"],
           "sort" : [
             { "timestamp" : { "order" : "asc" }},
-            {"system.process.cpu.total.pct": "desc"}],
+            { "system.process.cpu.total.pct": "desc"}],
           "query": {
              "bool": {
                 "must" : [

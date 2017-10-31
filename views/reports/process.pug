@@ -19,13 +19,12 @@ block script
       $('#sdate').val(moment().subtract(0, 'days').format(dateFormat));
       $('#edate').val(moment().format(dateFormat));      
       // time series char를 그린다.
+      getData();
+       $('#btn_search').click(function() {          
         getData();
-         $('#btn_search').click(function() {          
-          getData();
-        });
+      });
     });                         
 block content
-  input#indexs(type='hidden', name='indexs', value=indexs)
   .container-fluid
     .page-content
       .breadcrumbs
