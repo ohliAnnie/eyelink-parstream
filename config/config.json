@@ -37,8 +37,13 @@
 		"es_elagent" : "elagent_test-agent-",
 		"es_alarm" : "efsm_alarm-",
 		"es_corecode" : "corecode-",
-		"es_anomaly" : "analysis",
-		"es_cluster" : "cluster"
+		"es_anomaly" : "analysis"		
+	},
+	"da_index" : {
+		"da_cluster" : "cluster",
+		"da_pattern_data" : "da_pattern_data",
+		"da_pattern_info" : "da_pattern_info",
+		"da_pattern_matching" : "da_pattern_matching"
 	},
 	"analysis": {
 		"#host" : "localhost",
