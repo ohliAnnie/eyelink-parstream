@@ -61,9 +61,7 @@ router.get('/error_pop_jira', function(req, res, next) {
   var in_data = {
     index:  [indexAcc+Utils.getDate(today, fmt4, -1, 0, 0, 0),  indexAcc+Utils.getToday(fmt4)],
     START : Utils.getDate(today, fmt1, -1, 0, 0, 0)+startTime,
-    END : today+startTime,
-    MIN : 400
-  };  
+    END : today+startTime,    MIN : 400  };  
   queryProvider.selectSingleQueryByID2("dashboard","selectJiraErrorList", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
