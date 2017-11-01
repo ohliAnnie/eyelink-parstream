@@ -43,8 +43,8 @@
 		"da_cluster" : "cluster",
 		"da_pattern_data" : "da_pattern_data",
 		"da_pattern_info" : "da_pattern_info",
-		"da_pattern_matching" :  "da_pattern_matching"
-	}
+		"da_pattern_matching" : "da_pattern_matching"
+	},
 	"analysis": {
 		"#host" : "localhost",
 		"host" : "m2u-da.eastus.cloudapp.azure.com",
