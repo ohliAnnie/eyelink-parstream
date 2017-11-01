@@ -14,7 +14,10 @@ var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis: 'open selecte
 
 var indexCore = global.config.es_index.es_corecode;
 var indexAnomaly = global.config.es_index.es_anomaly;
-var indexCluster = global.config.es_index.es_cluster;
+var indexCluster = global.config.da_index.da_cluster;
+var indexPatternData = global.config.da_index.da_pattern_data;
+var indexPatternInfo = global.config.da_index.da_pattern_info;
+var indexPatternMatching = global.config.da_index.da_pattern_matching;
 
 var startTime = CONSTS.STARTTIME.KOREA;
 var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
@@ -82,14 +85,14 @@ router.post('/restapi/insertAnomaly/:id', function(req, res, next) {
   console.log('/analysis/restapi/insertAnomaly');
   console.log(JSON.stringify(req.body));
    var id = req.params.id;
-   var in_data = {    INDEX: "da_patterndata", TYPE: "pattern_data", ID: id   };
+   var in_data = {    INDEX: indexPatternData, TYPE: "pattern_data", ID: id   };
    queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');
       console.log(rtnCode);
       res.json({rtnCode: rtnCode});
     }  else  {
-      var in_data = {    INDEX: "da_patterndata", TYPE: "pattern_data", ID: id,   BODY : JSON.stringify(req.body)   };
+      var in_data = {    INDEX: indexPatternData, TYPE: "pattern_data", ID: id,   BODY : JSON.stringify(req.body)   };
      queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {
           console.log(out_data);
           if(out_data.result == "created"){
@@ -106,11 +109,11 @@ router.post('/restapi/insertAnomaly/:id', function(req, res, next) {
 router.post('/restapi/updateAnomaly/:id', function(req, res, next) {
   console.log('/analysis/restapi/updateAnomaly');
   console.log(JSON.stringify(req.body));
-  var in_data = { INDEX: "da_patterndata", TYPE: "pattern_data", ID: req.params.id };
+  var in_data = { INDEX: indexPatternData, TYPE: "pattern_data", ID: req.params.id };
   queryProvider.deleteQueryByID("analysis", "deleteById", in_data, function(err, out_data) {
     if(out_data.result == "deleted"){
       var rtnCode = CONSTS.getErrData("D003");
-      var in_data = { INDEX: "da_patterndata", TYPE: "pattern_data", ID: req.params.id,  BODY : JSON.stringify(req.body) };
+      var in_data = { INDEX: indexPatternData, TYPE: "pattern_data", ID: req.params.id,  BODY : JSON.stringify(req.body) };
      queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {
         if(out_data.result == "created"){
           rtnCode = CONSTS.getErrData("D001");
@@ -126,7 +129,7 @@ router.post('/restapi/updateAnomaly/:id', function(req, res, next) {
 
 router.delete('/restapi/deleteAnomaly/:id', function(req, res, next) {
   console.log('/analysis/restapi/deleteAnomaly');
-  var in_data = { INDEX: "da_patterndata", TYPE: "pattern_data", ID: req.params.id };
+  var in_data = { INDEX: indexPatternData, TYPE: "pattern_data", ID: req.params.id };
   queryProvider.deleteQueryByID("analysis", "deleteById", in_data, function(err, out_data) {
     if(out_data.result == "deleted"){
       var rtnCode = CONSTS.getErrData("D003");
@@ -138,7 +141,7 @@ router.delete('/restapi/deleteAnomaly/:id', function(req, res, next) {
 // query RawData
 router.get('/restapi/getAnomaly/:id', function(req, res, next) {
   console.log(req.query);
-  var in_data = { INDEX: "da_patterndata", TYPE: "pattern_data", ID: req.params.id}
+  var in_data = { INDEX: indexPatternData, TYPE: "pattern_data", ID: req.params.id}
   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
@@ -156,7 +159,7 @@ router.get('/restapi/getAnomaly/:id', function(req, res, next) {
 router.get('/restapi/getClusterPattern', function(req, res, next) {
   console.log(req.query);
   var in_data = {
-      INDEX: "da_patterndata", TYPE: "pattern_data",
+      INDEX: indexPatternData, TYPE: "pattern_data",
       ID: req.query.id,
       TARGET: req.query.target
   };
@@ -177,7 +180,7 @@ router.get('/restapi/getClusterPattern', function(req, res, next) {
 // patterns
 router.get('/restapi/getPatterns', function(req, res, next) {
   console.log(req.query);
-  var in_data = { INDEX: "da_patterninfo", TYPE: "pattern_info", ID: req.query.id}
+  var in_data = { INDEX: indexPatternInfo, TYPE: "pattern_info", ID: req.query.id}
   queryProvider.selectSingleQueryByID2("analysis", "selectPatterns", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data.length == 0) {
@@ -193,7 +196,7 @@ router.get('/restapi/getPatterns', function(req, res, next) {
 router.post('/pattern_info/:id/_update', function(req, res) {
   console.log(req.body);
   var in_data = {
-      INDEX: "da_patterninfo",
+      INDEX: indexPatternInfo,
       TYPE: "pattern_info",
       ID: req.params.id,
       FACTOR: req.body.factorGroup,
@@ -211,12 +214,12 @@ router.post('/pattern_info/:id/_update', function(req, res) {
 router.post('/restapi/insertAnomalyPattern/:id', function(req, res, next) {
   console.log('/analysis/restapi/insertAnomalyPattern');
   console.log(JSON.stringify(req.body));
-   var in_data = { INDEX: "da_patternmatching", TYPE: "pattern_matching", ID: req.params.id   };
+   var in_data = { INDEX: indexPatternMatching, TYPE: "pattern_matching", ID: req.params.id   };
    queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');
     }  else  {
-      var in_data = { INDEX: "da_patternmatching", TYPE: "pattern_matching", ID: req.params.id,   BODY : JSON.stringify(req.body)   };
+      var in_data = { INDEX: indexPatternMatching, TYPE: "pattern_matching", ID: req.params.id,   BODY : JSON.stringify(req.body)   };
      queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {
           if(out_data.result == "created"){
             console.log(out_data);
@@ -233,12 +236,12 @@ router.post('/restapi/insertAnomalyPattern/:id', function(req, res, next) {
 router.post('/restapi/insertPatternInfo/:id', function(req, res, next) {
   console.log('/analysis/restapi/insertPatternInfo');
   console.log(JSON.stringify(req.body));
-   var in_data = {    INDEX: "da_patterninfo", TYPE: "pattern_info", ID: req.params.id   };
+   var in_data = {    INDEX: indexPatternInfo, TYPE: "pattern_info", ID: req.params.id   };
    queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');
     }  else  {
-      var in_data = {    INDEX: "da_patterninfo", TYPE: "pattern_info", ID: req.params.id,   BODY : JSON.stringify(req.body)   };
+      var in_data = {    INDEX: indexPatternInfo, TYPE: "pattern_info", ID: req.params.id,   BODY : JSON.stringify(req.body)   };
      queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {
           if(out_data.result == "created"){
             console.log(out_data);
@@ -254,7 +257,7 @@ router.post('/restapi/insertPatternInfo/:id', function(req, res, next) {
 
 // query RawData
 router.get('/restapi/getAnomalyPattern/:id', function(req, res, next) {
-  var in_data = {  INDEX: "da_patternmatching", TYPE: "pattern_matching" , ID: req.params.id}
+  var in_data = {  INDEX: indexPatternMatching, TYPE: "pattern_matching" , ID: req.params.id}
   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data.length === 0) {
@@ -266,7 +269,7 @@ router.get('/restapi/getAnomalyPattern/:id', function(req, res, next) {
       var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
       var day = new Date().toString().split(' ');
       var id = day[3]+'-'+mon[day[1]]+'-'+day[2];
-      var in_data = {  INDEX: "da_patterndata", TYPE: "pattern_data" , ID: id };
+      var in_data = {  INDEX: indexPatternData, TYPE: "pattern_data" , ID: id };
       var pattern = out_data[0]._source ;
       queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data,  function(err, out_data, params) {
         var clust = out_data[0]._source.pattern_data;
@@ -291,7 +294,7 @@ router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
   console.log("convert utc:", sDate, eDate);
   console.log("master id: ", req.query.masterId);
   var in_data = {
-      INDEX : "da_patterndata", TYPE : "pattern_data",
+      INDEX : indexPatternData, TYPE : "pattern_data",
       START_TIMESTAMP: sDate,
       END_TIMESTAMP: eDate,
       MASTER_ID: req.query.masterId};
@@ -313,7 +316,7 @@ router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
 router.get('/restapi/getAnomaly_Pattern', function(req, res, next) {
   console.log(req.query);
   var in_data = {
-      INDEX : "da_patternmatching", TYPE : "pattern_matching",
+      INDEX : indexPatternMatching, TYPE : "pattern_matching",
       START_TIMESTAMP: req.query.startTime,
       END_TIMESTAMP: req.query.endTime};
 
