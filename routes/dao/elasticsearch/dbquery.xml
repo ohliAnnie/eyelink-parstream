@@ -1341,6 +1341,7 @@
     ]]></query>
     <query id='selectPatternList'><![CDATA[
       {
+<<<<<<< HEAD
         "index" : #INDEX#,
         "type" : #TYPE#,
         "body" : {
@@ -1355,6 +1356,26 @@
                   "pattern_data.creation_Date" : { "gte" : #gte#, "lte" : #lte# }
                 }
               }
+=======
+        "index": #INDEX#,
+        "type": #TYPE#,
+        "body": {
+          "size": 10000,
+          "_source" : [ "pattern_data.creation_Date", "_id" ],
+          "sort": { "pattern_data.creation_Date": "desc" },
+          "query" : {
+            "bool" : {
+              "should": [
+                { "term": { "_id": #MASTER_ID# }},
+                { "range": {
+                    "pattern_data.creation_Date" : {
+                      "gte" : #START_TIMESTAMP#, 
+                      "lte" : #END_TIMESTAMP# 
+                    }
+                  }
+                }
+              ]
+>>>>>>> 3423bb9905171c77d71a02662a6f3d8639661bec
             }
           }
         }
