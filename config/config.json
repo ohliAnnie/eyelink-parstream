@@ -36,14 +36,14 @@
 		"es_appinfo" : "efsm_applicationinfo",
 		"es_elagent" : "elagent_test-agent-",
 		"es_alarm" : "efsm_alarm-",
-		"es_corecode" : "corecode-",
-		"es_anomaly" : "analysis"		
+		"es_corecode" : "corecode-"	
 	},
 	"da_index" : {
-		"da_cluster" : "cluster",
-		"da_pattern_data" : "da_pattern_data",
-		"da_pattern_info" : "da_pattern_info",
-		"da_pattern_matching" : "da_pattern_matching"
+		"clustering_master" : "clustering_master",
+		"clustering_detail" : "clustering_detail",
+		"ad_pattern_data" : "ad_pattern_data",
+		"ad_pattern_info" : "ad_pattern_info",
+		"ad_pattern_matching" : "ad_pattern_matching"
 	},
 	"analysis": {
 		"#host" : "localhost",
