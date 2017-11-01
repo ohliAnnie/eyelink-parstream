@@ -1,28 +1,12 @@
 function getMasterList(interval) {
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
-  if(sdate === '' && edate === '') {
-    $.ajax({
-      url: "/analysis/restapi/getDaClusterMasterAll" ,
-      dataType: "json",
-      type: "get",
-      success: function(result) {
-        if (result.rtnCode.code == "0000") {
-          var master = result.rtnData;
-          drawMaster(master);
-        }
-      },
-      error: function(req, status, err) {
-        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-      }
-    });
-  } else {
-   console.log('%s, %s, %s', sdate, edate, interval);
-   $.ajax({
+  console.log('%s, %s, %s', sdate, edate, interval);
+  $.ajax({
     url: "/analysis/restapi/getDaClusterMaster" ,
     dataType: "json",
     type: "get",
-    data: { startDate:sdate, endDate:edate, interval:interval },
+    data: { sdate:sdate, edate:edate, interval:interval },
     success: function(result) {
       if (result.rtnCode.code == "0000") {
         console.log(result);
