@@ -1,31 +1,30 @@
 var liveValue = [];
- setInterval(function() { 
-    $.ajax({
-      url: "/analysis/restapi/getClusterNodeLive" ,
-      dataType: "json",
-      type: "get",
-      data: { },
-      success: function(result) {        
-        if (result.rtnCode.code == "0000") {                
-          if(result.rtnData.length == 1){
-            liveValue = result.rtnData[0];            
-          } else {
-            console.log(new Date());
-          }
+setInterval(function() { 
+  $.ajax({
+    url: "/analysis/restapi/getClusterNodeLive" ,
+    dataType: "json",
+    type: "get",
+    data: { },
+    success: function(result) {        
+      if (result.rtnCode.code == "0000") {                
+        if(result.rtnData.length == 1){
+          liveValue = result.rtnData[0];            
         } else {
-          //- $("#errormsg").html(result.message);
+          console.log(new Date());
         }
-      },
-      error: function(req, status, err) {
-        //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+      } else {
+        //- $("#errormsg").html(result.message);
       }
-    });  
-  }, 5*1000);    
+    },
+    error: function(req, status, err) {
+      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    }
+  });  
+}, 5*1000);
 
 function getData(){    
-  $.ajax({
-   // url: "/analysis/restapi/getAnomalyPattern/2017-08-23T15:50:00",
+  $.ajax({  
     url: "/analysis/restapi/getAnomalyChartData",
     dataType: "json",
     type: "get",
@@ -52,16 +51,17 @@ function getData(){
       //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
-  });
-  
+  });  
 }
 
 function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, pattern, apt, cpt) {
   oriEnd = end;    
   var limit = 60,    duration = 1000;   
- var margin = {top: 10, right: 50, bottom: 30, left: 50},
+  
+  var margin = {top: 10, right: 50, bottom: 30, left: 50},
   width = window.innerWidth*0.88 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;  
+  
   if(pattern[id].status == "normal"){
     var color = 'green';    
   } else if(pattern[id].status == "caution"){ 
@@ -71,53 +71,52 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, patt
   } else {
     var color = 'gray';
   }
+  
   liveValue = raw[raw.length-1];    
-    var groups = {
-      output: {
-        value: liveValue[id],
-        color: 'black',
-        data: d3.range(0).map(function() {
-          return 0
-        })
-      }
+  var groups = {
+    output: {
+      value: liveValue[id],
+      color: 'pink',
+      data: d3.range(0).map(function() {
+        return 0
+      })
     }
-      now = new Date(liveValue.event_time).getTime();      
+  }
+  now = new Date(liveValue.event_time).getTime();      
 
-    var x = d3.time.scale()
-     .domain([start, end])
+  var x = d3.time.scale()
+    .domain([start, end])
     .range([0, width]);
 
-    switch(id) {
-      case 'voltage' :
-        var yStart = 0, yEnd = 280;
-        break;
-      case 'ampere' :
-        var yStart = 0, yEnd = 1.5;
-        break;
-      case 'active_power' :
-        var yStart = 0, yEnd = 200;
-        break;
-      case 'power_factor' :
-        var yStart = 0, yEnd = 1.5;
-        break;      
-    }
-    var y = d3.scale.linear()    
+  switch(id) {
+    case 'voltage' :
+      var yStart = 0, yEnd = 280;
+      break;
+    case 'ampere' :
+      var yStart = 0, yEnd = 1.5;
+      break;
+    case 'active_power' :
+      var yStart = 0, yEnd = 180;
+      break;
+    case 'power_factor' :
+      var yStart = 0, yEnd = 1.5;
+      break;      
+  }
+
+  var y = d3.scale.linear()    
     .domain([yStart, yEnd])
     .range([height, 3]);
 
-    var line = d3.svg.line()
+  var line = d3.svg.line()
     .interpolate('basis')
-    .x(function(d, i) {              
-     //return x(now)  })          
-     return x(now + i*(duration)) })
-    .y(function(d) {  return y(d)   })
+    .x(function(d, i) { return x(now + i*(duration)) })
+    .y(function(d) { return y(d) })
 
   var valueline = d3.svg.line()
-  .x(function(d) { 
-    return x(new Date(d.event_time)); })
-  .y(function(d) { return y(d[id]); });
+    .x(function(d) { return x(new Date(d.event_time)); })
+    .y(function(d) { return y(d[id]); });
   
-   var compareline = d3.svg.line()
+  var compareline = d3.svg.line()
     .interpolate("cardinal")
     .x(function(d, i) { return x(d.date); })
     .y(function(d) {  return y(d.center);});
@@ -156,26 +155,25 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, patt
     .y0(function (d) { return y(d.lower); })
     .y1(function (d) { return y(d.min); });
 
-    var svg = d3.select(chart_id)
+  var svg = d3.select(chart_id)
     .append('svg')    
-  .attr("width", width + margin.left + margin.right)
-  .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-  .attr("transform",
-    "translate(" + margin.left + "," + margin.top + ")");
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var xaxis = svg.append('g')
-.attr('class', 'x axis')
-.attr('transform', 'translate(0,' + height + ')')
-.call(x.axis = d3.svg.axis().scale(x).orient('bottom'))
+  var xaxis = svg.append('g')
+    .attr('class', 'x axis')
+    .attr('transform', 'translate(0,' + height + ')')
+    .call(x.axis = d3.svg.axis().scale(x).orient('bottom'))
 
-var yaxis = svg.append('g')
- .attr('class', 'y axis')   
+  var yaxis = svg.append('g')
+    .attr('class', 'y axis')   
     .call(y.axis = d3.svg.axis().scale(y).orient('left'))
 
-var legendWidth  = 380, legendHeight = 55;
+  var legendWidth  = 380, legendHeight = 55;
 
- var legend = svg.append('g')
+  var legend = svg.append('g')
     .attr('class', 'legend')
     .attr('transform', 'translate(' + margin.left + ', 0)');
 
@@ -191,19 +189,19 @@ var legendWidth  = 380, legendHeight = 55;
     .attr('x', 10)
     .attr('y', 8);
 
-    legend.append('text')
+  legend.append('text')
     .attr('x', 103)
     .attr('y', 19)
     .text('lower-upper');
 
-    legend.append('rect')
+  legend.append('rect')
     .attr('class', 'outer')
     .attr('width',  55)
     .attr('height', 15)
     .attr('x', 10)
     .attr('y', 33);  
 
-    legend.append('text')
+  legend.append('text')
     .attr('x', 95)
     .attr('y', 43)
     .text('min-max');
@@ -217,7 +215,7 @@ var legendWidth  = 380, legendHeight = 55;
     .attr('y', 19)
     .text('Pattern');
 
-   legend.append('path')
+  legend.append('path')
     .attr('class', 'valueline')
     .attr('d', 'M150,40L205,40');
 
@@ -443,48 +441,49 @@ var div = d3.select("body").append("div")
   oriNow = now;
   function tick() {           
 
-    now = new Date().getTime();        
-    value = liveValue[id];            
-    for (var name in groups) {
-      var group = groups[name]
-        //group.data.push(group.value) // Real values arrive at irregular intervals
-        group.value = value
-        group.data.push(value)
-        group.path.attr('d', line)        
-      }      
-      ddata.push({ date:now, value:value});     
-      var d = ddata[ddata.length-1];
-      //console.log(new Date(d.date));            
-     x.domain([now-50*60*1000+gap, now+10*60*1000-gap]);     
-     //console.log(new Date(now-50*60*1000+gap), new Date(now+10*60*1000-gap));     
-     //x.domain([start,end]);
-    // Slide paths left
-      paths.attr('transform', null)
-      .transition()
-      .duration(duration)
-      .ease('linear')
-      .each('end', tick);
+  now = new Date().getTime();        
+  value = liveValue[id];            
+  for (var name in groups) {
+    var group = groups[name]
+      //group.data.push(group.value) // Real values arrive at irregular intervals
+      group.value = value
+      group.data.push(value)
+      group.path.attr('d', line)        
+    }      
+    ddata.push({ date:now, value:value});     
+    var d = ddata[ddata.length-1];
+    //console.log(new Date(d.date));            
+   x.domain([now-50*60*1000+gap, now+10*60*1000-gap]);     
+   //console.log(new Date(now-50*60*1000+gap), new Date(now+10*60*1000-gap));     
+   //x.domain([start,end]);
+  // Slide paths left
+    paths.attr('transform', null)
+    .transition()
+    .duration(duration)
+    .ease('linear')
+    .each('end', tick);
    //   .attr('transform', 'translate(' + x(now - (limit) * duration) + ')')         
-      if(oriEnd<=now){
-         if(now > oriEnd+3*60*1000) {
-                console.log('reload');
-               // window.location.reload(true);
-        }
-        if(now >= (end+2*60*1000)){
-          end += 2*60*1000;
-        }
-        if((now-oriNow) > 10*1000) {
-          oriNow = now;        
-        /*$.ajax({
+    if(oriEnd<=now){
+       if(now > oriEnd+3*60*1000) {
+              console.log('reload');
+             // window.location.reload(true);
+      }
+      if(now >= (end+2*60*1000)){
+        end += 2*60*1000;
+      }
+      if((oriEnd-end) < 10*1000) {
+        oriNow = now;        
+        $.ajax({
           url: "/analysis/restapi/getAnomalyPatternCheck/",
           dataType: "json",
           type: "get",
           data: {},
           success: function(result) {            
             console.log(result.rtnCode.message);            
-            if (result.rtnCode.code == "0000") {                                      
+            if (result.rtnCode.code == "0000") {                                                      
                 console.log('reload');
                 window.location.reload(true);
+
             } else {
               //- $("#errormsg").html(result.message);
             }
@@ -493,12 +492,11 @@ var div = d3.select("body").append("div")
             //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
             $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
           }
-        });*/
-        }        
-      }    
-
+        });
+      }        
     }
-    tick();  
+  }
+  tick();  
 }
 var cnt = 0, oriEnd = 0, oriNow = 0;
 
