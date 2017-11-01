@@ -6,8 +6,7 @@ function getData(){
     dataType: "json",
     type: "get",
     data: { sdate : sdate, edate : edate},
-    success: function(result) {
-      console.log(result);
+    success: function(result) {      
       if (result.rtnCode.code == "0000") {        
         drawChart(result.rtnData, sdate, edate);        
       } else {
@@ -20,6 +19,7 @@ function getData(){
     }
   });
 }
+
 function drawChart(data, sdate, edate) {
   var s = sdate.split('-');
   var minDate = new Date(new Date(s[0], parseInt(s[1])-1, s[2], 0, 0, 0).getTime()-24*60*60*1000);
@@ -91,7 +91,7 @@ function drawChart(data, sdate, edate) {
     return 1;
   });
 
-   countBar
+  countBar
     .width(window.innerWidth*0.44)
     .height(390)
     .x(d3.time.scale().domain([minDate, maxDate]))    
@@ -103,8 +103,7 @@ function drawChart(data, sdate, edate) {
     .elasticY(true)
     .brushOn(true)
     .mouseZoomable(true)
-    .centerBar(true)
-    
+    .centerBar(true)    
     .clipPadding(20);
 
   typePie
@@ -166,7 +165,6 @@ function drawChart(data, sdate, edate) {
     .title(function(d){         
       return month[d.key]+' : '+d.value;
     });
-
 
   monLine.xAxis().tickFormat(function(v) {return month[v];})  ;
 
