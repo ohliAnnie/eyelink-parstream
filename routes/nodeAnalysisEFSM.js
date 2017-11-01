@@ -449,12 +449,33 @@ router.get('/restapi/getClusterNodeLive', function(req, res, next) {
   console.log('analysis/restapi/getClusterNodeLive');
   var today = Utils.getToday(fmt2);    
   var in_data = {
-      index : indexCore+'*',
-      type : "corecode",
-      START_TIMESTAMP: Utils.getDate(today, fmt2, 0, 0, -1, 0, 'Y'),
-      END_TIMESTAMP: Utils.getDate(today, fmt2, 0, 0, 0, 1, 'Y'),
-      NODE: ["0002.00000039"],
-      FLAG : 'N'};  
+        index : indexCore+'*',      type : "corecode",
+        START_TIMESTAMP: Utils.getDate(today, fmt2, 0, 0, -1, 0, 'Y'),
+        END_TIMESTAMP: Utils.getDate(today, fmt2, 0, 0, 0, 1, 'Y'),
+        NODE: ["0002.00000039"], FLAG : 'N'};  
+  queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
+     //console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data === null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+   var data = [];    
+    out_data.forEach(function(d){                 
+      data.push(d._source);
+    });    
+    console.log('analysis/restapi/getClusterNodeLive -> length : %s', out_data.length);
+    res.json({rtnCode: rtnCode, rtnData: data});
+  });
+});
+
+// query RawData
+router.get('/restapi/getClusterNodePower', function(req, res, next) {
+  console.log('analysis/restapi/getClusterNodePower');
+  var today = Utils.getToday(fmt2);    
+  var in_data = {
+        index : indexCore+'*',   type : "corecode",
+        START_TIMESTAMP: req.query.startDate, END_TIMESTAMP: req.query.endDate,
+        NODE: req.query.nodeId.split(','), FLAG : 'N'};
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
      //console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
