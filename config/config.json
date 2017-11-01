@@ -37,7 +37,8 @@
 		"es_elagent" : "elagent_test-agent-",
 		"es_alarm" : "efsm_alarm-",
 		"es_corecode" : "corecode-",
-		"es_anomaly" : "analysis"
+		"es_anomaly" : "analysis",
+		"es_cluster" : "cluster"
 	},
 	"analysis": {
 		"#host" : "localhost",
