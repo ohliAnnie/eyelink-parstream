@@ -1384,25 +1384,29 @@
      ]]></query>
     <query id='selectPatternList'><![CDATA[
       {
-        "index" : #INDEX#,
-        "type" : #TYPE#,
-        "body" : {
-          "size"   : 10000,
-          "sort" : { "pattern_data.creation_Date" : { "order" : "desc"  } },
-          "_source" : ["pattern_data.creation_Date"],
+        "index": #INDEX#,
+        "type": #TYPE#,
+        "body": {
+          "size": 10000,
+          "_source" : [ "pattern_data.creation_Date", "_id" ],
+          "sort": { "pattern_data.creation_Date": "desc" },
           "query" : {
             "bool" : {
-              "must" : { "match_all": {} },
-               "filter" : {
-                "range" : {
-                   "pattern_data.creation_Date" : { "gte" : #START_TIMESTAMP#, "lte" : #END_TIMESTAMP# }
+              "should": [
+                { "term": { "_id": #MASTER_ID# }},
+                { "range": {
+                    "pattern_data.creation_Date" : {
+                      "gte" : #START_TIMESTAMP#, 
+                      "lte" : #END_TIMESTAMP# 
+                    }
                   }
                 }
-              }
+              ]
+            }
           }
         }
       }
-     ]]></query>
+    ]]></query>
     <query id='selectAnomaly_Pattern'><![CDATA[
       {
         "index" : #INDEX#,
