@@ -1,29 +1,15 @@
-function drawChart() {
-  var indexs = $('#indexs').val();
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
-  var sdate = $('#sdate').val();  
-  var sindex =new Date(new Date(sdate).getTime()-24*60*60*1000);
-  var edate = $('#edate').val();
-  console.log(new Date(sdate), edate);
-  var index = [], cnt = 0;
-  for(i=sindex.getTime(); i < new Date(edate).getTime()+24*60*60*1000; i+=24*60*60*1000){    
-    var day = new Date(i).toString().split(' ');    
-    index[cnt++] = indexs+day[3]+'.'+mon[day[1]]+'.'+day[2];    
-  }  
-  console.log(index);
-  var s = sindex.toString().split(' ');
-  var gte = s[3]+'-'+mon[s[1]]+'-'+s[2]+'T15:00:00.000Z';
-  var e = new Date(edate).toString().split(' ' );
-  var lte = e[3]+'-'+mon[e[1]]+'-'+e[2]+'T15:00:00.000Z';
+function drawChart() {  
+  var sdate = $('#sdate').val();    
+  var edate = $('#edate').val();  
   $.ajax({
     url: "/reports/restapi/getJiraAcc",
     dataType: "json",
     type: "get",
-    data: { index :  index, gte : gte, lte : lte }, 
+    data: { sdate : sdate, edate : edate }, 
     success: function(result) {   
       if (result.rtnCode.code == "0000") {             
-        console.log(sdate, edate);
-        drawAll(result.rtnData, sdate, edate);
+        console.log(result)
+        drawAll(result.rtnData, sdate, edate, result.minTime, result.maxTime);
       } else {
         //- $("#errormsg").html(result.message);
       }
@@ -31,85 +17,43 @@ function drawChart() {
   });
 }
 
-function drawAll(data, sdate, edate) {
+function drawAll(data, sdate, edate, minTime, maxTime) {
   var pieChart = dc.pieChart('#pieChart');
   var countBar = dc.barChart('#countBar');
   var countLine = dc.compositeChart("#countLine");
-  var serverCount = dc.barChart('#serverCount');
-
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var gap = (maxDate-minDate)/(24 * 60 * 60 * 1000);  
-  var acc = [];
-  var minTime = new Date(), maxTime = new Date('1990-01-01');
-  var minDate = new Date(sdate);  
-  var maxDate =  new Date(edate);
-  console.log(minDate);
-  console.log(maxDate);
-  data.forEach(function(d) { 
-    if(d._type == "access"){
-         d._source.type = "jira";
-    } 
-    if(d._source.timestamp != null){
-
-    
-      
-      var t = d._source.timestamp.split(' ');                   
-      t = t[0].split(':');
-      var s = t[0].split('/');   
-      d._source.timestamp = new Date(new Date(s[2]+'-'+mon[s[1]]+'-'+s[0]+'T'+t[1]+':'+t[2]+':'+t[3]).getTime() + 9*60*60*1000);
-      d._source.response = parseInt(d._source.response);     
-      d._source.responsetime = parseInt(d._source.responsetime);
-      d._source.day = d3.time.day(d._source.timestamp);
-      d._source.hour = d3.time.hour(d._source.timestamp);
-      if(d._source.response >= 400)  {
-        d._source.section = 'error';
-        d._source.index = 4;
-      } else if(d._source.responsetime <= 1000) {
-        d._source.section = '1s';
-        d._source.index = 0;
-      } else if(d._source.responsetime <= 3000) {
-        d._source.section = '3s';
-        d._source.index = 1;
-      } else if(d._source.responsetime <= 5000) {
-        d._source.section = '5s';
-        d._source.index = 2;
-      } else {
-        d._source.section = 'slow';
-        d._source.index = 3
-      }    
-      acc.push(d._source);
-      if(minTime.getTime() > d._source.hour.getTime()){
-        minTime = d._source.hour;
-      }
-      if(maxTime.getTime() < d._source.hour.getTime()){
-        maxTime = d._source.hour;
-      }
-    }
-  });
+  var serverCount = dc.barChart('#serverCount');   
 
   if(sdate == edate) {
-    minDate = new Date(minTime.getTime()-30*60*1000);
-    maxDate = new Date(maxTime.getTime()+30*60*1000);
+    var minBar = d3.time.hour(new Date(minTime-60*60*1000));
+    var maxBar = d3.time.hour(new Date(maxTime+60*60*1000));
+    var minLine = d3.time.hour(new Date(minTime));
+    var maxLine = d3.time.hour(new Date(maxTime));
   } else {
-    minDate = new Date(minDate.getTime()-12*60*60*1000);
+    var minBar = d3.time.day(new Date(minTime-24*60*60*1000));
+    var maxBar = d3.time.day(new Date(maxTime+24*60*60*1000));
+    var minLine = d3.time.day(new Date(minTime));
+    var maxLine = d3.time.day(new Date(maxTime));
   }
-  var nyx = crossfilter(acc);
+
+  var gap = (maxLine-minLine)/(24 * 60 * 60 * 1000);  
+  var nyx = crossfilter(data);
   var all = nyx.groupAll();
 
-  var sectionDim = nyx.dimension(function(d){
+  var sectionDim = nyx.dimension(function(d){    
     return d.section;
   }); 
 
   var pieGroup = sectionDim.group().reduceCount(function(d){
     return 1;
   });
+
   if(sdate != edate) {    
-    var dayDim = nyx.dimension(function(d){      
-      return d.day;
-    });
-  } else {
-    var dayDim = nyx.dimension(function(d) {                  
-      return d.hour;
+    var dayDim = nyx.dimension(function(d){                  
+      return d3.time.day(new Date(d.timestamp));
+
+    });  } else {
+    var dayDim = nyx.dimension(function(d) {                        
+      return d3.time.hour(new Date(d.timestamp));
     });
   }
 
@@ -233,7 +177,7 @@ function drawAll(data, sdate, edate) {
     .group(stackGroup, term[0], sel_stack('0'))
     .mouseZoomable(true)
     .renderHorizontalGridLines(true)
-    .x(d3.time.scale().domain([minDate, maxDate]))    
+    .x(d3.time.scale().domain([minBar, maxBar]))    
     .xUnits(function(){return 24;})
     .elasticY(true)
     .centerBar(true)
@@ -241,11 +185,9 @@ function drawAll(data, sdate, edate) {
     .colors(d3.scale.ordinal().range(["#EDC951",  "#31a354", "#00A0B0", "#FFB2F5" , "#CC333F"]));
 
   if(sdate == edate){
-    countBar
-    .round(d3.time.hour.round);
+    countBar.round(d3.time.hour.round);
   } else {
-    countBar
-    .round(d3.time.day.round);
+    countBar.round(d3.time.day.round);
   }
     
   countBar.legend(dc.legend());
@@ -260,9 +202,9 @@ function drawAll(data, sdate, edate) {
   }  
     /*  dc.barChart('#eventBar')  */
   function sel_stack(i) {
-      return function(d) {            
-          return d.value[i]?d.value[i]:0;
-      };
+    return function(d) {            
+      return d.value[i]?d.value[i]:0;
+    };
   }
 
   countLine
@@ -275,7 +217,7 @@ function drawAll(data, sdate, edate) {
     .y(d3.scale.linear().domain([0, data.length]))      
     .brushOn(true)
     .mouseZoomable(true)
-    .x(d3.time.scale().domain([minDate, maxDate]))
+    .x(d3.time.scale().domain([minLine, maxLine]))
     .y(d3.scale.linear().domain([0, 100]))
     .round(function(d) {
       if(edate == sdate) {
@@ -291,32 +233,32 @@ function drawAll(data, sdate, edate) {
     })
     .legend(dc.legend().x(20).y(10).itemHeight(13).gap(5))
     .compose([
-        dc.lineChart(countLine).group(errGroup, "error")
-          .valueAccessor(function(d){
-           return d.value.cnt; })
-          .colors("#CC333F"),
-        dc.lineChart(countLine).group(slowGroup, "slow")
-          .valueAccessor(function(d){
-            return d.value.cnt; })
-          .colors("#FFB2F5"),
-        dc.lineChart(countLine).group(s1Group, "1s")
-          .valueAccessor(function(d){
-            return d.value.cnt; })
-          .colors("#EDC951"),
-        dc.lineChart(countLine).group(s3Group, "3s")
-          .valueAccessor(function(d){
-            return d.value.cnt; })
-          .colors('#31a354'),
-        dc.lineChart(countLine).group(s5Group, "5s")
-          .valueAccessor(function(d){
-            return d.value.cnt; })
-          .colors("#00A0B0")
-      ]);
+      dc.lineChart(countLine).group(errGroup, "error")
+        .valueAccessor(function(d){
+         return d.value.cnt; })
+        .colors("#CC333F"),
+      dc.lineChart(countLine).group(slowGroup, "slow")
+        .valueAccessor(function(d){
+          return d.value.cnt; })
+        .colors("#FFB2F5"),
+      dc.lineChart(countLine).group(s1Group, "1s")
+        .valueAccessor(function(d){
+          return d.value.cnt; })
+        .colors("#EDC951"),
+      dc.lineChart(countLine).group(s3Group, "3s")
+        .valueAccessor(function(d){
+          return d.value.cnt; })
+        .colors('#31a354'),
+      dc.lineChart(countLine).group(s5Group, "5s")
+        .valueAccessor(function(d){
+          return d.value.cnt; })
+        .colors("#00A0B0")
+    ]);
 
-   if(sdate == edate) {
+  if(sdate == edate) {
     countLine.rangeChart(countBar);
     countBar.rangeChart(countLine);
-    } 
+  } 
   var serverList = ["jira"];
   serverCount
     .width(window.innerWidth*0.43)

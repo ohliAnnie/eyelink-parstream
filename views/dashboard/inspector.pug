@@ -20,17 +20,10 @@ block script
       // time series char를 그린다.
       drawCountChart();      
 
-      $('#btn_search').click(function() {
-        if(document.getElementById("server").selectedIndex == 0){
-          location.href='/dashboard/timeseries_agent';
-        } else {
-          location.href='/dashboard/timeseries_file';
-        }
-        
-        //- d3.selectAll("svg").remove()
-        //- drawCountChart();        
+      $('#btn_search').click(function() {        
+        var server = $('#server').val().split('&');        
+        location.href='/dashboard/timeseries'+server[0]+'?server='+server[1];
       });
-
     });
 block content
   input#indexs(type='hidden', name='indexs', value=indexs)
@@ -71,13 +64,13 @@ block content
                         input#edate.form-control(type='text', name='to' value='')
                     label.control-label.col-md-1 Server                    
                     .col-md-3.form-inline
-                      select#server.form-control.input-small.select2me.form-md-line-input(name='server')                      
-                       each data in agent 
-                          #{type}
-                            if data.name==type
-                               option(value='', selected='selected') #{data.name}
-                            else                              
-                              option #{data.name}                    
+                      select#server.form-control.input-small.select2me.form-md-line-input(name='server')
+                        each data in agent 
+                          #{server}
+                            if data.name==server
+                               option(value=data.type+'&'+data.name, selected='selected') #{data.name}
+                            else
+                              option(value=data.type+'&'+data.name) #{data.name} 
                     .col-md-2.form-inline
                       button#btn_search.btn.blue
                         i.fa.fa-search Search

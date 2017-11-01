@@ -49,8 +49,8 @@ function(d3,d3tip)
             return '<tr><td style="color:'+d.options.color+'">'+d.options.label+' </td>'+
                   '<td style="color:#333333;text-align:right">'+yscale.setformat(d.item[d.aes.y])+'</td></tr>'
           }).join('')+'</table>'
-
-        return '<h4 style="color:#333333;text-align:center">'+xscale.setformat(d3.time.day(date))+'</h4>'+spans
+        var format = d3.time.format('%H:%M:%S')
+        return '<h4 style="color:#333333;text-align:center">'+format(date)+'</h4>'+spans
       }
 
     function createLines(serie){

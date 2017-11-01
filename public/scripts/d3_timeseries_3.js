@@ -42,15 +42,16 @@ function(d3,d3tip)
 
     // default tool tip function
     var _tipFunction = function(date,series) {
-      // console.log('_tipFunction : ' + xscale.setformat(d3.time.day(date)));
+      // console.log('_tipFunction : ' + xscale.setformat(d3.time.day(date)));        
         var spans = '<table style="border:none">'+series.filter(function(d){
             return d.item!==undefined && d.item!==null
           }).map(function(d){
+            console.log()
             return '<tr><td style="color:'+d.options.color+'">'+d.options.label+' </td>'+
                   '<td style="color:#333333;text-align:right">'+yscale.setformat(d.item[d.aes.y])+'</td></tr>'
           }).join('')+'</table>'
-
-        return '<h4 style="color:#333333;text-align:center">'+xscale.setformat(d3.time.day(date))+'</h4>'+spans
+        var format = d3.time.format("%H:%M:%S");
+        return '<h4 style="color:#333333;text-align:center">'+format(date)+'</h4>'+spans
       }
 
     function createLines(serie){
@@ -283,7 +284,7 @@ function(d3,d3tip)
     function brushed(e) {
       xscale.domain(brush.empty() ? fullxscale.domain() : brush.extent());
 
-      var xAxis = d3.svg.axis().scale(xscale).orient('bottom').tickFormat(xscale.setformat)
+      var xAxis = d3.svg.axis().scale(xscale).orient('bottom').ticks(5).tickFormat(xscale.setformat)
 
       series.forEach(drawSerie)
       svg.select(".focus.x.axis").call(xAxis);
@@ -406,7 +407,7 @@ function(d3,d3tip)
       }
       mousevline.update()
 
-      var xAxis = d3.svg.axis().scale(xscale).orient('bottom').tickFormat(xscale.setformat)
+      var xAxis = d3.svg.axis().scale(xscale).orient('bottom').tickFormat(xscale.setformat).ticks(5)
       var yAxis = d3.svg.axis().scale(yscale).orient('left').tickFormat(yscale.setformat)
 
       brush.x(fullxscale)

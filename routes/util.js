@@ -177,6 +177,14 @@ function getToday(fmt, utcYN, delimYN) {
   return dateFormat(d, fmt);
 }
 
+function getMs2Date(cur, fmt, delimYN) {
+  var d = new Date(cur);
+
+  fmt = convertDateFormat(fmt, 'Y', delimYN);
+
+  return dateFormat(d, fmt);
+}
+
 function getDateLocal2UTC(cur, fmt, delimYN) {
   cur = cur.replace('T', ' ');
   var d = new Date(cur);
@@ -200,11 +208,11 @@ function getDateUTC2Local(cur, fmt, delimYN) {
   return dateFormat(d, fmt);
 }
 
-function getDate(dt, fmt, d, h, m, s) {
+function getDate(dt, fmt, d, h, m, s, delimYN) {
   dt = dt.replace('T', ' ');
   var dt = new Date(dt);
 
-  fmt = convertDateFormat(fmt, 'N', 'N');
+  fmt = convertDateFormat(fmt, 'N', delimYN);
 
   dt = dt.addDays(d);
   dt = dt.addHours(h);
@@ -220,5 +228,6 @@ module.exports.mergeLoadedData = mergeLoadedData;
 module.exports.generateRandom = generateRandom;
 module.exports.getToday = getToday;
 module.exports.getDate = getDate;
+module.exports.getMs2Date = getMs2Date;
 module.exports.getDateLocal2UTC = getDateLocal2UTC;
 module.exports.getDateUTC2Local = getDateUTC2Local;

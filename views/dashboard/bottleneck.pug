@@ -195,19 +195,28 @@ block content
         .col-md-8
           .portlet.light.bordered
             .portlet-title.smap-chart-title
-              .caption
+              .caption.col-md-5
                 span.caption-subject.bold
-                  | Chart
-              .btn-group.actions(data-toggle='buttons')
-                label.btn.btn-default
-                  input.toggle(type='radio' id='2min' name='time')
-                  |  2min
-                label.btn.btn-default
-                  input.toggle(type='radio' id='4min' name='time')
-                  |  4min
-                label.btn.btn-default
-                  input.toggle(type='radio' id='10min' name='time')
-                  |  10min
+                 | Chart
+              .col-md-4
+                .btn-group.actions(data-toggle='buttons')
+                  label.btn.btn-default
+                    input.toggle(type='radio' id='2min' name='time')
+                    |  2min
+                  label.btn.btn-default
+                    input.toggle(type='radio' id='4min' name='time')
+                    |  4min
+                  label.btn.btn-default
+                    input.toggle(type='radio' id='10min' name='time')
+                    |  10min
+              .col-md-3
+                .btn-group.btn-group-devided(data-toggle='buttons')
+                    label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                      input#syncY.toggle(type='radio', name='options', checked='Y')
+                      i.fa.fa-chain Sync
+                    label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                      input#syncN.toggle(type='radio', name='options')
+                      i.fa.fa-chain-broken Async
             .portlet-body(style='height:675px')
               .row
                 .col-md-7.smap-chart
