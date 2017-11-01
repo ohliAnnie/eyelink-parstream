@@ -76,67 +76,68 @@ router.get('/pattern_list', function(req, res, next) {
   res.render('./analysis/pattern_list', { title: global.config.productname, mainmenu:mainmenu});
 });
 
-router.post('/restapi/insertAnomaly/:id', function(req, res, next) {  
-  console.log('/analysis/restapi/insertAnomaly');    
+
+router.post('/restapi/insertAnomaly/:id', function(req, res, next) {
+  console.log('/analysis/restapi/insertAnomaly');
   console.log(JSON.stringify(req.body));
    var id = req.params.id;
-   var in_data = {    INDEX: "analysis", TYPE: "anomaly", ID: id   };  
-   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {        
+   var in_data = {    INDEX: "da_patterndata", TYPE: "pattern_data", ID: id   };
+   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');
       console.log(rtnCode);
       res.json({rtnCode: rtnCode});
     }  else  {
-      var in_data = {    INDEX: "analysis", TYPE: "anomaly", ID: id,   BODY : JSON.stringify(req.body)   };  
-     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {        
+      var in_data = {    INDEX: "da_patterndata", TYPE: "pattern_data", ID: id,   BODY : JSON.stringify(req.body)   };
+     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {
           console.log(out_data);
           if(out_data.result == "created"){
-            console.log(out_data);  
-            var rtnCode = CONSTS.getErrData("D001");                   
+            console.log(out_data);
+            var rtnCode = CONSTS.getErrData("D001");
           }
-        if (err) { console.log(err) };                     
-        res.json({rtnCode: rtnCode});    
+        if (err) { console.log(err) };
+        res.json({rtnCode: rtnCode});
       });
     }
   });
 });
 
-router.post('/restapi/updateAnomaly/:id', function(req, res, next) {  
-  console.log('/analysis/restapi/updateAnomaly');    
+router.post('/restapi/updateAnomaly/:id', function(req, res, next) {
+  console.log('/analysis/restapi/updateAnomaly');
   console.log(JSON.stringify(req.body));
-  var in_data = {  INDEX: "analysis", TYPE: "anomaly", ID: req.params.id };  
+  var in_data = { INDEX: "da_patterndata", TYPE: "pattern_data", ID: req.params.id };
   queryProvider.deleteQueryByID("analysis", "deleteById", in_data, function(err, out_data) {
     if(out_data.result == "deleted"){
       var rtnCode = CONSTS.getErrData("D003");
-      var in_data = {    INDEX: "analysis", TYPE: "anomaly", ID: req.params.id,  BODY : JSON.stringify(req.body)     };  
-     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {                  
-        if(out_data.result == "created"){          
-          rtnCode = CONSTS.getErrData("D001");                   
+      var in_data = { INDEX: "da_patterndata", TYPE: "pattern_data", ID: req.params.id,  BODY : JSON.stringify(req.body) };
+     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {
+        if(out_data.result == "created"){
+          rtnCode = CONSTS.getErrData("D001");
         }
-        if (err) { console.log(err) };                     
-        res.json({rtnCode: rtnCode});    
+        if (err) { console.log(err) };
+        res.json({rtnCode: rtnCode});
       });
-     rtnCode = CONSTS.getErrData("D002");  
+     rtnCode = CONSTS.getErrData("D002");
     }
     res.json({rtnCode: rtnCode});
-  });  
+  });
 });
 
-router.delete('/restapi/deleteAnomaly/:id', function(req, res, next) {  
-  console.log('/analysis/restapi/deleteAnomaly');      
-  var in_data = {  INDEX: "analysis", TYPE: "anomaly", ID: req.params.id };  
+router.delete('/restapi/deleteAnomaly/:id', function(req, res, next) {
+  console.log('/analysis/restapi/deleteAnomaly');
+  var in_data = { INDEX: "da_patterndata", TYPE: "pattern_data", ID: req.params.id };
   queryProvider.deleteQueryByID("analysis", "deleteById", in_data, function(err, out_data) {
     if(out_data.result == "deleted"){
-      var rtnCode = CONSTS.getErrData("D003");    
+      var rtnCode = CONSTS.getErrData("D003");
     }
     res.json({rtnCode: rtnCode});
-  });  
+  });
 });
 
 // query RawData
 router.get('/restapi/getAnomaly/:id', function(req, res, next) {
   console.log(req.query);
-  var in_data = {  INDEX: "analysis", TYPE: "anomaly" , ID: req.params.id}  
+  var in_data = { INDEX: "da_patterndata", TYPE: "pattern_data", ID: req.params.id}
   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
@@ -154,7 +155,7 @@ router.get('/restapi/getAnomaly/:id', function(req, res, next) {
 router.get('/restapi/getClusterPattern', function(req, res, next) {
   console.log(req.query);
   var in_data = {
-      INDEX: "analysis", TYPE: "anomaly",
+      INDEX: "da_patterndata", TYPE: "pattern_data",
       ID: req.query.id,
       TARGET: req.query.target
   };
@@ -164,6 +165,7 @@ router.get('/restapi/getClusterPattern', function(req, res, next) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data.length == 0) {
       rtnCode = CONSTS.getErrData('0001');
+      console.log('test');
       res.json({rtnCode: rtnCode});
     }
     console.log('analysis/restapi/getClusterPattern -> length : %s', out_data.length);
@@ -174,13 +176,11 @@ router.get('/restapi/getClusterPattern', function(req, res, next) {
 // patterns
 router.get('/restapi/getPatterns', function(req, res, next) {
   console.log(req.query);
-  var in_data = {  INDEX: "analysis", TYPE: "pattern_info" , ID: req.query.id}  
+  var in_data = { INDEX: "da_patterninfo", TYPE: "pattern_info", ID: req.query.id}
   queryProvider.selectSingleQueryByID2("analysis", "selectPatterns", in_data, function(err, out_data, params) {
-    console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data.length == 0) {
       rtnCode = CONSTS.getErrData('0001');
-      console.log('test');
       res.json({rtnCode: rtnCode});
     }
     console.log('analysis/restapi/getPatterns -> length : %s', out_data.length);
@@ -192,7 +192,7 @@ router.get('/restapi/getPatterns', function(req, res, next) {
 router.post('/pattern_info/:id/_update', function(req, res) {
   console.log(req.body);
   var in_data = {
-      INDEX: "analysis",
+      INDEX: "da_patterninfo",
       TYPE: "pattern_info",
       ID: req.params.id,
       FACTOR: req.body.factorGroup,
@@ -208,58 +208,57 @@ router.post('/pattern_info/:id/_update', function(req, res) {
 });
 /////////////////
 
-router.post('/restapi/insertAnomalyPattern/:id', function(req, res, next) {  
-  console.log('/analysis/restapi/insertAnomalyPattern');    
-  console.log(JSON.stringify(req.body));   
-   var in_data = {    INDEX: "analysis", TYPE: "anomaly_pattern", ID: req.params.id   };  
-   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {        
+router.post('/restapi/insertAnomalyPattern/:id', function(req, res, next) {
+  console.log('/analysis/restapi/insertAnomalyPattern');
+  console.log(JSON.stringify(req.body));
+   var in_data = { INDEX: "da_patternmatching", TYPE: "pattern_matching", ID: req.params.id   };
+   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     if (out_data[0] != null){
-      var rtnCode = CONSTS.getErrData('E005');      
-    }  else  {      
-      var in_data = {    INDEX: "analysis", TYPE: "anomaly_pattern", ID: req.params.id,   BODY : JSON.stringify(req.body)   };  
-     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {        
+      var rtnCode = CONSTS.getErrData('E005');
+    }  else  {
+      var in_data = { INDEX: "da_patternmatching", TYPE: "pattern_matching", ID: req.params.id,   BODY : JSON.stringify(req.body)   };
+     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {
           if(out_data.result == "created"){
-            console.log(out_data);  
-            var rtnCode = CONSTS.getErrData("D001");                   
+            console.log(out_data);
+            var rtnCode = CONSTS.getErrData("D001");
           }
-        if (err) { console.log(err) };                     
-        res.json({rtnCode: rtnCode});    
-      });     
+        if (err) { console.log(err) };
+        res.json({rtnCode: rtnCode});
+      });
     }
-     res.json({rtnCode: rtnCode});    
-     
+     res.json({rtnCode: rtnCode});
   });
 });
 
-router.post('/restapi/insertPatternInfo/:id', function(req, res, next) {  
-  console.log('/analysis/restapi/insertPatternInfo');    
-  console.log(JSON.stringify(req.body));   
-   var in_data = {    INDEX: "analysis", TYPE: "pattern_info", ID: req.params.id   };  
-   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {        
+router.post('/restapi/insertPatternInfo/:id', function(req, res, next) {
+  console.log('/analysis/restapi/insertPatternInfo');
+  console.log(JSON.stringify(req.body));
+   var in_data = {    INDEX: "da_patterninfo", TYPE: "pattern_info", ID: req.params.id   };
+   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     if (out_data[0] != null){
-      var rtnCode = CONSTS.getErrData('E005');      
-    }  else  {      
-      var in_data = {    INDEX: "analysis", TYPE: "pattern_info", ID: req.params.id,   BODY : JSON.stringify(req.body)   };  
-     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {        
+      var rtnCode = CONSTS.getErrData('E005');
+    }  else  {
+      var in_data = {    INDEX: "da_patterninfo", TYPE: "pattern_info", ID: req.params.id,   BODY : JSON.stringify(req.body)   };
+     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {
           if(out_data.result == "created"){
-            console.log(out_data);  
-            var rtnCode = CONSTS.getErrData("D001");                   
+            console.log(out_data);
+            var rtnCode = CONSTS.getErrData("D001");
           }
-        if (err) { console.log(err) };                     
-        res.json({rtnCode: rtnCode});    
-      });     
+        if (err) { console.log(err) };
+        res.json({rtnCode: rtnCode});
+      });
     }
-     res.json({rtnCode: rtnCode});    
+     res.json({rtnCode: rtnCode});
   });
 });
 
 // query RawData
-router.get('/restapi/getAnomalyPattern/:id', function(req, res, next) {  
-  var in_data = {  INDEX: "analysis", TYPE: "anomaly_pattern" , ID: req.params.id}  
-  queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {    
+router.get('/restapi/getAnomalyPattern/:id', function(req, res, next) {
+  var in_data = {  INDEX: "da_patternmatching", TYPE: "pattern_matching" , ID: req.params.id}
+  queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
-    if (out_data.length === 0000) {
-      rtnCode = CONSTS.getErrData('0001');      
+    if (out_data.length === 0) {
+      rtnCode = CONSTS.getErrData('0001');
       res.json({rtnCode: rtnCode});
     } else {
       console.log('f');
@@ -267,13 +266,13 @@ router.get('/restapi/getAnomalyPattern/:id', function(req, res, next) {
       var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
       var day = new Date().toString().split(' ');
       var id = day[3]+'-'+mon[day[1]]+'-'+day[2];
-      var in_data = {  INDEX: "analysis", TYPE: "anomaly" , ID: id };      
-      var pattern = out_data[0]._source ;      
-      queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data,  function(err, out_data, params) {        
+      var in_data = {  INDEX: "da_patterndata", TYPE: "pattern_data" , ID: id };
+      var pattern = out_data[0]._source ;
+      queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data,  function(err, out_data, params) {
         var clust = out_data[0]._source.pattern_data;
         console.log(pattern);
         var rtnCode = CONSTS.getErrData('0000');
-        if (out_data[0] === null) {   rtnCode = CONSTS.getErrData('0001');     
+        if (out_data[0] === null) {   rtnCode = CONSTS.getErrData('0001');
          res.json({rtnCode: rtnCode});   }
         console.log('analysis/restapi/getAnomaly -> length : %s', out_data.length);
         res.json({rtnCode: rtnCode, pattern : pattern, clust : clust});
@@ -281,16 +280,21 @@ router.get('/restapi/getAnomalyPattern/:id', function(req, res, next) {
     }
         console.log('analysis/restapi/getAnomalyPattern -> length : %s', out_data.length);
         res.json({rtnCode: rtnCode, pattern : pattern, clust : clust});
-  });  
+  });
 });
 
 // pattern dataset
 router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
-  console.log(req.query);
+  console.log("req.query:", req.query);
+  var sDate = Utils.getDateLocal2UTC(req.query.startDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
+  var eDate = Utils.getDateLocal2UTC(req.query.endDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
+  console.log("convert utc:", sDate, eDate);
+  console.log("master id: ", req.query.masterId);
   var in_data = {
-      INDEX : "analysis", TYPE : "anomaly",
-      START_TIMESTAMP: req.query.startDate + 'T00:00:00',
-      END_TIMESTAMP: req.query.endDate + 'T23:59:59'};
+      INDEX : "da_patterndata", TYPE : "pattern_data",
+      START_TIMESTAMP: sDate,
+      END_TIMESTAMP: eDate,
+      MASTER_ID: req.query.masterId};
 
   var sql = "selectPatternList";
 
@@ -309,7 +313,7 @@ router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
 router.get('/restapi/getAnomaly_Pattern', function(req, res, next) {
   console.log(req.query);
   var in_data = {
-      INDEX : "analysis", TYPE : "anomaly_pattern",
+      INDEX : "da_patternmatching", TYPE : "pattern_matching",
       START_TIMESTAMP: req.query.startTime,
       END_TIMESTAMP: req.query.endTime};
 
@@ -350,9 +354,9 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
         "pattern_data.ampere."+pattern.ampere.top_1,"pattern_data.ampere."+pattern.ampere.top_2+".center","pattern_data.ampere."+pattern.ampere.top_3+".center"] };        
       queryProvider.selectSingleQueryByID2("analysis", "selectAnomalyMatch", in_data,  function(err, out_data, params) {                                
         var rtnCode = CONSTS.getErrData('0000');
-        if (out_data == null) { 
-          console.log('null');          
-         rtnCode = CONSTS.getErrData('0001');        
+        if (out_data == null) {
+          console.log('null');
+         rtnCode = CONSTS.getErrData('0001');
         } else if(out_data.length == 0) {
            rtnCode = CONSTS.getErrData('0001');
         } else {        
@@ -419,7 +423,7 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
               res.json({rtnCode: rtnCode, raw : data, pattern : pattern, anomaly : anomaly, pt : pt});              
             }
           });
-        }         
+        }
         console.log('analysis/restapi/getAnomaly -> length : %s', out_data.length);
          res.json({rtnCode: rtnCode, anomaly : anomaly, raw : data, point : point});
       });
@@ -439,8 +443,8 @@ router.get('/restapi/getAnomalyPatternCheck/', function(req, res, next) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    } 
-    res.json({rtnCode: rtnCode, rtnData : out_data});  
+    }
+    res.json({rtnCode: rtnCode, rtnData : out_data});
   });
 });
 
@@ -482,8 +486,8 @@ router.get('/restapi/getClusterNodePower', function(req, res, next) {
     if (out_data === null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-   var data = [];    
-    out_data.forEach(function(d){                 
+   var data = [];
+    out_data.forEach(function(d){
       data.push(d._source);
     });    
     console.log('analysis/restapi/getClusterNodeLive -> length : %s', out_data.length);
@@ -492,14 +496,14 @@ router.get('/restapi/getClusterNodePower', function(req, res, next) {
 });
 
 // query RawData
-router.get('/restapi/getClusterRawData', function(req, res, next) { 
+router.get('/restapi/getClusterRawData', function(req, res, next) {
   console.log(req.query)
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };  
-  var start = new Date(req.query.startDate).getTime();  
-  var end = new Date(req.query.endDate).getTime();  
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  var start = new Date(req.query.startDate).getTime();
+  var end = new Date(req.query.endDate).getTime();
   var index = [], cnt = 0;
   for(i = start; i<=end; i=i+24*60*60*1000){
-    var d = new Date(i).toString().split(' ');    
+    var d = new Date(i).toString().split(' ');
     index[cnt++]  = "corecode-"+d[3]+'-'+mon[d[1]]+'-'+d[2];
   }
   console.log(index);
@@ -515,17 +519,17 @@ router.get('/restapi/getClusterRawData', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     }
     console.log('analysis/restapi/getClusterRawData -> length : %s', out_data.length);
-    var data = [];    
-    out_data.forEach(function(d){                 
+    var data = [];
+    out_data.forEach(function(d){
       data.push(d._source);
-    });    
+    });
     res.json({rtnCode: rtnCode, rtnData: data});
   });
 });
 
 // query RawData
-router.get('/restapi/getClusterRawDataByNode', function(req, res, next) { 
-  console.log(req.query)    
+router.get('/restapi/getClusterRawDataByNode', function(req, res, next) {
+  console.log(req.query);
   var in_data = {
       index : "corecode-*", type : "corecode",
       START_TIMESTAMP: req.query.startDate,
@@ -539,23 +543,23 @@ router.get('/restapi/getClusterRawDataByNode', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     }
     console.log('analysis/restapi/getClusterRawData -> length : %s', out_data.length);
-    var data = [];    
-    out_data.forEach(function(d){                 
+    var data = [];
+    out_data.forEach(function(d){
       data.push(d._source);
-    });    
+    });
     res.json({rtnCode: rtnCode, rtnData: data});
   });
 });
 
 // query RawData
-router.get('/restapi/getDataBySource', function(req, res, next) { 
+router.get('/restapi/getDataBySource', function(req, res, next) {
   console.log(req.query)
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };  
-  var start = new Date(req.query.startDate).getTime();  
-  var end = new Date(req.query.endDate).getTime();  
+  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+  var start = new Date(req.query.startDate).getTime();
+  var end = new Date(req.query.endDate).getTime();
   var index = [], cnt = 0;
   for(i = start; i<=end; i=i+24*60*60*1000){
-    var d = new Date(i).toString().split(' ');    
+    var d = new Date(i).toString().split(' ');
     index[cnt++]  = "corecode-"+d[3]+'-'+mon[d[1]]+'-'+d[2];
   }
   console.log(index);
@@ -572,80 +576,80 @@ router.get('/restapi/getDataBySource', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     }
     console.log('analysis/restapi/getClusterRawData -> length : %s', out_data.length);
-    var data = [];    
-    out_data.forEach(function(d){                 
+    var data = [];
+    out_data.forEach(function(d){
       data.push(d._source);
-    });    
+    });
     res.json({rtnCode: rtnCode, rtnData: data});
   });
 });
 
-router.post('/restapi/insertClusterMaster/:id', function(req, res, next) {  
-  console.log('/analysis/restapi/insertClusterMaster');    
+router.post('/restapi/insertClusterMaster/:id', function(req, res, next) {
+  console.log('/analysis/restapi/insertClusterMaster');
   console.log(JSON.stringify(req.body));
    var id = req.params.id;
-   var in_data = {    INDEX: "cluster", TYPE: "master", ID: id   };  
-   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {        
+   var in_data = {    INDEX: "cluster", TYPE: "master", ID: id   };
+   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');
       console.log(rtnCode);
       res.json({rtnCode: rtnCode});
     }  else  {
-      var in_data = {    INDEX: "cluster", TYPE: "master", ID: id,   BODY : JSON.stringify(req.body)   };  
-     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {        
+      var in_data = {    INDEX: "cluster", TYPE: "master", ID: id,   BODY : JSON.stringify(req.body)   };
+     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {
           console.log(out_data);
           if(out_data.result == "created"){
-            console.log(out_data);  
+            console.log(out_data);
 
-            var rtnCode = CONSTS.getErrData("D001");                   
+            var rtnCode = CONSTS.getErrData("D001");
           }
-        if (err) { console.log(err) };                     
-        res.json({rtnCode: rtnCode});    
+        if (err) { console.log(err) };
+        res.json({rtnCode: rtnCode});
       });
     }
   });
 });
 
-router.post('/restapi/insertClusterDetail/:id', function(req, res, next) {  
-  console.log('/analysis/restapi/insertClusterDetail');    
+router.post('/restapi/insertClusterDetail/:id', function(req, res, next) {
+  console.log('/analysis/restapi/insertClusterDetail');
   console.log(JSON.stringify(req.body));
    var id = req.params.id;
-   var in_data = {    INDEX: "cluster", TYPE: "detail", ID: id   };  
-   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {        
+   var in_data = {    INDEX: "cluster", TYPE: "detail", ID: id   };
+   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');
       console.log(rtnCode);
       res.json({rtnCode: rtnCode});
     }  else  {
-      var in_data = {    INDEX: "cluster", TYPE: "detail", ID: id,   BODY : JSON.stringify(req.body)   };  
-     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {        
+      var in_data = {    INDEX: "cluster", TYPE: "detail", ID: id,   BODY : JSON.stringify(req.body)   };
+     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {
           console.log(out_data);
           if(out_data.result == "created"){
-            console.log(out_data);  
-            var rtnCode = CONSTS.getErrData("D001");                   
+            console.log(out_data);
+            var rtnCode = CONSTS.getErrData("D001");
           }
-        if (err) { console.log(err) };                     
-        res.json({rtnCode: rtnCode});    
+        if (err) { console.log(err) };
+        res.json({rtnCode: rtnCode});
       });
     }
   });
 });
 
 // query RawData
-router.get('/restapi/getDaClusterDetail', function(req, res, next) {  
+router.get('/restapi/getDaClusterDetail', function(req, res, next) {
   var in_data = {
       INDEX : "cluster",    TYPE : "detail",
       ID : req.query.daDate };
-  queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {    
+  queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     console.log(err);
-    console.log(out_data);    
+    console.log(out_data);
     if (out_data === null) {
       var rtnCode = CONSTS.getErrData('0001');
       res.json({rtnCode: rtnCode, rtnData: out_data});
     } else {
       var rtnCode = CONSTS.getErrData('0000');
-      console.log('analysis/restapi/getDaClusterDetail -> length : %s', out_data.length);      
-    }   
+      console.log('analysis/restapi/getDaClusterDetail -> length : %s', out_data.length);
+    }
     res.json({rtnCode: rtnCode, rtnData : out_data[0]._source.detail_result });
   });
 });
@@ -712,7 +716,7 @@ router.post('/restapi/runAnalysis', function(req, res, next) {
   });
 });
 
-function getConnectionToDA(connName, callback){  
+function getConnectionToDA(connName, callback){
   var pUrl = global.config.analysis.host;
   var pPort = global.config.analysis.port;
   // var pUrl = 'm2u-da.eastus.cloudapp.azure.com';

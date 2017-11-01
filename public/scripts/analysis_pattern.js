@@ -1,19 +1,18 @@
 function getPatternList() {
   "use strict";
-  var sdate = $('#sdate').val();
-  var edate = $('#edate').val();
-
-  console.log('%s, %s', sdate, edate);
+  var sdate = $('#sdate').val() + "T00:00:00";
+  var edate = $('#edate').val() + "T23:59:59";
+  var masterId = "master";
+  var nodeInfo = null;
+  console.log("sDate : %s, eDate : %s", sdate, edate);
   $.ajax({
     url: "/analysis/restapi/getAnomalyPatternList" ,
-    dataType: "json",
-    type: "get",
-    data: { startDate:sdate, endDate:edate },
+    dataType: "json", type: "get",
+    data: { startDate:sdate, endDate:edate, masterId:masterId },
     success: function(result) {
       if (result.rtnCode.code == "0000") {
-        console.log(result);
         var patternLists = result.rtnData;
-        drawPatternList(patternLists);
+        drawPatternList(patternLists, nodeInfo);
       }
     },
     error: function(req, status, err) {
@@ -22,161 +21,135 @@ function getPatternList() {
   });
 }
 
-function drawPatternList(patternLists) {
+
+///// draw pattern lists /////
+function drawPatternList(patternLists, nodeInfo) {
   "use strict";
-  console.log(patternLists);
+  console.log("patternLists : ", patternLists);
   var seatvar = document.getElementsByClassName("patternList");
-  var cnt = 0;
   $('#patternList').empty();
   var createdDate = patternLists[0]._id;
   patternLists.forEach(function(d) {
-    //d = d._source.pattern_data;
     d = d._id;
-    console.log("d is " + d);
     var sb = new StringBuffer();
-
-    if(cnt == 0) {
-      //sb.append('<tr><th>Creation Date</th><th></th></tr>');
-      cnt++;
+    if (d == 'master'){
+      sb.append('<tr><th style="font-weight:bold"><a onclick="clickLinkFunc(this)">' + d + '</th></tr>');
+    } else {
+      sb.append('<tr><td><a onclick="clickLinkFunc(this)">' + d +'</td>');
     }
-    sb.append('<tr><td><a onclick="clickLinkFunc(this)">' + d+'</td>');
-    console.log("sb is" + sb);
     $('#patternList').append(sb.toString());
   });
-
   $("#lblCreatedDate").empty();
   $("#lblCreatedDate").append(createdDate);
-  loadPatternData(createdDate);
+  loadPatternData(createdDate, nodeInfo);
 }
 
-function loadPatternData(creationDate) {
+
+function loadPatternData(creationDate, nodeInfo) {
   "use strict";
   $.ajax({
     url: "/analysis/restapi/getPatterns" ,
-    dataType: "json",
-    type: "get",
+    dataType: "json", type: "get",
     data: {id : creationDate},
     success: function(result) {
       if (result.rtnCode.code == "0000") {
-        console.log(result);
-        var d = result.rtnData.pattern_info;
-        var length = Object.keys(d.ampere).length;
-        console.log(length);
-        console.log(Object.keys(d));
-
-        drawPatternTree(creationDate, d);
-
-        // for (var key in d){
-        //   console.log(key + '==>' + d[key]);
-        // }
-        //console.log(d);
-        //drawCheckCluster(set, daDate, factor);
+        console.log("getPatterns data : ", result);
+        var d = (result.rtnData.pattern_info);
       }
+      var sortedData = sortObject(d);
+      drawPatternTree(creationDate, sortedData, nodeInfo);
     },
     error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }
   });
 }
 
-function drawPatternTree(creationDate, TreeData){
+
+function sortObject(obj) {
   "use strict";
-  console.log("treeData ==>");
-  console.log(TreeData);
+  var sorted = {};
+  Object.keys(obj).sort().forEach( function(key) {
+    sorted[key] = obj[key];
+  });
+  return sorted;
+}
+
+
+function drawPatternTree(creationDate, treeData, nodeInfo){
+  "use strict";
   var treeNode = [];
-  for(var group in TreeData){
-    var normalCnt = 0;
-    var cautionCnt =0;
-    var anomalyCnt = 0;
-    var undefineCnt = 0;
-
-    // tree node count
-    for(var cno in TreeData[group]){
-      if (TreeData[group][cno] === "normal") {
-        normalCnt += 1;
-      }
-      else if (TreeData[group][cno] === "caution") {
-        cautionCnt += 1;
-      }
-      else if (TreeData[group][cno] === "anomaly") {
-        anomalyCnt += 1;
-      }
-      if (TreeData[group][cno] === "undefined") {
-        undefineCnt += 1;
-      }
+  for(var group in treeData){
+    if (group != 'creation_Date'){
+      var nodeData = getNodeData(treeData[group], group);
+      treeNode.push(nodeData);
     }
-
-    var totalCnt = normalCnt + cautionCnt + anomalyCnt + undefineCnt;
-
-    var nodeData = {'text': group,
-      href: '#'+ group,
-      icon: "glyphicon glyphicon-copyright-mark",
-      tags: [totalCnt],
-      nodes: [
-        {
-          text: "normal",
-          href: '#' + group + '-normal',
-          color: "green",
-          tags: [normalCnt]
-        },
-        {
-          text: "caution",
-          href: '#' + group + '-caution',
-          color: "blue",
-          tags: [cautionCnt]
-        },
-        {
-          text: "anomaly",
-          href: '#' + group + '-anomaly',
-          color: "red",
-          tags: [anomalyCnt]
-        },
-        {
-          text: "undefined",
-          href: '#' + group + '-undefined',
-          color: "gray",
-          tags: [undefineCnt]
-        }
-      ]
-    };
-
-    treeNode.push(nodeData);
   }
-  console.log(treeNode)
   // construct patternTree
   $('#patternTree').treeview({
     levels: 1,
     color: '#428bca',
     showTags: true,
-    data: treeNode,
-
-    onNodeSelected: function(event, node) {
-      console.log(node.href + ' is selected');
-      var nodeText = node.href.replace(/\#/g,'');
-      var nodeText = nodeText.split('-');
-      console.log(nodeText[0]);
-      console.log(nodeText[1]);
-      var parentNode = nodeText[0];
-      var childNode = nodeText[1];
-
-      drawPatterns(creationDate, parentNode, childNode, TreeData);
-
-      if(nodeText[1] == undefined){
-        console.log("zzzzz")
-      }
-
-
-    }
+    data: treeNode
   });
+
+  /// 노트 선택시 이벤트
+  $('#patternTree').on('nodeSelected', function(event, node){
+    console.log(node.href + ' is selected');
+    var nodeText = node.href.replace(/#/g,'');
+    var nodeText = nodeText.split('-');
+    var parentNode = nodeText[0];
+    var childNode = nodeText[1];
+    drawPatterns(creationDate, parentNode, childNode, treeData);
+  });
+
+  if (nodeInfo != null){
+    var nodeText = nodeInfo.href.replace(/#/g,'').split('-');
+    drawPatterns(creationDate, nodeText[0], nodeText[1], treeData);
+    $('#patternTree').treeview('selectNode', [nodeInfo.nodeId, {silent: true}]);
+    if (nodeInfo.parentId != undefined){
+      $('#patternTree').treeview('expandNode', [nodeInfo.parentId, {levels:2, silent: true}]);
+    }
+  }
 }
 
+
+function getNodeData(treeData, group){
+  "use strict";
+  var normalCnt = 0;
+  var cautionCnt =0;
+  var anomalyCnt = 0;
+  var undefineCnt = 0;
+  for(var cno in treeData){
+    if (treeData[cno] === "normal")       { normalCnt += 1; }
+    else if (treeData[cno] === "caution") { cautionCnt += 1; }
+    else if (treeData[cno] === "anomaly") { anomalyCnt += 1; }
+    if (treeData[cno] === "undefined")    { undefineCnt += 1; }
+  }
+  var totalCnt = normalCnt + cautionCnt + anomalyCnt + undefineCnt;
+
+  var nodeData = {'text': group, href: '#'+ group,
+    icon: "glyphicon glyphicon-copyright-mark",
+    tags: [totalCnt],
+    nodes: [
+      { text: "normal", href: '#' + group + '-normal', color: "green", tags: [normalCnt]},
+      { text: "caution", href: '#' + group + '-caution', color: "blue", tags: [cautionCnt]},
+      { text: "anomaly", href: '#' + group + '-anomaly', color: "red", tags: [anomalyCnt]},
+      { text: "undefined", href: '#' + group + '-undefined', color: "gray", tags: [undefineCnt]}
+    ]
+  };
+  return nodeData;
+}
+
+
+//// 선택된 패턴그룹에 대한 패턴 리스트를 보여준다.
 function drawPatterns(creationDate, parentNode, childNode, patternData) {
+  var parentNodeData = sortObject(patternData[parentNode]);
   d3.selectAll("svg").remove();
   var seatvar = document.getElementsByClassName("tblPatterns");
   var cnt = 0
   $('#tblPatterns').empty();
-  console.log(typeof(patternData));
+  //console.log(typeof(patternData));
   var sb = new StringBuffer();
   var headTag = '<thead><tr>' +
     '<th style="text-align:center"><input type="checkbox" name="chkAll" ></th>' +
@@ -189,46 +162,55 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
   sb.append('<tbody class="patternBody">');
 
   if(childNode == undefined) {
-    for (cno in patternData[parentNode]){
-      var selectTag = statusCheck(patternData[parentNode][cno]);
-      var dataTag = '<tr>' +
-        '<td><input type="checkbox" name="patternChk" ></td>'+
-        '<td>' + parentNode + '</td>' +
-        '<td><a href="#" class="clickPattern">' + cno + '</td>' +
-        '<td><select name="status" class="form-control input-small select2me form-md-line-input">' +
-        selectTag + '</td>' +
-        '<td><input type="button" class="updateBtn" value="update" /></td>' +
-      '</tr>';
-      sb.append(dataTag);
-    }
-    sb.append("</tbody>");
-  }
-  else{
-    for (cno in patternData[parentNode]){
-      if (patternData[parentNode][cno] == childNode) {
-        var selectTag = statusCheck(patternData[parentNode][cno]);
-        var dataTag = '<tr>' +
-          '<td><input type="checkbox" name="patternChk" ></td>'+
+    for (cno in parentNodeData){
+      var selectTag = statusCheck(parentNodeData[cno]);
+      if (parentNodeData[cno] == "undefined"){
+        var dataTag = '<tr><td><input type="checkbox" name="patternChk" ></td>'+
           '<td>' + parentNode + '</td>' +
           '<td><a href="#" class="clickPattern">' + cno + '</td>' +
           '<td><select name="status" class="form-control input-small select2me form-md-line-input">' +
           selectTag + '</td>' +
-          '<td><input type="button" class="updateBtn" value="update" /></td>' +
-        '</tr>';
+          '<td><input type="button" class="updateBtn" value="update" /></td></tr>';
+        sb.append(dataTag);
+      } else {
+        var dataTag = '<tr><td></td><td>' + parentNode + '</td>' +
+          '<td><a href="#" class="clickPattern">' + cno + '</td>' +
+          '<td>' + selectTag + '</td><td></td></tr>';
         sb.append(dataTag);
       }
     }
     sb.append("</tbody>");
   }
-
-
-    //sb.append('<tr><td>' + parentNode + '</td></tr>');
+  else{
+    for (cno in parentNodeData){
+      if (parentNodeData[cno] == childNode) {
+        var selectTag = statusCheck(parentNodeData[cno]);
+        if (parentNodeData[cno] == "undefined"){
+          var dataTag = '<tr><td><input type="checkbox" name="patternChk" ></td>'+
+            '<td>' + parentNode + '</td>' +
+            '<td><a href="#" class="clickPattern">' + cno + '</td>' +
+            '<td><select name="status" class="form-control input-small select2me form-md-line-input">' +
+            selectTag + '</td>' +
+            '<td><input type="button" class="updateBtn" value="update" /></td></tr>';
+          sb.append(dataTag);
+        } else {
+          var dataTag = '<tr><td></td><td>' + parentNode + '</td>' +
+            '<td><a href="#" class="clickPattern">' + cno + '</td>' +
+            '<td>' + selectTag + '</td><td></td></tr>';
+          sb.append(dataTag);
+        }
+      }
+    }
+    sb.append("</tbody>");
+  }
   $('#tblPatterns').append(sb.toString());
 
+  /// Event ///
   $('input[name=chkAll]').click(function(){
     $('input:checkbox').not(this).prop('checked', this.checked);
-  })
+  });
 
+  /// update button click event ///
   $(".updateBtn").click(function(){
     var updateBtn = $(this);
     var td = updateBtn.parent().parent().children();
@@ -251,14 +233,12 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
         success: function(result) {
           alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
           if (result.rtnCode.code == "D002") {
-            //location.href = "/analysis/pattern";
             // pattern tree data reload
-            loadPatternData(id);
+            var nodeInfo = $('#patternTree').treeview('getSelected');
+            loadPatternData(id, nodeInfo[0]);
           }
         },
         error: function(req, status, err) {
-
-          //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
           $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
         }
       });
@@ -272,7 +252,7 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
 
     var factGroup = td.eq(1).text();
     var clusterNo = td.eq(2).text();
-    var target = "pattern_data." + factGroup + ".center." + clusterNo;
+    var target = "pattern_data." + factGroup + "." + clusterNo + ".center";
 
     //var state = td.eq(3).text();
     console.log(target);
@@ -286,7 +266,7 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
         if (result.rtnCode.code == "0000") {
           console.log(result);
           var d = result.rtnData.pattern_data;
-          var graphData = d[factGroup]["center"][clusterNo];
+          var graphData = d[factGroup][clusterNo]["center"];
           var set = [];
           var maxval = 0;
           var minval = 1000;
@@ -318,9 +298,21 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
   });
 }
 
-function updateCheckedAll() {
-  
+///// status select option //////
+function statusCheck(statechk) {
+  var optionTag;
+  if (statechk === 'undefined') {
+    optionTag = '<option value="normal">normal</option>' +
+      '<option value="caution">caution</option>' +
+      '<option value="anomaly">anomaly</option>' +
+      '<option value="undefined" selected>undefined</option></select>'
+  } else {
+    optionTag = statechk;
+  }
+  return optionTag;
 }
+// function updateCheckedAll() {
+// }
 
 function drawPatternChart(dataset, minval, maxval) {
   // 그래프를 그려야 함!!!!!
@@ -381,32 +373,4 @@ function drawPatternChart(dataset, minval, maxval) {
         .attr("d", line);
 }
 
-///// status select option //////
-function statusCheck(statechk) {
-  var optionTag;
-  if (statechk === 'normal'){
-    optionTag = '<option value="normal" selected>normal</option>' +
-      '<option value="caution">caution</option>' +
-      '<option value="anomaly">anomaly</option>' +
-      '<option value="undefined">undefined</option></select>'
-  }
-  else if (statechk === 'caution') {
-    optionTag = '<option value="normal">normal</option>' +
-      '<option value="caution" selected>caution</option>' +
-      '<option value="anomaly">anomaly</option>' +
-      '<option value="undefined">undefined</option></select>'
-  }
-  else if (statechk === 'anomaly') {
-    optionTag = '<option value="normal">normal</option>' +
-      '<option value="caution">caution</option>' +
-      '<option value="anomaly" selected>anomaly</option>' +
-      '<option value="undefined">undefined</option></select>'
-  }
-  else {
-    optionTag = '<option value="normal">normal</option>' +
-      '<option value="caution">caution</option>' +
-      '<option value="anomaly">anomaly</option>' +
-      '<option value="undefined" selected>undefined</option></select>'
-  }
-  return optionTag;
-}
+
