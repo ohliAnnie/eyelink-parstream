@@ -14,6 +14,7 @@ var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis: 'open selecte
 
 var indexCore = global.config.es_index.es_corecode;
 var indexAnomaly = global.config.es_index.es_anomaly;
+var indexCluster = global.config.es_index.es_cluster;
 
 var startTime = CONSTS.STARTTIME.KOREA;
 var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
@@ -289,8 +290,8 @@ router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
   console.log(req.query);
   var in_data = {
       INDEX : "analysis", TYPE : "anomaly",
-      START_TIMESTAMP: req.query.startDate + 'T00:00:00',
-      END_TIMESTAMP: req.query.endDate + 'T23:59:59'};
+      gte: req.query.startDate + 'T00:00:00',
+      lte: req.query.endDate + 'T23:59:59'};
 
   var sql = "selectPatternList";
 
@@ -310,8 +311,8 @@ router.get('/restapi/getAnomaly_Pattern', function(req, res, next) {
   console.log(req.query);
   var in_data = {
       INDEX : "analysis", TYPE : "anomaly_pattern",
-      START_TIMESTAMP: req.query.startTime,
-      END_TIMESTAMP: req.query.endTime};
+      gte: req.query.startTime,
+      lte: req.query.endTime};
 
   var sql = "selectAnomaly_Pattern";
 
@@ -361,7 +362,7 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
           console.log(pattern.timestamp);
           var start = Utils.getDate(pattern.timestamp, fmt2, 0, 0, -50, -10, 'Y');          
           var in_data = { index : indexCore+'*', type : "corecode",
-                START_TIMESTAMP: start, END_TIMESTAMP: end,  NODE: ["0002.00000039"], FLAG : 'N'};    
+                gte: start, lte: end,  NODE: ["0002.00000039"], FLAG : 'N'};    
          queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
             var rtnCode = CONSTS.getErrData('0000');
             if (out_data == null) {
@@ -409,7 +410,10 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
               var anomaly = { vdata : vdata, adata : adata, apdata : apdata, pfdata : pfdata };              
               var pt = { vapt : vapt, aapt : aapt, apapt : apapt, pfapt : pfapt, vcpt : vcpt, acpt : acpt, apcpt : apcpt, pfcpt : pfcpt };              
               var data = [];
-              out_data.forEach(function(d){     
+              var sdata = out_data[0]._source;              
+              sdata.event_time = new Date(start).getTime();              
+              data.push(sdata);              
+              out_data.forEach(function(d){                
                 d._source.event_time = new Date(d._source.event_time).getTime();
                 data.push(d._source);                
               });      
@@ -430,12 +434,13 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
 });
 
 router.get('/restapi/getAnomalyPatternCheck/', function(req, res, next) {  
-  var now = Utils.getToday(fmt2);
+  var now = Utils.getDateLocal2UTC(Utils.getToday(fmt2), fmt2, 'Y');  
   var start = Utils.getDateLocal2UTC(Utils.getDate(now, fmt2, 0, 0, -2, 0), fmt2, 'Y');  
+  console.log('((((((((((((((((s')
+  console.log(now, start);    
   var in_data = {  INDEX: indexAnomaly, TYPE: "anomaly_pattern", 
-        gte : start,     lte : now } 
-  var in_data = {  INDEX: indexAnomaly, TYPE: "anomaly_pattern" , ID: req.params.id}
-  queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {    
+        gte : start,     lte : now }   
+  queryProvider.selectSingleQueryByID2("analysis", "selectByAnalysisTimestamp", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -450,8 +455,8 @@ router.get('/restapi/getClusterNodeLive', function(req, res, next) {
   var today = Utils.getToday(fmt2);    
   var in_data = {
         index : indexCore+'*',      type : "corecode",
-        START_TIMESTAMP: Utils.getDate(today, fmt2, 0, 0, -1, 0, 'Y'),
-        END_TIMESTAMP: Utils.getDate(today, fmt2, 0, 0, 0, 1, 'Y'),
+        gte: Utils.getDate(today, fmt2, 0, 0, -1, 0, 'Y'),
+        lte: Utils.getDate(today, fmt2, 0, 0, 0, 1, 'Y'),
         NODE: ["0002.00000039"], FLAG : 'N'};  
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
      //console.log(out_data);
@@ -474,7 +479,7 @@ router.get('/restapi/getClusterNodePower', function(req, res, next) {
   var today = Utils.getToday(fmt2);    
   var in_data = {
         index : indexCore+'*',   type : "corecode",
-        START_TIMESTAMP: req.query.startDate, END_TIMESTAMP: req.query.endDate,
+        gte: req.query.startDate, lte: req.query.endDate,
         NODE: req.query.nodeId.split(','), FLAG : 'N'};
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
      //console.log(out_data);
@@ -505,8 +510,8 @@ router.get('/restapi/getClusterRawData', function(req, res, next) {
   console.log(index);
   var in_data = {
       index : index, type : "corecode",
-      START_TIMESTAMP: req.query.startDate,
-      END_TIMESTAMP: req.query.endDate,
+      gte: req.query.startDate,
+      lte: req.query.endDate,
     };
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawData", in_data, function(err, out_data, params) {
     // console.log(out_data);
@@ -528,8 +533,8 @@ router.get('/restapi/getClusterRawDataByNode', function(req, res, next) {
   console.log(req.query)    
   var in_data = {
       index : "corecode-*", type : "corecode",
-      START_TIMESTAMP: req.query.startDate,
-      END_TIMESTAMP: req.query.endDate,
+      gte: req.query.startDate,
+      lte: req.query.endDate,
       node : req.query.node
     };
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawDataByNode", in_data, function(err, out_data, params) {
@@ -561,8 +566,8 @@ router.get('/restapi/getDataBySource', function(req, res, next) {
   console.log(index);
   var in_data = {
       index : "corecode-*", type : "corecode",
-      START_TIMESTAMP: req.query.startDate,
-      END_TIMESTAMP: req.query.endDate,
+      gte: req.query.startDate,
+      lte: req.query.endDate,
       Source : req.query.source.split(',')
     };
   queryProvider.selectSingleQueryByID2("analysis", "selectDataBySource", in_data, function(err, out_data, params) {
@@ -667,13 +672,13 @@ router.get('/restapi/getDaClusterMasterByDadate', function(req, res, next) {
 });
 
 
-router.get('/restapi/getDaClusterMaster', function(req, res, next) {
-  console.log(req.query);
-  console.log(req.query.interval);
+router.get('/restapi/getDaClusterMaster', function(req, res, next) {  
+  var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
+  var lte = Utils.getMs2Date(req.query.edate, fmt1);
   var in_data = {
-      index : "cluster", type : "master",
-      START_TIMESTAMP: req.query.startDate + 'T00:00:00',
-      END_TIMESTAMP: req.query.endDate + 'T23:59:59',
+      index : indexCluster, type : "master",
+      gte: gte+startTime,
+      lte: req.query.endDate + 'T23:59:59',
       INTERVAL: parseInt(req.query.interval),
       FLAG : 'N'};
   if(req.query.interval === 'all')  {
