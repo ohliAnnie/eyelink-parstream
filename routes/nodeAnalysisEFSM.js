@@ -207,7 +207,6 @@ router.post('/pattern_info/:id/_update', function(req, res) {
     res.json({rtnCode: rtnCode});
   });
 });
-/////////////////
 
 router.post('/restapi/insertAnomalyPattern/:id', function(req, res, next) {
   console.log('/analysis/restapi/insertAnomalyPattern');
@@ -292,16 +291,10 @@ router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
   console.log("convert utc:", sDate, eDate);
   console.log("master id: ", req.query.masterId);
   var in_data = {
-<<<<<<< HEAD
-      INDEX : "analysis", TYPE : "anomaly",
-      gte: req.query.startDate + 'T00:00:00',
-      lte: req.query.endDate + 'T23:59:59'};
-=======
       INDEX : "da_patterndata", TYPE : "pattern_data",
       START_TIMESTAMP: sDate,
       END_TIMESTAMP: eDate,
       MASTER_ID: req.query.masterId};
->>>>>>> 3423bb9905171c77d71a02662a6f3d8639661bec
 
   var sql = "selectPatternList";
 
@@ -320,15 +313,9 @@ router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
 router.get('/restapi/getAnomaly_Pattern', function(req, res, next) {
   console.log(req.query);
   var in_data = {
-<<<<<<< HEAD
-      INDEX : "analysis", TYPE : "anomaly_pattern",
-      gte: req.query.startTime,
-      lte: req.query.endTime};
-=======
       INDEX : "da_patternmatching", TYPE : "pattern_matching",
       START_TIMESTAMP: req.query.startTime,
       END_TIMESTAMP: req.query.endTime};
->>>>>>> 3423bb9905171c77d71a02662a6f3d8639661bec
 
   var sql = "selectAnomaly_Pattern";
 
@@ -347,8 +334,8 @@ router.get('/restapi/getAnomaly_Pattern', function(req, res, next) {
 router.get('/restapi/getAnomalyChartData', function(req, res, next) {    
   var now = Utils.getToday(fmt2);
   var end = Utils.getDateLocal2UTC(Utils.getDate(now, fmt2, 0, 0, 0, 10), fmt2, 'Y');
-  console.log(now);  
-  var in_data = {  INDEX: indexAnomaly, TYPE: "anomaly_pattern", 
+  var in_data = {  
+        INDEX: indexAnomaly, TYPE: "anomaly_pattern", 
         gte : Utils.getDateLocal2UTC(Utils.getDate(now, fmt2, 0, 0, -10, 0), fmt2, 'Y'), 
         lte : end }   
   queryProvider.selectSingleQueryByID2("analysis", "selectByAnalysisTimestamp", in_data, function(err, out_data, params) {        
@@ -374,8 +361,7 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
            rtnCode = CONSTS.getErrData('0001');
         } else {        
           var clust = out_data[0]._source.pattern_data;   
-          console.log(start)
-          console.log(pattern.timestamp);
+
           var start = Utils.getDate(pattern.timestamp, fmt2, 0, 0, -50, -10, 'Y');          
           var in_data = { index : indexCore+'*', type : "corecode",
                 gte: start, lte: end,  NODE: ["0002.00000039"], FLAG : 'N'};    
@@ -591,14 +577,12 @@ router.get('/restapi/getDataBySource', function(req, res, next) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    }
+    } 
     console.log('analysis/restapi/getClusterRawData -> length : %s', out_data.length);
-    var data = [];    
     var data = [];
     out_data.forEach(function(d){
       data.push(d._source);
-    });    
-    });
+    });        
     res.json({rtnCode: rtnCode, rtnData: data});
   });
 });
