@@ -193,29 +193,34 @@ router.get('/restapi/getPatterns', function(req, res, next) {
 });
 
 // pattern_info 정보 수정
-router.post('/pattern_info/:id/_update', function(req, res) {
-  console.log(req.body);
-  var in_data = {
-      INDEX: indexPatternInfo,
-      TYPE: "pattern_info",
-      ID: req.params.id,
-      FACTOR: req.body.factorGroup,
-      QUERYBODY: req.body.qBody,
-  };
-  console.log(in_data);
-  queryProvider.updateQueryByID("analysis", "updatePattern_info", in_data, function(err, out_data) {
-    if(out_data.result == "updated");
-      var rtnCode = CONSTS.getErrData("D002");
-    if (err) { console.log(err);   }
-    res.json({rtnCode: rtnCode});
+router.post('/restapi/pattern_info/:id/_update', function(req, res) {
+  console.log('/analysis/restapi/pattern_info');
+  console.log(JSON.stringify(req.body));
+  var in_data = { INDEX: indexPatternInfo, TYPE: "pattern_info", ID: req.params.id };
+  queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
+    if (out_data[0] == null){
+      var rtnCode = CONSTS.getErrData('E001');
+    } else {
+      var in_data = { INDEX: indexPatternInfo, TYPE: "pattern_info", ID: req.params.id, BODY: JSON.stringify(req.body)};
+      queryProvider.updateQueryByID("analysis", "updatePattern_info", in_data, function(err, out_data) {
+        if(out_data.result == "updated"){
+          var rtnCode = CONSTS.getErrData("D002");
+        } else if (out_data.result == "noop") {
+          var rtnCode = CONSTS.getErrData("D007");
+        }
+        if (err) { console.log(err);}
+        res.json({rtnCode: rtnCode});
+      });
+    }
   });
 });
+
 
 router.post('/restapi/insertAnomalyPattern/:id', function(req, res, next) {
   console.log('/analysis/restapi/insertAnomalyPattern');
   console.log(JSON.stringify(req.body));
-   var in_data = { INDEX: indexPatternMatching, TYPE: "pattern_matching", ID: req.params.id   };
-   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
+  var in_data = { INDEX: indexPatternMatching, TYPE: "pattern_matching", ID: req.params.id   };
+  queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');
     }  else  {
