@@ -216,21 +216,22 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
     var td = updateBtn.parent().parent().children();
     console.log(td.eq(1).text());
 
-    if(confirm("저장 하시겠습니까?")) {
+    if(confirm("수정 하시겠습니까?")) {
       var id = creationDate;
       var queryBody = {};
-      var fG = td.eq(1).text();
-      var cN = td.eq(2).text();
-      var sV = td.eq(3).children().val();
-      queryBody[cN] = sV;
-      queryBody = JSON.stringify(queryBody);
-      console.log(queryBody);
+      var fG = td.eq(1).text();           // Factor Group
+      var cN = td.eq(2).text();           // cluster No
+      var sV = td.eq(3).children().val(); // status Value
+      queryBody[fG] = {};
+      queryBody[fG][cN] = sV;
+      
       $.ajax({
-        url: "/analysis/pattern_info/" + id + "/_update",
+        url: "/analysis/restapi/pattern_info/" + id + "/_update",
         dataType: "json",
         type: "POST",
-        data:{ factorGroup : fG, qBody : queryBody},
+        data: queryBody,
         success: function(result) {
+          console.log("result: ", result);
           alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
           if (result.rtnCode.code == "D002") {
             // pattern tree data reload

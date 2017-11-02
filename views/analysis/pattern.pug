@@ -49,38 +49,32 @@ block script
             var queryBody = {};
             var tr = checkbox.parent().parent();
             var fG = tr.children().eq(1).text();
+            queryBody[fG] = {};
 
             checkbox.each(function(i) {
               var td = tr.eq(i).children();
               var cN = td.eq(2).text();
-              queryBody[cN] = td.eq(3).children().val();
-              });
+              queryBody[fG][cN] = td.eq(3).children().val();
+            });
 
-            queryBody = JSON.stringify(queryBody);
             console.log(queryBody);
-            
+
             $.ajax({
-              url: "/analysis/pattern_info/" + id + "/_update",
-              dataType: "json",
-              type: "POST",
-              data:{ factorGroup : fG, qBody : queryBody},
+              url: "/analysis/restapi/pattern_info/" + id + "/_update",
+              dataType: "json", type: "POST", data: queryBody,
               success: function(result) {
                 alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
                 if (result.rtnCode.code == "D002") {
-                  //location.href = "/analysis/pattern";
-                  // pattern tree data reload
-                  loadPatternData(id);
+                  var nodeInfo = $('#patternTree').treeview('getSelected');
+                  loadPatternData(id, nodeInfo[0]);
                 }
               },
               error: function(req, status, err) {
-
-                //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
                 $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
               }
             });
           }
         }
-        //console.log(checkbox);
       });
 
       
