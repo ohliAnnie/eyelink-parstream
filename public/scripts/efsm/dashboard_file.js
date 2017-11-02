@@ -474,15 +474,13 @@ function drawWeekly() {
   var markerName = "dashboardChart";
   var volumeChart = dc.barChart('#volumn-chart', markerName);
 
-  d3.json("/dashboard/restapi/getJiraAccOneWeek", function(err, out_data) {        
-    var maxDate = new Date();
-    var minDate  = addDays(new Date(), -20);
-    
-    maxDate = new Date(new Date().getTime());
-    minDate = new Date(new Date().getTime()-7*24*60*60*1000-12*60*60*1000);
+  d3.json("/dashboard/restapi/getJiraAccOneWeek", function(err, out_data) {               
+    var maxDate = new Date(out_data.rtnData[out_data.rtnData.length-1].timestamp);
+    var minDate  = new Date(out_data.rtnData[0].timestamp);
 
-    var data = out_data.rtnData;    
-    var ndx = crossfilter(data);
+    console.log(minDate, maxDate);
+
+    var ndx = crossfilter(out_data.rtnData);
 
     var moveDays = ndx.dimension(function (d) {    
       return d3.time.day(new Date(d.timestamp));

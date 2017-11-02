@@ -7,8 +7,7 @@ function drawChart() {
     type: "get",
     data: { sdate : sdate, edate : edate }, 
     success: function(result) {   
-      if (result.rtnCode.code == "0000") {             
-        console.log(result)
+      if (result.rtnCode.code == "0000") {                     
         drawAll(result.rtnData, sdate, edate, result.minTime, result.maxTime);
       } else {
         //- $("#errormsg").html(result.message);

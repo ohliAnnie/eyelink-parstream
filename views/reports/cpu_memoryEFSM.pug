@@ -1,37 +1,35 @@
 extends ../layout-type01
-block style
-  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
-  link(type='text/css', href='/assets/leaflet/css/MarkerCluster.Default.css', rel='stylesheet')
-  link(type='text/css', href='/assets/leaflet/css/MarkerCluster.css', rel='stylesheet')
-  link(rel='stylesheet', href='/assets/leaflet/dc.css')  
-  link(type='text/css', href='/assets/leaflet/css/leaflet-legend.css', rel='stylesheet')
+block style    
+  link(rel='stylesheet', href='/assets/leaflet/dc.css')
   link(rel='stylesheet', href='/stylesheets/style.css')
+  link(rel='stylesheet', type='text/css', href='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
 block script
   script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
   script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
   script(type='text/javascript', src='/assets/annie/js/dc.js')
   script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
-  script(type='text/javascript', src='/assets/leaflet/leaflet.js')  
-  script(type='text/javascript', src='/assets/leaflet/leaflet.markercluster.js')  
-  script(type='text/javascript', src='/assets/leaflet/dc.leaflet.js')
   script(type='text/javascript', src="/scripts/util.js")
-  script(src='/scripts/report_error.js')
+  script(type='text/javascript', src='/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+  script(type='text/javascript', src='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
+  script(src='/assets/scripts/page/table-managed.js')
+  script(src='/scripts/efsm/report_cpu_memory.js')
   script.
     $(document).ready(function() {                          
        var dateFormat = 'YYYY-MM-DD';
-      $('#sdate').val(moment().subtract(7, 'days').format(dateFormat));
+      $('#sdate').val(moment().subtract(0, 'days').format(dateFormat));
       $('#edate').val(moment().format(dateFormat));
       // time series char를 그린다.
+      getData();      
+      $('#btn_search').click(function() {    
+        $('#sample_2').empty();      
         getData();
-         $('#btn_search').click(function() {     
-          getData();
-        });
-      });                      
+      });
+    });                         
 block content  
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 Error
+        h1 CPU / Memory
         ol.breadcrumb
           li
             a(href='#') Home
@@ -60,96 +58,67 @@ block content
                     .col-md-4.form-inline                     
                       button#btn_search.btn.blue
                         i.fa.fa-search Search
-      a(href='javascript:dc.filterAll("error"); dc.renderAll("error");') Reset All
+      a(href='javascript:dc.filterAll(); dc.renderAll();') Reset All
       .row
-        .col-md-6
-          .portlet.light
+        .col-md-4
+          .portlet.light(style='height:450px; ')
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase Count by Day
-                span.caption-helper  
+                span.caption-subject.bold.uppercase.font-green-haze Cpu
+                span.caption-helper  system.cpu.system
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
-                  |  Print                
+                  |  Print
+                a.collapse(href='javascript:;')
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart(style='height:400px; ')
-                #countBar(style='margine:0 auto;')
-        .col-md-6
+                #cpuChart
+        .col-md-4
+          .portlet.light.bordered(style='height:450px; ')
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Memory
+                span.caption-helper  system.memory.actual.used.pct
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print
+                a.collapse(href='javascript:;')
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:400px; ')
+                #memoryChart
+        .col-md-4
+          .portlet.light(style='height:450px; ')
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Filesystem
+                span.caption-helper  system.filesystem.used.pct
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print
+                a.collapse(href='javascript:;')
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:450px; ')
+                #filesystemChart
+      .row                  
+        .col-md-12
           .portlet.light.bordered
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase Error Type
-                span.caption-helper  
+                span.caption-subject.bold.uppercase.font-green-haze Process List
+                span.caption-helper
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
-                  |  Print                
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
-            .portlet-body
-              .chart(style='height:400px; ')
-                #typePie
-      .row
-        .col-md-6
-          .portlet.light
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase Geo Map
-                span.caption-helper  
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-print
-                  |  Print               
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
-            .portlet-body
-              .chart(style='height:400px; ')
-                #demo
-                  .map
-                    .map
-        .col-md-6
-          .portlet.light.bordered
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase Count by Hour
-                span.caption-helper  
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-print
-                  |  Print                
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
-            .portlet-body
-              .chart(style='height:400px; ')
-                #hourLine
-      .row
-        .col-md-6
-          .portlet.light
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase Count by Week
-                span.caption-helper  
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-print
-                  |  Print               
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
-            .portlet-body
-              .chart(style='height:400px; ')
-                #weekLine
-        .col-md-6
-          .portlet.light.bordered
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase Count by Month
-                span.caption-helper  
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-print
-                  |  Print                
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
-            .portlet-body
-              .chart(style='height:400px; ')
-                #monLine
+                  |  Print
+                a.collapse(href='javascript:;')
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')              
+            #sample             
     p.copyright Copyright M2U Technology All rights reserved.
   a.go2top(href='#index')
     i.icon-arrow-up

@@ -1,4 +1,4 @@
-function getTransaction(id, date) {      
+                                                                                                                                                                                                              function getTransaction(id, date) {      
   console.log(date);  
   $.ajax({
     url: "/dashboard/restapi/getTransactionDetail" ,
@@ -7,8 +7,7 @@ function getTransaction(id, date) {
     data: { date : date, id : id },
     success: function(result) {
       if (result.rtnCode.code == "0000") {              
-        drawDetail(result.rtnData);       
-        console.log(result.rtnData);
+        drawDetail(result.rtnData);        
       } else {
         //- $("#errormsg").html(result.message);
       }

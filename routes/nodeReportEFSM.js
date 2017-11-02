@@ -23,34 +23,25 @@ router.get('/', function(req, res, next) {
   res.render('./reports/report_all'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, indexs: global.config.es_index });
 });
 
-router.get('/main', function(req, res, next) {
-  res.render('./reports/main', { title: global.config.productname, mainmenu:mainmenu });
-});
-
-router.get('/Res_Req', function(req, res, next) {
-  res.render('./reports/Res_Req', { title: global.config.productname, mainmenu:mainmenu });
+router.get('/res_req', function(req, res, next) {
+  res.render('./reports/res_req'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/process', function(req, res, next) {
-  res.render('./reports/process', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./reports/process'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/cpu_memory', function(req, res, next) {
-  res.render('./reports/cpu_memory', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./reports/cpu_memory'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/error', function(req, res, next) {
-  res.render('./reports/error', { title: global.config.productnam, mainmenu:mainmenu });
+  res.render('./reports/error'+global.config.pcode, { title: global.config.productnam, mainmenu:mainmenu });
 });
 
 router.get('/all', function(req, res, next) {
-  res.render('./reports/report_allEFSM', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./reports/report_all'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu });
 });
-
-router.get('/test', function(req, res, next) {
-  res.render('./reports/test', { title: global.config.productname, mainmenu:mainmenu });
-});
-
 
 // query Report
 router.get('/restapi/getJiraAcc', function(req, res, next) {
