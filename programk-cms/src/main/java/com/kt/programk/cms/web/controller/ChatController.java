@@ -309,15 +309,19 @@ public class ChatController {
 		String status = "";
 		String message = "";
 
-		if (!Strings.isNullOrEmpty(aimlMain.getInput()))
+		if (!Strings.isNullOrEmpty(aimlMain.getInput())) {
 			aimlMain.setInput(aimlMain.getInput().replaceAll("[<>\"']", " "));
-		if (!Strings.isNullOrEmpty(aimlMain.getImageUrl()))
-			aimlMain.setImageUrl(aimlMain.getImageUrl().replaceAll("[<>\"']", " "));
-		if (!Strings.isNullOrEmpty(aimlMain.getImageAlt()))
-			aimlMain.setImageAlt(aimlMain.getImageAlt().replaceAll("[<>\"']", " "));
-		if (!Strings.isNullOrEmpty(aimlMain.getLinkUrl()))
-			aimlMain.setLinkUrl(aimlMain.getLinkUrl().replaceAll("[<>\"']", " "));
-
+		}
+		if (!Strings.isNullOrEmpty(aimlMain.getImageUrl())) {
+			aimlMain.setImageUrl(aimlMain.getImageUrl().replaceAll("[\']", " "));
+		}
+		if (!Strings.isNullOrEmpty(aimlMain.getImageAlt())) {
+			aimlMain.setImageAlt(aimlMain.getImageAlt().replaceAll("[\']", " "));
+		}
+		if (!Strings.isNullOrEmpty(aimlMain.getLinkUrl())) {
+			// Changed to use bot properties in text link url
+			aimlMain.setLinkUrl(aimlMain.getLinkUrl().replaceAll("[\']", " "));
+		}
 		if (AimlValidator.validPattern(aimlMain.getInput())) {
 			// 정상일경우
 			int result = chatServcie.countByInput(aimlMain);
@@ -419,15 +423,20 @@ public class ChatController {
 		String status = "";
 		String message = "";
 		
-		if (!Strings.isNullOrEmpty(aimlMain.getInput()))
+		if (!Strings.isNullOrEmpty(aimlMain.getInput())) {
 			aimlMain.setInput(aimlMain.getInput().replaceAll("[<>\"']", " "));
-		if (!Strings.isNullOrEmpty(aimlMain.getImageUrl()))
-			aimlMain.setImageUrl(aimlMain.getImageUrl().replaceAll("[<>\"']", " "));
-		if (!Strings.isNullOrEmpty(aimlMain.getImageAlt()))
-			aimlMain.setImageAlt(aimlMain.getImageAlt().replaceAll("[<>\"']", " "));
-		if (!Strings.isNullOrEmpty(aimlMain.getLinkUrl()))
-			aimlMain.setLinkUrl(aimlMain.getLinkUrl().replaceAll("[<>\"']", " "));
-
+		}
+		if (!Strings.isNullOrEmpty(aimlMain.getImageUrl())) {
+			aimlMain.setImageUrl(aimlMain.getImageUrl().replaceAll("[\']", " "));
+		}
+		if (!Strings.isNullOrEmpty(aimlMain.getImageAlt())) {
+			aimlMain.setImageAlt(aimlMain.getImageAlt().replaceAll("[\']", " "));
+		}
+		if (!Strings.isNullOrEmpty(aimlMain.getLinkUrl())) {
+			// Changed to use bot properties in text link url
+			aimlMain.setLinkUrl(aimlMain.getLinkUrl().replaceAll("[\']", " "));
+		}
+		
 		if (AimlValidator.validPattern(aimlMain.getInput())) {
 			// 정상일경우
 			int result = chatServcie.countByInput(aimlMain);
