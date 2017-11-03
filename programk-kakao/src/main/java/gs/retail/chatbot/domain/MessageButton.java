@@ -1,4 +1,4 @@
-package m2u.eyelink.aibot.domain;
+package gs.retail.chatbot.domain;
 
 public class MessageButton {
 

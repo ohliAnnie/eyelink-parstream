@@ -13,7 +13,7 @@
  * 2016.01.06         성지훈                                   최초작성
  * @since : 2016.01.06
  */
-package m2u.eyelink.aibot.utils;
+package gs.retail.chatbot.utils;
 
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;

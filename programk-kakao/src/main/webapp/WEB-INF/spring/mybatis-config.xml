@@ -3,10 +3,10 @@
 
 <configuration>
 	<typeAliases>
-		<typeAlias type="m2u.eyelink.aibot.domain.UserAuth" alias="UserAuth" />
+		<typeAlias type="gs.retail.chatbot.domain.UserAuth" alias="UserAuth" />
 	</typeAliases>
 	<mappers>
-		<package name="m2u.eyelink.aibot.mapper" />
+		<package name="gs.retail.chatbot.mapper" />
 	</mappers>
 </configuration>
 

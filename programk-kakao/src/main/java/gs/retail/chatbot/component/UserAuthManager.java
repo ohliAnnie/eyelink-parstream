@@ -1,4 +1,4 @@
-package m2u.eyelink.aibot.component;
+package gs.retail.chatbot.component;
 
 import java.util.concurrent.TimeUnit;
 
@@ -17,11 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import m2u.eyelink.aibot.IConstants;
-import m2u.eyelink.aibot.domain.MessageIn;
-import m2u.eyelink.aibot.domain.UserAuth;
-import m2u.eyelink.aibot.mapper.UserAuthMapper;
-import m2u.eyelink.aibot.utils.DateUtils;
+import gs.retail.chatbot.IConstants;
+import gs.retail.chatbot.domain.MessageIn;
+import gs.retail.chatbot.domain.UserAuth;
+import gs.retail.chatbot.mapper.UserAuthMapper;
+import gs.retail.chatbot.utils.DateUtils;
 
 @Component
 public class UserAuthManager {

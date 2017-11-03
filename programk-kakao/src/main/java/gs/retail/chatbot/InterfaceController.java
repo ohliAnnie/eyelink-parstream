@@ -1,4 +1,4 @@
-package m2u.eyelink.aibot;
+package gs.retail.chatbot;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import m2u.eyelink.aibot.component.Config;
-import m2u.eyelink.aibot.component.KakaoRespGenerator;
-import m2u.eyelink.aibot.component.UserAuthManager;
-import m2u.eyelink.aibot.domain.Friend;
-import m2u.eyelink.aibot.domain.Keyboard;
-import m2u.eyelink.aibot.domain.MessageIn;
-import m2u.eyelink.aibot.domain.MessageOut;
-import m2u.eyelink.aibot.domain.UserAuth;
+import gs.retail.chatbot.component.Config;
+import gs.retail.chatbot.component.KakaoRespGenerator;
+import gs.retail.chatbot.component.UserAuthManager;
+import gs.retail.chatbot.domain.Friend;
+import gs.retail.chatbot.domain.Keyboard;
+import gs.retail.chatbot.domain.MessageIn;
+import gs.retail.chatbot.domain.MessageOut;
+import gs.retail.chatbot.domain.UserAuth;
 
 @Controller
 public class InterfaceController {
@@ -51,10 +51,9 @@ public class InterfaceController {
 	public Keyboard getKeyboard() {
 		
 		logger.debug("Getting keyboard...");
+		
 		if ( keyboard == null ) {
 			List<String> buttons = new ArrayList<>();
-	//		buttons.add("1st 버튼");
-	//		buttons.add("두번째 버튼");
 			keyboard = kakaoRespGenerator.createKakaoKeyboard(buttons);
 		}
 		return keyboard;
@@ -71,6 +70,8 @@ public class InterfaceController {
 		
 		logger.info("Message received. user_key : {}", messageIn.getUser_key());
 		
+		MessageOut result = null;
+		
 		UserAuth userAuth = uaManager.authenticateUser(messageIn);
 		
 		if ( userAuth.getStatus() == 1 ) {
@@ -85,17 +86,14 @@ public class InterfaceController {
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
-
 		uaManager.checkUpdateLastTalkDttm(userAuth);
 		
-		MessageOut result = null;
 		if ( response != null ) {
 			result = kakaoRespGenerator.programkToKakaoMessage(response);
 		}
-		
 		return result;
 	}
-	
+
 	/**
 	 * 사용자가 플러스 친구를 추가했을 때 호출되는 서비스
 	 * @param friend

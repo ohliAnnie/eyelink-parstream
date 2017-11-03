@@ -1,4 +1,4 @@
-package m2u.eyelink.aibot.component;
+package gs.retail.chatbot.component;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -8,12 +8,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
-import m2u.eyelink.aibot.IConstants;
-import m2u.eyelink.aibot.domain.Keyboard;
-import m2u.eyelink.aibot.domain.Message;
-import m2u.eyelink.aibot.domain.MessageButton;
-import m2u.eyelink.aibot.domain.MessageOut;
-import m2u.eyelink.aibot.domain.Photo;
+import gs.retail.chatbot.IConstants;
+import gs.retail.chatbot.domain.Keyboard;
+import gs.retail.chatbot.domain.Message;
+import gs.retail.chatbot.domain.MessageButton;
+import gs.retail.chatbot.domain.MessageOut;
+import gs.retail.chatbot.domain.Photo;
 
 @Component
 public class KakaoRespGenerator {

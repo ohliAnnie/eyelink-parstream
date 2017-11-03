@@ -1,4 +1,4 @@
-package m2u.eyelink.aibot.component;
+package gs.retail.chatbot.component;
 
 import java.io.BufferedReader;
 import java.io.IOException;

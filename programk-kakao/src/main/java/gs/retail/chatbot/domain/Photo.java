@@ -1,4 +1,4 @@
-package m2u.eyelink.aibot.domain;
+package gs.retail.chatbot.domain;
 
 import java.awt.image.BufferedImage;
 import java.net.URL;
@@ -8,7 +8,7 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import m2u.eyelink.aibot.IConstants;
+import gs.retail.chatbot.IConstants;
 
 /**
  * 카카오톡 이미지

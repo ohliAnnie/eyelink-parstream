@@ -24,7 +24,7 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 
-	<context:component-scan base-package="m2u.eyelink.aibot" />
+	<context:component-scan base-package="gs.retail.chatbot" />
 
 	<context:property-placeholder location="file:/chatbot/aibot/conf/commons.properties" />
 
@@ -67,7 +67,7 @@
 	</bean> -->
  
  	<!-- 암복화 모듈 -->
-    <bean id="jdbcConfig" class="m2u.eyelink.aibot.utils.JdbcConfig">
+    <bean id="jdbcConfig" class="gs.retail.chatbot.utils.JdbcConfig">
     	<property name="useCrypt"      value="${commons.programk.postgresql.jdbc.crypt}" />
         <property name="decUrl"        value="${commons.programk.postgresql.jdbc.url}" />
         <property name="decUsername"   value="${commons.programk.postgresql.jdbc.username}" />
@@ -94,7 +94,7 @@
 
 	<!-- mybatis setting -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="m2u.eyelink.aibot.mapper" />
+		<property name="basePackage" value="gs.retail.chatbot.mapper" />
 	</bean>
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />

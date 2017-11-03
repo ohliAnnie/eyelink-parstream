@@ -1,4 +1,4 @@
-package m2u.eyelink.aibot;
+package gs.retail.chatbot;
 
 public interface IConstants {
 	

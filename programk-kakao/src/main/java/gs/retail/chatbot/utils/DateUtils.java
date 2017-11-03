@@ -1,4 +1,4 @@
-package m2u.eyelink.aibot.utils;
+package gs.retail.chatbot.utils;
 
 import java.util.Date;
 

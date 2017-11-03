@@ -1,4 +1,4 @@
-package m2u.eyelink.aibot;
+package gs.retail.chatbot;
 
 import java.io.IOException;
 
@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import m2u.eyelink.aibot.component.Config;
-import m2u.eyelink.aibot.component.HttpRequester;
-import m2u.eyelink.aibot.domain.MessageIn;
+import gs.retail.chatbot.component.Config;
+import gs.retail.chatbot.component.HttpRequester;
+import gs.retail.chatbot.domain.MessageIn;
 
 @Service
 public class InterfaceService {

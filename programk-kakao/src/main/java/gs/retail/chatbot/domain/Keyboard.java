@@ -1,8 +1,8 @@
-package m2u.eyelink.aibot.domain;
+package gs.retail.chatbot.domain;
 
 import java.util.List;
 
-import m2u.eyelink.aibot.IConstants;
+import gs.retail.chatbot.IConstants;
 
 public class Keyboard {
 

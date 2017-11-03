@@ -1,6 +1,6 @@
-package m2u.eyelink.aibot.mapper;
+package gs.retail.chatbot.mapper;
 
-import m2u.eyelink.aibot.domain.UserAuth;
+import gs.retail.chatbot.domain.UserAuth;
 
 //@Repository(value = "userAuthMapper")
 public interface UserAuthMapper {

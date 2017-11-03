@@ -1,4 +1,4 @@
-package m2u.eyelink.aibot.component;
+package gs.retail.chatbot.component;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
-import m2u.eyelink.aibot.IConstants;
-import m2u.eyelink.aibot.InterfaceController;
+import gs.retail.chatbot.IConstants;
+import gs.retail.chatbot.InterfaceController;
 
 @Component
 public class Config implements InitializingBean{
