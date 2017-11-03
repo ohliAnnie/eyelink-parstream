@@ -106,27 +106,6 @@ router.post('/restapi/insertAnomaly/:id', function(req, res, next) {
   });
 });
 
-router.post('/restapi/updateAnomaly/:id', function(req, res, next) {
-  console.log('/analysis/restapi/updateAnomaly');
-  console.log(JSON.stringify(req.body));
-  var in_data = { INDEX: indexPatternData, TYPE: "pattern_data", ID: req.params.id };
-  queryProvider.deleteQueryByID("analysis", "deleteById", in_data, function(err, out_data) {
-    if(out_data.result == "deleted"){
-      var rtnCode = CONSTS.getErrData("D003");
-      var in_data = { INDEX: indexPatternData, TYPE: "pattern_data", ID: req.params.id,  BODY : JSON.stringify(req.body) };
-     queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {
-        if(out_data.result == "created"){
-          rtnCode = CONSTS.getErrData("D001");
-        }
-        if (err) { console.log(err) };
-        res.json({rtnCode: rtnCode});
-      });
-     rtnCode = CONSTS.getErrData("D002");
-    }
-    res.json({rtnCode: rtnCode});
-  });
-});
-
 router.delete('/restapi/deleteAnomaly/:id', function(req, res, next) {
   console.log('/analysis/restapi/deleteAnomaly');
   var in_data = { INDEX: indexPatternData, TYPE: "pattern_data", ID: req.params.id };
@@ -192,9 +171,32 @@ router.get('/restapi/getPatterns', function(req, res, next) {
   })
 });
 
+// pattern data 업데이트
+router.post('/restapi/pattern_data/:id/_update', function(req, res, next) {
+  console.log('/analysis/restapi/pattern_data/:id/_update');
+  console.log(JSON.stringify(req.body));
+  var in_data = { INDEX: indexPatternData, TYPE: "pattern_data", ID: req.params.id };
+  queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
+    if (out_data[0] == null){
+      var rtnCode = CONSTS.getErrData('E001');
+    } else {
+      var in_data = { INDEX: indexPatternData, TYPE: "pattern_data", ID: req.params.id, BODY: JSON.stringify(req.body)};
+      queryProvider.updateQueryByID("analysis", "updatePatternData", in_data, function(err, out_data) {
+        if(out_data.result == "updated"){
+          var rtnCode = CONSTS.getErrData("D002");
+        } else if (out_data.result == "noop") {
+          var rtnCode = CONSTS.getErrData("D007");
+        }
+        if (err) { console.log(err);}
+        res.json({rtnCode: rtnCode});
+      });
+    }
+  });
+});
+
 // pattern_info 정보 수정
-router.post('/restapi/pattern_info/:id/_update', function(req, res) {
-  console.log('/analysis/restapi/pattern_info');
+router.post('/restapi/pattern_info/:id/_update/', function(req, res, next) {
+  console.log('/analysis/restapi/pattern_info/:id/_update');
   console.log(JSON.stringify(req.body));
   var in_data = { INDEX: indexPatternInfo, TYPE: "pattern_info", ID: req.params.id };
   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
@@ -202,7 +204,7 @@ router.post('/restapi/pattern_info/:id/_update', function(req, res) {
       var rtnCode = CONSTS.getErrData('E001');
     } else {
       var in_data = { INDEX: indexPatternInfo, TYPE: "pattern_info", ID: req.params.id, BODY: JSON.stringify(req.body)};
-      queryProvider.updateQueryByID("analysis", "updatePattern_info", in_data, function(err, out_data) {
+      queryProvider.updateQueryByID("analysis", "updatePatternInfo", in_data, function(err, out_data) {
         if(out_data.result == "updated"){
           var rtnCode = CONSTS.getErrData("D002");
         } else if (out_data.result == "noop") {

@@ -1430,7 +1430,21 @@
         }
       }
     ]]></query>
-    <query id='updatePattern_info'><![CDATA[
+    <!-- Pattern data update [0]-->
+    <query id='updatePatternData'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,
+        "body" : {
+          "doc" : {
+            "pattern_data" : #BODY#
+          }
+        }
+      }
+    ]]></query>
+    <!-- Pattern infomation update [0]-->
+    <query id='updatePatternInfo'><![CDATA[
       {
         "index" : #INDEX#,
         "type" : #TYPE#,
