@@ -414,17 +414,15 @@ router.get('/restapi/selectJiraAccDash', function(req, res, next) {
   });
 });
 
-router.get('/selected_detail_jira', function(req, res, next) {          
+router.get('/selected_detail_jira', function(req, res, next) {       
   var start = Utils.getMs2Date(new Date(parseInt(req.query.start)), fmt2, 'Y');  
-  var end = Utils.getMs2Date(new Date(parseInt(req.query.end)), fmt2, 'Y');   
-  console.log('JJJJJJJJJJJJJJJJJ')  
-  console.log(start, end)
+  var end = Utils.getMs2Date(new Date(parseInt(req.query.end)), fmt2, 'Y');     
   var in_data = {
-    index:  [indexAcc+Utils.getDate(start, fmt4), indexAcc+Utils.getDate(end,fmt4)],
+    index:  [indexAcc+Utils.getMs2Date(start, fmt4, 'Y'), indexAcc+Utils.getMs2Date(end, fmt4, 'Y')],
     START : start,  END : end,
     MIN : parseInt(req.query.min),
     MAX : parseInt(req.query.max)  
-  };
+  };  
   queryProvider.selectSingleQueryByID2("dashboard","selectScatterSectionList", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -557,6 +555,8 @@ router.get('/restapi/getJiraAccOneWeek', function(req, res, next) {
     index: indexAcc+"*", type : "access",
     start: Utils.getDate(Utils.getToday(fmt2,'N','Y'), fmt1, -7, 0, 0, 0)+startTime  
   };  
+  console.log('((((((((((((((((((((')
+  console.log(in_data);
   queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccOneWeek", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');
