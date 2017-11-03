@@ -5,8 +5,24 @@ if ( process.argv[2] == null || process.argv[3] == null ) {
 
 const log4js = require('log4js');
 log4js.configure({
-  appenders: [{ datagen: { type: 'file', filename: './datagen.log', backups: 5 } }],
-  categories: { default: { appenders: ['datagen'], level: 'debug' } }
+  // appenders: [
+  //             { type: 'file', filename: './datagen.log', backups: 5 }
+  //             ],
+  // categories: { default: { appenders: ['datagen'], level: 'debug' } }
+  
+    "appenders": [
+      {
+        "type": "console"
+      },
+      {
+        "type": "file",
+        "filename": "./datagen.log",
+        "maxLogSize": 1024000,
+        "backups": 5,
+        "category": "eyelink"
+      }
+    ]
+  
 });
 global.logger = log4js.getLogger('datagen');
 
@@ -122,9 +138,7 @@ lineReader.on('line', function (line) {
           logger.debug('Processing DateTime : ',event_date + ' ' + data_arr[3].split('T')[1],', Next Event DateTime : ',data_arr[3].split('T').join(' '),', diffSeconds : ',diffSeconds );
       }
       // 17.11.02 로컬 시간을 UTC 시간으로 변경하기 위한 로직 추가
-      logger.debug("LOCAL time : {}", data_arr[3]);
-      data_arr[3] = util.getDateLocal2UTC(data_arr[3], CONSTS.DATEFORMAT.DATETIME, 'Y');
-      logger.debug("UTC time : {}", data_arr[3]);
+      data_arr[3] = Utils.getDateLocal2UTC(data_arr[3], CONSTS.DATEFORMAT.DATETIME, 'Y');
 
       if ( startDatetimeToSkip == null || nextEventDateTime.diff(startDatetimeToSkip, 'seconds') > 0 ){
           var index = 'corecode-' + cur_kor_datetime.split(' ')[0];
