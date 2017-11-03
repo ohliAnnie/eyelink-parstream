@@ -39,7 +39,7 @@ public enum AimlTagType {
     /**
      * The Tag 5.
      */
-    TAG5("star", "&#60;star index=1/&#62;"),
+    TAG5("star", "&#60;star index=&#34;1&#34;/&#62;"),
     /**
      * Tag 6 aiml tag type.
      */
