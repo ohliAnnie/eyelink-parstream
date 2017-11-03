@@ -307,7 +307,11 @@ public class AimlTemplateProcess extends AbstractTemplateProcess {
         }
 
         buffer.append(TEMPLATE_TAB + "<template>\n");
-        buffer.append(TEMPLATE_TAB + "{" + gson.toJson(template) + "}" + main.getReply() + CATEGORY_GUBUN + main.getId() + "\n");
+        
+        String json = gson.toJson(template);
+        json = replaceBotProperty(json);
+        
+        buffer.append(TEMPLATE_TAB + "{" + json + "}" + main.getReply() + CATEGORY_GUBUN + main.getId() + "\n");
         buffer.append(TEMPLATE_TAB + "</template>\n");
         buffer.append(CATEGORY_TAB + "</category>\n");
 
@@ -359,7 +363,29 @@ public class AimlTemplateProcess extends AbstractTemplateProcess {
             template.getMpatterns().get(i).setReplyInput(replaceSrai(template.getMpatterns().get(i).getReplyInput()));
         }
     }
+    /**
+     * 봇 프로퍼티 사용할 수 있도록
+     * @param src
+     * @return
+     */
+    private String replaceBotProperty(String src){
+        if(src == null || "".equals(src)){
+            return src;
+        }
 
+        String temp = src;
+
+        Pattern regex = Pattern.compile("<bot name=(.?\\\".*\\\")/>");
+        Matcher regexMatcher = regex.matcher(src);
+        while(regexMatcher.find()){
+            String find = regexMatcher.group();
+            find = find.replaceAll("\\\\", "\\\\\\\\");
+            temp = temp.replaceAll(find, find.replaceAll("\\\\",""));
+        }
+
+        return temp;
+    }
+    
     /**
      * input을 홀 따옴표로 변경
      * @param src
