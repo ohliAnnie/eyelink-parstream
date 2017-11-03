@@ -29,7 +29,9 @@ router.get('/users', function(req, res, next) {
     out_data.forEach(function(d){
       d._source.reg_date = Utils.getDateUTC2Local(d._source.reg_date, fmt2);
     });
-    res.render('./management/users'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, users:out_data });
+    var confDel = CONSTS.getConfMsg('DELETE');
+    console.log(confDel);
+    res.render('./management/users'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, users:out_data, confDel : confDel });
   });
 });
 

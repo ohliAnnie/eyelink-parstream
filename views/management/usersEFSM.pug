@@ -21,7 +21,8 @@ block script
           return false;
         }
         // TODO 메시지 공통 영역으로
-        if (confirm("삭제 하시겠습니까? ")) {
+        var confDel = JSON.parse($('#confDel').val())
+        if (confirm(confDel.message)) {
           $.ajax({
             url: "/management/users/" + userid,
             dataType: "json",
@@ -43,6 +44,7 @@ block script
       });
     });
 block content
+  input#confDel(name='error', type='hidden', value=confDel)
   .container-fluid
     .page-content
       .breadcrumbs

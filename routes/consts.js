@@ -59,8 +59,19 @@ define("ERROR_CODE", {
 	"ER_BAD_NULL_ERROR": "Column 'user_id' cannot be null",
 });
 
+define("CONFIRM", {
+	"DELETE" : "삭제하시겠습니까?"
+});
+
 function getErrData(key) {
 	var msg = exports.ERROR_CODE[key];
+	if (typeof msg == 'undefined')
+		msg = "오류 코드(" + key + ")에 대한 메시지가 정의되어 있지 않습니다..";
+	return {code: key, message : msg};
+}
+
+function getConfMsg(key) {
+	var msg = exports.CONFIRM[key];
 	if (typeof msg == 'undefined')
 		msg = "오류 코드(" + key + ")에 대한 메시지가 정의되어 있지 않습니다..";
 	return {code: key, message : msg};
@@ -76,5 +87,6 @@ function getCodeValue(category, key) {
 }
 
 exports.getErrData = getErrData;
+exports.getConfMsg = getConfMsg;
 exports.getCodeValue = getCodeValue;
 exports.UPLOADPATH_OFFICE = exports.CONFIG["UPLOADPATH_OFFICE"];
