@@ -227,9 +227,7 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
       
       $.ajax({
         url: "/analysis/restapi/pattern_info/" + id + "/_update",
-        dataType: "json",
-        type: "POST",
-        data: queryBody,
+        dataType: "json", type: "POST", data: queryBody,
         success: function(result) {
           console.log("result: ", result);
           alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
