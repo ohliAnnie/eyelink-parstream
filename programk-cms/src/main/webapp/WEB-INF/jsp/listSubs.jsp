@@ -145,7 +145,7 @@
 				      			<td class="btnBox">
 				      				<c:if test="${(sessionScope.userInfo.auth == 'SAA') || (sessionScope.userInfo.auth == 'CPA' && item.restriction != 'all')}">
 			      						<a href="#" onclick="fnEditLayer('${item.cateId}','${item.find}');return false;" class="btnBg"><span class="icon_modify"></span>수정</a>
-				      					<a href="#" onclick="fnDelete('${item.cateId}','${item.find}');return false;" class="btnBg"><span class="icon_delete"></span>삭제</a>
+				      					<a href="#" onclick="fnDelete('${item.cateId}','${item.find}', '${item.cateName}');return false;" class="btnBg"><span class="icon_delete"></span>삭제</a>
 			      					</c:if>				      				
 				      			</td>
 							</tr>
@@ -175,6 +175,7 @@
 <div class="popLayer writeCategorySet">
 	<form id="form" method="post">
 	<input type="hidden" id="cateId" name="cateId" />
+	<input type="hidden" id="cateName" name="cateName" />
 	<div class="popTitle">
 		<h1>수정</h1>
 		<a href="#" onclick="return false;" class="btnBg closePopBox closePop"><span class="icon_closePop">닫기</span></a>
@@ -354,10 +355,11 @@
 	}
 	
 	//삭제
-	function fnDelete(cateId,find){
+	function fnDelete(cateId,find,cateName){
 		$("#form")[0].reset(); //초기화
 		$('#form #cateId').val(cateId);
 		$('#form #find').val(replaceCharacter(find));
+		$('#form #cateName').val(cateName);
 		
 		var formData = $('#form').serializeArray();
 		var answer = confirm("삭제 하시겠습니까?");

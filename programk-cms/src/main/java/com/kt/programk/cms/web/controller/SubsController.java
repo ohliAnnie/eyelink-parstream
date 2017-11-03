@@ -265,7 +265,11 @@ public class SubsController {
 		String message = "";
 		
 		try {
-			subsService.remove(aimlSubs);
+			int result = subsService.remove(aimlSubs);
+			if ( result == 0 ) {
+				status = "FAIL";
+				message = "삭제 실패하였습니다.\n카테고리:" + aimlSubs.getCateName() + ", 대상키워드:" + aimlSubs.getFindOrg();
+			}
 		} catch (Exception e) {
 			status = "FAIL";
 			message = e.getMessage();
