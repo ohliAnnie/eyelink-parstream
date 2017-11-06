@@ -335,14 +335,12 @@ router.get('/restapi/getAnomaly_Pattern', function(req, res, next) {
 
 // query RawData
 router.get('/restapi/getAnomalyChartData', function(req, res, next) {    
-  var now = Utils.getToday(fmt2);
-  var end = Utils.getDateLocal2UTC(Utils.getDate(now, fmt2, 0, 0, 0, 10), fmt2, 'Y');
+  var now = Utils.getToday(fmt2, 'Y');  
+  var end = Utils.getDate(now, fmt2, 0, 0, 0, 10, 'Y', 'Y');
   var in_data = {  
         INDEX: indexPatternMatching, TYPE: "pattern_matching", 
-        gte : Utils.getDateLocal2UTC(Utils.getDate(now, fmt2, 0, 0, -10, 0), fmt2, 'Y'), 
-        lte : end }   
-        console.log('***************')
-        console.log(in_data);
+        gte : Utils.getDate(now, fmt2, 0, 0, -10, 0, 'Y', 'Y'), 
+        lte : end }
   queryProvider.selectSingleQueryByID2("analysis", "selectByAnalysisTimestamp", in_data, function(err, out_data, params) {        
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -365,11 +363,12 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
         } else if(out_data.length == 0) {
            rtnCode = CONSTS.getErrData('0001');
         } else {        
-          var clust = out_data[0]._source.pattern_data;   
-
-          var start = Utils.getDate(pattern.timestamp, fmt2, 0, 0, -50, -10, 'Y');          
+          var clust = out_data[0]._source.pattern_data;           
+          var start = Utils.getDate(pattern.timestamp, fmt2, 0, 0, -50, -10, 'Y', 'Y');                    
           var in_data = { index : indexCore+'*', type : "corecode",
-                gte: start, lte: end,  NODE: ["0002.00000039"], FLAG : 'N'};    
+                gte: start, lte: end,  NODE: ["0002.00000039"], FLAG : 'N'}; 
+          console.log('(99999999999999999999')
+          console.log(in_data)
          queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
             var rtnCode = CONSTS.getErrData('0000');
             if (out_data == null) {
@@ -424,9 +423,9 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
                 d._source.event_time = new Date(d._source.event_time).getTime();
                 data.push(d._source);                
               });      
-              var last = data[data.length-1];
-              last.date = new Date().getTime();
-              data.push(last);
+              var last = data[data.length-1];              
+              last.event_time = new Date().getTime();
+              data.push(last);              S              
               res.json({rtnCode: rtnCode, raw : data, pattern : pattern, anomaly : anomaly, pt : pt});              
             }
           });
@@ -441,10 +440,8 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
 });
 
 router.get('/restapi/getAnomalyPatternCheck/', function(req, res, next) {  
-  var now = Utils.getDateLocal2UTC(Utils.getToday(fmt2), fmt2, 'Y');  
-  var start = Utils.getDateLocal2UTC(Utils.getDate(now, fmt2, 0, 0, -2, 0), fmt2, 'Y');  
-  console.log('((((((((((((((((s')
-  console.log(now, start);    
+  var now = Utils.getToday(fmt2, 'Y', 'Y');  
+  var start = Utils.getDate(now, fmt2, 0, 0, -2, 0, 'Y', 'Y');    
   var in_data = {  INDEX: indexPatternMatching, TYPE: "pattern_matching", 
         gte : start,     lte : now }   
   queryProvider.selectSingleQueryByID2("analysis", "selectByAnalysisTimestamp", in_data, function(err, out_data, params) {    
@@ -459,11 +456,12 @@ router.get('/restapi/getAnomalyPatternCheck/', function(req, res, next) {
 // query RawData
 router.get('/restapi/getClusterNodeLive', function(req, res, next) {
   console.log('analysis/restapi/getClusterNodeLive');
-  var today = Utils.getToday(fmt2);    
+  var today = Utils.getToday(fmt2, 'Y', 'Y');    
+  console.log(today);
   var in_data = {
         index : indexCore+'*',      type : "corecode",
-        gte: Utils.getDate(today, fmt2, 0, 0, -1, 0, 'Y'),
-        lte: Utils.getDate(today, fmt2, 0, 0, 0, 1, 'Y'),
+        gte: Utils.getDate(today, fmt2, 0, 0, -1, 0, 'Y', 'Y'),
+        lte: Utils.getDate(today, fmt2, 0, 0, 0, 1, 'Y', 'Y'),
         NODE: ["0002.00000039"], FLAG : 'N'};  
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
      //console.log(out_data);

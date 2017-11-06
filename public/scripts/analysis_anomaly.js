@@ -34,7 +34,7 @@ function getData(){
       var point = new Date(result.pattern.timestamp).getTime(), start = point -50*60*1000, end = point+10*60*1000;      
       var now = new Date().getTime();      
       if (result.rtnCode.code == "0000") {                                              
-        console.log(result);
+        console.log(result);        
         drawChart(raw, result.anomaly.vdata, start, end, now, point, now-point, 'voltage', '#voltage', result.pattern, result.pt.vapt, result.pt.vcpt);
         drawChart(raw, result.anomaly.adata, start, end, now, point, now-point, 'ampere', '#ampere', result.pattern, result.pt.aapt, result.pt.acpt);
         drawChart(raw, result.anomaly.apdata, start, end, now, point, now-point, 'active_power', '#active_power', result.pattern, result.pt.apapt, result.pt.apcpt);
@@ -73,6 +73,7 @@ function drawChart(raw, compare, start, end, now, point, gap, id, chart_id, patt
   }
   
   liveValue = raw[raw.length-1];    
+  console.log(liveValue)
   var groups = {
     output: {
       value: liveValue[id],
