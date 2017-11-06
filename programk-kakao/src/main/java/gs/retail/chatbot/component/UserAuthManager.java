@@ -244,14 +244,14 @@ public class UserAuthManager {
 	}
 	
 	private int updateLastAuthDttm(UserAuth userAuth) {
-		logger.debug("Updating last auth dttm for user : {}", userAuth);
+		logger.debug("Updating last auth dttm for user : {}", userAuth.getUserKey());
 		String currentDttm = DateUtils.instance.getCurrentDttm(IConstants.DateFormat.DTTM_19);
 		userAuth.setLastAuthDttm(currentDttm);
 		return userAuthMapper.update(userAuth);
 	}
 
 	private int updateLastTalkDttm(UserAuth userAuth) {
-		logger.debug("Updating last talk dttm for user : {}", userAuth);
+		logger.debug("Updating last talk dttm for user : {}", userAuth.getUserKey());
 		String currentDttm = DateUtils.instance.getCurrentDttm(IConstants.DateFormat.DTTM_19);
 		userAuth.setLastTalkDttm(currentDttm);
 		return userAuthMapper.update(userAuth);

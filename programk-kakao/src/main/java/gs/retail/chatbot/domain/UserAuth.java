@@ -113,23 +113,4 @@ public class UserAuth {
 	public void setStatus(int status) {
 		this.status = status;
 	}
-	
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("UserAuth [userKey=");
-		builder.append(userKey);
-		builder.append(", lastAuthDttm=");
-		builder.append(lastAuthDttm);
-		builder.append(", lastTalkDttm=");
-		builder.append(lastTalkDttm);
-		builder.append(", userName=");
-		builder.append(userName);
-		builder.append(", empId=");
-		builder.append(empId);
-		builder.append(", status=");
-		builder.append(status);
-		builder.append("]");
-		return builder.toString();
-	}
 }
