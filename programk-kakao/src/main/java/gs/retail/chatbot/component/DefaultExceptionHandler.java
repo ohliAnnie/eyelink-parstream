@@ -12,7 +12,7 @@ public class DefaultExceptionHandler {
 
 	@ExceptionHandler(Throwable.class)
 	public String anyException(Throwable th) {
-		logger.debug(th.getMessage(), th);
+		logger.error(th.getMessage(), th);
 		return null;
 	}
 }
