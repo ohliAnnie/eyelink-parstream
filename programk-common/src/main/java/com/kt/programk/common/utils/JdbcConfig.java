@@ -137,7 +137,6 @@ public class JdbcConfig {
 		logger.debug("Trying to decrypt data. [{}]", encData);
 		
 		StandardPBEStringEncryptor enc = new StandardPBEStringEncryptor();
-		enc.setAlgorithm("PBEWITHMD5ANDDES");
 		enc.setPassword("key for encrypt passwd");
 		try {
 			rv = enc.decrypt(encData);
@@ -146,76 +145,6 @@ public class JdbcConfig {
 		}
 		return rv;
 	}
-//	private String decData(String encData) {
-//		String rv = "";
-//
-//		// 설정암호화 여부
-//		if (!useCrypt) {
-//			rv = encData;
-//			return rv;
-//		}
-//
-//		// Symmetric Cipher
-//		rv = ssoDb(JKTFCrypto.CIPHER_SEED_ALGO, encData);
-//		if ("".equals(rv)) {
-//			return "";
-//		}
-//
-//		rv = ssoDb(JKTFCrypto.CIPHER_AES_128, encData);
-//		if ("".equals(rv)) {
-//			return "";
-//		}
-//
-//		rv = ssoDb(JKTFCrypto.CIPHER_3DES_ALGO, encData);
-//		if ("".equals(rv)) {
-//			return "";
-//		}
-//
-//		return rv;
-//	}
-
-	/**
-	 * Sso db string.
-	 *
-	 * @param algo
-	 *            the algo
-	 * @param encData
-	 *            the enc data
-	 * @return the string
-	 */
-//	private String ssoDb(int algo, String encData) {
-//		LOG.debug("==================== encData == " + encData);
-//		JKTFSymmetricKey symmKey = null;
-//
-//		try {
-//			symmKey = new JKTFSymmetricKey();
-//		} catch (JKTFException e) {
-//			LOG.info(e.getMessage());
-//			return "";
-//		}
-//
-//		LOG.debug("***** SSODB Algorithm : " + getAlgoName(algo) + " *****");
-//
-//		// Init SecretKey
-//		symmKey.InitSecretKey();
-//		if (symmKey.getErrorCode() < 0) {
-//			LOG.info("InitSecretKey Failed : " + symmKey.getErrorCode());
-//			return "";
-//		}
-//		LOG.debug("InitSecretKey - OK");
-//
-//		byte[] decdata = symmKey.DecryptData(encData);
-//		if (symmKey.getErrorCode() < 0 || decdata == null) {
-//			LOG.debug("DecryptData Failed : " + symmKey.getErrorCode());
-//			return "";
-//		}
-//
-//		LOG.debug("DecryptedData : " + new String(decdata) + " Length(byte) :" + decdata.length);
-//		LOG.debug("DecryptData - OK");
-//		LOG.debug("");
-//
-//		return new String(decdata);
-//	}
 
 	/**
 	 * Gets algo name.
