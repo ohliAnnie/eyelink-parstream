@@ -69,7 +69,6 @@ public class JdbcConfig {
 		}
 		
 		StandardPBEStringEncryptor enc = new StandardPBEStringEncryptor();
-		enc.setAlgorithm("PBEWITHMD5ANDDES");
 		enc.setPassword("key for encrypt passwd");
 		try {
 			rv = enc.decrypt(encData);
@@ -84,7 +83,6 @@ public class JdbcConfig {
 	 */
 	public static void main(String[] args) {
 		StandardPBEStringEncryptor enc = new StandardPBEStringEncryptor();
-		enc.setAlgorithm("PBEWITHMD5ANDDES");
 		enc.setPassword("key for encrypt passwd");
 		System.out.println(enc.encrypt(args[0]));
 	}
