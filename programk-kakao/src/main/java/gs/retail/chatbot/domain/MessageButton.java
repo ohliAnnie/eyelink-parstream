@@ -1,5 +1,9 @@
 package gs.retail.chatbot.domain;
 
+/**
+ * 카카오톡 메시지버튼
+ * @author Kihyun
+ */
 public class MessageButton {
 
 	private String label;

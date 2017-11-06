@@ -1,42 +1,17 @@
-/**
- * 암호화된 DB정보에 대해서 복호화 하는 클래스
- *
- * @Package : com.olleh.search.cms.config;
- * @FileName: JdbcConfig.java
- * @author : 성지훈
- * @version 1.0
- * <p>
- * << 개정이력 >>
- * <p>
- * 수정일                           수정자                                   수정내용
- * --------------- -------------   -----------------------
- * 2016.01.06         성지훈                                   최초작성
- * @since : 2016.01.06
- */
+
 package gs.retail.chatbot.utils;
 
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * The type Jdbc config.
+ * 암호화된 DB정보에 대해서 암복호화 하는 클래스
+ * @author Kihyun
  */
 public class JdbcConfig {
-	private static final Logger LOG = LoggerFactory.getLogger(JdbcConfig.class);
 
-	/**
-	 * The Dec url.
-	 */
 	private String decUrl;
-	/**
-	 * The Dec username.
-	 */
 	private String decUsername;
-	/**
-	 * The Dec password.
-	 */
 	private String decPassword;
 
 	/**
@@ -51,59 +26,26 @@ public class JdbcConfig {
 		super();
 	}
 
-	/**
-	 * Gets dec url.
-	 *
-	 * @return the dec url
-	 */
 	public String getDecUrl() {
 		return decUrl;
 	}
 
-	/**
-	 * Sets dec url.
-	 *
-	 * @param decUrl
-	 *            the dec url
-	 */
 	public void setDecUrl(String decUrl) {
 		this.decUrl = decData(decUrl);
 	}
 
-	/**
-	 * Gets dec username.
-	 *
-	 * @return the dec username
-	 */
 	public String getDecUsername() {
 		return decUsername;
 	}
 
-	/**
-	 * Sets dec username.
-	 *
-	 * @param decUsername
-	 *            the dec username
-	 */
 	public void setDecUsername(String decUsername) {
 		this.decUsername = decData(decUsername);
 	}
 
-	/**
-	 * Gets dec password.
-	 *
-	 * @return the dec password
-	 */
 	public String getDecPassword() {
 		return decPassword;
 	}
 
-	/**
-	 * Sets dec password.
-	 *
-	 * @param decPassword
-	 *            the dec password
-	 */
 	public void setDecPassword(String decPassword) {
 		this.decPassword = decData(decPassword);
 	}
@@ -117,13 +59,6 @@ public class JdbcConfig {
 			this.useCrypt = Boolean.parseBoolean(useCrypt);
 	}
 
-	/**
-	 * Dec data string.
-	 *
-	 * @param encData
-	 *            the enc data
-	 * @return the string
-	 */
 	private String decData(String encData) {
 		String rv = "";
 
@@ -143,6 +78,10 @@ public class JdbcConfig {
 		}
 		return rv;
 	}
+	/**
+	 * 변경된 패스워드 암호화를 위한 메인메서드
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		StandardPBEStringEncryptor enc = new StandardPBEStringEncryptor();
 		enc.setAlgorithm("PBEWITHMD5ANDDES");

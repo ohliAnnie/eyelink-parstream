@@ -11,11 +11,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+/**
+ * Http 요청을 위한 컴포넌트
+ * @author dev
+ *
+ */
 @Component
 public class HttpRequester {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
+	/**
+	 * 특정 URL로 HTTP POST 요청하기
+	 * @param jsonMsg
+	 * @param destUrl
+	 * @return
+	 * @throws IOException
+	 */
 	public String sendPostRequest(String jsonMsg, String destUrl) throws IOException {
 		
 		StringBuffer sb = new StringBuffer();

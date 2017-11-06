@@ -1,5 +1,9 @@
 package gs.retail.chatbot.domain;
 
+/**
+ * 사용자 인증 도메인
+ * @author Kihyun
+ */
 public class UserAuth {
 
 	/**
@@ -21,7 +25,7 @@ public class UserAuth {
 	 */
 	private String userName;
 	/**
-	 * 점원번호
+	 * 스토어매니저ID
 	 */
 	private String empId;
 	/**

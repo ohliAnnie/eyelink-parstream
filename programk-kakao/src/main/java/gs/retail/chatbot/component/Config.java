@@ -16,6 +16,11 @@ import org.springframework.stereotype.Component;
 import gs.retail.chatbot.IConstants;
 import gs.retail.chatbot.InterfaceController;
 
+/**
+ * 설정 파일 캐시
+ * @author dev
+ *
+ */
 @Component
 public class Config implements InitializingBean{
 

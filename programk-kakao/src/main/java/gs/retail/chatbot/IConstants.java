@@ -1,5 +1,9 @@
 package gs.retail.chatbot;
 
+/**
+ * 각종 상수 정의
+ * @author Kihyun
+ */
 public interface IConstants {
 	
 	interface Charset {

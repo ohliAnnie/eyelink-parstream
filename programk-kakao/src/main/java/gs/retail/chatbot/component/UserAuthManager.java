@@ -23,6 +23,11 @@ import gs.retail.chatbot.domain.UserAuth;
 import gs.retail.chatbot.mapper.UserAuthMapper;
 import gs.retail.chatbot.utils.DateUtils;
 
+/**
+ * 사용자 인증 관리자
+ * @author dev
+ *
+ */
 @Component
 public class UserAuthManager {
 
@@ -56,6 +61,11 @@ public class UserAuthManager {
 		
 	}
 	
+	/**
+	 * 사용자 인증하기
+	 * @param messageIn
+	 * @return
+	 */
 	public UserAuth authenticateUser(MessageIn messageIn) {
 		if ( cache == null ) {
 			initCache();
@@ -190,6 +200,10 @@ public class UserAuthManager {
 		return false;
 	}
 
+	/**
+	 * 마지막 대화시간 업데이트
+	 * @param userAuth
+	 */
 	public void checkUpdateLastTalkDttm(UserAuth userAuth) {
 		
 		String lastTalkDttm = DateUtils.instance.getCurrentDttm(null);
@@ -242,6 +256,10 @@ public class UserAuthManager {
 		userAuth.setLastTalkDttm(currentDttm);
 		return userAuthMapper.update(userAuth);
 	}
+	/**
+	 * 사용자 인증 캐시에서 삭제
+	 * @param user_key
+	 */
 	public void remove(String user_key) {
 		cache.remove(user_key);
 	}

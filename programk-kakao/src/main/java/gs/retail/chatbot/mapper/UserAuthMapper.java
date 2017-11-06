@@ -2,7 +2,10 @@ package gs.retail.chatbot.mapper;
 
 import gs.retail.chatbot.domain.UserAuth;
 
-//@Repository(value = "userAuthMapper")
+/**
+ * 사용자 정보 관련 매퍼 인터페이스
+ * @author Kihyun
+ */
 public interface UserAuthMapper {
 
     /**

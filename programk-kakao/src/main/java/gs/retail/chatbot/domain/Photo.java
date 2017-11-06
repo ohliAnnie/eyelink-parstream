@@ -87,12 +87,4 @@ public class Photo {
 		builder.append("]");
 		return builder.toString();
 	}
-	
-	public static void main(String[] args) {
-		int a = 3;
-		int b = 7;
-		
-		float result = (float)a/b;
-		System.out.println(result);
-	}
 }

@@ -15,9 +15,19 @@ import gs.retail.chatbot.domain.MessageButton;
 import gs.retail.chatbot.domain.MessageOut;
 import gs.retail.chatbot.domain.Photo;
 
+/**
+ * 카카오톡 응답 생성기
+ * @author dev
+ *
+ */
 @Component
 public class KakaoRespGenerator {
 
+	/**
+	 * 키보드 API
+	 * @param buttons
+	 * @return
+	 */
 	public Keyboard createKakaoKeyboard(List<String> buttons) {
 		if (buttons != null && buttons.size() > 0 ){
 			return new Keyboard(buttons);
@@ -25,6 +35,11 @@ public class KakaoRespGenerator {
 		return new Keyboard(IConstants.Type.Keyboard.TEXT);
 	}
 
+	/**
+	 * Program K의 응답을 카카오톡에 맞게 변경
+	 * @param response
+	 * @return
+	 */
 	public MessageOut programkToKakaoMessage(String response) {
 
 		MessageOut result = new MessageOut();

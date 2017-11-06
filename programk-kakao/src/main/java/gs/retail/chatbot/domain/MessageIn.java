@@ -1,5 +1,9 @@
 package gs.retail.chatbot.domain;
 
+/**
+ * 카카오톡에서 받는 메시지
+ * @author Kihyun
+ */
 public class MessageIn {
 
 	private String user_key;

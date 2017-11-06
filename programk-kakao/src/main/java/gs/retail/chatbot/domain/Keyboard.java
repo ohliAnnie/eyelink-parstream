@@ -4,6 +4,10 @@ import java.util.List;
 
 import gs.retail.chatbot.IConstants;
 
+/**
+ * 카카오톡 키보드
+ * @author Kihyun
+ */
 public class Keyboard {
 
 	private String type;

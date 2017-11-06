@@ -1,5 +1,9 @@
 package gs.retail.chatbot.domain;
 
+/**
+ * 카카오톡으로 나가는 메시지
+ * @author Kihyun
+ */
 public class MessageOut {
 
 	private Message message;

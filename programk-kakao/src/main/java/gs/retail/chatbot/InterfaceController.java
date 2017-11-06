@@ -23,6 +23,10 @@ import gs.retail.chatbot.domain.MessageIn;
 import gs.retail.chatbot.domain.MessageOut;
 import gs.retail.chatbot.domain.UserAuth;
 
+/**
+ * 카카오톡이 호출하는 인터페이스
+ * @author Kihyun
+ */
 @Controller
 public class InterfaceController {
 	
