@@ -28,44 +28,6 @@
 
 	<context:property-placeholder location="file:/chatbot/aibot/conf/commons.properties" />
 
-	<!-- -->
-	<!-- Configuration for encryptor, based on environment variables. -->
-	<!-- -->
-	<!-- In this example, the encryption password will be read from an -->
-	<!-- environment variable called "APP_ENCRYPTION_PASSWORD" which, once -->
-	<!-- the application has been started, could be safely unset. -->
-	<!-- -->
-	<!-- <bean id="environmentVariablesConfiguration"
-		class="org.jasypt.encryption.pbe.config.EnvironmentStringPBEConfig">
-		<property name="algorithm" value="PBEWITHMD5ANDDES" />
-		<property name="passwordEnvName" value="commons.programk.postgresql.jdbc.password" />
-		<property name="password" value="key for encrypt passwd" />
-	</bean> -->
-
-	<!-- -->
-	<!-- The will be the encryptor used for decrypting configuration values. -->
-	<!-- -->
-	<!-- <bean id="configurationEncryptor" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
-		<property name="config" ref="environmentVariablesConfiguration" />
-	</bean> -->
-
-	<!-- -->
-	<!-- The EncryptablePropertyPlaceholderConfigurer will read the -->
-	<!-- .properties files and make their values accessible as ${var}. -->
-	<!-- -->
-	<!-- Our "configurationEncryptor" bean (which implements -->
-	<!-- org.jasypt.encryption.StringEncryptor) is set as a constructor arg. -->
-	<!-- -->
-	<!-- <bean id="propertyConfigurer"
-		class="org.jasypt.spring31.properties.EncryptablePropertyPlaceholderConfigurer">
-		<constructor-arg ref="configurationEncryptor" />
-		<property name="locations">
-			<list>
-				<value>file:/chatbot/aibot/conf/commons.properties</value>
-			</list>
-		</property>
-	</bean> -->
- 
  	<!-- 암복화 모듈 -->
     <bean id="jdbcConfig" class="gs.retail.chatbot.utils.JdbcConfig">
     	<property name="useCrypt"      value="${commons.programk.postgresql.jdbc.crypt}" />
@@ -76,13 +38,9 @@
     
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="org.postgresql.Driver" />
-		<!-- <property name="url" value="jdbc:postgresql://localhost:5432/talksearch" /> -->
 		<property name="url" value="#{jdbcConfig.decUrl}"/>
         <property name="username" value="#{jdbcConfig.decUsername}"/>
         <property name="password" value="#{jdbcConfig.decPassword}"/>
-		<!-- <property name="url" value="${commons.programk.postgresql.jdbc.url}" />
-		<property name="username" value="${commons.programk.postgresql.jdbc.username}" />
-		<property name="password" value="${commons.programk.postgresql.jdbc.password}" /> -->
 		<property name="initialSize" value="${commons.programk.postgresql.jdbc.initialSize}" />
 		<property name="maxActive"   value="${commons.programk.postgresql.jdbc.jdbc.maxActive}" />
 		<property name="maxIdle"     value="${commons.programk.postgresql.jdbc.jdbc.maxIdle}" />
