@@ -1,3 +1,25 @@
+jQuery(document).ready(function() {  
+  $('#sample_2 > tbody > tr').click(function(){                       
+    var values = $(this).find('td').map(function(){            
+      return $(this).text();
+    }).get();          
+    console.log($(this)[0].id)          
+    //getTransaction($(this)[0].id, values[0]);
+  });
+   $('.tree-2').treegrid({
+      expanderExpandedClass: 'glyphicon glyphicon-minus',
+      expanderCollapsedClass: 'glyphicon glyphicon-plus'
+    });
+  Metronic.init(); // init metronic core componets
+  eyelinkLayout.init(); // init layout
+  QuickSidebar.init(); // init quick sidebar
+  Layout.init(); // init layout
+  Demo.init(); // init index page
+  ComponentsPickers.init();
+  TableManaged.init();
+  ComponentsDropdowns.init();
+});
+
 function drawDetail(detail, id, date, app, agent) {    
   $('#call').empty();
   var sb = new StringBuffer();

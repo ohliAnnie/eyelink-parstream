@@ -12,39 +12,25 @@ block script
   script.
     $(document).ready(function() {
       TableManaged.init();
-      $('a').click(function(event){ 
-        //- event.preventDefault();
-        if ('deleteUser' != $(this).attr('flag')) return;
-        var userid =$(this).attr('userid');
+      $('a').click(function(event){         
+        if ('deleteUser' != $(this).attr('flag')) return;        
         var id = $(this).attr('id');
         if (id == "") {
           return false;
         }
-        // TODO 메시지 공통 영역으로
-        var confDel = JSON.parse($('#confDel').val())
-        if (confirm(confDel.message)) {
-          $.ajax({
-            url: "/management/users/" + userid,
-            dataType: "json",
-            type: "DELETE",
-            data: {id : id},
-            success: function(result) {
-              alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
-              if (result.rtnCode.code == "D003") {
-                location.href = "/management/users";
-              }
-            },
-            error: function(req, status, err) {
-
-              //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-              $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-            }
-          });
+        var dataStr = "{id : "+id+"}";
+          var data = JSON.parse(dataStr);
+          console.log(data);
+        // TODO 메시지 공통 영역으로        
+        if (confirm("삭제하시겠습니까?")) {
+          var link = "/management/users/" + userid;          
+          var dataStr = '{id : "'+id+'" }';
+          var data = JSON.parse(dataStr);
+          var result = ajaxGetData(link, "DELETE", data);
         }
       });
     });
-block content
-  input#confDel(name='error', type='hidden', value=confDel)
+block content  
   .container-fluid
     .page-content
       .breadcrumbs

@@ -1,3 +1,15 @@
+$(document).ready(function() {
+  var dateFormat = 'YYYY-MM-DD';
+  $('#sdate').val(moment().format(dateFormat));
+  $('#edate').val(moment().format(dateFormat));            
+  // time series char를 그린다.
+  drawCountChart();
+  $('#btn_search').click(function() {        
+    var server = $('#server').val().split('&');        
+    location.href='/dashboard/timeseries'+server[0]+'?server='+server[1];
+  });
+});
+
 function drawCountChart() {
   var sdate = $('#sdate').val();  
   $.ajax({

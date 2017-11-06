@@ -1,3 +1,18 @@
+$(document).ready(function() {
+  var dateFormat = 'YYYY-MM-DD';
+  $('#sdate').val(moment().format(dateFormat));1      
+
+  // time series char를 그린다.
+  getData();
+
+  $('#btn_search').click(function() {        
+    var server = $('#server').val().split('&');
+    console.log(server)
+    console.log('/dashboard/timeseries'+server[0]+'?server='+server[1]);
+    location.href='/dashboard/timeseries'+server[0]+'?server='+server[1];    
+  });
+});
+
 function getData() {
   var sdate = $('#sdate').val();  
   $.ajax({
@@ -44,8 +59,7 @@ function getData() {
     data: { date : sdate },
     success: function(result) {
       // console.log(result);
-      if (result.rtnCode.code == "0000") {
-        console.log(result);
+      if (result.rtnCode.code == "0000") {        
         drawTopTimeseries(result.rtnData);
       } else {
         //- $("#errormsg").html(result.message);

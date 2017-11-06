@@ -1,4 +1,16 @@
-function getData() {  
+$(document).ready(function() {                          
+   var dateFormat = 'YYYY-MM-DD';
+  $('#sdate').val(moment().subtract(0, 'days').format(dateFormat));
+  $('#edate').val(moment().format(dateFormat));
+  // time series char를 그린다.
+  getData();      
+  $('#btn_search').click(function() {    
+    $('#sample_2').empty();      
+    getData();
+  });
+}); 
+
+function getData() {    
   var sdate = $('#sdate').val();    
   var edate = $('#edate').val();  
   

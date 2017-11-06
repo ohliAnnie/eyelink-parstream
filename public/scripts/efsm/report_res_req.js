@@ -1,3 +1,17 @@
+$(document).ready(function() {                          
+   var dateFormat = 'YYYY-MM-DD';
+  $('#sdate').val(moment().subtract(6, 'days').format(dateFormat));
+  $('#edate').val(moment().format(dateFormat));
+  // time series char를 그린다.
+  makeIndex();
+  $('#btn_search').click(function() {     
+    d3.select("svg").remove();
+    d3.select("svg").remove();
+    d3.select("svg").remove();
+    makeIndex();
+  });
+}); 
+
 function makeIndex(){        
   var sdate = $('#sdate').val();  
   var edate = $('#edate').val();

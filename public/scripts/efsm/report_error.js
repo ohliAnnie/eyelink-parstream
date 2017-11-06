@@ -1,3 +1,13 @@
+$(document).ready(function() {                          
+  var dateFormat = 'YYYY-MM-DD';
+  $('#sdate').val(moment().subtract(7, 'days').format(dateFormat));
+  $('#edate').val(moment().format(dateFormat));
+  getData();
+   $('#btn_search').click(function() {     
+    getData();
+  });
+});             
+
 function getData(){  
   var sdate = $('#sdate').val();     
   var edate = $('#edate').val(); 
@@ -5,7 +15,7 @@ function getData(){
     url: "/reports/restapi/getAccessError" ,
     dataType: "json",
     type: "get",
-    data: { sdate : sdate, edate : edate},
+    data: { sdate : sdate, edate : edate },
     success: function(result) {      
       if (result.rtnCode.code == "0000") {        
         drawChart(result.rtnData, sdate, edate);        

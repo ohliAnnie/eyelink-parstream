@@ -1,4 +1,36 @@
-                                                                                                                                                                                                              function getTransaction(id, date) {      
+jQuery(document).ready(function() {  
+  var old = '', oldValues = '';
+  $('#sample_2 > tbody > tr').click(function(){
+   if(old != ''){          
+    if(oldvalues[4] == "true"){
+      old.css("background", "#FFA7A7"); //reset to original color
+    } else {
+      old.css("background", "#fff"); //reset to original color
+    }
+   }                           
+   $(this).css("background", "#FAED7D"); //apply the new color         
+    var values = $(this).find('td').map(function(){              
+      return $(this).text();
+    }).get();                 
+    oldvalues = values;
+    old = $(this);
+    console.log(values[7], values[1]);
+    getTransaction(values[7], values[1]);
+  });       
+   $('.tree-2').treegrid({
+    expanderExpandedClass: 'glyphicon glyphicon-minus',
+    expanderCollapsedClass: 'glyphicon glyphicon-plus'
+  });
+  Metronic.init(); // init metronic core componets
+  eyelinkLayout.init(); // init layout
+  QuickSidebar.init(); // init quick sidebar
+  Layout.init(); // init layout
+  Demo.init(); // init index page        
+  TableManaged.init();
+});
+
+
+function getTransaction(id, date) {      
   console.log(date);  
   $.ajax({
     url: "/dashboard/restapi/getTransactionDetail" ,

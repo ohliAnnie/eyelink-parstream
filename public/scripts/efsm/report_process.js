@@ -1,5 +1,15 @@
-function getData() {
-  
+$(document).ready(function() {                          
+   var dateFormat = 'YYYY-MM-DD';
+  $('#sdate').val(moment().subtract(0, 'days').format(dateFormat));
+  $('#edate').val(moment().format(dateFormat));      
+  // Data를 가져온다
+  getData();
+   $('#btn_search').click(function() {          
+    getData();
+  });
+}); 
+
+function getData() {  
   var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
   var sdate = $('#sdate').val();    
   var edate = $('#edate').val();
@@ -15,9 +25,9 @@ function getData() {
     dataType: "json",
     type: "get",
     data: { sdate : sdate, edate : edate, name : name},
-    success: function(result) {
-      console.log(result);
+    success: function(result) {      
       if (result.rtnCode.code == "0000") {        
+        // line chart들과 dataTable을 그린다
         drawChart(result.rtnData);
       } else {
         //- $("#errormsg").html(result.message);

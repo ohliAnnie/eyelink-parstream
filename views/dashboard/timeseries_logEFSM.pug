@@ -1,32 +1,12 @@
 extends ../layout-type01
-
-block style
-  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
-  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
-  link(rel='stylesheet', href='/assets/leaflet/dc.css')
-  link(rel='stylesheet', href='/stylesheets/style.css')
+block style      
   link(rel='stylesheet', href='/scripts/d3_timeseries.css')
 block script
-  script(type='text/javascript', src='/assets/leaflet/d3.js')
-  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')  
-  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(type='text/javascript', src='/assets/leaflet/d3.js')  
   script(type='text/javascript', src="/scripts/util.js")
-  script(type='text/javascript', src="/scripts/d3_timeseries.js")
-  script(type='text/javascript', src="/scripts/efsm/timeseries_log.js")
-  script.
-    $(document).ready(function() {
-      var dateFormat = 'YYYY-MM-DD';
-      $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
-      $('#edate').val(moment().format(dateFormat));
-
-      // time series char를 그린다.
-      drawChart();
-
-      $('#btn_search').click(function() {
-        drawChart();
-      });
-    });
-block content
+  script(type='text/javascript', src="/assets/scripts/libs/d3_timeseries_4.js")
+  script(type='text/javascript', src="/scripts/efsm/timeseries_log.js")    
+block content  
   .container-fluid
     .page-content
       .breadcrumbs
@@ -35,8 +15,8 @@ block content
           li
             a(href='#') Home
           li
-            a(href='#') Time Series
-          li.active Time Series
+            a(href='#') Timeseries
+          li.active #{type}
       .row
         .col-md-12
           .portlet.light.bordered
@@ -56,24 +36,21 @@ block content
               form.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
                   .form-group.last
+                    .col-md-2
                     label.control-label.col-md-1 Date Range
-                    .col-md-4
+                    .col-md-2
                       .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
-                        input#sdate.form-control(type='text', name='from' value='')
-                        span.input-group-addon to
-                        input#edate.form-control(type='text', name='to' value='')
-                    label.control-label.col-md-1 Select Area
-                    .col-md-6.form-inline
-                      select.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Area')
-                        option(value='') Zone ID
-                        option(value='') All Area
-                        option(value='') AreaID1234
-                        option(value='') AreaID5678
-                      select.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Item')
-                        option(value='') Node ID
-                        option(value='') Node ID
-                        option(value='') Item1234
-                        option(value='') Item5678
+                        input#sdate.form-control(type='text', name='from' value='' style='width:140px')
+                    label.control-label.col-md-1 Server                    
+                    .col-md-3.form-inline
+                      select#server.form-control.input-small.select2me.form-md-line-input(name='server')
+                        each data in agent 
+                          #{server}
+                            if data.name==server
+                              option(value=data.type+'&'+data.name, selected='selected') #{data.name}
+                            else
+                              option(value=data.type+'&'+data.name) #{data.name} 
+                    .col-md-2.form-inline                      
                       button#btn_search.btn.blue
                         i.fa.fa-search Search
       .row
@@ -81,8 +58,8 @@ block content
           .portlet.light
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Active Power / Ampere
-                span.caption-helper Active Power / Ampere
+                span.caption-subject.bold.uppercase.font-green-haze Response Time Count
+                span.caption-helper  res_time / slow / error
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -95,8 +72,8 @@ block content
           .portlet.light.bordered
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze ALS / Dimming Level
-                span.caption-helper ALS / Dimming Level
+                span.caption-subject.bold.uppercase.font-green-haze System Process
+                span.caption-helper  cpu total pct / memory rss pct
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -110,8 +87,8 @@ block content
           .portlet.light
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Noise
-                span.caption-helper Noise
+                span.caption-subject.bold.uppercase.font-green-haze Top 10
+                span.caption-helper  process cpu total pct
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -124,8 +101,8 @@ block content
           .portlet.light.bordered
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Vibration
-                span.caption-helper Vibration
+                span.caption-subject.bold.uppercase.font-green-haze System Cpu/Memory
+                span.caption-helper  user / system / idle / used / actual used / swap used
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')

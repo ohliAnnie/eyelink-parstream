@@ -254,7 +254,8 @@ function drawScatter(data, start, end, max) {
       nPaddingRight : 5,
       fOnSelect : function(htPosition, htXY){        
         var aData = this.getDataByXY(htXY.nXFrom, htXY.nXTo, htXY.nYFrom, htXY.nYTo);
-        console.log(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));        
+        console.log(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
+        console.log(htXY.nXFrom, htXY.nxTo);
         var link = '/dashboard/selected_detail_jira?start='+htXY.nXFrom+'&end='+htXY.nXTo+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;
         console.timeEnd('fOnSelect');
         console.log('adata length', aData.length);
@@ -475,9 +476,14 @@ function drawWeekly() {
   var volumeChart = dc.barChart('#volumn-chart', markerName);
 
   d3.json("/dashboard/restapi/getJiraAccOneWeek", function(err, out_data) {               
-    var maxDate = new Date(out_data.rtnData[out_data.rtnData.length-1].timestamp);
-    var minDate  = new Date(out_data.rtnData[0].timestamp);
-
+    var maxDate = new Date();    
+    maxDate.setHours(23);    
+    maxDate.setMinutes(59);    
+    maxDate.setMilliseconds(59);
+    var minDate = new Date(new Date().getTime()-7*24*60*60*1000);
+    minDate.setHours(0);    
+    minDate.setMinutes(0);  
+    minDate.setMilliseconds(0);
     console.log(minDate, maxDate);
 
     var ndx = crossfilter(out_data.rtnData);
@@ -512,19 +518,19 @@ function drawWeekly() {
       .group(stackGroup, type[0], sel_stack('0'))
       .centerBar(true)
       .brushOn(false)      
-      .x(d3.time.scale().domain([minDate, maxDate]))            
-      //.yAxisPadding()
+      .x(d3.time.scale().domain([minDate, maxDate]))                  
       .elasticY(true)
       .round(d3.time.day.round)
       .alwaysUseRounding(true)
-      .xUnits(function(){return 8;})      
+      .xUnits(function(){return 9;})      
       .title(function(d) {
         for(var i=0; i<type.length; i++) {
           if(this.layer == type[i])                   
             return this.layer + ' : ' + d.value[i];
           }
-        })
-       .colors(d3.scale.ordinal().range(["#EDC951",  "#CC333F"]));
+        }
+      )
+      .colors(d3.scale.ordinal().range(["#EDC951",  "#CC333F"]));
 
     for(var i = 1; i<type.length; ++i){
       volumeChart.stack(stackGroup, type[i], sel_stack(i));
