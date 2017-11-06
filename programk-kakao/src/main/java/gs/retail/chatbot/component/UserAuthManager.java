@@ -209,7 +209,6 @@ public class UserAuthManager {
 		String lastTalkDttm = DateUtils.instance.getCurrentDttm(null);
 
 		if ( userAuth.getStatus() == authStatusDone ) {
-			logger.debug("Setting new last talk dttm for user : {}", userAuth.getUserKey());
 			userAuth.setLastTalkDttm(lastTalkDttm);
 			updateLastTalkDttm(userAuth);
 		}
