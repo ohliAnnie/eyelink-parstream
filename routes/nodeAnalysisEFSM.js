@@ -341,6 +341,8 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
         INDEX: indexPatternMatching, TYPE: "pattern_matching", 
         gte : Utils.getDateLocal2UTC(Utils.getDate(now, fmt2, 0, 0, -10, 0), fmt2, 'Y'), 
         lte : end }   
+        console.log('***************')
+        console.log(in_data);
   queryProvider.selectSingleQueryByID2("analysis", "selectByAnalysisTimestamp", in_data, function(err, out_data, params) {        
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -502,15 +504,14 @@ router.get('/restapi/getClusterNodePower', function(req, res, next) {
 });
 
 // query RawData
-router.get('/restapi/getClusterRawData', function(req, res, next) {
-  console.log(req.query)
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+router.get('/restapi/getClusterRawData', function(req, res, next) {   
+  console.log(req.query);
   var start = new Date(req.query.startDate).getTime();
   var end = new Date(req.query.endDate).getTime();
   var index = [], cnt = 0;
-  for(i = start; i<=end; i=i+24*60*60*1000){
-    var d = new Date(i).toString().split(' ');
-    index[cnt++]  = "corecode-"+d[3]+'-'+mon[d[1]]+'-'+d[2];
+  console.log(start, end);
+  for(i = start; i<=end; i=i+24*60*60*1000){    
+    index[cnt++]  = indexCore+Utils.getMs2Date(i, fmt4);
   }
   console.log(index);
   var in_data = {
