@@ -1,10 +1,7 @@
 extends ../layout-type01
 block style
-  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
-  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
   link(rel='stylesheet', type='text/css', href='/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
   link(rel='stylesheet', href='/stylesheets/style.css')
-  link(rel='stylesheet', href='/assets/leaflet/dc.css')
   link(href='/assets/bootstrap-treeview/bootstrap-treeview.css', rel='stylesheet', type='text/css')
 
 block script
@@ -28,10 +25,10 @@ block script
       getPatternList() // pattern dataset
       
 
-      $('#btn_search').click(function() {
-        d3.selectAll("svg").remove();
-        getPatternList() // pattern dataset
-      });
+      //- $('#btn_search').click(function() {
+      //-   d3.selectAll("svg").remove();
+      //-   getPatternList() // pattern dataset
+      //- });
 
       $('#btnCheckedUpdate').click(function() {
         console.log("checkbox test");
