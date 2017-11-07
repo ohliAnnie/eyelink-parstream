@@ -358,25 +358,12 @@ function displayCount() {
       setStatus($('#monCnt_status'), result.tmon/result.ymon*100, 'mon', result.ymon);                
     }    
   });
- 
-   $.ajax({
-    url: "/dashboard/restapi/countAccJiraError",
-    dataType: "json",
-    type: "GET",    
-    data: { date : day },
-    success: function(result) {
-      // console.log(result);
-      if (result.rtnCode.code == "0000") {
-        //- $("#successmsg").html(result.message);                        
-        $('#errCnt').text(result.today);
-         setStatus($('#errCnt_status'), result.today/result.yday*100, 'day', result.yday);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+
+  var in_data = { url : "/dashboard/restapi/countAccJiraDay", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){
+    if (result.rtnCode.code == "0000") {
+      $('#errCnt').text(result.today);
+      setStatus($('#errCnt_status'), result.today/result.yday*100, 'day', result.yday);
     }
   });
 }
@@ -391,27 +378,6 @@ function setStatus(obj, percent, msg, cnt) {
 function repVal(str) {
   str *= 1
   return str.toFixed(2);
-}
-
-function perrCnt(day){
-  $.ajax({
-    url: "/dashboard/restapi/countAccJiraError",
-    dataType: "json",
-    type: "GET",    
-    data: { date : day },
-    success: function(result) {      
-      if (result.rtnCode.code == "0000") {
-        //- $("#successmsg").html(result.message);
-        setStatus($('#errCnt_status'), parseInt($('#errCnt').text())/result.rtnData*100, 'day', result.rtnData);       
-      } else {
-        //- $("#errormsg").html(rsuelt.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
-  });
 }
 
 function drawWeekly() {
