@@ -28,10 +28,8 @@ router.get('/users', function(req, res, next) {
     }
     out_data.forEach(function(d){
       d._source.reg_date = Utils.getDateUTC2Local(d._source.reg_date, fmt2);
-    });
-    var confDel = CONSTS.getConfMsg('DELETE');
-    console.log(confDel);
-    res.render('./management/users'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, users:out_data, confDel : confDel });
+    });    
+    res.render('./management/users'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, users:out_data });
   });
 });
 
@@ -55,12 +53,12 @@ router.get('/users/:id', function(req, res) {
             var rtnCode = CONSTS.getErrData('0001');
             var maps = [];
           }
-          res.render('./management/edit_user', { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps});
+          res.render('./management/user_edit', { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps, tnc_error : tnc_error});
         });
       } else {
         var rtnCode = CONSTS.getErrData('0001');
       }
-      res.render('./management/edit_user', { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps });
+      res.render('./management/user_edit', { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps });
     });
   }
 });
@@ -380,7 +378,7 @@ router.get('/menu', function(req, res, next) {
 
 router.get('/restapi/getMenuList', function(req, res, next) {
   logger.debug('/restapi/getMenuList');
-  var in_data = {  INDEX: indexMenu, TYPE: req.query.type, SORT: "code" };
+  var in_data = {  INDEX: indexMenu, TYPE: "menu", SORT: "code" };
   var rtnCode = CONSTS.getErrData('0000');
   queryProvider.selectSingleQueryByID2("management", "selectSortList", in_data, function(err, out_data, params) {
     logger.debug(out_data);
