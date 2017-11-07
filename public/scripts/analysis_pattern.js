@@ -1,3 +1,29 @@
+$(function(){
+  $('#btn_search').on('click', function(){
+    d3.selectAll("svg").remove();
+    getPatternList(); // pattern dataset
+  });
+
+  // 업데이트 버튼 클릭 이벤트
+  // $('#btnCheckedUpdate').on('click', function(){
+  //   var checkbox = $("input[name=patternChk]:checked");
+  //   var numOfCheck = $("input[name=patternChk]:checked").length;
+  //   console.log(numOfCheck);
+  //   if(numOfCheck == 0) {
+  //         console.log("There is no checked item");
+  //   } else {
+  //     updatePatternData()
+  //   }
+
+  // });
+
+});
+
+// function updatePatternDate(checkedYN, numOfCheck, queryBody){
+
+// }
+
+
 function getPatternList() {
   "use strict";
   var sdate = $('#sdate').val() + "T00:00:00";
@@ -124,7 +150,7 @@ function getNodeData(treeData, group){
     if (treeData[cno] === "normal")       { normalCnt += 1; }
     else if (treeData[cno] === "caution") { cautionCnt += 1; }
     else if (treeData[cno] === "anomaly") { anomalyCnt += 1; }
-    if (treeData[cno] === "undefined")    { undefineCnt += 1; }
+    else { undefineCnt += 1; } //undefined
   }
   var totalCnt = normalCnt + cautionCnt + anomalyCnt + undefineCnt;
 
@@ -215,6 +241,7 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
     var updateBtn = $(this);
     var td = updateBtn.parent().parent().children();
     console.log(td.eq(1).text());
+    console.log(updateBtn.closest("tr"));
 
     if(confirm("수정 하시겠습니까?")) {
       var id = creationDate;

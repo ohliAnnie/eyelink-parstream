@@ -243,12 +243,12 @@ router.post('/restapi/insertAnomalyPattern/:id', function(req, res, next) {
 router.post('/restapi/insertPatternInfo/:id', function(req, res, next) {
   console.log('/analysis/restapi/insertPatternInfo');
   console.log(JSON.stringify(req.body));
-   var in_data = {    INDEX: indexPatternInfo, TYPE: "pattern_info", ID: req.params.id   };
+   var in_data = { INDEX: indexPatternInfo, TYPE: "pattern_info", ID: req.params.id };
    queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');
     }  else  {
-      var in_data = {    INDEX: indexPatternInfo, TYPE: "pattern_info", ID: req.params.id,   BODY : JSON.stringify(req.body)   };
+      var in_data = { INDEX: indexPatternInfo, TYPE: "pattern_info", ID: req.params.id,   BODY : JSON.stringify(req.body)   };
      queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {
           if(out_data.result == "created"){
             console.log(out_data);
