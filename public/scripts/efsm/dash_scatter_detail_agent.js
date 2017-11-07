@@ -29,24 +29,12 @@ jQuery(document).ready(function() {
   TableManaged.init();
 });
 
-
 function getTransaction(id, date) {      
-  console.log(date);  
-  $.ajax({
-    url: "/dashboard/restapi/getTransactionDetail" ,
-    dataType: "json",
-    type: "get",
-    data: { date : date, id : id },
-    success: function(result) {
-      if (result.rtnCode.code == "0000") {              
-        drawDetail(result.rtnData);        
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+  var data = { date : date, id : id };
+  var in_data = { url : "/dashboard/restapi/getTransactionDetail", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {              
+      drawDetail(result.rtnData);        
     }
   });
 }

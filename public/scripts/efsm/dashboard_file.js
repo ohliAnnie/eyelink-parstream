@@ -351,8 +351,7 @@ function displayCount() {
   });
   
   var in_data = { url : "/dashboard/restapi/countAccJiraDay", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){
-  $.ajax({
+  ajaxGetData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {
       $('#monCnt').text(result.tmon);
       setStatus($('#monCnt_status'), result.tmon/result.ymon*100, 'mon', result.ymon);                

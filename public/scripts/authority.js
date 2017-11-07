@@ -4,23 +4,10 @@ $(function() {
 var old = '';
 
 function getMenu() {        
-  $.ajax({
-    url: "/management/restapi/getMenuList" ,
-    dataType: "json",
-    type: "get",
-    data: {     
-      type : "menu"
-    },
-    success: function(result) {
-      if (result.rtnCode.code == "0000") {              
-        drawMenuList(result.rtnData);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+  var in_data = { url : "/dashboard/restapi/getBottleneckList", type : "GET", data : { type : "menu" } };
+  ajaxGetData(in_data, function(result){
+    if (result.rtnCode.code == "0000") {              
+      drawMenuList(result.rtnData);
     }
   });
 }
@@ -64,21 +51,12 @@ function clickTrEvent(code, id){
     $(this).css('background', "#FAED7D");
     old = $(this);
   });
-  $.ajax({
-    url: "/management/restapi/getAuthMenu" ,
-    dataType: "json",
-    type: "get",
-    data: {  code : code, id : id   },
-    success: function(result) {      
-      if (result.rtnCode.code == "0000") {     
-        drawRoleList(result.menuAuth, result.roleList, code, id);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+
+  var data = { code : code, id : id };
+  var in_data = { url : "/management/restapi/getAuthMenu", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){
+    if (result.rtnCode.code == "0000") {     
+      drawRoleList(result.menuAuth, result.roleList, code, id);
     }
   });
 }
@@ -123,22 +101,14 @@ function saveMenuAuth(id, code){
   for(i=0; i<$destinationFields[0].children.length;i++){        
     role[i] = $destinationFields[0].children[i].innerText.split('-')[0];    
   }   
-  $.ajax({
-    url: "/management/menu_auth/"+code,
-    dataType: "json",
-    type: "put",
-    data: { id : id, role : role },
-    success: function(result) {
-      console.log(result);
-      if (result.rtnCode.code == "D002") {        
-        location.href='/management/authority';
-      } else {
-        $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
+
+  var data = { id : id, role : role };
+  var in_data = { url : "/management/menu_auth/"+code, type : "PUT", data : data };
+  ajaxGetData(in_data, function(result){
+    if (result.rtnCode.code == "D002") {        
+      location.href='/management/authority';
+    } else {
+      $("#errormsg").html(result.message);
+    }    
   }); 
 }

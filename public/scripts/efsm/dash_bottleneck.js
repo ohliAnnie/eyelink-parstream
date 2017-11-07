@@ -1,27 +1,13 @@
 var stamp = "";
 
-function getData(server, selected){
-  var date = $("#date").val();    
+function getData(server, selected){  
   var list = selected['CPU']+selected['MEMORY']+selected['SERVICE'];
-  console.log(list);  
-  $.ajax({
-    url: "/dashboard/restapi/getBottleneckList" ,
-    dataType: "json",
-    type: "get",
-    data: {
-      date : new Date(date).getTime(),
-      server : server, list : list
-    },
-    success: function(result) {
-      if (result.rtnCode.code == "0000") {              
-        drawBottleneckList(result.rtnData);        
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+  
+  var data = { date : new Date($("#date").val()).getTime(), server : server, list : list };
+  var in_data = { url : "/dashboard/restapi/getBottleneckList", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){
+    if (result.rtnCode.code == "0000") {
+      drawBottleneckList(result.rtnData);        
     }
   });  
 }
@@ -45,23 +31,12 @@ function drawBottleneckList(data){
 }
 
 function clickTrEvent(id){
-  console.log(id);
-  $.ajax({
-    url: "/dashboard/restapi/getBottleneckDetail" ,
-    dataType: "json",
-    type: "get",
-    data: { id : "_id", value : id },
-    success: function(result) {
-      if (result.rtnCode.code == "0000") {                 
-        drawDetail(result);        
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
+  var data = { id : "_id", value : id };
+  var in_data = { url : "/dashboard/restapi/getBottleneckDetail", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {                 
+      drawDetail(result);        
+    }    
   });
 }
 
@@ -103,57 +78,29 @@ function pad(n, width) {
 
 function getChartData(range){  
   d3.selectAll("svg").remove();   
-  $.ajax({
-    url: "/dashboard/restapi/getHeapData" ,
-    dataType: "json",
-    type: "get",
-    data: { gap : range, end : stamp, type : 'range' },
-    success: function(result) {      
-      if (result.rtnCode.code == "0000") {                
-        drawHeap(result.heap);
-        drawPermgen(result.perm);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+  var data = { gap : range, end : stamp, type : 'range' };
+  var in_data = { url : "/dashboard/restapi/getHeapData", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {                
+      drawHeap(result.heap);
+      drawPermgen(result.perm);      
     }
   });
- $.ajax({
-    url: "/dashboard/restapi/getJvmSysData" ,
-    dataType: "json",
-    type: "get",
-    data: { gap : range , end : stamp, type : 'range' },
-    success: function(result) {      
-      if (result.rtnCode.code == "0000") {        
-        drawJvmSys(result.rtnData);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+
+  var in_data = { url : "/dashboard/restapi/getJvmSysData", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){ 
+    if (result.rtnCode.code == "0000") {        
+      drawJvmSys(result.rtnData);
     }
   });
-  $.ajax({
-    url: "/dashboard/restapi/getAgentData" ,
-    dataType: "json",
-    type: "get",
-    data: { date : stamp, gap : 'range', range : range },
-    success: function(result) {            
-      if (result.rtnCode.code == "0000") {                              
-        summaryAgent(result.data, result.start, result.end);
-        drawAgentScattor(result.data, result.start, result.end);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+
+  var data = { date : stamp, gap : 'range', range : range };
+  var in_data = { url : "/dashboard/restapi/getAgentData", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){  
+  $.ajax({    
+    if (result.rtnCode.code == "0000") {                              
+      summaryAgent(result.data, result.start, result.end);
+      drawAgentScattor(result.data, result.start, result.end);
     }
   });}
 

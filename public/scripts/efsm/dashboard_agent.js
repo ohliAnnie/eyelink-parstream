@@ -6,41 +6,19 @@ function getAgentData(day){
 function drawDashAgent(data){
   var server = $("#server").val();  
   if(server != 'all') {
-     $.ajax({
-      url: "/dashboard/restapi/getAgentMap" ,
-      dataType: "json",
-      type: "get",
-      data: data,
-      success: function(result) {            
-        if (result.rtnCode.code == "0000") {              
-          var elseJson = { nodes : result.nodes, edges : result.edges };              
-          getServerMap(elseJson);    
-        } else {
-          //- $("#errormsg").html(result.message);
-        }
-      },
-      error: function(req, status, err) {
-        //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+    var in_data = { url : "/dashboard/restapi/getAgentMap", type : "GET", data : data };
+    ajaxGetData(in_data, function(result){
+      if (result.rtnCode.code == "0000") {              
+        var elseJson = { nodes : result.nodes, edges : result.edges };              
+        getServerMap(elseJson);    
       }
     });
   }
-  $.ajax({
-    url: "/dashboard/restapi/getAgentData" ,
-    dataType: "json",
-    type: "get",
-    data: data,
-    success: function(result) {            
-      if (result.rtnCode.code == "0000") {                              
-        summaryAgent(result.data, result.start, result.end);
-        drawAgentScattor(result.data, result.start, result.end, result.max);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+  var in_data = { url : "/dashboard/restapi/getAgentData", type : "GET", data : data };  
+  ajaxGetData(in_data, function(result){
+    if (result.rtnCode.code == "0000") {                              
+      summaryAgent(result.data, result.start, result.end);
+      drawAgentScattor(result.data, result.start, result.end, result.max);
     }
   });
 }
@@ -146,89 +124,37 @@ function summaryAgent(data, start, end) {
 
 function displayCountAgent() {      
   var day = new Date().getTime();
-  $.ajax({
-    url: "/dashboard/restapi/countAgentDay",
-    dataType: "json",
-    type: "GET",    
-    data: { date : day, gap : 'day' },
-    success: function(result) {
-      if (result.rtnCode.code == "0000") {
-        //- $("#successmsg").html(result.message);        
-        console.log(result)
-         $('#dayCnt').text(result.today);               
-         setStatus($('#dayCnt_status'), result.today/result.yday*100, 'day', result.yday); 
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+
+  var data = { date : day, gap : 'day' };
+  var in_data = { url : "/dashboard/restapi/countAgentDay", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {
+       $('#dayCnt').text(result.today);               
+       setStatus($('#dayCnt_status'), result.today/result.yday*100, 'day', result.yday); 
     }
   });
 
-  $.ajax({
-    url: "/dashboard/restapi/countAgentMon",
-    dataType: "json",
-    type: "GET",    
-    data: { date : day, gap : 'mon' },
-    success: function(result) {
-      // console.log(result);
-      if (result.rtnCode.code == "0000") {
-        //- $("#successmsg").html(result.message);        
-        console.log(result)
-        $('#monCnt').text(result.tmon);        
-        setStatus($('#monCnt_status'), result.tmon/result.ymon*100, 'day', result.ymon); 
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+  var data = { date : day, gap : 'mon' };
+  var in_data = { url : "/dashboard/restapi/countAgentMon", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {    
+      $('#monCnt').text(result.tmon);        
+      setStatus($('#monCnt_status'), result.tmon/result.ymon*100, 'day', result.ymon); 
     }
   });
  
-   $.ajax({
-    url: "/dashboard/restapi/countAgentError",
-    dataType: "json",
-    type: "GET",    
-    data: { date : day },
-    success: function(result) {
-      // console.log(result);
-      if (result.rtnCode.code == "0000") {
-        //- $("#successmsg").html(result.message);        
-         console.log(result)
-         $('#errCnt').text(result.today);                       
-         setStatus($('#errCnt_status'), result.today/result.yday*100, 'day', result.yday); 
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
+  var in_data = { url : "/dashboard/restapi/countAgentDay", type : "GET", data : { date : day }};
+  ajaxGetData(in_data, function(result){            
+    if (result.rtnCode.code == "0000") {      
+       $('#errCnt').text(result.today);                       
+       setStatus($('#errCnt_status'), result.today/result.yday*100, 'day', result.yday); 
+    } 
   });         
 
-  $.ajax({
-    url: "/dashboard/restapi/getAgentOneWeek",
-    dataType: "json",
-    type: "GET",    
-    data: {},
-    success: function(result) {
-      // console.log(result);
-      if (result.rtnCode.code == "0000") {
-        //- $("#successmsg").html(result.message);        
-        console.log(result);
-        drawAgentWeekly(result.rtnData);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+  var in_data = { url : "/dashboard/restapi/countAgentDay", type : "GET", data : {} };
+  ajaxGetData(in_data, function(result){    
+    if (result.rtnCode.code == "0000") {      
+      drawAgentWeekly(result.rtnData);
     }
   });         
 }
