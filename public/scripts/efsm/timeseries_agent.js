@@ -10,76 +10,35 @@ $(document).ready(function() {
   });
 });
 
-function drawCountChart() {
-  var sdate = $('#sdate').val();  
-  $.ajax({
-    url: "/dashboard/restapi/getHeapData" ,
-    dataType: "json",
-    type: "get",
-    data: { date : sdate, type : 'normal' },
-    success: function(result) {      
-      if (result.rtnCode.code == "0000") {        
-        drawHeap(result.heap);
-        drawPermgen(result.perm);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
-  });
-   $.ajax({
-    url: "/dashboard/restapi/getJvmSysData" ,
-    dataType: "json",
-    type: "get",
-    data: { date : sdate, type : 'normal' },
-    success: function(result) {      
-      if (result.rtnCode.code == "0000") {                
-        drawJvmSys(result.rtnData);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
-  });
-   $.ajax({
-    url: "/dashboard/restapi/getStatTransaction" ,
-    dataType: "json",
-    type: "get",
-    data: { date : sdate, type : 'normal' },
-    success: function(result) {
-      if (result.rtnCode.code == "0000") {        
-        drawTransaction(result.rtnData);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+function drawCountChart() {  
+  var data = { date : $('#sdate').val(), type : 'normal' };
+
+  var in_data = { url : "/dashboard/restapi/getHeapData", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){
+    if (result.rtnCode.code == "0000") {        
+      drawHeap(result.heap);
+      drawPermgen(result.perm);
     }
   });
 
-   $.ajax({
-    url: "/dashboard/restapi/getActiveTrace" ,
-    dataType: "json",
-    type: "get",
-    data: { date : sdate, type : 'normal' },
-    success: function(result) {      
-      if (result.rtnCode.code == "0000") {        
-        drawActiveTrace(result.rtnData);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+  var in_data = { url : "/dashboard/restapi/getHeapData", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){
+    if (result.rtnCode.code == "0000") {                
+        drawJvmSys(result.rtnData);
+    } 
+  });
+
+  var in_data = { url : "/dashboard/restapi/getStatTransaction", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {        
+      drawTransaction(result.rtnData);
+    }
+  });
+
+  var in_data = { url : "/dashboard/restapi/getActiveTrace", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {        
+      drawActiveTrace(result.rtnData);
     }
   });
 }

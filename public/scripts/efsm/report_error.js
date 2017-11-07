@@ -8,24 +8,13 @@ $(document).ready(function() {
   });
 });             
 
-function getData(){  
-  var sdate = $('#sdate').val();     
-  var edate = $('#edate').val(); 
-  $.ajax({
-    url: "/reports/restapi/getAccessError" ,
-    dataType: "json",
-    type: "get",
-    data: { sdate : sdate, edate : edate },
-    success: function(result) {      
-      if (result.rtnCode.code == "0000") {        
-        drawChart(result.rtnData, sdate, edate);        
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+function getData(){    
+  var data = { sdate : $('#sdate').val(), edate : $('#edate').val() };
+
+  var in_data = { url : "/reports/restapi/getAccessError", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {        
+      drawChart(result.rtnData, sdate, edate);        
     }
   });
 }

@@ -9,33 +9,20 @@ $(document).ready(function() {
   });
 }); 
 
-function getData() {  
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };    
-  var sdate = $('#sdate').val();    
-  var edate = $('#edate').val();
+function getData() {    
   var name = $('#process').val();
-  console.log(sdate, edate);
   if(name == '')  {
     var link = "/reports/restapi/getProcess" 
   } else {
     var link = "/reports/restapi/getProcessByName" 
   }  
-  $.ajax({
-    url: link,
-    dataType: "json",
-    type: "get",
-    data: { sdate : sdate, edate : edate, name : name},
-    success: function(result) {      
-      if (result.rtnCode.code == "0000") {        
-        // line chart들과 dataTable을 그린다
-        drawChart(result.rtnData);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+
+  var data = { sdate : $('#sdate').val(), edate : $('#edate').val(), name : name }
+  var in_data = { url : link, type : "GET", data : data };
+  ajaxGetData(in_data, function(result){
+    if (result.rtnCode.code == "0000") {        
+      // line chart들과 dataTable을 그린다
+      drawChart(result.rtnData);
     }
   });
 }

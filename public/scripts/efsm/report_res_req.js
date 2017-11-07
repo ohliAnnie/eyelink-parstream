@@ -18,30 +18,17 @@ function makeIndex(){
   var weeks = parseInt($('#weeks').val());
   var months = parseInt($('#months').val());
 //getData(indexD, xD, rangeD.toString(), "#day");  
-  getData(sdate, edate, "#day")
-  getData(weeks, edate, "#week")
-  getData(months, edate, "#month")
+  getData({ sdate : sdate, edate : edate, type : "#day" });
+  getData({ sdate : weeks, edate : edate, type :"#week" });
+  getData({ sdate : months, edate : edate, type : "#month" });
   var indexW = [], rangeW = [], xW = [], cnt = 0;     
 }
 
-function getData(sdate, edate, name) {    
-  $.ajax({
-    url: "/reports/restapi/getMultiIndexCount" ,
-    dataType: "json",
-    type: "get",
-    data: { sdate : sdate, edate : edate, type : name },
-    success: function(result) {
-      console.log(result);        
-      if (result.rtnCode.code == "0000") {                            
-        console.log(result.rtnData);
-        drawChart(result.rtnData, name, result.max);          
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+function getData(data) {    
+  var in_data = { url : "/reports/restapi/getMultiIndexCount", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {                                
+      drawChart(result.rtnData, name, result.max);          
     }
   });
 }
