@@ -7,64 +7,30 @@ function makeDatabyDay(day){
 }
 
 function getMap(data){
-  $.ajax({
-    url: "/dashboard/restapi/getJiramapdata" ,
-    dataType: "json",
-    type: "get",
-    data: data,
-    success: function(result) {            
-      if (result.rtnCode.code == "0000") {  
-        var elseJson = { nodes : result.nodes, edges : result.edges };      
-        getServerMap(elseJson);             
-        nodeLIst = result.nodeList;
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+  var in_data = { url : "/dashboard/restapi/getJiramapdata", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){
+    if (result.rtnCode.code == "0000") {  
+      var elseJson = { nodes : result.nodes, edges : result.edges };      
+      getServerMap(elseJson);             
+      znodeLIst = result.nodeList;
     }
-  });
+  });    
 }
 
 function getDash(data){  
-  $.ajax({
-    url: "/dashboard/restapi/selectJiraAccDash",
-    dataType: "json",
-    type: "GET",    
-    data: data,
-    success: function(result) {            
-      if (result.rtnCode.code == "0000") {        
-        //- $("#successmsg").html(result.message);        
-        drawScatter(result.rtnData, result.start, result.end, result.max);
-        summary(result.rtnData, result.start, result.end);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+  var in_data = { url : "/dashboard/restapi/selectJiraAccDash", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {        
+      drawScatter(result.rtnData, result.start, result.end, result.max);
+      summary(result.rtnData, result.start, result.end);
     }
   });
 
-  $.ajax({
-    url: "/dashboard/restapi/selectJiraSankeyByLink" ,
-    dataType: "json",
-    type: "get",
-    data: data,
-    success: function(result) {      
-      if (result.rtnCode.code == "0000") {                        
-        drawSankey({rtnData : result.rtnData, id : result.id});
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
+  var in_data = { url : "/dashboard/restapi/selectJiraSankeyByLink", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){
+    if (result.rtnCode.code == "0000") {                        
+      drawSankey({rtnData : result.rtnData, id : result.id});
+    } 
   });  
 }
 
@@ -78,7 +44,7 @@ function getServerMap(elesJson) {
           'height': '90px',
           'content': 'data(name)',
           'background-fit': 'cover',
-           'border-color': 'data(color)',
+          'border-color': 'data(color)',
           'border-width': 3,
           'border-opacity': 0.5,
           'text-outline-width': 2,
@@ -375,45 +341,22 @@ function summary(data, start, end) {
 }
 
 function displayCount() {  
-  var day = new Date().getTime();
-  $.ajax({
-    url: "/dashboard/restapi/countAccJiraDay",
-    dataType: "json",
-    type: "GET",    
-    data: { date : day },
-    success: function(result) {
-      if (result.rtnCode.code == "0000") {
-        //- $("#successmsg").html(result.message);                
-         $('#dayCnt').text(result.today);
-         setStatus($('#dayCnt_status'), result.today/result.yday*100, 'day', result.yday);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+  var data = { date : new Date().getTime() };
+  var in_data = { url : "/dashboard/restapi/countAccJiraDay", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){
+    if (result.rtnCode.code == "0000") {
+      $('#dayCnt').text(result.today);
+      setStatus($('#dayCnt_status'), result.today/result.yday*100, 'day', result.yday);
     }
   });
-
+  
+  var in_data = { url : "/dashboard/restapi/countAccJiraDay", type : "GET", data : data };
+  ajaxGetData(in_data, function(result){
   $.ajax({
-    url: "/dashboard/restapi/countAccJiraMon",
-    dataType: "json",
-    type: "GET",    
-    data: { date : day },
-    success: function(result) {
-      if (result.rtnCode.code == "0000") {
-        //- $("#successmsg").html(result.message);                
-         $('#monCnt').text(result.tmon);
-         setStatus($('#monCnt_status'), result.tmon/result.ymon*100, 'mon', result.ymon);                
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
+    if (result.rtnCode.code == "0000") {
+      $('#monCnt').text(result.tmon);
+      setStatus($('#monCnt_status'), result.tmon/result.ymon*100, 'mon', result.ymon);                
+    }    
   });
  
    $.ajax({
