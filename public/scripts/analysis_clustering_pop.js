@@ -1,9 +1,35 @@
-     var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
-        return paramPair.split(/=(.+)?/).slice(0, 2);
-    }).reduce(function(obj, pairArray) {
-        obj[pairArray[0]] = pairArray[1];
-        return obj;
-    }, {});
+jQuery(document).ready(function() {
+  var sdate = urlParams.start;
+  var edate = urlParams.end;
+  var interval = urlParams.interval;
+  $('#sdate').val(sdate.split('T')[0]);
+  $('#edate').val(edate.split('T')[0]);
+  $('#interval').val(interval);
+  drawCheckChart();
+  getNodeList();
+  Metronic.init(); // init metronic core componets
+  eyelinkLayout.init(); // init layout
+  QuickSidebar.init(); // init quick sidebar
+  Layout.init(); // init layout
+  Tasks.initDashboardWidget(); // init tash dashboard widget      
+   $('input[type="radio"]').on('click change', function(e) {
+   
+    if(e.target.value === 'ampere' || e.target.value === 'active_power' || e.target.value === 'voltage' || e.target.value === 'power_factor') {
+     console.log(e.target.value);
+      d3.selectAll("svg").remove();
+      //d3.selectAll("rect").remove();
+      drawCheckChart();
+      getNodeList();
+    }
+  });
+});
+
+ var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
+    return paramPair.split(/=(.+)?/).slice(0, 2);
+  }).reduce(function(obj, pairArray) {
+    obj[pairArray[0]] = pairArray[1];
+    return obj;
+  }, {});
 
 var dadate = urlParams.dadate;
 function drawCheckChart() {  
@@ -15,41 +41,30 @@ function drawCheckChart() {
     var factor = $('#factor2').val();
   } else if ($('#factor3').is(':checked') === true) {
     var factor = $('#factor3').val();
-  }   
-
-  $.ajax({
-    url: "/analysis/restapi/getDaClusterDetail" ,
-    dataType: "json",
-    type: "get",
-    data: {daDate : dadate},
-    success: function(result) {
-       if (result.rtnCode.code == "0000") {                
-        var d = result.rtnData;        
-        var set = [];
-        for(i=0; i<d['c0_ampere'].length; i++){
-          var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');          
-          var event_time = new Date(d['event_time'][i]);          
-          //console.log(df.parse(new Date(d['event_time'][i])));
-          if(factor === 'ampere') {
-            set.push({ time : event_time, c0:d['c0_ampere'][i], c1:d['c1_ampere'][i], c2:d['c2_ampere'][i], c3:d['c3_ampere'][i]});
-          } else if(factor === 'voltage') {
-            set.push({ time : event_time, c0:d['c0_voltage'][i], c1:d['c1_voltage'][i], c2:d['c2_voltage'][i], c3:d['c3_voltage'][i]});
-          } else if(factor === 'active_power') {
-            set.push({ time : event_time, c0:d['c0_active_power'][i], c1:d['c1_active_power'][i], c2:d['c2_active_power'][i], c3:d['c3_active_power'][i]});
-          } else if(factor === 'power_factor') {
-            set.push({ time : event_time, c0:d['c0_power_factor'][i], c1:d['c1_power_factor'][i], c2:d['c2_power_factor'][i], c3:d['c3_power_factor'][i]});
-          }
-        };        
-        console.log(set);
-        drawCheckCluster(set, dadate, factor);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
+  }
+  
+  var in_data = { url : "/analysis/restapi/getDaClusterDetail", type : "GET", data : { daDate : dadate } };  
+  ajaxTypeData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {                
+      var d = result.rtnData;        
+      var set = [];
+      for(i=0; i<d['c0_ampere'].length; i++){
+        var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');          
+        var event_time = new Date(d['event_time'][i]);          
+        //console.log(df.parse(new Date(d['event_time'][i])));
+        if(factor === 'ampere') {
+          set.push({ time : event_time, c0:d['c0_ampere'][i], c1:d['c1_ampere'][i], c2:d['c2_ampere'][i], c3:d['c3_ampere'][i]});
+        } else if(factor === 'voltage') {
+          set.push({ time : event_time, c0:d['c0_voltage'][i], c1:d['c1_voltage'][i], c2:d['c2_voltage'][i], c3:d['c3_voltage'][i]});
+        } else if(factor === 'active_power') {
+          set.push({ time : event_time, c0:d['c0_active_power'][i], c1:d['c1_active_power'][i], c2:d['c2_active_power'][i], c3:d['c3_active_power'][i]});
+        } else if(factor === 'power_factor') {
+          set.push({ time : event_time, c0:d['c0_power_factor'][i], c1:d['c1_power_factor'][i], c2:d['c2_power_factor'][i], c3:d['c3_power_factor'][i]});
+        }
+      };        
+      console.log(set);
+      drawCheckCluster(set, dadate, factor);
+    }     
   });
 }
 
@@ -118,20 +133,20 @@ function drawCheckCluster(data, dadate, factor) {
        y.domain([0, 1.5]);
      }
 
-      //data.length/10 is set for the garantte of timeseries's fitting effect in svg chart
-      var xAxis = d3.svg.axis()
-        .scale(x)
-        .ticks(7)
-        .tickSize(-height)
-        .tickPadding([7])
-        .orient("bottom");
+    //data.length/10 is set for the garantte of timeseries's fitting effect in svg chart
+    var xAxis = d3.svg.axis()
+      .scale(x)
+      .ticks(7)
+      .tickSize(-height)
+      .tickPadding([7])
+      .orient("bottom");
 
-      var yAxis = d3.svg.axis()
-        .scale(y)
-        .ticks(10)
-        .tickSize(-width)
-        .tickPadding([8])
-        .orient("left");
+    var yAxis = d3.svg.axis()
+      .scale(y)
+      .ticks(10)
+      .tickSize(-width)
+      .tickPadding([8])
+      .orient("left");
 
     // Define the div for the tooltip
     var div = d3.select("body").append("div")
