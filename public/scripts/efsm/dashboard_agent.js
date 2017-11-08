@@ -7,7 +7,7 @@ function drawDashAgent(data){
   var server = $("#server").val();  
   if(server != 'all') {
     var in_data = { url : "/dashboard/restapi/getAgentMap", type : "GET", data : data };
-    ajaxGetData(in_data, function(result){
+    ajaxTypeData(in_data, function(result){
       if (result.rtnCode.code == "0000") {              
         var elseJson = { nodes : result.nodes, edges : result.edges };              
         getServerMap(elseJson);    
@@ -15,7 +15,7 @@ function drawDashAgent(data){
     });
   }
   var in_data = { url : "/dashboard/restapi/getAgentData", type : "GET", data : data };  
-  ajaxGetData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {                              
       summaryAgent(result.data, result.start, result.end);
       drawAgentScattor(result.data, result.start, result.end, result.max);
@@ -127,7 +127,7 @@ function displayCountAgent() {
 
   var data = { date : day, gap : 'day' };
   var in_data = { url : "/dashboard/restapi/countAgentDay", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {
        $('#dayCnt').text(result.today);               
        setStatus($('#dayCnt_status'), result.today/result.yday*100, 'day', result.yday); 
@@ -136,7 +136,7 @@ function displayCountAgent() {
 
   var data = { date : day, gap : 'mon' };
   var in_data = { url : "/dashboard/restapi/countAgentMon", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {    
       $('#monCnt').text(result.tmon);        
       setStatus($('#monCnt_status'), result.tmon/result.ymon*100, 'day', result.ymon); 
@@ -144,7 +144,7 @@ function displayCountAgent() {
   });
  
   var in_data = { url : "/dashboard/restapi/countAgentDay", type : "GET", data : { date : day }};
-  ajaxGetData(in_data, function(result){            
+  ajaxTypeData(in_data, function(result){            
     if (result.rtnCode.code == "0000") {      
        $('#errCnt').text(result.today);                       
        setStatus($('#errCnt_status'), result.today/result.yday*100, 'day', result.yday); 
@@ -152,7 +152,7 @@ function displayCountAgent() {
   });         
 
   var in_data = { url : "/dashboard/restapi/countAgentDay", type : "GET", data : {} };
-  ajaxGetData(in_data, function(result){    
+  ajaxTypeData(in_data, function(result){    
     if (result.rtnCode.code == "0000") {      
       drawAgentWeekly(result.rtnData);
     }
