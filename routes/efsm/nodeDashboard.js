@@ -48,12 +48,8 @@ router.get('/', function(req, res, next) {
       server = list[0].name;
       type = list[0].type;
     }    
-    res.render('./dashboard/main'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : server, type : type }); 
+    res.render('./'+global.config.pcode+'/dashboard/dashboard', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : server, type : type }); 
   });
-});
-
- router.get('/error_pop', function(req, res, next) { 
-  res.render('./dashboard/error_pop'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc });
 });
 
 router.get('/error_pop_jira', function(req, res, next) {     
@@ -71,7 +67,7 @@ router.get('/error_pop_jira', function(req, res, next) {
         d._source.timestamp = Utils.getDateUTC2Local(d._source.timestamp, fmt2);
       });
     }
-    res.render('./dashboard/scatter_detail_jira'+global.config.pcode, { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+    res.render('./'+global.config.pcode+'/dashboard/scatter_detail_jira', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });                 
 
