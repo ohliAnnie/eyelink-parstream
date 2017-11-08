@@ -1,4 +1,6 @@
-$(function() {
+
+$(document).ready(function() {   
+  TableManaged.init();   
   $('#btn_add').click(function(){
     //- event.preventDefault();        
     var code =$("#code").val();
