@@ -180,10 +180,11 @@ describe("Util.js", function(){
     })
   });
 
-  describe("오늘 날짜 조회 (Utils.getToday()) 테스트 -> ", function() {
+  describe.only("오늘 날짜 조회 (Utils.getToday()) 테스트 -> ", function() {
     var fmt1 = CONSTS.DATEFORMAT.DATE;
     var fmt2 = CONSTS.DATEFORMAT.DATETIME;
     var fmt3 =  CONSTS.DATEFORMAT.DATETIMEMILLI;
+    var fmt4 = "YYYY.MM.DD";
     it('오늘날짜 조회', function(done) {
       var desc = '오늘날짜 조회';
       var curDate = Utils.getToday();
@@ -192,6 +193,8 @@ describe("Util.js", function(){
       console.log('%s : format(%s), %s', desc, fmt2, curDate);
       curDate = Utils.getToday(fmt3);
       console.log('%s : format(%s), %s', desc, fmt3, curDate);
+      curDate = Utils.getToday(fmt4);
+      console.log('%s : format(%s), %s', desc, fmt4, curDate);
       should.exist(curDate);
       done();
     })
@@ -238,6 +241,7 @@ describe("Util.js", function(){
     var fmt1 = CONSTS.DATEFORMAT.DATE;
     var fmt2 = CONSTS.DATEFORMAT.DATETIME;
     var fmt3 =  CONSTS.DATEFORMAT.DATETIMEMILLI;
+
 
     it('지정날짜를 UTC 시간(-9시간)으로 조회', function(done) {
       var testLocalDate = '2017-10-18 08:26:40';

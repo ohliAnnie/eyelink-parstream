@@ -1255,6 +1255,8 @@
         }
     ]]></query>
   </sample>
+
+  <!-- ANALYSIS QUERY -->
   <analysis>
     <query id='insertById'><![CDATA[
       {
@@ -1339,20 +1341,21 @@
         }
       }
     ]]></query>
+    <!-- 2017-11-07 updated -->
     <query id='selectPatternList'><![CDATA[
       {
         "index": #INDEX#,
         "type": #TYPE#,
         "body": {
           "size": 10000,
-          "_source" : [ "pattern_data.creation_Date", "_id" ],
-          "sort": { "pattern_data.creation_Date": "desc" },
+          "_source" : [ "da_result.createDate", "_id" ],
+          "sort": { "da_result.createDate": "desc" },
           "query" : {
             "bool" : {
               "should": [
                 { "term": { "_id": #MASTER_ID# }},
                 { "range": {
-                    "pattern_data.creation_Date" : {
+                    "da_result.createDate" : {
                       "gte" : #START_TIMESTAMP#, 
                       "lte" : #END_TIMESTAMP# 
                     }
@@ -1370,19 +1373,19 @@
         "type" : #TYPE#,
         "body" : {
           "size"   : 10000,
-          "sort" : { "analysis.timestamp" : { "order" : "asc"  } },
+          "sort" : { "da_result.timestamp" : { "order" : "asc"  } },
           "_source" : [
-              "analysis.timestamp",
-              "analysis.voltage", "analysis.voltage_status",
-              "analysis.ampere", "analysis.ampere_status",
-              "analysis.active_power", "analysis.active_power_status",
-              "analysis.power_factor", "analysis.power_factor_status"],
+              "da_result.timestamp",
+              "da_result.voltage", "da_result.voltage_status",
+              "da_result.ampere", "da_result.ampere_status",
+              "da_result.active_power", "da_result.active_power_status",
+              "da_result.power_factor", "da_result.power_factor_status"],
           "query" : {
             "bool" : {
               "must" : { "match_all": {} },
                "filter" : {
                 "range" : {
-                  "analysis.timestamp" : { "gte" : #gte#, "lte" : #lte# }
+                  "da_result.timestamp" : { "gte" : #gte#, "lte" : #lte# }
                 }
               }
             }
@@ -1402,9 +1405,11 @@
         }
       }
     ]]></query>
+    
+    <!-- get pattern data -->
     <query id='selectPatterns'><![CDATA[
       {
-        "index" : #INDEX#,
+        "index" : #INDEX#, 
         "type" : #TYPE#,
         "body" : {
           "query" : {
@@ -1413,6 +1418,7 @@
         }
       }
     ]]></query>
+
     <query id='selectClusterPattern'><![CDATA[
       {
         "index" : #INDEX#,
@@ -1430,14 +1436,28 @@
         }
       }
     ]]></query>
-    <query id='updatePattern_info'><![CDATA[
+    <!-- Pattern data update [0]-->
+    <query id='updatePatternData'><![CDATA[
       {
         "index" : #INDEX#,
         "type" : #TYPE#,
         "id" : #ID#,
         "body" : {
           "doc" : {
-            "pattern_info" : { #FACTOR# : #QUERYBODY# }
+            "da_result" : #BODY#
+          }
+        }
+      }
+    ]]></query>
+    <!-- Pattern infomation update [0]-->
+    <query id='updatePatternInfo'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,
+        "body" : {
+          "doc" : {
+            "da_result" : #BODY#
           }
         }
       }

@@ -36,7 +36,7 @@ define("DATEFORMAT", {
 
 define("STARTTIME", {
 	"KOREA" : "T15:00:00"
-})
+});
 
 define("ERROR_CODE", {
 	"0000": "SUCCESS!!!",
