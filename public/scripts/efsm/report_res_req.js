@@ -1,5 +1,5 @@
-$(document).ready(function() {                          
-   var dateFormat = 'YYYY-MM-DD';
+$(document).ready(function(e) {                   
+  var dateFormat = 'YYYY-MM-DD';
   $('#sdate').val(moment().subtract(6, 'days').format(dateFormat));
   $('#edate').val(moment().format(dateFormat));
   // time series char를 그린다.
@@ -26,9 +26,9 @@ function makeIndex(){
 
 function getData(data) {    
   var in_data = { url : "/reports/restapi/getMultiIndexCount", type : "GET", data : data };
-  ajaxTypeData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){      
     if (result.rtnCode.code == "0000") {                                
-      drawChart(result.rtnData, name, result.max);          
+      drawChart(result.rtnData, data.type, result.max);          
     }
   });
 }

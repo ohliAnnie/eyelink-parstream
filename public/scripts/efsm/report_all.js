@@ -1,3 +1,13 @@
+$(document).ready(function() {             
+  var dateFormat = 'YYYY-MM-DD';
+  $('#sdate').val(moment().subtract(0, 'days').format(dateFormat));
+  $('#edate').val(moment().format(dateFormat));      
+  drawChart();
+  $('#btn_search').click(function() {          
+    drawChart();
+  });
+});                
+
 function drawChart() {  
   var sdate = $('#sdate').val();    
   var edate = $('#edate').val();  
