@@ -5,7 +5,7 @@ function getData(server, selected){
   
   var data = { date : new Date($("#date").val()).getTime(), server : server, list : list };
   var in_data = { url : "/dashboard/restapi/getBottleneckList", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {
       drawBottleneckList(result.rtnData);        
     }
@@ -33,7 +33,7 @@ function drawBottleneckList(data){
 function clickTrEvent(id){
   var data = { id : "_id", value : id };
   var in_data = { url : "/dashboard/restapi/getBottleneckDetail", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {                 
       drawDetail(result);        
     }    
@@ -80,7 +80,7 @@ function getChartData(range){
   d3.selectAll("svg").remove();   
   var data = { gap : range, end : stamp, type : 'range' };
   var in_data = { url : "/dashboard/restapi/getHeapData", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {                
       drawHeap(result.heap);
       drawPermgen(result.perm);      
@@ -88,7 +88,7 @@ function getChartData(range){
   });
 
   var in_data = { url : "/dashboard/restapi/getJvmSysData", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){ 
+  ajaxTypeData(in_data, function(result){ 
     if (result.rtnCode.code == "0000") {        
       drawJvmSys(result.rtnData);
     }
@@ -96,7 +96,7 @@ function getChartData(range){
 
   var data = { date : stamp, gap : 'range', range : range };
   var in_data = { url : "/dashboard/restapi/getAgentData", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
   $.ajax({    
     if (result.rtnCode.code == "0000") {                              
       summaryAgent(result.data, result.start, result.end);

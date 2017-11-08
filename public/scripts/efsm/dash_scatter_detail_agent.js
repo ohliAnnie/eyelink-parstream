@@ -32,7 +32,7 @@ jQuery(document).ready(function() {
 function getTransaction(id, date) {      
   var data = { date : date, id : id };
   var in_data = { url : "/dashboard/restapi/getTransactionDetail", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {              
       drawDetail(result.rtnData);        
     }

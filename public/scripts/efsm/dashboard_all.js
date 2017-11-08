@@ -53,7 +53,7 @@ $(document).ready(function(e) {
 
 function getAllData(day){ 
   var in_data = { url : "/dashboard/restapi/getAllMapData", type : "GET", data : { date : day } };
-  ajaxGetData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {                
       var elseJson = { nodes : result.nodes, edges : result.edges };                      
       getServerMap(elseJson);
