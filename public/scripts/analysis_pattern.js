@@ -171,34 +171,36 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
   $('#tblPatterns').empty();
   
   var sb = new StringBuffer();
-  var headTag = '<thead><tr>' +
-    '<th style="text-align:center"><input type="checkbox" name="chkAll" ></th>' +
-    '<th style="text-align:center"> Group </th>' +
-    '<th style="text-align:center"> Cluster </th>' +
-    '<th style="text-align:center"> Master </th>' +
-    '<th style="text-align:center"> Status </th>' +
-    '<th style="text-align:center"></th>' +
-  '</tr></thead>';
-  sb.append(headTag);
+  
+  sb.append('<thead><tr><th style="text-align:center"><input type="checkbox" name="chkAll" ></th>');
+  sb.append('<th style="text-align:center"> Group </th>');
+  sb.append('<th style="text-align:center"> Cluster </th>');
+  sb.append('<th style="text-align:center"> Master </th>');
+  sb.append('<th style="text-align:center"> Status </th>');
+  sb.append('<th style="text-align:center"></th></tr></thead>');
   sb.append('<tbody class="patternBody">');
 
   if(childNode == undefined) {
-    for (cno in parentNodeData){
+    for (var cno in parentNodeData){
       var selectTag = statusCheck(parentNodeData[cno].status);
       if (parentNodeData[cno].status == "undefined"){
-        var dataTag = '<tr><td><input type="checkbox" name="patternChk" ></td>'+
-          '<td>' + parentNode + '</td>' +
-          '<td><a href="#" class="clickPattern">' + cno + '</td>' +
-          '<td><a href="#" class="clickPattern">' + parentNodeData[cno].masterCN + '</td>' +
-          '<td><select name="status" class="form-control input-small select2me form-md-line-input">' +
-          selectTag + '</td>' +
-          '<td><input type="button" class="updateBtn" value="update" /></td></tr>';
-        sb.append(dataTag);
+        sb.append('<tr><td><input type="checkbox" name="patternChk" ></td><td>');
+        sb.append(parentNode);
+        sb.append('</td><td><a href="#" class="clickPattern">');
+        sb.append(cno);
+        sb.append('</td><td><a href="#" class="clickPattern">');
+        sb.append(parentNodeData[cno].masterCN);
+        sb.append('</td><td><select name="status">');
+        sb.append(selectTag);
+        sb.append('</td><td><input type="button" class="updateBtn" value="update" /></td></tr>');
       } else {
-        var dataTag = '<tr><td></td><td>' + parentNode + '</td>' +
-          '<td><a href="#" class="clickPattern">' + cno + '</td>' +
-          '<td>' + selectTag + '</td><td></td></tr>';
-        sb.append(dataTag);
+        sb.append('<tr><td></td><td>');
+        sb.append(parentNode);
+        sb.append('</td><td><a href="#" class="clickPattern">');
+        sb.append(cno);
+        sb.append('</td><td>');
+        sb.append(selectTag);
+        sb.append('</td><td></td></tr>');
       }
     }
     sb.append("</tbody>");

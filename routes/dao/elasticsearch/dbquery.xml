@@ -1405,7 +1405,7 @@
         }
       }
     ]]></query>
-    
+
     <!-- get pattern data -->
     <query id='selectPatterns'><![CDATA[
       {
@@ -1449,6 +1449,7 @@
         }
       }
     ]]></query>
+    
     <!-- Pattern infomation update [0]-->
     <query id='updatePatternInfo'><![CDATA[
       {
