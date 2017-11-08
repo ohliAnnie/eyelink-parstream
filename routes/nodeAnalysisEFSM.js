@@ -352,8 +352,8 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
   var in_data = {  
         INDEX: indexPatternMatching, TYPE: "pattern_matching", 
         gte : Utils.getDate(now, fmt2, 0, 0, -10, 0, 'Y', 'Y'), 
-        lte : end }
-  queryProvider.selectSingleQueryByID2("analysis", "selectByAnalysisTimestamp", in_data, function(err, out_data, params) {        
+        lte : end }  
+  queryProvider.selectSingleQueryByID2("analysis", "selectByAnalysisTimestamp", in_data, function(err, out_data, params) {            
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       logger.debug('null');
@@ -362,16 +362,8 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     } else {            
       var pattern = out_data[0]._source.da_result;
-<<<<<<< HEAD
       var list = makeList(["voltage", "ampere", "power_factor", "active_power"], pattern);
       var in_data = { INDEX: indexPatternData, TYPE: "pattern_data" , ID: "master", list : list }      
-=======
-      var in_data = { INDEX: indexPatternData, TYPE: "pattern_data" , ID: "master", 
-        list : ["da_result.active_power."+pattern.active_power.top_1,"da_result.active_power."+pattern.active_power.top_2+".center","da_result.active_power."+pattern.active_power.top_3+".center",
-        "da_result.voltage."+pattern.voltage.top_1,"da_result.voltage."+pattern.voltage.top_2+".center","da_result.voltage."+pattern.voltage.top_3+".center",
-        "da_result.power_factor."+pattern.power_factor.top_1,"da_result.power_factor."+pattern.power_factor.top_2+".center","da_result.power_factor."+pattern.power_factor.top_3+".center",
-        "da_result.ampere."+pattern.ampere.top_1,"da_result.ampere."+pattern.ampere.top_2+".center","da_result.ampere."+pattern.ampere.top_3+".center"] };        
->>>>>>> e5fd280dc39072e56ce8e23c6bb687f152559d2e
       queryProvider.selectSingleQueryByID2("analysis", "selectAnomalyMatch", in_data,  function(err, out_data, params) {                                
         var rtnCode = CONSTS.getErrData('0000');
         if (out_data == null) {
@@ -380,14 +372,8 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
         } else if(out_data.length == 0) {
            rtnCode = CONSTS.getErrData('0001');
         } else {        
-<<<<<<< HEAD
           var clust = out_data[0]._source.pattern_data;           
           var start = Utils.getDate(pattern.timestamp, fmt2, 0, 0, -50, -10, 'Y', 'Y');                    
-=======
-          var clust = out_data[0]._source.da_result;   
-
-          var start = Utils.getDate(pattern.timestamp, fmt2, 0, 0, -50, -10, 'Y');          
->>>>>>> e5fd280dc39072e56ce8e23c6bb687f152559d2e
           var in_data = { index : indexCore+'*', type : "corecode",
                 gte: start, lte: end,  NODE: ["0002.00000039"], FLAG : 'N'};           
          queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
@@ -397,51 +383,12 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
             } else if(out_data.length == 0) {
               rtnCode = CONSTS.getErrData('0001');
             } else {
-<<<<<<< HEAD
-              console.log('analysis/restapi/getClusterNodePower -> length : %s', out_data.length);
+              logger.debug('analysis/restapi/getClusterNodePower -> length : %s', out_data.length);
               var tot = { "voltage" : [], "ampere" : [], "active_power" : [], "power_factor" : [] };
-              console.log(tot);
+              logger.debug(tot);
               for(key in tot) {
                 tot[key] = arangeData(clust, pattern, start, key);                 
               }              
-=======
-              logger.debug('analysis/restapi/getClusterNodePower -> length : %s', out_data.length);
-              var vdata = [], adata = [], pfdata = [], apdata = [];                  
-              var vapt = [], aapt = [], pfapt = [], apapt = [], vcpt = [], acpt = [], pfcpt = [], apcpt = [];
-              for(i=59; i<120; i++){                  
-                var date = new Date(start).getTime()+(i-59)*60*1000;
-                vdata.push({date : date, center : clust.voltage[pattern.voltage.top_1].center[i], center2 : clust.voltage[pattern.voltage.top_2].center[i], center3 : clust.voltage[pattern.voltage.top_3].center[i], min : clust.voltage[pattern.voltage.top_1].min_value[i], max : clust.voltage[pattern.voltage.top_1].max_value[i], lower : clust.voltage[pattern.voltage.top_1].lower[i], upper : clust.voltage[pattern.voltage.top_1].upper[i] });                                
-                adata.push({date : date, center : clust.ampere[pattern.ampere.top_1].center[i], center2 : clust.ampere[pattern.ampere.top_2].center[i], center3 : clust.ampere[pattern.ampere.top_3].center[i], min : clust.ampere[pattern.ampere.top_1].min_value[i], max : clust.ampere[pattern.ampere.top_1].max_value[i], lower : clust.ampere[pattern.ampere.top_1].lower[i], upper : clust.ampere[pattern.ampere.top_1].upper[i] });
-                apdata.push({date : date, center : clust.active_power[pattern.active_power.top_1].center[i], center2 : clust.active_power[pattern.active_power.top_2].center[i], center3 : clust.active_power[pattern.active_power.top_3].center[i], min : clust.active_power[pattern.active_power.top_1].min_value[i], max : clust.active_power[pattern.active_power.top_1].max_value[i], lower : clust.active_power[pattern.active_power.top_1].lower[i], upper : clust.active_power[pattern.active_power.top_1].upper[i] });
-                pfdata.push({date : date, center : clust.power_factor[pattern.power_factor.top_1].center[i], center2 : clust.power_factor[pattern.power_factor.top_2].center[i], center3 : clust.power_factor[pattern.power_factor.top_3].center[i], min : clust.power_factor[pattern.power_factor.top_1].min_value[i], max : clust.power_factor[pattern.power_factor.top_1].max_value[i], lower : clust.power_factor[pattern.power_factor.top_1].lower[i], upper : clust.power_factor[pattern.power_factor.top_1].upper[i] });
-                if(i<110) {
-                  if(pattern.ampere.caution_pt[i] != -1){
-                    acpt.push({ date : date, value : pattern.ampere.caution_pt[i] });                 
-                  }
-                  if(pattern.voltage.caution_pt[i] != -1){
-                    vcpt.push({ date : date, value : pattern.voltage.caution_pt[i] });
-                  }
-                  if(pattern.active_power.caution_pt[i] != -1){
-                    apcpt.push({ date : date, value : pattern.active_power.caution_pt[i] });
-                  }
-                  if(pattern.power_factor.caution_pt[i] != -1){
-                    pfcpt.push({ date : date, value : pattern.power_factor.caution_pt[i] });
-                  }
-                  if(pattern.ampere.anomaly_pt[i] != -1){
-                    aapt.push({ date : date, value : pattern.ampere.anomaly_pt[i] });
-                  }
-                  if(pattern.voltage.anomaly_pt[i] != -1){
-                    vapt.push({ date : date, value : pattern.voltage.anomaly_pt[i] });
-                  }
-                  if(pattern.active_power.anomaly_pt[i] != -1){
-                    apapt.push({ date : date, value : pattern.active_power.anomaly_pt[i] });
-                  }
-                  if(pattern.power_factor.anomaly_pt[i] != -1){
-                    pfapt.push({ date : date, value : pattern.power_factor.anomaly_pt[i] });
-                  }               
-                }                                
-              }            
->>>>>>> e5fd280dc39072e56ce8e23c6bb687f152559d2e
               pattern.timestamp = Utils.getDateUTC2Local(pattern.timestamp, fmt2);
               var data = [];
               var sdata = out_data[0]._source;              
@@ -500,15 +447,8 @@ function makeList(key, pattern){
 }
 
 router.get('/restapi/getAnomalyPatternCheck/', function(req, res, next) {  
-<<<<<<< HEAD
   var now = Utils.getToday(fmt2, 'Y', 'Y');  
   var start = Utils.getDate(now, fmt2, 0, 0, -2, 0, 'Y', 'Y');    
-=======
-  var now = Utils.getDateLocal2UTC(Utils.getToday(fmt2), fmt2, 'Y');  
-  var start = Utils.getDateLocal2UTC(Utils.getDate(now, fmt2, 0, 0, -2, 0), fmt2, 'Y');  
-  logger.debug('((((((((((((((((s')
-  logger.debug(now, start);    
->>>>>>> e5fd280dc39072e56ce8e23c6bb687f152559d2e
   var in_data = {  INDEX: indexPatternMatching, TYPE: "pattern_matching", 
         gte : start,     lte : now }   
   queryProvider.selectSingleQueryByID2("analysis", "selectByAnalysisTimestamp", in_data, function(err, out_data, params) {    
@@ -522,14 +462,8 @@ router.get('/restapi/getAnomalyPatternCheck/', function(req, res, next) {
 
 // query RawData
 router.get('/restapi/getClusterNodeLive', function(req, res, next) {
-<<<<<<< HEAD
-  console.log('analysis/restapi/getClusterNodeLive');
-  var today = Utils.getToday(fmt2, 'Y', 'Y');    
-  console.log(today);
-=======
   logger.debug('analysis/restapi/getClusterNodeLive');
-  var today = Utils.getToday(fmt2);    
->>>>>>> e5fd280dc39072e56ce8e23c6bb687f152559d2e
+  var today = Utils.getToday(fmt2, 'Y', 'Y');    
   var in_data = {
         index : indexCore+'*',      type : "corecode",
         gte: Utils.getDate(today, fmt2, 0, 0, -1, 0, 'Y', 'Y'),
@@ -574,7 +508,6 @@ router.get('/restapi/getClusterNodePower', function(req, res, next) {
 });
 
 // query RawData
-<<<<<<< HEAD
 router.get('/restapi/getClusterRawData', function(req, res, next) {     
   var start = new Date(req.query.startDate).getTime();
   var end = new Date(req.query.endDate).getTime();
@@ -584,24 +517,6 @@ router.get('/restapi/getClusterRawData', function(req, res, next) {
   }  
   var in_data = {  index : index, type : "corecode",
                    gte: req.query.startDate, lte: req.query.endDate,    };
-=======
-router.get('/restapi/getClusterRawData', function(req, res, next) {
-  logger.debug(req.query)
-  var mon = {'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
-  var start = new Date(req.query.startDate).getTime();
-  var end = new Date(req.query.endDate).getTime();
-  var index = [], cnt = 0;
-  for(i = start; i<=end; i=i+24*60*60*1000){
-    var d = new Date(i).toString().split(' ');
-    index[cnt++]  = "corecode-"+d[3]+'-'+mon[d[1]]+'-'+d[2];
-  }
-  logger.debug(index);
-  var in_data = {
-      index : index, type : "corecode",
-      gte: req.query.startDate,
-      lte: req.query.endDate,
-    };
->>>>>>> e5fd280dc39072e56ce8e23c6bb687f152559d2e
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawData", in_data, function(err, out_data, params) {
     // logger.debug(out_data);
     var rtnCode = CONSTS.getErrData('0000');
@@ -628,12 +543,12 @@ router.get('/restapi/getClusterDetailRawData', function(req, res, next) {
   var in_data = {  index : index, type : "corecode",
                    gte: req.query.startDate, lte: req.query.endDate,    };
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawData", in_data, function(err, out_data, params) {
-    // console.log(out_data);
+    // logger.debug(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-    console.log('analysis/restapi/getClusterRawData -> length : %s', out_data.length);
+    logger.debug('analysis/restapi/getClusterRawData -> length : %s', out_data.length);
     var data = [];
     out_data.forEach(function(d){
       d = d._source;
