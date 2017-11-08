@@ -19,7 +19,7 @@ function getData() {
 
   var data = { sdate : $('#sdate').val(), edate : $('#edate').val(), name : name }
   var in_data = { url : link, type : "GET", data : data };
-  ajaxGetData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {        
       // line chart들과 dataTable을 그린다
       drawChart(result.rtnData);

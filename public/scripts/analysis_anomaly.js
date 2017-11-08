@@ -1,7 +1,7 @@
 var liveValue = [];
 setInterval(function() { 
   var in_data = { url : "/analysis/restapi/getClusterNodeLive", type : "GET", data : {} };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {                        
       if(result.rtnData.length == 1){
         liveValue = result.rtnData[0];            
@@ -12,7 +12,7 @@ setInterval(function() {
 
 function getData(){    
   var in_data = { url : "/analysis/restapi/getAnomalyChartData", type : "GET", data : {} };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {
       var raw = result.raw;      
       var point = new Date(result.pattern.timestamp).getTime(), start = point -50*60*1000, end = point+10*60*1000;      
@@ -276,7 +276,7 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
       if((oriEnd-end) < 10*1000) {
         oriNow = now;
         var in_data = { url : "/analysis/restapi/getAnomalyPatternCheck/", type : "GET", data : {} };
-        ajaxGetData(in_data, function(result){
+        ajaxTypeData(in_data, function(result){
           console.log(result.rtnCode.message);
           if (result.rtnCode.code == "0000") {
             console.log('reload');

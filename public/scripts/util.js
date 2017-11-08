@@ -23,7 +23,6 @@ function ajaxGetData(data, callback) {
     data: data.data,
     success: callback,
     error: function(req, status, err) {
-
       //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
       $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
     }

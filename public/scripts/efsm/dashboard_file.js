@@ -8,7 +8,7 @@ function makeDatabyDay(day){
 
 function getMap(data){
   var in_data = { url : "/dashboard/restapi/getJiramapdata", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {  
       var elseJson = { nodes : result.nodes, edges : result.edges };      
       getServerMap(elseJson);             
@@ -19,7 +19,7 @@ function getMap(data){
 
 function getDash(data){  
   var in_data = { url : "/dashboard/restapi/selectJiraAccDash", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {        
       drawScatter(result.rtnData, result.start, result.end, result.max);
       summary(result.rtnData, result.start, result.end);
@@ -27,7 +27,7 @@ function getDash(data){
   });
 
   var in_data = { url : "/dashboard/restapi/selectJiraSankeyByLink", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {                        
       drawSankey({rtnData : result.rtnData, id : result.id});
     } 
@@ -343,7 +343,7 @@ function summary(data, start, end) {
 function displayCount() {  
   var data = { date : new Date().getTime() };
   var in_data = { url : "/dashboard/restapi/countAccJiraDay", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {
       $('#dayCnt').text(result.today);
       setStatus($('#dayCnt_status'), result.today/result.yday*100, 'day', result.yday);
@@ -351,7 +351,7 @@ function displayCount() {
   });
   
   var in_data = { url : "/dashboard/restapi/countAccJiraDay", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {
       $('#monCnt').text(result.tmon);
       setStatus($('#monCnt_status'), result.tmon/result.ymon*100, 'mon', result.ymon);                
@@ -359,7 +359,7 @@ function displayCount() {
   });
 
   var in_data = { url : "/dashboard/restapi/countAccJiraDay", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {
       $('#errCnt').text(result.today);
       setStatus($('#errCnt_status'), result.today/result.yday*100, 'day', result.yday);

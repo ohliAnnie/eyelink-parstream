@@ -18,7 +18,7 @@ function getData() {
 
   var data = { date : sdate, interval : '10m' };
   var in_data = { url : "/dashboard/restapi/getAccTimeseries", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {        
       drawAccTimeseries(result.rtnData);
     }
@@ -26,21 +26,21 @@ function getData() {
 
   var data = { date : sdate };
   var in_data = { url : "/dashboard/restapi/getProcessTimeseries", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){    
+  ajaxTypeData(in_data, function(result){    
     if (result.rtnCode.code == "0000") {        
       drawProcessTimeseries(result.rtnData);
     }
   });
 
   var in_data = { url : "/dashboard/restapi/getTopTimeseries", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){      
+  ajaxTypeData(in_data, function(result){      
     if (result.rtnCode.code == "0000") {        
       drawTopTimeseries(result.rtnData);
     }
   });
 
   var in_data = { url : "/dashboard/restapi/getTotalTimeseries", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){        
+  ajaxTypeData(in_data, function(result){        
     if (result.rtnCode.code == "0000") {
       drawTotalTimeseries(result.rtnData);
     }

@@ -5,7 +5,7 @@ $(document).ready(function() {
 
 function getMenu(id, date) {
   var in_data = { url : "/management/restapi/getMenuList", type : "GET", data : {} };
-  ajaxGetData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {              
       drawMenuList(result.rtnData);        
     }

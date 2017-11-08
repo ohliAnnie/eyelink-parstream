@@ -18,7 +18,7 @@ $(document).ready(function() {
       var roleid = $("#roleid").val();
       var data = $('#create_account').serialize();
       var in_data = { url : "/management/role/"+roleid, type : "POST", data : data };
-      ajaxGetData(in_data, function(result){
+      ajaxTypeData(in_data, function(result){
         alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
         if (result.rtnCode.code == "D001") {
           location.href = "/management/role";

@@ -2,7 +2,6 @@
   font: 10px sans-serif;
 }
 
-
 .d3_timeseries.axis path,
 .d3_timeseries.axis line {
   fill: none;
@@ -10,7 +9,6 @@
   stroke-width:1;
   shape-rendering: crispEdges;
 }
-
 
 .d3_timeseries.brush {
   fill-opacity : 0.2;

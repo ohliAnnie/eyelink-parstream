@@ -12,7 +12,7 @@ function getData(){
   var data = { sdate : $('#sdate').val(), edate : $('#edate').val() };
 
   var in_data = { url : "/reports/restapi/getAccessError", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {        
       drawChart(result.rtnData, sdate, edate);        
     }

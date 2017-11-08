@@ -14,7 +14,7 @@ function drawCountChart() {
   var data = { date : $('#sdate').val(), type : 'normal' };
 
   var in_data = { url : "/dashboard/restapi/getHeapData", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {        
       drawHeap(result.heap);
       drawPermgen(result.perm);
@@ -22,21 +22,21 @@ function drawCountChart() {
   });
 
   var in_data = { url : "/dashboard/restapi/getHeapData", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {                
         drawJvmSys(result.rtnData);
     } 
   });
 
   var in_data = { url : "/dashboard/restapi/getStatTransaction", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {        
       drawTransaction(result.rtnData);
     }
   });
 
   var in_data = { url : "/dashboard/restapi/getActiveTrace", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {        
       drawActiveTrace(result.rtnData);
     }

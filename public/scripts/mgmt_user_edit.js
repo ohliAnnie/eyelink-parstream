@@ -38,7 +38,7 @@ $(document).ready(function() {
       var userid = $("#userid").val();
       var data = $('#update_account').serialize();
       var in_data = { url : "/management/users/"+userid, type : "PUT", data : data };
-      ajaxGetData(in_data, function(result){      
+      ajaxTypeData(in_data, function(result){      
         alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
         if (result.rtnCode.code == "D002") {
           location.href = "/management/users";
@@ -62,7 +62,7 @@ $(document).ready(function() {
     // TODO 메시지 공통 영역으로
     if (confirm("삭제 하시겠습니까? ")) {
       var in_data = { url : "/management/mem/"+memid, type : "DELETE", data : { memid : memid } };;
-      ajaxGetData(in_data, function(result){
+      ajaxTypeData(in_data, function(result){
         alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
         if (result.rtnCode.code == "D003") {
           location.href = "/management/users/"+userid;

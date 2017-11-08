@@ -26,7 +26,7 @@ function makeIndex(){
 
 function getData(data) {    
   var in_data = { url : "/reports/restapi/getMultiIndexCount", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {                                
       drawChart(result.rtnData, name, result.max);          
     }

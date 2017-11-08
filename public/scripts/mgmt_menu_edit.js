@@ -38,7 +38,7 @@ $(function() {
     if (confirm("등록 하시겠습니까? ")) {
       var code = $("#code").val();
       var in_data = { url : , type : "GET", data : $('#create_account').serialize() };
-      ajaxGetData(in_data, function(result){      
+      ajaxTypeData(in_data, function(result){      
         alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
         if (result.rtnCode.code == "D001") {
           location.href = "/management/menu/editMenu";
@@ -50,7 +50,7 @@ $(function() {
 
 function getMenu() {
   var in_data = { url : "/management/restapi/getMenuList", type : "GET", data : {} };
-  ajaxGetData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {              
       drawMenuList(result.rtnData);        
     }
@@ -88,7 +88,7 @@ function clickDelete(id){
 
 function deleteMenu(id, status){
   var in_data = { url : "/management/menu/"+id, type : "DELETE", data : { id : id } };
-  ajaxGetData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){
     if(status){
       alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
       if (result.rtnCode.code == "D003") {
@@ -162,7 +162,7 @@ function clickUpdate(id){
     var code = $("#ecode").val();
     var data = { id : id, code : code, name : $("#ename").val(), upcode : $("#eupcode").val() }
     var in_data = { url : "/management/menu/"+code, type : "PUT", data : data };
-    ajaxGetData(in_data, function(result){    
+    ajaxTypeData(in_data, function(result){    
       alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
       location.href = "/management/menu/editMenu";
     });    

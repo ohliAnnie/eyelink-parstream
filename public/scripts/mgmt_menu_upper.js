@@ -54,7 +54,7 @@ $(function() {
 
 function getList(id){  
   var in_data = { url : "/management/restapi/getCodeList", type : "GET", data : { id : id} };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "D003") {                
     } else {        
       result.rtnData.forEach(function(d){          
@@ -67,7 +67,7 @@ function getList(id){
 
 function deleteMenu(id, status){  
   var in_data = { url : "/management/menu/" + id, type : "DELETE", data : { id : id } };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     if(status){
       alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
       if (result.rtnCode.code == "D003") {
@@ -137,7 +137,7 @@ function clickEdit(id, oldCode){
 function insertMenu(code, name, upcode, status){
   var data = { code : code, name : name, upcode : upcode };
   var in_data = { url : "/management/menu/" + code, type : "POST", data : data };
-  ajaxGetData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){
     if(status){
       alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
       if (result.rtnCode.code == "D001") {
@@ -150,7 +150,7 @@ function insertMenu(code, name, upcode, status){
 function updateUpperMenu(id, code, name, oldCode){
   var data = { id : id, code : code, name : name, upcode : "0000" };
   var in_data = { url : "/management/menu_upper/" + code, type : "PUT", data : data };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "D002") {
       getMenuList(code, oldCode);
       alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);       
@@ -163,7 +163,7 @@ function updateUpperMenu(id, code, name, oldCode){
 
 function getMenuList(upcode, oldCode){
   var in_data = { url : "/management/restapi/getCodeList", type : "GET", data : { upcode : oldCode } };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     result.rtnData.forEach(function(d){
     var code = upcode.substring(0,1)+d._source.code.substring(1,4);
     updateMenu(d._id, code,d._source.name, upcode);
@@ -173,7 +173,7 @@ function getMenuList(upcode, oldCode){
 function updateMenu(id, code, name, upcode){
   var data = { id : id, code : code, name : name, upcode : upcode };
   var in_data = { url : "/management/menu/" + code, type : "PUT", data : data };
-  ajaxGetData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){  
     console.log(result);
   });
 }

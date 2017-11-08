@@ -11,7 +11,7 @@ $(document).ready(function() {
         // TODO 메시지 공통 영역으로
         if (confirm("삭제 하시겠습니까? ")) {
           var in_data = { url : "/management/mem/"+memid, type : "DELETE", data : { memid : memid } };
-          ajaxGetData(in_data, function(result){          
+          ajaxTypeData(in_data, function(result){          
             alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
             if (result.rtnCode.code == "D003") {
               location.href = "/management/memList/"+roleid;
@@ -28,7 +28,7 @@ $(document).ready(function() {
         // TODO 메시지 공통 영역으로
         if (confirm("추가 하시겠습니까? ")) {          
           var in_data = { url : "/management/mem/"+roleid, type : "POST", data : { userid : userid } };
-          ajaxGetData(in_data, function(result){          
+          ajaxTypeData(in_data, function(result){          
             alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
             if (result.rtnCode.code == "D001") {
               location.href = "/management/memList/"+roleid;

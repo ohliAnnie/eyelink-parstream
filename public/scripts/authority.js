@@ -5,7 +5,7 @@ var old = '';
 
 function getMenu() {        
   var in_data = { url : "/dashboard/restapi/getBottleneckList", type : "GET", data : { type : "menu" } };
-  ajaxGetData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {              
       drawMenuList(result.rtnData);
     }
@@ -54,7 +54,7 @@ function clickTrEvent(code, id){
 
   var data = { code : code, id : id };
   var in_data = { url : "/management/restapi/getAuthMenu", type : "GET", data : data };
-  ajaxGetData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {     
       drawRoleList(result.menuAuth, result.roleList, code, id);
     }
@@ -104,7 +104,7 @@ function saveMenuAuth(id, code){
 
   var data = { id : id, role : role };
   var in_data = { url : "/management/menu_auth/"+code, type : "PUT", data : data };
-  ajaxGetData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "D002") {        
       location.href='/management/authority';
     } else {

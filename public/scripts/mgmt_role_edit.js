@@ -12,7 +12,7 @@ $(document).ready(function() {
       var roleid = $("#roleid").val();
       var data = $('#update_account').serialize();
       var in_data = { url : "/management/role/"+roleid, type : "PUT", data : data };
-      ajaxGetData(in_data, function(result){            
+      ajaxTypeData(in_data, function(result){            
         alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
         if (result.rtnCode.code == "D002") {
           location.href = "/management/role";
