@@ -522,6 +522,40 @@ router.get('/restapi/getClusterRawData', function(req, res, next) {
 });
 
 // query RawData
+router.get('/restapi/getClusterDetailRawData', function(req, res, next) {     
+  var start = new Date(req.query.startDate).getTime();
+  var end = new Date(req.query.endDate).getTime();
+  var index = [], cnt = 0;  
+  for(i = start; i<=end; i=i+24*60*60*1000){    
+    index[cnt++]  = indexCore+Utils.getMs2Date(i, fmt4);
+  }  
+  var in_data = {  index : index, type : "corecode",
+                   gte: req.query.startDate, lte: req.query.endDate,    };
+  queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawData", in_data, function(err, out_data, params) {
+    // console.log(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    console.log('analysis/restapi/getClusterRawData -> length : %s', out_data.length);
+    var data = [];
+    out_data.forEach(function(d){
+      d = d._source;
+      d.event_time = new Date(d.event_time).getTime();
+      d.active_power = d.active_power === undefined? 0:d.active_power;
+      d.als_level = d.als_level === ''? 0:d.als_level;
+      d.dimming_level = d.dimming_level === ''? 0:d.dimming_level;
+      d.noise_frequency = d.noise_frequency === ''? 0:d.noise_frequency;
+      d.vibration_x = d.vibration_x === ''? 0 : d.vibration_x;
+      d.vibration_y = d.vibration_y === ''? 0 : d.vibration_y;
+      d.vibration_z = d.vibration_z === ''? 0 : d.vibration_z;      
+      data.push(d);
+    });
+    res.json({rtnCode: rtnCode, rtnData: data});
+  });
+});
+
+// query RawData
 router.get('/restapi/getClusterRawDataByNode', function(req, res, next) {
   console.log(req.query);
   var in_data = {
