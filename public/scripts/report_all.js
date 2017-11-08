@@ -1,3 +1,14 @@
+$(document).ready(function() {                          
+   var dateFormat = 'YYYY-MM-DD';
+  $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
+  $('#edate').val(moment().format(dateFormat));
+  // time series char를 그린다.
+  drawChart();
+   $('#btn_search').click(function() {          
+    drawChart();
+  });
+});    
+
 function drawChart() {
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
