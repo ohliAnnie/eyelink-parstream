@@ -4,7 +4,7 @@ $(function() {
 var old = '';
 
 function getMenu() {        
-  var in_data = { url : "/dashboard/restapi/getBottleneckList", type : "GET", data : { type : "menu" } };
+  var in_data = { url :  "/management/restapi/getMenuList", type : "GET", data : { type : "menu" } };
   ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {              
       drawMenuList(result.rtnData);
