@@ -1,3 +1,7 @@
+$(document).ready(function(e) {      
+  getData();
+});
+
 var liveValue = [];
 setInterval(function() { 
   var in_data = { url : "/analysis/restapi/getClusterNodeLive", type : "GET", data : {} };
