@@ -1,12 +1,28 @@
-if ( process.argv[2] == null ) {
+if ( process.argv[2] == null || process.argv[3] == null ) {
   printUsage();
   process.exit();
 }
 
 const log4js = require('log4js');
 log4js.configure({
-  appenders: { datagen: { type: 'file', filename: 'datagen.log' } },
-  categories: { default: { appenders: ['datagen'], level: 'debug' } }
+  // appenders: [
+  //             { type: 'file', filename: './datagen.log', backups: 5 }
+  //             ],
+  // categories: { default: { appenders: ['datagen'], level: 'debug' } }
+  
+    "appenders": [
+      {
+        "type": "console"
+      },
+      {
+        "type": "file",
+        "filename": "./datagen.log",
+        "maxLogSize": 1024000,
+        "backups": 5,
+        "category": "eyelink"
+      }
+    ]
+  
 });
 global.logger = log4js.getLogger('datagen');
 
@@ -17,7 +33,8 @@ var sleep = require('system-sleep');
 var moment = require('moment-timezone');
 var datetime = require('node-datetime');
 var xml2js = require('xml2js');
-
+var Utils = require('../routes/util');
+var CONSTS = require('../routes/consts');
 var QueryProvider = require('./nodelib-es').QueryProvider;
 var queryProvider = new QueryProvider();
 
@@ -120,6 +137,8 @@ lineReader.on('line', function (line) {
           
           logger.debug('Processing DateTime : ',event_date + ' ' + data_arr[3].split('T')[1],', Next Event DateTime : ',data_arr[3].split('T').join(' '),', diffSeconds : ',diffSeconds );
       }
+      // 17.11.02 로컬 시간을 UTC 시간으로 변경하기 위한 로직 추가
+      data_arr[3] = Utils.getDateLocal2UTC(data_arr[3], CONSTS.DATEFORMAT.DATETIME, 'Y');
 
       if ( startDatetimeToSkip == null || nextEventDateTime.diff(startDatetimeToSkip, 'seconds') > 0 ){
           var index = 'corecode-' + cur_kor_datetime.split(' ')[0];
@@ -164,6 +183,8 @@ function printUsage() {
   console.log('');
   console.log('Ex. $ node dataSimulator.js ./source.csv 0002.00000039 30 \'2017-08-11 11:00:00\'');
   // node dataSimulator.js ../source/busan_tb_node_raw.0315.csv 0002.00000039 49 '2017-08-29 16:58:27'
+  // forever start dataSimulator.js ./busan_tb_node_raw.0315.csv 0 1 '2017-10-10 15:20:00'
+  // TODO : forever start dataSimulator.js ./busan_tb_node_raw.0315.csv 0 0 으로 실행 시에도 문제없이 돌아야 함., 로직 수정 필요 
 }
 function insertData(index, type, linedata){
 
