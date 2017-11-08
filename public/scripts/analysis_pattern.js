@@ -47,12 +47,9 @@ function getPatternList() {
   });
 }
 
-
 ///// draw pattern lists /////
 function drawPatternList(patternLists, nodeInfo) {
-  "use strict";
   console.log("patternLists : ", patternLists);
-  var seatvar = document.getElementsByClassName("patternList");
   $('#patternList').empty();
   var createdDate = patternLists[0]._id;
   patternLists.forEach(function(d) {
@@ -80,7 +77,7 @@ function loadPatternData(creationDate, nodeInfo) {
     success: function(result) {
       if (result.rtnCode.code == "0000") {
         console.log("getPatterns data : ", result);
-        var d = (result.rtnData.pattern_info);
+        var d = (result.rtnData.da_result);
       }
       var sortedData = sortObject(d);
       drawPatternTree(creationDate, sortedData, nodeInfo);
@@ -93,9 +90,8 @@ function loadPatternData(creationDate, nodeInfo) {
 
 
 function sortObject(obj) {
-  "use strict";
   var sorted = {};
-  Object.keys(obj).sort().forEach( function(key) {
+  Object.keys(obj).sort().forEach(function(key) {
     sorted[key] = obj[key];
   });
   return sorted;
@@ -103,10 +99,9 @@ function sortObject(obj) {
 
 
 function drawPatternTree(creationDate, treeData, nodeInfo){
-  "use strict";
   var treeNode = [];
   for(var group in treeData){
-    if (group != 'creation_Date'){
+    if (group != 'createDate'){
       var nodeData = getNodeData(treeData[group], group);
       treeNode.push(nodeData);
     }
@@ -119,16 +114,6 @@ function drawPatternTree(creationDate, treeData, nodeInfo){
     data: treeNode
   });
 
-  /// 노트 선택시 이벤트
-  $('#patternTree').on('nodeSelected', function(event, node){
-    console.log(node.href + ' is selected');
-    var nodeText = node.href.replace(/#/g,'');
-    var nodeText = nodeText.split('-');
-    var parentNode = nodeText[0];
-    var childNode = nodeText[1];
-    drawPatterns(creationDate, parentNode, childNode, treeData);
-  });
-
   if (nodeInfo != null){
     var nodeText = nodeInfo.href.replace(/#/g,'').split('-');
     drawPatterns(creationDate, nodeText[0], nodeText[1], treeData);
@@ -137,6 +122,16 @@ function drawPatternTree(creationDate, treeData, nodeInfo){
       $('#patternTree').treeview('expandNode', [nodeInfo.parentId, {levels:2, silent: true}]);
     }
   }
+
+  /// 노트 선택시 이벤트
+  $('#patternTree').on('nodeSelected', function(event, node){
+    console.log(node.href + ' is selected');
+    var nodeText = node.href.replace(/#/g,'');
+    nodeText = nodeText.split('-');
+    var parentNode = nodeText[0];
+    var childNode = nodeText[1];
+    drawPatterns(creationDate, parentNode, childNode, treeData);
+  });
 }
 
 
@@ -171,17 +166,17 @@ function getNodeData(treeData, group){
 //// 선택된 패턴그룹에 대한 패턴 리스트를 보여준다.
 function drawPatterns(creationDate, parentNode, childNode, patternData) {
   var parentNodeData = sortObject(patternData[parentNode]);
+  console.log(parentNodeData);
   d3.selectAll("svg").remove();
-  var seatvar = document.getElementsByClassName("tblPatterns");
-  var cnt = 0
   $('#tblPatterns').empty();
-  //console.log(typeof(patternData));
+  
   var sb = new StringBuffer();
   var headTag = '<thead><tr>' +
     '<th style="text-align:center"><input type="checkbox" name="chkAll" ></th>' +
     '<th style="text-align:center"> Group </th>' +
-    '<th style="text-align:center"> Cluster No. </th>' +
-    '<th width=0 style="text-align:center"> Status </th>' +
+    '<th style="text-align:center"> Cluster </th>' +
+    '<th style="text-align:center"> Master </th>' +
+    '<th style="text-align:center"> Status </th>' +
     '<th style="text-align:center"></th>' +
   '</tr></thead>';
   sb.append(headTag);
@@ -189,11 +184,12 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
 
   if(childNode == undefined) {
     for (cno in parentNodeData){
-      var selectTag = statusCheck(parentNodeData[cno]);
-      if (parentNodeData[cno] == "undefined"){
+      var selectTag = statusCheck(parentNodeData[cno].status);
+      if (parentNodeData[cno].status == "undefined"){
         var dataTag = '<tr><td><input type="checkbox" name="patternChk" ></td>'+
           '<td>' + parentNode + '</td>' +
           '<td><a href="#" class="clickPattern">' + cno + '</td>' +
+          '<td><a href="#" class="clickPattern">' + parentNodeData[cno].masterCN + '</td>' +
           '<td><select name="status" class="form-control input-small select2me form-md-line-input">' +
           selectTag + '</td>' +
           '<td><input type="button" class="updateBtn" value="update" /></td></tr>';
@@ -291,7 +287,7 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
       success: function(result) {
         if (result.rtnCode.code == "0000") {
           console.log(result);
-          var d = result.rtnData.pattern_data;
+          var d = result.rtnData.da_result;
           var graphData = d[factGroup][clusterNo]["center"];
           var set = [];
           var maxval = 0;
