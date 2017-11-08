@@ -15,7 +15,7 @@ StringBuffer.prototype.toString = function() {
   return this.buffer.join("");
 };
 
-function ajaxGetData(data, callback) {
+function ajaxTypeData(data, callback) {
   $.ajax({
     url: data.url,
     dataType: "json",
