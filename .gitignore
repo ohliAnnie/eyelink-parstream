@@ -3,3 +3,4 @@ bower_components/
 data/
 *.log
 logs/
+**/.DS_Store
