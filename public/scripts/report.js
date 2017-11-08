@@ -21,14 +21,13 @@ d3.json("/reports/restapi/getReportRawData", function(err, data){
   if(err) throw error;
 
 
-// TODO :  날짜 자동 계산
-    var dateFormat = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
-    var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
-    var numberFormat = d3.format('.2f');
+// TODO :  날짜 자동 계산  
+  var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
+  var numberFormat = d3.format('.2f');
 /*    var maxDate = new Date();
     var minDate  = addDays(new Date(), -7);
 */
-var minDate = new Date(2016,11,01);
+  var minDate = new Date(2016,11,01);
   var maxDate = new Date(2016,11,07,24,0,0); 
 
   var eventName = ["POWER", "ALS", "VIBRATION", "NOISE", "GPS", "STREET LIGHT", "DL", "REBOOT"];
@@ -740,27 +739,27 @@ noFMax
         return false;
     }
    volumeMax.focusCharts = function (chartlist) {
-        if (!arguments.length) {
-            return this._focusCharts;
-        }
-        this._focusCharts = chartlist; // only needed to support the getter above
-        this.on('filtered', function (range_chart) {
-            if (!range_chart.filter()) {
-                dc.events.trigger(function () {
-                    chartlist.forEach(function(focus_chart) {
-                        focus_chart.x().domain(focus_chart.xOriginalDomain());
-                    });
+    if (!arguments.length) {
+        return this._focusCharts;
+    }
+    this._focusCharts = chartlist; // only needed to support the getter above
+    this.on('filtered', function (range_chart) {
+        if (!range_chart.filter()) {
+            dc.events.trigger(function () {
+                chartlist.forEach(function(focus_chart) {
+                    focus_chart.x().domain(focus_chart.xOriginalDomain());
                 });
-            } else chartlist.forEach(function(focus_chart) {
-                if (!rangesEqual(range_chart.filter(), focus_chart.filter())) {
-                    dc.events.trigger(function () {
-                        focus_chart.focus(range_chart.filter());
-                    });
-                }
             });
+        } else chartlist.forEach(function(focus_chart) {
+            if (!rangesEqual(range_chart.filter(), focus_chart.filter())) {
+                dc.events.trigger(function () {
+                    focus_chart.focus(range_chart.filter());
+                });
+            }
         });
-        console.log(this);
-        return this;
+    });
+    console.log(this);
+    return this;
     };
     volumeMax.focusCharts([apMax, vibMax, noDMax, noFMax]);
 

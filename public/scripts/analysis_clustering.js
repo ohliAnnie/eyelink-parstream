@@ -1,21 +1,67 @@
+$(document).ready(function(e) {
+  console.log($('input[name="c0"]').prop('checked'));
+  var dateFormat = 'YYYY-MM-DD';      
+  var daDate = '';
+  $('#sdate').val(moment().format(dateFormat));
+  $('#edate').val(moment().format(dateFormat));
+  // time series char를 그린다.
+  var interval = $("select[name=interval]").val();
+  getMasterList(interval);
+  $('#btn_search').click(function() {
+    var interval = $("select[name=interval]").val();
+    d3.selectAll("svg").remove();
+    getMasterList(interval);
+  });
+  $('#btn_factor').click(function() {
+    d3.selectAll("svg").remove();
+  });
+  $('input[type="radio"]').on('click change', function(e) {
+    if ($('#factor0').is(':checked') === true) {
+      var factor = $('#factor0').val();
+    } else if ($('#factor1').is(':checked') === true) {
+      var factor = $('#factor1').val();
+    } else if ($('#factor2').is(':checked') === true) {
+      var factor = $('#factor2').val();
+    } else if ($('#factor3').is(':checked') === true) {
+      var factor = $('#factor3').val();
+    }
+    var daDate = $('#daDate').val();       
+    if(daDate != ''){
+      d3.selectAll("svg").remove();
+      drawCheckChart(factor, daDate);
+    }
+  });
+  clickfunc = function(link) {
+    var daDate = link.innerText || link.textContent;
+    $('#daDate').val(daDate);
+    console.log('2' + $('#daDate').val())
+    if ($('#factor0').is(':checked') === true) {
+      var factor = $('#factor0').val();
+    } else if ($('#factor1').is(':checked') === true) {
+      var factor = $('#factor1').val();
+    } else if ($('#factor2').is(':checked') === true) {
+      var factor = $('#factor2').val();
+    } else if ($('#factor3').is(':checked') === true) {
+      var factor = $('#factor3').val();
+    }
+    console.log(factor + ' ' + daDate);
+      d3.selectAll("svg").remove();
+      drawCheckChart(factor, daDate);
+  };
+});
+
 function getMasterList(interval) {
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
   console.log('%s, %s, %s', sdate, edate, interval);
-  $.ajax({
-    url: "/analysis/restapi/getDaClusterMaster" ,
-    dataType: "json",
-    type: "get",
-    data: { sdate:sdate, edate:edate, interval:interval },
-    success: function(result) {
-      if (result.rtnCode.code == "0000") {
-        console.log(result);
-        var master = result.rtnData;          
-        drawMaster(master);
-      }
-    },
-    error: function(req, status, err) {
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+
+  var data = { sdate:sdate, edate:edate, interval:interval };
+  var in_data = { url : "/analysis/restapi/getDaClusterMaster", type : "GET", data : data };  
+  ajaxTypeData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {
+      console.log(result);
+      var master = result.rtnData;          
+      drawMaster(master);
     }
   });
  }
@@ -53,43 +99,32 @@ function drawMaster(master) {
   });
 }
 
-function drawCheckChart(factor, daDate) {  
-  $.ajax({
-    url: "/analysis/restapi/getDaClusterDetail" ,
-    dataType: "json",
-    type: "get",
-    data: {daDate : daDate},
-    success: function(result) {
-      if (result.rtnCode.code == "0000") {        
-        console.log(result);
-        var d = result.rtnData;
-        console.log(d);
-        var set = [];
-        for(i=0; i<d['c0_ampere'].length; i++){
-          var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
-          console.log(d['event_time'][i]);
-          var event_time = new Date(d['event_time'][i]);          
-          //console.log(df.parse(new Date(d['event_time'][i])));
-          if(factor === 'ampere') {
-            set.push({ time : event_time, c0:d['c0_ampere'][i], c1:d['c1_ampere'][i], c2:d['c2_ampere'][i], c3:d['c3_ampere'][i]});
-          } else if(factor === 'voltage') {
-            set.push({ time : event_time, c0:d['c0_voltage'][i], c1:d['c1_voltage'][i], c2:d['c2_voltage'][i], c3:d['c3_voltage'][i]});
-          } else if(factor === 'active_power') {
-            set.push({ time : event_time, c0:d['c0_active_power'][i], c1:d['c1_active_power'][i], c2:d['c2_active_power'][i], c3:d['c3_active_power'][i]});
-          } else if(factor === 'power_factor') {
-            set.push({ time : event_time, c0:d['c0_power_factor'][i], c1:d['c1_power_factor'][i], c2:d['c2_power_factor'][i], c3:d['c3_power_factor'][i]});
-          }
-        };        
-        console.log(set);
-        drawCheckCluster(set, daDate, factor);
-      } else {
-        //- $("#errormsg")[html(result[message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
+function drawCheckChart(factor, daDate) {    
+  var in_data = { url : "/analysis/restapi/getDaClusterDetail", type : "GET", data : {daDate : daDate} };  
+  ajaxTypeData(in_data, function(result){ 
+    if (result.rtnCode.code == "0000") {        
+      console.log(result);
+      var d = result.rtnData;
+      console.log(d);
+      var set = [];
+      for(i=0; i<d['c0_ampere'].length; i++){
+        var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
+        console.log(d['event_time'][i]);
+        var event_time = new Date(d['event_time'][i]);          
+        //console.log(df.parse(new Date(d['event_time'][i])));
+        if(factor === 'ampere') {
+          set.push({ time : event_time, c0:d['c0_ampere'][i], c1:d['c1_ampere'][i], c2:d['c2_ampere'][i], c3:d['c3_ampere'][i]});
+        } else if(factor === 'voltage') {
+          set.push({ time : event_time, c0:d['c0_voltage'][i], c1:d['c1_voltage'][i], c2:d['c2_voltage'][i], c3:d['c3_voltage'][i]});
+        } else if(factor === 'active_power') {
+          set.push({ time : event_time, c0:d['c0_active_power'][i], c1:d['c1_active_power'][i], c2:d['c2_active_power'][i], c3:d['c3_active_power'][i]});
+        } else if(factor === 'power_factor') {
+          set.push({ time : event_time, c0:d['c0_power_factor'][i], c1:d['c1_power_factor'][i], c2:d['c2_power_factor'][i], c3:d['c3_power_factor'][i]});
+        }
+      };        
+      console.log(set);
+      drawCheckCluster(set, daDate, factor);
+    }    
   });
 }
 

@@ -48,12 +48,12 @@ router.get('/', function(req, res, next) {
       server = list[0].name;
       type = list[0].type;
     }    
-    res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : server, type : type }); 
+    res.render('./dashboard/main'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : server, type : type }); 
   });
 });
 
  router.get('/error_pop', function(req, res, next) { 
-  res.render('./dashboard/error_pop', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc });
+  res.render('./dashboard/error_pop'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc });
 });
 
 router.get('/error_pop_jira', function(req, res, next) {     
@@ -71,7 +71,7 @@ router.get('/error_pop_jira', function(req, res, next) {
         d._source.timestamp = Utils.getDateUTC2Local(d._source.timestamp, fmt2);
       });
     }
-    res.render('./dashboard/scatter_detail_jira', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+    res.render('./dashboard/scatter_detail_jira'+global.config.pcode, { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });                 
 
@@ -91,7 +91,7 @@ router.get('/error_pop_agent', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }  
-    res.render('./dashboard/scatter_detail_agent', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+    res.render('./dashboard/scatter_detail_agent'+global.config.pcode, { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });     
 
@@ -120,7 +120,7 @@ router.get('/timeseriesAGENT', function(req, res, next) {
       server = list[0].name;
       type = list[0].type
     }    
-    res.render('./dashboard/inspector', { title: global.config.productname, mainmenu:mainmenu, agent: list, server : server, type : type });
+    res.render('./dashboard/timeseries_agent'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, agent: list, server : server, type : type });
   });
 });
 
@@ -149,32 +149,7 @@ router.get('/timeseriesLOG', function(req, res, next) {
       server = list[0].name;
       type = list[0].type;
     }    
-    res.render('./dashboard/timeseries'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, agent: list, server : server, type : req.query.server }); 
-  });
-});
-
-router.get('/timeseries_agent', function(req, res, next) {  
-  mainmenu.dashboard = '';
-  mainmenu.timeseries = ' open selected';    
-  var server = req.query.server;
-  var in_data = {    index:  indexAppinfo, type: "applicationInfo"    };    
-  queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
-    var rtnCode = CONSTS.getErrData('0000');
-    var check = {}, list = [], cnt = 0;        
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');
-    } else {
-      out_data.forEach(function(d){
-        if(check[d._source.applicationId]==null){
-          check[d._source.applicationId] = { no : cnt++};
-          list.push({ id : d._source.collection, name : d._source.applicationId, type : d._source.collection });
-        } 
-      });       
-    }    
-    if(server == undefined || server == ""){
-      server = list[0].name;
-    }    
-    res.render('./dashboard/inspector', { title: global.config.productname, mainmenu:mainmenu, agent: list, server : server });
+    res.render('./dashboard/timeseries_log'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, agent: list, server : server, type : req.query.server }); 
   });
 });
 
@@ -199,7 +174,7 @@ router.get('/bottleneck', function(req, res, next) {
     if(server == undefined || server == ""){
       server = list[0].name;
     }    
-  res.render('./dashboard/bottleneck', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : server }); 
+  res.render('./dashboard/bottleneck'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : server }); 
   });
 });
 
@@ -208,12 +183,6 @@ router.get('/trenddata', function(req, res, next) {
   mainmenu.dashboard = ' open selected';
   mainmenu.timeseries = '';
   res.render('./dashboard/trenddata', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc});
-});
-
-router.get('/test', function(req, res, next) {
-  mainmenu.dashboard = ' open selected';
-  mainmenu.timeseries = '';
-  res.render('./dashboard/test', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc });
 });
 
 // query RawData
@@ -390,7 +359,7 @@ router.get('/sankey_pop', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }     
-    res.render('./dashboard/sankey_pop', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+    res.render('./dashboard/sankey_pop'+global.config.pcode, { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });
 
@@ -445,15 +414,15 @@ router.get('/restapi/selectJiraAccDash', function(req, res, next) {
   });
 });
 
-router.get('/selected_detail_jira', function(req, res, next) {          
+router.get('/selected_detail_jira', function(req, res, next) {       
   var start = Utils.getMs2Date(new Date(parseInt(req.query.start)), fmt2, 'Y');  
-  var end = Utils.getMs2Date(new Date(parseInt(req.query.end)), fmt2, 'Y');   
+  var end = Utils.getMs2Date(new Date(parseInt(req.query.end)), fmt2, 'Y');     
   var in_data = {
-    index:  [indexAcc+Utils.getDate(start, fmt4), indexAcc+Utils.getDate(end,fmt4)],
+    index:  [indexAcc+Utils.getMs2Date(start, fmt4, 'Y'), indexAcc+Utils.getMs2Date(end, fmt4, 'Y')],
     START : start,  END : end,
     MIN : parseInt(req.query.min),
     MAX : parseInt(req.query.max)  
-  };
+  };  
   queryProvider.selectSingleQueryByID2("dashboard","selectScatterSectionList", in_data, function(err, out_data, params) {     
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -463,7 +432,7 @@ router.get('/selected_detail_jira', function(req, res, next) {
         d._source.timestamp = Utils.getDateUTC2Local(d._source.timestamp, fmt2);                
       });
     }    
-    res.render('./dashboard/scatter_detail_jira', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+    res.render('./dashboard/scatter_detail_jira'+global.config.pcode, { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });                 
 
@@ -480,7 +449,7 @@ router.get('/selected_detail_agent', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }  
-    res.render('./dashboard/scatter_detail_agent', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+    res.render('./dashboard/scatter_detail_agent'+global.config.pcode, { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });        
 
@@ -586,6 +555,8 @@ router.get('/restapi/getJiraAccOneWeek', function(req, res, next) {
     index: indexAcc+"*", type : "access",
     start: Utils.getDate(Utils.getToday(fmt2,'N','Y'), fmt1, -7, 0, 0, 0)+startTime  
   };  
+  console.log('((((((((((((((((((((')
+  console.log(in_data);
   queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccOneWeek", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');
