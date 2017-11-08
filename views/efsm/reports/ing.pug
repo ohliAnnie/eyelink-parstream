@@ -1,0 +1,64 @@
+doctype html
+html(lang='en')
+  head
+    title Home | A Visualization System Prototype of Security Monitoring Product
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1')
+    link(rel='stylesheet', type='text/css', href='/assets/annie/css/bootstrap.min.css')      
+    link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')
+  body#table
+    
+      .col-sm-12.col-md-8
+        .panel.panel-card
+          .panel-title
+            h5.no-margin.m-b click line chart
+          .panel-body
+            .panel-checkbox-xs.visible-xs-block.visible-sm-block
+              input#ampere.click_checkbox(type='checkbox', name='ampere', value='1', v-on='click:checkOpt', checked='true')
+              text  ampere
+              |  
+              input#voltage.click_checkbox(type='checkbox', name='voltage', value='2', v-on='click:checkOpt', checked='true')
+              text  voltage
+              |  
+              input#active_power.click_checkbox(type='checkbox', name='active_power', value='3', v-on='click:checkOpt')
+              text  active_power
+              |  
+              input#apparent_power.click_checkbox(type='checkbox', name='apparent_power', value='4', v-on='click:checkOpt', checked='true')
+              text  apparent_power
+              |  
+              input#reactive_power.click_checkbox(type='checkbox', name='reactive_power', value='5', v-on='click:checkOpt')
+              text  reactive_power
+              |  
+              input#power_factor.click_checkbox(type='checkbox', name='power_factor', value='6', v-on='click:checkOpt')
+              text  power_factor
+            .col-xm-12.col-sm-12.col-md-10.col-xs-12
+              #LINE(style='width:100%;height:370px;')          
+      .col-sm-12.col-md-8
+        .panel.panel-card
+          .panel-title
+            h5.no-margin.m-b Area Chart
+          .panel-body
+            #Area(style='height:270px;')
+      .col-sm-12.col-md-6
+        .panel.panel-card
+          .panel-title
+            h5.no-margin.m-b Sensor Network Monitor
+          .panel-body
+            #DualArea(style='height:280px;')
+      .col-sm-12.col-md-6
+        .panel.panel-card
+          .panel-title
+            h5.no-margin.m-b Sensor Disk IO Monitor
+          .panel-body
+            #LineArea(style='height:280px;')
+      .col-sm-12.col-md-12
+        .panel.panel-card
+          .panel-title
+            h5.no-margin.m-b Sensor People Counting Monitor
+          .panel-body
+            #LineBar(style='height:400px;')
+    script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+    script(src="/assets/scripts/libs/jquery-2.2.3.min.js")
+    script(src="/assets/scripts/libs/bootstrap.min.js")
+    script(src='/assets/annie/js/vue.min.js')
+    script(src='/scripts/integrateIndex.js')   

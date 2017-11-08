@@ -1,0 +1,111 @@
+extends ../layout-reports
+block style   
+  link(rel='stylesheet', type='text/css', href='/assets/annie/css/style_report_power.css')
+block scripts
+  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  script(type='text/javascript', src='/assets/annie/js/dc.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(src='/scripts/report_power.js')
+  script(src='/scripts/report_power_check.js')
+  script(src='/assets/annie/js/vue.min.js')
+block content
+  main.layout-contents
+    div.layout-contents-inner
+      section
+        header.page-title
+          h1.title Reports_Noise
+        fieldset.search-container
+          legend search
+          .right-content-view
+            fieldset.segmented-control
+              legend Sync
+              ul.list
+                li
+                  input#syncY(type='radio', name='syncYN', checked='Y')
+                  label(for='syncY') Sync
+                li
+                  input#syncN(type='radio', name='syncYN')
+                  label(for='syncN') Async
+          .left-content-view
+            span.datepicker
+              input(type='text', name='daterange', id='daterange', value='')
+            select.select(name='', id='')
+              option(value='') Zone ID
+            select.select(name='', id='')
+              option(value='') Node ID
+            select.select(name='', id='')
+              option(value='') ALL
+            button#btn_search.btn-submit.search(type='submit') SEARCH
+            script.
+              $(document).ready(function() {
+                drawCheckChart();
+                var start = moment().subtract(5, 'days');                
+                var end = moment();    
+                start = '2016-11-26';
+                end = '2016-12-13';
+                $('input[name="daterange"]').daterangepicker({
+                    "autoApply": true,
+                    startDate: start,
+                    endDate: end,
+                    locale: {
+                      format: 'YYYY-MM-DD'
+                    }
+                  }, function(start, end, label) {
+                    console.log("New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')");
+                    });
+
+                // time series char를 그린다.
+                drawChart();                
+
+                $('#btn_search').click(function() {
+                  drawChart();
+                });
+
+              });
+        div.map-container
+          div.inner
+        a(href='javascript:dc.filterAll(); dc.renderAll();') Reset All
+        ul.list-reports
+          li
+            div.chart
+              strong Daily ActivePower Sum 
+              br
+              #powerSum
+          li
+            div.chart
+              strong Weekly Amount of Active Power Min/Max/Avg
+              br
+              #weekPlot
+          li
+            div.chart
+              strong Active Power by Time
+              br
+              #timePlot
+          li
+            div.chart
+              strong Over Flow Voltage Value
+              br
+              #volLine
+        div.map-container(style='width:98%;height:440px;')
+          div.inner
+            #table
+              .panel.panel-card
+                  .panel-title
+                    h5.no-margin.m-b Click Line Show Chart
+                  .panel-body
+                    .panel-checkbox-xs.visible-xs-block.visible-sm-block                
+                      input#week0.click_checkbox(type='checkbox', name='week0', value='1', v-on='click:checkOpt', checked='true')
+                      text  이번주
+                      |  
+                      input#week1.click_checkbox(type='checkbox', name='week1', value='2', v-on='click:checkOpt')
+                      text  1주전
+                      |  
+                      input#week2.click_checkbox(type='checkbox', name='week2', value='3', v-on='click:checkOpt')
+                      text  2주전
+                      |  
+                      input#week3.click_checkbox(type='checkbox', name='week3', value='4', v-on='click:checkOpt', checked='true')
+                      text  3주전
+                    .col-xm-12.col-sm-12.col-md-10.col-xs-12
+                      #LINE(style='width:95%;height:350px;')

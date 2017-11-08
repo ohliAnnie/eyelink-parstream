@@ -1,0 +1,102 @@
+extends ../layout-reports
+block style  
+  link(rel='stylesheet', href='/stylesheets/style.css')
+block scripts
+  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(type='text/javascript', src='/assets/annie/js/d3pie.min.js')
+  script(type='text/javascript', src='/assets/annie/js/d3pie.js')
+  script(type='text/javascript', src='/assets/annie/js/gauge.js')
+  script(type='text/javascript', src='/assets/annie/js/Donut3D.js')
+  script(src='/assets/annie/js/materialize.min.js')
+  script(src='/assets/annie/js/vizuly_core.min.js')
+  script(src='/assets/annie/js/vizuly_radialprogress.min.js')
+  script(src='/assets/annie/js/liquidFillGauge.js', language='JavaScript')
+  script(type='text/javascript', src='/scripts/report_d3.js')  
+block content
+  body
+  main.layout-contents.padding
+    div.layout-contents-inner
+      section
+        header.page-title
+          h1.title Reports
+          p.count Total
+            mark.report 836
+        fieldset.search-container
+          legend search
+            div.right-content-view
+              label(for='') List view
+                select.select(name='', id='')
+                  option(value='') 15
+            div.left-content-view
+              span.datepicker
+                input(type='text', name='daterange', id='', value='')
+                select.select(name='', id='')
+                  option(value='') Zone ID
+                select.select(name='', id='')
+                  option(value='') Node ID
+                select.select(name='', id='')
+                  option(value='') ALL
+              button.btn-submit.search(type='submit') SEARCH
+        script.
+          $(document).ready(function() {
+            report();
+            var start = moment().subtract(29, 'days');
+            var end = moment();
+            $('input[name="daterange"]')
+              .daterangepicker(
+              {
+                "autoApply" : true,
+                startDate : start,
+                endDate : end,
+                locale : {
+                  format : 'YYYY-MM-DD'
+                }
+              },
+              function(start, end, label) {
+                console.log("New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')");
+              });
+          });      
+        div.map-container
+          div.inner        
+        ul.list-reports
+          li
+            div.chart(style='height:500px;')
+              #pieChart
+          li            
+            div.chart(style='height:500px;')
+              h2 Event Count Chart
+              pie3D
+              button(onclick='report.changeData()') Change Data
+          li
+            div.chart(style='height:430px;')
+              h2 Vibration Value
+              br
+              span#vibXGaugeContainer
+              span#vibYGaugeContainer
+              span#vibZGaugeContainer
+              br
+              br
+              span#vibGaugeContainer                         
+          li
+            div.chart(style='height:430px;')
+              h2 Event Count Percentage
+              br
+              svg#fillgauge1(width='90%', height='184', onclick='gauge1.update(NewValue());')
+              svg#fillgauge2(width='17%', height='140', onclick='gauge2.update(NewValue());')
+              svg#fillgauge3(width='17%', height='140', onclick='gauge3.update(NewValue());')
+              svg#fillgauge4(width='17%', height='140', onclick='gauge4.update(NewValue());')
+              svg#fillgauge5(width='17%', height='140', onclick='gauge5.update(NewValue());')
+              svg#fillgauge6(width='17%', height='140', onclick='gauge6.update(NewValue());')
+          li            
+            div.chart(style='height:530px;')
+              h2 Daily Max Value
+              groupBar
+          li            
+            div.chart(style='height:530px;')
+              h2 Daily Event Count
+              groupTip
+          li            
+            div.chart
+          li
+            div.chart
+              .radarChart
