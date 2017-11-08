@@ -1,12 +1,12 @@
-var Logger = require('./log4js-utils').Logger;
+var Logger = require('../log4js-utils').Logger;
 var logger = new Logger('nodeDashboardEFSM');
-var CONSTS = require('./consts');
-var Utils = require('./util');
+var CONSTS = require('../consts');
+var Utils = require('../util');
 var express = require('express');
 require('date-utils');
 var router = express.Router();
 
-var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
+var QueryProvider = require('../dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
 var queryProvider = new QueryProvider();
 
 var mainmenu = {dashboard:'open selected', timeseries:'', reports:'', analysis:'', management:'', settings:''};

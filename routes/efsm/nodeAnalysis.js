@@ -1,12 +1,12 @@
-var Logger = require('./log4js-utils').Logger;
-var logger = new Logger('nodeDashboardEFSM');
-var CONSTS = require('./consts');
-var Utils = require('./util');
+var Logger = require('../log4js-utils').Logger;
+var logger = new Logger('nodeAnalysisEFSM');
+var CONSTS = require('../consts');
+var Utils = require('../util');
 var express = require('express');
 var fs = require('fs');
 var net = require('net');
 var router = express.Router();
-var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
+var QueryProvider = require('../dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
 
 var queryProvider = new QueryProvider();
 
