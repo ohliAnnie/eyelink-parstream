@@ -59,7 +59,7 @@
       
       // Click creation date
       clickLinkFunc = function(link) {
-        $('#tblPatterns > tbody').empty();
+        $('#sample_2 > tbody').empty();
         d3.selectAll("svg").remove();
         var creationDate = link.innerText || link.textContent;
         //$('#creationDate').val(creationDate);
@@ -231,12 +231,13 @@ function getNodeData(treeData, group){
 function drawPatterns(creationDate, parentNode, childNode, patternData) {
   var parentNodeData = sortObject(patternData[parentNode]);
   console.log(parentNodeData);
-  d3.selectAll("svg").remove();
-  $('#tblPatterns > tbody').empty();
-  
+  //d3.selectAll("svg").remove();  
+  $("#sample").empty();
   var sb = new StringBuffer();
-  sb.append('<tbody class="patternBody">');
-
+//  sb.append('<tbody class="patternBody">');
+  sb.append('<div class="portlet-body form"><div class="chart" style="height:auto">');
+  sb.append('<table class="table table-striped table-bordered table-hover" id="sample_2">');
+  sb.append('<thead><tr><th></th><th>Group</th><th>Cluster No.</th><th>Status</th><th></th></tr></thead><tbody>');
   if(childNode == undefined) {
     for (var cno in parentNodeData){
       var selectTag = statusCheck(parentNodeData[cno].status);
@@ -276,8 +277,11 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
     }
     sb.append("</tbody>");
   }
-  $('#tblPatterns').append(sb.toString());
-  $('#tblPatterns').tableHeadFixer();
+  sb.append('</table></div></div>');
+  console.log(sb.toString());
+  $('#sample').append(sb.toString());
+  TableManaged.init();
+//  $('#sample_2').tableHeadFixer();
 
   /// Event ///
   $('input[name=chkAll]').click(function(){
