@@ -10,6 +10,13 @@ define("CONFIG", {
 						  relative: "/upload/office/"},
 });
 
+define("SCHEMA_EFMM", {
+	"EFMM_NOTCHING_OEE": {'INDEX' : 'efsm_notching_oee', 'TYPE' : 'oee'},
+	"EFMM_NOTCHING_STATUS": {'INDEX' : 'efsm_notching_status', 'TYPE' : 'status'},
+	"EFMM_STACKING_OEE": {'INDEX' : 'efsm_stacking_oee', 'TYPE' : 'oee'},
+	"EFMM_STACKING_STATUS": {'INDEX' : 'efsm_stacking_status', 'TYPE' : 'status'}
+});
+
 define("SCHEMA", {
 	"EFSM_ALARM": {'INDEX' : 'efsm_alarm-', 'TYPE' : 'AgentAlarm'},
 	"APPLICATION_INFO": {'INDEX' : 'efsm_applicationinfo', 'TYPE' : 'applicationInfo'}
@@ -28,7 +35,7 @@ define(	"CODE", {
 });
 
 define("DATEFORMAT", {
-	"DATE" : "YYYY-MM-DD",	
+	"DATE" : "YYYY-MM-DD",
 	"DATETIME" : "YYYY-MM-DD HH:MM:SS",
 	"DATETIMEMILLI" : "YYYY-MM-DD HH:MM:SS.L",
 	"INDEXDATE" : "YYYY.mm.DD"

@@ -32,10 +32,6 @@ logger.info('Data Simulator has been started.');
 logger.info(__dirname);
 
 var fs = require('fs');
-var sleep = require('system-sleep');
-var moment = require('moment-timezone');
-var datetime = require('node-datetime');
-var xml2js = require('xml2js');
 var Utils = require('../../routes/util');
 var CONSTS = require('../../routes/consts');
 var readline = require('linebyline');
@@ -44,127 +40,124 @@ var queryProvider = new QueryProvider();
 
 
 const datafilepath = process.argv[2];
-const type = 'efmm';
-const bulkSize = 100;
+const bulkSize = 100;     // bulk insert 하는 데이터 count
 
 logger.info('=========================================================');
 logger.info('== Data File Path        : ', datafilepath);
 logger.info('=========================================================');
 
+var listJsonData = [];
+var totalCount = 0;
 // Directory 내 파일 list를 읽는다.
-fs.readdir(datafilepath, function(err, files) {
-  files.forEach(function(file) {
-    //
-    var match = file.match(/.json/);
-    if (match !== null) {
-      logger.info('read file : %s', file);
-      var lineReader = readline(datafilepath+'/'+file);
+fs.readdirSync(datafilepath).forEach(function(file) {
+  //
+  var match = file.match(/.json/);
+  if (match !== null) {
+    logger.info('read file : %s', file);
 
-      // 실제 라인 단위로 데이터 읽어와서 처리하는 로직 시작.
-      lineReader.on('line', function(line, lineCount, byteCount) {
-        logger.info('parsing data : %s, %d, %s, %s', file, lineCount, byteCount, line);
-      })
-      .on('error', function(e) {
+    var lineReader = readline(datafilepath+'/'+file);
 
-      })
-      .on('close', function() {
-        logger.info('matched : ', matchedCount, ', unmatched: ', notMatchedCount, ', total : ', (matchedCount + notMatchedCount));
-        logger.info('Data Simulator finished successfully.');
-      });
+    // 실제 라인 단위로 데이터 읽어와서 처리하는 로직 시작.
+    lineReader.on('line', function(line, lineCount, byteCount) {
+      totalCount++;
+      logger.info('%s - json data : %d, %d, %s', file, lineCount, byteCount, line);
+      makeListData(file, JSON.parse(line));
+    })
+    .on('error', function(e) {
 
-    }
+    })
+    .on('close', function() {
+      logger.info('lineRead close start');
+      // bulkSize를 다 채우지 못한고 listJsonData에 남은 데이터 DB Insert 처리
+      for(var i=0; i<listJsonData.length; i++) {
+        var item = listJsonData[i];
+        if (item.listData.length > 0) {
+          // logger.debug('listData[0] : %s', JSON.stringify(item));
+          var index = makeIndexName(item.listData[0]);
+          // logger.debug('last data - index : %s, data : %s', JSON.stringify(index), JSON.stringify(item.listData));
+          insertData(index, item.listData);
+          item.listData = [];
+        }
+      }
 
-  })
+      // logger.debug('listJsonData : %s', JSON.stringify(listJsonData, null, 2));
+      logger.info('totalCount : %s', totalCount);
+      logger.info('Data Simulator finished successfully.');
+    });
+  }
 });
 
+function makeListData(fileName, jData) {
+  // logger.debug('start makeListData');
+  // 이미 listJsonData에 file명으로 key가 존재하는지 체크
+  //   - 존재하면 jsonData.data에 jData만 push
+  //   - 존재하지 않으면 list에 jsonData를 추가하고 jData에 Push
+  var isExist = false;
+  var jsonData;
+  for(var i=0; i<listJsonData.length; i++) {
+    var item = listJsonData[i];
+    if (item.name == fileName) {
+      isExist = true;
+      jsonData = item;
+    }
+  };
+  logger.debug('name : %s, exist : %s', fileName, isExist);
+  if (isExist == true) {
+    jsonData.listData.push(jData);
 
-var notMatchedCount = 0;
-var matchedCount = 0;
-var curDate;
+    // listData가 bulkSize가 되면 DB에 Insert한 후 jsonData.listData를 초기화.
+    logger.debug('list data length : %s', jsonData.listData.length);
+    if (jsonData.listData.length == bulkSize) {
+      var index = makeIndexName(jData);
+      insertData(index, jsonData.listData);
+      jsonData.listData = [];
+    }
+  } else {
+    var item = {name : fileName, listData : []};
+    // logger.debug(item);
+    item.listData.push(jData);
+    listJsonData.push(item);
+  }
+  // logger.debug('listJsonData2 : %s', JSON.stringify(listJsonData));
 
-loadQuery('./dbquery.xml');
+}
 
-// sample csv line data
-// 0002.00000038,49,2016-11-17 11:49:01.533,2016-11-17 11:49:01,,,,,,,,,,,,,,11,100,1.1,10000,,,,,,,,,,,,,,,0,
-
-// var cur_datetime = moment(datetime.create().format('Y-m-d H:M:S'));
-
+function makeIndexName(jData) {
+  var indexName = 'EFMM_' + jData.flag.toUpperCase() + '_' + jData.sensorType.toUpperCase();
+  var dt = '-' + jData.dtTransmitted.substring(0,4) + '.' +
+    jData.dtTransmitted.substring(4,6) + '.' +
+    jData.dtTransmitted.substring(6,8);
+  return {
+    indexName : CONSTS.SCHEMA_EFMM[indexName].INDEX + dt,
+    typeName : CONSTS.SCHEMA_EFMM[indexName].TYPE
+  };
+}
 
 function printUsage() {
   console.log('Usage : $ node dataSimulator.js [data source file path]');
   console.log('    []: required, {}: optional');
   console.log('');
-  console.log('Ex. $ node dataSimulator.js ./stacking.json');
+  console.log('Ex. $ node dataSimulator.js ./source/efmm');
 }
 
-function insertData(index, type, linedata){
+function insertData(index, listData){
 
-  logger.debug('Inserting data - index: ',index,', data : ',linedata);
-  queryProvider.insertData(type, 'insertData', makeJsonData(index, type, linedata));
-}
+  logger.debug('Inserting index : %s, data : %s', index, listData);
+  var in_data = {
+    index : index.indexName,
+    type : index.typeName,
+    body : listData
+  };
+  logger.debug('insertData - indata : %s', JSON.stringify(in_data));
+  queryProvider.insertBulkQuery(in_data, function(err, out_data) {
+    if (err) { console.log(err) };
+    logger.debug(out_data);
+    if(out_data.errors == false){
+      // console.log(out_data);
+      var rtnCode = CONSTS.getErrData("D001");
+    }
+    logger.info('finished insertData ');
 
-function loadQuery(queryFilePath) {
-  var parser = new xml2js.Parser();
-  // console.log('initApps/loadQuery -> ' + queryFilePath);
-  fs.readFile(queryFilePath, function(err, data) {
-    parser.parseString(data, function (err, result) {
-    // console.log('initApps/loadQuery -> xml file');
-      // result = cleanXML(result);
-      result = JSON.stringify(result);
-      // console.log('initApps/loadQuery -> %j', result);
-      result = JSON.parse(result)
-      // console.log('initApps/loadQuery : ' + result.dashboard[0]);
-      // console.log('Done');
-      global.query = result;
-      // console.log('global.query : ', result);
-    });
+    // cb(err);
   });
 }
-
-function makeJsonData(index, type, data) {
-
-  var linedataArr = data.split(',');
-  var s_logs = {
-    "index" : index,
-    "type" : type,
-    "node_id" : linedataArr[0],
-    "event_type" : linedataArr[1],
-    "measure_time" : linedataArr[2],
-    "event_time" : linedataArr[3],
-    "voltage" : parseFloat(linedataArr[4]) || 0,
-    "ampere" : parseFloat(linedataArr[5]) || 0,
-    "power_factor" : parseFloat(linedataArr[6]) || 0,
-    "active_power" : parseFloat(linedataArr[7]) || 0,
-    "reactive_power" : parseFloat(linedataArr[8]) || 0,
-    "apparent_power" : parseFloat(linedataArr[9]) || 0,
-    "amount_of_active_power" : parseFloat(linedataArr[10]) || 0,
-    "als_level" : parseInt(linedataArr[11]) || 0,
-    "dimming_level" : parseInt(linedataArr[12]) || 0,
-    "vibration_x" : parseInt(linedataArr[13]) || 0,
-    "vibration_y" : parseInt(linedataArr[14]) || 0,
-    "vibration_z" : parseInt(linedataArr[15]) || 0,
-    "vibration_max" : parseInt(linedataArr[16]) || 0,
-    "noise_origin_decibel" : parseFloat(linedataArr[17]) || 0,
-    "noise_origin_frequency" : parseInt(linedataArr[18]) || 0,
-    "noise_decibel" : parseFloat(linedataArr[19]) || 0,
-    "noise_frequency" : parseInt(linedataArr[20]) || 0,
-    "gps_longitude" : parseFloat(linedataArr[21]) || 0,
-    "gps_latitude" : parseFloat(linedataArr[21]) || 0,
-    "gps_altitude" : parseFloat(linedataArr[23]) || 0,
-    "gps_satellite_count" : parseInt(linedataArr[24]) || 0,
-    "status_als" : parseInt(linedataArr[25]) || 0,
-    "status_gps" : parseInt(linedataArr[26])|| 0,
-    "status_noise" : parseInt(linedataArr[27]) || 0,
-    "status_vibration" : parseInt(linedataArr[28]) || 0,
-    "status_power_meter" : parseInt(linedataArr[29]) || 0,
-    "status_emergency_led_active" : parseInt(linedataArr[30]) || 0,
-    "status_self_diagnostics_led_active" : parseInt(linedataArr[31]) || 0,
-    "status_active_mode" : parseInt(linedataArr[32]) || 0,
-    "status_led_on_off_type" : parseInt(linedataArr[33]) || 0,
-    "reboot_time" : linedataArr[34] || 'NULL',
-    "event_remain" : parseInt(linedataArr[35]) || 0,
-    "failfirmwareupdate" : parseInt(linedataArr[36]) || 0
-  }
-  return s_logs;
-}
-
