@@ -28,11 +28,11 @@ router.get('/res_req', function(req, res, next) {
 });
 
 router.get('/process', function(req, res, next) {
-  res.render('./reports/process'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/reports/processEFSM', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/cpu_memory', function(req, res, next) {
-  res.render('./reports/cpu_memory'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/reports/cpu_memoryEFSM', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/error', function(req, res, next) {
