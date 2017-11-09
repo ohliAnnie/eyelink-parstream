@@ -1,5 +1,4 @@
-var Logger = require('./log4js-utils').Logger;
-var logger = new Logger('initApp');
+var logger = global.log4js.getLogger('initApp');
 var CONSTS = require('./consts');
 require('date-utils');
 var fs = require('fs'),
