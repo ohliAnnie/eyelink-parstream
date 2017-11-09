@@ -131,6 +131,8 @@ public class ChatCategoryController {
     {
         LOG.debug("/addChatCategory" );
         
+        aimlCategory.setTopic("N");
+        
         String status = "";
 		String message = "";		
 		
@@ -195,6 +197,8 @@ public class ChatCategoryController {
     public Object editChatCategory(@ModelAttribute AimlCategory aimlCategory, ModelMap map, HttpSession session, HttpServletRequest request) throws BizCheckedException, ApplicationException
     {
         LOG.debug("/editChatCategory" );
+        
+        aimlCategory.setTopic("N");
         
         String status = "";
 		String message = "";
