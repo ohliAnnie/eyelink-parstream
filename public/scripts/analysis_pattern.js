@@ -1,109 +1,89 @@
-    $(document).ready(function() {
-      var dateFormat = 'YYYY-MM-DD';      
-      $('#sdate').val(moment().format(dateFormat));
-      $('#edate').val(moment().format(dateFormat));
-      getPatternList() // pattern dataset
-
-     
-
-      $('#btn_search').on('click', function(){
-        d3.selectAll("svg").remove();
-        getPatternList(); // pattern dataset
-      });
+$(document).ready(function() {
+  var dateFormat = 'YYYY-MM-DD';      
+  $('#sdate').val(moment().format(dateFormat));
+  $('#edate').val(moment().format(dateFormat));
+  getPatternList() // pattern dataset
 
 
-      $('#btnCheckedUpdate').click(function() {
-        console.log("checkbox test");
-        //updateCheckedAll();
-        var checkbox = $("input[name=patternChk]:checked");
-        var numOfCheck = $("input[name=patternChk]:checked").length;
-        console.log(numOfCheck);
-        
-        if(numOfCheck == 0) {
-          console.log("There is no checked item");
+  $('#btn_search').on('click', function(){
+    d3.selectAll("svg").remove();
+    getPatternList(); // pattern dataset
+  });
+
+
+  /// update button click event ///
+  $(".updateBtn").click(function(){
+    var updateBtn = $(this);
+    var td = updateBtn.parent().parent().children();
+    console.log(td.eq(1).text());
+    console.log(updateBtn.closest("tr"));
+
+    if(confirm("수정 하시겠습니까?")) {
+      var id = creationDate;
+      var queryBody = {};
+      var fG = td.eq(1).text();           // Factor Group
+      var cN = td.eq(2).text();           // cluster No
+      var sV = td.eq(3).children().val(); // status Value
+      queryBody[fG] = {};
+      queryBody[fG][cN] = sV;
+      
+      var data = queryBody;
+      var in_data = {url: "/analysis/restapi/pattern_info/", type: "POST", data: data};
+      ajaxTypeData(in_data, function(result) {
+        if (result.rtnCode.code == "0000") {
+          var nodeInfo = $('#patternTree').treeview('getSelected');
+          loadPatternData(id, nodeInfo[0]);
         }
-        else{
-          if(confirm(numOfCheck + "개 항목에 대해 일괄저장 하시겠습니까?")){
-            var id = $('#lblCreatedDate').text();
-            var queryBody = {};
-            var tr = checkbox.parent().parent();
-            var fG = tr.children().eq(1).text();
-            queryBody[fG] = {};
+      });
+    }
+  });
 
-            checkbox.each(function(i) {
-              var td = tr.eq(i).children();
-              var cN = td.eq(2).text();
-              queryBody[fG][cN] = td.eq(3).children().val();
-            });
+  $('#btnCheckedUpdate').click(function() {
+    console.log("checkbox test");
+    //updateCheckedAll();
+    var checkbox = $("input[name=patternChk]:checked");
+    var numOfCheck = $("input[name=patternChk]:checked").length;
+    console.log(numOfCheck);
+    
+    if(numOfCheck == 0) {
+      console.log("There is no checked item");
+    }
+    else{
+      if(confirm(numOfCheck + "개 항목에 대해 일괄저장 하시겠습니까?")){
+        var id = $('#lblCreatedDate').text();
+        var queryBody = {};
+        var tr = checkbox.parent().parent();
+        var fG = tr.children().eq(1).text();
+        queryBody[fG] = {};
 
-            console.log(queryBody);
+        checkbox.each(function(i) {
+          var td = tr.eq(i).children();
+          var cN = td.eq(2).text();
+          queryBody[fG][cN] = td.eq(3).children().val();
+        });
 
-            $.ajax({
-              url: "/analysis/restapi/pattern_info/" + id + "/_update",
-              dataType: "json", type: "POST", data: queryBody,
-              success: function(result) {
-                alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
-                if (result.rtnCode.code == "D002") {
-                  var nodeInfo = $('#patternTree').treeview('getSelected');
-                  loadPatternData(id, nodeInfo[0]);
-                }
-              },
-              error: function(req, status, err) {
-                $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-              }
-            });
+        console.log(queryBody);
+
+        $.ajax({
+          url: "/analysis/restapi/pattern_info/" + id + "/_update",
+          dataType: "json", type: "POST", data: queryBody,
+          success: function(result) {
+            alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+            if (result.rtnCode.code == "D002") {
+              var nodeInfo = $('#patternTree').treeview('getSelected');
+              loadPatternData(id, nodeInfo[0]);
+            }
+          },
+          error: function(req, status, err) {
+            $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
           }
-        }
-      });
-
-      
-      // Click creation date
-      clickLinkFunc = function(link) {
-        $('#sample_2 > tbody').empty();
-        d3.selectAll("svg").remove();
-        var creationDate = link.innerText || link.textContent;
-        //$('#creationDate').val(creationDate);
-        $("#lblCreatedDate").empty();
-        $("#lblCreatedDate").append(creationDate);
-        $("#lblCreatedDate").hide();
-
-        console.log(creationDate);
-        d3.selectAll("svg").remove();
-        loadPatternData(creationDate);
-      };
-
-      
-
-      // getPatternList();  
-
-      Metronic.init(); // init metronic core componets
-      eyelinkLayout.init(); // init eyelinklayout
-      QuickSidebar.init(); // init quick sidebar
-      Layout.init(); // init layout
-      Demo.init(); // init index page
-      ComponentsPickers.init();
-      TableManaged.init();
-      ComponentsDropdowns.init();
-    });
+        });
+      }
+    }
+  });
+});
 
 
-  // 업데이트 버튼 클릭 이벤트
-  // $('#btnCheckedUpdate').on('click', function(){
-  //   var checkbox = $("input[name=patternChk]:checked");
-  //   var numOfCheck = $("input[name=patternChk]:checked").length;
-  //   console.log(numOfCheck);
-  //   if(numOfCheck == 0) {
-  //         console.log("There is no checked item");
-  //   } else {
-  //     updatePatternData()
-  //   }
-
-  // });
-
-
-// function updatePatternDate(checkedYN, numOfCheck, queryBody){
-
-// }
 
 function getPatternList() {
   var sdate = $('#sdate').val() + "T00:00:00";
@@ -129,9 +109,9 @@ function drawPatternList(patternLists, nodeInfo) {
     d = d._id;
     var sb = new StringBuffer();
     if (d == 'master'){
-      sb.append('<tr><th style="font-weight:bold"><a onclick="clickLinkFunc(this)">' + d + '</th></tr>');
+      sb.append('<tr><th style="font-weight:bold"><a class="clickPatternId">' + d + '</th></tr>');
     } else {
-      sb.append('<tr><td><a onclick="clickLinkFunc(this)">' + d +'</td>');
+      sb.append('<tr><td><a class="clickPatternId">' + d +'</td>');
     }
     $('#patternList').append(sb.toString());
   });
@@ -139,6 +119,20 @@ function drawPatternList(patternLists, nodeInfo) {
   $("#lblCreatedDate").append(createdDate);
   $("#lblCreatedDate").hide();
   loadPatternData(createdDate, nodeInfo);
+
+  // 생성된 패턴ID 클릭 이벤트
+  $('.clickPatternId').on('click', function(){
+    var creationDate = $(this)[0].innerText || $(this)[0].textContent;
+    $("#sample").empty();
+    d3.selectAll("svg").remove();
+    $("#lblCreatedDate").empty();
+    $("#lblCreatedDate").append(creationDate);
+    $("#lblCreatedDate").hide();
+    $("#lblGroup").empty();
+    $("#lblGroup").append('parent - child node');
+
+    loadPatternData(creationDate);
+  });
 }
 
 
@@ -155,7 +149,6 @@ function loadPatternData(creationDate, nodeInfo) {
   });
 }
 
-
 function sortObject(obj) {
   var sorted = {};
   Object.keys(obj).sort().forEach(function(key) { sorted[key] = obj[key]; });
@@ -163,7 +156,7 @@ function sortObject(obj) {
 }
 
 
-function drawPatternTree(creationDate, treeData, nodeInfo){
+function drawPatternTree(creationDate, treeData, nodeInfo) {
   var treeNode = [];
   for(var group in treeData){
     if (group != 'createDate'){
@@ -229,152 +222,149 @@ function getNodeData(treeData, group){
 
 //// 선택된 패턴그룹에 대한 패턴 리스트를 보여준다.
 function drawPatterns(creationDate, parentNode, childNode, patternData) {
-  var parentNodeData = sortObject(patternData[parentNode]);
-  console.log(parentNodeData);
-  //d3.selectAll("svg").remove();  
+  d3.selectAll("svg").remove();  
   $("#sample").empty();
+  $('#lblGroup').empty();
+  $('#lblGroup').append(parentNode);
+  if (childNode != undefined) {
+    $('#lblGroup').append(' - ', childNode);
+  }
+
+  var parentNodeData = sortObject(patternData[parentNode]);
   var sb = new StringBuffer();
-//  sb.append('<tbody class="patternBody">');
+
   sb.append('<div class="portlet-body form"><div class="chart" style="height:auto">');
   sb.append('<table class="table table-striped table-bordered table-hover" id="sample_2">');
-  sb.append('<thead><tr><th></th><th>Group</th><th>Cluster No.</th><th>Status</th><th></th></tr></thead><tbody>');
+  sb.append('<thead><tr><th><input type="checkbox" name="chkAll"></th>');
+  sb.append('<th>Cluster #</th><th>Master C#</th><th>Status</th><th></th></tr></thead><tbody>');
+  
+  console.log('pNode', parentNode);
+  console.log('cNode', childNode);
+  console.log(parentNodeData);
+
+  ///// hard coding ////////
   if(childNode == undefined) {
     for (var cno in parentNodeData){
       var selectTag = statusCheck(parentNodeData[cno].status);
       if (parentNodeData[cno].status == "undefined"){
-        sb.append('<tr><td style="text-align:center"><input type="checkbox" name="patternChk" ></td>');
-        sb.append('<td><a href="#" class="clickPattern">' + cno + '</td>');
-        sb.append('<td><a href="#" class="clickPattern">' + parentNodeData[cno].masterCN + '</td>');
+        sb.append('<tr><td><input type="checkbox" name="patternChk" ></td>');
+        sb.append('<td><a class="clickClustNo">' + cno + '</td>');
+        sb.append('<td><a class="clickMasterCno">' + parentNodeData[cno].masterCN + '</td>');
         sb.append('<td><select name="status">' + selectTag + '</td>');
-        sb.append('<td><input type="button" class="updateBtn" value="update" /></td></tr>');
+        sb.append('<td><a class="btn default btn-xs balck"><i class="fa fa-edit"></i> Update</a></td></tr>');
       } else {
         sb.append('<tr><td></td>');
-        sb.append('<td><a href="#" class="clickPattern">' + cno + '</td>');
-        sb.append('<td>' + selectTag + '</td><td></td></tr>');
+        sb.append('<td><a class="clickClustNo">' + cno + '</td>');
+        sb.append('<td><a class="clickMasterCno">' + parentNodeData[cno].masterCN + '</td>');
+        sb.append('<td><select name="status">' + selectTag + '</td>');
+        sb.append('<td></td></tr>');
       }
     }
     sb.append("</tbody>");
   }
   else{
     for (cno in parentNodeData){
-      if (parentNodeData[cno] == childNode) {
-        var selectTag = statusCheck(parentNodeData[cno]);
-        if (parentNodeData[cno] == "undefined"){
-          var dataTag = '<tr><td><input type="checkbox" name="patternChk" ></td>'+
-            '<td>' + parentNode + '</td>' +
-            '<td><a href="#" class="clickPattern">' + cno + '</td>' +
-            '<td><select name="status" class="form-control input-small select2me form-md-line-input">' +
-            selectTag + '</td>' +
-            '<td><input type="button" class="updateBtn" value="update" /></td></tr>';
-          sb.append(dataTag);
+      if (parentNodeData[cno].status == childNode) {
+        var selectTag = statusCheck(parentNodeData[cno].status);
+        if (parentNodeData[cno].status == "undefined"){
+          sb.append('<tr><td><input type="checkbox" name="patternChk" ></td>');
+          sb.append('<td><a class="clickClustNo">' + cno + '</td>');
+          sb.append('<td><a class="clickMasterCno">' + parentNodeData[cno].masterCN + '</td>');
+          sb.append('<td><select name="status" class="form-control input-small select2me form-md-line-input">' + selectTag + '</td>');
+          sb.append('<td><a class="btn default btn-xs balck"><i class="fa fa-edit"></i> Update</a></td></tr>');
         } else {
-          var dataTag = '<tr><td></td><td>' + parentNode + '</td>' +
-            '<td><a href="#" class="clickPattern">' + cno + '</td>' +
-            '<td>' + selectTag + '</td><td></td></tr>';
-          sb.append(dataTag);
+          sb.append('<tr><td></td>');
+          sb.append('<td><a class="clickClustNo">' + cno + '</td>');
+          sb.append('<td><a class="clickMasterCno">' + parentNodeData[cno].masterCN + '</td>');
+          sb.append('<td><select name="status">' + selectTag + '</td>');
+          sb.append('<td></td></tr>');
         }
       }
     }
     sb.append("</tbody>");
   }
   sb.append('</table></div></div>');
-  console.log(sb.toString());
+  //console.log(sb.toString());
   $('#sample').append(sb.toString());
   TableManaged.init();
-//  $('#sample_2').tableHeadFixer();
 
   /// Event ///
   $('input[name=chkAll]').click(function(){
     $('input:checkbox').not(this).prop('checked', this.checked);
   });
 
-  /// update button click event ///
-  $(".updateBtn").click(function(){
-    var updateBtn = $(this);
-    var td = updateBtn.parent().parent().children();
-    console.log(td.eq(1).text());
-    console.log(updateBtn.closest("tr"));
 
-    if(confirm("수정 하시겠습니까?")) {
-      var id = creationDate;
-      var queryBody = {};
-      var fG = td.eq(1).text();           // Factor Group
-      var cN = td.eq(2).text();           // cluster No
-      var sV = td.eq(3).children().val(); // status Value
-      queryBody[fG] = {};
-      queryBody[fG][cN] = sV;
-      
-      $.ajax({
-        url: "/analysis/restapi/pattern_info/" + id + "/_update",
-        dataType: "json", type: "POST", data: queryBody,
-        success: function(result) {
-          console.log("result: ", result);
-          alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
-          if (result.rtnCode.code == "D002") {
-            // pattern tree data reload
-            var nodeInfo = $('#patternTree').treeview('getSelected');
-            loadPatternData(id, nodeInfo[0]);
+  $('.clickClustNo').click(function(){
+    var CN = $(this)[0].innerText || $(this)[0].textContent;
+    var target = "da_result." + parentNode + "." + CN + ".center";
+    
+    var data = {id : creationDate, target : target};
+    var in_data = {url: "/analysis/restapi/getClusterPattern", type: "GET", data: data};
+    ajaxTypeData(in_data, function(result) {
+      if (result.rtnCode.code == "0000") {
+        var d = result.rtnData.da_result;
+        var graphData = d[parentNode][CN]["center"];
+        var set = [];
+        var maxval = 0;
+        var minval = 1000;
+
+        console.log(graphData);
+        for (i=0; i<graphData.length; i++) {
+          set.push({ x : i, y : graphData[i]});
+          if (graphData[i] > maxval) {
+            maxval = graphData[i];
+          } else if(graphData[i] < minval) {
+            minval = graphData[i];
           }
-        },
-        error: function(req, status, err) {
-          $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
         }
-      });
-    }
+        console.log(set);
+        console.log(minval, maxval);
+
+        d3.selectAll("svg").remove();
+        drawPatternChart(set, minval, maxval);
+      }
+    });
   });
 
-  $('.clickPattern').click(function(){
-    var id = creationDate;
-    var clickPattern = $(this);
-    var td = clickPattern.parent().parent().children();
-
-    var factGroup = td.eq(1).text();
-    var clusterNo = td.eq(2).text();
-    var target = "pattern_data." + factGroup + "." + clusterNo + ".center";
-
-    //var state = td.eq(3).text();
-    console.log(target);
-
-    $.ajax({
-      url: "/analysis/restapi/getClusterPattern" ,
-      dataType: "json",
-      type: "get",
-      data: {id : creationDate, target : target},
-      success: function(result) {
+  $('.clickMasterCno').click(function(){
+    var CN = $(this)[0].innerText || $(this)[0].textContent;
+    if (CN != 'unknown'){
+      var target = "da_result." + parentNode + "." + CN + ".center";
+      var data = {id : "master", target : target};
+      var in_data = {url: "/analysis/restapi/getClusterPattern", type: "GET", data: data};
+      ajaxTypeData(in_data, function(result) {
         if (result.rtnCode.code == "0000") {
-          console.log(result);
           var d = result.rtnData.da_result;
-          var graphData = d[factGroup][clusterNo]["center"];
+          var graphData = d[parentNode][CN]["center"];
           var set = [];
           var maxval = 0;
           var minval = 1000;
 
           console.log(graphData);
-          for(i=0; i<graphData.length; i++){
+          for (i=0; i<graphData.length; i++) {
             set.push({ x : i, y : graphData[i]});
-            if(graphData[i] > maxval){
+            if (graphData[i] > maxval) {
               maxval = graphData[i];
-            }
-            else if(graphData[i] < minval){
+            } else if(graphData[i] < minval) {
               minval = graphData[i];
             }
-          };
+          }
           console.log(set);
           console.log(minval, maxval);
 
           d3.selectAll("svg").remove();
           drawPatternChart(set, minval, maxval);
-        } else {
-
         }
-      },
-      error: function(req, status, err) {
-        //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-      }
-    });
+      });
+    } else {
+      d3.selectAll("svg").remove();
+    }
+    
   });
+
+
 }
+
 
 ///// status select option //////
 function statusCheck(statechk) {
