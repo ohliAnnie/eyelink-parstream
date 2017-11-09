@@ -19,20 +19,6 @@ var config = require('./config/config.json');
 logger.info('config : %j', config);
 global.config = config;
 
-var intro = require('./routes/intro');
-var login = require('./routes/nodeLogin');
-var dashboard = require('./routes/'+global.config.pcode+'/nodeDashboard');
-var reports = require('./routes/'+global.config.pcode+'/nodeReport');
-var analysis = require('./routes/'+global.config.pcode+'/nodeAnalysis');
-var initapps = require('./routes/initApp');
-var socketapp = require('./routes/socketApp');
-var node = require('./routes/nodeCon');
-var management = require('./routes/'+global.config.pcode+'/nodeManagement');
-var sample = require('./routes/nodeSample');
-var simulator = require('./routes/nodeSimulator');
-// for ES Test
-var dashboardes = require('./routes/'+global.config.pcode+'/nodeDashboard');
-
 var app = express();
 
 // view engine setup
@@ -54,17 +40,37 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use('/', intro);
+var intro = require('./routes/intro');
+var login = require('./routes/nodeLogin');
+var initapps = require('./routes/initApp');
+var socketapp = require('./routes/socketApp');
+var node = require('./routes/nodeCon');
+var sample = require('./routes/nodeSample');
+var simulator = require('./routes/nodeSimulator');
+try {
+  var dashboard = require('./routes/'+global.config.pcode+'/nodeDashboard');
+  app.use('/dashboard', dashboard);
+} catch(e) {}
+try {
+  var reports = require('./routes/'+global.config.pcode+'/nodeReport');
+  app.use('/reports', reports);
+} catch (e) {}
+try {
+  var analysis = require('./routes/'+global.config.pcode+'/nodeAnalysis');
+  app.use('/analysis', analysis);
+} catch (e) {}
+try {
+  var management = require('./routes/'+global.config.pcode+'/nodeManagement');
+  app.use('/management', management);
+} catch(e) {}
+try {
+} catch(e) {}
+
 app.use('/', login);
-app.use('/dashboard', dashboard);
-app.use('/reports', reports);
-app.use('/analysis', analysis);
 app.use('/intro', intro);
 app.use('/node', node);
-app.use('/management', management);
 app.use('/sample', sample);
 app.use('/simulator', simulator);
-app.use('/dashboardes', dashboardes);
 app.use('/socketapp', socketapp);
 
 global._rawDataByDay = {};

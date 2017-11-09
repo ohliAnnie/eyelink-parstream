@@ -1,0 +1,188 @@
+extends ../efmm-layout01
+block style
+  link(rel='stylesheet', href='/assets/leaflet/dc.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+  link(type='text/css', rel='stylesheet', href='/assets/sample/style/bigscatterchart.css')
+  link(href='/assets/sample/style/dashboard_main.css', rel='stylesheet')
+  link(href='/assets/sample/style/sankey01.css', rel='stylesheet')
+block script
+  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  script(type='text/javascript', src='/assets/annie/js/dc.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(type='text/javascript', src='/socket.io/socket.io.js')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(src='/assets/sample/js/cytoscape.min.js')
+  script(src='/assets/sample/js/dagre.min.js')
+  script(src='/assets/sample/js/cytoscape-dagre.js')
+  script(type='text/javascript', src='/assets/sample/js/modernizr.js')
+  script(type='text/javascript', src='/assets/sample/js/underscore-min.js')
+  script(type='text/javascript', src='/assets/sample/js/jquery.Class.js')
+  script(type='text/javascript', src='/assets/sample/js/jquery.dragToSelect.js')
+  script(type='text/javascript', src='/assets/sample/js/jquery.BigScatterChart.js')
+  script(src='/assets/sample/js/sankey.js')
+  script(src='/assets/sample/js/d3.chart.min.js')
+  script(src='/assets/sample/js/d3.chart.sankey.min.js')
+  script(type='text/javascript', src="/scripts/dashboard_es.js")
+  script(src='/assets/sample/script/sankey_main.js')
+  script.
+    $(document).ready(function(e) {
+      displayCount();
+      drawChart();
+      getData();
+      $( "#btn_sankey" ).click(function() {
+        console.log('test');
+        $( "#sankey" ).toggle( "slide" );
+      });
+    });
+block content
+  input#indexs(type='hidden', name='indexs', value=indexs)
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Dashboard
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Dashboard
+          li.active Dashboard
+      .row
+        .col-lg-3.col-md-3.col-sm-6.col-xs-12
+          .dashboard-stat2
+            .display
+              .number
+                h3#monCnt.font-blue-sharp 0
+                small TOTAL MONTHLY EVENT
+              .icon
+                i.icon-calendar
+            #monCnt_status.progress-info
+              .progress
+                span.progress-bar.progress-bar-success.blue-sharp(style='width: 90%;')
+                  span.sr-only 76% progress
+              .status
+                .status-title  From the previous month
+                .status-number  0%
+        .col-lg-3.col-md-3.col-sm-6.col-xs-12
+          .dashboard-stat2
+            .display
+              .number
+                h3#dayCnt.font-green-sharp 0
+                small Total Daily Event
+              .icon
+                i.icon-pie-chart
+            #dayCnt_status.progress-info
+              .progress
+                span.progress-bar.progress-bar-success.green-sharp(style='width: 85%;')
+                  span.sr-only 85% change
+              .status
+                .status-title  From the previous day
+                .status-number  0%
+        .col-lg-3.col-md-3.col-sm-6.col-xs-12
+          .dashboard-stat2
+            .display
+              .number
+                h3#errCnt.font-red-haze 0
+                small Daily Fault Event
+              .icon
+                i.icon-speedometer
+            #errCnt_status.progress-info
+              .progress
+                span.progress-bar.progress-bar-success.red-haze(style='width: 45%;')
+                  span.sr-only 45% grow
+              .status
+                .status-title  From the previous day
+                .status-number  0%
+        .col-lg-3.col-md-3.col-sm-6.col-xs-12
+          .dashboard-stat2
+            .display
+              .number
+                h3#power.font-yellow-green 0
+                small Service Status
+              .icon
+                i.icon-energy
+            #power_status.progress-info
+              .progress
+                span.progress-bar.progress-bar-success.yellow-green(style='width: 57%;')
+                  span.sr-only 57% change
+              .status
+                .status-title  From the previous day
+                .status-number  0%
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase One Week Event Count
+                span.caption-helper  by success / error
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart(style='height:80px')
+                #volumn-chart.chart_custom
+              #sankey
+      .row
+        .col-md-6(style="height:815px")
+          .portlet.light(style="height:815px")
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase Server Map
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .row
+                .chart(style="height:730px")
+                  #cy
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase Scatter Chart
+                span.caption-helper  Access Log Response Data
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart
+                #chart1(style="width:100%; height:100%")
+        .col-md-3
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase Count by All
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .row
+                .col-md-12(style="height:300px")
+                  #test(style="width:100%;")
+        .col-md-3
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Count by Hour
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .row
+                .col-md-12(style="height:300px")
+                  #load(style="width:100%;")
