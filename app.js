@@ -21,17 +21,17 @@ global.config = config;
 
 var intro = require('./routes/intro');
 var login = require('./routes/nodeLogin');
-var dashboard = require('./routes/nodeDashboard' + global.config.pcode);
-var reports = require('./routes/nodeReport' + global.config.pcode);
-var analysis = require('./routes/nodeAnalysis' + global.config.pcode);
+var dashboard = require('./routes/'+global.config.pcode+'/nodeDashboard');
+var reports = require('./routes/'+global.config.pcode+'/nodeReport');
+var analysis = require('./routes/'+global.config.pcode+'/nodeAnalysis');
 var initapps = require('./routes/initApp');
 var socketapp = require('./routes/socketApp');
 var node = require('./routes/nodeCon');
-var management = require('./routes/nodeManagement' + global.config.pcode);
+var management = require('./routes/'+global.config.pcode+'/nodeManagement');
 var sample = require('./routes/nodeSample');
 var simulator = require('./routes/nodeSimulator');
 // for ES Test
-var dashboardes = require('./routes/nodeDashboard' + global.config.pcode);
+var dashboardes = require('./routes/'+global.config.pcode+'/nodeDashboard');
 
 var app = express();
 

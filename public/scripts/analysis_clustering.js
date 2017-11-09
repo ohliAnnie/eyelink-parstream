@@ -65,7 +65,6 @@ function getMasterList(interval) {
     }
   });
  }
-}
 
 function drawMaster(master) {
   console.log(master)

@@ -1,0 +1,185 @@
+extends ../layout-type01
+block style   
+  link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')
+block script
+  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(src='/assets/annie/js/vue.min.js')
+  script(src='/scripts/integrateIndex.js')  
+  script(src='/scripts/report_power_check.js')
+  script.
+    $(document).ready(function() {                          
+      var dateFormat = 'YYYY-MM-DD';
+      $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
+      $('#edate').val(moment().format(dateFormat));
+
+      // time series char를 그린다.
+        drawCheckChart();        
+        $('#btn_search').click(function() {
+         drawCheckChart();        
+        });
+    });                      
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Reports_Live
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Reports
+          li.active OverView
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Set date and area
+                span.caption-helper Date range and select area
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body.form
+               form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group.last
+                    label.control-label.col-md-1 Date Range
+                    .col-md-4
+                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
+                        input#sdate.form-control(type='text', name='from' value='')
+                        span.input-group-addon to
+                        input#edate.form-control(type='text', name='to' value='')
+                    label.control-label.col-md-1 Select Area
+                    .col-md-6.form-inline
+                      select.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Area')
+                        option(value='') Zone ID
+                        option(value='') All Area
+                        option(value='') AreaID1234
+                        option(value='') AreaID5678
+                      select.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Item')
+                        option(value='') Node ID
+                        option(value='') Node ID
+                        option(value='') Item1234
+                        option(value='') Item5678
+                      button#btn_search.btn.blue
+                        i.fa.fa-search Search
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Event Count
+                span.caption-helper Two Column chart
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print
+                a.collapse(href='javascript:;')
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:auto;')
+                #table
+                  .panel.panel-card
+                    .panel-body
+                      .col-xm-2.col-sm-2.col-md-2.panel-checkbox.hidden-xs.hidden-sm
+                        input#week0.click_checkbox(type='checkbox', name='week0', value='1', v-on='click:checkOpt', checked='true')
+                        text  이번주
+                        br
+                        input#week1.click_checkbox(type='checkbox', name='week1', value='2', v-on='click:checkOpt')
+                        text  1주전
+                        br
+                        input#week2.click_checkbox(type='checkbox', name='week2', value='3', v-on='click:checkOpt')
+                        text  2주전
+                        br
+                        input#week3.click_checkbox(type='checkbox', name='week3', value='4', v-on='click:checkOpt', checked='true')
+                        text  3주전
+                      .col-xm-12.col-sm-12.col-md-10.col-xs-12
+                        #LINE(style='width:95%;height:350px;')
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Event Count Chart
+                span.caption-helper Two Column chart
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print
+                a.collapse(href='javascript:;')
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:auto;')
+                #table    
+                .panel.panel-card                             
+                  .panel-body
+                    #Area(style='height:280px;')
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Event Count by Day
+                span.caption-helper Two Column chart
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print
+                a.collapse(href='javascript:;')
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:340px;')
+                #table                      
+                  .panel.panel-card
+                    .panel-title
+                      h5(style='color:black;').no-margin.m-b Dual Area Chart
+                    .panel-body
+                      #DualArea(style='height:280px;')   
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Event Count by Node
+                span.caption-helper Two Column chart
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print
+                a.collapse(href='javascript:;')
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:auto;')
+                #table                      
+                  .panel.panel-card                
+                    .panel-title
+                      h5(style='color:black;').no-margin.m-b Line Area Chart
+                    .panel-body
+                      #LineArea(style='height:280px;')
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Daily Max Value
+                span.caption-helper Two Column chart
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print
+                a.collapse(href='javascript:;')
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:auto;')
+                #table                      
+                  .panel.panel-card
+                    .panel-title
+                      h5(style='color:black;').no-margin.m-b Line Bar Chart
+                    .panel-body
+                      #LineBar(style='height:280px;')      
+    p.copyright Copyright M2U Technology All rights reserved.
+  a.go2top(href='#index')
+    i.icon-arrow-up

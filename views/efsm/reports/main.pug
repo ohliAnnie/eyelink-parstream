@@ -1,0 +1,153 @@
+extends ../layout-reports
+block style  
+  link(rel='stylesheet', href='/stylesheets/style.css')
+  style.  
+    #apMax .x.axis text {
+      text-anchor: end !important;
+      transform: rotate(-30deg);
+    }
+    #vibMax .x.axis text {
+      text-anchor: end !important;
+      transform: rotate(-30deg);
+    }
+    #noDMax .x.axis text {
+      text-anchor: end !important;
+      transform: rotate(-30deg);
+    }
+    #noFMax .x.axis text {
+      text-anchor: end !important;
+      transform: rotate(-30deg);
+    }
+   #volumeMax .x.axis text {
+      text-anchor: end !important;
+      transform: rotate(-30deg);
+    }
+block scripts
+  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  script(type='text/javascript', src='/assets/annie/js/dc.js')
+  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
+  script(type='text/javascript', src="/scripts/util.js")
+  script(src='/scripts/report.js')
+block content
+  main.layout-contents.padding
+    div.layout-contents-inner
+      section
+        header.page-title
+          h1.title Reports
+          p.count Total
+            mark.report 836
+        fieldset.search-container
+          legend search
+            div.right-content-view
+              label(for='') List view
+                select.select(name='', id='')
+                  option(value='') 15
+            div.left-content-view
+              span.datepicker
+                input(type='text', name='daterange', id='', value='')
+                select.select(name='', id='')
+                  option(value='') Zone ID
+                select.select(name='', id='')
+                  option(value='') Node ID
+                select.select(name='', id='')
+                  option(value='') ALL
+              button.btn-submit.search(type='submit') SEARCH
+        script.
+          $(document).ready(function() {
+            report();
+            var start = moment().subtract(29, 'days');
+            var end = moment().substract(0,'days');
+            $('input[name="daterange"]')
+              .daterangepicker(
+              {
+                "autoApply" : true,
+                startDate : start,
+                endDate : end,
+                locale : {
+                  format : 'YYYY-MM-DD'
+                }
+              },
+              function(start, end, label) {
+                console.log("New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')");
+              });
+          });
+        div.map-container
+          div.inner
+        a(href='javascript:dc.filterAll(); dc.renderAll();') Reset All
+        ul.list-reports
+          li
+            div.chart
+              strong Events Occurance By Type
+              br
+              #eventChart(style='margine:0 auto;')
+          li            
+            div.chart
+              strong Events Occurance by Type
+              br
+              #eventHeat
+          li
+            div.chart
+              strong Vibration & Noise Bubble
+              br
+              #dayBubble
+          li
+            div.chart
+              strong Events Occurance by Type
+              br
+              #eventSeries
+          li
+            div.chart
+              strong Event Type Count by Day
+              br
+              #eventBar
+          li
+            div.chart
+              strong Energy Consumption volume chart
+              br
+              #volumeMax 
+          li
+            div.chart
+              strong Energy Consumption by Time of Week(Max)
+              br
+              div
+                #apMax
+              div
+                #vibMax
+          li
+            div.chart
+              strong Energy Consumption by Time of Week (Max)
+              br
+              div
+                #noDMax
+              div
+                #noFMax
+          li
+            div.chart
+              strong Daily Avg
+              br
+              #avgCom
+          li
+            div.chart
+              strong Daily Avg. Vibrations
+              br
+              #avgVib
+          li
+            div.chart
+              strong  Hourly Vibration Min / Max
+              br
+              #gapVib
+          li
+            div.chart
+              strong Noise Group Bar
+              br
+              #groupBar
+          li
+            div.chart
+              strong ScatterSeriesChart
+              br
+              #scatterSeries
+          li
+            div.chart
+              .radarChart
+    //- script(src='/scripts/report.js')

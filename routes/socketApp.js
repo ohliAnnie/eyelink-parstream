@@ -50,7 +50,7 @@ function initSocket(app, callback) {
 }
 
 function saveAlarmData(data, cb) {
-  var management = require('./nodeManagement' + global.config.pcode);
+  var management = require('./'+global.config.pcode+'/nodeManagement');
   management.saveAlarmData(data, function(odata) {
     logger.debug(odata);
     var out_data = {
@@ -62,7 +62,7 @@ function saveAlarmData(data, cb) {
 }
 
 function emitAlarmCount() {
-  var management = require('./nodeManagement' + global.config.pcode);
+  var management = require('./'+global.config.pcode+'/nodeManagement');
   management.selectAlarmList(function(data) {
     // count+1 => saveAlarmData에서 저장후 ES refresh 되기전 조회가 되므로 count가 반영되지 않음.
     var out_data = {
