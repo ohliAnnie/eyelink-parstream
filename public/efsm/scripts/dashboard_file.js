@@ -350,7 +350,7 @@ function displayCount() {
     }
   });
   
-  var in_data = { url : "/dashboard/restapi/countAccJiraDay", type : "GET", data : data };
+  var in_data = { url : "/dashboard/restapi/countAccJiraMon", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {
       $('#monCnt').text(result.tmon);
@@ -358,7 +358,7 @@ function displayCount() {
     }    
   });
 
-  var in_data = { url : "/dashboard/restapi/countAccJiraDay", type : "GET", data : data };
+  var in_data = { url : "/dashboard/restapi/countAgentError", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {
       $('#errCnt').text(result.today);
