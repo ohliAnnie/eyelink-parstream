@@ -627,14 +627,14 @@ router.post('/restapi/insertClusterMaster/:id', function(req, res, next) {
   logger.debug('/analysis/restapi/insertClusterMaster');
   logger.debug(JSON.stringify(req.body));
    var id = req.params.id;
-   var in_data = {    INDEX: indexClusterMaster, TYPE: "master", ID: id   };
+   var in_data = {    INDEX: indexClusteringMaster, TYPE: "master", ID: id   };
    queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');
       logger.debug(rtnCode);
       res.json({rtnCode: rtnCode});
     }  else  {
-      var in_data = {    INDEX: indexClusterMaster, TYPE: "master", ID: id,   BODY : JSON.stringify(req.body)   };
+      var in_data = {    INDEX: indexClusteringMaster, TYPE: "master", ID: id,   BODY : JSON.stringify(req.body)   };
      queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {
           logger.debug(out_data);
           if(out_data.result == "created"){
@@ -653,14 +653,14 @@ router.post('/restapi/insertClusterDetail/:id', function(req, res, next) {
   logger.debug('/analysis/restapi/insertClusterDetail');
   logger.debug(JSON.stringify(req.body));
    var id = req.params.id;
-   var in_data = {    INDEX: indexClusterDetail, TYPE: "detail", ID: id   };
+   var in_data = {    INDEX: indexClusteringDetail, TYPE: "detail", ID: id   };
    queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');
       logger.debug(rtnCode);
       res.json({rtnCode: rtnCode});
     }  else  {
-      var in_data = {    INDEX: indexClusterDetail, TYPE: "detail", ID: id,   BODY : JSON.stringify(req.body)   };
+      var in_data = {    INDEX: indexClusteringDetail, TYPE: "detail", ID: id,   BODY : JSON.stringify(req.body)   };
      queryProvider.insertQueryByID("analysis", "insertById", in_data, function(err, out_data) {
           logger.debug(out_data);
           if(out_data.result == "created"){
@@ -677,7 +677,7 @@ router.post('/restapi/insertClusterDetail/:id', function(req, res, next) {
 // query RawData
 router.get('/restapi/getDaClusterDetail', function(req, res, next) {
   var in_data = {
-      INDEX : indexClusterDetail,    TYPE : "detail",
+      INDEX : indexClusteringDetail,    TYPE : "detail",
       ID : req.query.daDate };
   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     logger.debug(err);
@@ -696,7 +696,7 @@ router.get('/restapi/getDaClusterDetail', function(req, res, next) {
 router.get('/restapi/getDaClusterMasterByDadate', function(req, res, next) {
   logger.debug(req.query);
   var in_data = {
-      index : indexClusterMaster,    type : "master",
+      index : indexClusteringMaster,    type : "master",
       DADATE: req.query.dadate };
   queryProvider.selectSingleQueryByID2("analysis", "selectDaClusterMasterByDadate", in_data, function(err, out_data, params) {
     // logger.debug(out_data);
@@ -713,10 +713,11 @@ router.get('/restapi/getDaClusterMasterByDadate', function(req, res, next) {
 router.get('/restapi/getDaClusterMaster', function(req, res, next) {  
   var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
   var lte = Utils.getMs2Date(req.query.edate, fmt1);
+  console.log()
   var in_data = {
-      index : indexClusterMaster, type : "master",
+      index : indexClusteringMaster, type : "master",
       gte: gte+startTime,
-      lte: req.query.endDate+startTime,
+      lte: lte+startTime,
       INTERVAL: parseInt(req.query.interval),
       FLAG : 'N'};
   if(req.query.interval === 'all')  {
