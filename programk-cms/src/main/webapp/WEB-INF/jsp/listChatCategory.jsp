@@ -105,25 +105,29 @@
 		<!--// 테이블 시작 -->
 		<div class="tableList">
 			<table>
-				<caption>대화 카테고리 설정-NO, 카테고리, 토픽, 토픽 설정, 유형, 등록건수, 사용여부, 배포여부, 업로드 잠금, 편집(수정, 삭제)</caption>
+				<!--<caption>대화 카테고리 설정-NO, 카테고리, 토픽, 토픽 설정, 유형, 등록건수, 사용여부, 배포여부, 업로드 잠금, 편집(수정, 삭제)</caption>-->
+				<caption>대화 카테고리 설정-NO, 카테고리, 유형, 등록건수, 사용여부, 배포여부, 업로드 잠금, 편집(수정, 삭제)</caption>
 				<colgroup>
 					<col class="w1 w5p">
 					<col class="w2">
-					<col class="w3">
-					<col class="w4 w50px">
+				<!--<col class="w3">
+					<col class="w4 w50px"> -->
 					<col class="w5 w10p">					
 					<col class="w6 w10p">
-					<col class="w7 w50px">
+				<!--<col class="w7 w50px">
 					<col class="w8 w50px">
-					<col class="w9 w60px">
+					<col class="w9 w60px"> -->
+					<col class="w7 w10p">
+					<col class="w8 w10p">
+					<col class="w9 w10p">
 					<col class="w10 w150px">
 				</colgroup>
 				<thead>
 					<tr>
 						<th scope="col">NO</th>
 						<th scope="col">카테고리</th>
-						<th scope="col">토픽</th>
-						<th scope="col">토픽 설정</th>
+					<!--<th scope="col">토픽</th>
+						<th scope="col">토픽 설정</th> -->
 						<th scope="col">유형</th>						
 						<th scope="col">등록건수</th>
 						<th scope="col">사용 여부</th>
@@ -139,8 +143,8 @@
 							<tr>
 								<td>${(paging.totalCount - status.index) - ((paging.pageNum - 1) * paging.PAGESIZE)}</td>
 				      			<td class="txtL"><a href="#" onclick="fnDetailChat('${item.id}');return false;">${item.name}</a></td>
-				      			<td>${item.topicName}</td>
-				      			<td>${item.topic}</td>
+				      		<!--<td>${item.topicName}</td>
+				      			<td>${item.topic}</td> -->
 				      			<td>
 				      				<c:forEach var="category" items="${categoryType}">		
 				      				<c:if test="${category.value == item.restriction}">
@@ -241,15 +245,15 @@
 					<a href="#" onclick="fnIsName();return false;" class="btnBg"><span class="icon_search"></span>중복확인</a>
 				</li>
 			</ul>
-			<ul id="topicUl">
-				<li class="title">토픽설정</li>
+		<!--<ul id="topicUl">
+			<li class="title">토픽설정</li>
 				<li class="content">
 					<c:forEach var="topic" items="${topicType}" varStatus="status">	
 						<input type="radio" id="topic${status.index}" name="topic" value="${topic.value}"/><label for="topic${status.index}">${topic.value}</label>
 					</c:forEach>
 					<div id="topicNameInput" style="display:none"><input type="text" class="inputTopics" id="topicName" name="topicName"  maxlength="128"/></div>
 				</li>
-			</ul>
+			</ul> -->
 			<ul id="enabledUl">
 				<li class="title">사용여부</li>
 				<li class="content">
@@ -310,13 +314,13 @@
 		});	
 		
 		//토픽여부 변경 될때
-		$("#form input[name='topic']").click(function(){			
+	/*$("#form input[name='topic']").click(function(){			
 			if($(this).val() == "Y"){
 				$("#topicNameInput").show();
 			}else{
 				$("#topicNameInput").hide();
 			}
-		});
+		});*/
 	});
 	
 	//유형 세팅
@@ -376,7 +380,7 @@
 		});		
 		obj.find("#cpId").selectmenu("refresh");
 		
-		obj.find("input:radio[name=topic]:input[value=N]").prop("checked", true);
+	//	obj.find("input:radio[name=topic]:input[value=N]").prop("checked", true);
 		obj.find("input:radio[name=enabled]:input[value=Y]").prop("checked", true);
 		obj.find("input:radio[name=deploy]:input[value=N]").prop("checked", true);
 		obj.find("input:radio[name=uploadLock]:input[value=N]").prop("checked", true);
@@ -385,7 +389,7 @@
 		
 		$("#restrictionUl").show();
 		$("#nameUl").show();
-		$("#topicUl").show();
+	//	$("#topicUl").show();
 		$("#enabledUl").show();
 		
 		fnRestriction('',''); //유형
@@ -406,8 +410,8 @@
         		var cpId = response.cpId;
         		var name = response.name;
         		var restriction = response.restriction;
-        		var topic = response.topic;
-        		var topicName = response.topicName;
+        	//	var topic = response.topic;
+        	//	var topicName = response.topicName;
         		var enabled = response.enabled;
         		var deploy = response.deploy;
         		var uploadLock = response.uploadLock;
@@ -425,9 +429,9 @@
         		
         		obj.find("#type").val(type);
         		obj.find("#id").val(id);        		
-        		obj.find("#name").val(name);        		
-        		obj.find("#topicName").val(topicName);
-        		obj.find("input:radio[name=topic]:input[value="+ topic +"]").prop("checked", true);
+        	//	obj.find("#name").val(name);        		
+        	//	obj.find("#topicName").val(topicName);
+        	//	obj.find("input:radio[name=topic]:input[value="+ topic +"]").prop("checked", true);
         		obj.find("input:radio[name=enabled]:input[value="+ enabled +"]").prop("checked", true);
         		obj.find("input:radio[name=deploy]:input[value="+ deploy +"]").prop("checked", true);
         		obj.find("input:radio[name=uploadLock]:input[value="+ uploadLock +"]").prop("checked", true);
@@ -435,23 +439,23 @@
         		
         		fnRestriction('',restriction); //유형
         		
-        		if(topic == "Y"){
+        	/*	if(topic == "Y"){
         			$("#topicNameInput").show();
         		}else{
         			$("#topicNameInput").hide();
-        		}
+        		}*/
         		
         		//배포만 수정시
         		if(type == "2"){
         			$("#restrictionUl").hide();
         			$("#nameUl").hide();
-        			$("#topicUl").hide();
+        		//	$("#topicUl").hide();
         			$("#enabledUl").hide();
         			$("#uploadLockUl").hide();
         		}else{
         			$("#restrictionUl").show();
         			$("#nameUl").show();
-        			$("#topicUl").show();
+        		//	$("#topicUl").show();
         			$("#enabledUl").show();
         			$("#uploadLockUl").show();
         		}
@@ -580,8 +584,8 @@
 	$('#form').validate({
 		rules: {
 			restriction: {required:true},
-			name: {required:true},
-			topicName: {required:true,inputbox:true}
+			name: {required:true}
+		//	topicName: {required:true,inputbox:true}
 		},
 		messages: {
 			restriction: {
@@ -589,11 +593,11 @@
 			},
 			name: {
 				required:"카테고리를 확인 하세요."
-			},
-			topicName: {
+			}
+		/*	topicName: {
 				required:"토픽명을 확인 하세요.",
 				inputbox:"<>&\'\"는 사용할 수 없습니다."
-			}
+			}*/
 		},
 		onkeyup : false,           
         onclick : false,           
