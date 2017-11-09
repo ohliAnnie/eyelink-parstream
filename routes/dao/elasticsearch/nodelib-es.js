@@ -1,5 +1,4 @@
-var Logger = require('../../log4js-utils').Logger;
-var logger = new Logger('nodelib-es');
+var logger = global.log4js.getLogger('nodelib-es');
 var Utils = require('../../util');
 var queryParser = require('../queryParser');
 var elasticsearch = require('elasticsearch');

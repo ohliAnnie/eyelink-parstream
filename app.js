@@ -2,15 +2,21 @@ var cors = require('cors');
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('morgan');
+var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var multer  = require('multer');
 var pug = require('pug');
 
+// Logging 처리, 다른 파일에서도 사용하기 위해서 global 변수에 등록.
+global.log4js = require('log4js');
+log4js.configure('./config/log4js_conf.json');
+
+global.logger = global.log4js.getLogger('app');
 var config = require('./config/config.json');
-console.log('config : %j', config);
+
+logger.info('config : %j', config);
 global.config = config;
 
 var intro = require('./routes/intro');
@@ -36,7 +42,7 @@ app.set('view engine', 'pug');
 app.use(cors());
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
-app.use(logger('dev'));
+app.use(morgan('dev'));
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(multer());
