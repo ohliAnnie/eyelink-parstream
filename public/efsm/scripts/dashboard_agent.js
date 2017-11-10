@@ -143,7 +143,7 @@ function displayCountAgent() {
     }
   });
  
-  var in_data = { url : "/dashboard/restapi/countAgentDay", type : "GET", data : { date : day }};
+  var in_data = { url : "/dashboard/restapi/countAgentError", type : "GET", data : { date : day }};
   ajaxTypeData(in_data, function(result){            
     if (result.rtnCode.code == "0000") {      
        $('#errCnt').text(result.today);                       
@@ -151,7 +151,7 @@ function displayCountAgent() {
     } 
   });         
 
-  var in_data = { url : "/dashboard/restapi/countAgentDay", type : "GET", data : {} };
+  var in_data = { url : "/dashboard/restapi/getAgentOneWeek", type : "GET", data : {} };
   ajaxTypeData(in_data, function(result){    
     if (result.rtnCode.code == "0000") {      
       drawAgentWeekly(result.rtnData);

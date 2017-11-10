@@ -52,6 +52,10 @@ try {
   app.use('/dashboard', dashboard);
 } catch(e) {}
 try {
+  var timeseries = require('./routes/'+global.config.pcode+'/nodeTimeseries');
+  app.use('/timeseries', timeseries);
+} catch(e) {}
+try {
   var reports = require('./routes/'+global.config.pcode+'/nodeReport');
   app.use('/reports', reports);
 } catch (e) {}
