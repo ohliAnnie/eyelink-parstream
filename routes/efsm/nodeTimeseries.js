@@ -1,5 +1,4 @@
-var Logger = require('../log4js-utils').Logger;
-var logger = new Logger('nodeTimeseriesEFSM');
+var logger = global.log4js.getLogger('nodeTimeseries');
 var CONSTS = require('../consts');
 var Utils = require('../util');
 var express = require('express');

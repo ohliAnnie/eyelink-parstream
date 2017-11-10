@@ -1,5 +1,4 @@
-var Logger = require('../log4js-utils').Logger;
-var logger = new Logger('nodeManagementEFSM');
+var logger = global.log4js.getLogger('nodeManagement');
 var CONSTS = require('../consts');
 var Utils = require('../util');
 var express = require('express');
@@ -198,7 +197,7 @@ router.get('/role/:id', function(req, res) {
   logger.debug(req.params.id);
   // 신규 등록
   if (req.params.id === 'addRole') {
-    res.render('./management/role_add', { title: global.config.productname, mainmenu:mainmenu });
+    res.render('./'+global.config.pcode+'/management/role_add', { title: global.config.productname, mainmenu:mainmenu });
   } else { // 기존 사용자 정보 변경
     var in_data = { INDEX: indexRole, TYPE: "role", ID: "role_id", VALUE: req.params.id };
     queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
