@@ -1379,8 +1379,8 @@
         "type": #TYPE#,
         "body": {
           "size": 10000,
-          "_source" : [ "da_result.createDate", "_id" ],
-          "sort": { "da_result.createDate": "desc" },
+          "_source" : ["_id" ],
+          "sort": { "_uid": "desc" },
           "query" : {
             "bool" : {
               "should": [
