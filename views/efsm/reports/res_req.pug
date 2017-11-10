@@ -1,19 +1,15 @@
 extends ../layout-type01
-block style    
-  link(type='text/css', rel='stylesheet', href='/efsm/assets/css/dc.css') 
-  link(type='text/css', rel='stylesheet', href='/efsm/css/chart_style.css')
+block style          
+  link(rel='stylesheet', href='/efsm/css/res_req.css')
 block script
   script(type='text/javascript', src='/efsm/assets/scripts/d3_dc.js')
-  script(type='text/javascript', src='/efsm/assets/scripts/crossfilter.js')
-  script(type='text/javascript', src='/efsm/assets/scripts/dc.js')  
-  script(type='text/javascript', src='/efsm/assets/scripts/colorbrewer.js')
   script(type='text/javascript', src="/common/scripts/util.js")
-  script(type='text/javascript', src='/efsm/scripts/report_all.js')
+  script(type='text/javascript', src='/efsm/scripts/report_res_req.js')  
 block content  
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 Reports_All
+        h1 Res&Req
         ol.breadcrumb
           li
             a(href='#') Home
@@ -30,26 +26,40 @@ block content
             .portlet-body.form
                form.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
-                  .form-group.last
-                    .col-md-1
+                  .form-group.last                    
                     label.control-label.col-md-2 Date Range
-                    .col-md-4
+                    .col-md-3
                       .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
                         input#sdate.form-control(type='text', name='from' value='')
                         span.input-group-addon to
                         input#edate.form-control(type='text', name='to' value='')                        
+                    label.control-label.col-md-1 Weeks
+                    .col-md-1
+                      select#weeks.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Week')
+                        option(value=4 selected) 4
+                        option(value=6) 6
+                        option(value=8) 8
+                        option(value=10) 10
+                        option(value=12) 12
+                    label.control-label.col-md-1 Months
+                    .col-md-1
+                      select#months.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Monthh')
+                        option(value=4) 4
+                        option(value=6 selected) 6
+                        option(value=8) 8
+                        option(value=10) 10
+                        option(value=12) 12
                     label.control-label.col-md-1 
-                    .col-md-4.form-inline                     
+                    .col-md-2.form-inline                     
                       button#btn_search.btn.blue
-                        i.fa.fa-search Search
-      a(href='javascript:dc.filterAll(); dc.renderAll();') Reset All
+                        i.fa.fa-search Search      
       .row
         .col-md-6
-          .portlet.light(style='height:450px; ')
+          .portlet.light
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Count All
-                span.caption-helper  Responsetime Type count chart
+                span.caption-subject.bold.uppercase.font-green-haze Count by Day
+                span.caption-helper  검색된 기간 내의 일별 차트
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -58,13 +68,13 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart(style='height:400px; ')
-                #pieChart
+                #day        
         .col-md-6
-          .portlet.light.bordered(style='height:450px; ')
+          .portlet.light
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Count by Hour/Day
-                span.caption-helper  Responsetime Type count chart
+                span.caption-subject.bold.uppercase.font-green-haze Count by Week
+                span.caption-helper  마지막 날부터 지정된 주 수 만큼의 주별 차트
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -73,14 +83,14 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart(style='height:400px; ')
-                #countBar
+                #week        
       .row
         .col-md-6
-          .portlet.light(style='height:450px; ')
+          .portlet.light
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Count by Hour/Day
-                span.caption-helper  Responsetime Type count chart
+                span.caption-subject.bold.uppercase.font-green-haze Count by Month
+                span.caption-helper  마지막 날부터 지정된 월 수 만큼의 월별 차트
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -88,23 +98,5 @@ block content
                 a.collapse(href='javascript:;')
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
-              .chart(style='height:450px; ')
-                #countLine
-        .col-md-6
-          .portlet.light.bordered(style='height:450px; ')
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-green-haze  Count by Server
-                span.caption-helper   Responsetime Type Count by Server
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-print
-                  |  Print
-                a.collapse(href='javascript:;')
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
-            .portlet-body
-              .chart(style='height:450px; ')
-                #serverCount
-    p.copyright Copyright M2U Technology All rights reserved.
-  a.go2top(href='#index')
-    i.icon-arrow-up
+              .chart(style='height:400px; ')
+                #month        

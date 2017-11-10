@@ -1,10 +1,10 @@
 extends ../layout-type01
 block style      
-  link(rel='stylesheet', href='/scripts/d3_timeseries.css')
+  link(rel='stylesheet', href='/efsm/assets/css/d3_timeseries.css') 
 block script
-  script(type='text/javascript', src='/assets/leaflet/d3.js')  
-  script(type='text/javascript', src="/scripts/util.js")
-  script(type='text/javascript', src="/assets/scripts/libs/d3_timeseries_4.js")
+  script(type='text/javascript', src='/efsm/assets/scripts/d3_dc.js')
+  script(type='text/javascript', src="/efsm/assets/scripts/d3_timeseries_4.js")
+  script(type='text/javascript', src="/common/scripts/util.js")   
   script(type='text/javascript', src="/efsm/scripts/timeseries_log.js")    
 block content  
   input#date(type='hidden', name='date', value=date)

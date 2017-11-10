@@ -29,7 +29,7 @@ router.get('/users', function(req, res, next) {
     out_data.forEach(function(d){
       d._source.reg_date = Utils.getDateUTC2Local(d._source.reg_date, fmt2);
     });    
-    res.render('./management/users'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, users:out_data });
+    res.render('./'+global.config.pcode+'/management/users', { title: global.config.productname, mainmenu:mainmenu, users:out_data });
   });
 });
 
@@ -37,7 +37,7 @@ router.get('/users/:id', function(req, res) {
   logger.debug(req.params.id);
   // 신규 등록
   if (req.params.id === 'addUser') {
-    res.render('./management/sign_up', { title: global.config.productname, mainmenu:mainmenu });
+    res.render('./'+global.config.pcode+'/management/sign_up', { title: global.config.productname, mainmenu:mainmenu });
   } else { // 기존 사용자 정보 변경
     var in_data = {  INDEX: indexUser,  TYPE: "user",  ID : "user_id",  VALUE: req.params.id   };
     queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
@@ -53,12 +53,12 @@ router.get('/users/:id', function(req, res) {
             var rtnCode = CONSTS.getErrData('0001');
             var maps = [];
           }
-          res.render('./management/user_edit', { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps, tnc_error : tnc_error});
+          res.render('./'+global.config.pcode+'/management/user_edit', { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps, tnc_error : tnc_error});
         });
       } else {
         var rtnCode = CONSTS.getErrData('0001');
       }
-      res.render('./management/user_edit', { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps });
+      res.render('./'+global.config.pcode+'/management/user_edit', { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps });
     });
   }
 });
@@ -171,12 +171,12 @@ router.get('/user/:id', function(req, res) {
           var rtnCode = CONSTS.getErrData('0001');
           var maps = [];
         }
-        res.render('./management/user_info', { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps});
+        res.render('./'+global.config.pcode+'/management/user_info', { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps});
       });
     } else {
       var rtnCode = CONSTS.getErrData('0001');
     }
-    res.render('./management/user_info', { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps });
+    res.render('./'+global.config.pcode+'/management/user_info', { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps });
   });
 });
 
@@ -190,7 +190,7 @@ router.get('/role', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     }
     var roles = out_data;
-    res.render('./management/role_list', { title: global.config.productname, mainmenu:mainmenu, roles:roles });
+    res.render('./'+global.config.pcode+'/management/role_list', { title: global.config.productname, mainmenu:mainmenu, roles:roles });
   });
 });
 
@@ -207,10 +207,10 @@ router.get('/role/:id', function(req, res) {
         var role = out_data[0];
         queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
           var menu = out_data[0];
-          res.render('./management/role_edit', { title: global.config.productname,   mainmenu:mainmenu,   role:role, menu:menu});
+          res.render('./'+global.config.pcode+'/management/role_edit', { title: global.config.productname,   mainmenu:mainmenu,   role:role, menu:menu});
         });
       }
-      res.render('./management/role_edit',  { title: global.config.productname,   mainmenu:mainmenu,   role:role,  menu:menu});
+      res.render('./'+global.config.pcode+'/management/role_edit',  { title: global.config.productname,   mainmenu:mainmenu,   role:role,  menu:menu});
     });
   }
 });
@@ -306,10 +306,10 @@ router.get('/memList/:id', function(req, res, next) {
         }
         var users = out_data;
         logger.debug(users);
-        res.render('./management/mem_list', { title: global.config.productname, mainmenu:mainmenu, mems:mems, users:users, roleid:req.params.id });
+        res.render('./'+global.config.pcode+'/management/mem_list', { title: global.config.productname, mainmenu:mainmenu, mems:mems, users:users, roleid:req.params.id });
       });
     }
-    res.render('./management/mem_list', { title: global.config.productname, mainmenu:mainmenu, mems:mems, users:users, roleid:req.params.id  });
+    res.render('./'+global.config.pcode+'/management/mem_list', { title: global.config.productname, mainmenu:mainmenu, mems:mems, users:users, roleid:req.params.id  });
   });
 });
 
@@ -317,7 +317,7 @@ router.get('/mem/:id', function(req, res) {
   logger.debug(req.params.id);
   // 신규 등록
   if (req.params.id === 'addMem') {
-    res.render('./management/add_mem', { title: global.config.productname, mainmenu:mainmenu });
+    res.render('./'+global.config.pcode+'/management/add_mem', { title: global.config.productname, mainmenu:mainmenu });
   } else { // 기존 사용자 정보 변경
     var in_data = { INDEX: indexMap, TYPE: "map", ID: "role_id", VALUE: req.params.id };
     queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
@@ -327,10 +327,10 @@ router.get('/mem/:id', function(req, res) {
         var role = out_data[0];
         queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
           var menu = out_data[0];
-          res.render('./management/role_edit', { title: global.config.productname, mainmenu:mainmenu, role:role, menu:menu});
+          res.render('./'+global.config.pcode+'/management/role_edit', { title: global.config.productname, mainmenu:mainmenu, role:role, menu:menu});
         });
       }
-      res.render('./management/role_edit', { title: global.config.productname, mainmenu:mainmenu, role:role});
+      res.render('./'+global.config.pcode+'/management/role_edit', { title: global.config.productname, mainmenu:mainmenu, role:role});
     });
   }
 });
@@ -373,7 +373,7 @@ router.delete('/mem/:id', function(req, res) {
 router.get('/menu', function(req, res, next) {
   logger.debug('management/restapi/menu');
   mainmenu.management = ' open selected';
-  res.render('./management/menu', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/management/menu', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/restapi/getMenuList', function(req, res, next) {
@@ -405,7 +405,7 @@ router.get('/menu/:id', function(req, res) {
           list.push(d._source);
         }
       });
-      res.render('./management/menu_edit', { title: global.config.productname, mainmenu:mainmenu, list:list });
+      res.render('./'+global.config.pcode+'/management/menu_edit', { title: global.config.productname, mainmenu:mainmenu, list:list });
     });
   }
 });
@@ -458,7 +458,7 @@ router.get('/menu_upper', function(req, res, next) {
         }
       });
     }
-    res.render('./management/menu_upper', { title: global.config.productname, mainmenu:mainmenu, list:list });
+    res.render('./'+global.config.pcode+'/management/menu_upper', { title: global.config.productname, mainmenu:mainmenu, list:list });
   });
 });
 
@@ -616,7 +616,6 @@ function saveAlarmData(data, cb) {
     INDEX: CONSTS.SCHEMA.EFSM_ALARM.INDEX + d.toFormat('YYYY.MM.DD'),
     TYPE: 'AgentAlarm',
     BODY : JSON.stringify(data)};
-
   queryProvider.insertQueryByID("management", "insertAlarmData", in_data, function(err, out_data) {
     logger.debug(out_data);
     var rtnCode = CONSTS.getErrData('0000');
@@ -636,7 +635,7 @@ function saveAlarmData(data, cb) {
 router.get('/authority', function(req, res, next) {
   logger.debug('management/restapi/authority');
   mainmenu.management = ' open selected';
-  res.render('./management/authority', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/management/authority', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/asset', function(req, res, next) {
@@ -649,7 +648,7 @@ router.get('/asset', function(req, res, next) {
     }
     logger.debug(out_data);
     var users = out_data;
-    res.render('./management/asset'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, users:users });
+    res.render('./'+global.config.pcode+'/management/asset', { title: global.config.productname, mainmenu:mainmenu, users:users });
   });
 });
 

@@ -1,11 +1,10 @@
 extends ../layout-type01
 block style
-  link(rel='stylesheet', href='/efsm/assets/css/dc.css')
-  link(rel='stylesheet', href='/stylesheets/style.css')  
+  link(rel='stylesheet', href='/efsm/assets/css/dc.css')  
   link(type='text/css', rel='stylesheet', href='/efsm/assets/css/bigscatterchart.css')
-  link(type='text/css', rel='stylesheet', href='/assets/sample/style/jquery-ui.css')    
-  link(href='/assets/sample/style/dashboard_main.css', rel='stylesheet') 
-  link(rel='stylesheet', href='/scripts/d3_timeseries.css')    
+  link(type='text/css', rel='stylesheet', href='/efsm/assets/css/jquery-ui.css')
+  link(rel='stylesheet', href='/efsm/assets/css/d3_timeseries.css')    
+  link(type='text/css', rel='stylesheet', href='/efsm/css/chart_style.css')
   link(href='https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css', rel='stylesheet')
   style.
     td {
@@ -26,7 +25,7 @@ block script
   script(src='/efsm/assets/scripts/d3.chart.min.js')  
   script(src='https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js')
   script(type='text/javascript', src="/common/scripts/util.js")       
-  script(type='text/javascript', src='/efsm/scripts/dashboard_bottleneck.js')      
+  script(type='text/javascript', src='/efsm/scripts/dashboard_bottleneck.js')
 block content    
   input#server(type='hidden', name='server', value=server)
   .container-fluid

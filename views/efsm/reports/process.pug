@@ -2,18 +2,22 @@ extends ../layout-type01
 block style    
   link(type='text/css', rel='stylesheet', href='/efsm/assets/css/dc.css') 
   link(type='text/css', rel='stylesheet', href='/efsm/css/chart_style.css')
+  link(type='text/css', rel='stylesheet', href='/common/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
 block script
   script(type='text/javascript', src='/efsm/assets/scripts/d3_dc.js')
   script(type='text/javascript', src='/efsm/assets/scripts/crossfilter.js')
   script(type='text/javascript', src='/efsm/assets/scripts/dc.js')  
-  script(type='text/javascript', src='/efsm/assets/scripts/colorbrewer.js')
+  script(type='text/javascript', src='/efsm/assets/scripts/colorbrewer.js')  
+  script(type='text/javascript', src='/common/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+  script(type='text/javascript', src='/common/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')    
+  script(type='text/javascript', src='/common/assets/scripts/page/table-managed.js')
   script(type='text/javascript', src="/common/scripts/util.js")
-  script(type='text/javascript', src='/efsm/scripts/report_all.js')
-block content  
+  script(type='text/javascript', src='/efsm/scripts/report_process.js')
+block content
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 Reports_All
+        h1 Process
         ol.breadcrumb
           li
             a(href='#') Home
@@ -25,31 +29,31 @@ block content
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase.font-blue-sharp Set date
-                span.caption-helper  Date range 
+                span.caption-subject.bold.uppercase.font-blue-sharp Set date and area
+                span.caption-helper  Date range and Process Name
             .portlet-body.form
                form.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
                   .form-group.last
-                    .col-md-1
                     label.control-label.col-md-2 Date Range
                     .col-md-4
                       .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
                         input#sdate.form-control(type='text', name='from' value='')
                         span.input-group-addon to
-                        input#edate.form-control(type='text', name='to' value='')                        
-                    label.control-label.col-md-1 
-                    .col-md-4.form-inline                     
+                        input#edate.form-control(type='text', name='to' value='')
+                    label.control-label.col-md-2 Process Name
+                    .col-md-4.form-inline
+                      input#process.form-control(type='text', name='process', value='', data-placeholder='Select Process')                 
                       button#btn_search.btn.blue
                         i.fa.fa-search Search
       a(href='javascript:dc.filterAll(); dc.renderAll();') Reset All
       .row
-        .col-md-6
+        .col-md-4
           .portlet.light(style='height:450px; ')
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Count All
-                span.caption-helper  Responsetime Type count chart
+                span.caption-subject.bold.uppercase.font-green-haze Cpu
+                span.caption-helper  system.process.cpu.total
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -58,13 +62,13 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart(style='height:400px; ')
-                #pieChart
-        .col-md-6
+                #cpuChart
+        .col-md-4
           .portlet.light.bordered(style='height:450px; ')
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Count by Hour/Day
-                span.caption-helper  Responsetime Type count chart
+                span.caption-subject.bold.uppercase.font-green-haze Memory
+                span.caption-helper  system.process.memory.rss
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -73,14 +77,13 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart(style='height:400px; ')
-                #countBar
-      .row
-        .col-md-6
+                #memoryChart
+        .col-md-4
           .portlet.light(style='height:450px; ')
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Count by Hour/Day
-                span.caption-helper  Responsetime Type count chart
+                span.caption-subject.bold.uppercase.font-green-haze Filesystem
+                span.caption-helper  system.filesystem.used.pct
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -89,13 +92,14 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart(style='height:450px; ')
-                #countLine
-        .col-md-6
-          .portlet.light.bordered(style='height:450px; ')
+                #filesystemChart
+      .row                  
+        .col-md-12
+          .portlet.light.bordered
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze  Count by Server
-                span.caption-helper   Responsetime Type Count by Server
+                span.caption-subject.bold.uppercase.font-green-haze Process List
+                span.caption-helper
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -103,8 +107,8 @@ block content
                 a.collapse(href='javascript:;')
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
-              .chart(style='height:450px; ')
-                #serverCount
+              .chart(style='height:auto; ')
+                table.table.table-hover.processTable
     p.copyright Copyright M2U Technology All rights reserved.
   a.go2top(href='#index')
     i.icon-arrow-up

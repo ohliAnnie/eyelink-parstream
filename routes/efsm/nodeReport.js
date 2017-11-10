@@ -20,27 +20,27 @@ var fmt4 = CONSTS.DATEFORMAT.INDEXDATE; // "YYYY.mm.DD",
 
 /* GET reports page. */
 router.get('/', function(req, res, next) {
-  res.render('./reports/report_all'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, indexs: global.config.es_index });
+  res.render('./'+global.config.pcode+'/reports/report_all', { title: global.config.productname, mainmenu:mainmenu, indexs: global.config.es_index });
 });
 
 router.get('/res_req', function(req, res, next) {
-  res.render('./reports/res_req'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/reports/res_req', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/process', function(req, res, next) {
-  res.render('./'+global.config.pcode+'/reports/processEFSM', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/reports/process', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/cpu_memory', function(req, res, next) {
-  res.render('./'+global.config.pcode+'/reports/cpu_memoryEFSM', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/reports/cpu_memory', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/error', function(req, res, next) {
-  res.render('./reports/error'+global.config.pcode, { title: global.config.productnam, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/reports/error', { title: global.config.productnam, mainmenu:mainmenu });
 });
 
 router.get('/all', function(req, res, next) {
-  res.render('./reports/report_all'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/reports/report_all', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 // query Report

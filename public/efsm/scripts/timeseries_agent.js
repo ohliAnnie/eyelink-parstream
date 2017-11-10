@@ -26,7 +26,7 @@ function drawCountChart() {
     }
   });
 
-  var in_data = { url : "/timeseries/restapi/getHeapData", type : "GET", data : data };
+  var in_data = { url : "/timeseries/restapi/getJvmSysData", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {                
         drawJvmSys(result.rtnData);
