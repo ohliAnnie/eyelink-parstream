@@ -87,67 +87,9 @@ router.get('/error_pop_agent', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }  
-    res.render('./dashboard/scatter_detail_agent'+global.config.pcode, { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+    res.render('./'+global.config.pcode+'/dashboard/scatter_detail_agent', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });     
-
-router.get('/timeseriesAGENT', function(req, res, next) {  
-  mainmenu.dashboard = '';
-  mainmenu.timeseries = ' open selected';    
-  var server = req.query.server, type = '';
-  var in_data = {    index:  indexAppinfo, type: "applicationInfo"    };  
-  queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
-    var rtnCode = CONSTS.getErrData('0000');
-    var check = {}, list = [], cnt = 0;        
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');
-    } else {
-      out_data.forEach(function(d){
-        if(check[d._source.applicationId]==null){
-          check[d._source.applicationId] = { no : cnt++};
-          list.push({ id : d._source.collection, name : d._source.applicationId, type : d._source.collection });
-          if(server == d._source.applicationId){
-            type = d._source.collection;
-          }          
-        } 
-      });       
-    }    
-    if(server == undefined || server == ""){
-      server = list[0].name;
-      type = list[0].type
-    }    
-    res.render('./dashboard/timeseries_agent'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, agent: list, server : server, type : type });
-  });
-});
-
-router.get('/timeseriesLOG', function(req, res, next) {    
-  mainmenu.dashboard = '';
-  mainmenu.timeseries = 'open selected';
-  var server = req.query.server, type = '';
-  var in_data = {    index:  indexAppinfo, type: "applicationInfo"    };  
-  queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
-    var rtnCode = CONSTS.getErrData('0000');
-    var check = {}, list = [], cnt = 0;        
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');
-    } else {
-      out_data.forEach(function(d){
-        if(check[d._source.applicationId]==null){
-          check[d._source.applicationId] = { no : cnt++};
-          list.push({ id : d._source.collection, name : d._source.applicationId, type : d._source.collection });
-          if(server == d._source.applicationId){
-            type = d._source.collection;
-          }          
-        } 
-      });       
-    }    
-    if(server == undefined || server == ""){
-      server = list[0].name;
-      type = list[0].type;
-    }    
-    res.render('./dashboard/timeseries_log'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, agent: list, server : server, type : req.query.server }); 
-  });
-});
 
 router.get('/bottleneck', function(req, res, next) {
   mainmenu.dashboard = 'open selected';
@@ -170,14 +112,13 @@ router.get('/bottleneck', function(req, res, next) {
     if(server == undefined || server == ""){
       server = list[0].name;
     }    
-  res.render('./dashboard/bottleneck'+global.config.pcode, { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : server }); 
+  res.render('./'+global.config.pcode+'/dashboard/bottleneck', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc, agent: list, server : server }); 
   });
 });
 
 
 router.get('/trenddata', function(req, res, next) {
-  mainmenu.dashboard = ' open selected';
-  mainmenu.timeseries = '';
+  mainmenu.dashboard = ' open selected';  
   res.render('./dashboard/trenddata', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc});
 });
 
@@ -428,7 +369,7 @@ router.get('/selected_detail_jira', function(req, res, next) {
         d._source.timestamp = Utils.getDateUTC2Local(d._source.timestamp, fmt2);                
       });
     }    
-    res.render('./dashboard/scatter_detail_jira'+global.config.pcode, { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+    res.render('./'+global.config.pcode+'/dashboard/scatter_detail_jira', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });                 
 
@@ -445,7 +386,7 @@ router.get('/selected_detail_agent', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     }  
-    res.render('./dashboard/scatter_detail_agent'+global.config.pcode, { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
+    res.render('./'+global.config.pcode+'/dashboard/scatter_detail_agent', { title: 'EyeLink for Service Monitoring', mainmenu:mainmenu, list : out_data });
   });  
 });        
 
@@ -551,8 +492,6 @@ router.get('/restapi/getJiraAccOneWeek', function(req, res, next) {
     index: indexAcc+"*", type : "access",
     start: Utils.getDate(Utils.getToday(fmt2,'N','Y'), fmt1, -7, 0, 0, 0)+startTime  
   };  
-  console.log('((((((((((((((((((((')
-  console.log(in_data);
   queryProvider.selectSingleQueryByID2("dashboard","selectJiraAccOneWeek", in_data, function(err, out_data, params) {
     // console.log(out_datsa);
     var rtnCode = CONSTS.getErrData('0000');
@@ -599,115 +538,6 @@ router.get('/restapi/getAgentOneWeek', function(req, res, next) {
     });       
     res.json({rtnCode: rtnCode, rtnData: data });
   });  
-});
-
-router.get('/restapi/getAccTimeseries', function(req, res, next) {
-  logger.debug('dashboard/restapi/getAccTimeseries');  
-  var end = Utils.getMs2Date(req.query.date,fmt1,'Y');  
-  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0);  
-  var in_data = { index : [indexAcc+Utils.getDate(start, fmt4), indexAcc+Utils.getDate(end, fmt4)], type : "access",
-                  gte : start+startTime, lte : end+startTime, interval : req.query.interval };
-  queryProvider.selectSingleQueryByID3("dashboard","getAccTimeseries", in_data, function(err, out_data, params) {    
-    var rtnCode = CONSTS.getErrData('0000');  
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');      
-    } else {      
-      var data = [];
-      out_data = out_data.group_by_timestamp.buckets;
-      out_data.forEach(function(b) {
-        var d = b.group_by_code.buckets;        
-        data.push({ timestamp : b.key, res_time : d.ok.group_by_time.buckets.res_time.doc_count, slow : d.ok.group_by_time.buckets.slow.doc_count, error : d.error.doc_count });         
-      });
-    }   
-    res.json({rtnCode: rtnCode, rtnData: data });
-  });
-});
-
-router.get('/restapi/getProcessTimeseries', function(req, res, next) {
-  logger.debug('dashboard/restapi/getProcessTimeseries');    
-  var end = Utils.getMs2Date(req.query.date,fmt1,'Y');  
-  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0); 
-  var in_data = { index : [indexMetric+Utils.getDate(start, fmt4), indexMetric+Utils.getDate(end, fmt4)], 
-                  type : "metricsets", gte : start+startTime, lte : end+startTime }  
-  queryProvider.selectSingleQueryByID2("dashboard","getProcessTimeseries", in_data, function(err, out_data, params) {    
-    var rtnCode = CONSTS.getErrData('0000');
-    var data = [];       
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');      
-    } else {
-      var data = [];
-      out_data.forEach(function(d) {      
-        data.push({ timestamp : new Date(d._source.timestamp).getTime(), cpu_total : d._source.system.process.cpu.total.pct, memory_rss : d._source.system.process.memory.rss.pct } );
-      });  
-    }
-    res.json({rtnCode: rtnCode, rtnData: data });
-  });
-});
-
-router.get('/restapi/getTopTimeseries', function(req, res, next) {
-  logger.debug('dashboard/restapi/getTopTimeseries');    
-  var end = Utils.getMs2Date(req.query.date,fmt1,'Y');  
-  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0); 
-  var in_data = { index : [indexMetric+Utils.getDate(start, fmt4), indexMetric+Utils.getDate(end, fmt4)], 
-                  type : "metricsets", gte : start+startTime, lte : end+startTime } 
-  queryProvider.selectSingleQueryByID2("dashboard","getTopTimeseries", in_data, function(err, out_data, params) {    
-    var rtnCode = CONSTS.getErrData('0000');
-    var data = [];   
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');      
-    } else {
-      var data = [];      
-      var top = [0,0,0,0,0,0,0,0,0,0]
-      var time = new Date().getTime();
-      var cnt = 0;
-      out_data.forEach(function(d) {          
-        d._source.timestamp = new Date(d._source.timestamp).getTime();    
-        if(time != d._source.timestamp){      
-          if(time < d._source.timestamp) {
-            data.push({ timestamp : time, top1 : top[0], top2 : top[1], top3 : top[2], top4 : top[3], top5 : top[4], top6 : top[5], top7 : top[6], top8 : top[7], top9 : top[8], top10 : top[9] });
-          }
-          time = d._source.timestamp;
-          cnt = 0;
-          top = [0,0,0,0,0,0,0,0,0,0];          
-        } else {
-          top[cnt++] = d._source.system.process.cpu.total.pct;
-        }
-      });
-    }
-    res.json({rtnCode: rtnCode, rtnData: data });
-  });
-});
-
-router.get('/restapi/getTotalTimeseries', function(req, res, next) {
-  logger.debug('dashboard/restapi/getTotalTimeseries');    
-  var end = Utils.getMs2Date(req.query.date,fmt1,'Y');  
-  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0); 
-  var in_data = { index : [indexMetric+Utils.getDate(start, fmt4), indexMetric+Utils.getDate(end, fmt4)], 
-                  type : "metricsets", gte : start+startTime, lte : end+startTime }
-  queryProvider.selectSingleQueryByID2("dashboard","getTotalTimeseries", in_data, function(err, out_data, params) {    
-    var rtnCode = CONSTS.getErrData('0000');
-    var data = [];   
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');      
-    } else {
-      var data = [];
-      var m_used = 0, m_actual_used = 0, m_swap_used = 0, c_user = 0, c_system = 0, c_idle = 0;
-      out_data.forEach(function(d) {      
-        if(d._source.metricset.name == "memory") {      
-          m_used = d._source.system.memory.used.pct;
-          m_actual_used = d._source.system.memory.actual.used.pct;
-          m_swap_used = d._source.system.memory.swap.used.pct;
-          data.push({ timestamp : new Date(d._source.timestamp).getTime(), memory_used : m_used, memory_actual_used : m_actual_used, memory_swap_used : m_swap_used, cpu_user : c_user, cpu_system : c_system, cpu_idle : c_idle } );
-        } else if(d._source.metricset.name == "cpu") {
-          c_user = d._source.system.cpu.user.pct;
-          c_system = d._source.system.cpu.system.pct;
-          c_idle = d._source.system.cpu.idle.pct;
-          data.push({ timestamp : new Date(d._source.timestamp).getTime(), cpu_user : d._source.system.cpu.user.pct, cpu_system : d._source.system.cpu.system.pct, cpu_idle : d._source.system.cpu.idle.pct } );
-        }
-      });
-    }
-    res.json({rtnCode: rtnCode, rtnData: data });
-  });
 });
 
 router.get('/restapi/getJiramapdata', function(req, res, next) {
@@ -884,13 +714,13 @@ router.get('/restapi/getAllMapData', function(req, res, next) {
 router.get('/restapi/getHeapData', function(req, res, next) {  
   logger.debug('dashboard/restapi/getHeapData');   
   if(req.query.type == 'range') {
-    var gte = Utils.getDate(req.query.end, fmt2, 0, 0, -parseInt(req.query.gap), 0, 'Y');
-    var lte = Utils.getDate(req.query.end, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y');
+    var gte = Utils.getDate(req.query.end, fmt2, 0, 0, -parseInt(req.query.gap), 0, 'N', 'Y');
+    var lte = Utils.getDate(req.query.end, fmt2, 0, 0, parseInt(req.query.gap), 0, 'N', 'Y');
   } else if(req.query.type == 'normal') {  
     var lte = Utils.getMs2Date(req.query.date, fmt1, 'N')+startTime;      
     var gte = Utils.getDate(lte, fmt2, -1, 0, 0, 0, 'Y');
   }
-  var in_data = { index : indexElagent+'*', type : "AgentStatJvmGc", gte : gte, lte : lte };    
+  var in_data = { index : indexElagent+'*', type : "AgentStatJvmGc", gte : gte, lte : lte };
   queryProvider.selectSingleQueryByID2("dashboard","selectByTimestamp", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');        
     if (out_data == null) {
@@ -910,8 +740,8 @@ router.get('/restapi/getHeapData', function(req, res, next) {
 router.get('/restapi/getJvmSysData', function(req, res, next) {
   logger.debug('dashboard/restapi/getHeapData');    
   if(req.query.type == 'range') {    
-    var gte = Utils.getDate(req.query.end, fmt2, 0, 0, -parseInt(req.query.gap), 0, 'Y');
-    var lte = Utils.getDate(req.query.end, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y');
+    var gte = Utils.getDate(req.query.end, fmt2, 0, 0, -parseInt(req.query.gap), 0, 'N', 'Y');
+    var lte = Utils.getDate(req.query.end, fmt2, 0, 0, parseInt(req.query.gap), 0, 'N', 'Y');
   } else if(req.query.type == 'normal') {  
     var lte = Utils.getMs2Date(req.query.date, fmt1, 'N')+startTime;      
     var gte = Utils.getDate(lte, fmt2, -1, 0, 0, 0, 'Y');
@@ -936,8 +766,8 @@ router.get('/restapi/getJvmSysData', function(req, res, next) {
 router.get('/restapi/getStatTransaction', function(req, res, next) {
   logger.debug('dashboard/restapi/getStatTransaction');    
   if(req.query.type == 'range') {
-    var gte = Utils.getDate(req.query.end, fmt2, 0, 0, -parseInt(req.query.gap), 0, 'Y');
-    var lte = Utils.getDate(req.query.end, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y');
+    var gte = Utils.getDate(req.query.end, fmt2, 0, 0, -parseInt(req.query.gap), 0, 'N', 'Y');
+    var lte = Utils.getDate(req.query.end, fmt2, 0, 0, parseInt(req.query.gap), 0, 'N', 'Y');
   } else if(req.query.type == 'normal') {  
     var lte = Utils.getMs2Date(req.query.date, fmt1, 'N')+startTime;      
     var gte = Utils.getDate(lte, fmt2, -1, 0, 0, 0, 'Y');
@@ -1077,12 +907,12 @@ router.get('/restapi/getAgentData', function(req, res, next) {
     var end = Utils.getMs2Date(parseInt(req.query.date), fmt1, 'N')+startTime;
     var start = Utils.getDate(end, fmt1, -1, 0, 0, 0) + startTime;            
   } else if(req.query.gap == 'range') {
-    var start = Utils.getDate(req.query.date, fmt2, 0, 0, -parseInt(req.query.range), 0, 'Y');
-    var end = Utils.getDate(req.query.date, fmt2, 0, 0, parseInt(req.query.range), 0, 'Y');
+    var start = Utils.getDate(req.query.date, fmt2, 0, 0, -parseInt(req.query.range), 0, 'N', 'Y');
+    var end = Utils.getDate(req.query.date, fmt2, 0, 0, parseInt(req.query.range), 0, 'N', 'Y');
   } else {       
     var end = Utils.getMs2Date(parseInt(req.query.date),fmt2,'Y');
     var start = Utils.getMs2Date(parseInt(req.query.date)-parseInt(req.query.gap),fmt2,'Y');    
-  };
+  };  
   var in_data = { 
       index : indexElagent+'*', type : "ApplicationLinkData",
       start : start,  end : end, id : "startTime" };  
@@ -1122,7 +952,7 @@ router.get('/restapi/getAgentData', function(req, res, next) {
 });
 
 router.get('/restapi/countAgentDay', function(req, res, next) {
-  logger.debug('dashboard/restapi/countAgent');      
+  logger.debug('dashboard/restapi/countAgent');        
   var end = Utils.getMs2Date(parseInt(req.query.date),fmt1,'Y')+startTime;  
   var start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;  
   var in_data = { index : indexElagent+'*', type : "ApplicationLinkData", START : start, END : end  };  
