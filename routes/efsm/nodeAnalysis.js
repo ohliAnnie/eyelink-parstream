@@ -27,57 +27,57 @@ var fmt4 = CONSTS.DATEFORMAT.INDEXDATE; // "YYYY.mm.DD",
 /* GET reports page. */
 router.get('/', function(req, res, next) {
   logger.debug(_rawDataByDay);
-  res.render('./analysis/clustering', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/analysis/clustering', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/clustering', function(req, res, next) {
   logger.debug(_rawDataByDay);
-  res.render('./analysis/clustering', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/analysis/clustering', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/cluster_detail', function(req, res, next) {
   logger.debug(_rawDataByDay);
-  res.render('./analysis/cluster_detail', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/analysis/cluster_detail', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/clusteringPop', function(req, res, next) {
   logger.debug(_rawDataByDay);
-  res.render('./analysis/clustering_popup', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/analysis/clustering_popup', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/runalaysis', function(req, res, next) {
   logger.debug(_rawDataByDay);
-  res.render('./analysis/runanalysis', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/analysis/runanalysis', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/anomaly', function(req, res, next) {
   logger.debug(_rawDataByDay);
-  res.render('./analysis/anomaly', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/analysis/anomaly', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/anomaly_new', function(req, res, next) {
   logger.debug(_rawDataByDay);
-  res.render('./analysis/anomaly_new', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/analysis/anomaly_new', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/pattern', function(req, res, next) {
   logger.debug(_rawDataByDay);
-  res.render('./analysis/pattern', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/analysis/pattern', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/patternMatching', function(req, res, next) {
   logger.debug(_rawDataByDay);
-  res.render('./analysis/patternMatching', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/analysis/patternMatching', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/postTest', function(req, res, next) {
   logger.debug(_rawDataByDay);
-  res.render('./analysis/postTest', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/analysis/postTest', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/pattern_list', function(req, res, next) {
   logger.debug(_rawDataByDay);
-  res.render('./analysis/pattern_list', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/analysis/pattern_list', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 
@@ -353,7 +353,7 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
         INDEX: indexPatternMatching, TYPE: "pattern_matching", 
         gte : Utils.getDate(now, fmt2, 0, 0, -10, 0, 'Y', 'Y'), 
         lte : end }  
-  queryProvider.selectSingleQueryByID2("analysis", "selectByAnalysisTimestamp", in_data, function(err, out_data, params) {            
+  queryProvider.selectSingleQueryByID2("analysis", "selectByAnalysisTimestamp", in_data, function(err, out_data, params) {                
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       logger.debug('null');
@@ -364,7 +364,7 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
       var pattern = out_data[0]._source.da_result;
       var list = makeList(["voltage", "ampere", "power_factor", "active_power"], pattern);
       var in_data = { INDEX: indexPatternData, TYPE: "pattern_data" , ID: "master", list : list }      
-      queryProvider.selectSingleQueryByID2("analysis", "selectAnomalyMatch", in_data,  function(err, out_data, params) {                                
+      queryProvider.selectSingleQueryByID2("analysis", "selectAnomalyMatch", in_data,  function(err, out_data, params) {                
         var rtnCode = CONSTS.getErrData('0000');
         if (out_data == null) {
           logger.debug('null');
@@ -372,7 +372,7 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
         } else if(out_data.length == 0) {
            rtnCode = CONSTS.getErrData('0001');
         } else {        
-          var clust = out_data[0]._source.pattern_data;           
+          var clust = out_data[0]._source.da_result;          
           var start = Utils.getDate(pattern.timestamp, fmt2, 0, 0, -50, -10, 'Y', 'Y');                    
           var in_data = { index : indexCore+'*', type : "corecode",
                 gte: start, lte: end,  NODE: ["0002.00000039"], FLAG : 'N'};           
@@ -384,11 +384,11 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
               rtnCode = CONSTS.getErrData('0001');
             } else {
               logger.debug('analysis/restapi/getClusterNodePower -> length : %s', out_data.length);
-              var tot = { "voltage" : [], "ampere" : [], "active_power" : [], "power_factor" : [] };
-              logger.debug(tot);
-              for(key in tot) {
+              var tot = { "voltage" : [], "ampere" : [], "active_power" : [], "power_factor" : [] };              
+              for(key in tot) {                
                 tot[key] = arangeData(clust, pattern, start, key);                 
               }              
+              logger.debug(tot);
               pattern.timestamp = Utils.getDateUTC2Local(pattern.timestamp, fmt2);
               var data = [];
               var sdata = out_data[0]._source;              
@@ -417,7 +417,7 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
 function arangeData(clust, pattern, start, type){    
   var data = [], cpt = [], apt = [], min = [], max = [];
   for(i=59; i<120; i++){                  
-    var date = new Date(start).getTime()+(i-59)*60*1000;    
+    var date = new Date(start).getTime()+(i-59)*60*1000;        
     min[i-59] = clust[type][pattern[type].top_1].min_value[i];
     max[i-59] = clust[type][pattern[type].top_1].max_value[i]
     data.push({date : date, center : clust[type][pattern[type].top_1].center[i], center2 : clust[type][pattern[type].top_2].center[i], center3 : clust[type][pattern[type].top_3].center[i], min : clust[type][pattern[type].top_1].min_value[i], max : clust[type][pattern[type].top_1].max_value[i], lower : clust[type][pattern[type].top_1].lower[i], upper : clust[type][pattern[type].top_1].upper[i] });
@@ -438,10 +438,10 @@ function arangeData(clust, pattern, start, type){
 
 function makeList(key, pattern){
   var list = [], cnt = 0;
-  for(i=0; i<key.length; i++){
-    list[cnt++] = "pattern_data."+key[i]+"."+pattern[key[i]].top_1;
-    list[cnt++] = "pattern_data."+key[i]+"."+pattern[key[i]].top_2+".center";
-    list[cnt++] = "pattern_data."+key[i]+"."+pattern[key[i]].top_3+".center";
+  for(i=0; i<key.length; i++){    
+    list[cnt++] = "da_result."+key[i]+"."+pattern[key[i]].top_1;
+    list[cnt++] = "da_result."+key[i]+"."+pattern[key[i]].top_2;
+    list[cnt++] = "da_result."+key[i]+"."+pattern[key[i]].top_3;
   }
   return list;
 }
