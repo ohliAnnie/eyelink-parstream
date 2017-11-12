@@ -1,5 +1,4 @@
-var Logger = require('../log4js-utils').Logger;
-var logger = new Logger('nodeReportEFSM');
+var logger = global.log4js.getLogger('nodeReport');
 var CONSTS = require('../consts');
 var Utils = require('../util');
 var express = require('express');
