@@ -2,9 +2,7 @@
       var dateFormat = 'YYYY-MM-DD';      
       $('#sdate').val(moment().format(dateFormat));
       $('#edate').val(moment().format(dateFormat));
-      getPatternList() // pattern dataset
-
-     
+      getPatternList() // pattern dataset    
 
       $('#btn_search').on('click', function(){
         d3.selectAll("svg").remove();
