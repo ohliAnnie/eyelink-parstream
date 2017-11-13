@@ -1,9 +1,10 @@
-var CONSTS = require('./consts');
-var Utils = require('./util');
+var logger = global.log4js.getLogger('nodeReport');
+var CONSTS = require('../consts');
+var Utils = require('../util');
 var express = require('express');
 var router = express.Router();
 
-var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
+var QueryProvider = require('../dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
 var queryProvider = new QueryProvider();
 
 var mainmenu = {dashboard:'', timeseries:'', reports:'open selected', analysis:'', management:'', settings:''};
@@ -11,39 +12,39 @@ var mainmenu = {dashboard:'', timeseries:'', reports:'open selected', analysis:'
 
 /* GET reports page. */
 router.get('/', function(req, res, next) {
-  res.render('./reports/report_all', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/reports/report_all', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/main', function(req, res, next) {
-  res.render('./reports/main', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/reports/main', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/d3', function(req, res, next) {
-  res.render('./reports/report_d3', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/reports/report_d3', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/test', function(req, res, next) {
-  res.render('./reports/test', { title: 'Test', mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/reports/test', { title: 'Test', mainmenu:mainmenu });
 });
 
 router.get('/all', function(req, res, next) {
-  res.render('./reports/report_all', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/reports/report_all', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/power', function(req, res, next) {
-  res.render('./reports/report_power', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/reports/report_power', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/fault', function(req, res, next) {
-  res.render('./reports/fault_notification', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/reports/fault_notification', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 router.get('/d3', function(req, res, next) {
-  res.render('./report_d3', { title: 'Report_d3', mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/report_d3', { title: 'Report_d3', mainmenu:mainmenu });
 });
 
 router.get('/live', function(req, res, next) {
-  res.render('./reports/report_live', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/reports/report_live', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 
