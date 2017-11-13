@@ -1443,6 +1443,12 @@
         "index" : #INDEX#, 
         "type" : #TYPE#,
         "body" : {
+          "_source" : [
+            "da_result.active_power", 
+            "da_result.ampere",
+            "da_result.power_factor",
+            "da_result.voltage"
+            ],
           "query" : {
             "term" : { "_id" : #ID# }
           }

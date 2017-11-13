@@ -13,92 +13,7 @@ block script
   script(src='/assets/scripts/page/table-managed.js')  
 
   script(src='/assets/bootstrap-treeview/bootstrap-treeview.js', type='text/javascript')
-  script(type='text/javascript', src="/scripts/analysis_pattern.js")
-
-  script.
-    $(document).ready(function() {
-      var dateFormat = 'YYYY-MM-DD';      
-      $('#sdate').val(moment().format(dateFormat));
-      $('#edate').val(moment().format(dateFormat));
-      getPatternList() // pattern dataset
-      
-
-      //- $('#btn_search').click(function() {
-      //-   d3.selectAll("svg").remove();
-      //-   getPatternList() // pattern dataset
-      //- });
-
-      $('#btnCheckedUpdate').click(function() {
-        console.log("checkbox test");
-        //updateCheckedAll();
-        var checkbox = $("input[name=patternChk]:checked");
-        var numOfCheck = $("input[name=patternChk]:checked").length;
-        console.log(numOfCheck);
-        
-        if(numOfCheck == 0) {
-          console.log("There is no checked item");
-        }
-        else{
-          if(confirm(numOfCheck + "개 항목에 대해 일괄저장 하시겠습니까?")){
-            var id = $('#lblCreatedDate').text();
-            var queryBody = {};
-            var tr = checkbox.parent().parent();
-            var fG = tr.children().eq(1).text();
-            queryBody[fG] = {};
-
-            checkbox.each(function(i) {
-              var td = tr.eq(i).children();
-              var cN = td.eq(2).text();
-              queryBody[fG][cN] = td.eq(3).children().val();
-            });
-
-            console.log(queryBody);
-
-            $.ajax({
-              url: "/analysis/restapi/pattern_info/" + id + "/_update",
-              dataType: "json", type: "POST", data: queryBody,
-              success: function(result) {
-                alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
-                if (result.rtnCode.code == "D002") {
-                  var nodeInfo = $('#patternTree').treeview('getSelected');
-                  loadPatternData(id, nodeInfo[0]);
-                }
-              },
-              error: function(req, status, err) {
-                $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-              }
-            });
-          }
-        }
-      });
-
-      
-      // Click creation date
-      clickLinkFunc = function(link) {        
-        //d3.selectAll("svg").remove();
-        var creationDate = link.innerText || link.textContent;
-        //- //$('#creationDate').val(creationDate);
-        //- $("#lblCreatedDate").empty();
-        //- $("#lblCreatedDate").append(creationDate);
-
-        //- console.log(creationDate);
-        //- d3.selectAll("svg").remove();
-        loadPatternData(creationDate);
-      };
-
-      
-
-      // getPatternList();  
-
-      Metronic.init(); // init metronic core componets
-      eyelinkLayout.init(); // init eyelinklayout
-      QuickSidebar.init(); // init quick sidebar
-      Layout.init(); // init layout
-      Demo.init(); // init index page
-      ComponentsPickers.init();
-      TableManaged.init();
-      ComponentsDropdowns.init();
-    });
+  script(type='text/javascript', src="/efsm/scripts/analysis_pattern.js")
 
 block content
   .container-fluid
@@ -136,29 +51,29 @@ block content
             .portlet-title
               .caption.font-dark
                 span.caption-subject.bold.uppercase Pattern list
-                span.caption-helper  By Created date
+                //- span.caption-helper  By Created date
             .portlet-body
-              .scroller(style='height: 730px;', data-always-visible='1', data-rail-visible='0')
+              .scroller(style='height: 600px;', data-always-visible='1', data-rail-visible='0')
                 table#patternList.table.table-hover.table-light
         .col-md-2
-          .portlet.light.bordered.tasks-widget(style='height:730px;')
+          .portlet.light.bordered.tasks-widget
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Pattern Group
-                span.caption-helper  Created Patterns at  
+                //- span.caption-helper  Created Patterns at  
                 label#lblCreatedDate  
             .portlet-body
               .scroller(style='height: 600px;', data-always-visible='1', data-rail-visible='0')
                 #patternTree
         .col-md-4
-          .portlet.light(style='height:730px;')
+          .portlet.light
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Patterns
-                span.caption-helper  Detail information about selected patterns
+                span.caption-helper  of group : 
+                label#lblGroup.control-label.bold parent - child node
               .tools
-                button#btnCheckedUpdate.btn.blue
-                  i.fa  checked update
+                button#btnBatchUpdate.btn.btn-default.blue(type='button') Batch update
             .portlet-body              
               #sample
         .col-md-4
@@ -177,16 +92,3 @@ block content
               //- 차트 들어갈 부분
               .chart(style='height:500px;')
                 #patternChart
-        .col-md-12
-          .portlet.light.bordered
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-green-haze Process List
-                span.caption-helper
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-print
-                  |  Print
-                a.collapse(href='javascript:;')
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
-            #sample
