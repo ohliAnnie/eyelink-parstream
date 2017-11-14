@@ -1,40 +1,56 @@
-
-.container {
-  text-align: center;
-}
 .container div {
-  display: inline-block;
-  padding: 20px;
-  width: 50vw;
+ display: inline-block;
+  width: 20vw;
 }
 
-.rbc-label-start {
-  font-family: fontawesome;
-  font-weight: bold;
-  font-size: 30px;
+svg {
+  font: 14px 'Open Sans';
 }
 
-text{
-  font: 200px Verdana, Helvetica, Arial, sans-serif;
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
 }
 
-tspan{
-  fill: red;
-  font-weight: bold
+.axis text {
+  fill: #000;
 }
 
-.rbc-center-text {
-  font-family: 'Roboto', 'Myriad Set Pro', 'Lucida Grande', 'Helvetica Neue', Helvetica, Arial;
-  fill: white;
-  font-size: 200%;
+.axis .tick line {
+  stroke: rgba(0, 0, 0, 0.1);
 }
 
-.calories .rbc-center-text-line0 {
-  font-size: 200%;
+.oline,
+.legend .oline {
+  fill: none;
+  stroke: #000;
+  stroke-width: 3;
 }
-.calories .rbc-center-text-line1 {
-  font-size: 90px;
+
+.aline,
+.legend .aline {
+  fill: none;
+  stroke: #000;
+  stroke-width: 3;
 }
-.gpa .rbc-center-text-line0 {
-  font-size: 70px;
+
+.pline,
+.legend .pline {
+  fill: none;
+  stroke: #000;
+  stroke-width: 3;
+}
+
+.qline,
+.legend .qline {
+  fill: none;
+  stroke: #000;
+  stroke-width: 3;
+}
+
+.legend .legend-bg {
+  fill: rgba(0, 0, 0, 0.5);
+  stroke: rgba(0, 0, 0, 0.5);
 }
