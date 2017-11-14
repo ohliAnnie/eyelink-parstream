@@ -10,45 +10,15 @@ $(document).ready(function() {
     getPatternList(); // pattern dataset
   });
 
-
-  /// update button click event ///
-  $(".updateBtn").click(function(){
-    var updateBtn = $(this);
-    var td = updateBtn.parent().parent().children();
-    console.log(td.eq(1).text());
-    console.log(updateBtn.closest("tr"));
-
-    if(confirm("수정 하시겠습니까?")) {
-      var id = creationDate;
-      var queryBody = {};
-      var fG = td.eq(1).text();           // Factor Group
-      var cN = td.eq(2).text();           // cluster No
-      var sV = td.eq(3).children().val(); // status Value
-      queryBody[fG] = {};
-      queryBody[fG][cN] = sV;
-      
-      var data = queryBody;
-      var in_data = {url: "/analysis/restapi/pattern_info/", type: "POST", data: data};
-      ajaxTypeData(in_data, function(result) {
-        if (result.rtnCode.code == "0000") {
-          var nodeInfo = $('#patternTree').treeview('getSelected');
-          loadPatternData(id, nodeInfo[0]);
-        }
-      });
-    }
-  });
-
-  $('#btnCheckedUpdate').click(function() {
-    console.log("checkbox test");
+  $('#btnBatchUpdate').click(function() {
     //updateCheckedAll();
     var checkbox = $("input[name=patternChk]:checked");
     var numOfCheck = $("input[name=patternChk]:checked").length;
-    console.log(numOfCheck);
-    
+    console.log(checkbox);
+
     if(numOfCheck == 0) {
       console.log("There is no checked item");
-    }
-    else{
+    } else {
       if(confirm(numOfCheck + "개 항목에 대해 일괄저장 하시겠습니까?")){
         var id = $('#lblCreatedDate').text();
         var queryBody = {};
@@ -61,21 +31,12 @@ $(document).ready(function() {
           var cN = td.eq(2).text();
           queryBody[fG][cN] = td.eq(3).children().val();
         });
-
-        console.log(queryBody);
-
-        $.ajax({
-          url: "/analysis/restapi/pattern_info/" + id + "/_update",
-          dataType: "json", type: "POST", data: queryBody,
-          success: function(result) {
-            alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
-            if (result.rtnCode.code == "D002") {
-              var nodeInfo = $('#patternTree').treeview('getSelected');
-              loadPatternData(id, nodeInfo[0]);
-            }
-          },
-          error: function(req, status, err) {
-            $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+        var data = queryBody;
+        var in_data = {url: "/analysis/restapi/pattern_info/" + id + "/_update", type: "POST", data: data};
+        ajaxTypeData(in_data, function(result){
+          if (result.rtnCode.code == "0000") {
+            var nodeInfo = $('#patternTree').treeview('getSelected');
+            loadPatternData(id, nodeInfo[0]);
           }
         });
       }
@@ -249,13 +210,13 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
       if (parentNodeData[cno].status == "undefined"){
         sb.append('<tr><td><input type="checkbox" name="patternChk" ></td>');
         sb.append('<td><a class="clickClustNo">' + cno + '</td>');
-        sb.append('<td><a class="clickMasterCno">' + parentNodeData[cno].masterCN + '</td>');
+        sb.append('<td>' + parentNodeData[cno].masterCN + '</td>');
         sb.append('<td><select name="status">' + selectTag + '</td>');
-        sb.append('<td><a class="btn default btn-xs balck"><i class="fa fa-edit"></i> Update</a></td></tr>');
+        sb.append('<td><input type="button" class="updateBtn" value="Update"/></td></tr>');
       } else {
         sb.append('<tr><td></td>');
         sb.append('<td><a class="clickClustNo">' + cno + '</td>');
-        sb.append('<td><a class="clickMasterCno">' + parentNodeData[cno].masterCN + '</td>');
+        sb.append('<td>' + parentNodeData[cno].masterCN + '</td>');
         sb.append('<td><select name="status">' + selectTag + '</td>');
         sb.append('<td></td></tr>');
       }
@@ -269,13 +230,13 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
         if (parentNodeData[cno].status == "undefined"){
           sb.append('<tr><td><input type="checkbox" name="patternChk" ></td>');
           sb.append('<td><a class="clickClustNo">' + cno + '</td>');
-          sb.append('<td><a class="clickMasterCno">' + parentNodeData[cno].masterCN + '</td>');
+          sb.append('<td>' + parentNodeData[cno].masterCN + '</td>');
           sb.append('<td><select name="status" class="form-control input-small select2me form-md-line-input">' + selectTag + '</td>');
-          sb.append('<td><a class="btn default btn-xs balck"><i class="fa fa-edit"></i> Update</a></td></tr>');
+          sb.append('<td><input type="button" class="updateBtn" value="Update"/></td></tr>');
         } else {
           sb.append('<tr><td></td>');
           sb.append('<td><a class="clickClustNo">' + cno + '</td>');
-          sb.append('<td><a class="clickMasterCno">' + parentNodeData[cno].masterCN + '</td>');
+          sb.append('<td>' + parentNodeData[cno].masterCN + '</td>');
           sb.append('<td><select name="status">' + selectTag + '</td>');
           sb.append('<td></td></tr>');
         }
@@ -295,76 +256,76 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
 
 
   $('.clickClustNo').click(function(){
-    var CN = $(this)[0].innerText || $(this)[0].textContent;
-    var target = "da_result." + parentNode + "." + CN + ".center";
+    var row = $(this).closest('tr');
+    var CN = row[0].cells[1].innerText;
+    var masterCN = row[0].cells[2].innerText;
+    d3.selectAll("svg").remove();
     
-    var data = {id : creationDate, target : target};
-    var in_data = {url: "/analysis/restapi/getClusterPattern", type: "GET", data: data};
-    ajaxTypeData(in_data, function(result) {
-      if (result.rtnCode.code == "0000") {
-        var d = result.rtnData.da_result;
-        var graphData = d[parentNode][CN]["center"];
-        var set = [];
-        var maxval = 0;
-        var minval = 1000;
+    var masterTarget = "da_result." + parentNode + "." + masterCN + ".center";
+    getGraphData(test, creationDate, parentNode, CN);
 
-        console.log(graphData);
-        for (i=0; i<graphData.length; i++) {
-          set.push({ x : i, y : graphData[i]});
-          if (graphData[i] > maxval) {
-            maxval = graphData[i];
-          } else if(graphData[i] < minval) {
-            minval = graphData[i];
-          }
-        }
-        console.log(set);
-        console.log(minval, maxval);
-
-        d3.selectAll("svg").remove();
-        drawPatternChart(set, minval, maxval);
-      }
-    });
+    function test(set, minval, maxval){
+      drawPatternChart(set, minval, maxval);
+    }
   });
 
-  $('.clickMasterCno').click(function(){
-    var CN = $(this)[0].innerText || $(this)[0].textContent;
-    if (CN != 'unknown'){
-      var target = "da_result." + parentNode + "." + CN + ".center";
-      var data = {id : "master", target : target};
-      var in_data = {url: "/analysis/restapi/getClusterPattern", type: "GET", data: data};
+  /// update button click event ///
+  $('.updateBtn').click(function(){
+    var updateBtn = $(this);
+    var td = updateBtn.parent().parent().children();
+    console.log(td.eq(1).text());
+    console.log(updateBtn.closest("tr"));
+
+    if(confirm("수정 하시겠습니까?")) {
+      var id = creationDate;
+      var queryBody = {};
+      var fG = td.eq(1).text();           // Factor Group
+      var cN = td.eq(2).text();           // cluster No
+      var sV = td.eq(3).children().val(); // status Value
+      queryBody[fG] = {};
+      queryBody[fG][cN] = sV;
+      
+      var data = queryBody;
+      var in_data = {url: "/analysis/restapi/pattern_info/", type: "POST", data: data};
       ajaxTypeData(in_data, function(result) {
         if (result.rtnCode.code == "0000") {
-          var d = result.rtnData.da_result;
-          var graphData = d[parentNode][CN]["center"];
-          var set = [];
-          var maxval = 0;
-          var minval = 1000;
-
-          console.log(graphData);
-          for (i=0; i<graphData.length; i++) {
-            set.push({ x : i, y : graphData[i]});
-            if (graphData[i] > maxval) {
-              maxval = graphData[i];
-            } else if(graphData[i] < minval) {
-              minval = graphData[i];
-            }
-          }
-          console.log(set);
-          console.log(minval, maxval);
-
-          d3.selectAll("svg").remove();
-          drawPatternChart(set, minval, maxval);
+          var nodeInfo = $('#patternTree').treeview('getSelected');
+          loadPatternData(id, nodeInfo[0]);
         }
       });
-    } else {
-      d3.selectAll("svg").remove();
     }
-    
   });
-
-
 }
 
+
+function getGraphData(callback, id, factName, clusterNo) {
+  var target = "da_result." + factName + "." + clusterNo + ".center";
+  var data = {id : id, target : target};
+  var in_data = {url: "/analysis/restapi/getClusterPattern", type: "GET", data: data};
+  
+  ajaxTypeData(in_data, function(result) {
+    if (result.rtnCode.code == "0000") {
+      var d = result.rtnData.da_result;
+      console.log("d", d);
+      var graphData = d[factName][clusterNo]["center"];
+      var set = [];
+      var maxval = 0;
+      var minval = 1000;
+
+      for (i=0; i<graphData.length; i++) {
+        set.push({ x : i, y : graphData[i]});
+        if (graphData[i] > maxval) {
+          maxval = graphData[i];
+        } else if(graphData[i] < minval) {
+          minval = graphData[i];
+        }
+      }
+      if (callback) {
+        callback(set, minval, maxval);
+      }
+    }
+  });
+}
 
 ///// status select option //////
 function statusCheck(statechk) {
@@ -384,6 +345,9 @@ function statusCheck(statechk) {
 
 function drawPatternChart(dataset, minval, maxval) {
   // 그래프를 그려야 함!!!!!
+  console.log("dataset", dataset);
+  console.log("minval", minval);
+  console.log("maxval", maxval);
   var margin = {top: 10, right: 20, bottom: 20, left: 40},
     width = (window.innerWidth*0.3) - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
