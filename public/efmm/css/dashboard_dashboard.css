@@ -1,0 +1,40 @@
+
+.container {
+  text-align: center;
+}
+.container div {
+  display: inline-block;
+  padding: 20px;
+  width: 50vw;
+}
+
+.rbc-label-start {
+  font-family: fontawesome;
+  font-weight: bold;
+  font-size: 30px;
+}
+
+text{
+  font: 200px Verdana, Helvetica, Arial, sans-serif;
+}
+
+tspan{
+  fill: red;
+  font-weight: bold
+}
+
+.rbc-center-text {
+  font-family: 'Roboto', 'Myriad Set Pro', 'Lucida Grande', 'Helvetica Neue', Helvetica, Arial;
+  fill: white;
+  font-size: 200%;
+}
+
+.calories .rbc-center-text-line0 {
+  font-size: 200%;
+}
+.calories .rbc-center-text-line1 {
+  font-size: 90px;
+}
+.gpa .rbc-center-text-line0 {
+  font-size: 70px;
+}
