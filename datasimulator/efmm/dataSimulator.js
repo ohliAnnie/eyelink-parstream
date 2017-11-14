@@ -101,6 +101,10 @@ function makeListData(fileName, jData) {
       jsonData = item;
     }
   };
+
+  // ElasticSearch dateType으로 날짜 형식을 변환
+  changeDate(jData);
+
   logger.debug('name : %s, exist : %s', fileName, isExist);
   if (isExist == true) {
     jsonData.listData.push(jData);
@@ -122,11 +126,33 @@ function makeListData(fileName, jData) {
 
 }
 
+// ElasticSearch dateType으로 날짜 형식을 변환
+function changeDate(jData) {
+  jData.dtTransmitted = convertDateFormat(jData.dtTransmitted);
+  for (var i=0; i<jData.data.length; i++) {
+    jData.data[i].dtSensed = convertDateFormat(jData.data[i].dtSensed);
+  }
+}
+
+function convertDateFormat(val) {
+  var v;
+  v = val.substring(0,4) + '/' +
+    val.substring(4,6) + '/' +
+    val.substring(6,8);
+  if (val.length >= 14) {
+    v = v + ' ' +
+      val.substring(8,10) + ':' +
+      val.substring(10,12) + ':' +
+      val.substring(12,14);
+  }
+  return v;
+}
+
+// ElasticSearch에 입력을 위한 IndexName을 구성.
+//   ex) efmm_notching_oee_2017.11.24
 function makeIndexName(jData) {
   var indexName = 'EFMM_' + jData.flag.toUpperCase() + '_' + jData.sensorType.toUpperCase();
-  var dt = '-' + jData.dtTransmitted.substring(0,4) + '.' +
-    jData.dtTransmitted.substring(4,6) + '.' +
-    jData.dtTransmitted.substring(6,8);
+  var dt = '-' + jData.dtTransmitted.substring(0,10).replace(/\//g, '.');
   return {
     indexName : CONSTS.SCHEMA_EFMM[indexName].INDEX + dt,
     typeName : CONSTS.SCHEMA_EFMM[indexName].TYPE
