@@ -1,10 +1,11 @@
-var CONSTS = require('./consts');
-var Utils = require('./util');
+var logger = global.log4js.getLogger('nodeDashboard');
+var CONSTS = require('../consts');
+var Utils = require('../util');
 var express = require('express');
 require('date-utils');
 var router = express.Router();
 
-var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
+var QueryProvider = require('../dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
 var queryProvider = new QueryProvider();
 
 var mainmenu = {dashboard:'open selected', timeseries:'', reports:'', analysis:'', management:'', settings:''};

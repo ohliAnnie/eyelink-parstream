@@ -1,10 +1,11 @@
-var CONSTS = require('./consts');
-var Utils = require('./util');
+var logger = global.log4js.getLogger('nodeAnalysis');
+var CONSTS = require('../consts');
+var Utils = require('../util');
 var express = require('express');
 var fs = require('fs');
 var net = require('net');
 var router = express.Router();
-var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
+var QueryProvider = require('../dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
 
 var queryProvider = new QueryProvider();
 
@@ -14,27 +15,27 @@ var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis: 'open selecte
 /* GET reports page. */
 router.get('/', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./analysis/clustering', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/analysis/clustering', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/clustering', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./analysis/clustering', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/analysis/clustering', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/cluster_detail', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./analysis/cluster_detail', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/analysis/cluster_detail', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/clusteringPop', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./analysis/clustering_popup', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/analysis/clustering_popup', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/runalaysis', function(req, res, next) {
   console.log(_rawDataByDay);
-  res.render('./analysis/runanalysis', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/analysis/runanalysis', { title: global.config.productname, mainmenu:mainmenu});
 });
 /*router.get('/clustering', function(req, res, next) {
    var in_data = {};
@@ -282,7 +283,5 @@ function writeDataToDA(socket, data, callback){
     callback();
   }
 }
-
-
 
 module.exports = router;

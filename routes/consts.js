@@ -11,10 +11,10 @@ define("CONFIG", {
 });
 
 define("SCHEMA_EFMM", {
-	"EFMM_NOTCHING_OEE": {'INDEX' : 'efsm_notching_oee', 'TYPE' : 'oee'},
-	"EFMM_NOTCHING_STATUS": {'INDEX' : 'efsm_notching_status', 'TYPE' : 'status'},
-	"EFMM_STACKING_OEE": {'INDEX' : 'efsm_stacking_oee', 'TYPE' : 'oee'},
-	"EFMM_STACKING_STATUS": {'INDEX' : 'efsm_stacking_status', 'TYPE' : 'status'}
+	"EFMM_NOTCHING_OEE": {'INDEX' : 'efmm_notching_oee', 'TYPE' : 'oee'},
+	"EFMM_NOTCHING_STATUS": {'INDEX' : 'efmm_notching_status', 'TYPE' : 'status'},
+	"EFMM_STACKING_OEE": {'INDEX' : 'efmm_stacking_oee', 'TYPE' : 'oee'},
+	"EFMM_STACKING_STATUS": {'INDEX' : 'efmm_stacking_status', 'TYPE' : 'status'}
 });
 
 define("SCHEMA", {

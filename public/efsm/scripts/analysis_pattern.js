@@ -4,7 +4,6 @@ $(document).ready(function() {
   $('#edate').val(moment().format(dateFormat));
   getPatternList() // pattern dataset
 
-
   $('#btn_search').on('click', function(){
     d3.selectAll("svg").remove();
     getPatternList(); // pattern dataset
