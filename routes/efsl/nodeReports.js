@@ -40,7 +40,7 @@ router.get('/fault', function(req, res, next) {
 });
 
 router.get('/d3', function(req, res, next) {
-  res.render('./'+global.config.pcode+'/report_d3', { title: 'Report_d3', mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/reports/d3', { title: 'Report_d3', mainmenu:mainmenu });
 });
 
 router.get('/live', function(req, res, next) {
