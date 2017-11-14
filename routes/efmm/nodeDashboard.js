@@ -13,6 +13,19 @@ var mainmenu = {dashboard:'open selected', timeseries:'', reports:'', analysis:'
 /* GET reports page. */
 router.get('/', function(req, res, next) {
   // console.log(_rawDataByDay);
+  var outdata = {
+    title: global.config.productname,
+    mainmenu : mainmenu
+  }
+
+  logger.info('mainmenu : %s, outdata : %s', mainmenu.dashboard, JSON.stringify(outdata));
+  logger.debug('mainmenu : %s, outdata : %s', mainmenu.dashboard, JSON.stringify(outdata));
+  logger.error('mainmenu : %s, outdata : %s', mainmenu.dashboard, JSON.stringify(outdata));
+  res.render(global.config.pcode + '/dashboard/dashboard', outdata);
+});
+
+router.get('/test', function(req, res, next) {
+  // console.log(_rawDataByDay);
   mainmenu.dashboard = ' open selected';
 
   mainmenu.timeseries = '';
@@ -24,7 +37,8 @@ router.get('/', function(req, res, next) {
   logger.info('mainmenu : %s, outdata : %s', mainmenu.dashboard, JSON.stringify(outdata));
   logger.debug('mainmenu : %s, outdata : %s', mainmenu.dashboard, JSON.stringify(outdata));
   logger.error('mainmenu : %s, outdata : %s', mainmenu.dashboard, JSON.stringify(outdata));
-  res.render(global.config.pcode + '/dashboard/dashboard', outdata);
+  res.render(global.config.pcode + '/dashboard/test', outdata);
 });
+
 
 module.exports = router;
