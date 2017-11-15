@@ -140,7 +140,9 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
   var status = svgSet(svg, 'g', 'status', 500 , 0);
 
   rectLegendBG(status, 'status-bg', statusWidth, statusHeight);
-  textLegend(status, 20-pattern[id].status.status.length, 15, pattern[id].status.status);
+  console.log(pattern[id].status.status.length  )
+  var length = (pattern[id].status.status.length<8)?pattern[id].status.status.length:pattern[id].status.status.length*1.3;
+  textLegend(status, 20-length, 15, pattern[id].status.status);
 
   status.append('circle')    
     .attr('class', 'sign')
