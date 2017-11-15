@@ -111,29 +111,29 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
     .attr('class', 'y axis')   
     .call(y.axis = d3.svg.axis().scale(y).orient('left'));
 
-  var legendWidth  = 380, legendHeight = 55;
+  var legendWidth  = 385, legendHeight = 55;
 
   var legend = svgSet(svg, 'g', 'legend', margin.left , 0);
 
   rectLegendBG(legend, 'legend-bg', legendWidth, legendHeight);
 
   rectLegend(legend, 'inner', 55, 15, 10, 8);
-  textLegend(legend, 103, 19, 'lower-upper');
+  textLegend(legend, 75, 19, 'lower-upper');
 
   rectLegend(legend, 'outer', 55, 15, 10, 33);
-  textLegend(legend, 95, 43, 'min-max');
+  textLegend(legend, 75, 43, 'min-max');
 
   pathLegend(legend, 'compareline', 'M150,15L205,15');
-  textLegend(legend, 230, 19, 'Pattern');
+  textLegend(legend, 215, 19, 'Pattern');
 
   pathLegend(legend, 'valueline', 'M150,40L205,40');
-  textLegend(legend, 225, 43, 'Data');
+  textLegend(legend, 215, 43, 'Data');
 
   pathLegend(legend, 'compareline2', 'M265,15L320,15');
-  textLegend(legend, 348, 19, 'Pattern2');
+  textLegend(legend, 330, 19, 'Pattern2');
 
   pathLegend(legend, 'compareline3', 'M265,40L320,40');
-  textLegend(legend, 348, 43, 'Pattern3');
+  textLegend(legend, 330, 43, 'Pattern3');
 
   var statusWidth  = 63, statusHeight = 55;
 
