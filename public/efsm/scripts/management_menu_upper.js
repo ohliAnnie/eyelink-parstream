@@ -175,7 +175,6 @@ function getMenuList(upcode, oldCode){
 function updateMenu(id, code, name, upcode){
   var data = { id : id, code : code, name : name, upcode : upcode };
   var in_data = { url : "/management/menu/" + code, type : "PUT", data : data };
-  ajaxTypeData(in_data, function(result){  
-    console.log(result);
+  ajaxTypeData(in_data, function(result){      
   });
 }

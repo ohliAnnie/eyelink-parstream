@@ -11,17 +11,11 @@ $(document).ready(function() {
 function drawChart() {  
   var sdate = $('#sdate').val();    
   var edate = $('#edate').val();  
-  $.ajax({
-    url: "/reports/restapi/getJiraAcc",
-    dataType: "json",
-    type: "get",
-    data: { sdate : sdate, edate : edate }, 
-    success: function(result) {   
-      if (result.rtnCode.code == "0000") {                     
-        drawAll(result.rtnData, sdate, edate, result.minTime, result.maxTime);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
+  var data = { sdate : sdate, edate : edate };
+  var in_data = { url : "/reports/restapi/getJiraAcc", type : "GET", data : data };  
+  ajaxTypeData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {                     
+      drawAll(result.rtnData, sdate, edate, result.minTime, result.maxTime);
     }
   });
 }
@@ -304,5 +298,5 @@ function drawAll(data, sdate, edate, minTime, maxTime) {
     serverCount.stack(typeGroup, term[i], sel_stack(i));
   }  
 
-  dc.renderAll();
+  ;
 }

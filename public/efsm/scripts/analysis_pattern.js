@@ -8,41 +8,7 @@ $(document).ready(function() {
     d3.selectAll("svg").remove();
     getPatternList(); // pattern dataset
   });
-
-  $('#btnBatchUpdate').click(function() {
-    //updateCheckedAll();
-    var checkbox = $("input[name=patternChk]:checked");
-    var numOfCheck = $("input[name=patternChk]:checked").length;
-    console.log(checkbox);
-
-    if(numOfCheck == 0) {
-      console.log("There is no checked item");
-    } else {
-      if(confirm(numOfCheck + "개 항목에 대해 일괄저장 하시겠습니까?")){
-        var id = $('#lblCreatedDate').text();
-        var queryBody = {};
-        var tr = checkbox.parent().parent();
-        var fG = tr.children().eq(1).text();
-        queryBody[fG] = {};
-
-        checkbox.each(function(i) {
-          var td = tr.eq(i).children();
-          var cN = td.eq(2).text();
-          queryBody[fG][cN] = td.eq(3).children().val();
-        });
-        var data = queryBody;
-        var in_data = {url: "/analysis/restapi/pattern_info/" + id + "/_update", type: "POST", data: data};
-        ajaxTypeData(in_data, function(result){
-          if (result.rtnCode.code == "0000") {
-            var nodeInfo = $('#patternTree').treeview('getSelected');
-            loadPatternData(id, nodeInfo[0]);
-          }
-        });
-      }
-    }
-  });
 });
-
 
 
 function getPatternList() {
@@ -54,6 +20,7 @@ function getPatternList() {
   var data = { startDate: sdate, endDate: edate, masterId: masterId };
   var in_data = {url: "/analysis/restapi/getAnomalyPatternList", type: "GET", data: data};
   ajaxTypeData(in_data, function(result){
+    console.log('getPatternList[CODE]:', result.rtnCode.code);
     if (result.rtnCode.code == "0000") {
       drawPatternList(result.rtnData, nodeInfo);
     }
@@ -75,38 +42,39 @@ function drawPatternList(patternLists, nodeInfo) {
     }
     $('#patternList').append(sb.toString());
   });
-  $("#lblCreatedDate").empty();
-  $("#lblCreatedDate").append(createdDate);
-  $("#lblCreatedDate").hide();
+
   loadPatternData(createdDate, nodeInfo);
 
   // 생성된 패턴ID 클릭 이벤트
   $('.clickPatternId').on('click', function(){
     var creationDate = $(this)[0].innerText || $(this)[0].textContent;
-    $("#sample").empty();
-    d3.selectAll("svg").remove();
-    $("#lblCreatedDate").empty();
-    $("#lblCreatedDate").append(creationDate);
-    $("#lblCreatedDate").hide();
-    $("#lblGroup").empty();
-    $("#lblGroup").append('parent - child node');
-
     loadPatternData(creationDate, nodeInfo);
   });
 }
 
 
-function loadPatternData(creationDate, nodeInfo) {
-  var data = {id : creationDate};
+function loadPatternData(createdDate, nodeInfo) {
+  console.log('nodeInfo',nodeInfo);
+  $("#lblCreatedDate").empty();
+  $("#lblCreatedDate").append(createdDate);
+  $("#lblCreatedDate").hide();
+  $("#lblGroup").empty();
+  $("#lblGroup").append('parent - child node');
+  d3.selectAll("svg").remove();
+  $("#sample_2").dataTable().fnClearTable();
+
+  var data = {id : createdDate};
   var in_data = {url: "/analysis/restapi/getPatterns", type: "GET", data: data};
   ajaxTypeData(in_data, function(result){
+    console.log('loadPatternData[CODE]:', result.rtnCode.code);
     if (result.rtnCode.code == "0000") {
       var d = result.patternData;
       var treeData = sortObject(d);
-      drawPatternTree(creationDate, treeData, nodeInfo);
+      drawPatternTree(createdDate, treeData, nodeInfo);
     }
   });
 }
+
 
 function sortObject(obj) {
   var sorted = {};
@@ -138,14 +106,15 @@ function drawPatternTree(creationDate, treeData, nodeInfo) {
     }
   }
 
-  /// 노트 선택시 이벤트
+  /// 노드 선택시 이벤트
   $('#patternTree').on('nodeSelected', function(event, node){
-    console.log(node.href + ' is selected');
+    console.log('selected node: ', node.href);
     var nodeText = node.href.replace(/#/g,'');
     nodeText = nodeText.split('-');
     var parentNode = nodeText[0];
     var childNode = nodeText[1];
     drawPatterns(creationDate, parentNode, childNode, treeData);
+    $("#sample_2").dataTable().fnPageChange('first');
   });
 }
 
@@ -162,7 +131,6 @@ function getNodeData(treeData, group){
     else { undefineCnt += 1; } //undefined
   }
   var totalCnt = normalCnt + cautionCnt + anomalyCnt + undefineCnt;
-
   var nodeData = {'text': group, href: '#'+ group,
     icon: "glyphicon glyphicon-copyright-mark",
     tags: [totalCnt],
@@ -176,20 +144,22 @@ function getNodeData(treeData, group){
   return nodeData;
 }
 
+
 function drawPatterns(creationDate, parentNode, childNode, patternData){
-  d3.selectAll("svg").remove();  
+  d3.selectAll("svg").remove();
   $("#sample").empty();
   $('#lblGroup').empty();
   $('#lblGroup').append(parentNode);
   if (childNode != undefined) {
     $('#lblGroup').append(' - ', childNode);
   }
-
+  console.log("patternData : ", patternData[parentNode]);
   var selectedNodeData = sortObject(patternData[parentNode]);
   var tableTag = getPatternsData(creationDate, parentNode, childNode, selectedNodeData);
 
   $('#sample').append(tableTag.toString());
   TableManaged.init();
+
 
   ///// Event /////
   // Checkbox event
@@ -197,64 +167,121 @@ function drawPatterns(creationDate, parentNode, childNode, patternData){
     $('input:checkbox').not(this).prop('checked', this.checked); });
 
   // click event about cluster number in patterns table
-  $('.clickClustNo').click(function(){
+  $('#sample_2').on('click', '.clickClustNo', function(){
+    d3.selectAll("svg").remove();
     var row = $(this).closest('tr');
-    
     var CN = row[0].cells[1].innerText;
     var masterCN = row[0].cells[2].innerText;
-    d3.selectAll("svg").remove();
-
     var tgtCluster = "da_result." + parentNode + "." + CN + ".center"; 
     var tgtMaster = "da_result." + parentNode + "." + masterCN + ".center";
-    console.log('target:', tgtCluster, 'master:', tgtMaster);
+    console.log('[cluster]', CN, '| [master]', masterCN);
 
     var data = {id : creationDate, targetCluster : tgtCluster, targetMaster: tgtMaster};
     var in_data = {url: "/analysis/restapi/getClusterPattern", type: "GET", data: data};
 
     ajaxTypeData(in_data, function(result) {
+      console.log('clusterClick[CODE]: ', result.rtnCode.code);
       if (result.rtnCode.code == "0000") {
         var patternGraph = result.patternData[parentNode][CN]["center"];
         var masterGraph;
         if (result.masterData == null) { masterGraph = null; }
         else { masterGraph = result.masterData[parentNode][masterCN]["center"]; }
-
-        console.log("pData: ", patternGraph);
-        console.log("mData: ", masterGraph);
-
         var graphData = getGraphData(patternGraph, masterGraph);
-        
         drawPatternChart(graphData);
       }
     });
   });
 
   /// update button click event ///
-  $('.updateBtn').click(function(){
-    var updateBtn = $(this);
-    var td = updateBtn.parent().parent().children();
-    console.log(td.eq(1).text());
-    console.log(updateBtn.closest("tr"));
+  $('#sample_2').on('click', '.updateBtn', function(){
+    var row = $(this).closest('tr');
+    console.log(row);
+    var cN = row[0].cells[1].innerText;
+    var sV = row.find("option:selected").text(); // status Value
+    var queryBody = {};
+    queryBody[parentNode] = {};
+    queryBody[parentNode][cN] = {};
+    queryBody[parentNode][cN].status = sV;
+    var updateDate = moment().format('YYYY-MM-DD');
+    queryBody[parentNode][cN].updateDate = updateDate;
 
-    if(confirm("수정 하시겠습니까?")) {
-      var id = creationDate;
-      var queryBody = {};
-      var fG = td.eq(1).text();           // Factor Group
-      var cN = td.eq(2).text();           // cluster No
-      var sV = td.eq(3).children().val(); // status Value
-      queryBody[fG] = {};
-      queryBody[fG][cN] = sV;
-      
-      var data = queryBody;
-      var in_data = {url: "/analysis/restapi/pattern_info/", type: "POST", data: data};
-      ajaxTypeData(in_data, function(result) {
-        if (result.rtnCode.code == "0000") {
-          var nodeInfo = $('#patternTree').treeview('getSelected');
-          loadPatternData(id, nodeInfo[0]);
-        }
-      });
+    var pageNo = ($('#sample_2').dataTable().fnPagingInfo().iPage);
+    console.log(pageNo);
+    console.log(queryBody);
+
+    if (creationDate == 'master') {
+      if (confirm("Do you want to update ?")) {
+        modifyPattern(creationDate, queryBody);
+      }
+    } else {
+      if (confirm("Do you want to register as a new pattern ?")) {
+        insertNewPattern(creationDate, queryBody);
+      }
     }
   });
 
+  $('#btnBatchUpdate').click(function() {
+    //updateCheckedAll();
+    var nodes =  $('#sample_2').dataTable().fnGetNodes();
+    var checkbox = $("input[name=patternChk]:checked", nodes).closest('tr');
+    // var numOfCheck = $("input[name=patternChk]:checked", nodes).length;
+    var numOfCheck = checkbox.length;
+
+    console.log(checkbox);
+    console.log("num of checked:",numOfCheck);
+
+    if(numOfCheck == 0) {
+      console.log("There is no checked item");
+    } else {
+      if(confirm(numOfCheck + "개 항목에 대해 일괄저장 하시겠습니까?")){
+        var id = $('#lblCreatedDate').text();
+        var queryBody = {};
+        var fG = parentNode;
+        var updateDate = moment().format('YYYY-MM-DD');
+        console.log('id: ', id);
+        console.log("fG: ", fG);
+        queryBody[fG] = {};
+
+        console.log(checkbox);
+        checkbox.each(function(i) {
+          
+          var cN = checkbox[i].cells[1].innerText;
+          var sV = checkbox[i]; // status Value
+          console.log(sV);
+          queryBody[fG][cN] = {};
+          queryBody[fG][cN].status = sV;
+          queryBody[fG][cN].updateDate = updateDate;
+        });
+
+        console.log(queryBody);
+
+
+        // var data = queryBody;
+        // var in_data = {url: "/analysis/restapi/pattern_info/" + id + "/_update", type: "POST", data: data};
+        // ajaxTypeData(in_data, function(result){
+        //   if (result.rtnCode.code == "0000") {
+        //     var nodeInfo = $('#patternTree').treeview('getSelected');
+        //     loadPatternData(id, nodeInfo[0]);
+        //   }
+        // });
+      }
+    }
+  });
+
+
+
+}
+
+function modifyPattern(id, data){
+  console.log("modifyPattern start");
+  var in_data = {url: "/analysis/restapi/pattern_info/" + id + "/_update", type: "POST", data: data};
+  ajaxTypeData(in_data, function(result) {
+    alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+    if (result.rtnCode.code == "D002") {
+      var nodeInfo = $('#patternTree').treeview('getSelected');
+      loadPatternData(id, nodeInfo[0]);
+    }
+  });
 }
 
 //// 선택된 패턴그룹에 대한 패턴 리스트를 보여준다.
@@ -330,37 +357,23 @@ function getGraphData(pData, mData) {
       mSet.push({ x : i, y : mData[i]});
     }
   }
-
   var minVal = Math.min.apply(null,pData, mData);
   var maxVal = Math.max.apply(null,pData, mData);
-  
   //var graphData = {};
   graphData['pSet'] = pSet;
   graphData['mSet'] = mSet;
   graphData['minVal'] = minVal;
   graphData['maxVal'] = maxVal;
 
-  console.log(graphData);
-
   return graphData;
 }
 
 
-// function updateCheckedAll() {
-// }
-
 function drawPatternChart(graphData) {
-  console.log("pattern dataset", graphData['pSet']);
-  console.log("master dataset", graphData['mSet']);
-  console.log("minval", graphData['minVal']);
-  console.log("maxval", graphData['maxVal']);
-
   var margin = {top: 10, right: 90, bottom: 10, left: 55},
-    width = (window.innerWidth*0.32) - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom;
-
+                width = (window.innerWidth*0.32) - margin.left - margin.right,
+                height = 400 - margin.top - margin.bottom;
   var xScale = d3.scale.linear().range([0, width]);
-
   var yScale = d3.scale.linear().range([height, 0]);
 
   var xAxis = d3.svg.axis()
@@ -369,7 +382,6 @@ function drawPatternChart(graphData) {
       .innerTickSize(-height)
       .outerTickSize(0)
       .tickPadding(10);
-
   var yAxis = d3.svg.axis()
       .scale(yScale)
       .orient("left")
@@ -380,8 +392,7 @@ function drawPatternChart(graphData) {
   var line = d3.svg.line()
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
-
-    var line2 = d3.svg.line()
+  var line2 = d3.svg.line()
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
 
@@ -390,108 +401,36 @@ function drawPatternChart(graphData) {
           .attr("width", width + margin.left + margin.right)
           .attr("height", height + margin.left + margin.bottom)
       .append("g")
-          .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
-    xScale.domain([0, d3.max(graphData['pSet'], function(d){ return d.x; })]);
-    yScale.domain([graphData['minVal'], graphData['maxVal']]);
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  xScale.domain([0, d3.max(graphData.pSet, function(d){ return d.x; })]);
+  yScale.domain([graphData.minVal, graphData.maxVal]);
 
   // Add the X Axis
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
 
-    // Add the Y Axis
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis);
+  // Add the Y Axis
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
 
-    svg.append("path")
-        .data([graphData['pSet']])
-        .attr("fill", "none")
-        .attr("stroke", "steelblue")
-        .attr("stroke-linejoin", "round")
-        .attr("stroke-linecap", "round")
-        .attr("stroke-width", 3)
-        .attr("d", line);
+  svg.append("path")
+      .data([graphData['pSet']])
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 3)
+      .attr("d", line);
 
-    svg.append("path")
-        .data([graphData['mSet']])
-        .attr("fill", "none")
-        .attr("stroke", "red")
-        .attr("stroke-linejoin", "round")
-        .attr("stroke-linecap", "round")
-        .attr("stroke-width", 3)
-        .attr("d", line2);
-
-  // var margin = {top: 10, right: 20, bottom: 20, left: 40},
-  //   width = (window.innerWidth*0.3) - margin.left - margin.right,
-  //   height = 400 - margin.top - margin.bottom;
-
-  // var xScale = d3.scale.linear().range([0, width]);
-
-  // var yScale = d3.scale.linear().range([height, 0]);
-
-  // var xAxis = d3.svg.axis()
-  //     .scale(xScale)
-  //     .orient("bottom")
-  //     .innerTickSize(-height)
-  //     .outerTickSize(0)
-  //     .tickPadding(10);
-
-  // var yAxis = d3.svg.axis()
-  //     .scale(yScale)
-  //     .orient("left")
-  //     .innerTickSize(-width)
-  //     .outerTickSize(0)
-  //     .tickPadding(10);
-
-  // var line = d3.svg.line()
-  //     .x(function(d) { return xScale(d.x); })
-  //     .y(function(d) { return yScale(d.y); });
-
-  //   var line2 = d3.svg.line()
-  //     .x(function(d) { return xScale(d.x); })
-  //     .y(function(d) { return yScale(d.y); });
-
-  // var svg = d3.select("#patternChart")
-  //     .append("svg")
-  //         .attr("width", width + margin.left + margin.right)
-  //         .attr("height", height + margin.left + margin.bottom)
-  //     .append("g")
-  //         .attr("transform",
-  //               "translate(" + margin.left + "," + margin.top + ")");
-  //   xScale.domain([0, d3.max(graphData['pSet'], function(d){ return d.x; })]);
-  //   yScale.domain([graphData['minVal'], graphData['maxVal']]);
-
-  // // Add the X Axis
-  //   svg.append("g")
-  //       .attr("class", "x axis")
-  //       .attr("transform", "translate(0," + height + ")")
-  //       .call(xAxis);
-
-  //   // Add the Y Axis
-  //   svg.append("g")
-  //       .attr("class", "y axis")
-  //       .call(yAxis);
-
-  //   svg.append("path")
-  //       .data([graphData['pSet']])
-  //       .attr("fill", "none")
-  //       .attr("stroke", "steelblue")
-  //       .attr("stroke-linejoin", "round")
-  //       .attr("stroke-linecap", "round")
-  //       .attr("stroke-width", 3)
-  //       .attr("d", line);
-
-  //   svg.append("path")
-  //       .data([graphData['mSet']])
-  //       .attr("fill", "none")
-  //       .attr("stroke", "red")
-  //       .attr("stroke-linejoin", "round")
-  //       .attr("stroke-linecap", "round")
-  //       .attr("stroke-width", 3)
-  //       .attr("d", line2);
+  svg.append("path")
+      .data([graphData['mSet']])
+      .attr("fill", "none")
+      .attr("stroke", "red")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 3)
+      .attr("d", line2);
 }
-
-
