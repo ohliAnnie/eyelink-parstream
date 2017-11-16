@@ -2,7 +2,7 @@ $(document).ready(function() {
   var dateFormat = 'YYYY-MM-DD';      
   $('#sdate').val(moment().format(dateFormat));
   $('#edate').val(moment().format(dateFormat));
-  getPatternList() // pattern dataset
+  getPatternList();// pattern dataset
 
   $('#btn_search').on('click', function(){
     d3.selectAll("svg").remove();
@@ -63,19 +63,15 @@ function drawPatternList(patternLists, nodeInfo) {
   patternLists.forEach(function(d) {
     d = d._id;
     var sb = new StringBuffer();
-    if (d == 'master'){
-      sb.append('<tr><th style="font-weight:bold"><a class="clickPatternId">' + d + '</th></tr>');
-    } else {
-      sb.append('<tr><td><a class="clickPatternId">' + d +'</td>');
-    }
+    sb.append('<tr><td><a class="clickPatternId">' + d + '</td></tr>');
     $('#patternList').append(sb.toString());
   });
-
-  loadPatternData(createdDate, nodeInfo);
 
   // 생성된 패턴ID 클릭 이벤트
   $('.clickPatternId').on('click', function(){
     var creationDate = $(this)[0].innerText || $(this)[0].textContent;
+    $('.clickPatternId').css({'color':'', 'font-weight': ''});
+    $(this).css({'color':'red', 'font-weight': 'bold'});
     loadPatternData(creationDate, nodeInfo);
   });
 }
@@ -89,6 +85,7 @@ function loadPatternData(createdDate, nodeInfo) {
   $("#lblGroup").append('parent - child node');
   d3.selectAll("svg").remove();
   $("#sample_2").dataTable().fnClearTable();
+  
   if($('#lblCreatedDate').text() == 'master'){
     $('#btnBatchUpdate').show();
   } else { $('#btnBatchUpdate').hide(); }
@@ -185,6 +182,7 @@ function drawPatterns(creationDate, parentNode, childNode, patternData){
   if (childNode != undefined) {
     $('#lblGroup').append(' - ', childNode);
   }
+  
   console.log("patternData : ", patternData[parentNode]);
   var selectedNodeData = sortObject(patternData[parentNode]);
   var tableTag = getPatternsData(creationDate, parentNode, childNode, selectedNodeData);
@@ -201,6 +199,9 @@ function drawPatterns(creationDate, parentNode, childNode, patternData){
   // click event about cluster number in patterns table
   $('#sample_2').on('click', '.clickClustNo', function(){
     d3.selectAll("svg").remove();
+    $('#sample_2').DataTable().$('.clickClustNo').css({'color':'', 'font-weight': ''});
+    $(this).css({'color':'red', 'font-weight': 'bold'});
+    
     var row = $(this).closest('tr');
     var CN = row[0].cells[1].innerText;
     var masterCN = row[0].cells[2].innerText;
@@ -219,6 +220,7 @@ function drawPatterns(creationDate, parentNode, childNode, patternData){
         if (result.masterData == null) { masterGraph = null; }
         else { masterGraph = result.masterData[parentNode][masterCN]["center"]; }
         var graphData = getGraphData(patternGraph, masterGraph);
+        console.log(graphData);
         drawPatternChart(graphData);
       }
     });
@@ -394,8 +396,13 @@ function getGraphData(pData, mData) {
       mSet.push({ x : i, y : mData[i]});
     }
   }
-  var minVal = Math.min.apply(null,pData, mData);
-  var maxVal = Math.max.apply(null,pData, mData);
+  var minVal = Math.min.apply(null,pData);
+  var maxVal = Math.max.apply(null,pData);
+  var mMinVal = Math.min.apply(null,mData);
+  var mMaxVal = Math.max.apply(null,mData);
+  if (minVal > mMinVal){ minVal = mMinVal};
+  if (maxVal < mMaxVal){ maxVal = mMaxVal};
+  
   //var graphData = {};
   graphData.pSet = pSet;
   graphData.mSet = mSet;
@@ -407,7 +414,7 @@ function getGraphData(pData, mData) {
 
 
 function drawPatternChart(graphData) {
-  var margin = {top: 10, right: 90, bottom: 10, left: 55},
+  var margin = {top: 30, right: 90, bottom: 30, left: 55},
                 width = (window.innerWidth*0.32) - margin.left - margin.right,
                 height = 400 - margin.top - margin.bottom;
   var xScale = d3.scale.linear().range([0, width]);
@@ -440,7 +447,7 @@ function drawPatternChart(graphData) {
       .append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
   xScale.domain([0, d3.max(graphData.pSet, function(d){ return d.x; })]);
-  yScale.domain([graphData.minVal, graphData.maxVal]);
+  yScale.domain([graphData.minVal, graphData.maxVal+(graphData.maxVal/100)]);
 
   // Add the X Axis
   svg.append("g")

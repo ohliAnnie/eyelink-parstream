@@ -1,6 +1,50 @@
+$(document).ready(function() {
+  var dateFormat = 'YYYY-MM-DD HH:mm';
+  $('#baseTime').val(moment().format(dateFormat));
+  getMatchingList(); // pattern dataset
+
+
+  $('#btn_search').click(function() {
+    d3.selectAll("svg").remove();        
+    getMatchingList(); // pattern dataset
+  });
+
+  $('#baseTime').datetimepicker({
+    format: 'yyyy-mm-dd hh:ii',
+    autoclose: true,
+    todayBtn: true,
+    pickerPosition: "bottom-left"
+  });
+  // Click creation date
+  clickLinkFunc = function(link) {
+    $('#tblPatterns > tbody').empty();
+    d3.selectAll("svg").remove();
+    var creationDate = link.innerText || link.textContent;
+    //$('#creationDate').val(creationDate);
+    $("#lblCreatedDate").empty();
+    $("#lblCreatedDate").append(creationDate);
+
+    console.log(creationDate);
+    d3.selectAll("svg").remove();
+    loadPatternData(creationDate);
+  };
+
+  // getPatternList();  
+
+  //Metronic.init(); // init metronic core componets
+  //eyelinkLayout.init(); // init eyelinklayout
+  // QuickSidebar.init(); // init quick sidebar
+  // Layout.init(); // init layout
+  // Demo.init(); // init index page
+  // ComponentsPickers.init();
+  TableManaged.init();
+  // ComponentsDropdowns.init();
+});
+
+
+
 // 날짜 변환 함수
-function dateConvert(date){
-  "use strict";
+function dateConvert(date){ 
   function pad(num) {
     num = num + '';
     return num.length < 2 ? '0' + num : num;
@@ -8,33 +52,27 @@ function dateConvert(date){
   return date.getFullYear() + "-" + pad(date.getMonth()+1) + "-" + pad(date.getDate()) + "T" + pad(date.getHours()) + ":" + pad(date.getMinutes()) + ":00"
 }
 
+
 function getMatchingList() {
-  "use strict";
   var basetime = $('#baseTime').val() + ':59';
   var timeRange = $('select[name=timeRange').val();
   var startDt = new Date(Date.parse(basetime) - (1000*60*timeRange));
   var endDt = new Date(Date.parse(basetime) + (1000*60*timeRange));
-  var stime = dateConvert(startDt)
-  var etime = dateConvert(endDt)
+  var stime = String(dateConvert(startDt));
+  var etime = String(dateConvert(endDt));
   console.log('%s, %s', stime, etime);
-
-  $.ajax({
-    url: "/analysis/restapi/getAnomaly_Pattern",
-    dataType: "json",
-    type: "get",
-    data: { startTime:stime, endTime:etime },
-    success: function(result) {
-      if (result.rtnCode.code == "0000") {
-        var matchingList = result.rtnData;
-        console.log(matchingList);
-        drawMatchingHistory(matchingList);
-        //test(matchingList);
-      }
-    },
-    error: function (req, status, err) {
-      $("#errormsg").html("code:" + status + "\n" + "message:" + req.responseText + "\n" + "error:" + err);
+  
+  var data = { startDate: stime, endDate: etime };
+  var in_data = { url: "/analysis/restapi/getAnomaly_Pattern", type: "GET", data:data};
+  ajaxTypeData(in_data, function(result){
+    console.log('getPatternList[CODE]:', result.rtnCode.code);
+    if (result.rtnCode.code == "0000") {
+      var matchingList = result.rtnData;
+      console.log(matchingList);
+      drawMatchingHistory(matchingList);
     }
   });
+        //test(matchingList);
 }
 
 function test(matchingList){
