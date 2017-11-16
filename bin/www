@@ -3,15 +3,20 @@
 /**
  * Module dependencies.
  */
+if ( process.argv[1] == null || process.argv[2] == null) {
+  printUsage();
+  process.exit(0);
+}
 
 var app = require('../app');
 var debug = require('debug')('EyeLink-parStream:server');
 var http = require('http');
+
 /**
  * Get port from environment and store in Express.
  */
-
-var port = normalizePort(process.env.PORT || '5223');
+// global.config.pcode에 따른 포트를 오픈한다.
+var port = normalizePort(process.env.PORT || global.config.products[global.config.pcode].port);
 app.set('port', port);
 
 /**
@@ -33,6 +38,13 @@ server.listen(port, function() {
 });
 server.on('error', onError);
 server.on('listening', onListening);
+
+function printUsage() {
+  console.log('Usage : $ npm start [pcode]');
+  console.log('    [efsl/efsm/efmm]: required, {}: optional');
+  console.log('');
+  console.log('Ex. $ npm start efmm');
+}
 
 /**
  * Normalize a port into a number, string, or false.

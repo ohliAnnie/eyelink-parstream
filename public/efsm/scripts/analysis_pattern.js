@@ -481,4 +481,3 @@ function drawPatternChart(graphData) {
       .attr("d", patternLine);
 
 }
-
