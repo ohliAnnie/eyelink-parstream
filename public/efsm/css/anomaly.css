@@ -11,6 +11,12 @@ path {
 text {
   font-size: 0.5rem;
 }
+
+.axis text {
+    font-size: .7em;
+    color: #a0a0a0;
+}
+
 .legend text {   
     fill: black;
     font-weight: bold;

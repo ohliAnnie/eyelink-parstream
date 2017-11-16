@@ -18,21 +18,12 @@ function getMatchingList() {
   var etime = dateConvert(endDt)
   console.log('%s, %s', stime, etime);
 
-  $.ajax({
-    url: "/analysis/restapi/getAnomaly_Pattern",
-    dataType: "json",
-    type: "get",
-    data: { startTime:stime, endTime:etime },
-    success: function(result) {
-      if (result.rtnCode.code == "0000") {
-        var matchingList = result.rtnData;
-        console.log(matchingList);
-        drawMatchingHistory(matchingList);
-        //test(matchingList);
-      }
-    },
-    error: function (req, status, err) {
-      $("#errormsg").html("code:" + status + "\n" + "message:" + req.responseText + "\n" + "error:" + err);
+  var data = { startTime:stime, endTime:etime };
+  var in_data = { url : "/analysis/restapi/getAnomaly_Pattern", type : "GET", data : data };  
+  ajaxTypeData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {
+      var matchingList = result.rtnData;        
+      drawMatchingHistory(matchingList);       
     }
   });
 }
@@ -137,58 +128,48 @@ function clickPattern(factor,timestamp,clusterNo){
   console.log(factor, timestamp, clusterNo);
   var creationDate = timestamp.split('T')[0];
   var target = "pattern_data." + factor + ".center." + clusterNo;
-  $.ajax({
-    url: "/analysis/restapi/getClusterPattern",
-    dataType: "json",
-    type: "get",
-    data: {id : creationDate, target : target},
-    success: function(result) {
-        if (result.rtnCode.code == "0000") {
-          console.log(result);
-          var matchData = result.rtnData.pattern_data[factor]['center'][clusterNo];
-          console.log(matchData);
-          // var pCenter = result.rtnData.pattern_data[factor]['center'][clusterNo];
-          // var pMin = result.rtnData.pattern_data[factor]['min_value'][clusterNo];
-          // var pMax = result.rtnData.pattern_data[factor]['max_value'][clusterNo];
-          // var pLower = result.rtnData.pattern_data[factor]['lower'][clusterNo];
-          // var pUpper = result.rtnData.pattern_data[factor]['upper'][clusterNo];
-          // console.log(pCenter, pMin, pMax, pLower, pUpper);
+  var data = {id : creationDate, target : target};
+  var in_data = { url : "/analysis/restapi/getClusterPattern", type : "GET", data : data };  
+  ajaxTypeData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {
+      console.log(result);
+      var matchData = result.rtnData.pattern_data[factor]['center'][clusterNo];
+      console.log(matchData);
+      // var pCenter = result.rtnData.pattern_data[factor]['center'][clusterNo];
+      // var pMin = result.rtnData.pattern_data[factor]['min_value'][clusterNo];
+      // var pMax = result.rtnData.pattern_data[factor]['max_value'][clusterNo];
+      // var pLower = result.rtnData.pattern_data[factor]['lower'][clusterNo];
+      // var pUpper = result.rtnData.pattern_data[factor]['upper'][clusterNo];
+      // console.log(pCenter, pMin, pMax, pLower, pUpper);
 
-          // var listVal = [];
-          // listVal.push(Math.max.apply(Math, pCenter));
-          // listVal.push(Math.min.apply(Math, pCenter));
-          // listVal.push(Math.max.apply(Math, pMax));
-          // listVal.push(Math.min.apply(Math, pMin));
+      // var listVal = [];
+      // listVal.push(Math.max.apply(Math, pCenter));
+      // listVal.push(Math.min.apply(Math, pCenter));
+      // listVal.push(Math.max.apply(Math, pMax));
+      // listVal.push(Math.min.apply(Math, pMin));
 
-          var minval = Math.min.apply(Math, matchData);
-          var maxval = Math.max.apply(Math, matchData);
-          var stime = new Date(Date.parse(timestamp) - (1000*60*110));
-          var set = [];
-          console.log(stime);
+      var minval = Math.min.apply(Math, matchData);
+      var maxval = Math.max.apply(Math, matchData);
+      var stime = new Date(Date.parse(timestamp) - (1000*60*110));
+      var set = [];
+      console.log(stime);
 
-          for(i=0; i<matchData.length; i++){
-            set.push({ind : i, x : stime-(i-120)*60*1000, y : matchData[i]});
-          }
-
-          console.log(set);
-
-          d3.selectAll("svg").remove();
-          drawPatternChart(stime, set, minval, maxval);
-        } else {
-          console.log("failure!!!!!!!");
-        }
-      },
-      error: function(req, status, err) {
-        //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+      for(i=0; i<matchData.length; i++){
+        set.push({ind : i, x : stime-(i-120)*60*1000, y : matchData[i]});
       }
+
+      console.log(set);
+
+      d3.selectAll("svg").remove();
+      drawPatternChart(stime, set, minval, maxval);
+    } else {
+      console.log("failure!!!!!!!");
+    }  
   });
 }
 
 function drawPatternChart(stime, matchData, minval, maxval){
   var etime = new Date(Date.parse(stime) + (1000*60*120));
-
-
 
   console.log(stime, etime);
   // var timeRange = $('select[name=timeRange').val();

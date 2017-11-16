@@ -15,14 +15,14 @@ router.get('/', function(req, res, next) {
   // console.log(_rawDataByDay);
   mainmenu.dashboard = ' open selected';
   mainmenu.timeseries = '';
-  res.render('./dashboard/main', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/dashboard/dashboard', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/timeseries', function(req, res, next) {
   // console.log(_rawDataByDay);
   mainmenu.dashboard = '';
   mainmenu.timeseries = ' open selected';
-  res.render('./dashboard/timeseries', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/dashboard/timeseries', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 

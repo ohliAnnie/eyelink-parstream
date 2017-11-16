@@ -503,10 +503,10 @@ function drawCheckCluster(data, dadate, factor) {
     }
   },
   compiled: function () {
-      var self = this;
-      self.displayLine();      
+   var self = this;
+    self.displayLine();      
   }
-});
+  });
 }
 
 function getNodeList(type) {
@@ -521,33 +521,21 @@ function getNodeList(type) {
   } else if ($('#factor3').is(':checked') === true) {
     var factor = $('#factor3').val();
   }    
-   $.ajax({
-    url: "/analysis/restapi/getDaClusterMasterByDadate" ,
-    dataType: "json",
-    type: "get",
-    data: {dadate : dadate},
-    success: function(result) {
-      if (result.rtnCode.code == "0000") {
-        var d = result.rtnData;        
-        console.log(d);
-        var nodeList = [];       
-        if(factor === 'voltage') {
-          nodeList.push({ c0 : d['c0_voltage'], c1 : d['c1_voltage'], c2 : d['c2_voltage'], c3 : d['c3_voltage'] })
-        } else if(factor === 'ampere') {
-          nodeList.push({ c0 : d['c0_ampere'], c1 : d['c1_ampere'], c2 : d['c2_ampere'], c3 : d['c3_ampere'] })
-        } else if(factor === 'active_power') {
-          nodeList.push({ c0 : d['c0_active_power'], c1 : d['c1_active_power'], c2 : d['c2_active_power'], c3 : d['c3_active_power'] })
-        } else if(factor === 'power_factor') {
-          nodeList.push({ c0 : d['c0_power_factor'], c1 : d['c1_power_factor'], c2 : d['c2_power_factor'], c3 : d['c3_power_factor'] })
-        }      
-          drawDirectory(nodeList);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+  var in_data = { url : "/analysis/restapi/getDaClusterMasterByDadate", type : "GET", data : {dadate : dadate} };  
+  ajaxTypeData(in_data, function(result){
+    if (result.rtnCode.code == "0000") {
+      var d = result.rtnData;      
+      var nodeList = [];       
+      if(factor === 'voltage') {
+        nodeList.push({ c0 : d['c0_voltage'], c1 : d['c1_voltage'], c2 : d['c2_voltage'], c3 : d['c3_voltage'] })
+      } else if(factor === 'ampere') {
+        nodeList.push({ c0 : d['c0_ampere'], c1 : d['c1_ampere'], c2 : d['c2_ampere'], c3 : d['c3_ampere'] })
+      } else if(factor === 'active_power') {
+        nodeList.push({ c0 : d['c0_active_power'], c1 : d['c1_active_power'], c2 : d['c2_active_power'], c3 : d['c3_active_power'] })
+      } else if(factor === 'power_factor') {
+        nodeList.push({ c0 : d['c0_power_factor'], c1 : d['c1_power_factor'], c2 : d['c2_power_factor'], c3 : d['c3_power_factor'] })
+      }      
+      drawDirectory(nodeList);
     }
   });
 }
@@ -633,53 +621,45 @@ function getNodePower(nodeList, len){
   var start = urlParams.start;
   var end = urlParams.end;
   var last, start;
-   $.ajax({
-    url: "/analysis/restapi/getClusterNodePower" ,
-    dataType: "json",
-    type: "get",
-    data: {startDate:start, endDate:end, nodeId: node},
-    success: function(result) {
-      console.log(result);
-      if (result.rtnCode.code == "0000") {
-        var data = result.rtnData;
-        var set = [];
-        var max = 0;       
-        var cnt = 0;
-        data.forEach(function(d){                    
-          d.event_time = new Date(d.event_time);                 
-         if(factor === 'ampere') {          
-          set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.ampere)});
-          if(d.ampere > max)
-            max = parseFloat(d.ampere);
-         } else if(factor === 'voltage') {
-          set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.voltage)});
-          if(d.voltage > max)
-            max = parseFloat(d.voltage);
-        } else if(factor === 'active_power') {
-          set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.active_power) });
-          if(d.active_power > max) {            
-            max = parseFloat(d.active_power);
-          }
-        } else if(factor === 'power_factor') {
-          set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.power_factor) });
-          if(d.power_factor > max)
-            max =  parseFloat(d.power_factor);
-        }   
-          var format = d3.time.format("%Y-%m-%d");
-          last = format(d.event_time);
-          if(cnt++ === 0) {
-           start= format(d.event_time);
-          }                              
-        });                        
-        drawNode(set, max, node.split(',').length, last, start, len);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
+
+  var data = { startDate:start, endDate:end, nodeId: node };
+  var in_data = { url : "/analysis/restapi/getClusterNodePower", type : "GET", data : data };  
+  ajaxTypeData(in_data, function(result){         
+    if (result.rtnCode.code == "0000") {
+      var data = result.rtnData;
+      var set = [];
+      var max = 0;       
+      var cnt = 0;
+      data.forEach(function(d){                    
+        d.event_time = new Date(d.event_time);                 
+       if(factor === 'ampere') {          
+        set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.ampere)});
+        if(d.ampere > max)
+          max = parseFloat(d.ampere);
+       } else if(factor === 'voltage') {
+        set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.voltage)});
+        if(d.voltage > max)
+          max = parseFloat(d.voltage);
+      } else if(factor === 'active_power') {
+        set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.active_power) });
+        if(d.active_power > max) {            
+          max = parseFloat(d.active_power);
+        }
+      } else if(factor === 'power_factor') {
+        set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.power_factor) });
+        if(d.power_factor > max)
+          max =  parseFloat(d.power_factor);
+      }   
+        var format = d3.time.format("%Y-%m-%d");
+        last = format(d.event_time);
+        if(cnt++ === 0) {
+         start= format(d.event_time);
+        }                              
+      });                        
+      drawNode(set, max, node.split(',').length, last, start, len);
+    } else {
+      //- $("#errormsg").html(result.message);
+    }    
   });
 }
 var oldL = 0;
@@ -698,8 +678,7 @@ var margin = {top: 5, right: 20, bottom: 20, left: 30},
     width = (window.innerWidth*0.3) - margin.left - margin.right,       
     height = 315 - margin.top - margin.bottom - 15*idCnt/4;
     //- (20*(idCnt/(width/100)));
-    console.log(idCnt);
-console.log(height);
+    
 // Set the ranges
 var x = d3.time.scale().range([0, width]);
 var y = d3.scale.linear().range([height, 0]);
@@ -787,23 +766,15 @@ function clickNode(nodeId) {
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
 
-  $.ajax({
-    url: "/analysis/restapi/getClusterRawDataByNode" ,
-    dataType: "json",
-    type: "get",
-    data: {startDate:sdate, endDate:edate, node:nodeId},
-    success: function(result) {
-      if (result.rtnCode.code == "0000") {        
-        var data = result.rtnData;           
-         drawTimeseries(data);
-      } else {
-        //- $("#errormsg").html(result.message);
-      }
-    },
-    error: function(req, status, err) {
-      //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-      $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
-    }
+  var data = {startDate:sdate, endDate:edate, node:nodeId};
+  var in_data = { url : "/analysis/restapi/getClusterRawDataByNode", type : "GET", data : data };  
+  ajaxTypeData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {        
+      var data = result.rtnData;           
+       drawTimeseries(data);
+    } else {
+      //- $("#errormsg").html(result.message);
+    }    
   });
 }
 
@@ -833,9 +804,6 @@ function drawTimeseries(data) {
     d.noise_frequency = d.noise_frequency === ''? 0:d.noise_frequency;
    
   });
-
-
-  console.log(data);
 
   var chartName = '#ts-chart01';
   chart01 = d3.timeseries()
