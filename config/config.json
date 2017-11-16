@@ -1,9 +1,12 @@
 {
 	"#comment": "Customer module configs",
 	"productname": "EyeLink",
-	"#pcode": "efsl",
 	"pcode": "efsm",
-	"#pcode": "efmm",
+	"products": {
+		"efsm" : {"productName" : "EFSM", "port" : 5223},
+		"efmm" : {"productName" : "EFMM", "port" : 5224},
+		"efsl" : {"productName" : "EFSL", "port" : 5225}
+	},
 	"version": "1.0",
 	"username": "root",
 	"password": "foot",
