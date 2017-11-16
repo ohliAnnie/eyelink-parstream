@@ -15,51 +15,7 @@ block script
   script(type='text/javascript', src='/common/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js')
   script(type='text/javascript', src="/common/scripts/util.js")
   script(type='text/javascript', src="/efsm/scripts/analysis_patternMatching.js")
-  script.
-    $(document).ready(function() {
-      var dateFormat = 'YYYY-MM-DD HH:mm';
-      $('#baseTime').val(moment().format(dateFormat));
-      getMatchingList() // pattern dataset
-
-      $('#btn_search').click(function() {
-        d3.selectAll("svg").remove();        
-        getMatchingList() // pattern dataset
-      });
-
-      $('#baseTime').datetimepicker({
-        format: 'yyyy-mm-dd hh:ii',
-        autoclose: true,
-        todayBtn: true,
-        pickerPosition: "bottom-left"
-      });
-      // Click creation date
-      clickLinkFunc = function(link) {
-        $('#tblPatterns > tbody').empty();
-        d3.selectAll("svg").remove();
-        var creationDate = link.innerText || link.textContent;
-        //$('#creationDate').val(creationDate);
-        $("#lblCreatedDate").empty();
-        $("#lblCreatedDate").append(creationDate);
-
-        console.log(creationDate);
-        d3.selectAll("svg").remove();
-        loadPatternData(creationDate);
-      };
-
-      
-
-      // getPatternList();  
-
-      Metronic.init(); // init metronic core componets
-      eyelinkLayout.init(); // init eyelinklayout
-      QuickSidebar.init(); // init quick sidebar
-      Layout.init(); // init layout
-      Demo.init(); // init index page
-      ComponentsPickers.init();
-      TableManaged.init();
-      ComponentsDropdowns.init();
-    });
-
+ 
 block content
   .container-fluid
     .page-content
