@@ -177,6 +177,23 @@ router.get('/restapi/getAnomaly/:id', function(req, res, next) {
   });
 });
 
+// load master cluster : update 2017-11-15
+router.get('/restapi/getPatternInfo', function(req, res, next) {
+  logger.debug(req.query);
+  var in_data = { INDEX: indexPatternInfo, TYPE: "pattern_info", ID: req.query.id};
+  queryProvider.selectSingleQueryByID2("analysis", "selectPatterns", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data.length == 0) {
+      rtnCode = CONSTS.getErrData('0001');
+      res.json({rtnCode: rtnCode});
+    } else {
+      logger.debug('analysis/restapi/getPatternInfo -> length : %s', out_data.length);
+      res.json({rtnCode: rtnCode, rtnData: out_data[0]._source.da_result});
+    }
+  });
+});
+
+
 // load patterns data : update 2017-11-07
 router.get('/restapi/getPatterns', function(req, res, next) {
   logger.debug(req.query);
@@ -214,6 +231,23 @@ router.get('/restapi/getPatterns', function(req, res, next) {
           }
         });
       }
+    }
+  });
+});
+
+// get select cluster data
+router.get('/restapi/getClusterData', function(req, res, next) {
+  logger.debug(req.query);
+  var in_data = { INDEX: indexPatternData, TYPE: "pattern_data", ID: req.query.id, TARGET: req.query.target };
+  queryProvider.selectSingleQueryByID2("analysis", "selectClusterPattern", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data.length == 0) {
+      rtnCode = CONSTS.getErrData('0001');
+      res.json({rtnCode: rtnCode});
+    } else {
+      out_data[0]._source.da_result;
+      logger.debug('analysis/restapi/getClusterPattern -> length : %s', out_data.length);
+      res.json({rtnCode: rtnCode, rtnData: out_data[0]._source.da_result});
     }
   });
 });
@@ -267,7 +301,7 @@ router.post('/restapi/pattern_data/:id/_update', function(req, res, next) {
       var in_data = { INDEX: indexPatternData, TYPE: "pattern_data", ID: req.params.id, BODY: JSON.stringify(req.body)};
       queryProvider.updateQueryByID("analysis", "updatePatternData", in_data, function(err, out_data) {
         if(out_data.result == "updated"){
-          var rtnCode = CONSTS.getErrData("D002");
+          var rtnCode = CONSTS.getErrData("D001");
           logger.debug((out_data.result));
         } else if (out_data.result == "noop") {
           var rtnCode = CONSTS.getErrData("D007");

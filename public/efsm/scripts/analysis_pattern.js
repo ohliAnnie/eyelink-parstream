@@ -8,6 +8,35 @@ $(document).ready(function() {
     d3.selectAll("svg").remove();
     getPatternList(); // pattern dataset
   });
+
+  $('#btnBatchUpdate').hide();
+  $('#btnBatchUpdate').click(function() {
+    var nodes =  $('#sample_2').dataTable().fnGetNodes();
+    var checkbox = $("input[name=patternChk]:checked", nodes).closest('tr');
+    var numOfCheck = checkbox.length;
+
+    if(numOfCheck == 0) {
+      alert("There is no checked item");
+    } else {
+      if(confirm("Do you want to batch update checked" + numOfCheck + "patterns ?")){
+        var id = $('#lblCreatedDate').text();
+        var queryBody = {};
+        var fG = $('#lblGroup').text().split(' - ')[0];
+        var updateDate = moment().format('YYYY-MM-DD');
+        queryBody[fG] = {};
+        checkbox.each(function(i) {
+          var cN = checkbox[i].cells[1].innerText;
+          var sV = $(this).find('td:eq(3)').find('option:selected').val();
+          queryBody[fG][cN] = {};
+          queryBody[fG][cN].status = sV;
+          queryBody[fG][cN].updateDate = updateDate;
+        });
+        console.log(queryBody);
+        modifyPattern(id, queryBody);
+      }
+    }
+  });
+
 });
 
 
@@ -29,7 +58,6 @@ function getPatternList() {
 
 ///// draw pattern lists /////
 function drawPatternList(patternLists, nodeInfo) {
-  console.log("patternLists : ", patternLists);
   $('#patternList').empty();
   var createdDate = patternLists[0]._id;
   patternLists.forEach(function(d) {
@@ -54,7 +82,6 @@ function drawPatternList(patternLists, nodeInfo) {
 
 
 function loadPatternData(createdDate, nodeInfo) {
-  console.log('nodeInfo',nodeInfo);
   $("#lblCreatedDate").empty();
   $("#lblCreatedDate").append(createdDate);
   $("#lblCreatedDate").hide();
@@ -62,6 +89,10 @@ function loadPatternData(createdDate, nodeInfo) {
   $("#lblGroup").append('parent - child node');
   d3.selectAll("svg").remove();
   $("#sample_2").dataTable().fnClearTable();
+  if($('#lblCreatedDate').text() == 'master'){
+    $('#btnBatchUpdate').show();
+  } else { $('#btnBatchUpdate').hide(); }
+
 
   var data = {id : createdDate};
   var in_data = {url: "/analysis/restapi/getPatterns", type: "GET", data: data};
@@ -108,6 +139,7 @@ function drawPatternTree(creationDate, treeData, nodeInfo) {
 
   /// 노드 선택시 이벤트
   $('#patternTree').on('nodeSelected', function(event, node){
+    //$('input[type=checkbox]').attr('checked',true);
     console.log('selected node: ', node.href);
     var nodeText = node.href.replace(/#/g,'');
     nodeText = nodeText.split('-');
@@ -195,88 +227,93 @@ function drawPatterns(creationDate, parentNode, childNode, patternData){
   /// update button click event ///
   $('#sample_2').on('click', '.updateBtn', function(){
     var row = $(this).closest('tr');
-    console.log(row);
+    var id = $('#lblCreatedDate').text();
     var cN = row[0].cells[1].innerText;
     var sV = row.find("option:selected").text(); // status Value
+    var updateDate = moment().format('YYYY-MM-DD');
     var queryBody = {};
     queryBody[parentNode] = {};
-    queryBody[parentNode][cN] = {};
-    queryBody[parentNode][cN].status = sV;
-    var updateDate = moment().format('YYYY-MM-DD');
-    queryBody[parentNode][cN].updateDate = updateDate;
-
-    var pageNo = ($('#sample_2').dataTable().fnPagingInfo().iPage);
-    console.log(pageNo);
-    console.log(queryBody);
-
-    if (creationDate == 'master') {
+    // var pageNo = ($('#sample_2').dataTable().fnPagingInfo().iPage);
+    // console.log(pageNo);
+    
+    if (id == 'master') {
       if (confirm("Do you want to update ?")) {
-        modifyPattern(creationDate, queryBody);
+        queryBody[parentNode][cN] = {};
+        queryBody[parentNode][cN].status = sV;
+        queryBody[parentNode][cN].updateDate = updateDate;
+        console.log(queryBody);
+        modifyPattern(id, queryBody);
       }
     } else {
       if (confirm("Do you want to register as a new pattern ?")) {
-        insertNewPattern(creationDate, queryBody);
-      }
-    }
-  });
+        ///// 마스터데이터 로드..
+        var data = {id : "master"};
+        var in_data = {url: "/analysis/restapi/getPatternInfo", type: "GET", data: data};
+        ajaxTypeData(in_data, function(result){
+          if (result.rtnCode.code == "0000") {
+            var newCN = Object.keys(result.rtnData[parentNode]).sort().pop();
+            newCN = pad(Number(newCN.split('_')[1])+1, 3);
+            newCN = 'cluster_' + newCN;
+        
+            queryBody[parentNode][cN] = {};
+            queryBody[parentNode][cN].status = sV;
+            queryBody[parentNode][cN].updateDate = updateDate;
+            queryBody[parentNode][cN].masterCN = newCN;
 
-  $('#btnBatchUpdate').click(function() {
-    //updateCheckedAll();
-    var nodes =  $('#sample_2').dataTable().fnGetNodes();
-    var checkbox = $("input[name=patternChk]:checked", nodes).closest('tr');
-    // var numOfCheck = $("input[name=patternChk]:checked", nodes).length;
-    var numOfCheck = checkbox.length;
+            var insertBody = {};
+            insertBody[parentNode] = {};
+            insertBody[parentNode][newCN] = {};
+            insertBody[parentNode][newCN].status = sV;
+            insertBody[parentNode][newCN].masterCN = 'unknown';
+            insertBody[parentNode][newCN].createDate = updateDate;
+            insertBody[parentNode][newCN].updateDate = updateDate;
 
-    console.log(checkbox);
-    console.log("num of checked:",numOfCheck);
+            console.log("queryBody: ", queryBody);
+            console.log('insertBody: ', insertBody);
+            modifyPattern(id, queryBody);
+            modifyPattern('master', insertBody);
+            insertNewPattern(id, parentNode, cN, newCN);
 
-    if(numOfCheck == 0) {
-      console.log("There is no checked item");
-    } else {
-      if(confirm(numOfCheck + "개 항목에 대해 일괄저장 하시겠습니까?")){
-        var id = $('#lblCreatedDate').text();
-        var queryBody = {};
-        var fG = parentNode;
-        var updateDate = moment().format('YYYY-MM-DD');
-        console.log('id: ', id);
-        console.log("fG: ", fG);
-        queryBody[fG] = {};
-
-        console.log(checkbox);
-        checkbox.each(function(i) {
-          
-          var cN = checkbox[i].cells[1].innerText;
-          var sV = checkbox[i]; // status Value
-          console.log(sV);
-          queryBody[fG][cN] = {};
-          queryBody[fG][cN].status = sV;
-          queryBody[fG][cN].updateDate = updateDate;
+            alert("정상적으로 등록되었습니다.");
+          }
         });
-
-        console.log(queryBody);
-
-
-        // var data = queryBody;
-        // var in_data = {url: "/analysis/restapi/pattern_info/" + id + "/_update", type: "POST", data: data};
-        // ajaxTypeData(in_data, function(result){
-        //   if (result.rtnCode.code == "0000") {
-        //     var nodeInfo = $('#patternTree').treeview('getSelected');
-        //     loadPatternData(id, nodeInfo[0]);
-        //   }
-        // });
       }
     }
   });
+}
 
+function pad(n, width) {
+  n = n + '';
+  return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
+}
 
+function insertNewPattern(id, group, CN, newCN){
+  console.log(newCN);
+  var target = "da_result." + group + "." + CN; 
 
+  var data = {id : id, target: target};
+  var in_data = {url: "/analysis/restapi/getClusterData", type: "GET", data: data};
+  ajaxTypeData(in_data, function(result){
+    console.log('getPatternData[CODE]:', result.rtnCode.code);
+    if (result.rtnCode.code == "0000") {
+      var d = result.rtnData[group][CN];
+      var queryBody = {};
+      queryBody[group] = {};
+      queryBody[group][newCN] = d;
+      console.log(queryBody);
+      var in_data = {url: "/analysis/restapi/pattern_data/master/_update", type: "POST", data: queryBody};
+      ajaxTypeData(in_data, function(result) {
+        if (result.rtnCode.code == "D001") {
+          console.log('insert completed');
+        }
+      });
+    }
+  });
 }
 
 function modifyPattern(id, data){
-  console.log("modifyPattern start");
   var in_data = {url: "/analysis/restapi/pattern_info/" + id + "/_update", type: "POST", data: data};
   ajaxTypeData(in_data, function(result) {
-    alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
     if (result.rtnCode.code == "D002") {
       var nodeInfo = $('#patternTree').treeview('getSelected');
       loadPatternData(id, nodeInfo[0]);
@@ -360,10 +397,10 @@ function getGraphData(pData, mData) {
   var minVal = Math.min.apply(null,pData, mData);
   var maxVal = Math.max.apply(null,pData, mData);
   //var graphData = {};
-  graphData['pSet'] = pSet;
-  graphData['mSet'] = mSet;
-  graphData['minVal'] = minVal;
-  graphData['maxVal'] = maxVal;
+  graphData.pSet = pSet;
+  graphData.mSet = mSet;
+  graphData.minVal = minVal;
+  graphData.maxVal = maxVal;
 
   return graphData;
 }
@@ -389,10 +426,10 @@ function drawPatternChart(graphData) {
       .outerTickSize(0)
       .tickPadding(10);
 
-  var line = d3.svg.line()
+  var masterLine = d3.svg.line()
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
-  var line2 = d3.svg.line()
+  var patternLine = d3.svg.line()
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
 
@@ -416,21 +453,24 @@ function drawPatternChart(graphData) {
       .attr("class", "y axis")
       .call(yAxis);
 
+
   svg.append("path")
+      .data([graphData['mSet']])
+      .attr("fill", "none")
+      .attr("stroke", "orange")
+      .attr("stroke-dasharray", ("4, 4"))
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+      .attr("d", masterLine);
+
+        svg.append("path")
       .data([graphData['pSet']])
       .attr("fill", "none")
       .attr("stroke", "steelblue")
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
-      .attr("stroke-width", 3)
-      .attr("d", line);
+      .attr("stroke-width", 2.5)
+      .attr("d", patternLine);
 
-  svg.append("path")
-      .data([graphData['mSet']])
-      .attr("fill", "none")
-      .attr("stroke", "red")
-      .attr("stroke-linejoin", "round")
-      .attr("stroke-linecap", "round")
-      .attr("stroke-width", 3)
-      .attr("d", line2);
 }
