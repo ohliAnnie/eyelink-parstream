@@ -15,7 +15,7 @@ router.get('/', function(req, res, next) {
   // console.log(_rawDataByDay);
   mainmenu.dashboard = ' open selected';
   mainmenu.timeseries = '';
-  res.render('./'+global.config.pcode+'/dashboard/main', { title: global.config.productname, mainmenu:mainmenu});
+  res.render('./'+global.config.pcode+'/dashboard/dashboard', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/timeseries', function(req, res, next) {
