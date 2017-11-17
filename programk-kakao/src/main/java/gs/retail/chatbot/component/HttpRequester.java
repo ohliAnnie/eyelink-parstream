@@ -43,6 +43,7 @@ public class HttpRequester {
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");
 			conn.setConnectTimeout(3000);
+			conn.setReadTimeout(3000);
 			conn.setUseCaches(false);
 			
 			// Send post request

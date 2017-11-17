@@ -10,6 +10,7 @@ import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.ehcache.expiry.Duration;
 import org.ehcache.expiry.Expirations;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +115,7 @@ public class UserAuthManager {
 					messageIn.setContent(makeItSecret(userAuthStatus, messageIn.getContent()));
 					
 					String savedUserKey = callGSAuth(userAuth);
-					
+
 					if (userKey.equals(savedUserKey)) {
 						// 성공일 경우 마지막 인증 시간 업데이트
 						logger.debug("Successful authentication process for user : {}", userKey);
@@ -225,8 +226,9 @@ public class UserAuthManager {
 			o.put("empNm", userAuth.getUserName());
 			o.put("userKey", userAuth.getUserKey());
 			
+			String response = "";
 			try {
-				String response = httpRequester.sendPostRequest(o.toString(), config.getAuthUrl());
+				response = httpRequester.sendPostRequest(o.toString(), config.getAuthUrl());
 				
 				JSONObject authResult = new JSONObject(response);
 				JSONObject body = (JSONObject)authResult.get("body");
@@ -236,6 +238,8 @@ public class UserAuthManager {
 				
 				return userKey;
 			} catch (Exception e) {
+				if ( e instanceof JSONException )
+					logger.error("JSON Response : {}", response);
 				logger.error(e.getMessage(), e);
 			}
 		}
@@ -260,7 +264,8 @@ public class UserAuthManager {
 	 * @param user_key
 	 */
 	public void remove(String user_key) {
-		cache.remove(user_key);
+		if ( user_key != null )
+			cache.remove(user_key);
 	}
 	private String makeItSecret(int status, String content) {
 		String show = null;
