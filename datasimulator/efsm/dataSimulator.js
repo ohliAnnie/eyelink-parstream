@@ -5,24 +5,8 @@ if ( process.argv[2] == null || process.argv[3] == null ) {
 
 const log4js = require('log4js');
 log4js.configure({
-  // appenders: [
-  //             { type: 'file', filename: './datagen.log', backups: 5 }
-  //             ],
-  // categories: { default: { appenders: ['datagen'], level: 'debug' } }
-  
-    "appenders": [
-      {
-        "type": "console"
-      },
-      {
-        "type": "file",
-        "filename": "./datagen.log",
-        "maxLogSize": 1024000,
-        "backups": 5,
-        "category": "eyelink"
-      }
-    ]
-  
+  appenders: { datagen: {type: 'file', filename: './datagen.log', backups: 5 } },
+  categories: { default: { appenders: ['datagen'], level: 'debug' } }
 });
 global.logger = log4js.getLogger('datagen');
 
@@ -33,8 +17,8 @@ var sleep = require('system-sleep');
 var moment = require('moment-timezone');
 var datetime = require('node-datetime');
 var xml2js = require('xml2js');
-var Utils = require('../routes/util');
-var CONSTS = require('../routes/consts');
+var Utils = require('../../routes/util');
+var CONSTS = require('../../routes/consts');
 var QueryProvider = require('./nodelib-es').QueryProvider;
 var queryProvider = new QueryProvider();
 
