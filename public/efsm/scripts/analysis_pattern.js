@@ -10,6 +10,7 @@ $(document).ready(function() {
   });
 
   $('#btnBatchUpdate').hide();
+
   $('#btnBatchUpdate').click(function() {
     var nodes =  $('#sample_2').dataTable().fnGetNodes();
     var checkbox = $("input[name=patternChk]:checked", nodes).closest('tr');
@@ -190,7 +191,6 @@ function drawPatterns(creationDate, parentNode, childNode, patternData){
   $('#sample').append(tableTag.toString());
   TableManaged.init();
 
-
   ///// Event /////
   // Checkbox event
   $('input[name=chkAll]').click(function(){
@@ -307,6 +307,8 @@ function insertNewPattern(id, group, CN, newCN){
       ajaxTypeData(in_data, function(result) {
         if (result.rtnCode.code == "D001") {
           console.log('insert completed');
+          var nodeInfo = $('#patternTree').treeview('getSelected');
+          loadPatternData(id, nodeInfo[0]);
         }
       });
     }
