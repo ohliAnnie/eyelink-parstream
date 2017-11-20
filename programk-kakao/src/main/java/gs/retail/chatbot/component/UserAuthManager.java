@@ -238,9 +238,11 @@ public class UserAuthManager {
 				
 				return userKey;
 			} catch (Exception e) {
-				if ( e instanceof JSONException )
-					logger.error("JSON Response : {}", response);
-				logger.error(e.getMessage(), e);
+				if ( e instanceof JSONException ) {
+					logger.error("{}\n\rJSON Response : {}", e.getMessage(), response);
+				} else {
+					logger.error(e.getMessage(), e);
+				}
 			}
 		}
 		return null;
