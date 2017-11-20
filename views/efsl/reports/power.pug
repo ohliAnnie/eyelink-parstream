@@ -1,46 +1,19 @@
 extends ../layout-type01
-block style 
-  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
-  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')   
-  link(rel='stylesheet', href='/assets/leaflet/dc.css')
-  link(rel='stylesheet', href='/stylesheets/style.css')
+block style
+  link(type='text/css', rel='stylesheet', href='/efsl/assets/css/dc.css') 
+  link(type='text/css', rel='stylesheet', href='/efsl/css/chart_style.css')
 block script
-  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
-  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
-  script(type='text/javascript', src='/assets/annie/js/dc.js')
-  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
-  script(type='text/javascript', src='/assets/leaflet/leaflet.js')
-  script(type='text/javascript', src='/assets/leaflet/leaflet.markercluster.js')
-  script(type='text/javascript', src='/assets/leaflet/dc.leaflet.js')
-  script(type='text/javascript', src="/scripts/util.js")
-  script(src='/scripts/fault_notification.js')
-  script.
-    $(document).ready(function() {                          
-      var dateFormat = 'YYYY-MM-DD';
-      $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
-      $('#edate').val(moment().format(dateFormat));
-
-      // time series char를 그린다.
-        drawChart();
-        $('#btn_search').click(function() {
-          drawChart();
-        });
-    });                      
-    jQuery(document).ready(function() {      
-      Metronic.init(); // init metronic core componets
-      eyelinkLayout.init(); // init eyelinklayout
-      QuickSidebar.init(); // init quick sidebar
-      Layout.init(); // init layout
-      Demo.init(); // init index page
-      ComponentsPickers.init();
-      ComponentsDropdowns.init();
-    });
-
+  script(type='text/javascript', src='/efsl/assets/scripts/d3_dc.js')
+  script(type='text/javascript', src='/efsl/assets/scripts/crossfilter.js')
+  script(type='text/javascript', src='/efsl/assets/scripts/dc.js')  
+  script(type='text/javascript', src='/efsl/assets/scripts/colorbrewer.js')
+  script(type='text/javascript', src="/common/scripts/util.js")
+  script(type='text/javascript', src='/efsl/scripts/report_power.js')
 block content
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 Fault_Notification
+        h1 Reports_Power
         ol.breadcrumb
           li
             a(href='#') Home
@@ -84,13 +57,13 @@ block content
                         option(value='') Item5678
                       button#btn_search.btn.blue
                         i.fa.fa-search Search
-      a(href='javascript:dc.filterAll("fault"); dc.renderAll("fault");') Reset All
+      a(href='javascript:dc.filterAll(); dc.renderAll();') Reset All
       .row
-        .col-md-4
+        .col-md-6
           .portlet.light
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Daily Count
+                span.caption-subject.bold.uppercase.font-green-haze Daily ActivePower Sum 
                 span.caption-helper Two Column chart
               .actions
                 a.btn.btn-default.btn-sm(href='#')
@@ -100,12 +73,13 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart
-                #dayCount
-        .col-md-3
+                #powerSum
+        .col-md-6
           .portlet.light.bordered
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Zone Count
+                span.caption-subject.bold.uppercase.font-green-haze Weekly Amount of Active Power
+                span.caption-helper  Min/Max/AvgDay
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -114,27 +88,13 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart
-                #groupCount      
-        .col-md-5
+                #weekPlot
+      .row
+        .col-md-6
           .portlet.light
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Map
-                span.caption-helper Two Column chart
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-print
-                  |  Print
-                a.collapse(href='javascript:;')
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
-            .portlet-body              
-              .chart       
-                #bubble-map-map(style="width:300px; height:100px")
-        .col-md-12
-          .portlet.light.bordered
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-green-haze Data Table
+                span.caption-subject.bold.uppercase.font-green-haze Active Power by Time
                 span.caption-helper Two Column chart
               .actions
                 a.btn.btn-default.btn-sm(href='#')
@@ -144,7 +104,22 @@ block content
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
               .chart
-                .dataTable
+                #timeBar
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Over Flow Voltage Value
+                span.caption-helper Two Column chart
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print
+                a.collapse(href='javascript:;')
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart
+                #volLine
     a.page-quick-sidebar-toggler(href='javascript:;')
       i.icon-login
     .page-quick-sidebar-wrapper
