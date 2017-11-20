@@ -14,16 +14,20 @@ global.log4js = require('log4js');
 log4js.configure('./config/log4js_conf.json');
 
 global.logger = global.log4js.getLogger('app');
-var config = require('./config/config.json');
+global.config = require('./config/config.json');
+// global.config = config;
 
+// npm start 시작시 입력받은 pcode 값으로 global.config.pcode 값 변경.
+global.config.pcode = process.argv[2];
+global.config.productname = global.config.products[global.config.pcode].productName;
 logger.info('config : %j', config);
-global.config = config;
 
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+
 
 app.use(cors());
 // uncomment after placing your favicon in /public

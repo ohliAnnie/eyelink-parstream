@@ -63,7 +63,7 @@ function getMatchingList() {
   console.log('%s, %s', stime, etime);
   
   var data = { startDate: stime, endDate: etime };
-  var in_data = { url: "/analysis/restapi/getAnomaly_Pattern", type: "GET", data:data};
+  var in_data = { url: "/analysis/restapi/getMatchingPattern", type: "GET", data:data};
   ajaxTypeData(in_data, function(result){
     console.log('getPatternList[CODE]:', result.rtnCode.code);
     if (result.rtnCode.code == "0000") {
@@ -134,30 +134,19 @@ function test(matchingList){
 }
 
 function drawMatchingHistory(matchingList) {
-  "use strict";
-  var seatvar = document.getElementsByClassName("matchingList");
-  var cnt = 0;
-  $('#matchingList').empty();
   var sb = new StringBuffer();
+  sb.append('<div class="portlet-body form"><div class="historyTable" style="height:auto">');
+  sb.append('<table class="table table-striped table-bordered table-hover" id="sample_2">');
+  sb.append('<th>Matching Time</th><th>active_power</th><th>ampere</th><th>power_factor</th><th>voltage</th></tr></thead><tbody>');
+
   matchingList.forEach(function(d) {
-    d = d._source.analysis;
-    var listkey = d.timestamp.replace('T', ' ');
-    if(cnt == 0) {
-      var headTag = '<thead><tr>' +
-        '<th style="text-align:center"> Matching time </th>' +
-        '<th style="text-align:center"> voltage </th>' +
-        '<th style="text-align:center"> ampere </th>' +
-        '<th style="text-align:center"> active_power </th>' +
-        '<th style="text-align:center"> power_factor </th>' +
-        // '<th style="display:none;"> v_status </th>' +
-        // '<th style="display:none;"> a_status </th>' +
-        // '<th style="display:none;"> ap_status </th>' +
-        // '<th style="display:none;"> pf_status </th>' +
-        '</tr></thead>';
-      sb.append(headTag);
-      sb.append('<tbody class="matchingListBody">');
-      cnt++;
-    }
+    d = d._source.da_result;
+    console.log(d);
+    var matchingTime = d.timestamp.replace('T', ' ');
+
+    sb.append('<tr><td>' + matchingTime + '</td>');
+    sb.append('<tr><a class="')
+
     var preTag = '<td style="text-align:center"><a onclick="javascript_:clickPattern('
     var dataTag = '<tr><td style="text-align:center">' + listkey +'</td>' +
       preTag + "'voltage'," + "'" + d.timestamp + "','" + d.voltage+ "'" + ')">' + d.voltage_status +'</td>' +
@@ -175,58 +164,48 @@ function clickPattern(factor,timestamp,clusterNo){
   console.log(factor, timestamp, clusterNo);
   var creationDate = timestamp.split('T')[0];
   var target = "pattern_data." + factor + ".center." + clusterNo;
-  $.ajax({
-    url: "/analysis/restapi/getClusterPattern",
-    dataType: "json",
-    type: "get",
-    data: {id : creationDate, target : target},
-    success: function(result) {
-        if (result.rtnCode.code == "0000") {
-          console.log(result);
-          var matchData = result.rtnData.pattern_data[factor]['center'][clusterNo];
-          console.log(matchData);
-          // var pCenter = result.rtnData.pattern_data[factor]['center'][clusterNo];
-          // var pMin = result.rtnData.pattern_data[factor]['min_value'][clusterNo];
-          // var pMax = result.rtnData.pattern_data[factor]['max_value'][clusterNo];
-          // var pLower = result.rtnData.pattern_data[factor]['lower'][clusterNo];
-          // var pUpper = result.rtnData.pattern_data[factor]['upper'][clusterNo];
-          // console.log(pCenter, pMin, pMax, pLower, pUpper);
+  var data = {id : creationDate, target : target};
+  var in_data = { url : "/analysis/restapi/getClusterPattern", type : "GET", data : data };  
+  ajaxTypeData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {
+      console.log(result);
+      var matchData = result.rtnData.pattern_data[factor]['center'][clusterNo];
+      console.log(matchData);
+      // var pCenter = result.rtnData.pattern_data[factor]['center'][clusterNo];
+      // var pMin = result.rtnData.pattern_data[factor]['min_value'][clusterNo];
+      // var pMax = result.rtnData.pattern_data[factor]['max_value'][clusterNo];
+      // var pLower = result.rtnData.pattern_data[factor]['lower'][clusterNo];
+      // var pUpper = result.rtnData.pattern_data[factor]['upper'][clusterNo];
+      // console.log(pCenter, pMin, pMax, pLower, pUpper);
 
-          // var listVal = [];
-          // listVal.push(Math.max.apply(Math, pCenter));
-          // listVal.push(Math.min.apply(Math, pCenter));
-          // listVal.push(Math.max.apply(Math, pMax));
-          // listVal.push(Math.min.apply(Math, pMin));
+      // var listVal = [];
+      // listVal.push(Math.max.apply(Math, pCenter));
+      // listVal.push(Math.min.apply(Math, pCenter));
+      // listVal.push(Math.max.apply(Math, pMax));
+      // listVal.push(Math.min.apply(Math, pMin));
 
-          var minval = Math.min.apply(Math, matchData);
-          var maxval = Math.max.apply(Math, matchData);
-          var stime = new Date(Date.parse(timestamp) - (1000*60*110));
-          var set = [];
-          console.log(stime);
+      var minval = Math.min.apply(Math, matchData);
+      var maxval = Math.max.apply(Math, matchData);
+      var stime = new Date(Date.parse(timestamp) - (1000*60*110));
+      var set = [];
+      console.log(stime);
 
-          for(i=0; i<matchData.length; i++){
-            set.push({ind : i, x : stime-(i-120)*60*1000, y : matchData[i]});
-          }
-
-          console.log(set);
-
-          d3.selectAll("svg").remove();
-          drawPatternChart(stime, set, minval, maxval);
-        } else {
-          console.log("failure!!!!!!!");
-        }
-      },
-      error: function(req, status, err) {
-        //- alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-        $("#errormsg").html("code:"+status+"\n"+"message:"+req.responseText+"\n"+"error:"+err);
+      for(i=0; i<matchData.length; i++){
+        set.push({ind : i, x : stime-(i-120)*60*1000, y : matchData[i]});
       }
+
+      console.log(set);
+
+      d3.selectAll("svg").remove();
+      drawPatternChart(stime, set, minval, maxval);
+    } else {
+      console.log("failure!!!!!!!");
+    }  
   });
 }
 
 function drawPatternChart(stime, matchData, minval, maxval){
   var etime = new Date(Date.parse(stime) + (1000*60*120));
-
-
 
   console.log(stime, etime);
   // var timeRange = $('select[name=timeRange').val();

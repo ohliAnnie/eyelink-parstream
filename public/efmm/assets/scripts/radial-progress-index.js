@@ -11,12 +11,12 @@ function RadialProgressChart(query, options) {
 
   var self = this;
   self.options = RadialProgressChart.normalizeOptions(options);
-
-  // internal  variables
+  
+  // internal  variables  
   var series = self.options.series
     , width = 15 + ((self.options.diameter / 2) + (self.options.stroke.width * self.options.series.length) + (self.options.stroke.gap * self.options.series.length - 1)) * 2
     , height = width
-    , dim = "0 0 " + height + " " + width
+    , dim = "0 -40 " + height*2 + " " + width*2
     , τ = 2 * Math.PI
     , inner = []
     , outer = [];
@@ -63,6 +63,9 @@ function RadialProgressChart(query, options) {
 
   // create svg
   self.svg = d3.select(query).append("svg")
+    .attr("class", "gage")
+    .attr("width", options.size.width)
+    .attr("height", options.size.height)
     .attr("preserveAspectRatio","xMinYMin meet")
     .attr("viewBox", dim)
     .append("g")
@@ -105,7 +108,8 @@ function RadialProgressChart(query, options) {
       .attr('class', 'rbc-center-text')
       .attr("text-anchor", "middle")
       .attr('x', self.options.center.x + 'px')
-      .attr('y', self.options.center.y + 'px')
+      .attr('y', self.options.center.y + 'px')      
+      .attr('font-size',50)
       .selectAll('tspan')
       .data(self.options.center.content).enter()
       .append('tspan')
