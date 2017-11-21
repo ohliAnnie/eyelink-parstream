@@ -85,7 +85,8 @@ function loadPatternData(createdDate, nodeInfo) {
   $("#lblGroup").empty();
   $("#lblGroup").append('parent - child node');
   d3.selectAll("svg").remove();
-  $("#sample_2").dataTable().fnClearTable();
+  $("#sample").empty();
+  // $("#sample_2").dataTable().fnClearTable();
   
   if($('#lblCreatedDate').text() == 'master'){
     $('#btnBatchUpdate').show();
@@ -384,7 +385,7 @@ function statusCheck(patternId, cno, masterCN, status) {
 
 
 function getGraphData(pData, mData) {
-  graphData = {};
+  var graphData = {};
   var pSet = [];
   var mSet = [];
 
@@ -398,14 +399,11 @@ function getGraphData(pData, mData) {
       mSet.push({ x : i, y : mData[i]});
     }
   }
-  var minVal = Math.min.apply(null,pData);
-  var maxVal = Math.max.apply(null,pData);
-  var mMinVal = Math.min.apply(null,mData);
-  var mMaxVal = Math.max.apply(null,mData);
-  if (minVal > mMinVal){ minVal = mMinVal};
-  if (maxVal < mMaxVal){ maxVal = mMaxVal};
+
+  var array = pData.concat(mData);
+  var minVal = Math.min.apply(null,array);
+  var maxVal = Math.max.apply(null,array);
   
-  //var graphData = {};
   graphData.pSet = pSet;
   graphData.mSet = mSet;
   graphData.minVal = minVal;
@@ -464,17 +462,17 @@ function drawPatternChart(graphData) {
 
 
   svg.append("path")
-      .data([graphData['mSet']])
+      .data([graphData.mSet])
       .attr("fill", "none")
       .attr("stroke", "orange")
-      .attr("stroke-dasharray", ("4, 4"))
+      .attr("opacity", 0.4)
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
-      .attr("stroke-width", 2.5)
+      .attr("stroke-width", 6)
       .attr("d", masterLine);
 
-        svg.append("path")
-      .data([graphData['pSet']])
+  svg.append("path")
+      .data([graphData.pSet])
       .attr("fill", "none")
       .attr("stroke", "steelblue")
       .attr("stroke-linejoin", "round")
