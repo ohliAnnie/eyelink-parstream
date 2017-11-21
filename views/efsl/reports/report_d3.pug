@@ -1,32 +1,22 @@
 extends ../layout-type01
 block style 
-  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
-  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')   
-  link(rel='stylesheet', href='/assets/leaflet/dc.css')
-  link(rel='stylesheet', href='/stylesheets/style.css')
+  link(type='text/css', rel='stylesheet', href='/efsl/assets/css/dc.css') 
+  link(rel='stylesheet', href='/efsl/assets/css/leaflet.css')
+  link(rel='stylesheet', href='/efsl/assets/css/leaflet.markercluster.css') 
+  link(type='text/css', rel='stylesheet', href='/efsl/css/chart_style.css')
+  link(type='text/css', rel='stylesheet', href='/efsl/css/report_d3.css')
 block script
-  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
-  script(type='text/javascript', src='/assets/annie/js/d3pie.min.js')
-  script(type='text/javascript', src='/assets/annie/js/d3pie.js')
-  script(type='text/javascript', src='/assets/annie/js/gauge.js')
-  script(type='text/javascript', src='/assets/annie/js/Donut3D.js')
-  script(src='/assets/annie/js/materialize.min.js')
-  script(src='/assets/annie/js/vizuly_core.min.js')
-  script(src='/assets/annie/js/vizuly_radialprogress.min.js')
-  script(src='/assets/annie/js/liquidFillGauge.js', language='JavaScript')
-  script(type='text/javascript', src='/scripts/report_d3.js')  
-  script.
-    $(document).ready(function() {                          
-      var dateFormat = 'YYYY-MM-DD';
-      $('#sdate').val(moment().subtract(5, 'days').format(dateFormat));
-      $('#edate').val(moment().format(dateFormat));
-
-      // time series char를 그린다.
-        report();
-        $('#btn_search').click(function() {
-          report();
-        });
-    });                      
+  script(type='text/javascript', src='/efsl/assets/scripts/d3_dc.js')
+  script(type='text/javascript', src='/efsl/assets/scripts/d3pie.min.js')
+  script(type='text/javascript', src='/efsl/assets/scripts/d3pie.js')
+  script(type='text/javascript', src='/efsl/assets/scripts/gauge.js')
+  script(type='text/javascript', src='/efsl/assets/scripts/Donut3D.js')
+  script(src='/efsl/assets/scripts/materialize.min.js')
+  script(src='/efsl/assets/scripts/vizuly_core.min.js')
+  script(src='/efsl/assets/scripts/vizuly_radialprogress.min.js')
+  script(src='/efsl/assets/scripts/liquidFillGauge.js', language='JavaScript')
+  script(type='text/javascript', src="/common/scripts/util.js")
+  script(type='text/javascript', src='/efsl/scripts/report_d3.js')
 block content
   .container-fluid
     .page-content

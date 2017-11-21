@@ -367,7 +367,7 @@ function drawAll(data, sdate, edate) {
     .group(eventBarGroup, "POWER", sel_stack('0'))
     .mouseZoomable(true)
     .renderHorizontalGridLines(true)
-    .x(d3.time.scale().domain([minDate-12*60*60*1000, maxDate]))
+    .x(d3.time.scale().domain([minDate-12*60*60*1000, maxDate]))    
     //.gap(gap)
     .round(d3.time.day.round)
     .xUnits(function(){return 10;})
@@ -396,14 +396,10 @@ function drawAll(data, sdate, edate) {
     //.y(d3.scale.linear().domain([0, data.length]))      
     .brushOn(false)
     .mouseZoomable(true)
-    .x(d3.time.scale().domain([minDate, maxDate]))
+    .x(d3.time.scale().domain([minDate+12*60*60*1000, maxDate-6*60*60*1000]))
     .y(d3.scale.linear().domain([0, 100]))
-    .round(function(d) {
-      if(gap > 30) {
-        return d3.time.month.round;
-      } else {
-      return d3.time.day.round;
-    }})
+    .xUnits(d3.time.days)
+    .round(d3.time.days.round)
     .renderHorizontalGridLines(true)
     .renderVerticalGridLines(true)
  //   .yAxisLabel("Date")

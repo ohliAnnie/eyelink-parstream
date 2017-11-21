@@ -21,14 +21,6 @@ router.get('/all', function(req, res, next) {
   res.render('./'+global.config.pcode+'/reports/report_all', { title: global.config.productname, mainmenu:mainmenu });
 });
 
-router.get('/main', function(req, res, next) {
-  res.render('./'+global.config.pcode+'/reports/main', { title: global.config.productname, mainmenu:mainmenu });
-});
-
-router.get('/d3', function(req, res, next) {
-  res.render('./'+global.config.pcode+'/reports/report_d3', { title: global.config.productname, mainmenu:mainmenu });
-});
-
 router.get('/power', function(req, res, next) {
   res.render('./'+global.config.pcode+'/reports/power', { title: global.config.productname, mainmenu:mainmenu });
 });
@@ -76,6 +68,7 @@ router.get('/restapi/getRangeData', function(req, res, next) {
             break;
           case "33" :     // 진동
             d.index = 2;
+            d.vibration = (d.vibration_x + d.vibration_y + d.vibration_z) / 3;
             d.event_name = 'VIBRATION';
             break;
           case "49" :    // 노이즈
@@ -107,7 +100,6 @@ router.get('/restapi/getRangeData', function(req, res, next) {
   });
 });
 
-
 // query Report
 router.get('/restapi/getRangePowerData', function(req, res, next) {
   console.log('reports/restapi/getRangePowerData');      
@@ -133,80 +125,9 @@ router.get('/restapi/getRangePowerData', function(req, res, next) {
         d.zone_id = 'ZONE-04'
         data.push(d);
       });      
+      console.log(data);
     }
     res.json({rtnCode: rtnCode, rtnData: data});
-  });
-});
-
-
-// query Report
-router.get('/restapi/testData', function(req, res, next) {
-  console.log('reports/restapi/testData');
-  var in_data = {MERGE:'Y'};
-  queryProvider.selectSingleQueryByID2("reports","testData", in_data, function(err, out_data, params) {
-    // console.log(out_data);
-    var rtnCode = CONSTS.getErrData('0000');
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');
-    }
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
-  });
-});
-
-// query RawData
-router.get('/restapi/getTbRawDataByPeriod', function(req, res, next) {
-  console.log(req.query);
-   var in_data = {
-      START_TIMESTAMP: req.query.startDate + ' 00:00:00',
-      END_TIMESTAMP: req.query.endDate + ' 23:59:59',
-      FLAG : 'N'};
-  queryProvider.selectSingleQueryByID2("reports","selectEventRawDataOld", in_data, function(err, out_data, params) {
-    // console.log(out_data);
-    var rtnCode = CONSTS.getErrData('0000');
-    if (out_data[0] === null) {
-      rtnCode = CONSTS.getErrData('0001');
-    }
-
-    console.log('reports/restapi/getTbRawDataByPeriod -> length : %s', out_data[0].length);
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
-  });
-});
-
-// query RawData Power
-router.get('/restapi/getTbRawDataByPeriodPower', function(req, res, next) {
-  console.log(req.query);
-   var in_data = {
-      START_TIMESTAMP: req.query.startDate + ' 00:00:00',
-      END_TIMESTAMP: req.query.endDate + ' 23:59:59',
-      FLAG : 'N'};
-  queryProvider.selectSingleQueryByID2("reports","selectEventRawDataPower", in_data, function(err, out_data, params) {
-    // console.log(out_data);
-    var rtnCode = CONSTS.getErrData('0000');
-    if (out_data[0] === null) {
-      rtnCode = CONSTS.getErrData('0001');
-    }
-
-    console.log('reports/restapi/getTbRawDataByPeriodPower -> length : %s', out_data[0].length);
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
-  });
-});
-
-// query RawData Power All
-router.get('/restapi/getTbRawDataByAllPower', function(req, res, next) {
-  console.log(req.query);
-   var in_data = {
-      START_TIMESTAMP: req.query.startDate + ' 00:00:00',
-      END_TIMESTAMP: req.query.endDate + ' 23:59:59',
-      FLAG : 'N'};
-  queryProvider.selectSingleQueryByID2("reports","selectEventRawDataPowerAll", in_data, function(err, out_data, params) {
-    // console.log(out_data);
-    var rtnCode = CONSTS.getErrData('0000');
-    if (out_data[0] === null) {
-      rtnCode = CONSTS.getErrData('0001');
-    }
-
-    console.log('reports/restapi/getTbRawDataByAllPower -> length : %s', out_data[0].length);
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });
 });
 
