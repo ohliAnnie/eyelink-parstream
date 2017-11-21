@@ -15,30 +15,13 @@ $(document).ready(function() {
     todayBtn: true,
     pickerPosition: "bottom-left"
   });
-  // Click creation date
-  clickLinkFunc = function(link) {
-    $('#tblPatterns > tbody').empty();
-    d3.selectAll("svg").remove();
-    var creationDate = link.innerText || link.textContent;
-    //$('#creationDate').val(creationDate);
-    $("#lblCreatedDate").empty();
-    $("#lblCreatedDate").append(creationDate);
 
-    console.log(creationDate);
-    d3.selectAll("svg").remove();
-    loadPatternData(creationDate);
-  };
-
-  // getPatternList();  
-
-  //Metronic.init(); // init metronic core componets
-  //eyelinkLayout.init(); // init eyelinklayout
+  // Metronic.init(); // init metronic core componets
+  eyelinkLayout.init(); // init eyelinklayout
   // QuickSidebar.init(); // init quick sidebar
-  // Layout.init(); // init layout
-  // Demo.init(); // init index page
-  // ComponentsPickers.init();
+  Layout.init(); // init layout
+  ComponentsPickers.init();
   TableManaged.init();
-  // ComponentsDropdowns.init();
 });
 
 
@@ -72,208 +55,187 @@ function getMatchingList() {
       drawMatchingHistory(matchingList);
     }
   });
-        //test(matchingList);
 }
 
-function test(matchingList){
-  var testdata = [];
-
-  matchingList.forEach(function(d) {
-    d = d._source.analysis;
-    testdata.push(d);
-  });
-  console.log("tetset");
-  console.log(testdata);
-
-  //$('#matchingList').empty();
-  $('#matchingList').DataTable({
-    data : testdata,
-    "columns" : [
-      {title: "matching time", data: "timestamp"},
-      {title: "voltage", data: "voltage_status",
-        render: function(data, type, row, meta){
-          if(type == 'display'){
-            data = '<a href="#" class="clickV">' + data + '</a>';
-          }
-          return data;
-        }
-      },
-      {title: "ampere", data: "ampere_status",
-        render: function(data, type, row, meta){
-          if(type == 'display'){
-            data = '<a href="#" class="clickA">' + data + '</a>';
-          }
-          return data;
-        }
-      },
-      {title: "active_power", data: "active_power_status",
-        render: function(data, type, row, meta){
-          if(type == 'display'){
-            data = '<a href="#" class="clickAP">' + data + '</a>';
-          }
-          return data;
-        }
-      },
-      {title: "power_factor", data: "power_factor_status",
-        render: function(data, type, row, meta){
-          if(type == 'display'){
-            data = '<a href="#" class="clickPF">' + data + '</a>';
-          }
-          return data;
-        }
-      },
-      {title: "v_cluster", data: "voltage"},
-      {title: "a_cluster", data: "ampere"},
-      {title: "ap_cluster", data: "active_power"},
-      {title: "pf_cluster", data: "power_factor"}
-    ],
-    "columnDefs": [
-      {"targets": [5,6,7,8], "visible": false}
-    ]
-  });
-}
 
 function drawMatchingHistory(matchingList) {
+  $('#tblMatchingList').empty();
   var sb = new StringBuffer();
   sb.append('<div class="portlet-body form"><div class="historyTable" style="height:auto">');
-  sb.append('<table class="table table-striped table-bordered table-hover" id="sample_2">');
-  sb.append('<th>Matching Time</th><th>active_power</th><th>ampere</th><th>power_factor</th><th>voltage</th></tr></thead><tbody>');
+  sb.append('<table class="table table-striped table-bordered table-hover" id="dtPattern">');
+  sb.append('<thead><tr><th rowspan="2"> Matching Time </th>');
+  sb.append('<th colspan="2"> active_power </th><th colspan="2"> ampere </th><th colspan="2"> power_factor </th><th colspan="2"> voltage </th></tr>');
+  sb.append('<tr><th>cluster</th><th>status</th><th>cluster</th><th>status</th><th>cluster</th><th>status</th><th>cluster</th><th>status</th></tr>');
+  sb.append('</thead><tbody>');
 
+  console.log(matchingList);
   matchingList.forEach(function(d) {
     d = d._source.da_result;
-    console.log(d);
     var matchingTime = d.timestamp.replace('T', ' ');
-
+    console.log(d);
+    
     sb.append('<tr><td>' + matchingTime + '</td>');
-    sb.append('<tr><a class="')
-
-    var preTag = '<td style="text-align:center"><a onclick="javascript_:clickPattern('
-    var dataTag = '<tr><td style="text-align:center">' + listkey +'</td>' +
-      preTag + "'voltage'," + "'" + d.timestamp + "','" + d.voltage+ "'" + ')">' + d.voltage_status +'</td>' +
-      preTag + "'ampere'," + "'" + d.timestamp + "','" + d.ampere+ "'" + ')">' + d.ampere_status +'</td>' +
-      preTag + "'active_power'," + "'" + d.timestamp + "','" + d.active_power+ "'" + ')">' + d.active_power_status +'</td>' +
-      preTag + "'power_factor'," + "'" + d.timestamp + "','" + d.power_factor+ "'" + ')">' + d.power_factor_status +'</td>' +
-      '</tr>';
-    sb.append(dataTag);
+    sb.append('<td><a class="clickPattern" group="active_power">' + d.active_power.top_1 + '</td>');
+    sb.append('<td>' + d.active_power.status.status + '</td>');
+    sb.append('<td><a class="clickPattern" group="ampere">' + d.ampere.top_1 + '</td>');
+    sb.append('<td>' + d.ampere.status.status + '</td>');
+    sb.append('<td><a class="clickPattern" group="power_factor">' + d.power_factor.top_1 + '</td>');
+    sb.append('<td>' + d.power_factor.status.status + '</td>');
+    sb.append('<td><a class="clickPattern" group="voltage">' + d.voltage.top_1 + '</td>');
+    sb.append('<td>' + d.voltage.status.status + '</td>');
+    sb.append('</tr>');
   });
-  sb.append("</tbody>");
-  $('#matchingList').append(sb.toString());
-}
+  sb.append("</tbody></table></div></div>");
+  $('#tblMatchingList').append(sb.toString());
+  TableManaged.init();
 
-function clickPattern(factor,timestamp,clusterNo){
-  console.log(factor, timestamp, clusterNo);
-  var creationDate = timestamp.split('T')[0];
-  var target = "pattern_data." + factor + ".center." + clusterNo;
-  var data = {id : creationDate, target : target};
-  var in_data = { url : "/analysis/restapi/getClusterPattern", type : "GET", data : data };  
-  ajaxTypeData(in_data, function(result){  
-    if (result.rtnCode.code == "0000") {
-      console.log(result);
-      var matchData = result.rtnData.pattern_data[factor]['center'][clusterNo];
-      console.log(matchData);
-      // var pCenter = result.rtnData.pattern_data[factor]['center'][clusterNo];
-      // var pMin = result.rtnData.pattern_data[factor]['min_value'][clusterNo];
-      // var pMax = result.rtnData.pattern_data[factor]['max_value'][clusterNo];
-      // var pLower = result.rtnData.pattern_data[factor]['lower'][clusterNo];
-      // var pUpper = result.rtnData.pattern_data[factor]['upper'][clusterNo];
-      // console.log(pCenter, pMin, pMax, pLower, pUpper);
+  ////////// click event //////////
+  $('#dtPattern').on('click', '.clickPattern', function(){
+    d3.selectAll("svg").remove();
+    $('#dtPattern').DataTable().$('.clickPattern').css({'color':'', 'font-weight': ''});
+    $(this).css({'color':'red', 'font-weight': 'bold'});
 
-      // var listVal = [];
-      // listVal.push(Math.max.apply(Math, pCenter));
-      // listVal.push(Math.min.apply(Math, pCenter));
-      // listVal.push(Math.max.apply(Math, pMax));
-      // listVal.push(Math.min.apply(Math, pMin));
+    var group = $(this).attr("group");
+    // var top1 = $(this).attr("top1");
+    // var top2 = $(this).attr("top2");
+    // var top3 = $(this).attr("top3");
+    // var matchingTime = $(this).closest('tr')[0].cells[0].innerText;
+    // matchingTime = matchingTime.replace(' ', 'T') + 'Z';
 
-      var minval = Math.min.apply(Math, matchData);
-      var maxval = Math.max.apply(Math, matchData);
-      var stime = new Date(Date.parse(timestamp) - (1000*60*110));
-      var set = [];
-      console.log(stime);
+    var rowInd = $('#dtPattern').dataTable().fnGetPosition($(this).closest('tr')[0]);
+    var targetData = matchingList[rowInd]._source.da_result[group];
+    console.log(targetData);
 
-      for(i=0; i<matchData.length; i++){
-        set.push({ind : i, x : stime-(i-120)*60*1000, y : matchData[i]});
-      }
-
-      console.log(set);
-
-      d3.selectAll("svg").remove();
-      drawPatternChart(stime, set, minval, maxval);
-    } else {
-      console.log("failure!!!!!!!");
-    }  
+    var graphData = getGraphData(targetData);
+    drawPatternChart(graphData);
   });
 }
 
-function drawPatternChart(stime, matchData, minval, maxval){
-  var etime = new Date(Date.parse(stime) + (1000*60*120));
+function getGraphData(targetData) {
+  graphData = {};
+  var realSet = [];
+  var top1Set = [];
+  var top2Set = [];
+  var top3Set = [];
 
-  console.log(stime, etime);
-  // var timeRange = $('select[name=timeRange').val();
-  // var startDt = new Date(Date.parse(basetime) - (1000*60*timeRange));
-  // var endDt = new Date(Date.parse(basetime) + (1000*60*timeRange));
-  // var stime = dateConvert(startDt)
-  // var etime = dateConvert(endDt)
-  // var stime = new Data(parseInt)
+  for (i=0; i<targetData.realValue.length; i++) {
+    realSet.push({ x : i, y : targetData.realValue[i]});
+  }
+  for (i=0; i<targetData.top_1_value.length; i++) {
+    top1Set.push({ x : i, y : targetData.top_1_value[i]});
+    top2Set.push({ x : i, y : targetData.top_2_value[i]});
+    top3Set.push({ x : i, y : targetData.top_3_value[i]});
+  }
 
-  //////////////////////////////
-  var margin = {top: 10, right: 20, bottom: 20, left: 40},
-    width = (window.innerWidth*0.44) - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom;
+  var array = targetData.top_1_value.concat(targetData.top_2_value, targetData.top_3_value);
+  var minVal = Math.min.apply(null,array);
+  var maxVal = Math.max.apply(null,array);
 
-  var xScale = d3.time.scale()
-    .domain([stime, etime])
-    .range([0, width]);
+  graphData.realSet = realSet;
+  graphData.top1Set = top1Set;
+  graphData.top2Set = top2Set;
+  graphData.top3Set = top3Set;
+  graphData.minVal = minVal;
+  graphData.maxVal = maxVal;
+
+  console.log(graphData);
+  return graphData;
+}
 
 
-  var yScale = d3.scale.linear()
-    .domain([0, maxval])
-    .range([height, 0]);
+function drawPatternChart(graphData){
+
+  var margin = {top: 30, right: 60, bottom: 30, left: 55},
+                width = (window.innerWidth*0.38) - margin.left - margin.right,
+                height = 400 - margin.top - margin.bottom;
+  var xScale = d3.scale.linear().range([0, width]);
+  var yScale = d3.scale.linear().range([height, 0]);
 
   var xAxis = d3.svg.axis()
       .scale(xScale)
       .orient("bottom")
       .innerTickSize(-height)
-      .outerTickSize(0)
+      .outerTickSize(1)
       .tickPadding(10);
-
   var yAxis = d3.svg.axis()
       .scale(yScale)
       .orient("left")
       .innerTickSize(-width)
-      .outerTickSize(0)
+      .outerTickSize(1)
       .tickPadding(10);
-
-  var line = d3.svg.line()
-      .x(function(d) { return xScale(d.x); })
-      .y(function(d) { return yScale(d.y); });
 
   var svg = d3.select("#patternChart")
       .append("svg")
           .attr("width", width + margin.left + margin.right)
           .attr("height", height + margin.left + margin.bottom)
       .append("g")
-          .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
-    
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  xScale.domain([0, d3.max(graphData.top1Set, function(d){ return d.x; })]);
+  yScale.domain([graphData.minVal, graphData.maxVal+(graphData.maxVal/100)]);
+
+  var top1Line = d3.svg.line()
+      .x(function(d) { return xScale(d.x); })
+      .y(function(d) { return yScale(d.y); });
+  var top2Line = d3.svg.line()
+      .x(function(d) { return xScale(d.x); })
+      .y(function(d) { return yScale(d.y); });
+  var top3Line = d3.svg.line()
+      .x(function(d) { return xScale(d.x); })
+      .y(function(d) { return yScale(d.y); });
+  var realLine = d3.svg.line()
+      .x(function(d) { return xScale(d.x); })
+      .y(function(d) { return yScale(d.y); });
 
   // Add the X Axis
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
 
-    // Add the Y Axis
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis);
+  // Add the Y Axis
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
 
-    svg.append("path")
-        .data([matchData])
-        .attr("fill", "none")
-        .attr("stroke", "steelblue")
-        .attr("stroke-linejoin", "round")
-        .attr("stroke-linecap", "round")
-        .attr("stroke-width", 3)
-        .attr("d", line);
+
+  svg.append("path")
+      .data([graphData.top1Set])
+      .attr("fill", "none")
+      .attr("stroke", "darkgreen")
+      .attr("opacity", 0.5)
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 4)
+      .attr("d", top1Line);
+
+  svg.append("path")
+      .data([graphData.top2Set])
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("opacity", 0.5)
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 4)
+      .attr("d", top2Line);
+
+  svg.append("path")
+      .data([graphData.top3Set])
+      .attr("fill", "none")
+      .attr("stroke", "tan")
+      .attr("opacity", 0.5)
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 4)
+      .attr("d", top3Line);
+
+  svg.append("path")
+      .data([graphData.realSet])
+      .attr("fill", "none")
+      .attr("stroke", "crimson")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 4)
+      .attr("d", realLine);
+
 }
 

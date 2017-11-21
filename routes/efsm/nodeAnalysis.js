@@ -205,6 +205,7 @@ router.get('/restapi/getPatterns', function(req, res, next) {
       res.json({rtnCode: rtnCode});
     } else {
       var patternData = out_data[0]._source.da_result;
+      logger.debug('######################', patternData.ampere.cluster_032);
       if (req.query.id == "master"){
         res.json({rtnCode: rtnCode, patternData: patternData});
       } else {
@@ -216,13 +217,13 @@ router.get('/restapi/getPatterns', function(req, res, next) {
             res.json({rtnCode: rtnCode});
           } else {
             var masterData = out_data[0]._source.da_result;
+            logger.debug('######################', masterData.ampere.cluster_121);
 
             for (var group in patternData) {
               for (var cno in patternData[group]) {
-                if (patternData[group][cno]['masterCN'] != 'unknown'){
-                  patternData[group][cno]['status'] = masterData[group][cno]['status'];
-                } else {
-                  patternData[group][cno]['status'] = 'undefined';
+                mCno = patternData[group][cno]['masterCN'];
+                if (mCno != 'unknown'){
+                  patternData[group][cno]['status'] = masterData[group][mCno]['status'];  
                 }
               }
             }
