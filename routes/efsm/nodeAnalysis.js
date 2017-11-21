@@ -21,7 +21,7 @@ var indexPatternMatching = global.config.da_index.ad_pattern_matching;
 var startTime = CONSTS.STARTTIME.KOREA;
 var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
 var fmt2 = CONSTS.DATEFORMAT.DATETIME; // "YYYY-MM-DD HH:MM:SS",
-var fmt4 = CONSTS.DATEFORMAT.INDEXDATE; // "YYYY.mm.DD",
+var fmt4 = CONSTS.DATEFORMAT.INDEXDATE; // "YYYY.MM.DD",
 
 /* GET reports page. */
 router.get('/', function(req, res, next) {

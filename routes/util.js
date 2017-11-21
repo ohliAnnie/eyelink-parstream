@@ -140,6 +140,7 @@ function convertDateFormat(fmt, utcYN, delimYN) {
   fmt = fmt.replace('DD', 'dd');
   fmt = fmt.replace(':SS', ':ss');
   fmt = fmt.replace('.L', '.l');
+  fmt = fmt.replace('.MM', '.mm');
 
   if (utcYN == 'Y') {
     fmt = 'UTC:' + fmt;
@@ -180,8 +181,7 @@ function getToday(fmt, utcYN, delimYN) {
 function getMs2Date(cur, fmt, delimYN) {
   var d = new Date(cur);
 
-  fmt = convertDateFormat(fmt, 'Y', delimYN);
-
+  fmt = convertDateFormat(fmt, 'Y', delimYN);  
   return dateFormat(d, fmt);
 }
 

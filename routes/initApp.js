@@ -9,6 +9,7 @@ var queryProvider = new QueryProvider();
 
 function loadQuery(callback) {
   var parser = new xml2js.Parser();
+
   logger.info('loadQuery -> ' + __dirname + '/' + global.config.fetchData.database + '/' + global.config.pcode + '/dbquery.xml')
   fs.readFile(__dirname + '/dao/' + global.config.fetchData.database + '/' + global.config.pcode + '/dbquery.xml', function(err, data) {
     parser.parseString(data, function (err, result) {

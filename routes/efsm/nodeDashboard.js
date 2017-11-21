@@ -19,7 +19,7 @@ var indexMetric = global.config.es_index.es_metric;
 var startTime = CONSTS.STARTTIME.KOREA;
 var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
 var fmt2 = CONSTS.DATEFORMAT.DATETIME; // "YYYY-MM-DD HH:MM:SS",
-var fmt4 = CONSTS.DATEFORMAT.INDEXDATE; // "YYYY.mm.DD",
+var fmt4 = CONSTS.DATEFORMAT.INDEXDATE; // "YYYY.MM.DD",
 
 router.get('/', function(req, res, next) {
   mainmenu.dashboard = 'open selected';
@@ -90,9 +90,7 @@ router.get('/error_pop_agent', function(req, res, next) {
   });  
 });     
 
-router.get('/bottleneck', function(req, res, next) {
-  mainmenu.dashboard = 'open selected';
-  mainmenu.timeseries = '';
+router.get('/bottleneck', function(req, res, next) {  
   var server = req.query.server;    
   var in_data = { index:  indexAppinfo, type: "applicationInfo" };
   queryProvider.selectSingleQueryByID2("dashboard","selectByIndex", in_data, function(err, out_data, params) {     
@@ -116,8 +114,7 @@ router.get('/bottleneck', function(req, res, next) {
 });
 
 
-router.get('/trenddata', function(req, res, next) {
-  mainmenu.dashboard = ' open selected';  
+router.get('/trenddata', function(req, res, next) {  
   res.render('./dashboard/trenddata', { title: global.config.productname, mainmenu:mainmenu, indexs: indexAcc});
 });
 
@@ -166,7 +163,7 @@ router.get('/restapi/selectJiraSankeyByLink', function(req, res, next) {
   logger.debug('dashboard/restapi/selectJiraSankeyByLink');
   if(req.query.gap == 0){
     var day = Utils.getMs2Date(parseInt(req.query.date), fmt1, 'N');
-    var from = Utils.getDate(day, fmt1, -1, 0, 0, 0);    
+    var from = Utils.getDate(day, fmt1, -1, 0, 0, 0);
     var in_data = {
       //index:  [indexAcc+Utils.getDate(from, fmt4, 0, 0, 0, 0),  indexAcc+Utils.getDate(day, fmt4, 0, 0, 0, 0)],
       index : [indexAcc+'*'], type : "access", START : from+startTime,  END : day+startTime  };   
