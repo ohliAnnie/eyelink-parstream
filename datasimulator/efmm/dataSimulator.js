@@ -53,62 +53,118 @@ logger.info('=========================================================');
 */
 /*
   1초마다 1회 Random(1,1000) 실행 rdx값이
-    - 1~990 : 양품 생산 이벤트 발생
-    - 991~999 : 불량품 생산 이벤트 발생
-    - 1000 : down_time 발생
+    - 1~980 : 양품 생산 이벤트 발생
+    - 981~990 : 불량품 생산 이벤트 발생
+    - 990 ~ 1000 : down_time 발생
 */
 var accept_count = 0;
 var reject_count = 0;
 var cnt = 0;
-var isInitOEE = false;
 var cnt_init_oee = 0;
+var init_oee_time = '09:00:00';
+var meal_break_time1 = '12';
+var meal_break_time2 = '18';
+var short_break_term = 4 * 60 * 60;
+var short_break_period = 15 * 60 * 60;
+var down_time_period = 30 * 60 * 60;
+
+var short_break_cnt = 0;
+var v_short_break_period = short_break_period;
+var isDownTime = false;
+var down_time_cnt = 0;
+
+// for test
+// var curdate = '2017-11-20 10:59:55';
+
 while(true) {
+  var isNormal = true;
   var rdx = Utils.generateRandom(1, 1000);
+
+  // for test : oee init
+  // curdate = Utils.getDate(curdate, CONSTS.DATEFORMAT.DATETIME, 0, 0, 0, 1);
+
   var curdate = Utils.getToday(CONSTS.DATEFORMAT.DATETIME);
   logger.debug('rdx : %s, today : %s', rdx, curdate);
 
-  curdate = '2017-11-20 09:00:36';
-  // 09:00 이면 OEE를 초기화하고 처리한다.
-  if (isInitOEE == false && curdate.indexOf(curdate.substring(0,11) + '09:00') > -1) {
-    logger.debug('init oee data');
+  // 09:00 이면 OEE 관련 데이터를 초기화한다.
+  //  - 누적 생산량 값 초기화
+  if (compareTime(curdate, init_oee_time)) {  // oee init
+    logger.info('initiate OEE data');
     accept_count = 0;
     reject_count = 0;
-    isInitOEE = true;
-  } else if (curdate.indexOf(curdate.substring(0,11) + '09:01') > -1) {
-    isInitOEE = false;
+  } else if (compareTime(curdate, meal_break_time1) || compareTime(curdate, meal_break_time2)) { // meal_break event
+    // json data에서 날짜값과 양불량품개수 값을 변경
+    setDataInEventData('meal_break', curdate);
+    isNormal = false;
+  } else if (short_break_cnt > short_break_term) { // short_break event
+    // json data에서 날짜값과 양불량품개수 값을 변경
+    setDataInEventData('short_break', curdate);
+    isNormal = false;
+    v_short_break_period--;
+    if (v_short_break_period == 0) {
+      short_break_cnt = 0;
+      v_short_break_period = short_break_period;
+    }
+  } else if (rdx > 990) {   // down_time event
+    isNormal = false;
+    isDownTime = true;
   }
 
-  if (rdx <= 500) {
+  if (isDownTime) {
     // json data에서 날짜값과 양불량품개수 값을 변경
-    setDataInEventData(simuldata.normal_accept, curdate);
-    // 누적 양품 생산량 합산
-    // simuldata.normal_accept
-    logger.debug('stacking data -> normal_accept : %s', JSON.stringify(simuldata.normal_accept.data[0]));
-  } else if (rdx > 500 && rdx < 1000) {
-    // json data에서 날짜값과 양불량품개수 값을 변경
-    setDataInEventData(simuldata.normal_reject, curdate);
-    logger.debug('stacking data -> normal_reject : %s', JSON.stringify(simuldata.normal_reject.data[0]));
-  } else if (rdx == 1000) {
-    // json data에서 날짜값과 양불량품개수 값을 변경
-    setDataInEventData(simuldata.down_time, curdate);
-    logger.debug('stacking data -> down_time : %s', JSON.stringify(simuldata.down_time.data[0]));
+    setDataInEventData('down_time', curdate);
+    down_time_cnt++;
+    if (down_time_cnt == down_time_period) {
+      down_time_cnt = 0;
+      isDownTime = false;
+    }
+
+  } else if (isNormal) {
+    if (rdx <= 980) {
+      // json data에서 날짜값과 양불량품개수 값을 변경
+      setDataInEventData('normal_accept', curdate);
+      // 누적 양품 생산량 합산
+
+    } else if (rdx > 980 && rdx < 990) {
+      // json data에서 날짜값과 양불량품개수 값을 변경
+      setDataInEventData('normal_reject', curdate);
+    }
   }
+
+  short_break_cnt ++;
 
   // for test
   cnt++;
-  if (cnt > 1000) break;
+  if (cnt > 5) break;
 
   sleep(1000);
 }
 
-function setDataInEventData(vJson, curdate) {
+function compareTime(d1, t1) {
+  return d1.indexOf(' ' + t1) > 0 ? true : false;
+  // var d2 = new Date(d1.substring(0,11) + d2);
+  // var d1 = new Date(d1);
+  // var gap = d1.getTime() - d2.getTime();
+  // gap = gap / 1000 / 60 / 60;
+  // logger.debug('gap : ', gap);
+  // return isEqual;
+}
 
+function setDataInEventData(key, curdate) {
+  // TODO bulk insert 로직으로 보강이 필요함.
+  var listData = [];
+  var vJson = simuldata[key];
   accept_count = accept_count + vJson.data[0].accept_pieces;
   reject_count = reject_count + vJson.data[0].reject_pieces;
   vJson.dtTransmitted = curdate;
   vJson.data[0].dtSensed = curdate;
   vJson.data[0].total_accept_pieces = accept_count;
   vJson.data[0].total_reject_pieces = reject_count;
+  logger.debug('%s : %s', key, JSON.stringify(vJson.data[0]));
+
+  var index = makeIndexName(vJson);
+  listData.push(vJson);
+  insertData(index, listData);
 }
 
 // ElasticSearch dateType으로 날짜 형식을 변환
@@ -137,7 +193,7 @@ function convertDateFormat(val) {
 //   ex) efmm_notching_oee_2017.11.24
 function makeIndexName(jData) {
   var indexName = 'EFMM_' + jData.flag.toUpperCase() + '_' + jData.sensorType.toUpperCase();
-  var dt = '-' + jData.dtTransmitted.substring(0,10).replace(/\//g, '.');
+  var dt = '-' + jData.dtTransmitted.substring(0,10).replace(/-/g, '.');
   return {
     indexName : CONSTS.SCHEMA_EFMM[indexName].INDEX + dt,
     typeName : CONSTS.SCHEMA_EFMM[indexName].TYPE
@@ -146,7 +202,7 @@ function makeIndexName(jData) {
 
 function insertData(index, listData){
 
-  logger.debug('Inserting index : %s, data : %s', index, listData);
+  // logger.debug('Inserting index : %s, data : %s', index, listData);
   var in_data = {
     index : index.indexName,
     type : index.typeName,

@@ -22,7 +22,7 @@ log4js.configure({
   },
   'categories' :
   {
-    'default' : { 'appenders': ['console', 'file'], 'level' : 'info'}
+    'default' : { 'appenders': ['console', 'file'], 'level' : 'debug'}
   }
 });
 var logger = log4js.getLogger('dataCollector');
@@ -168,7 +168,7 @@ function printUsage() {
 
 function insertData(index, listData){
 
-  logger.debug('Inserting index : %s, data : %s', index, listData);
+  // logger.debug('Inserting index : %s, data : %s', index, listData);
   var in_data = {
     index : index.indexName,
     type : index.typeName,
