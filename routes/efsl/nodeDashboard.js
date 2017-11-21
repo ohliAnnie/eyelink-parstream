@@ -11,20 +11,9 @@ var queryProvider = new QueryProvider();
 var mainmenu = {dashboard:'open selected', timeseries:'', reports:'', analysis:'', management:'', settings:''};
 
 /* GET reports page. */
-router.get('/', function(req, res, next) {
-  // console.log(_rawDataByDay);
-  mainmenu.dashboard = ' open selected';
-  mainmenu.timeseries = '';
+router.get('/', function(req, res, next) {  
   res.render('./'+global.config.pcode+'/dashboard/dashboard', { title: global.config.productname, mainmenu:mainmenu});
 });
-
-router.get('/timeseries', function(req, res, next) {
-  // console.log(_rawDataByDay);
-  mainmenu.dashboard = '';
-  mainmenu.timeseries = ' open selected';
-  res.render('./'+global.config.pcode+'/dashboard/timeseries', { title: global.config.productname, mainmenu:mainmenu });
-});
-
 
 // test db query logic
 router.get('/restapi/get_successcount', function(req, res, next) {
