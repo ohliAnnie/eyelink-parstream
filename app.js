@@ -17,6 +17,7 @@ global.logger = global.log4js.getLogger('app');
 global.config = require('./config/config.json');
 // global.config = config;
 
+
 // npm start 시작시 입력받은 pcode 값으로 global.config.pcode 값 변경.
 global.config.pcode = process.argv[2];
 global.config.productname = global.config.products[global.config.pcode].productName;

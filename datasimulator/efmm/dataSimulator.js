@@ -1,8 +1,3 @@
-if ( process.argv[2] == null) {
-  printUsage();
-  process.exit();
-}
-
 global.log4js = require('log4js');
 log4js.configure({
   'appenders':
@@ -14,7 +9,7 @@ log4js.configure({
       'file' :
       {
         'type': 'file',
-        'filename': './datacollector.log',
+        'filename': './datasimulator.log',
         'maxLogSize': 1024000,
         'backups': 5,
         'category': 'eyelink'
@@ -22,7 +17,7 @@ log4js.configure({
   },
   'categories' :
   {
-    'default' : { 'appenders': ['console', 'file'], 'level' : 'info'}
+    'default' : { 'appenders': ['console', 'file'], 'level' : 'debug'}
   }
 });
 var logger = log4js.getLogger('dataSimulator');
@@ -32,98 +27,144 @@ logger.info('Data Simulator has been started.');
 logger.info(__dirname);
 
 var fs = require('fs');
+var sleep = require('system-sleep');
 var Utils = require('../../routes/util');
 var CONSTS = require('../../routes/consts');
-var readline = require('linebyline');
+var simuldata = require('../../source/efmm/stacking_simulate.json');
 var QueryProvider = require('../../routes/dao/elasticsearch/nodelib-es').QueryProvider;
 var queryProvider = new QueryProvider();
 
-
-const datafilepath = process.argv[2];
 const bulkSize = 100;     // bulk insert 하는 데이터 count
 
+// simuldata = JSON.parse(simuldata);
+
 logger.info('=========================================================');
-logger.info('== Data File Path        : ', datafilepath);
+logger.info('== Simulate Data      : ', simuldata);
 logger.info('=========================================================');
 
-var listJsonData = [];
-var totalCount = 0;
-// Directory 내 파일 list를 읽는다.
-fs.readdirSync(datafilepath).forEach(function(file) {
-  //
-  var match = file.match(/.json/);
-  if (match !== null) {
-    logger.info('read file : %s', file);
+/*
+  데이터 발생 조건
+    - OEE 기준 : 24 시간 (9:00 ~ 익일 8:59)
+    - 12:00 ~ 1:00, 6:00 ~ 7:00 meal time 발생
+    - 장비별 4시간마다 1회 Real 교체에 따른 15분 short break 발생
+    - 1일 최대 1회, 30분간 Random하게 down time 발생
+    - 생산량은 1초당 3개 생산
+    - 양품 : 초당 3개
+*/
+/*
+  1초마다 1회 Random(1,1000) 실행 rdx값이
+    - 1~980 : 양품 생산 이벤트 발생
+    - 981~990 : 불량품 생산 이벤트 발생
+    - 990 ~ 1000 : down_time 발생
+*/
+var accept_count = 0;
+var reject_count = 0;
+var cnt = 0;
+var cnt_init_oee = 0;
+var init_oee_time = '09:00:00';
+var meal_break_time1 = '12';
+var meal_break_time2 = '18';
+var short_break_term = 4 * 60 * 60;
+var short_break_period = 15 * 60 * 60;
+var down_time_period = 30 * 60 * 60;
 
-    var lineReader = readline(datafilepath+'/'+file);
+var short_break_cnt = 0;
+var v_short_break_period = short_break_period;
+var isDownTime = false;
+var down_time_cnt = 0;
 
-    // 실제 라인 단위로 데이터 읽어와서 처리하는 로직 시작.
-    lineReader.on('line', function(line, lineCount, byteCount) {
-      totalCount++;
-      logger.info('%s - json data : %d, %d, %s', file, lineCount, byteCount, line);
-      makeListData(file, JSON.parse(line));
-    })
-    .on('error', function(e) {
+// for test
+// var curdate = '2017-11-20 10:59:55';
 
-    })
-    .on('close', function() {
-      logger.info('lineRead close start');
-      // bulkSize를 다 채우지 못한고 listJsonData에 남은 데이터 DB Insert 처리
-      for(var i=0; i<listJsonData.length; i++) {
-        var item = listJsonData[i];
-        if (item.listData.length > 0) {
-          // logger.debug('listData[0] : %s', JSON.stringify(item));
-          var index = makeIndexName(item.listData[0]);
-          // logger.debug('last data - index : %s, data : %s', JSON.stringify(index), JSON.stringify(item.listData));
-          insertData(index, item.listData);
-          item.listData = [];
-        }
-      }
+while(true) {
+  var isNormal = true;
+  var rdx = Utils.generateRandom(1, 1000);
 
-      // logger.debug('listJsonData : %s', JSON.stringify(listJsonData, null, 2));
-      logger.info('totalCount : %s', totalCount);
-      logger.info('Data Simulator finished successfully.');
-    });
-  }
-});
+  // for test : oee init
+  // curdate = Utils.getDate(curdate, CONSTS.DATEFORMAT.DATETIME, 0, 0, 0, 1);
 
-function makeListData(fileName, jData) {
-  // logger.debug('start makeListData');
-  // 이미 listJsonData에 file명으로 key가 존재하는지 체크
-  //   - 존재하면 jsonData.data에 jData만 push
-  //   - 존재하지 않으면 list에 jsonData를 추가하고 jData에 Push
-  var isExist = false;
-  var jsonData;
-  for(var i=0; i<listJsonData.length; i++) {
-    var item = listJsonData[i];
-    if (item.name == fileName) {
-      isExist = true;
-      jsonData = item;
+  var curdate = Utils.getToday(CONSTS.DATEFORMAT.DATETIME);
+  logger.debug('rdx : %s, today : %s', rdx, curdate);
+
+  // 09:00 이면 OEE 관련 데이터를 초기화한다.
+  //  - 누적 생산량 값 초기화
+  if (compareTime(curdate, init_oee_time)) {  // oee init
+    logger.info('initiate OEE data');
+    accept_count = 0;
+    reject_count = 0;
+  } else if (compareTime(curdate, meal_break_time1) || compareTime(curdate, meal_break_time2)) { // meal_break event
+    // json data에서 날짜값과 양불량품개수 값을 변경
+    setDataInEventData('meal_break', curdate);
+    isNormal = false;
+  } else if (short_break_cnt > short_break_term) { // short_break event
+    // json data에서 날짜값과 양불량품개수 값을 변경
+    setDataInEventData('short_break', curdate);
+    isNormal = false;
+    v_short_break_period--;
+    if (v_short_break_period == 0) {
+      short_break_cnt = 0;
+      v_short_break_period = short_break_period;
     }
-  };
-
-  // ElasticSearch dateType으로 날짜 형식을 변환
-  changeDate(jData);
-
-  logger.debug('name : %s, exist : %s', fileName, isExist);
-  if (isExist == true) {
-    jsonData.listData.push(jData);
-
-    // listData가 bulkSize가 되면 DB에 Insert한 후 jsonData.listData를 초기화.
-    logger.debug('list data length : %s', jsonData.listData.length);
-    if (jsonData.listData.length == bulkSize) {
-      var index = makeIndexName(jData);
-      insertData(index, jsonData.listData);
-      jsonData.listData = [];
-    }
-  } else {
-    var item = {name : fileName, listData : []};
-    // logger.debug(item);
-    item.listData.push(jData);
-    listJsonData.push(item);
+  } else if (rdx > 990) {   // down_time event
+    isNormal = false;
+    isDownTime = true;
   }
-  // logger.debug('listJsonData2 : %s', JSON.stringify(listJsonData));
 
+  if (isDownTime) {
+    // json data에서 날짜값과 양불량품개수 값을 변경
+    setDataInEventData('down_time', curdate);
+    down_time_cnt++;
+    if (down_time_cnt == down_time_period) {
+      down_time_cnt = 0;
+      isDownTime = false;
+    }
+
+  } else if (isNormal) {
+    if (rdx <= 980) {
+      // json data에서 날짜값과 양불량품개수 값을 변경
+      setDataInEventData('normal_accept', curdate);
+      // 누적 양품 생산량 합산
+
+    } else if (rdx > 980 && rdx < 990) {
+      // json data에서 날짜값과 양불량품개수 값을 변경
+      setDataInEventData('normal_reject', curdate);
+    }
+  }
+
+  short_break_cnt ++;
+
+  // for test
+  cnt++;
+  if (cnt > 5) break;
+
+  sleep(1000);
+}
+
+function compareTime(d1, t1) {
+  return d1.indexOf(' ' + t1) > 0 ? true : false;
+  // var d2 = new Date(d1.substring(0,11) + d2);
+  // var d1 = new Date(d1);
+  // var gap = d1.getTime() - d2.getTime();
+  // gap = gap / 1000 / 60 / 60;
+  // logger.debug('gap : ', gap);
+  // return isEqual;
+}
+
+function setDataInEventData(key, curdate) {
+  // TODO bulk insert 로직으로 보강이 필요함.
+  var listData = [];
+  var vJson = simuldata[key];
+  accept_count = accept_count + vJson.data[0].accept_pieces;
+  reject_count = reject_count + vJson.data[0].reject_pieces;
+  vJson.dtTransmitted = curdate;
+  vJson.data[0].dtSensed = curdate;
+  vJson.data[0].total_accept_pieces = accept_count;
+  vJson.data[0].total_reject_pieces = reject_count;
+  logger.debug('%s : %s', key, JSON.stringify(vJson.data[0]));
+
+  var index = makeIndexName(vJson);
+  listData.push(vJson);
+  insertData(index, listData);
 }
 
 // ElasticSearch dateType으로 날짜 형식을 변환
@@ -152,23 +193,16 @@ function convertDateFormat(val) {
 //   ex) efmm_notching_oee_2017.11.24
 function makeIndexName(jData) {
   var indexName = 'EFMM_' + jData.flag.toUpperCase() + '_' + jData.sensorType.toUpperCase();
-  var dt = '-' + jData.dtTransmitted.substring(0,10).replace(/\//g, '.');
+  var dt = '-' + jData.dtTransmitted.substring(0,10).replace(/-/g, '.');
   return {
     indexName : CONSTS.SCHEMA_EFMM[indexName].INDEX + dt,
     typeName : CONSTS.SCHEMA_EFMM[indexName].TYPE
   };
 }
 
-function printUsage() {
-  console.log('Usage : $ node dataSimulator.js [data source file path]');
-  console.log('    []: required, {}: optional');
-  console.log('');
-  console.log('Ex. $ node dataSimulator.js ./source/efmm');
-}
-
 function insertData(index, listData){
 
-  logger.debug('Inserting index : %s, data : %s', index, listData);
+  // logger.debug('Inserting index : %s, data : %s', index, listData);
   var in_data = {
     index : index.indexName,
     type : index.typeName,
