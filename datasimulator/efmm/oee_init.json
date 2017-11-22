@@ -1,0 +1,13 @@
+{
+  "total_shift_length" : 0,
+  "total_short_break" : 0,
+  "total_meal_break" : 0,
+  "total_down_time" : 0,
+  "ideal_run_rate" : 3,
+  "total_accept_pieces" : 0,
+  "total_reject_pieces" : 0,
+  "availability" : 0,
+  "performance" : 0,
+  "quality" : 0,
+  "overall_oee" : 0
+}
