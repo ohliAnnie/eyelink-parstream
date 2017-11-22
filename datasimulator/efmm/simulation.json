@@ -10,6 +10,7 @@
     [
       {
         "dtSensed" : "",
+        "status" : "Running",
         "shift_length" : 1,
         "short_break" : 0,
         "meal_break" : 0,
@@ -31,6 +32,7 @@
     [
       {
         "dtSensed" : "",
+        "status" : "Running",
         "shift_length" : 1,
         "short_break" : 0,
         "meal_break" : 0,
@@ -52,6 +54,7 @@
     [
       {
         "dtSensed" : "",
+        "status" : "ShortBreak",
         "shift_length" : 1,
         "short_break" : 1,
         "meal_break" : 1,
@@ -73,6 +76,7 @@
     [
       {
         "dtSensed" : "",
+        "status" : "MealBreak",
         "shift_length" : 1,
         "short_break" : 0,
         "meal_break" : 1,
@@ -94,6 +98,7 @@
     [
       {
         "dtSensed" : "",
+        "status" : "DownTime",
         "shift_length" : 1,
         "short_break" : 0,
         "meal_break" : 0,
