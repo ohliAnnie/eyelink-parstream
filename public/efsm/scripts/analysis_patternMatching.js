@@ -119,15 +119,15 @@ function getGraphData(targetData) {
   var top3Set = [];
 
   for (i=0; i<targetData.realValue.length; i++) {
-    realSet.push({ x : i, y : targetData.realValue[i]});
+    realSet.push({ x : i, y : targetData.realValue[i].toFixed(3)});
   }
   for (i=0; i<targetData.top_1_value.length; i++) {
-    top1Set.push({ x : i, y : targetData.top_1_value[i]});
-    top2Set.push({ x : i, y : targetData.top_2_value[i]});
-    top3Set.push({ x : i, y : targetData.top_3_value[i]});
+    top1Set.push({ x : i, y : targetData.top_1_value[i].toFixed(3)});
+    top2Set.push({ x : i, y : targetData.top_2_value[i].toFixed(3)});
+    top3Set.push({ x : i, y : targetData.top_3_value[i].toFixed(3)});
   }
 
-  var array = targetData.top_1_value.concat(targetData.top_2_value, targetData.top_3_value);
+  var array = targetData.top_1_value.concat(targetData.top_2_value, targetData.top_3_value, targetData.realValue);
   var minVal = Math.min.apply(null,array);
   var maxVal = Math.max.apply(null,array);
 
@@ -171,18 +171,22 @@ function drawPatternChart(graphData){
       .append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
   xScale.domain([0, d3.max(graphData.top1Set, function(d){ return d.x; })]);
-  yScale.domain([graphData.minVal, graphData.maxVal+(graphData.maxVal/100)]);
+  yScale.domain([graphData.minVal-(graphData.maxVal/100), graphData.maxVal+(graphData.maxVal/100)]);
 
   var top1Line = d3.svg.line()
+      .interpolate("basis")
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
   var top2Line = d3.svg.line()
+      .interpolate("basis")
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
   var top3Line = d3.svg.line()
+      .interpolate("basis")
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
   var realLine = d3.svg.line()
+      .interpolate("basis")
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
 
