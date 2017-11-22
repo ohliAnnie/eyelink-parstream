@@ -1,3 +1,8 @@
+if ( process.argv[2] == null || process.argv[3] == null) {
+  printUsage();
+  process.exit();
+}
+
 global.log4js = require('log4js');
 log4js.configure({
   'appenders':
@@ -11,13 +16,13 @@ log4js.configure({
         'type': 'file',
         'filename': './datasimulator.log',
         'maxLogSize': 1024000,
-        'backups': 5,
+        'backups': 1,
         'category': 'eyelink'
       }
   },
   'categories' :
   {
-    'default' : { 'appenders': ['console', 'file'], 'level' : 'debug'}
+    'default' : { 'appenders': ['console', 'file'], 'level' : 'info'}
   }
 });
 var logger = log4js.getLogger('dataSimulator');
@@ -28,9 +33,10 @@ logger.info(__dirname);
 
 var fs = require('fs');
 var sleep = require('system-sleep');
+var calcOee = require('./calculateOee');
 var Utils = require('../../routes/util');
 var CONSTS = require('../../routes/consts');
-var simuldata = require('../../source/efmm/stacking_simulate.json');
+var simuldata = require('./simulation.json');
 var QueryProvider = require('../../routes/dao/elasticsearch/nodelib-es').QueryProvider;
 var queryProvider = new QueryProvider();
 
@@ -39,7 +45,7 @@ const bulkSize = 100;     // bulk insert 하는 데이터 count
 // simuldata = JSON.parse(simuldata);
 
 logger.info('=========================================================');
-logger.info('== Simulate Data      : ', simuldata);
+logger.info('== Simulation Base Data      : ', simuldata);
 logger.info('=========================================================');
 
 /*
@@ -57,49 +63,55 @@ logger.info('=========================================================');
     - 981~990 : 불량품 생산 이벤트 발생
     - 990 ~ 1000 : down_time 발생
 */
-var accept_count = 0;
-var reject_count = 0;
 var cnt = 0;
 var cnt_init_oee = 0;
+var flag = process.argv[2];
+var cid = process.argv[3];
 var init_oee_time = '09:00:00';
 var meal_break_time1 = '12';
 var meal_break_time2 = '18';
 var short_break_term = 4 * 60 * 60;
-var short_break_period = 15 * 60 * 60;
-var down_time_period = 30 * 60 * 60;
+var short_break_period = 15 * 60;
+var down_time_period = 30 * 60;
 
 var short_break_cnt = 0;
 var v_short_break_period = short_break_period;
 var isDownTime = false;
 var down_time_cnt = 0;
 
-// for test
-// var curdate = '2017-11-20 10:59:55';
+// // for test
+// var curdate = '2017-11-20 08:49:55';
 
 while(true) {
   var isNormal = true;
   var rdx = Utils.generateRandom(1, 1000);
 
-  // for test : oee init
+  // // for test : oee init
   // curdate = Utils.getDate(curdate, CONSTS.DATEFORMAT.DATETIME, 0, 0, 0, 1);
 
-  var curdate = Utils.getToday(CONSTS.DATEFORMAT.DATETIME);
+  var curdate = Utils.getToday(CONSTS.DATEFORMAT.DATETIME, 'Y', 'Y');
   logger.debug('rdx : %s, today : %s', rdx, curdate);
 
   // 09:00 이면 OEE 관련 데이터를 초기화한다.
   //  - 누적 생산량 값 초기화
   if (compareTime(curdate, init_oee_time)) {  // oee init
     logger.info('initiate OEE data');
-    accept_count = 0;
-    reject_count = 0;
+    isNormal = false;
+    isDownTime = false;
+
+    // OEE 초기화.
+    calcOee.initiateOee();
+
   } else if (compareTime(curdate, meal_break_time1) || compareTime(curdate, meal_break_time2)) { // meal_break event
     // json data에서 날짜값과 양불량품개수 값을 변경
     setDataInEventData('meal_break', curdate);
     isNormal = false;
+    isDownTime = false;
   } else if (short_break_cnt > short_break_term) { // short_break event
     // json data에서 날짜값과 양불량품개수 값을 변경
     setDataInEventData('short_break', curdate);
     isNormal = false;
+    isDownTime = false;
     v_short_break_period--;
     if (v_short_break_period == 0) {
       short_break_cnt = 0;
@@ -132,13 +144,21 @@ while(true) {
   }
 
   short_break_cnt ++;
+  cnt++;
 
   // for test
-  cnt++;
-  if (cnt > 5) break;
+  if (cnt > 10) break;
 
   sleep(1000);
 }
+
+function printUsage() {
+  console.log('Usage : $ node dataSimulator.js [notching/stacking] [cid]');
+  console.log('    []: required, {}: optional');
+  console.log('');
+  console.log('Ex. $ node dataSimulator.js notching 100');
+}
+
 
 function compareTime(d1, t1) {
   return d1.indexOf(' ' + t1) > 0 ? true : false;
@@ -154,14 +174,16 @@ function setDataInEventData(key, curdate) {
   // TODO bulk insert 로직으로 보강이 필요함.
   var listData = [];
   var vJson = simuldata[key];
-  accept_count = accept_count + vJson.data[0].accept_pieces;
-  reject_count = reject_count + vJson.data[0].reject_pieces;
+  vJson.flag = flag;
+  vJson.cid = cid;
   vJson.dtTransmitted = curdate;
   vJson.data[0].dtSensed = curdate;
-  vJson.data[0].total_accept_pieces = accept_count;
-  vJson.data[0].total_reject_pieces = reject_count;
   logger.debug('%s : %s', key, JSON.stringify(vJson.data[0]));
 
+  // OEE 계산.
+  calcOee.calculateOee(vJson)
+
+  // DB에 저장
   var index = makeIndexName(vJson);
   listData.push(vJson);
   insertData(index, listData);
@@ -181,7 +203,7 @@ function convertDateFormat(val) {
     val.substring(4,6) + '/' +
     val.substring(6,8);
   if (val.length >= 14) {
-    v = v + ' ' +
+    v = v + 'T' +
       val.substring(8,10) + ':' +
       val.substring(10,12) + ':' +
       val.substring(12,14);
@@ -211,12 +233,12 @@ function insertData(index, listData){
   logger.debug('insertData - indata : %s', JSON.stringify(in_data));
   queryProvider.insertBulkQuery(in_data, function(err, out_data) {
     if (err) { console.log(err) };
-    logger.debug(out_data);
+    logger.debug(JSON.stringify(out_data));
     if(out_data.errors == false){
       // console.log(out_data);
       var rtnCode = CONSTS.getErrData("D001");
     }
-    logger.info('finished insertData ');
+    logger.info('finished insertData - index : %s, _id : %s', out_data.items[0].index._index, out_data.items[0].index._id);
 
     // cb(err);
   });
