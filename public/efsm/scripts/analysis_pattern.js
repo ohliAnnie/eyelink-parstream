@@ -399,11 +399,14 @@ function getGraphData(pData, mData) {
       mSet.push({ x : i, y : mData[i]});
     }
   }
-
-  var array = pData.concat(mData);
+  var array;
+  if (mData != null){ array = pData.concat(mData); }
+  else { array = pData; }
+  
   var minVal = Math.min.apply(null,array);
   var maxVal = Math.max.apply(null,array);
   
+  console.log(minVal, maxVal);
   graphData.pSet = pSet;
   graphData.mSet = mSet;
   graphData.minVal = minVal;
@@ -434,9 +437,11 @@ function drawPatternChart(graphData) {
       .tickPadding(10);
 
   var masterLine = d3.svg.line()
+      .interpolate("basis")
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
   var patternLine = d3.svg.line()
+      .interpolate("basis")
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
 
@@ -447,7 +452,7 @@ function drawPatternChart(graphData) {
       .append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
   xScale.domain([0, d3.max(graphData.pSet, function(d){ return d.x; })]);
-  yScale.domain([graphData.minVal, graphData.maxVal+(graphData.maxVal/100)]);
+  yScale.domain([graphData.minVal-(graphData.maxVal/100), graphData.maxVal+(graphData.maxVal/100)]);
 
   // Add the X Axis
   svg.append("g")
