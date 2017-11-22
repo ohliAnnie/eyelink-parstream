@@ -10,127 +10,157 @@ var queryProvider = new QueryProvider();
 
 var mainmenu = {dashboard:'open selected', timeseries:'', reports:'', analysis:'', management:'', settings:''};
 
+var indexCore = global.config.es_index.es_corecode;
+
+var startTime = CONSTS.STARTTIME.KOREA;
+var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
+var fmt2 = CONSTS.DATEFORMAT.DATETIME; // "YYYY-MM-DD HH:MM:SS",
+var fmt4 = CONSTS.DATEFORMAT.INDEXDATE; // "YYYY.MM.DD",
+
 /* GET reports page. */
 router.get('/', function(req, res, next) {  
   res.render('./'+global.config.pcode+'/dashboard/dashboard', { title: global.config.productname, mainmenu:mainmenu});
 });
 
-// test db query logic
-router.get('/restapi/get_successcount', function(req, res, next) {
-  var in_data = {};
-  queryProvider.selectSingleQueryByID("dashboard", "selectSuccessCount", in_data, function(err, out_data) {
-    console.log(out_data);
-    var rtnCode = CONSTS.getErrData('0000');
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');
-    }
-    res.json({rtnCode: rtnCode, rtnData: out_data});
-  });
-});
-
-// test db query logic
-router.get('/restapi/get_query_param', function(req, res, next) {
-  console.log(req.query);
-  var in_data = {};
-  queryProvider.selectSingleQueryByID("dashboard", "selectQueryInParams", in_data, function(err, out_data) {
-    console.log(out_data);
-    var rtnCode = CONSTS.getErrData('0000');
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');
-    }
-    res.json({rtnCode: rtnCode, rtnData: out_data});
-  });
-});
-
-
-// query Dashboard Section 1
-router.get('/restapi/getDashboardSection1', function(req, res, next) {
-  console.log(req.query);
-   var in_data = {
-      TODAY_TIMESTAMP: req.query.todate,
-      YESTERDAY_TIMESTAMP: req.query.yesterdate,
-      FLAG : 'N'};
-  queryProvider.selectSingleQueryByID("dashboard", "selectDashboardSection1", in_data, function(err, out_data) {
-    // console.log(out_data);
-    var rtnCode = CONSTS.getErrData('0000');
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');
-    }
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
-  });
-
-});
-
-// query RawData
 router.get('/restapi/getDashboardRawData', function(req, res, next) {
-  // load data on startup이 true일 경우
-  if (global.config.loaddataonstartup.active) {
-    var in_data = {MERGE:'Y'};
-    queryProvider.selectSingleQueryByID("dashboard", "selectEventRawData", in_data, function(err, out_data, params) {
-      // console.log(out_data);
-      var rtnCode = CONSTS.getErrData('0000');
-      if (out_data[0] === null) {
-        rtnCode = CONSTS.getErrData('0001');
-      }
-
-      // console.log('typeof array : %s', (typeof out_data[0] !== 'undefined'));
-      // console.log('typeof array : %s', (out_data[0] !== null));
-
-      // MERGE = 'Y'이면 이전 날짜의 RawData를 합쳐준다.
-      if (params.MERGE === 'Y')
-        out_data = Utils.mergeLoadedData(out_data);
-
-      // console.log('dashboard/restapi/getReportRawData -> out_data : %s', out_data);
-      // console.log('dashboard/restapi/getReportRawData -> out_data : %s', out_data[0]);
-      console.log('dashboard/restapi/getDashboardRawData -> length : %s', out_data[0].length);
-      res.json({rtnCode: rtnCode, rtnData: out_data[0]});
-    });
-  } else {  // false 인 경우는 현재일자부터 7일전 리스트를 조회.
-    var d = new Date();
-    var to_date = d.toFormat('YYYY-MM-DD');
-    getTbRawDataByPeriod(d.removeDays(7).toFormat('YYYY-MM-DD'), to_date, res);
-  }
-});
-
-// TO-DO Query 성능 개선 필요.
-// query RawData
-router.get('/restapi/getTbRawDataByPeriod', function(req, res, next) {
-  console.log(req.query);
-  var in_data = {
-      START_TIMESTAMP: req.query.startDate + ' 00:00:00',
-      END_TIMESTAMP: req.query.endDate + ' 23:59:59',
-      FLAG : 'N'};
-  queryProvider.selectSingleQueryByID("dashboard", "selectEventRawDataOld", in_data, function(err, out_data, params) {
-    // console.log(out_data);
+  console.log('reports/restapi/getDashboardRawData');    
+  var lte = Utils.getToday(fmt1, 'Y', 'Y');  
+  var gte = Utils.getDate(lte, fmt1, -7, 0, 0, 0, 'Y', 'Y');  
+/*  var index = [], cnt = 0;  
+  for(i = new Date(gte).getTime(); i<=new Date(lte).getTime(); i=i+24*60*60*1000){    
+    index[cnt++]  = indexCore+Utils.getMs2Date(i, fmt4);
+  }  */
+  var in_data = { index : indexCore+"*", type : "corecode",                   
+                  sort : "event_time" , gte : gte+startTime, lte : lte+startTime };    
+  queryProvider.selectSingleQueryByID2("dashboard","selectDashboardRawData", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
-    if (out_data[0] === null) {
+    if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
+    } else {    
+      var data = [];
+      out_data.forEach(function(d) {        
+        d = d._source;       
+        d.event_time = Utils.getDateUTC2Local(d.event_time, fmt2);      
+        d.geo = (d.node_id === '0001.00000001') ? '37.457271, 127.042861':'37.468271, 127.032861';
+        d.vibration = (d.vibration_x+d.vibration_y+d.vibration_z)/3;
+        d.zone_id = 'ZONE-04';  
+        data.push(d);
+      });     
     }
-
-    // console.log('dashboard/restapi/getReportRawData -> out_data : %s', out_data);
-    // console.log('dashboard/restapi/getReportRawData -> out_data : %s', out_data[0]);
-    console.log('dashboard/restapi/getTbRawDataByPeriod -> length : %s', out_data[0].length);
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+    res.json({rtnCode: rtnCode, rtnData: data});
   });
 });
 
-function getTbRawDataByPeriod(from_date, to_date, res) {
-  var in_data = {
-      START_TIMESTAMP: from_date + ' 00:00:00',
-      END_TIMESTAMP: to_date + ' 23:59:59',
-      FLAG : 'N'};
-  queryProvider.selectSingleQueryByID("dashboard", "selectEventRawDataOld", in_data, function(err, out_data, params) {
-    // console.log(out_data);
+router.get('/restapi/countDayEvent', function(req, res, next) {
+  logger.debug('dashboard/restapi/countEvent');        
+  var end = Utils.getMs2Date(parseInt(req.query.date),fmt1,'Y')+startTime;  
+  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;  
+  var in_data = { index : indexCore+'*', type : "corecode", START : start, END : end  };  
+  queryProvider.selectSingleQueryCount("dashboard","countEvent", in_data, function(err, out_data, params) {
+    var today = out_data;
     var rtnCode = CONSTS.getErrData('0000');
-    if (out_data[0] === null) {
+    if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    }
-
-    // console.log('dashboard/restapi/getReportRawData -> out_data : %s', out_data);
-    // console.log('dashboard/restapi/getReportRawData -> out_data : %s', out_data[0]);
-    console.log('dashboard/restapi/getTbRawDataByPeriod -> length : %s', out_data[0].length);
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]});
+    } else {
+      end = start;
+      start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;        
+      var in_data = { index : indexCore+'*', type : "corecode", START : start, END : end  };  
+      queryProvider.selectSingleQueryCount("dashboard","countEvent", in_data, function(err, out_data, params) {
+        var yday = out_data;
+        var rtnCode = CONSTS.getErrData('0000');
+        if (out_data == null) {
+          rtnCode = CONSTS.getErrData('0001');
+        }    
+        res.json({rtnCode: rtnCode, today : today, yday : yday });
+      });
+    }    
+    res.json({rtnCode: rtnCode, today : today, yday : yday });
   });
-};
+});
+
+router.get('/restapi/countMonEvent', function(req, res, next) {
+  logger.debug('dashboard/restapi/countEvent');      
+  var end = Utils.getMs2Date(parseInt(req.query.date),fmt1,'Y')+startTime;  
+  var start = Utils.getDate(end, fmt1, -(new Date(parseInt(req.query.date)).getDate()), 0, 0, 0)+startTime;    
+
+  var in_data = { index : indexCore+'*', type : "corecode", START : start, END : end  };  
+  queryProvider.selectSingleQueryCount("dashboard","countEvent", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    var tmon = out_data;
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {      
+      console.log('TTTTTTTTT')
+      console.log(start, end)
+      end = start;            
+      start = Utils.getDate(end, fmt1, -new Date(new Date(end).getTime()-1).getDate(), 0, 0, 0)+startTime;
+      console.log(start, end)
+      var in_data = { index : indexCore+'*', type : "corecode", START : start, END : end  };  
+      queryProvider.selectSingleQueryCount("dashboard","countEvent", in_data, function(err, out_data, params) {
+        var ymon = out_data;
+        var rtnCode = CONSTS.getErrData('0000');
+        if (out_data == null) {
+          rtnCode = CONSTS.getErrData('0001');
+        }    
+        res.json({rtnCode: rtnCode,tmon : tmon, ymon : ymon });
+      });
+    }
+    res.json({rtnCode: rtnCode, tmon : tmon, ymon : ymon });
+  });
+});
+
+router.get('/restapi/countFaultEvent', function(req, res, next) {
+  logger.debug('dashboard/restapi/countFaultEvent');  
+  var end = Utils.getMs2Date(parseInt(req.query.date),fmt1,'Y')+startTime;  
+  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;        
+  var in_data = { index : indexCore+'*', type : "corecode", start : start, end : end  };  
+  queryProvider.selectSingleQueryCount("dashboard","countFaultEvent", in_data, function(err, out_data, params) {
+    var today = out_data;
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {
+      end = start;
+      start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;
+      var in_data = { index : indexCore+'*', type : "corecode", start : start, end : end  };  
+      queryProvider.selectSingleQueryCount("dashboard","countFaultEvent", in_data, function(err, out_data, params) {
+        var yday = out_data;        
+        var rtnCode = CONSTS.getErrData('0000');
+        if (out_data == null) {
+          rtnCode = CONSTS.getErrData('0001');
+        }
+        res.json({rtnCode: rtnCode, today : today, yday : yday });
+      });
+    }
+    res.json({rtnCode: rtnCode, today : today, yday : yday });
+  });
+});
+
+router.post('/restapi/sumActivePower', function(req, res, next) {
+  logger.debug('dashboard/restapi/sumActivePower');        
+  var end = Utils.getToday(fmt1, 'Y', 'Y')+startTime;    
+  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;        
+  var in_data = { index : indexCore+'*', type : "corecode", start : start , end : end };    
+  queryProvider.selectSingleQueryByID3("dashboard","sumActivePower", in_data, function(err, out_data, params) {
+    var today = out_data;    
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {
+      end = start;
+      start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;
+      var in_data = { index : indexCore+'*', type : "corecode", start : start, end : end };  
+      queryProvider.selectSingleQueryByID3("dashboard","sumActivePower", in_data, function(err, out_data, params) {
+        var yday = out_data;        
+        var rtnCode = CONSTS.getErrData('0000');
+        if (out_data == null) {
+          rtnCode = CONSTS.getErrData('0001');
+        }
+        res.json({rtnCode: rtnCode, today : today.active_power.value, yday : yday.active_power.value });
+      });
+    }
+    res.json({rtnCode: rtnCode, today : today, yday : yday });
+  });
+});
 
 module.exports = router;
