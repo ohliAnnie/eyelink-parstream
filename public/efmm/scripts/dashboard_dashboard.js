@@ -1,7 +1,32 @@
-$(document).ready(function(e) {      
-  var dateFormat = 'YYYY-MM-DD';
-  $('#sdate').val(moment().subtract(7, 'days').format(dateFormat));
-  $('#edate').val(moment().format(dateFormat));
+$(document).ready(function(e) {        
+  getData();
+  drawGage(value);
+});
+
+var value = { oee : 0, availability : 0, performance : 0, quality : 0 };
+var oee, availability, performance, quality;
+
+(function loop() {
+  getData();
+  setTimeout(loop, 30*1000);
+})();
+
+function getData(){
+  var data = { now : new Date().getTime() };
+  var in_data = { url : "/dashboard/restapi/getDashboardRawData", type : "GET", data : data };
+  ajaxTypeData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {
+      var data = result.rtnData;              
+      makeData(data)
+    } 
+  });  
+}
+
+function makeData(data) {
+  var dateFormat = 'YYYY-MM-DD';  
+  var notching = data.notching[data.notching.length-1];
+  var stacking = data.stacking[data.stacking.length-1];
+  console.log(data)
   var rawData = [
   { index : 0, date : moment().subtract(6, 'days').format(dateFormat), oee : 88, availability : 93, performance : 97, quality : 99},
   { index : 1, date : moment().subtract(5, 'days').format(dateFormat), oee : 76, availability : 90, performance : 84, quality : 99},
@@ -9,11 +34,16 @@ $(document).ready(function(e) {
   { index : 3, date : moment().subtract(3, 'days').format(dateFormat), oee : 83, availability : 90, performance : 93, quality : 99},
   { index : 4, date : moment().subtract(2, 'days').format(dateFormat), oee : 77, availability : 88, performance : 87, quality : 99},
   { index : 5, date : moment().subtract(1, 'days').format(dateFormat), oee : 81, availability : 91, performance : 89, quality : 99},
-  { index : 6, date : moment().format(dateFormat), oee : 87, availability : 91, performance : 90, quality : 99}]
+  { index : 6, date : moment().format(dateFormat), oee : 87, availability : 91, performance : 90, quality : 99}];
   var tData = {
+    date : notching.dtSensed,
     kpis : { tot : 18, in_pro : 15, stop : 3, alarm : 3 },
-    notching : { tot : 6, in_pro : 5, stop : 1, alarm : 1, a_time : 7200, r_time : 3560, e_unit : 60000, p_unit : 58590, g_unit : 58490, n_unit : 100 },
-    stacking : { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3550, e_unit : 30000, p_unit : 29880, g_unit : 29800, n_unit : 80 },
+    notching : { tot : 6, in_pro : 5, stop : 1, alarm : 1, a_time : (notching.total_shift_length/60).toFixed(0), r_time : notching.realtime.toFixed(0),
+e_unit : (notching.realtime*notching.ideal_run_rate).toFixed(0), p_unit : notching.total_pieces, g_unit : notching.total_accept_pieces
+, n_unit : notching.total_reject_pieces },
+    stacking : { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : (stacking.total_shift_length/60).toFixed(0), r_time : stacking.realtime.toFixed(0)
+, e_unit : (stacking.realtime*stacking.ideal_run_rate).toFixed(0), p_unit : stacking.total_pieces, g_unit : stacking.total_accept_pieces
+, n_unit : stacking.total_reject_pieces },
     tab_welding : { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3600, e_unit : 29500, p_unit : 28970, g_unit : 28889, n_unit : 81 },
     packaging : { tot : 2, in_pro : 1, stop : 1, alarm : 1, a_time : 7200, r_time : 3540, e_unit : 29000, p_unit : 28700, g_unit : 28618, n_unit : 82 },
     degassing : { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3590, e_unit : 28500, p_unit : 28470, g_unit : 28392, n_unit : 78 },
@@ -21,18 +51,18 @@ $(document).ready(function(e) {
     can_swaging : { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3600, e_unit : 27500, p_unit : 26990, g_unit : 26911, n_unit : 79 }    
   };
   console.log(rawData)
-  drawGage(rawData[6]);
-  drawLineChart(rawData);
+  
+  drawLineChart(data.stacking.concat(data.notching));
   drawTable(tData)
-});
+}
 
 function drawGage(value){  
   var max = 100; 
 
-  var oee = getGaguChart("oee", max, 'yellow', value["oee"], 0.29);
-  var availability = getGaguChart("availability", max, 'blue', value["availability"], 0.21);
-  var performance = getGaguChart("performance", max, 'orange', value["performance"], 0.21);
-  var quality = getGaguChart("quality", max, 'green', value["quality"], 0.21);  
+  oee = getGaguChart("oee", max, 'yellow', value["oee"], 0.29);
+  availability = getGaguChart("availability", max, 'blue', value["availability"], 0.21);
+  performance = getGaguChart("performance", max, 'orange', value["performance"], 0.21);
+  quality = getGaguChart("quality", max, 'green', value["quality"], 0.21);  
 }
 
 function getGaguChart(id, max, color, value, size) {
@@ -57,31 +87,108 @@ function getGaguChart(id, max, color, value, size) {
 }
 
 function drawLineChart(data) {
-  var xData = [];
+  console.log(data);
+  var minDate = new Date(data[0].dtSensed);
+  var maxDate = new Date(data[data.length-1].dtSensed);
+  /*var xData = [];
   for(i=0; i<data.length; i++){
     xData[i] = data[i].date;
-  }
+  }*/
   var composite = dc.compositeChart("#composed");
   
   var ndx = crossfilter(data);
 
-  var dim  = ndx.dimension(function(d){
-    return d.index;
+  var dim  = ndx.dimension(function(d){    
+    return new Date(d.dtSensed);
   });
-  oGroup = dim.group().reduceSum(function(d) { return d.oee; });
-  aGroup = dim.group().reduceSum(function(d) { return d.availability; });
-  pGroup = dim.group().reduceSum(function(d) { return d.performance; });
-  qGroup = dim.group().reduceSum(function(d) { return d.quality; });
 
+  var oGroup = dim.group().reduce(
+      function(p,v){        
+        p.count++;
+        p.sum += v.overall_oee;
+        p.avg = p.sum/p.count;
+        return p;
+      },
+  //remove
+      function(p,v){
+        p.count--;    
+        p.sum -= v.overall_oee;
+        p.avg = p.sum/p.count;
+        return p;
+      },
+      //init
+      function(p,v){
+         return {count:0, avg:0, sum:0};
+      }
+    );
+  var aGroup = dim.group().reduce(
+      function(p,v){        
+        p.count++;
+        p.sum += v.availability;
+        p.avg = p.sum/p.count;
+        return p;
+      },
+  //remove
+      function(p,v){
+        p.count--;    
+        p.sum -= v.availability;
+        p.avg = p.sum/p.count;
+        return p;
+      },
+      //init
+      function(p,v){
+         return {count:0, avg:0, sum:0};
+      }
+    );
+  var pGroup = dim.group().reduce(
+      function(p,v){        
+        p.count++;
+        p.sum += v.performance;
+        p.avg = p.sum/p.count;
+        return p;
+      },
+  //remove
+      function(p,v){
+        p.count--;    
+        p.sum -= v.performance;
+        p.avg = p.sum/p.count;
+        return p;
+      },
+      //init
+      function(p,v){
+         return {count:0, avg:0, sum:0};
+      }
+    );
+  var qGroup = dim.group().reduce(
+      function(p,v){        
+        p.count++;
+        p.sum += v.quality;
+        p.avg = p.sum/p.count;
+        return p;
+      },
+  //remove
+      function(p,v){
+        p.count--;    
+        p.sum -= v.quality;
+        p.avg = p.sum/p.count;
+        return p;
+      },
+      //init
+      function(p,v){
+         return {count:0, avg:0, sum:0};
+      }
+    );
+  
   composite.margins().bottom = 50;
   composite.margins().right = 65;
-  composite.xAxis().tickFormat(function(v) {return xData[v];});
+  // composite.xAxis().tickFormat(function(v) {return xData[v];});
   composite.yAxis().ticks(7);
   composite
     .width(window.innerWidth*0.38)
     .height(290)
-    .x(d3.scale.linear().domain([0,6]))           
-    .y(d3.scale.linear().domain([50, 110]))    
+    .x(d3.time.scale().domain([minDate,maxDate]))
+    //.x(d3.scale.linear().domain([0,6]))           
+    .y(d3.scale.linear().domain([0, 110]))    
     .yAxisLabel("%")
     .legend(dc.legend().x(window.innerWidth*0.05).y(267).itemHeight(12).itemWidth(window.innerWidth*0.07).gap(4).horizontal(true))
     .renderHorizontalGridLines(true)
@@ -90,27 +197,48 @@ function drawLineChart(data) {
           .dimension(dim)            
           .colors('yellow')
           .renderDataPoints(true)
-          .group(oGroup, "OEE"),
+          .group(oGroup, "OEE")
+          .valueAccessor(function (p) {            
+            value.oee = p.value.avg*100;
+            return p.value.avg*100;
+          }),
       dc.lineChart(composite)
           .dimension(dim)
           .colors('blue')
           .renderDataPoints(true)
-          .group(aGroup, "Availability"),
+          .group(aGroup, "Availability")
+          .valueAccessor(function (p) {            
+            value.availability = p.value.avg*100;
+            return p.value.avg*100;
+          }),
       dc.lineChart(composite)
           .dimension(dim)
           .colors('orange')
           .renderDataPoints(true)
-          .group(pGroup, "Performance"),
+          .group(pGroup, "Performance")
+          .valueAccessor(function (p) {            
+            value.performance = p.value.avg*100;
+            return p.value.avg*100;
+          }),
       dc.lineChart(composite)
           .dimension(dim)
           .colors('green')
           .renderDataPoints(true)
           .group(qGroup, "Quality")            
+          .valueAccessor(function (p) {            
+            value.quality = p.value.avg*100;
+            return p.value.avg*100;
+          })
     ])
     .brushOn(false)
     .render();
+    oee.update(value.oee);
+    availability.update(value.availability);
+    performance.update(value.performance);
+    quality.update(value.quality);
 }
 
+var cnt = 0
 function drawTable(data) {
   $('#tbody').empty();  
   var sb = new StringBuffer();
@@ -122,6 +250,7 @@ function drawTable(data) {
   var style = 'style="background-color:#9E9E9E;"';
   var style2 = 'text-align:center; background-color:#9E9E9E;';
   sb.append('<tr><th '+style+' >ToTal</th><th style="'+style2+'">'+data.kpis.tot+'</th>');
+  //sb.append('<tr><th '+style+' >ToTal</th><th style="'+style2+'">'+data.kpis.tot+'</th>');
   sb.append(drawTr(data, 'tot', 'black', 'center'));
   sb.append('<tr><th '+style+'>In Production</th><th style="color:green; '+style2+'">'+data.kpis.in_pro+'</th>');
   sb.append(drawTr(data, 'in_pro', 'green', 'center'));
@@ -141,8 +270,7 @@ function drawTable(data) {
   sb.append(drawTr(data, 'g_unit', 'black', 'right'));
   sb.append('<tr><th '+style+' colspan="2">NG Units</th>');
   sb.append(drawTr(data, 'n_unit', 'red', 'right'));
-  sb.append('</table>');
-  console.log(sb.toString());
+  sb.append('</table>');  
   $('#tbody').append(sb.toString());    
 }
 

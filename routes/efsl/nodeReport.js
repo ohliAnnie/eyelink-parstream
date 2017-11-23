@@ -93,6 +93,7 @@ router.get('/restapi/getRangeData', function(req, res, next) {
             break;       
         }
         d.zone_id = 'ZONE-04';  
+        d.geo = (d.node_id === '0001.00000001') ? '37.457271, 127.042861':'37.468271, 127.032861';
         data.push(d);
       });     
     }
@@ -122,6 +123,7 @@ router.get('/restapi/getRangePowerData', function(req, res, next) {
       out_data.forEach(function(d){
         d = d._source;       
         d.event_time = Utils.getDateUTC2Local(d.event_time, fmt2);  
+        d.geo = (d.node_id === '0001.00000001') ? '37.457271, 127.042861':'37.468271, 127.032861';
         d.zone_id = 'ZONE-04'
         data.push(d);
       });      

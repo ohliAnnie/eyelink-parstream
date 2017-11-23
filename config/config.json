@@ -39,7 +39,9 @@
 		"es_appinfo" : "efsm_applicationinfo",
 		"es_elagent" : "elagent_test-agent-",
 		"es_alarm" : "efsm_alarm-",
-		"es_corecode" : "corecode-"
+		"es_corecode" : "corecode-",
+		"notching_oee" : "efmm_notching_oee-",
+		"stacking_oee" : "efmm_stacking_oee-"
 	},
 	"da_index" : {
 		"clustering_master" : "clustering_master",
