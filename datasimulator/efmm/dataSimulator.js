@@ -77,6 +77,7 @@ var down_time_period = 30 * 60;
 
 var short_break_cnt = 0;
 var v_short_break_period = short_break_period;
+var isTodayDown = false;
 var isDownTime = false;
 var down_time_cnt = 0;
 
@@ -99,7 +100,7 @@ while(true) {
     logger.info('initiate OEE data');
     isNormal = false;
     isDownTime = false;
-
+    isTodayDown = false;
     // OEE 초기화.
     calcOee.initiateOee();
 
@@ -121,9 +122,10 @@ while(true) {
   } else if (rdx > 990) {   // down_time event
     isNormal = false;
     isDownTime = true;
+    isTodayDown = true;
   }
 
-  if (isDownTime) {
+  if (isDownTime && isTodayDown == false) {
     // json data에서 날짜값과 양불량품개수 값을 변경
     setDataInEventData('down_time', curdate);
     down_time_cnt++;
