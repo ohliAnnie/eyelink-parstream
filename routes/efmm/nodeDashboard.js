@@ -26,26 +26,18 @@ router.get('/', function(req, res, next) {
     mainmenu : mainmenu
   }
 
-  logger.info('mainmenu : %s, outdata : %s', mainmenu.dashboard, JSON.stringify(outdata));
-  logger.debug('mainmenu : %s, outdata : %s', mainmenu.dashboard, JSON.stringify(outdata));
-  logger.error('mainmenu : %s, outdata : %s', mainmenu.dashboard, JSON.stringify(outdata));
+  logger.info('mainmenu : %s, outdata : %s', mainmenu.dashboard, JSON.stringify(outdata));  
   res.render(global.config.pcode + '/dashboard/dashboard', outdata);
 });
 
-router.get('/test', function(req, res, next) {
-  // console.log(_rawDataByDay);
-  mainmenu.dashboard = ' open selected';
-
-  mainmenu.timeseries = '';
+router.get('/detail', function(req, res, next) {
+  // console.log(_rawDataByDay);  
   var outdata = {
     title: global.config.productname,
     mainmenu : mainmenu
   }
-
-  logger.info('mainmenu : %s, outdata : %s', mainmenu.dashboard, JSON.stringify(outdata));
-  logger.debug('mainmenu : %s, outdata : %s', mainmenu.dashboard, JSON.stringify(outdata));
-  logger.error('mainmenu : %s, outdata : %s', mainmenu.dashboard, JSON.stringify(outdata));
-  res.render(global.config.pcode + '/dashboard/test', outdata);
+  logger.info('mainmenu : %s, outdata : %s', mainmenu.dashboard, JSON.stringify(outdata));  
+  res.render(global.config.pcode + '/dashboard/dashboard_detail', outdata);
 });
 
 router.get('/restapi/getDashboardRawData', function(req, res, next) {
@@ -77,11 +69,15 @@ router.get('/restapi/getDashboardRawData', function(req, res, next) {
           for(i=0; i<len; i++) {                        
             n = notch[i]._source.data[0];                                
             n.dtSensed = Utils.getDateUTC2Local(n.dtSensed, fmt2);
-            n.realtime = (n.total_shift_length-n.total_down_time)/60;            
+            n.total_shift_length = n.total_shift_length/60;
+            n.total_down_time = n.total_down_time/60;
+            n.realtime = n.total_shift_length-n.total_down_time;            
             notching.push(n);                        
             s = stack[i]._source.data[0];            
             s.dtSensed = Utils.getDateUTC2Local(s.dtSensed, fmt2);            
-            s.realtime = (s.total_shift_length-s.total_down_time)/60;            
+            s.total_shift_length = s.total_shift_length/60;
+            s.total_down_time = s.total_down_time/60;
+            s.realtime = s.total_shift_length-s.total_down_time;            
             stacking.push(s);            
         //    gage.push(gageData([n,s]));            
             /*var avg = { date : Utils.getDateUTC2Local(s.dtSensed, fmt2), odd : (n.overall_oee+s.overall_oee)/2, availability : (n.availability_s.availability)/2, 

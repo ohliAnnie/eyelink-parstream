@@ -38,10 +38,10 @@ function makeData(data) {
   var tData = {
     date : notching.dtSensed,
     kpis : { tot : 18, in_pro : 15, stop : 3, alarm : 3 },
-    notching : { tot : 6, in_pro : 5, stop : 1, alarm : 1, a_time : (notching.total_shift_length/60).toFixed(0), r_time : notching.realtime.toFixed(0),
+    notching : { tot : 6, in_pro : 5, stop : 1, alarm : 1, a_time : notching.total_shift_length.toFixed(0), d_time : notching.total_down_time.toFixed(0), r_time : notching.realtime.toFixed(0),
 e_unit : (notching.realtime*notching.ideal_run_rate).toFixed(0), p_unit : notching.total_pieces, g_unit : notching.total_accept_pieces
 , n_unit : notching.total_reject_pieces },
-    stacking : { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : (stacking.total_shift_length/60).toFixed(0), r_time : stacking.realtime.toFixed(0)
+    stacking : { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : stacking.total_shift_length.toFixed(0), d_time : stacking.total_down_time.toFixed(0), r_time : stacking.realtime.toFixed(0)
 , e_unit : (stacking.realtime*stacking.ideal_run_rate).toFixed(0), p_unit : stacking.total_pieces, g_unit : stacking.total_accept_pieces
 , n_unit : stacking.total_reject_pieces },
     tab_welding : { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3600, e_unit : 29500, p_unit : 28970, g_unit : 28889, n_unit : 81 },
@@ -99,6 +99,7 @@ function drawLineChart(data) {
   var ndx = crossfilter(data);
 
   var dim  = ndx.dimension(function(d){    
+    //console.log(d.overall_oee, d.availability, d.performance, d.quality);
     return new Date(d.dtSensed);
   });
 
@@ -243,7 +244,9 @@ function drawTable(data) {
   $('#tbody').empty();  
   var sb = new StringBuffer();
   var style3 = 'style="text-align:center;"';
-  sb.append('<table class="table table-striped table-bordered"><tr style="background-color:#353535; color:white;">');
+  sb.append('<table class="table table-striped table-bordered" onclick="location.href=');
+  sb.append("'detail?date="+data.date+"'"+'"><tr style="background-color:#353535; color:white;">');
+  console.log(sb.toString());
   sb.append('<th colspan="2" '+style3+'>KPIs</th><th '+style3+'>Notching</th><th '+style3+'>Stacking</th>');
   sb.append('<th '+style3+'>Tab Welding</th><th '+style3+'>Packaging</th><th '+style3+'>Degassing</th>');
   sb.append('<th '+style3+'>Leak Inspection</th><th '+style3+'>Can Swaging</th></tr>');
@@ -260,6 +263,8 @@ function drawTable(data) {
   sb.append(drawTr(data, 'alarm', 'red', 'center'));
   sb.append('<tr><th '+style+' colspan="2">Avaiability Time(min)</th>');
   sb.append(drawTr(data, 'a_time', 'green', 'right'));
+  sb.append('<tr><th '+style+' colspan="2">Down Time(min)</th>');
+  sb.append(drawTr(data, 'd_time', 'black', 'right'));
   sb.append('<tr><th '+style+' colspan="2">Rurnning Time(min)</th>');
   sb.append(drawTr(data, 'r_time', 'blue', 'right'));
   sb.append('<tr><th '+style+' colspan="2">Expected Units</th>');
@@ -271,6 +276,7 @@ function drawTable(data) {
   sb.append('<tr><th '+style+' colspan="2">NG Units</th>');
   sb.append(drawTr(data, 'n_unit', 'red', 'right'));
   sb.append('</table>');  
+
   $('#tbody').append(sb.toString());    
 }
 
