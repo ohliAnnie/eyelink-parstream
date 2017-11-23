@@ -3,6 +3,9 @@ if ( process.argv[2] == null || process.argv[3] == null) {
   process.exit();
 }
 
+var flag = process.argv[2];
+var cid = process.argv[3];
+
 global.log4js = require('log4js');
 log4js.configure({
   'appenders':
@@ -14,7 +17,7 @@ log4js.configure({
       'file' :
       {
         'type': 'file',
-        'filename': './datasimulator.log',
+        'filename': './datasimulator-' + cid + '.log',
         'maxLogSize': 1024000,
         'backups': 1,
         'category': 'eyelink'
@@ -65,8 +68,6 @@ logger.info('=========================================================');
 */
 var cnt = 0;
 var cnt_init_oee = 0;
-var flag = process.argv[2];
-var cid = process.argv[3];
 var init_oee_time = '09:00:00';
 var meal_break_time1 = '12';
 var meal_break_time2 = '18';
@@ -238,7 +239,9 @@ function insertData(index, listData){
       // console.log(out_data);
       var rtnCode = CONSTS.getErrData("D001");
     }
-    logger.info('finished insertData - index : %s, _id : %s', out_data.items[0].index._index, out_data.items[0].index._id);
+    logger.info('finished insertData - index : %s, _id : %s, status : %s',
+      out_data.items[0].index._index, out_data.items[0].index._id,
+      in_data.body[0].data[0].status);
 
     // cb(err);
   });
