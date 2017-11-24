@@ -25,7 +25,7 @@ log4js.configure({
   },
   'categories' :
   {
-    'default' : { 'appenders': ['console', 'file'], 'level' : 'info'}
+    'default' : { 'appenders': ['console', 'file'], 'level' : 'debug'}
   }
 });
 var logger = log4js.getLogger('dataSimulator');
@@ -82,14 +82,15 @@ var isDownTime = false;
 var down_time_cnt = 0;
 
 // // for test
-// var curdate = '2017-11-20 08:49:55';
+// var curdateTest = '2017-11-20 08:50:55';
 
 while(true) {
   var isNormal = true;
   var rdx = Utils.generateRandom(1, 1000);
 
   // // for test : oee init
-  // curdate = Utils.getDate(curdate, CONSTS.DATEFORMAT.DATETIME, 0, 0, 0, 1);
+  // curdateTest = Utils.getDate(curdateTest, CONSTS.DATEFORMAT.DATETIME, 0, 0, 0, 1);
+  // curdate = Utils.getDateLocal2UTC(curdateTest, CONSTS.DATEFORMAT.DATETIME, 'Y');
 
   var curdate = Utils.getToday(CONSTS.DATEFORMAT.DATETIME, 'Y', 'Y');
   logger.debug('rdx : %s, today : %s', rdx, curdate);
@@ -119,10 +120,9 @@ while(true) {
       short_break_cnt = 0;
       v_short_break_period = short_break_period;
     }
-  } else if (rdx > 990) {   // down_time event
+  } else if (rdx > 590) {   // down_time event
     isNormal = false;
     isDownTime = true;
-    isTodayDown = true;
   }
 
   if (isDownTime && isTodayDown == false) {
@@ -132,8 +132,8 @@ while(true) {
     if (down_time_cnt == down_time_period) {
       down_time_cnt = 0;
       isDownTime = false;
+      isTodayDown = true;
     }
-
   } else if (isNormal) {
     if (rdx <= 980) {
       // json data에서 날짜값과 양불량품개수 값을 변경
@@ -164,7 +164,7 @@ function printUsage() {
 
 
 function compareTime(d1, t1) {
-  return d1.indexOf(' ' + t1) > 0 ? true : false;
+  return d1.indexOf('T' + t1) > 0 ? true : false;
   // var d2 = new Date(d1.substring(0,11) + d2);
   // var d1 = new Date(d1);
   // var gap = d1.getTime() - d2.getTime();
