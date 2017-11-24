@@ -18,8 +18,8 @@ log4js.configure({
       {
         'type': 'file',
         'filename': './datasimulator-' + cid + '.log',
-        'maxLogSize': 1024000,
-        'backups': 1,
+        'maxLogSize': 1024000000,
+        'backups': 5,
         'category': 'eyelink'
       }
   },
