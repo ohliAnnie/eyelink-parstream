@@ -68,7 +68,7 @@ logger.info('=========================================================');
 */
 var cnt = 0;
 var cnt_init_oee = 0;
-var init_oee_time = '09:00:00';
+var init_oee_time = '00:00:00'; // GMT 기준 시간임.
 var meal_break_time1 = '12';
 var meal_break_time2 = '18';
 var short_break_term = 4 * 60 * 60;
