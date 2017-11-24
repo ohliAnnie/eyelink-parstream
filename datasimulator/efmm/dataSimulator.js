@@ -120,7 +120,7 @@ while(true) {
       short_break_cnt = 0;
       v_short_break_period = short_break_period;
     }
-  } else if (rdx > 590) {   // down_time event
+  } else if (rdx > 990) {   // down_time event
     isNormal = false;
     isDownTime = true;
   }
