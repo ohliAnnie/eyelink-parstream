@@ -25,7 +25,7 @@ log4js.configure({
   },
   'categories' :
   {
-    'default' : { 'appenders': ['console', 'file'], 'level' : 'debug'}
+    'default' : { 'appenders': ['console', 'file'], 'level' : 'info'}
   }
 });
 var logger = log4js.getLogger('dataSimulator');
