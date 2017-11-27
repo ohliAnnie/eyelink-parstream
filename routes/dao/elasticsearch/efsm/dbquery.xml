@@ -1404,7 +1404,7 @@
         "type" : #TYPE#,
         "body" : {
           "size"   : 10000,
-          "sort" : { "da_result.timestamp" : { "order" : "asc"  } },
+          "sort" : { "da_result.timestamp" : { "order" : "desc"  } },
           "query" : {
             "bool" : {
               "must" : { "match_all": {} },

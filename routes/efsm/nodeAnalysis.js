@@ -172,7 +172,7 @@ router.get('/restapi/getAnomaly/:id', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
       res.json({rtnCode: rtnCode});
     }
-    logger.debug('analysis/restapi/getDaClusterDetail -> length : %s', out_data.length);
+    logger.debug('analysis/restapi/getAnomaly -> length : %s', out_data.length);
     res.json({rtnCode: rtnCode, rtnData: out_data[0]._source.da_result});
   });
 });
@@ -752,9 +752,10 @@ router.post('/restapi/insertClusterDetail/:id', function(req, res, next) {
 
 // query RawData
 router.get('/restapi/getDaClusterDetail', function(req, res, next) {
+  var daDate = Utils.getDateLocal2UTC(req.query.daDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
   var in_data = {
       INDEX : indexClusteringDetail,    TYPE : "detail",
-      ID : req.query.daDate };
+      ID : daDate };
   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     logger.debug(err);
     logger.debug(out_data);
@@ -789,7 +790,7 @@ router.get('/restapi/getDaClusterMasterByDadate', function(req, res, next) {
 router.get('/restapi/getDaClusterMaster', function(req, res, next) {  
   var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0);
   var lte = Utils.getMs2Date(req.query.edate, fmt1);
-  console.log()
+  console.log(gte, lte);
   var in_data = {
       index : indexClusteringMaster, type : "master",
       gte: gte+startTime,
@@ -806,11 +807,19 @@ router.get('/restapi/getDaClusterMaster', function(req, res, next) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data === null) {
       rtnCode = CONSTS.getErrData('0001');
+    } else {
+      out_data.forEach(function(d){
+        d = d._source.master_result;
+        d.da_time = Utils.getDateUTC2Local(d.da_time, CONSTS.DATEFORMAT.DATETIME, 'Y');
+        d.start_date = Utils.getDateUTC2Local(d.start_date, CONSTS.DATEFORMAT.DATETIME, 'Y');
+        d.end_date = Utils.getDateUTC2Local(d.end_date, CONSTS.DATEFORMAT.DATETIME, 'Y');
+      });
     }
     logger.debug('analysis/restapi/getDaClusterMaster -> length : %s', out_data.length);
     res.json({rtnCode: rtnCode, rtnData: out_data });
   });
 });
+
 
 
 
