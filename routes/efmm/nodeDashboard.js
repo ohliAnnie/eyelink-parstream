@@ -31,61 +31,50 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/detail', function(req, res, next) {
-  // console.log(_rawDataByDay);  
+   console.log('/dashboard/detail');  
   var outdata = {
     title: global.config.productname,
     mainmenu : mainmenu
   }
-  logger.info('mainmenu : %s, outdata : %s', mainmenu.dashboard, JSON.stringify(outdata));  
+  logger.info('mainmenu : %s, outdata : %s' , mainmenu.dashboard, JSON.stringify(outdata));  
   res.render(global.config.pcode + '/dashboard/dashboard_detail', outdata);
 });
 
-router.get('/restapi/getDashboardRawData', function(req, res, next) {
-  console.log('reports/restapi/getDashboardRawData');    
+router.get('/info', function(req, res, next) {
+   console.log('/dashboard/info');  
+  var outdata = { title: global.config.productname, mainmenu : mainmenu }
+  logger.info('mainmenu : %s, outdata : %s' , mainmenu.dashboard, JSON.stringify(outdata));  
+  res.render(global.config.pcode + '/dashboard/dashboard_info', outdata);
+});
+
+router.get('/restapi/getDashboardAggsData', function(req, res, next) {
+  console.log('reports/restapi/getDashboardAggsData');    
   var lte = Utils.getMs2Date(parseInt(req.query.now), fmt2, 'Y', 'Y');    
-  var gte = Utils.getDate(lte, fmt2, 0, 0, 0, -30, 'Y', 'Y');    
-/*  var index = [], cnt = 0;  
+  //var gte = Utils.getMs2Date(parseInt(req.query.now), fmt1, 'Y', 'Y')+'T00:00:00';    
+  var gte = Utils.getDate(lte, fmt2, 0, 0, 0, -5, 'Y', 'Y');    
+/*  var index = [], cnt = 0;  -
   for(i = new Date(gte).getTime(); i<=new Date(lte).getTime(); i=i+24*60*60*1000){    
     index[cnt++]  = indexCore+Utils.getMs2Date(i, fmt4);
   }  */
   var in_data = { index : indexNotchingOee+"*", type : "oee",                   
                   sort : "dtTransmitted" , gte : gte, lte : lte };    
-  queryProvider.selectSingleQueryByID2("dashboard","selectDashboardRawData", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID3("dashboard","selectDashboardAggsData", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {    
-      var notch = out_data;                  
+      console.log(out_data)
+      var notch = out_data.group_by_state.buckets[out_data.group_by_state.buckets.length-1];      
+      console.log(notch);
       in_data = { index : indexStackingOee+"*", type : "oee",                   
                   sort : "dtTransmitted" , gte : gte, lte : lte };          
-      queryProvider.selectSingleQueryByID2("dashboard","selectDashboardRawData", in_data, function(err, out_data, params) {
+      queryProvider.selectSingleQueryByID3("dashboard","selectDashboardAggsData", in_data, function(err, out_data, params) {
         var rtnCode = CONSTS.getErrData('0000');
         if (out_data == null) {
           rtnCode = CONSTS.getErrData('0001');
         } else {    
-          var stack = out_data;
-          var len = (notch.length <= stack.length) ? notch.length : stack.length;          
-          var stacking = [], notching = [], gage = [];          
-          for(i=0; i<len; i++) {                        
-            n = notch[i]._source.data[0];                                
-            n.dtSensed = Utils.getDateUTC2Local(n.dtSensed, fmt2);
-            n.total_shift_length = n.total_shift_length/60;
-            n.total_down_time = n.total_down_time/60;
-            n.realtime = n.total_shift_length-n.total_down_time;            
-            notching.push(n);                        
-            s = stack[i]._source.data[0];            
-            s.dtSensed = Utils.getDateUTC2Local(s.dtSensed, fmt2);            
-            s.total_shift_length = s.total_shift_length/60;
-            s.total_down_time = s.total_down_time/60;
-            s.realtime = s.total_shift_length-s.total_down_time;            
-            stacking.push(s);            
-        //    gage.push(gageData([n,s]));            
-            /*var avg = { date : Utils.getDateUTC2Local(s.dtSensed, fmt2), odd : (n.overall_oee+s.overall_oee)/2, availability : (n.availability_s.availability)/2, 
-              performance : (n.performance+s.performance)/2, quality : (n.quality+s.quality)/2 }
-            console.log(avg)
-            gage.push(avg);*/
-          };
-          var data = { stacking : stacking, notching : notching, gage : gage };
+          var stack = out_data.group_by_state.buckets[out_data.group_by_state.buckets.length-1];
+          var data = { stacking : stack, notching : notch };
          // console.log(data);
         }
         res.json({rtnCode: rtnCode, rtnData: data});
@@ -95,20 +84,118 @@ router.get('/restapi/getDashboardRawData', function(req, res, next) {
   });
 });
 
-function gageData(data){    
-  var gage = { oee : 0, availability : 0, performance : 0, quality : 0 };
-  for(i=0; i<data.length; i++){  
-    gage.oee += data[i].overall_oee;    
-    gage.availability += data[i].availability;
-    gage.performance += data[i].performance;
-    gage.quality += data[i].quality;
-  }
-  gage.date = data[0].dtSensed;
-  gage.oee = gage.oee/data.length*100;
-  gage.availability = gage.availability/data.length*100;
-  gage.performance = gage.performance/data.length*100;
-  gage.quality = gage.quality/data.length*100;  
-  return gage;
-}
+router.get('/restapi/getDashboardGageData', function(req, res, next) {
+  console.log('reports/restapi/getDashboardGageData');    
+  var lte = Utils.getMs2Date(parseInt(req.query.now), fmt2, 'Y', 'Y');    
+  //var gte = Utils.getMs2Date(parseInt(req.query.now), fmt1, 'Y', 'Y')+'T00:00:00';    
+  var gte = Utils.getDate(lte, fmt2, 0, 0, -30, 0, 'Y', 'Y');    
+/*  var index = [], cnt = 0;  -
+  for(i = new Date(gte).getTime(); i<=new Date(lte).getTime(); i=i+24*60*60*1000){    
+    index[cnt++]  = indexCore+Utils.getMs2Date(i, fmt4);
+  }  */
+  var in_data = { index : indexNotchingOee+"*", type : "oee",                   
+                  sort : "dtTransmitted" , gte : gte, lte : lte };    
+  queryProvider.selectSingleQueryByID2("dashboard","selectDashboardGageData", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {    
+      var notch = out_data;                  
+      console.log(out_data);
+      in_data = { index : indexStackingOee+"*", type : "oee",                   
+                  sort : "dtTransmitted" , gte : gte, lte : lte };          
+      queryProvider.selectSingleQueryByID2("dashboard","selectDashboardGageData", in_data, function(err, out_data, params) {
+        var rtnCode = CONSTS.getErrData('0000');
+        if (out_data == null) {
+          rtnCode = CONSTS.getErrData('0001');
+        } else {    
+          var stack = out_data;
+          var len = (notch.length <= stack.length) ? notch.length : stack.length;          
+          var stacking = [], notching = [], gage = [];                    
+          for(i=0; i<len; i++) {                        
+            n = notch[i]._source.data[0];                                
+            n.dtSensed = Utils.getDateUTC2Local(n.dtSensed, fmt2);            
+            n.cid = notch[i]._source.cid;
+            notching.push(n);                        
+            s = stack[i]._source.data[0];            
+            s.dtSensed = Utils.getDateUTC2Local(s.dtSensed, fmt2);                        
+            s.cid = stack[i]._source.cid;
+            stacking.push(s);
+          };
+          var data = { stacking : stacking, notching : notching };
+         // console.log(data);
+        }
+        res.json({rtnCode: rtnCode, rtnData: data});
+      });
+    }
+    res.json({rtnCode: rtnCode, rtnData: data});
+  });
+});
+
+router.get('/restapi/getDashboardDetail', function(req, res, next) {
+  console.log('reports/restapi/getDashboardDetail');
+  var in_data = { index : indexNotchingOee+"*", type : "oee",                   
+                  sort : "dtTransmitted" , date : req.query.date };
+  queryProvider.selectSingleQueryByID2("dashboard","selectDashboardDetail", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {    
+      var notch = out_data;                  
+      console.log(out_data);
+      in_data = { index : indexStackingOee+"*", type : "oee",                   
+                  sort : "dtTransmitted" , date : req.query.date };         
+      queryProvider.selectSingleQueryByID2("dashboard","selectDashboardDetail", in_data, function(err, out_data, params) {
+        var rtnCode = CONSTS.getErrData('0000');
+        if (out_data == null) {
+          rtnCode = CONSTS.getErrData('0001');
+        } else {    
+          var stack = out_data;
+          var len = (notch.length <= stack.length) ? notch.length : stack.length;          
+          var stacking = [], notching = [], gage = [];                    
+          for(i=0; i<len; i++) {                        
+            n = notch[i]._source.data[0];                                
+            n.dtSensed = Utils.getDateUTC2Local(n.dtSensed, fmt2);            
+            n.cid = notch[i]._source.cid;
+            notching.push(n);                        
+            s = stack[i]._source.data[0];            
+            s.dtSensed = Utils.getDateUTC2Local(s.dtSensed, fmt2);                        
+            s.cid = stack[i]._source.cid;
+            stacking.push(s);
+          };
+          var data = { stacking : stacking, notching : notching };
+         // console.log(data);
+        }
+        res.json({rtnCode: rtnCode, rtnData: data});
+      });
+    }
+    res.json({rtnCode: rtnCode, rtnData: data});
+  });
+});
+
+router.get('/restapi/getDashboardInfo', function(req, res, next) {
+  console.log('reports/restapi/getDashboardInfo');  
+  var i = indexNotchingOee.split('_');
+  console.log(req.query);
+  var in_data = { index : i[0]+'_'+req.query.type+'_'+i[2]+"*", type : "oee",                   
+                  sort : "dtTransmitted" , date : req.query.date, cid : req.query.cid };
+  queryProvider.selectSingleQueryByID2("dashboard","selectDashboardInfo", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    var data = [];
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {    
+      data = out_data[0]._source.data[0];      
+      data.dtSensed = Utils.getDateUTC2Local(data.dtSensed, fmt2);
+      data.flag = out_data[0]._source.flag;
+      data.type = out_data[0]._source.type;
+      data.cid = out_data[0]._source.cid;
+      data.sensorType = out_data[0]._source.sensorType;
+      data.status = req.query.status;     
+    }
+    res.json({rtnCode: rtnCode, rtnData: data});
+  });
+});
+
 
 module.exports = router;
