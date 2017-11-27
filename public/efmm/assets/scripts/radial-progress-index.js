@@ -10,13 +10,13 @@ function RadialProgressChart(query, options) {
   if(!d3) throw new Error('d3 object is missing. D3.js library has to be loaded before.');
 
   var self = this;
-  self.options = RadialProgressChart.normalizeOptions(options);
+  self.options = RadialProgressChart.normalizeOptions(options);  
   
   // internal  variables  
   var series = self.options.series
-    , width = 15 + ((self.options.diameter / 2) + (self.options.stroke.width * self.options.series.length) + (self.options.stroke.gap * self.options.series.length - 1)) * 2
+    , width = ((self.options.diameter / 2) + (self.options.stroke.width * self.options.series.length) + (self.options.stroke.gap * self.options.series.length - 1)) * 2
     , height = width
-    , dim = "0 -40 " + height*2 + " " + width*2
+    , dim = "0 0 " + height + " " + width
     , τ = 2 * Math.PI
     , inner = []
     , outer = [];
