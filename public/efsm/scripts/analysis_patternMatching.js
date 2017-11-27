@@ -40,12 +40,12 @@ function getMatchingList() {
   var basetime = $('#baseTime').val() + ':59';
   var timeRange = $('select[name=timeRange').val();
   var startDt = new Date(Date.parse(basetime) - (1000*60*timeRange));
-  var endDt = new Date(Date.parse(basetime) + (1000*60*timeRange));
+  // var endDt = new Date(Date.parse(basetime) + (1000*60*timeRange));
   var stime = String(dateConvert(startDt));
-  var etime = String(dateConvert(endDt));
-  console.log('%s, %s', stime, etime);
+  // var etime = String(dateConvert(endDt));
+  console.log('%s, %s', stime, basetime);
   
-  var data = { startDate: stime, endDate: etime };
+  var data = { startDate: stime, endDate: basetime };
   var in_data = { url: "/analysis/restapi/getMatchingPattern", type: "GET", data:data};
   ajaxTypeData(in_data, function(result){
     console.log('getPatternList[CODE]:', result.rtnCode.code);
@@ -63,9 +63,9 @@ function drawMatchingHistory(matchingList) {
   var sb = new StringBuffer();
   sb.append('<div class="portlet-body form"><div class="historyTable" style="height:auto">');
   sb.append('<table class="table table-striped table-bordered table-hover" id="dtPattern">');
-  sb.append('<thead><tr><th rowspan="2"> Matching Time </th>');
+  sb.append('<thead><tr><th></th><th></th>');
   sb.append('<th colspan="2"> active_power </th><th colspan="2"> ampere </th><th colspan="2"> power_factor </th><th colspan="2"> voltage </th></tr>');
-  sb.append('<tr><th>cluster</th><th>status</th><th>cluster</th><th>status</th><th>cluster</th><th>status</th><th>cluster</th><th>status</th></tr>');
+  sb.append('<tr><th></th><th> Matching Time </th><th>cluster</th><th>status</th><th>cluster</th><th>status</th><th>cluster</th><th>status</th><th>cluster</th><th>status</th></tr>');
   sb.append('</thead><tbody>');
 
   console.log(matchingList);
@@ -74,7 +74,7 @@ function drawMatchingHistory(matchingList) {
     var matchingTime = d.timestamp.replace('T', ' ');
     console.log(d);
     
-    sb.append('<tr><td>' + matchingTime + '</td>');
+    sb.append('<tr><td></td><td>' + matchingTime + '</td>');
     sb.append('<td><a class="clickPattern" group="active_power">' + d.active_power.top_1 + '</td>');
     sb.append('<td>' + d.active_power.status.status + '</td>');
     sb.append('<td><a class="clickPattern" group="ampere">' + d.ampere.top_1 + '</td>');
@@ -119,12 +119,12 @@ function getGraphData(targetData) {
   var top3Set = [];
 
   for (i=0; i<targetData.realValue.length; i++) {
-    realSet.push({ x : i, y : targetData.realValue[i].toFixed(3)});
+    realSet.push({ x : i, y : targetData.realValue[i].toFixed(2)});
   }
   for (i=0; i<targetData.top_1_value.length; i++) {
-    top1Set.push({ x : i, y : targetData.top_1_value[i].toFixed(3)});
-    top2Set.push({ x : i, y : targetData.top_2_value[i].toFixed(3)});
-    top3Set.push({ x : i, y : targetData.top_3_value[i].toFixed(3)});
+    top1Set.push({ x : i, y : targetData.top_1_value[i].toFixed(2)});
+    top2Set.push({ x : i, y : targetData.top_2_value[i].toFixed(2)});
+    top3Set.push({ x : i, y : targetData.top_3_value[i].toFixed(2)});
   }
 
   var array = targetData.top_1_value.concat(targetData.top_2_value, targetData.top_3_value, targetData.realValue);
@@ -171,7 +171,7 @@ function drawPatternChart(graphData){
       .append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
   xScale.domain([0, d3.max(graphData.top1Set, function(d){ return d.x; })]);
-  yScale.domain([graphData.minVal-(graphData.maxVal/100), graphData.maxVal+(graphData.maxVal/100)]);
+  yScale.domain([graphData.minVal-(graphData.minVal/4), graphData.maxVal+(graphData.minVal/10)]);
 
   var top1Line = d3.svg.line()
       .interpolate("basis")

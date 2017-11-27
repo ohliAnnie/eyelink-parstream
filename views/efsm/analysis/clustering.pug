@@ -1,8 +1,11 @@
 extends ../layout-type01
 block style  
   link(type='text/css', rel='stylesheet', href='/efsm/css/chart_style.css')
+  link(type='text/css', rel='stylesheet', href='/efsm/assets/css/dc.css')
 block script  
   script(src='/efsm/assets/scripts/vue.min.js')
+  script(type='text/javascript', src='/efsm/assets/scripts/d3_dc.js')
+  script(type='text/javascript', src='/efsm/assets/scripts/colorbrewer.js')  
   script(type='text/javascript', src="/common/scripts/util.js")
   script(src='/efsm/scripts/analysis_clustering.js')
 block content
@@ -94,5 +97,8 @@ block content
                         br
                         input#c3.click_checkbox(type='checkbox', name='c3', value='4', v-on='click:checkOpt', checked='true')
                         text  Cluster3
+                        br
+                        input#c3.click_checkbox(type='checkbox', name='c4', value='5', v-on='click:checkOpt', checked='true')
+                        text  Cluster4
                       .col-xm-12.col-sm-12.col-md-10.col-xs-12
                         #Cluster(style='width:100%;height:395px;')
