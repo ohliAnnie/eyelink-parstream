@@ -28,9 +28,9 @@ function drawTable(data) {
   sb.append('<table class="table table-striped table-bordered">');  
   sb.append('<tr style="background-color:#353535; color:yellow;"><th '+style3+'>Notching</th><th '+style3+'>Stacking</th>');  
   sb.append('<th '+style3+'>Tab Welding</th><th '+style3+'>Packaging</th><th '+style3+'>Degassing</th></tr>');
-  sb.append('<tr style="background-color:#353535; color:white;"><th '+style3+'>'+data.notching[0].dtSensed+'</th><th '+style3+'>');
-  sb.append(data.stacking[0].dtSensed+'</th>');  
-  sb.append('<th '+style3+'>Tab Welding</th><th '+style3+'>Packaging</th><th '+style3+'>Degassing</th></tr><td>');  
+  sb.append('<tr style="background-color:#353535; color:white;"><td '+style3+'>'+data.notching[0].dtSensed+'</td><td '+style3+'>');
+  sb.append(data.stacking[0].dtSensed+'</td>');  
+  sb.append('<td '+style3+'>Tab Welding</td><td '+style3+'>Packaging</td><td '+style3+'>Degassing</td></tr><tr><td>');  
   var style = 'style="background-color:#9E9E9E;"';
   var style2 = 'text-align:center; background-color:#9E9E9E;';  
   for(i=0; i<data.notching.length; i++) {
@@ -56,16 +56,16 @@ function drawTable(data) {
   $('#tbody').append(sb.toString());
   for(i=0; i<data.notching.length; i++){
     var max = 100; 
-    gage[i] = getGaguChart("gage"+i, max, 'green', data.notching[i].overall_oee, 0.109);  
+    gage[i] = getGaguChart("gage"+i, max, 'green', data.notching[i].overall_oee, size);  
   }
   for(i=0; i<data.stacking.length; i++){
     var max = 100; 
-    gage[i+data.notching.length] = getGaguChart("gage"+(i+data.notching.length), max, 'green', data.stacking[i].overall_oee, 0.109);
+    gage[i+data.notching.length] = getGaguChart("gage"+(i+data.notching.length), max, 'green', data.stacking[i].overall_oee, size);
   }
   var i = data.notching.length+data.stacking.length; 
-  gage[i] = getGaguChart("gage"+i, max, 'green', 0.6, 0.109);
-  gage[++i] = getGaguChart("gage"+i, max, 'green', 0.3, 0.109);
-  gage[++i] = getGaguChart("gage"+i, max, 'green', 0.1, 0.109);  
+  gage[i] = getGaguChart("gage"+i, max, 'green', 0.6, size);
+  gage[++i] = getGaguChart("gage"+i, max, 'green', 0.3, size);
+  gage[++i] = getGaguChart("gage"+i, max, 'green', 0.1, size);  
 }
 
 function innerTable(data, type){
@@ -77,15 +77,16 @@ function innerTable(data, type){
   var sb = '<table class="table table-striped table-bordered" onclick="location.href=';
   sb += "'info?date="+getParameterByName('date')+'&type='+type+'&state='+data.state+'&cid='+data.cid+"'"+'">';
   console.log(sb);
-  sb += '<tr style="background-color:'+alarm+'"><td colspan="3" style="color:white; text-align:center;" ><strong style="font-size:20px;">'+data.cid+'</strong><br>'+data.state+'</td></tr>';    
+  sb += '<tr style="background-color:'+alarm+'"><td colspan="3" style="color:white; text-align:center;" >';
+  sb += '<strong style="font-size:18px;">'+data.cid+'</strong><br>'+data.state+'</td></tr>';    
   sb += '<tr><td colspan="3"><div class="gage'+cnt++ +'" style="text-align:center;"></div></td></tr>';
-  sb += '<tr style="background-color:'+color+'"><td>Ava</td><td>Perf</td><td>Qual</td></tr>';
-  sb += '<tr style="background-color:'+color+'"><td>'+data.availability.toFixed(1)+'%</td><td>'+data.performance.toFixed(1)+'%</td><td>'+data.quality.toFixed(1)+'%</td></tr>';
+  sb += '<tr style="background-color:'+color+'"><td>Ava<br>'+data.availability.toFixed(1)+'%</td><td>Perf<br>';
+  sb += data.performance.toFixed(1)+'%</td><td>Qual<br>'+data.quality.toFixed(1)+'%</td></tr>';
   sb += '</table>'  
   return sb;
 }
 
-var gage = [], cnt=0;
+var gage = [], size = 0.1, cnt = 0;
 function getGaguChart(id, max, color, value, size) {  
   return new RadialProgressChart('.'+id, {
     diameter: 200,
