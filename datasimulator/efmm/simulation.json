@@ -57,7 +57,7 @@
         "status" : "ShortBreak",
         "shift_length" : 1,
         "short_break" : 1,
-        "meal_break" : 1,
+        "meal_break" : 0,
         "down_time" : 0,
         "ideal_run_rate" : 3,
         "accept_pieces" : 0,

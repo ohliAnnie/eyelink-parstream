@@ -30,9 +30,9 @@ function calculateOee(data) {
   oee.total_down_time += data.data[0].down_time;
   oee.total_accept_pieces += data.data[0].accept_pieces;
   oee.total_reject_pieces += data.data[0].reject_pieces;
-
   oee.planned_production_time = oee.total_shift_length - oee.total_short_break - oee.total_meal_break;
   oee.operating_time = oee.planned_production_time - oee.total_down_time;
+  oee.total_expected_unit = oee.planned_production_time * data.data[0].ideal_run_rate;
   oee.total_pieces = oee.total_accept_pieces + oee.total_reject_pieces;
 
   oee.availability = (oee.planned_production_time == 0) ? 0 : oee.operating_time / oee.planned_production_time;
@@ -48,6 +48,7 @@ function calculateOee(data) {
   data.data[0].total_reject_pieces = oee.total_reject_pieces;
   data.data[0].planned_production_time = oee.planned_production_time;
   data.data[0].operating_time = oee.operating_time;
+  data.data[0].total_expected_unit = oee.total_expected_unit;
   data.data[0].total_pieces = oee.total_pieces;
   data.data[0].availability = oee.availability;
   data.data[0].performance = oee.performance;

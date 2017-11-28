@@ -362,7 +362,7 @@ var TableManaged = function () {
             // "bInfo": false,
             "bFilter": false,
             //"bPaginate": false,
-            "bSort": false,
+            "bSort": true,
             "columnDefs": [{  // set default column settings
                 'orderable': false,
                 'targets': [0]

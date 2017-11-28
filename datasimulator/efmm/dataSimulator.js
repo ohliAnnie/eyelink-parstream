@@ -3,6 +3,9 @@ if ( process.argv[2] == null || process.argv[3] == null) {
   process.exit();
 }
 
+var flag = process.argv[2];
+var cid = process.argv[3];
+
 global.log4js = require('log4js');
 log4js.configure({
   'appenders':
@@ -14,9 +17,9 @@ log4js.configure({
       'file' :
       {
         'type': 'file',
-        'filename': './datasimulator.log',
-        'maxLogSize': 1024000,
-        'backups': 1,
+        'filename': './datasimulator-' + cid + '.log',
+        'maxLogSize': 1024000000,
+        'backups': 5,
         'category': 'eyelink'
       }
   },
@@ -65,29 +68,29 @@ logger.info('=========================================================');
 */
 var cnt = 0;
 var cnt_init_oee = 0;
-var flag = process.argv[2];
-var cid = process.argv[3];
-var init_oee_time = '09:00:00';
-var meal_break_time1 = '12';
-var meal_break_time2 = '18';
+var init_oee_time = '00:00:00'; // GMT 기준 시간임.
+var meal_break_time1 = '03'; // GMT 기준 시간임.
+var meal_break_time2 = '09'; // GMT 기준 시간임.
 var short_break_term = 4 * 60 * 60;
 var short_break_period = 15 * 60;
 var down_time_period = 30 * 60;
 
 var short_break_cnt = 0;
 var v_short_break_period = short_break_period;
+var isTodayDown = false;
 var isDownTime = false;
 var down_time_cnt = 0;
 
 // // for test
-// var curdate = '2017-11-20 08:49:55';
+// var curdateTest = '2017-11-20 08:50:55';
 
 while(true) {
   var isNormal = true;
   var rdx = Utils.generateRandom(1, 1000);
 
   // // for test : oee init
-  // curdate = Utils.getDate(curdate, CONSTS.DATEFORMAT.DATETIME, 0, 0, 0, 1);
+  // curdateTest = Utils.getDate(curdateTest, CONSTS.DATEFORMAT.DATETIME, 0, 0, 0, 1);
+  // curdate = Utils.getDateLocal2UTC(curdateTest, CONSTS.DATEFORMAT.DATETIME, 'Y');
 
   var curdate = Utils.getToday(CONSTS.DATEFORMAT.DATETIME, 'Y', 'Y');
   logger.debug('rdx : %s, today : %s', rdx, curdate);
@@ -98,7 +101,7 @@ while(true) {
     logger.info('initiate OEE data');
     isNormal = false;
     isDownTime = false;
-
+    isTodayDown = false;
     // OEE 초기화.
     calcOee.initiateOee();
 
@@ -122,15 +125,15 @@ while(true) {
     isDownTime = true;
   }
 
-  if (isDownTime) {
+  if (isDownTime && isTodayDown == false) {
     // json data에서 날짜값과 양불량품개수 값을 변경
     setDataInEventData('down_time', curdate);
     down_time_cnt++;
     if (down_time_cnt == down_time_period) {
       down_time_cnt = 0;
       isDownTime = false;
+      isTodayDown = true;
     }
-
   } else if (isNormal) {
     if (rdx <= 980) {
       // json data에서 날짜값과 양불량품개수 값을 변경
@@ -161,7 +164,7 @@ function printUsage() {
 
 
 function compareTime(d1, t1) {
-  return d1.indexOf(' ' + t1) > 0 ? true : false;
+  return d1.indexOf('T' + t1) > 0 ? true : false;
   // var d2 = new Date(d1.substring(0,11) + d2);
   // var d1 = new Date(d1);
   // var gap = d1.getTime() - d2.getTime();
@@ -238,7 +241,9 @@ function insertData(index, listData){
       // console.log(out_data);
       var rtnCode = CONSTS.getErrData("D001");
     }
-    logger.info('finished insertData - index : %s, _id : %s', out_data.items[0].index._index, out_data.items[0].index._id);
+    logger.info('finished insertData - index : %s, _id : %s, status : %s',
+      out_data.items[0].index._index, out_data.items[0].index._id,
+      in_data.body[0].data[0].status);
 
     // cb(err);
   });
