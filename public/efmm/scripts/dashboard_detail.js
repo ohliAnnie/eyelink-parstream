@@ -21,13 +21,16 @@ function getData(){
 }
 
 function drawTable(data) {
+  console.log(data)
   $('#tbody').empty();  
   var sb = new StringBuffer();
   var style3 = 'style="text-align:center;"';
-  sb.append('<table class="table table-striped table-bordered">');
-  sb.append('<tr style="background-color:#353535; color:white; "><th colspan=5 '+style3+'>'+data.notching[0].dtSensed+'</th></tr>');  
-  sb.append('<tr style="background-color:#353535; color:yellow;"><th '+style3+'>Notching</th><th '+style3+'>Stacking</th>');
-  sb.append('<th '+style3+'>Tab Welding</th><th '+style3+'>Packaging</th><th '+style3+'>Degassing</th></tr><td>');
+  sb.append('<table class="table table-striped table-bordered">');  
+  sb.append('<tr style="background-color:#353535; color:yellow;"><th '+style3+'>Notching</th><th '+style3+'>Stacking</th>');  
+  sb.append('<th '+style3+'>Tab Welding</th><th '+style3+'>Packaging</th><th '+style3+'>Degassing</th></tr>');
+  sb.append('<tr style="background-color:#353535; color:white;"><th '+style3+'>'+data.notching[0].dtSensed+'</th><th '+style3+'>');
+  sb.append(data.stacking[0].dtSensed+'</th>');  
+  sb.append('<th '+style3+'>Tab Welding</th><th '+style3+'>Packaging</th><th '+style3+'>Degassing</th></tr><td>');  
   var style = 'style="background-color:#9E9E9E;"';
   var style2 = 'text-align:center; background-color:#9E9E9E;';  
   for(i=0; i<data.notching.length; i++) {
@@ -38,15 +41,15 @@ function drawTable(data) {
     sb.append(innerTable(data.stacking[i], 'stacking'));
   }
   sb.append('</td><td>');
-  var testData = { availability : 0.913, performance : 0.821, quality : 0.997, overall_oee : 0.6 };
+  var testData = { availability : 91.3, performance : 82.1, quality : 99.7, overall_oee : 60 };
   testData.cid = 300;
   sb.append(innerTable(testData, 'welding'));
   sb.append('</td><td>');
-  testData.overall_oee = 0.3;
+  testData.overall_oee = 30;
   testData.cid = 400;
   sb.append(innerTable(testData, 'packaging'));
   sb.append('</td><td>');
-  testData.overall_oee = 0.1;
+  testData.overall_oee = 10;
   testData.cid = 500;
   sb.append(innerTable(testData, 'degassing'));
   sb.append('</td></tr></table>');    
@@ -67,17 +70,17 @@ function drawTable(data) {
 
 function innerTable(data, type){
   //var style = 'style="color:'+color+'; text-align:'+align+'; font-weight:bold;"';
-  var status = ['active', 'idle', 'alarm'];
-  data.status = status[Math.floor(Math.random() * 10)%3]  
-  var alarm = (data.status=='active')?'green':(data.status=='idle')?'blue':'red';
+  var state = ['active', 'idle', 'alarm'];
+  data.state = state[Math.floor(Math.random() * 10)%3]  
+  var alarm = (data.state=='active')?'green':(data.state=='idle')?'blue':'red';
   var color = (data.overall_oee>=0.7)?'#6ABC64':(data.overall_oee>=0.5)?'#79ABFF':'#FF7E7E';  
   var sb = '<table class="table table-striped table-bordered" onclick="location.href=';
-  sb += "'info?date="+getParameterByName('date')+'&type='+type+'&status='+data.status+'&cid='+data.cid+"'"+'">';
+  sb += "'info?date="+getParameterByName('date')+'&type='+type+'&state='+data.state+'&cid='+data.cid+"'"+'">';
   console.log(sb);
-  sb += '<tr style="background-color:'+alarm+'"><td colspan="3" style="color:white; text-align:center;" ><strong style="font-size:20px;">'+data.cid+'</strong><br>'+data.status+'</td></tr>';    
+  sb += '<tr style="background-color:'+alarm+'"><td colspan="3" style="color:white; text-align:center;" ><strong style="font-size:20px;">'+data.cid+'</strong><br>'+data.state+'</td></tr>';    
   sb += '<tr><td colspan="3"><div class="gage'+cnt++ +'" style="text-align:center;"></div></td></tr>';
   sb += '<tr style="background-color:'+color+'"><td>Ava</td><td>Perf</td><td>Qual</td></tr>';
-  sb += '<tr style="background-color:'+color+'"><td>'+data.availability.toFixed(3)*100+'%</td><td>'+data.performance.toFixed(3)*100+'%</td><td>'+data.quality.toFixed(3)*100+'%</td></tr>';
+  sb += '<tr style="background-color:'+color+'"><td>'+data.availability.toFixed(1)+'%</td><td>'+data.performance.toFixed(1)+'%</td><td>'+data.quality.toFixed(1)+'%</td></tr>';
   sb += '</table>'  
   return sb;
 }
