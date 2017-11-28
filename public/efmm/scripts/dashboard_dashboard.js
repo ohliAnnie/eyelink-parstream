@@ -13,56 +13,44 @@ var oee, availability, performance, quality;
 
 function getData(){
   var data = { now : new Date().getTime() };
-  var in_data = { url : "/dashboard/restapi/getDashboardRawData", type : "GET", data : data };
+  var in_data = { url : "/dashboard/restapi/getDashboardGageData", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {
-      var data = result.rtnData;              
-      makeData(data)
+      var data = result.rtnData;
+      var notching = data.notching[data.notching.length-1];
+      var stacking = data.stacking[data.stacking.length-1];
+      drawLineChart(data.stacking.concat(data.notching));  
     } 
-  });  
-}
-
-function makeData(data) {
-  var dateFormat = 'YYYY-MM-DD';  
-  var notching = data.notching[data.notching.length-1];
-  var stacking = data.stacking[data.stacking.length-1];
-  console.log(data)
-  var rawData = [
-  { index : 0, date : moment().subtract(6, 'days').format(dateFormat), oee : 88, availability : 93, performance : 97, quality : 99},
-  { index : 1, date : moment().subtract(5, 'days').format(dateFormat), oee : 76, availability : 90, performance : 84, quality : 99},
-  { index : 2, date : moment().subtract(4, 'days').format(dateFormat), oee : 81, availability : 89, performance : 91, quality : 99},
-  { index : 3, date : moment().subtract(3, 'days').format(dateFormat), oee : 83, availability : 90, performance : 93, quality : 99},
-  { index : 4, date : moment().subtract(2, 'days').format(dateFormat), oee : 77, availability : 88, performance : 87, quality : 99},
-  { index : 5, date : moment().subtract(1, 'days').format(dateFormat), oee : 81, availability : 91, performance : 89, quality : 99},
-  { index : 6, date : moment().format(dateFormat), oee : 87, availability : 91, performance : 90, quality : 99}];
-  var tData = {
-    date : notching.dtSensed,
-    kpis : { tot : 18, in_pro : 15, stop : 3, alarm : 3 },
-    notching : { tot : 6, in_pro : 5, stop : 1, alarm : 1, a_time : notching.total_shift_length.toFixed(0), d_time : notching.total_down_time.toFixed(0), r_time : notching.realtime.toFixed(0),
-e_unit : (notching.realtime*notching.ideal_run_rate).toFixed(0), p_unit : notching.total_pieces, g_unit : notching.total_accept_pieces
-, n_unit : notching.total_reject_pieces },
-    stacking : { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : stacking.total_shift_length.toFixed(0), d_time : stacking.total_down_time.toFixed(0), r_time : stacking.realtime.toFixed(0)
-, e_unit : (stacking.realtime*stacking.ideal_run_rate).toFixed(0), p_unit : stacking.total_pieces, g_unit : stacking.total_accept_pieces
-, n_unit : stacking.total_reject_pieces },
-    tab_welding : { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3600, e_unit : 29500, p_unit : 28970, g_unit : 28889, n_unit : 81 },
-    packaging : { tot : 2, in_pro : 1, stop : 1, alarm : 1, a_time : 7200, r_time : 3540, e_unit : 29000, p_unit : 28700, g_unit : 28618, n_unit : 82 },
-    degassing : { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3590, e_unit : 28500, p_unit : 28470, g_unit : 28392, n_unit : 78 },
-    leak_inspection : { tot : 2, in_pro : 1, stop : 1, alarm : 1, a_time : 7200, r_time : 3570, e_unit : 28000, p_unit : 27590, g_unit : 27513, n_unit : 77 },
-    can_swaging : { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3600, e_unit : 27500, p_unit : 26990, g_unit : 26911, n_unit : 79 }    
-  };
-  console.log(rawData)
-  
-  drawLineChart(data.stacking.concat(data.notching));
-  drawTable(tData)
+  }); 
+  var in_data = { url : "/dashboard/restapi/getDashboardAggsData", type : "GET", data : data };
+  ajaxTypeData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {
+      var data = result.rtnData;      
+      var tData = {
+        date : data.notching.key_as_string,
+        kpis : { tot : 18, in_pro : 15, stop : 3, alarm : 3 },
+        notching : { tot : 6, in_pro : 5, stop : 1, alarm : 1, a_time : data.notching.availability_time.value, d_time : data.notching.down_time.value, r_time :data.notching.running_time.value, e_unit : data.notching.expected_unit.value, p_unit : data.notching.produce_unit.value, g_unit : data.notching.good_unit.value
+    , n_unit : data.notching.ng_unit.value },
+        stacking : { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : data.stacking.availability_time.value, d_time : data.stacking.down_time.value, r_time :data.stacking.running_time.value, e_unit : data.stacking.expected_unit.value, p_unit : data.stacking.produce_unit.value, g_unit : data.stacking.good_unit.value
+    , n_unit : data.stacking.ng_unit.value },
+        tab_welding : { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3600, e_unit : 29500, p_unit : 28970, g_unit : 28889, n_unit : 81 },
+        packaging : { tot : 2, in_pro : 1, stop : 1, alarm : 1, a_time : 7200, r_time : 3540, e_unit : 29000, p_unit : 28700, g_unit : 28618, n_unit : 82 },
+        degassing : { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3590, e_unit : 28500, p_unit : 28470, g_unit : 28392, n_unit : 78 },
+        leak_inspection : { tot : 2, in_pro : 1, stop : 1, alarm : 1, a_time : 7200, r_time : 3570, e_unit : 28000, p_unit : 27590, g_unit : 27513, n_unit : 77 },
+        can_swaging : { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3600, e_unit : 27500, p_unit : 26990, g_unit : 26911, n_unit : 79 }    
+      };
+      drawTable(tData);      
+    } 
+  });   
 }
 
 function drawGage(value){  
   var max = 100; 
 
-  oee = getGaguChart("oee", max, 'yellow', value["oee"], 0.29);
-  availability = getGaguChart("availability", max, 'blue', value["availability"], 0.21);
-  performance = getGaguChart("performance", max, 'orange', value["performance"], 0.21);
-  quality = getGaguChart("quality", max, 'green', value["quality"], 0.21);  
+  oee = getGaguChart("oee", max, 'yellow', value["oee"], 0.15);
+  availability = getGaguChart("availability", max, 'blue', value["availability"], 0.1);
+  performance = getGaguChart("performance", max, 'orange', value["performance"], 0.1);
+  quality = getGaguChart("quality", max, 'green', value["quality"], 0.1);  
 }
 
 function getGaguChart(id, max, color, value, size) {
@@ -87,7 +75,6 @@ function getGaguChart(id, max, color, value, size) {
 }
 
 function drawLineChart(data) {
-  console.log(data);
   var minDate = new Date(data[0].dtSensed);
   var maxDate = new Date(data[data.length-1].dtSensed);
   /*var xData = [];
@@ -104,7 +91,7 @@ function drawLineChart(data) {
   });
 
   var oGroup = dim.group().reduce(
-      function(p,v){        
+      function(p,v){                
         p.count++;
         p.sum += v.overall_oee;
         p.avg = p.sum/p.count;
@@ -245,11 +232,9 @@ function drawTable(data) {
   var sb = new StringBuffer();
   var style3 = 'style="text-align:center;"';
   sb.append('<table class="table table-striped table-bordered" onclick="location.href=');
-  sb.append("'detail?date="+data.date+"'"+'"><tr style="background-color:#353535; color:white;">');
-  console.log(sb.toString());
+  sb.append("'detail?date="+data.date+"'"+'"><tr style="background-color:#353535; color:white;">');  
   sb.append('<th colspan="2" '+style3+'>KPIs</th><th '+style3+'>Notching</th><th '+style3+'>Stacking</th>');
-  sb.append('<th '+style3+'>Tab Welding</th><th '+style3+'>Packaging</th><th '+style3+'>Degassing</th>');
-  sb.append('<th '+style3+'>Leak Inspection</th><th '+style3+'>Can Swaging</th></tr>');
+  sb.append('<th '+style3+'>Tab Welding</th><th '+style3+'>Packaging</th><th '+style3+'>Degassing</th></tr>');
   var style = 'style="background-color:#9E9E9E;"';
   var style2 = 'text-align:center; background-color:#9E9E9E;';
   sb.append('<tr><th '+style+' >ToTal</th><th style="'+style2+'">'+data.kpis.tot+'</th>');
@@ -284,7 +269,6 @@ function drawTr(data, id, color, align){
   var style = 'style="color:'+color+'; text-align:'+align+'; font-weight:bold;"';
   var sb = '<td '+style+'>'+data.notching[id]+'</td><td '+style+'>'+data.stacking[id]+'</td>';
   sb += '<td '+style+'>'+data.tab_welding[id]+'</td><td '+style+'>'+data.packaging[id]+'</td>';
-  sb += '<td '+style+'>'+data.degassing[id]+'</td><td '+style+'>'+data.leak_inspection[id]+'</td>';
-  sb += '<td '+style+'>'+data.can_swaging[id]+'</td></tr>';  
+  sb += '<td '+style+'>'+data.degassing[id]+'</td></tr>';  
   return sb;
 }

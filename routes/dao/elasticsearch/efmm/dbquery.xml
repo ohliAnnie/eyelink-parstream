@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <queryList>
   <dashboard>
-    <query id='selectDashboardRawData'><![CDATA[
+    <query id='selectDashboardGageData'><![CDATA[
       {
         "index" : #index#,
         "type"  : #type#,
         "body" : {
           "size" : 100000,
           "sort" : { #sort#: { "order" : "asc" } },
+          "_source" : ["data.dtSensed", "cid", "data.availability", "data.performance", "data.quality", "data.overall_oee"],
           "query" : {
             "bool": {
               "filter" : {
@@ -20,7 +21,113 @@
         }
       }
     ]]></query>
-  </dashboard>
+    <query id='selectDashboardAggsData'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {          
+          "sort" : { "dtTransmitted": { "order" : "asc" } },
+          "query" : {
+            "bool" : {
+              "must" : {
+                "range" : {
+                  "dtTransmitted" : {
+                    "gte" : #gte#,
+                    "lte" : #lte#
+                  }
+                }
+              }
+            }
+          },
+          "aggs" : {
+            "group_by_state" : {
+              "terms": {
+                "field": "dtTransmitted"
+              },
+              "aggs" : {
+                "availability_time" : {
+                  "sum" : {
+                    "field": "data.planned_production_time"
+                  }
+                },
+                "down_time" : {
+                  "sum" : {
+                    "field": "data.total_down_time"
+                  }
+                },
+                "running_time" : {
+                  "sum" : {
+                    "field": "data.operating_time"
+                  }
+                },
+                "expected_unit" : {
+                  "sum" : {
+                    "field": "data.total_expected_unit"
+                  }
+                },
+                "produce_unit" : {
+                  "sum" : {
+                    "field": "data.total_pieces"
+                  }
+                },
+                "good_unit" : {
+                  "sum" : {
+                    "field" : "data.total_accept_pieces"
+                  }
+                },
+                "ng_unit" : {
+                  "sum" : {
+                    "field": "data.total_reject_pieces"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDashboardDetail'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {          
+          "sort" : [{ "dtTransmitted" : "desc" },{ "cid" : "asc" }],
+          "size" : 5,
+          "_source" : ["data.dtSensed", "cid", "data.availability", "data.performance", "data.quality", "data.overall_oee"],
+          "query" : {
+            "bool": {
+              "filter" : {
+                "range" : {
+                  "dtTransmitted" : {
+                    "gte" : #gte#,
+                    "lte" : #lte#
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDashboardInfo'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {                    
+          "query" : {
+            "bool": {
+              "filter" : {
+                "term" : { "data.dtSensed" : #date# }
+              },
+              "must" : { 
+                "match" : { "cid" : #cid# }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+  </dashboard>  
   <scheduler>
     <query id='selectApplicationInfo'><![CDATA[
       {

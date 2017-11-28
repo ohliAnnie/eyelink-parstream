@@ -1,8 +1,7 @@
 extends ../efmm-layout01
 block style
   link(type='text/css', rel='stylesheet', href='/efmm/assets/css/dc.css') 
-  link(type='text/css', rel='stylesheet', href='/efmm/css/chart_style.css')
-  link(type='text/css', href="/efmm/css/dashboard_dashboard.css")
+  link(type='text/css', rel='stylesheet', href='/efmm/css/chart_style.css')  
 block script
   script(type='text/javascript', src='/efmm/assets/scripts/d3_dc.js')
   script(type='text/javascript', src='/efmm/assets/scripts/crossfilter.js')
@@ -10,7 +9,7 @@ block script
   script(type='text/javascript', src='/efmm/assets/scripts/colorbrewer.js')
   script(type='text/javascript', src='/efmm/assets/scripts/radial-progress-index.js')
   script(type='text/javascript', src="/common/scripts/util.js")
-  script(type='text/javascript', src="/efmm/scripts/dashboard_dashboard.js")
+  script(type='text/javascript', src="/efmm/scripts/dashboard_info.js")
 block content
   .container-fluid
     .page-content
@@ -27,7 +26,7 @@ block content
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase OVERALL OEE
+                span.caption-subject.bold.uppercase Detail Info
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -35,23 +34,5 @@ block content
                 a.fullscreen(href='javascript:;')
                 a.remove(href='javascript:;')
             .portlet-body              
-              .chart
-                .col-md-2
-                  .oee
-                .col-md-5
-                  .col-md-4
-                    span.caption-subject.bold.uppercase Availability
-                    .availability
-                  .col-md-4
-                    span.caption-subject.bold.uppercase Performance
-                    .performance
-                  .col-md-4
-                    span.caption-subject.bold.uppercase Quality
-                    .quality
-                .col-md-5
-                  span.caption-subject.bold OEE Last 7 Days
-                  #composed
-      .row
-        .col-md-12
-          .portlet.light
-            #tbody
+              .chart(style='height:auto;')
+                #tbody
