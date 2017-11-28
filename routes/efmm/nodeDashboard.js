@@ -134,37 +134,54 @@ router.get('/restapi/getDashboardGageData', function(req, res, next) {
 
 router.get('/restapi/getDashboardDetail', function(req, res, next) {
   console.log('reports/restapi/getDashboardDetail');
+  var gte = Utils.getDate(req.query.date, fmt2, 0, 0, 0, -20, 'Y', 'Y');  
+  console.log(gte)
+  console.log(req.query.date)
   var in_data = { index : indexNotchingOee+"*", type : "oee",                   
-                  sort : "dtTransmitted" , date : req.query.date };
+                  gte : gte, lte : req.query.date };
   queryProvider.selectSingleQueryByID2("dashboard","selectDashboardDetail", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {    
-      var notch = out_data;                  
-      console.log(out_data);
-      in_data = { index : indexStackingOee+"*", type : "oee",                   
-                  sort : "dtTransmitted" , date : req.query.date };         
+      var notch = out_data;                        
+      in_data.index = indexStackingOee+"*";
       queryProvider.selectSingleQueryByID2("dashboard","selectDashboardDetail", in_data, function(err, out_data, params) {
         var rtnCode = CONSTS.getErrData('0000');
         if (out_data == null) {
           rtnCode = CONSTS.getErrData('0001');
         } else {    
-          var stack = out_data;
-          var len = (notch.length <= stack.length) ? notch.length : stack.length;          
-          var stacking = [], notching = [], gage = [];                    
-          for(i=0; i<len; i++) {                        
-            n = notch[i]._source.data[0];                                
-            n.dtSensed = Utils.getDateUTC2Local(n.dtSensed, fmt2);            
-            n.cid = notch[i]._source.cid;
-            notching.push(n);                        
-            s = stack[i]._source.data[0];            
-            s.dtSensed = Utils.getDateUTC2Local(s.dtSensed, fmt2);                        
-            s.cid = stack[i]._source.cid;
-            stacking.push(s);
+          var stack = out_data;          
+          var stacking = [], notching = [];          
+          var ndate = notch[0]._source.data[0].dtSensed;          
+          for(i=0; i<notch.length; i++){            
+            if(ndate == notch[i]._source.data[0].dtSensed){            
+              var n = notch[i]._source.data[0];
+              n.dtSensed = Utils.getDateUTC2Local(n.dtSensed, fmt2);            
+              n.cid = notch[i]._source.cid;       
+              n.availability *= 100;
+              n.quality *= 100;
+              n.performance *= 100;
+              notching.push(n);    
+            } else {
+              i = notch.length;
+            }
           };
-          var data = { stacking : stacking, notching : notching };
-         // console.log(data);
+          var sdate = stack[0]._source.data[0].dtSensed;
+          for(i=0; i<stack.length; i++){            
+            if(sdate == stack[i]._source.data[0].dtSensed){              
+              var s = stack[i]._source.data[0];            
+              s.dtSensed = Utils.getDateUTC2Local(s.dtSensed, fmt2);     
+              s.cid = stack[i]._source.cid;
+              s.availability *= 100;
+              s.quality *= 100;
+              s.performance *= 100;
+              stacking.push(s);
+            } else {
+              i = stack.length;
+            }
+          };
+          var data = { stacking : stacking, notching : notching };                    
         }
         res.json({rtnCode: rtnCode, rtnData: data});
       });
@@ -176,9 +193,10 @@ router.get('/restapi/getDashboardDetail', function(req, res, next) {
 router.get('/restapi/getDashboardInfo', function(req, res, next) {
   console.log('reports/restapi/getDashboardInfo');  
   var i = indexNotchingOee.split('_');
-  console.log(req.query);
+  var date = Utils.getDateLocal2UTC(req.query.date, fmt2, 'Y', 'Y');
+  console.log(req.query);  
   var in_data = { index : i[0]+'_'+req.query.type+'_'+i[2]+"*", type : "oee",                   
-                  sort : "dtTransmitted" , date : req.query.date, cid : req.query.cid };
+                  sort : "dtTransmitted" , date : date, cid : req.query.cid };
   queryProvider.selectSingleQueryByID2("dashboard","selectDashboardInfo", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     var data = [];
@@ -187,11 +205,14 @@ router.get('/restapi/getDashboardInfo', function(req, res, next) {
     } else {    
       data = out_data[0]._source.data[0];      
       data.dtSensed = Utils.getDateUTC2Local(data.dtSensed, fmt2);
+      data.availability *= 100;
+      data.quality *= 100;
+      data.performance *= 100;
       data.flag = out_data[0]._source.flag;
       data.type = out_data[0]._source.type;
       data.cid = out_data[0]._source.cid;
       data.sensorType = out_data[0]._source.sensorType;
-      data.status = req.query.status;     
+      data.state = req.query.state;     
     }
     res.json({rtnCode: rtnCode, rtnData: data});
   });

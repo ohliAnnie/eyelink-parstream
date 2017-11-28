@@ -90,15 +90,18 @@
       {
         "index" : #index#,
         "type"  : #type#,
-        "body" : {
-          "size" : 100,
-          "sort" : "cid",
+        "body" : {          
+          "sort" : [{ "dtTransmitted" : "desc" },{ "cid" : "asc" }],
+          "size" : 5,
           "_source" : ["data.dtSensed", "cid", "data.availability", "data.performance", "data.quality", "data.overall_oee"],
           "query" : {
             "bool": {
               "filter" : {
-                "term" : {
-                  "data.dtSensed" : #date#
+                "range" : {
+                  "dtTransmitted" : {
+                    "gte" : #gte#,
+                    "lte" : #lte#
+                  }
                 }
               }
             }
