@@ -106,7 +106,7 @@ function drawMatchingHistory(matchingList) {
     var targetData = matchingList[rowInd]._source.da_result[group];
     console.log(targetData);
 
-    var graphData = getGraphData(targetData);
+  var graphData = getGraphData(targetData);
     drawPatternChart(graphData);
   });
 }
@@ -145,8 +145,8 @@ function getGraphData(targetData) {
 
 function drawPatternChart(graphData){
 
-  var margin = {top: 30, right: 60, bottom: 30, left: 55},
-                width = (window.innerWidth*0.38) - margin.left - margin.right,
+  var margin = {top: 30, right: 65, bottom: 30, left: 55},
+                width = (window.innerWidth*0.37) - margin.left - margin.right,
                 height = 400 - margin.top - margin.bottom;
   var xScale = d3.scale.linear().range([0, width]);
   var yScale = d3.scale.linear().range([height, 0]);
@@ -161,7 +161,7 @@ function drawPatternChart(graphData){
       .scale(yScale)
       .orient("left")
       .innerTickSize(-width)
-      .outerTickSize(1)
+      .outerTickSize(1)      
       .tickPadding(10);
 
   var svg = d3.select("#patternChart")
@@ -190,6 +190,24 @@ function drawPatternChart(graphData){
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
 
+  var legendWidth  = 310, legendHeight = 25;
+
+  var legend = svgSet(svg, 'g', 'legend', 17 , 0);
+
+  rectLegendBG(legend, 'legend-bg', legendWidth, legendHeight);
+
+  pathLegend(legend, 'realLine', 'M15,13L40,13');
+  textLegend(legend, 48, 17, 'Real');
+
+  pathLegend(legend, 'top1Line', 'M90,13L115,13');
+  textLegend(legend, 123, 17, 'Top1');  
+
+  pathLegend(legend, 'top2Line', 'M165,13L190,13');
+  textLegend(legend, 198, 17, 'Top2');
+
+  pathLegend(legend, 'top3Line', 'M240,13L265,13');
+  textLegend(legend, 273, 17, 'Top3');
+
   // Add the X Axis
   svg.append("g")
       .attr("class", "x axis")
@@ -212,6 +230,14 @@ function drawPatternChart(graphData){
       .attr("stroke-width", 4)
       .attr("d", top1Line);
 
+  svg.append("text")
+      .data([graphData.top1Set[graphData.top1Set.length-1]])
+      .attr("transform", function(d) { return "translate(" + xScale(d.x) + "," + yScale(d.y) + ")"; })
+      .attr("x", 3)
+      .attr("dy", "0.35em")
+      .style("font", "10px sans-serif")
+      .text("%");
+
   svg.append("path")
       .data([graphData.top2Set])
       .attr("fill", "none")
@@ -221,6 +247,14 @@ function drawPatternChart(graphData){
       .attr("stroke-linecap", "round")
       .attr("stroke-width", 4)
       .attr("d", top2Line);
+
+  svg.append("text")
+      .data([graphData.top2Set[graphData.top2Set.length-1]])
+      .attr("transform", function(d) { return "translate(" + xScale(d.x) + "," + yScale(d.y) + ")"; })
+      .attr("x", 3)
+      .attr("dy", "0.35em")
+      .style("font", "10px sans-serif")
+      .text("%");
 
   svg.append("path")
       .data([graphData.top3Set])
@@ -232,6 +266,14 @@ function drawPatternChart(graphData){
       .attr("stroke-width", 4)
       .attr("d", top3Line);
 
+  svg.append("text")
+      .data([graphData.top3Set[graphData.top3Set.length-1]])
+      .attr("transform", function(d) { return "translate(" + xScale(d.x) + "," + yScale(d.y) + ")"; })
+      .attr("x", 3)
+      .attr("dy", "0.35em")
+      .style("font", "10px sans-serif")
+      .text("%");
+
   svg.append("path")
       .data([graphData.realSet])
       .attr("fill", "none")
@@ -240,6 +282,35 @@ function drawPatternChart(graphData){
       .attr("stroke-linecap", "round")
       .attr("stroke-width", 4)
       .attr("d", realLine);
+}
 
+function rectLegendBG(legend, className, width, height) {
+  return legend
+    .append('rect')
+    .attr('class', className)
+    .attr('width', width)
+    .attr('height', height)
+}
+
+function textLegend(legend, x, y, text){
+  return legend
+    .append('text')
+    .attr('x', x)
+    .attr('y', y)
+    .text(text)
+}
+
+function pathLegend(legend, className, d) {
+  return legend
+    .append('path')
+    .attr('class', className)
+    .attr('d', d);
+}
+
+function svgSet(svg, append, className, tX, tY){
+  return svg
+    .append(append)
+    .attr('class', className)
+    .attr('transform', 'translate('+tX+','+tY+')');
 }
 
