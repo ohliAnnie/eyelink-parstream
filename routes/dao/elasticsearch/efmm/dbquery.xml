@@ -142,4 +142,15 @@
       }
     ]]></query>
   </scheduler>
+  <analysis>
+    <query id='selectNotchingOeeRaw'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {
+        
+        }
+      }
+    ]]></query>
+  </analysis>
 </queryList>

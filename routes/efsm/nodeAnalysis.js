@@ -375,12 +375,12 @@ router.get('/restapi/getAnomalyPattern/:id', function(req, res, next) {
 // pattern dataset
 router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
   logger.debug("req.query:", req.query);
-  var sDate = Utils.getDateLocal2UTC(req.query.startDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
-  var eDate = Utils.getDateLocal2UTC(req.query.endDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
+  var sDate = Utils.getDate(req.query.startDate, fmt1, -1, 0, 0, 0);
+  var eDate = Utils.getMs2Date(req.query.endDate, fmt1);
   var in_data = {
       INDEX : indexPatternData, TYPE : "pattern_data",
-      START_TIMESTAMP: sDate,
-      END_TIMESTAMP: eDate,
+      START_TIMESTAMP: sDate+startTime,
+      END_TIMESTAMP: eDate+startTime,
       MASTER_ID: req.query.masterId};
   var sql = "selectPatternList";
   queryProvider.selectSingleQueryByID2("analysis", sql, in_data, function(err, out_data, params) {
