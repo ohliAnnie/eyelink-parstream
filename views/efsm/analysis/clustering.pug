@@ -1,10 +1,11 @@
 extends ../layout-type01
 block style  
   link(type='text/css', rel='stylesheet', href='/efsm/css/chart_style.css')
+  link(type='text/css', rel='stylesheet', href='/efsm/css/analysis_clustering.css')
   link(type='text/css', rel='stylesheet', href='/efsm/assets/css/dc.css')
 block script  
-  script(src='/efsm/assets/scripts/vue.min.js')
   script(type='text/javascript', src='/efsm/assets/scripts/d3_dc.js')
+  script(src='/efsm/assets/scripts/vue.min.js')  
   script(type='text/javascript', src='/efsm/assets/scripts/colorbrewer.js')  
   script(type='text/javascript', src="/common/scripts/util.js")
   script(src='/efsm/scripts/analysis_clustering.js')
@@ -81,7 +82,7 @@ block content
                     | PowerFactor
             .portlet-body
               .chart(style='height:445px;')
-                input#daDate(type='hidden', name='hidden', value='')
+                input#dadate(type='hidden', name='hidden', value='')
                 #table
                   .panel.panel-card
                     .panel-body
