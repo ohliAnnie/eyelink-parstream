@@ -1,7 +1,7 @@
 $(document).ready(function(e) {
   console.log($('input[name="c0"]').prop('checked'));
   var dateFormat = 'YYYY-MM-DD';      
-  var daDate = '';
+  var dadate = '';
   $('#sdate').val(moment().format(dateFormat));
   $('#edate').val(moment().format(dateFormat));
   // time series char를 그린다.
@@ -14,10 +14,6 @@ $(document).ready(function(e) {
     getMasterList(interval);
   });
 
-  // $('#btn_factor').click(function() {
-  //   d3.selectAll("svg").remove();
-  // });
-
   $('input[type="radio"]').on('click change', function(e) {
     if ($('#factor0').is(':checked') === true) {
       var factor = $('#factor0').val();
@@ -28,17 +24,16 @@ $(document).ready(function(e) {
     } else if ($('#factor3').is(':checked') === true) {
       var factor = $('#factor3').val();
     }
-    var daDate = $('#daDate').val();       
-    if(daDate != ''){
+    var dadate = $('#dadate').val();       
+    if(dadate != ''){
       d3.selectAll("svg").remove();
-      drawCheckChart(factor, daDate);
+      drawCheckChart(factor, dadate);
     }
   });
   clickfunc = function(link) {
-    var daDate = link.innerText || link.textContent;
-    daDate = daDate.replace(' ', 'T');
-    $('#daDate').val(daDate);
-    console.log('2' + $('#daDate').val())
+    var dadate = link.innerText || link.textContent;
+    dadate = dadate.replace(' ', 'T');
+    $('#dadate').val(dadate);    
     if ($('#factor0').is(':checked') === true) {
       var factor = $('#factor0').val();
     } else if ($('#factor1').is(':checked') === true) {
@@ -49,23 +44,20 @@ $(document).ready(function(e) {
       var factor = $('#factor3').val();
     } else if ($('#factor4').is(':checked') === true) {
       var factor = $('#factor4').val();
-    }
-    console.log(factor, ":", daDate);
-      d3.selectAll("svg").remove();
-      drawCheckChart(factor, daDate);
+    }    
+    d3.selectAll("svg").remove();
+    drawCheckChart(factor, dadate);
   };
 });
 
 function getMasterList(interval) {
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
-  console.log('%s, %s, %s', sdate, edate, interval);
-
+  
   var data = { sdate:sdate, edate:edate, interval:interval };
   var in_data = { url : "/analysis/restapi/getDaClusterMaster", type : "GET", data : data };  
   ajaxTypeData(in_data, function(result){  
-    if (result.rtnCode.code == "0000") {
-      console.log(result);
+    if (result.rtnCode.code == "0000") {  
       var master = result.rtnData;          
       drawMaster(master);
     }
@@ -73,22 +65,19 @@ function getMasterList(interval) {
  }
 
 function drawMaster(master) {
-  console.log(master)
+  
   var seatvar = document.getElementsByClassName("masterList");
   var cnt = 0
-  $('#masterList').empty();
-  master.forEach(function(d) { 
-    d = d._source.master_result;  
-    console.log(d);
+  $('#masterList').empty();  
+  master.forEach(function(d) {     
     var sb = new StringBuffer();
     if(cnt == 0) {
       sb.append('<tr><th>DA Time</th><th>Start Date-End Date</th><th>Interval</th><th></th></tr>');
       cnt++;
     }
-    var sdate = d.start_date.split('T');
-    var edate = d.end_date.split('T');
-    var daTime = d.da_time.replace('T', ' ');
-    sb.append('<tr><td><a href="#" onclick="clickfunc(this)">' +daTime+'</td><td> '+sdate[0]+' ~ '+edate[0]+' </td>');
+    var sdate = d.start_date.split(' ');
+    var edate = d.end_date.split(' ');    
+    sb.append('<tr><td><a href="#" onclick="clickfunc(this)">' +d.da_time+'</td><td> '+d.start_date+' ~ '+d.end_date+' </td>');
     if (d.time_interval == 180) {
       var interval = '3hours';
     } else if (d.time_interval == 360) {
@@ -105,30 +94,13 @@ function drawMaster(master) {
   });
 }
 
-function drawCheckChart(factor, daDate) {    
-  var in_data = { url : "/analysis/restapi/getDaClusterDetail", type : "GET", data : {daDate : daDate} };  
+function drawCheckChart(factor, dadate) {    
+  var data = { dadate : dadate, factor : factor }
+  var in_data = { url : "/analysis/restapi/getDaClusterDetail", type : "GET", data : data };  
   ajaxTypeData(in_data, function(result){ 
     if (result.rtnCode.code == "0000") {        
-      var d = result.rtnData;
-      console.log(d);
-      var set = [];
-      for(i=0; i<d.ampere.cluster_00.length; i++){
-        var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
-        // console.log(d['event_time'][i]);
-        var event_time = new Date(d['event_time'][i]);          
-        //console.log(df.parse(new Date(d['event_time'][i])));
-        if(factor === 'ampere') {
-          set.push({ time : event_time, c0:d.ampere.cluster_00[i], c1:d.ampere.cluster_01[i], c2:d.ampere.cluster_02[i], c3:d.ampere.cluster_03[i], c4:d.ampere.cluster_04[i]});
-        } else if(factor === 'voltage') {
-          set.push({ time : event_time, c0:d.voltage.cluster_00[i], c1:d.voltage.cluster_01[i], c2:d.voltage.cluster_02[i], c3:d.voltage.cluster_03[i], c4:d.voltage.cluster_04[i]});
-        } else if(factor === 'active_power') {
-          set.push({ time : event_time, c0:d.active_power.cluster_00[i], c1:d.active_power.cluster_01[i], c2:d.active_power.cluster_02[i], c3:d.active_power.cluster_03[i], c4:d.active_power.cluster_04[i]});
-        } else if(factor === 'power_factor') {
-          set.push({ time : event_time, c0:d.power_factor.cluster_00[i], c1:d.power_factor.cluster_01[i], c2:d.power_factor.cluster_02[i], c3:d.power_factor.cluster_03[i], c4:d.power_factor.cluster_04[i]});
-        }
-      }        
-      console.log(set);
-      drawCheckCluster(set, daDate, factor);
+      console.log(result.rtnData);
+      drawCheckCluster(result.rtnData, dadate, factor);
     }    
   });
 }
@@ -182,14 +154,13 @@ function drawCheckCluster(data, dadate, factor) {
 
       data.forEach(function (d) {
         self.lineCategory.map(function (name) {
-          temp[name].values.push({'category': name, 'time': d['time'], 'num': d[name]});
+          temp[name].values.push({'category': name, 'time': new Date(d['time']), 'num': d[name]});
         });
-      });
-
+      });      
       return seriesArr;
     })();
-    x.domain(d3.extent(data, function(d) {
-     return d.time; }));
+    x.domain(d3.extent(data, function(d) {      
+     return new Date(d.time); }));
     if(factor === 'active_power') {
        y.domain([0, 200]);
      } else if(factor === 'ampere') {

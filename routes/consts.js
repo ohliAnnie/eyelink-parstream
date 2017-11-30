@@ -42,7 +42,7 @@ define("DATEFORMAT", {
 });
 
 define("STARTTIME", {
-	"KOREA" : "T15:00:00"
+	"KOREA" : "T15:00:00Z"
 });
 
 define("ERROR_CODE", {
