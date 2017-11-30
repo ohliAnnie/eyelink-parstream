@@ -32,30 +32,13 @@ function drawCheckChart() {
   } else if ($('#factor3').is(':checked') === true) {
     var factor = $('#factor3').val();
   }
-  
-  console.log('%s, %s', sdate, edate);
-  console.log(factor);
-  
+    
   var data = { startDate:sdate, endDate:edate };
   var in_data = { url : "/analysis/restapi/getDaClusterDetail", type : "GET", data : data };  
   ajaxTypeData(in_data, function(result){   
     if (result.rtnCode.code == "0000") {
-      var data = result.rtnData;
-      var set = [];
-      data.forEach(function(d){
-        var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');
-        d.event_time = df.parse(d.event_time);
-       if(factor === 'ampere') {
-        set.push({ time:d.event_time, c0:d.c0_ampere, c1:d.c1_ampere, c2:d.c2_ampere, c3:d.c3_ampere});
-       } else if(factor === 'voltage') {
-        set.push({ time:d.event_time, c0:d.c0_voltage, c1:d.c1_voltage, c2:d.c2_voltage, c3:d.c3_voltage});
-      } else if(factor === 'active_power') {
-        set.push({ time:d.event_time, c0:d.c0_active_power, c1:d.c1_active_power, c2:d.c2_active_power, c3:d.c3_active_power});
-      } else if(factor === 'power_factor') {
-        set.push({ time:d.event_time, c0:d.c0_power_factor, c1:d.c1_power_factor, c2:d.c2_power_factor, c3:d.c3_power_factor});
-      }
-      });
-      drawCheckCluster(set, sdate, edate);
+      var data = result.rtnData;      
+      drawCheckCluster(data, sdate, edate);
     }
   });
 }

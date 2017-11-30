@@ -5,21 +5,29 @@ jQuery(document).ready(function() {
   $('#sdate').val(sdate.split('T')[0]);
   $('#edate').val(edate.split('T')[0]);
   $('#interval').val(interval);
-  drawCheckChart();
-  getNodeList();
+  if ($('#factor0').is(':checked') === true) {
+    var factor = $('#factor0').val();
+  } else if ($('#factor1').is(':checked') === true) {
+    var factor = $('#factor1').val();
+  } else if ($('#factor2').is(':checked') === true) {
+    var factor = $('#factor2').val();
+  } else if ($('#factor3').is(':checked') === true) {
+    var factor = $('#factor3').val();
+  }
+  drawCheckChart(factor);
+  getNodeList(factor);
   Metronic.init(); // init metronic core componets
   eyelinkLayout.init(); // init layout
   QuickSidebar.init(); // init quick sidebar
   Layout.init(); // init layout
   Tasks.initDashboardWidget(); // init tash dashboard widget      
-   $('input[type="radio"]').on('click change', function(e) {
-   
+   $('input[type="radio"]').on('click change', function(e) {   
     if(e.target.value === 'ampere' || e.target.value === 'active_power' || e.target.value === 'voltage' || e.target.value === 'power_factor') {
      console.log(e.target.value);
       d3.selectAll("svg").remove();
-      //d3.selectAll("rect").remove();
-      drawCheckChart();
-      getNodeList();
+      //d3.selectAll("rect").remove();      
+      drawCheckChart(e.target.value);
+      getNodeList(e.target.value);
     }
   });
 });
@@ -31,40 +39,14 @@ jQuery(document).ready(function() {
     return obj;
   }, {});
 
-var dadate = urlParams.dadate;
-function drawCheckChart() {  
-  if ($('#factor0').is(':checked') === true) {
-    var factor = $('#factor0').val();
-  } else if ($('#factor1').is(':checked') === true) {
-    var factor = $('#factor1').val();
-  } else if ($('#factor2').is(':checked') === true) {
-    var factor = $('#factor2').val();
-  } else if ($('#factor3').is(':checked') === true) {
-    var factor = $('#factor3').val();
-  }
-  
-  var in_data = { url : "/analysis/restapi/getDaClusterDetail", type : "GET", data : { daDate : dadate } };  
-  ajaxTypeData(in_data, function(result){  
-    if (result.rtnCode.code == "0000") {                
-      var d = result.rtnData;        
-      var set = [];
-      for(i=0; i<d['c0_ampere'].length; i++){
-        var df = d3.time.format('%Y-%m-%d %H:%M:%S.%L');          
-        var event_time = new Date(d['event_time'][i]);          
-        //console.log(df.parse(new Date(d['event_time'][i])));
-        if(factor === 'ampere') {
-          set.push({ time : event_time, c0:d['c0_ampere'][i], c1:d['c1_ampere'][i], c2:d['c2_ampere'][i], c3:d['c3_ampere'][i]});
-        } else if(factor === 'voltage') {
-          set.push({ time : event_time, c0:d['c0_voltage'][i], c1:d['c1_voltage'][i], c2:d['c2_voltage'][i], c3:d['c3_voltage'][i]});
-        } else if(factor === 'active_power') {
-          set.push({ time : event_time, c0:d['c0_active_power'][i], c1:d['c1_active_power'][i], c2:d['c2_active_power'][i], c3:d['c3_active_power'][i]});
-        } else if(factor === 'power_factor') {
-          set.push({ time : event_time, c0:d['c0_power_factor'][i], c1:d['c1_power_factor'][i], c2:d['c2_power_factor'][i], c3:d['c3_power_factor'][i]});
-        }
-      };        
-      console.log(set);
-      drawCheckCluster(set, dadate, factor);
-    }     
+var dadate = urlParams.dadate.replace('%20', ' ');
+function drawCheckChart(factor) {  
+  var data = { dadate : dadate, factor : factor }    
+  var in_data = { url : "/analysis/restapi/getDaClusterDetail", type : "GET", data : data };  
+  ajaxTypeData(in_data, function(result){ 
+    if (result.rtnCode.code == "0000") {              
+      drawCheckCluster(result.rtnData, dadate, factor);
+    }    
   });
 }
 
@@ -115,14 +97,14 @@ function drawCheckCluster(data, dadate, factor) {
 
       data.forEach(function (d) {
         self.lineCategory.map(function (name) {
-          temp[name].values.push({'category': name, 'time': d['time'], 'num': d[name]});
+          temp[name].values.push({'category': name, 'time': new Date(d['time']), 'num': d[name]});
         });
       });
 
       return seriesArr;
     })();
     x.domain(d3.extent(data, function(d) {
-     return d.time; }));
+     return new Date(d.time); }));
     if(factor === 'active_power') {
        y.domain([0, 200]);
      } else if(factor === 'ampere') {
@@ -509,99 +491,56 @@ function drawCheckCluster(data, dadate, factor) {
   });
 }
 
-function getNodeList(type) {
+function getNodeList(factor) {
   var sdate = $('#sdate').val();
-  var edate = $('#edate').val();  
-  if ($('#factor0').is(':checked') === true) {
-    var factor = $('#factor0').val();
-  } else if ($('#factor1').is(':checked') === true) {
-    var factor = $('#factor1').val();
-  } else if ($('#factor2').is(':checked') === true) {
-    var factor = $('#factor2').val();
-  } else if ($('#factor3').is(':checked') === true) {
-    var factor = $('#factor3').val();
-  }    
-  var in_data = { url : "/analysis/restapi/getDaClusterMasterByDadate", type : "GET", data : {dadate : dadate} };  
+  var edate = $('#edate').val();    
+  var data = { dadate : dadate, factor : factor };
+  var in_data = { url : "/analysis/restapi/getDaClusterMasterBydadate", type : "GET", data : data };  
   ajaxTypeData(in_data, function(result){
-    if (result.rtnCode.code == "0000") {
-      var d = result.rtnData;      
-      var nodeList = [];       
-      if(factor === 'voltage') {
-        nodeList.push({ c0 : d['c0_voltage'], c1 : d['c1_voltage'], c2 : d['c2_voltage'], c3 : d['c3_voltage'] })
-      } else if(factor === 'ampere') {
-        nodeList.push({ c0 : d['c0_ampere'], c1 : d['c1_ampere'], c2 : d['c2_ampere'], c3 : d['c3_ampere'] })
-      } else if(factor === 'active_power') {
-        nodeList.push({ c0 : d['c0_active_power'], c1 : d['c1_active_power'], c2 : d['c2_active_power'], c3 : d['c3_active_power'] })
-      } else if(factor === 'power_factor') {
-        nodeList.push({ c0 : d['c0_power_factor'], c1 : d['c1_power_factor'], c2 : d['c2_power_factor'], c3 : d['c3_power_factor'] })
-      }      
-      drawDirectory(nodeList);
+    if (result.rtnCode.code == "0000") {     
+      console.log(result.rtnData);
+           
+      drawDirectory(result.rtnData[factor]);
     }
   });
 }
 
-function drawDirectory(nodeList) { 
-    if ($('#factor0').is(':checked') === true) {
-    var factor = $('#factor0').val();
-  } else if ($('#factor1').is(':checked') === true) {
-    var factor = $('#factor1').val();
-  } else if ($('#factor2').is(':checked') === true) {
-    var factor = $('#factor2').val();
-  } else if ($('#factor3').is(':checked') === true) {
-    var factor = $('#factor3').val();
-  }
+function drawDirectory(data) {     
   var seatvar = document.getElementsByClassName("tblClusterDir");                   
   var cnt = 0;
-  $('#tblClusterDir').empty();
-  console.log(nodeList);
-  nodeList.forEach(function(d) {  
-    console.log(d);
-    var sb = new StringBuffer();
-    if(cnt == 0) {
-      sb.append('<tr><th>Cluster</th><th>Node_id</th></tr>');
-      cnt++;
-   }       
-    if(d.c0 != null) {
-      var script = "javascript:getNodePower('"+d.c0+"',"+d.c0.length+");"; 
-      sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster0 </a></span></td><td></td></tr>');
-      for(var i=0; i < d.c0.length; i++) {
-        sb.append('<tr><td></td><td>');
-        var script = "javascript:clickNode('"+d.c0[i]+"');";
-        sb.append('<a class="primary-link" href="'+script+'">' + d.c0[i] + '</a>');
-        sb.append('</td></tr>');
-      }    
-    }
-    if(d.c1 != null) {
-      var script = "javascript:getNodePower('"+d.c1+"',"+d.c1.length+");";
-      sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster1 </a></span></td><td></td></tr>');    
-      for(var i=0; i < d.c1.length; i++) {
-        sb.append('<tr><td></td><td>');
-        var script = "javascript:clickNode('"+d.c1[i]+"');";      
-        sb.append('<a class="primary-link" href="'+script+'">' + d.c1[i] + '</a>');
-        sb.append('</td></tr>');
-      }  
-    }  
-    var script = "javascript:getNodePower('"+d.c2+"',"+d.c2.length+");";
-    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster2 </a></span></td><td></td></tr>');
-    for(var i=0; i < d.c2.length; i++) {
-      sb.append('<tr><td></td><td>');
-      var script = "javascript:clickNode('"+d.c2[i]+"');";      
-      sb.append('<a class="primary-link" href="'+script+'">' + d.c2[i] + '</a>');
-      sb.append('</td></tr>');
-    }    
-    var script = "javascript:getNodePower('"+d.c3+"',"+d.c3.length+");";
-    console.log(script);
-    sb.append('<tr><td><span class="bold theme-fone"><a href="'+script+'"> Cluster3 </a></span></td><td></td></tr>');
-    for(var i=0; i < d.c3.length; i++) {
-      sb.append('<tr><td></td><td>');
-      var script = "javascript:clickNode('"+d.c3[i]+"');";
-      sb.append('<a class="primary-link" href="'+script+'">' + d.c3[i] + '</a>');
-      sb.append('</td></tr>');
-    }
-    $('#tblClusterDir').append(sb.toString());
-  });
-    
+  $('#tblClusterDir').empty();    
+  var sb = new StringBuffer();
+  if(cnt == 0) {
+    sb.append('<tr><th>Cluster</th><th>Node_id</th></tr>');
+    cnt++;
+  }       
+  if(data.cluster_00.length != 0) {
+    sb.append(clusterNodeList(data.cluster_00, 'cluster_00'));
+  }
+  if(data.cluster_01.length != 0) {
+    sb.append(clusterNodeList(data.cluster_01, 'cluster_01'));
+  }
+  if(data.cluster_02.length != 0) {
+    sb.append(clusterNodeList(data.cluster_02, 'cluster_02'));
+  }
+  if(data.cluster_03.length != 0) {
+    sb.append(clusterNodeList(data.cluster_03, 'cluster_03'));
+  }
+  if(data.cluster_04.length != 0) {
+    sb.append(clusterNodeList(data.cluster_04, 'cluster_04'));
+  }
+  $('#tblClusterDir').append(sb.toString());  
+}
 
+function clusterNodeList(data, clusterName){  
+  var script = "javascript:getNodePower('"+data+"',"+data.length+");"; 
+  var sb = '<tr><td><span class="bold theme-fone"><a href="'+script+'">'+clusterName+'</a></span></td><td></td></tr>';
+  for(var i=0; i < data.length; i++) {
+    sb +='<tr><td></td><td>';
+    var script = "javascript:clickNode('"+data[i]+"');";
+    sb +='<a class="primary-link" href="'+script+'">' + data[i] + '</a></td></tr>';
+  }
+  return sb;
 }
 
 function getNodePower(nodeList, len){  
@@ -622,56 +561,28 @@ function getNodePower(nodeList, len){
   var end = urlParams.end;
   var last, start;
 
-  var data = { startDate:start, endDate:end, nodeId: node };
-  var in_data = { url : "/analysis/restapi/getClusterNodePower", type : "GET", data : data };  
+  var data = { startDate:start, endDate:end, nodeId: node, factor : factor };
+  var in_data = { url : "/analysis/restapi/getClusterNodePowerPop", type : "GET", data : data };  
   ajaxTypeData(in_data, function(result){         
     if (result.rtnCode.code == "0000") {
-      var data = result.rtnData;
-      var set = [];
-      var max = 0;       
-      var cnt = 0;
-      data.forEach(function(d){                    
-        d.event_time = new Date(d.event_time);                 
-       if(factor === 'ampere') {          
-        set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.ampere)});
-        if(d.ampere > max)
-          max = parseFloat(d.ampere);
-       } else if(factor === 'voltage') {
-        set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.voltage)});
-        if(d.voltage > max)
-          max = parseFloat(d.voltage);
-      } else if(factor === 'active_power') {
-        set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.active_power) });
-        if(d.active_power > max) {            
-          max = parseFloat(d.active_power);
-        }
-      } else if(factor === 'power_factor') {
-        set.push({ time:d.event_time, id: d.node_id, value: parseFloat(d.power_factor) });
-        if(d.power_factor > max)
-          max =  parseFloat(d.power_factor);
-      }   
-        var format = d3.time.format("%Y-%m-%d");
-        last = format(d.event_time);
-        if(cnt++ === 0) {
-         start= format(d.event_time);
-        }                              
-      });                        
-      drawNode(set, max, node.split(',').length, last, start, len);
+      console.log(result.rtnData);
+      drawNode(result.rtnData, node.split(',').length, len);
     } else {
       //- $("#errormsg").html(result.message);
     }    
   });
 }
 var oldL = 0;
-function drawNode(data, maxValue, idCnt, last, start, len) {    
+function drawNode(rtnData, idCnt, len) {    
   console.log(oldL);
-  var max = parseInt(maxValue) + 5;  
+  var data = rtnData.data;
+  var max = rtnData.max + 5;  
   for(var i = 0; i <= oldL; i++) {
     d3.select("#nodeChart").select("svg").remove();
   }
   oldL = len;
-var sdate = start;
-var edate = last;
+  var sdate = new Date(data[0].time);
+  var edate = new Date(data[data.length-1].time);
 
   // Set the dimensions of the canvas / graph
 var margin = {top: 5, right: 20, bottom: 20, left: 30},
@@ -691,7 +602,7 @@ var yAxis = d3.svg.axis().scale(y)
 
 // Define the line
 var priceline = d3.svg.line()
-    .x(function(d) { return x(d.time); })
+    .x(function(d) { return x(new Date(d.time)); })
     .y(function(d) { return y(d.value); });
     
     
@@ -706,7 +617,7 @@ var svg = d3.select("#nodeChart")
 
     // Scale the range of the data
     x.domain(d3.extent(data, function(d) {
-         return d.time; }));
+         return new Date(d.time); }));
     y.domain([0, max]); 
 
     // Nest the entries by symbol
@@ -766,8 +677,8 @@ function clickNode(nodeId) {
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
 
-  var data = {startDate:sdate, endDate:edate, node:nodeId};
-  var in_data = { url : "/analysis/restapi/getClusterRawDataByNode", type : "GET", data : data };  
+  var data = { sdate:sdate, edate:edate, node:nodeId };
+  var in_data = { url : "/analysis/restapi/getClusterRawDataByNodePop", type : "GET", data : data };  
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {        
       var data = result.rtnData;           
@@ -786,30 +697,11 @@ function drawTimeseries(data) {
    d3.select("#ts-chart04").select("svg").remove();
   // 데이터 가공
   var df = d3.time.format('%Y-%m-%dT%H:%M:%S');
-  var power = [], vib = [], noise = [], als = [];
-  data.forEach(function(d) {
-    d.event_time = df.parse(d.event_time);    
-    if(d.event_type == "1"){
-      power.push({ "time" : d.event_time, "active_power" : d.active_power, "ampere" : d.ampere, "amount_active_power" : d.amount_of_active_power });
-    } else if(d.event_type =="33")   {
-      vib.push({ "time" : d.event_time,  "vibration_x" : d.vibration_x, "vibration_y" : d.vibration_y, "vibration_z" : d.vibration_z, "vibration" : (d.vibration_x+d.vibration_y+d.vibration_z)/3 });
-    } else if(d.event_type == "49"){
-      noise.push({ "time" : d.event_time, "decibel" : d.noise_decibel, "frequency" : d.noise_frequency });
-    } else if(d.event_type == "17") {
-      als.push({ "time" : d.event_time, "dimming_level" : d.dimming_level, "als_level" : d.als_level });
-    }
-    
-    d.als_level = d.als_level === ''? 0:d.als_level;
-    d.dimming_level = d.dimming_level === ''? 0:d.dimming_level;
-    d.noise_frequency = d.noise_frequency === ''? 0:d.noise_frequency;
-   
-  });
-
   var chartName = '#ts-chart01';
   chart01 = d3.timeseries()
-    .addSerie(power,{x:'time',y:'active_power'},{interpolate:'linear'})
-    .addSerie(power,{x:'time',y:'ampere'},{interpolate:'step-before'})
-    .addSerie(power,{x:'time',y:'amount_active_power'},{interpolate:'linear'})
+    .addSerie(data.power,{x:'time',y:'active_power'},{interpolate:'linear'})
+    .addSerie(data.power,{x:'time',y:'ampere'},{interpolate:'step-before'})
+    .addSerie(data.power,{x:'time',y:'amount_active_power'},{interpolate:'linear'})
     // .xscale.tickFormat(d3.time.format("%b %d"))
     .width(window.innerWidth*0.2)
     .height(270)
@@ -820,8 +712,8 @@ function drawTimeseries(data) {
 
   var chartName = '#ts-chart02';
   chart02 = d3.timeseries()
-    .addSerie(als,{x:'time',y:'als_level'},{interpolate:'step-before'})
-    .addSerie(als,{x:'time',y:'dimming_level'},{interpolate:'linear'})
+    .addSerie(data.als,{x:'time',y:'als_level'},{interpolate:'step-before'})
+    .addSerie(data.als,{x:'time',y:'dimming_level'},{interpolate:'linear'})
     // .xscale.tickFormat(french_timeformat)
     .width(window.innerWidth*0.2)
     .height(270)
@@ -832,8 +724,8 @@ function drawTimeseries(data) {
 
   chartName = '#ts-chart03';
   chart03 = d3.timeseries()
-    .addSerie(noise,{x:'time',y:'decibel'},{interpolate:'step-before'})
-    .addSerie(noise,{x:'time',y:'frequency'},{interpolate:'linear'})
+    .addSerie(data.noise,{x:'time',y:'decibel'},{interpolate:'step-before'})
+    .addSerie(data.noise,{x:'time',y:'frequency'},{interpolate:'linear'})
     // .xscale.tickFormat(french_timeformat)
     .width(window.innerWidth*0.2)
     .height(270)
@@ -844,10 +736,10 @@ function drawTimeseries(data) {
 
   chartName = '#ts-chart04';
   chart04 = d3.timeseries()
-    .addSerie(vib,{x:'time',y:'vibration_x'},{interpolate:'linear'})
-    .addSerie(vib,{x:'time',y:'vibration_y'},{interpolate:'step-before'})
-    .addSerie(vib,{x:'time',y:'vibration_z'},{interpolate:'linear'})
-    .addSerie(vib,{x:'time',y:'vibration'},{interpolate:'linear'})
+    .addSerie(data.vib,{x:'time',y:'vibration_x'},{interpolate:'linear'})
+    .addSerie(data.vib,{x:'time',y:'vibration_y'},{interpolate:'step-before'})
+    .addSerie(data.vib,{x:'time',y:'vibration_z'},{interpolate:'linear'})
+    .addSerie(data.vib,{x:'time',y:'vibration'},{interpolate:'linear'})
     // .xscale.tickFormat(french_timeformat)
     .width(window.innerWidth*0.2)
     .height(270)
