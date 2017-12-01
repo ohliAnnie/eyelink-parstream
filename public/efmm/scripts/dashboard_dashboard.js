@@ -177,7 +177,7 @@ function drawLineChart(data) {
     .height(290)
     .x(d3.time.scale().domain([minDate,maxDate]))
     //.x(d3.scale.linear().domain([0,6]))           
-    .y(d3.scale.linear().domain([50, 110]))    
+    .y(d3.scale.linear().domain([65, 102]))    
     .yAxisLabel("%")
     .legend(dc.legend().x(window.innerWidth*0.05).y(267).itemHeight(12).itemWidth(window.innerWidth*0.07).gap(4).horizontal(true))
     .renderHorizontalGridLines(true)

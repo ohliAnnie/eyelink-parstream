@@ -58,7 +58,8 @@ router.get('/restapi/getDashboardAggsData', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {          
-      var notch = out_data.group_by_state.buckets[out_data.group_by_state.buckets.length-1];      
+      var notch = out_data.group_by_state.buckets[out_data.group_by_state.buckets.length-1];
+      
       in_data = { index : indexStackingOee+"*", type : "oee",                   
                   sort : "dtTransmitted" , gte : gte, lte : lte };          
       queryProvider.selectSingleQueryByID3("dashboard","selectDashboardAggsData", in_data, function(err, out_data, params) {
@@ -98,7 +99,9 @@ router.get('/restapi/getDashboardGageData', function(req, res, next) {
                   gte4 : gte[4], lte4 : lte[4],
                   gte5 : gte[5], lte5 : lte[5],
                   gte6 : gte[6], lte6 : lte[6] };
-  queryProvider.selectSingleQueryByID2("dashboard","selectDashboardGageData", in_data, function(err, out_data, params) {    
+  console.log(in_data);
+  queryProvider.selectSingleQueryByID2("dashboard","selectDashboardGageData", in_data, function(err, out_data, params) {
+    console.log(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
