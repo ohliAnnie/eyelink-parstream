@@ -49,23 +49,19 @@ router.get('/info', function(req, res, next) {
 
 router.get('/restapi/getDashboardAggsData', function(req, res, next) {
   console.log('reports/restapi/getDashboardAggsData');    
-  var lte = Utils.getMs2Date(parseInt(req.query.now), fmt2, 'Y', 'Y');    
-  //var gte = Utils.getMs2Date(parseInt(req.query.now), fmt1, 'Y', 'Y')+'T00:00:00';    
-  var gte = Utils.getDate(lte, fmt2, 0, 0, 0, -5, 'Y', 'Y');    
-/*  var index = [], cnt = 0;  -
-  for(i = new Date(gte).getTime(); i<=new Date(lte).getTime(); i=i+24*60*60*1000){    
-    index[cnt++]  = indexCore+Utils.getMs2Date(i, fmt4);
-  }  */
+  var lte = Utils.getMs2Date(parseInt(req.query.now), fmt2, 'Y', 'Y');  
+  var gte = Utils.getDate(lte, fmt2, 0, 0, 0, -10, 'Y', 'Y');    
   var in_data = { index : indexNotchingOee+"*", type : "oee",                   
                   sort : "dtTransmitted" , gte : gte, lte : lte };    
   queryProvider.selectSingleQueryByID3("dashboard","selectDashboardAggsData", in_data, function(err, out_data, params) {
-    var rtnCode = CONSTS.getErrData('0000');
+    var rtnCode = CONSTS.getErrData('0000');    
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    } else {    
+    } else {          
+      console.log('%%%%%%%%%%%%%')
       console.log(out_data)
-      var notch = out_data.group_by_state.buckets[out_data.group_by_state.buckets.length-1];      
-      console.log(notch);
+      var notch = out_data.group_by_state.buckets[out_data.group_by_state.buckets.length-1];
+      console.log(notch)
       in_data = { index : indexStackingOee+"*", type : "oee",                   
                   sort : "dtTransmitted" , gte : gte, lte : lte };          
       queryProvider.selectSingleQueryByID3("dashboard","selectDashboardAggsData", in_data, function(err, out_data, params) {
@@ -86,24 +82,32 @@ router.get('/restapi/getDashboardAggsData', function(req, res, next) {
 
 router.get('/restapi/getDashboardGageData', function(req, res, next) {
   console.log('reports/restapi/getDashboardGageData');    
-  var lte = Utils.getMs2Date(parseInt(req.query.now), fmt2, 'Y', 'Y');    
-  //var gte = Utils.getMs2Date(parseInt(req.query.now), fmt1, 'Y', 'Y')+'T00:00:00';    
-  var gte = Utils.getDate(lte, fmt2, 0, 0, -30, 0, 'Y', 'Y');    
-/*  var index = [], cnt = 0;  -
-  for(i = new Date(gte).getTime(); i<=new Date(lte).getTime(); i=i+24*60*60*1000){    
-    index[cnt++]  = indexCore+Utils.getMs2Date(i, fmt4);
-  }  */
-  var in_data = { index : indexNotchingOee+"*", type : "oee",                   
-                  sort : "dtTransmitted" , gte : gte, lte : lte };    
+  var lte = [], gte = [], indexNotch = [], indexStack = [], cnt = 0;
+  lte[6] = Utils.getMs2Date(parseInt(req.query.now), fmt2, 'Y', 'Y');    
+  gte[6] = Utils.getDate(lte[6], fmt2, 0, 0, 0, -5, 'Y', 'Y');
+  indexNotch[6] = indexNotchingOee+Utils.getMs2Date(parseInt(req.query.now), fmt4, 'Y', 'Y');
+  indexStack[6] = indexStackingOee+Utils.getMs2Date(parseInt(req.query.now), fmt4, 'Y', 'Y');  
+  for(i = new Date(lte[6]).getTime()-6*24*60*60*1000; i<new Date(lte[6]).getTime(); i=i+24*60*60*1000){
+    indexNotch[cnt]  = indexNotchingOee+Utils.getMs2Date(i, fmt4);
+    indexStack[cnt]  = indexStackingOee+Utils.getMs2Date(i, fmt4);
+    lte[cnt] = Utils.getMs2Date(i, fmt1, 'Y', 'Y')+'T23:59:59Z';
+    gte[cnt] = Utils.getDate(lte[cnt++], fmt2, 0, 0, 0, 0, 'Y', 'Y');
+  }  
+  var in_data = { index : indexNotch, type : "oee",                   
+                  gte0 : gte[0], lte0 : lte[0],
+                  gte1 : gte[1], lte1 : lte[1],
+                  gte2 : gte[2], lte2 : lte[2],
+                  gte3 : gte[3], lte3 : lte[3],
+                  gte4 : gte[4], lte4 : lte[4],
+                  gte5 : gte[5], lte5 : lte[5],
+                  gte6 : gte[6], lte6 : lte[6] };
   queryProvider.selectSingleQueryByID2("dashboard","selectDashboardGageData", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {    
-      var notch = out_data;                  
-      console.log(out_data);
-      in_data = { index : indexStackingOee+"*", type : "oee",                   
-                  sort : "dtTransmitted" , gte : gte, lte : lte };          
+      var notch = out_data;      
+      in_data.index = indexStack;
       queryProvider.selectSingleQueryByID2("dashboard","selectDashboardGageData", in_data, function(err, out_data, params) {
         var rtnCode = CONSTS.getErrData('0000');
         if (out_data == null) {
@@ -134,10 +138,8 @@ router.get('/restapi/getDashboardGageData', function(req, res, next) {
 
 router.get('/restapi/getDashboardDetail', function(req, res, next) {
   console.log('reports/restapi/getDashboardDetail');
-  var gte = Utils.getDate(req.query.date, fmt2, 0, 0, 0, -20, 'Y', 'Y');  
-  console.log(gte)
-  console.log(req.query.date)
-  var in_data = { index : indexNotchingOee+"*", type : "oee",                   
+  var gte = Utils.getDate(req.query.date, fmt2, 0, 0, 0, -60, 'Y', 'Y');    
+  var in_data = { index : indexNotchingOee+Utils.getDate(req.query.date, fmt4, 0, 0, 0, -30, 'Y', 'Y'), type : "oee",                   
                   gte : gte, lte : req.query.date };
   queryProvider.selectSingleQueryByID2("dashboard","selectDashboardDetail", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
@@ -195,7 +197,7 @@ router.get('/restapi/getDashboardInfo', function(req, res, next) {
   var i = indexNotchingOee.split('_');
   var date = Utils.getDateLocal2UTC(req.query.date, fmt2, 'Y', 'Y');
   console.log(req.query);  
-  var in_data = { index : i[0]+'_'+req.query.type+'_'+i[2]+"*", type : "oee",                   
+  var in_data = { index : i[0]+'_'+req.query.type+'_'+i[2]+Utils.getDateLocal2UTC(req.query.date, fmt4, 'Y', 'Y'), type : "oee",                   
                   sort : "dtTransmitted" , date : date, cid : req.query.cid };
   queryProvider.selectSingleQueryByID2("dashboard","selectDashboardInfo", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
