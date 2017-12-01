@@ -125,7 +125,9 @@ lineReader.on('line', function (line) {
       data_arr[3] = Utils.getDateLocal2UTC(data_arr[3], CONSTS.DATEFORMAT.DATETIME, 'Y');
 
       if ( startDatetimeToSkip == null || nextEventDateTime.diff(startDatetimeToSkip, 'seconds') > 0 ){
-          var index = 'corecode-' + cur_kor_datetime.split(' ')[0];
+          var indexHeader = 'corecode-';
+          var indexDate = cur_kor_datetime.split(' ')[0].replace(/\-/g,'.');
+          var index = indexHeader + indexDate;
 
           if ( needNewMapping ) {
               queryProvider.defineMappings(index);
