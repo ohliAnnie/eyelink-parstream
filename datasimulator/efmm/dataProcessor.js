@@ -34,7 +34,7 @@ const stackNo = process.argv[2];
 const dataType = process.argv[3].toLowerCase();
 const sourceDir = process.argv[4];
 const bulkSize = 50;
-const sleepMilisPerItem = 10;
+const sleepMilisPerItem = 100;
 
 global.log4js = require('log4js');
 log4js.configure({
@@ -55,9 +55,7 @@ var readLineObj = require('readline');
 var QueryProvider = require('./nodelib-es').QueryProvider;
 var queryProvider = new QueryProvider();
 
-var type = '';
-if ( dataType == 'm' ) type = 'status';
-else type = 'alarm';
+var type = 'status';
 
 logger.info('== Stact No. : ', stackNo);
 logger.info('== Data Type    : ', dataType);
@@ -65,16 +63,21 @@ logger.info('== Source Dir   : ', sourceDir);
 logger.info('=========================================================');
 
 var nopf = 0;  // Number of Processed Files
-fs.readdir(sourceDir, function (err, files){
-  if ( err ) {
-    logger.error(err);
-  }
-  var x = 0;
-  files.forEach(
-    function(file) {
-      processData(sourceDir, file, files.length, ++x);
-      sleep(25000);
-  });
+// fs.readdir(sourceDir, function (err, files){
+//   if ( err ) {
+//     logger.error(err);
+//   }
+//   var x = 0;
+//   files.forEach(
+//     function(file) {
+//       processData(sourceDir, file, files.length, ++x);
+//       sleep(25000);
+//   });
+// });
+var x = 0;
+var files = fs.readdirSync(sourceDir);
+files.forEach(function(file) {
+  processData(sourceDir, file, files.length, ++x);
 });
 
 function processData(dirPath, file, nof, x) {
@@ -143,8 +146,8 @@ function processData(dirPath, file, nof, x) {
       elapsedSeconds += 1;
     }
     rowsProcessed += 1;
-    if ( rowsProcessed % 1000 == 0 )
-      logger.info('['+file+'] ' + rowsProcessed + ' rows processed.');
+    if ( (rowsProcessed-1) % 1000 == 0 && (rowsProcessed-1) > 0 )
+      logger.info('['+file+'] ' + (rowsProcessed-1) + ' rows processed.');
   })
   .on('close', function() {
     if ( jsonDataList.length > 0 ) {
@@ -152,7 +155,7 @@ function processData(dirPath, file, nof, x) {
       jsonDataList.push(indexSettings(index));
       saveBulkData(index, CONSTS.SCHEMA_EFMM.EFMM_STACKING_STATUS.TYPE, jsonDataList);
     }
-    logger.info('['+file+'] Total ' + rowsProcessed + ' rows processed. (' + ++nopf + '/' + nof + ')');
+    logger.info('['+file+'] Total ' + (rowsProcessed-1) + ' rows processed. (' + ++nopf + '/' + nof + ')');
   });
 }
 function indexSettings(index) {
