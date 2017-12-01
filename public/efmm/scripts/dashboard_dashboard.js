@@ -17,6 +17,7 @@ function getData(){
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {
       var data = result.rtnData;
+      console.log(data);
       var notching = data.notching[data.notching.length-1];
       var stacking = data.stacking[data.stacking.length-1];
       drawLineChart(data.stacking.concat(data.notching));  
@@ -26,6 +27,7 @@ function getData(){
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {
       var data = result.rtnData;      
+      console.log(data);
       var tData = {
         date : data.notching.key_as_string,
         kpis : { tot : 18, in_pro : 15, stop : 3, alarm : 3 },
@@ -46,7 +48,6 @@ function getData(){
 
 function drawGage(value){  
   var max = 100; 
-
   oee = getGaguChart("oee", max, 'yellow', value["oee"], 0.15);
   availability = getGaguChart("availability", max, 'blue', value["availability"], 0.1);
   performance = getGaguChart("performance", max, 'orange', value["performance"], 0.1);
@@ -180,6 +181,9 @@ function drawLineChart(data) {
     .yAxisLabel("%")
     .legend(dc.legend().x(window.innerWidth*0.05).y(267).itemHeight(12).itemWidth(window.innerWidth*0.07).gap(4).horizontal(true))
     .renderHorizontalGridLines(true)
+    .title(function(d){            
+            return d.key.getFullYear()+'-'+(d.key.getMonth()+1)+'-'+d.key.getDate()+' : '+(d.value.avg*100).toFixed(1);
+            })
     .compose([
       dc.lineChart(composite)
           .dimension(dim)            
@@ -194,7 +198,7 @@ function drawLineChart(data) {
           .dimension(dim)
           .colors('blue')
           .renderDataPoints(true)
-          .group(aGroup, "Availability")
+          .group(aGroup, "Availability")          
           .valueAccessor(function (p) {            
             value.availability = p.value.avg*100;
             return p.value.avg*100;
