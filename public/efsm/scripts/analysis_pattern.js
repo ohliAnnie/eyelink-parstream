@@ -42,8 +42,8 @@ $(document).ready(function() {
 
 
 function getPatternList() {
-  var sdate = $('#sdate').val() + "T00:00:00";
-  var edate = $('#edate').val() + "T23:59:59";
+  var sdate = $('#sdate').val();
+  var edate = $('#edate').val();
   var masterId = "master";
   var nodeInfo = null;
   console.log("sDate : %s, eDate : %s", sdate, edate);
