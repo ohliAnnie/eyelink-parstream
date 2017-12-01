@@ -641,23 +641,22 @@ var svg = d3.select("#nodeChart")
           .attr("class", "legend")          
           .attr("width", width/4)
           .attr("height", 15)
-        .selectAll("g")
+          .selectAll("g")
           .data(data)
-        .enter().append("g")
+          .enter().append("g")
           .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
       legend.append("rect")
           .attr("width", 10)
           .attr("height", 10)
-           .style("fill", function() { // dynamic colours    // *******
-                return d.color = color(d.key); });
+          .style("fill", function() { // dynamic colours    // *******
+             return d.color = color(d.key); });
 
       legend.append("text")
           .attr("x", 50)
           .attr("y", 7)
           .attr("dy", ".25em")
           .text(d.key);
-
     });
     
     // Add the X Axis

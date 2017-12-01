@@ -3,19 +3,30 @@
   <dashboard>
     <query id='selectDashboardGageData'><![CDATA[
       {
-        "index" : #index#,
+        "index" : [##index##],
         "type"  : #type#,
         "body" : {
-          "size" : 100000,
-          "sort" : { #sort#: { "order" : "asc" } },
+          "size" : 10000,
+          "sort" : [{ "dtTransmitted" : "asc" }, { "cid" : "asc" }],
           "_source" : ["data.dtSensed", "cid", "data.availability", "data.performance", "data.quality", "data.overall_oee"],
           "query" : {
             "bool": {
-              "filter" : {
-                "range" : {
-                  #sort# : { "gte" : #gte#, "lte" : #lte# }
-                }
-              }
+              "should" : [
+                {"range" : { "dtTransmitted" : 
+                  { "gte" : #gte0#, "lte" : #lte0# }}},
+                {"range" : { "dtTransmitted" : 
+                  { "gte" : #gte1#, "lte" : #lte1# }}},
+                {"range" : { "dtTransmitted" : 
+                  { "gte" : #gte2#, "lte" : #lte2# }}},
+                {"range" : { "dtTransmitted" : 
+                  { "gte" : #gte3#, "lte" : #lte3# }}},
+                {"range" : { "dtTransmitted" : 
+                  { "gte" : #gte4#, "lte" : #lte4# }}},
+                {"range" : { "dtTransmitted" : 
+                  { "gte" : #gte5#, "lte" : #lte5# }}},
+                {"range" : { "dtTransmitted" : 
+                  { "gte" : #gte6#, "lte" : #lte6# }}}
+              ]
             }
           }
         }
