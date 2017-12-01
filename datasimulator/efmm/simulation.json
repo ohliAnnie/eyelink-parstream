@@ -1,0 +1,112 @@
+{
+  "normal_accept" :
+  {
+    "flag" : "stacking",
+    "type" : "realtime",
+    "cid" : 100,
+    "sensorType" : "oee",
+    "dtTransmitted" : "",
+    "data" :
+    [
+      {
+        "dtSensed" : "",
+        "status" : "Running",
+        "shift_length" : 1,
+        "short_break" : 0,
+        "meal_break" : 0,
+        "down_time" : 0,
+        "ideal_run_rate" : 3,
+        "accept_pieces" : 3,
+        "reject_pieces" : 0
+      }
+    ]
+  },
+  "normal_reject" :
+  {
+    "flag" : "stacking",
+    "type" : "realtime",
+    "cid" : 100,
+    "sensorType" : "oee",
+    "dtTransmitted" : "",
+    "data" :
+    [
+      {
+        "dtSensed" : "",
+        "status" : "Running",
+        "shift_length" : 1,
+        "short_break" : 0,
+        "meal_break" : 0,
+        "down_time" : 0,
+        "ideal_run_rate" : 3,
+        "accept_pieces" : 2,
+        "reject_pieces" : 1
+      }
+    ]
+  },
+  "short_break" :
+  {
+    "flag" : "stacking",
+    "type" : "realtime",
+    "cid" : 100,
+    "sensorType" : "oee",
+    "dtTransmitted" : "",
+    "data" :
+    [
+      {
+        "dtSensed" : "",
+        "status" : "ShortBreak",
+        "shift_length" : 1,
+        "short_break" : 1,
+        "meal_break" : 0,
+        "down_time" : 0,
+        "ideal_run_rate" : 3,
+        "accept_pieces" : 0,
+        "reject_pieces" : 0
+      }
+    ]
+  },
+  "meal_break" :
+  {
+    "flag" : "stacking",
+    "type" : "realtime",
+    "cid" : 100,
+    "sensorType" : "oee",
+    "dtTransmitted" : "",
+    "data" :
+    [
+      {
+        "dtSensed" : "",
+        "status" : "MealBreak",
+        "shift_length" : 1,
+        "short_break" : 0,
+        "meal_break" : 1,
+        "down_time" : 0,
+        "ideal_run_rate" : 3,
+        "accept_pieces" : 0,
+        "reject_pieces" : 0
+      }
+    ]
+  },
+  "down_time" :
+  {
+    "flag" : "stacking",
+    "type" : "realtime",
+    "cid" : 100,
+    "sensorType" : "oee",
+    "dtTransmitted" : "",
+    "data" :
+    [
+      {
+        "dtSensed" : "",
+        "status" : "DownTime",
+        "shift_length" : 1,
+        "short_break" : 0,
+        "meal_break" : 0,
+        "down_time" : 1,
+        "ideal_run_rate" : 3,
+        "accept_pieces" : 0,
+        "reject_pieces" : 0
+      }
+    ]
+  }
+}

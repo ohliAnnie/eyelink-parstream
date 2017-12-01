@@ -1,0 +1,109 @@
+extends ../efmm-layout01
+block style
+  link(href='/common/assets/fonts/font-awesome/css/font-awesome.min.css', rel='stylesheet', type='text/css')
+  link(type='text/css', href="/efmm/css/dashboard_dashboard.css")
+block script
+  script(type='text/javascript', src='/efmm/assets/scripts/d3_dc.js')
+  script(type='text/javascript', src='/efmm/assets/scripts/radial-progress-chart.js')
+  script(type='text/javascript', src="/common/scripts/util.js")
+  script(type='text/javascript', src="/efmm/scripts/dashboard_dashboard.js")  
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Dashboard
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Dashboard
+          li.active Dashboard     
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Overall OEE
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body                            
+              .col-md-3
+                .container
+                  .progress
+                .col-md-3
+                  .container
+                    .test                
+  script.
+    var progress = new RadialProgressChart('.progress', {
+    diameter: 200,
+    series: [
+    {
+    labelStart: '\\uF105',
+    value: 0,
+    color: {
+    linearGradient: { x1: '0%', y1: '100%', x2: '50%', y2: '0%', spreadMethod: 'pad' },
+    stops: [
+    {offset: '0%', 'stop-color': '#ffff00', 'stop-opacity': 1},
+    {offset: '100%', 'stop-color': '#ff0000', 'stop-opacity': 1}
+    ]}
+    }
+    ],
+    center: function (p) {
+    return p + ' %'
+    }
+    });
+    function getRandom(min, max) {
+    return Math.random() * (max - min) + min;
+    }
+    function loop(p) {
+    if (p > 100) {
+    setTimeout(function () {
+    loop(0)
+    }, 3000)
+    } else {
+    progress.update(p);
+    setTimeout(function () {
+    loop(p + 1)
+    }, 90)
+    }
+    }
+    loop(10);
+    var test = new RadialProgressChart('.test', {
+    diameter: 200,
+    series: [
+    {
+    labelStart: '\\uF105',
+    value: 0,
+    color: {
+    linearGradient: { x1: '0%', y1: '100%', x2: '50%', y2: '0%', spreadMethod: 'pad' },
+    stops: [
+    {offset: '0%', 'stop-color': '#ffff00', 'stop-opacity': 1},
+    {offset: '100%', 'stop-color': '#ff0000', 'stop-opacity': 1}
+    ]}
+    }
+    ],
+    center: function (p) {
+    return p + ' %'
+    }
+    });
+    function getRandom(min, max) {
+    return Math.random() * (max - min) + min;
+    }
+    function loop(p) {
+    if (p > 100) {
+    setTimeout(function () {
+    loop(0)
+    }, 3000)
+    } else {
+    progress.update(p);
+    setTimeout(function () {
+    loop(p + 1)
+    }, 90)
+    }
+    }
+    loop(10);
+

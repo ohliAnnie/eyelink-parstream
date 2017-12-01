@@ -1,0 +1,126 @@
+extends ../layout-type01
+block style  
+  //-link(rel='stylesheet', href='/stylesheets/style.css')
+  link(rel='stylesheet', href='/efsl/assets/css/d3_timeseries.css')
+block script
+  //- script(type='text/javascript', src='/assets/leaflet/d3.js')
+  //- //- script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
+  //- script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
+  //- //- script(type='text/javascript', src='/assets/annie/js/dc.js')
+  //- //- script(type='text/javascript', src='/assets/leaflet/dc.js')
+  //- script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')  
+  script(type='text/javascript', src='/efsl/assets/scripts/d3_dc.js')
+  script(type='text/javascript', src="/common/scripts/util.js")
+  script(type='text/javascript', src="/efsl/assets/scripts/d3_timeseries_4.js")
+  script(type='text/javascript', src="/efsl/scripts/timeseries.js")
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Time Series
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Time Series
+          li.active Time Series
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Set date and area
+                span.caption-helper Date range and select area
+              .actions
+                .btn-group.btn-group-devided(data-toggle='buttons')
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                    input#syncY.toggle(type='radio', name='options', checked='Y')
+                    i.fa.fa-chain Sync
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                    input#syncN.toggle(type='radio', name='options')
+                    i.fa.fa-chain-broken Async
+            .portlet-body.form
+              form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group.last
+                    label.control-label.col-md-1 Date Range
+                    .col-md-4
+                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
+                        input#sdate.form-control(type='text', name='from' value='')
+                        span.input-group-addon to
+                        input#edate.form-control(type='text', name='to' value='')
+                    label.control-label.col-md-1 Select Area
+                    .col-md-6.form-inline
+                      select.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Area')
+                        option(value='') Zone ID
+                        option(value='') All Area
+                        option(value='') AreaID1234
+                        option(value='') AreaID5678
+                      select.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Item')
+                        option(value='') Node ID
+                        option(value='') Node ID
+                        option(value='') Item1234
+                        option(value='') Item5678
+                      button#btn_search.btn.blue
+                        i.fa.fa-search Search
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Active Power / Ampere
+                span.caption-helper Active Power / Ampere
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart#ts-chart01
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze ALS / Dimming Level
+                span.caption-helper ALS / Dimming Level
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart#ts-chart02
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Noise
+                span.caption-helper Noise
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart#ts-chart03
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Vibration
+                span.caption-helper Vibration
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart#ts-chart04
+
+
+

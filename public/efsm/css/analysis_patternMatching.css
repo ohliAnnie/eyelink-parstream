@@ -1,0 +1,42 @@
+.legend text {   
+    fill: black;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.legend text {   
+    fill: black;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.legend .legend-bg {
+    fill: rgba(0, 0, 0, 0.5);
+    stroke: rgba(0, 0, 0, 0.5);
+    opacity: 0.1;
+ }     
+
+.top1Line,     
+.legend .top1Line {
+  fill: none;
+  stroke: darkgreen;
+  stroke-width: 3;
+}
+.top2Line,
+.legend .top2Line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 3;
+}
+.top3Line,
+.legend .top3Line {
+  fill: none;
+  stroke: tan;
+  stroke-width: 3;
+}      
+.realLine,
+.legend .realLine {
+  fill: none;
+  stroke: crimson;
+  stroke-width: 3;
+}

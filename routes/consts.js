@@ -38,11 +38,11 @@ define("DATEFORMAT", {
 	"DATE" : "YYYY-MM-DD",
 	"DATETIME" : "YYYY-MM-DD HH:MM:SS",
 	"DATETIMEMILLI" : "YYYY-MM-DD HH:MM:SS.L",
-	"INDEXDATE" : "YYYY.mm.DD"
+	"INDEXDATE" : "YYYY.MM.DD"
 });
 
 define("STARTTIME", {
-	"KOREA" : "T15:00:00"
+	"KOREA" : "T15:00:00Z"
 });
 
 define("ERROR_CODE", {

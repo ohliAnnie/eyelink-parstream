@@ -1,14 +1,14 @@
 extends ../layout-type01
 block style    
-  link(rel='stylesheet', href='/assets/leaflet/dc.css')
-  link(rel='stylesheet', href='/stylesheets/style.css')
+  link(type='text/css', rel='stylesheet', href='/efsl/assets/css/dc.css') 
+  link(type='text/css', rel='stylesheet', href='/efsl/css/chart_style.css')
 block script
-  script(type='text/javascript', src='/assets/annie/js/d3_dc.js')
-  script(type='text/javascript', src='/assets/annie/js/crossfilter.js')
-  script(type='text/javascript', src='/assets/annie/js/dc.js')
-  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
-  script(type='text/javascript', src="/scripts/util.js")
-  script(type='text/javascript', src='/scripts/report_all.js')          
+  script(type='text/javascript', src='/efsl/assets/scripts/d3_dc.js')
+  script(type='text/javascript', src='/efsl/assets/scripts/crossfilter.js')
+  script(type='text/javascript', src='/efsl/assets/scripts/dc.js')  
+  script(type='text/javascript', src='/efsl/assets/scripts/colorbrewer.js')
+  script(type='text/javascript', src="/common/scripts/util.js")
+  script(type='text/javascript', src='/efsl/scripts/report_all.js')          
 block content
   .container-fluid
     .page-content
@@ -81,7 +81,7 @@ block content
                 a.collapse(href='javascript:;')
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
-              .chart(style='height:500px; ')
+              .chart
                 #eventBar
       .row
         .col-md-6

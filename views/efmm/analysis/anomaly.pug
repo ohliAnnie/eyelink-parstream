@@ -1,0 +1,22 @@
+extends ../efmm-layout01
+block style  
+  link(type='text/css', rel='stylesheet', href='/efmm/css/chart_style.css')
+  link(type='text/css', rel='stylesheet', href='/efmm/css/analysis_clustering.css')
+  link(type='text/css', rel='stylesheet', href='/efmm/assets/css/dc.css')
+block script  
+  script(type='text/javascript', src='/efmm/assets/scripts/d3_dc.js')
+  script(src='/efmm/assets/scripts/vue.min.js')  
+  script(type='text/javascript', src='/efmm/assets/scripts/colorbrewer.js')  
+  script(type='text/javascript', src="/common/scripts/util.js")
+  script(src='/efmm/scripts/analysis_anomaly.js')
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Anomaly Detection
+        ol.breadcrumb
+          li
+            a(href='/dashboard') Home
+          li
+            a(href='#') Analysis
+          li.active Anomaly

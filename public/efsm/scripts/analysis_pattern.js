@@ -10,6 +10,7 @@ $(document).ready(function() {
   });
 
   $('#btnBatchUpdate').hide();
+
   $('#btnBatchUpdate').click(function() {
     var nodes =  $('#sample_2').dataTable().fnGetNodes();
     var checkbox = $("input[name=patternChk]:checked", nodes).closest('tr');
@@ -41,8 +42,8 @@ $(document).ready(function() {
 
 
 function getPatternList() {
-  var sdate = $('#sdate').val() + "T00:00:00";
-  var edate = $('#edate').val() + "T23:59:59";
+  var sdate = $('#sdate').val();
+  var edate = $('#edate').val();
   var masterId = "master";
   var nodeInfo = null;
   console.log("sDate : %s, eDate : %s", sdate, edate);
@@ -84,7 +85,8 @@ function loadPatternData(createdDate, nodeInfo) {
   $("#lblGroup").empty();
   $("#lblGroup").append('parent - child node');
   d3.selectAll("svg").remove();
-  $("#sample_2").dataTable().fnClearTable();
+  $("#sample").empty();
+  // $("#sample_2").dataTable().fnClearTable();
   
   if($('#lblCreatedDate').text() == 'master'){
     $('#btnBatchUpdate').show();
@@ -189,7 +191,6 @@ function drawPatterns(creationDate, parentNode, childNode, patternData){
 
   $('#sample').append(tableTag.toString());
   TableManaged.init();
-
 
   ///// Event /////
   // Checkbox event
@@ -307,6 +308,8 @@ function insertNewPattern(id, group, CN, newCN){
       ajaxTypeData(in_data, function(result) {
         if (result.rtnCode.code == "D001") {
           console.log('insert completed');
+          var nodeInfo = $('#patternTree').treeview('getSelected');
+          loadPatternData(id, nodeInfo[0]);
         }
       });
     }
@@ -382,7 +385,7 @@ function statusCheck(patternId, cno, masterCN, status) {
 
 
 function getGraphData(pData, mData) {
-  graphData = {};
+  var graphData = {};
   var pSet = [];
   var mSet = [];
 
@@ -396,14 +399,14 @@ function getGraphData(pData, mData) {
       mSet.push({ x : i, y : mData[i]});
     }
   }
-  var minVal = Math.min.apply(null,pData);
-  var maxVal = Math.max.apply(null,pData);
-  var mMinVal = Math.min.apply(null,mData);
-  var mMaxVal = Math.max.apply(null,mData);
-  if (minVal > mMinVal){ minVal = mMinVal};
-  if (maxVal < mMaxVal){ maxVal = mMaxVal};
+  var array;
+  if (mData != null){ array = pData.concat(mData); }
+  else { array = pData; }
   
-  //var graphData = {};
+  var minVal = Math.min.apply(null,array);
+  var maxVal = Math.max.apply(null,array);
+  
+  console.log(minVal, maxVal);
   graphData.pSet = pSet;
   graphData.mSet = mSet;
   graphData.minVal = minVal;
@@ -434,9 +437,11 @@ function drawPatternChart(graphData) {
       .tickPadding(10);
 
   var masterLine = d3.svg.line()
+      .interpolate("basis")
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
   var patternLine = d3.svg.line()
+      .interpolate("basis")
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
 
@@ -447,7 +452,7 @@ function drawPatternChart(graphData) {
       .append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
   xScale.domain([0, d3.max(graphData.pSet, function(d){ return d.x; })]);
-  yScale.domain([graphData.minVal, graphData.maxVal+(graphData.maxVal/100)]);
+  yScale.domain([graphData.minVal-(graphData.maxVal/100), graphData.maxVal+(graphData.maxVal/100)]);
 
   // Add the X Axis
   svg.append("g")
@@ -462,17 +467,17 @@ function drawPatternChart(graphData) {
 
 
   svg.append("path")
-      .data([graphData['mSet']])
+      .data([graphData.mSet])
       .attr("fill", "none")
       .attr("stroke", "orange")
-      .attr("stroke-dasharray", ("4, 4"))
+      .attr("opacity", 0.4)
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
-      .attr("stroke-width", 2.5)
+      .attr("stroke-width", 6)
       .attr("d", masterLine);
 
-        svg.append("path")
-      .data([graphData['pSet']])
+  svg.append("path")
+      .data([graphData.pSet])
       .attr("fill", "none")
       .attr("stroke", "steelblue")
       .attr("stroke-linejoin", "round")
