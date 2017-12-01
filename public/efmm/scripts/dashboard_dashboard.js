@@ -48,9 +48,9 @@ function getData(){
 
 function drawGage(value){  
   var max = 100; 
-  oee = getGaguChart("oee", max, 'yellow', value["oee"], 0.15);
+  oee = getGaguChart("oee", max, '#F361DC', value["oee"], 0.15);
   availability = getGaguChart("availability", max, 'blue', value["availability"], 0.1);
-  performance = getGaguChart("performance", max, 'orange', value["performance"], 0.1);
+  performance = getGaguChart("performance", max, '#FF7012', value["performance"], 0.1);
   quality = getGaguChart("quality", max, 'green', value["quality"], 0.1);  
 }
 
@@ -177,7 +177,7 @@ function drawLineChart(data) {
     .height(290)
     .x(d3.time.scale().domain([minDate,maxDate]))
     //.x(d3.scale.linear().domain([0,6]))           
-    .y(d3.scale.linear().domain([0, 110]))    
+    .y(d3.scale.linear().domain([50, 110]))    
     .yAxisLabel("%")
     .legend(dc.legend().x(window.innerWidth*0.05).y(267).itemHeight(12).itemWidth(window.innerWidth*0.07).gap(4).horizontal(true))
     .renderHorizontalGridLines(true)
@@ -187,7 +187,7 @@ function drawLineChart(data) {
     .compose([
       dc.lineChart(composite)
           .dimension(dim)            
-          .colors('yellow')
+          .colors('#F361DC')
           .renderDataPoints(true)
           .group(oGroup, "OEE")
           .valueAccessor(function (p) {            
@@ -205,7 +205,7 @@ function drawLineChart(data) {
           }),
       dc.lineChart(composite)
           .dimension(dim)
-          .colors('orange')
+          .colors('#FF7012')
           .renderDataPoints(true)
           .group(pGroup, "Performance")
           .valueAccessor(function (p) {            

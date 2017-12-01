@@ -58,10 +58,7 @@ router.get('/restapi/getDashboardAggsData', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {          
-      console.log('%%%%%%%%%%%%%')
-      console.log(out_data)
-      var notch = out_data.group_by_state.buckets[out_data.group_by_state.buckets.length-1];
-      console.log(notch)
+      var notch = out_data.group_by_state.buckets[out_data.group_by_state.buckets.length-1];      
       in_data = { index : indexStackingOee+"*", type : "oee",                   
                   sort : "dtTransmitted" , gte : gte, lte : lte };          
       queryProvider.selectSingleQueryByID3("dashboard","selectDashboardAggsData", in_data, function(err, out_data, params) {
@@ -84,7 +81,7 @@ router.get('/restapi/getDashboardGageData', function(req, res, next) {
   console.log('reports/restapi/getDashboardGageData');    
   var lte = [], gte = [], indexNotch = [], indexStack = [], cnt = 0;
   lte[6] = Utils.getMs2Date(parseInt(req.query.now), fmt2, 'Y', 'Y');    
-  gte[6] = Utils.getDate(lte[6], fmt2, 0, 0, 0, -5, 'Y', 'Y');
+  gte[6] = Utils.getDate(lte[6], fmt2, 0, 0, 0, -1, 'Y', 'Y');
   indexNotch[6] = indexNotchingOee+Utils.getMs2Date(parseInt(req.query.now), fmt4, 'Y', 'Y');
   indexStack[6] = indexStackingOee+Utils.getMs2Date(parseInt(req.query.now), fmt4, 'Y', 'Y');  
   for(i = new Date(lte[6]).getTime()-6*24*60*60*1000; i<new Date(lte[6]).getTime(); i=i+24*60*60*1000){
@@ -101,7 +98,7 @@ router.get('/restapi/getDashboardGageData', function(req, res, next) {
                   gte4 : gte[4], lte4 : lte[4],
                   gte5 : gte[5], lte5 : lte[5],
                   gte6 : gte[6], lte6 : lte[6] };
-  queryProvider.selectSingleQueryByID2("dashboard","selectDashboardGageData", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID2("dashboard","selectDashboardGageData", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
@@ -117,7 +114,8 @@ router.get('/restapi/getDashboardGageData', function(req, res, next) {
           var len = (notch.length <= stack.length) ? notch.length : stack.length;          
           var stacking = [], notching = [], gage = [];                    
           for(i=0; i<len; i++) {                        
-            n = notch[i]._source.data[0];                                
+            n = notch[i]._source.data[0];
+            console.log(n);
             n.dtSensed = Utils.getDateUTC2Local(n.dtSensed, fmt2);            
             n.cid = notch[i]._source.cid;
             notching.push(n);                        
