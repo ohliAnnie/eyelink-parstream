@@ -47,6 +47,16 @@ router.get('/info', function(req, res, next) {
   res.render(global.config.pcode + '/dashboard/dashboard_info', outdata);
 });
 
+router.get('/analysis', function(req, res, next) {
+   console.log('/analysis');  
+  var outdata = {
+    title: global.config.productname,
+    mainmenu : mainmenu
+  }
+  logger.info('mainmenu : %s, outdata : %s' , mainmenu.dashboard, JSON.stringify(outdata));  
+  res.render(global.config.pcode + '/dashboard/dashboard_detail', outdata);
+});
+
 router.get('/restapi/getDashboardAggsData', function(req, res, next) {
   console.log('reports/restapi/getDashboardAggsData');    
   var lte = Utils.getMs2Date(parseInt(req.query.now), fmt2, 'Y', 'Y');    

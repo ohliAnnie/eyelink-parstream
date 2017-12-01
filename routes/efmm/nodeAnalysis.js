@@ -19,27 +19,51 @@ var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
 var fmt2 = CONSTS.DATEFORMAT.DATETIME; // "YYYY-MM-DD HH:MM:SS",
 var fmt4 = CONSTS.DATEFORMAT.INDEXDATE; // "YYYY.MM.DD",
 
+/* GET analysis page. */
+router.get('/', function(req, res, next) {
+  // console.log(_rawDataByDay);
+  var outdata = { title: global.config.productname, mainmenu : mainmenu };
+  logger.info('mainmenu : %s, outdata : %s', mainmenu.analysis, JSON.stringify(outdata));  
+  res.render(global.config.pcode + '/analysis/clustering', outdata);
+});
+
+router.get('/clustering', function(req, res, next) {
+   console.log('/analysis/clustering');  
+  var outdata = { title: global.config.productname, mainmenu : mainmenu };
+  logger.info('mainmenu : %s, outdata : %s' , mainmenu.analysis, JSON.stringify(outdata));  
+  res.render(global.config.pcode + '/analysis/clustering', outdata);
+});
+
+router.get('/anomaly', function(req, res, next) {
+   console.log('/analysis/anomaly');  
+  var outdata = { title: global.config.productname, mainmenu : mainmenu };
+  logger.info('mainmenu : %s, outdata : %s' , mainmenu.analysis, JSON.stringify(outdata));  
+  res.render(global.config.pcode + '/analysis/anomaly', outdata);
+});
+
+// api test
+router.get('/restapi/test', function(req, res, next){
+  logger.debug("req.query:", req.query);
+  var rtnCode = CONSTS.getErrData('0000');
+  res.json({rtnCode: rtnCode, rtnData: "test ok"});
+  logger.debug('analysis/restapi/test -> ok');
+});
 
 // get stacking data
 router.get('/restapi/getNotchingOeeRaw', function(req, res, next){
-    logger.debug("req.query:", req.query);
-    var sDate = Utils.getDateLocal2UTC(req.query.startDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
-    var eDate = Utils.getDateLocal2UTC(req.query.endDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
-    var in_data = { INDEX : indexNotchingOee, TYPE : "oee", START: sDate, END: eDate};
-    var sql = "selectNotchingOeeRaw";
-    queryProvider.selectSingleQueryByID2("analysis", sql, in_data, function(err, out_data, params) {
-    var rtnCode = CONSTS.getErrData('0000');
+  logger.debug("req.query:", req.query);
+  var sDate = Utils.getDateLocal2UTC(req.query.startDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
+  var eDate = Utils.getDateLocal2UTC(req.query.endDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
+  var in_data = { INDEX : indexNotchingOee+'*', TYPE : "oee", START: sDate, END: eDate  };
+  queryProvider.selectSingleQueryByID2("analysis", "selectNotchingOeeRaw", in_data, function(err, out_data, params) {
     if (out_data === null) {
-      rtnCode = CONSTS.getErrData('0001');
+      var rtnCode = CONSTS.getErrData('0001');
+      res.json({rtnCode: rtnCode, rtnData: out_data});
     } else {
-      out_data.forEach(function(d){
-        var utcDt = d._source.da_result.timestamp;
-        var localDt = Utils.getDateUTC2Local(utcDt, CONSTS.DATEFORMAT.DATETIME, 'Y');
-        d._source.da_result.timestamp = localDt;
-      });
+      var rtnCode = CONSTS.getErrData('0000');
+      res.json({rtnCode: rtnCode, rtnData: out_data });
     }
     logger.debug('analysis/restapi/getAnomaly_Pattern -> length : %s', out_data.length);
-    res.json({rtnCode: rtnCode, rtnData: out_data });
   });
 });
 

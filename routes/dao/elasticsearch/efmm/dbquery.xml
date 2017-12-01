@@ -145,9 +145,21 @@
   <analysis>
     <query id='selectNotchingOeeRaw'><![CDATA[
       {
-        "index" : #index#,
-        "type"  : #type#,
+        "index" : #INDEX#,
+        "type"  : #TYPE#,
         "body" : {
+          "size": 100000,
+          "sort": { "dtTransmitted": { "order" : "asc" } },
+          "query" : {
+            "bool" : {
+              "must": [ {"match_all" : {} } ],
+              "filter" : {
+                "range" : {
+                  "dtTransmitted" : { "gte" : #START#, "lte" : #END# }
+                }
+              }
+            }
+          }
         
         }
       }
