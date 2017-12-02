@@ -33,13 +33,13 @@ function printUsage() {
 const stackNo = process.argv[2];
 const dataType = process.argv[3].toLowerCase();
 const sourceDir = process.argv[4];
-const bulkSize = 50;
-const sleepMilisPerItem = 100;
+const bulkSize = 200;
+const sleepMilisPerItem = 10;
 
 global.log4js = require('log4js');
 log4js.configure({
   appenders: { datastore: {type: 'file', filename: './dataProcessor_'+stackNo + '_' + dataType + '.log', 'maxLogSize': 1024000, backups: 5 } },
-  categories: { default: { appenders: ['datastore'], level: 'info' } }
+  categories: { default: { appenders: ['datastore'], level: 'debug' } }
 });
 global.logger = log4js.getLogger('dataStore');
 
@@ -57,12 +57,22 @@ var queryProvider = new QueryProvider();
 
 var type = 'status';
 
-logger.info('== Stact No. : ', stackNo);
+logger.info('== Stact No.    : ', stackNo);
 logger.info('== Data Type    : ', dataType);
 logger.info('== Source Dir   : ', sourceDir);
 logger.info('=========================================================');
 
 var nopf = 0;  // Number of Processed Files
+
+var files = fs.readdirSync(sourceDir);
+var isDone = false;
+var x = 0;
+for ( var i = 0 ; i < files.length ; i++ ) {
+  isDone = false;
+  processData(sourceDir, files[i], files.length, ++x);
+  while(!isDone) { sleep(10000); }
+}
+//------------------------------------------
 // fs.readdir(sourceDir, function (err, files){
 //   if ( err ) {
 //     logger.error(err);
@@ -74,11 +84,7 @@ var nopf = 0;  // Number of Processed Files
 //       sleep(25000);
 //   });
 // });
-var x = 0;
-var files = fs.readdirSync(sourceDir);
-files.forEach(function(file) {
-  processData(sourceDir, file, files.length, ++x);
-});
+//-------------------------------------
 
 function processData(dirPath, file, nof, x) {
 
@@ -114,7 +120,6 @@ function processData(dirPath, file, nof, x) {
 
       if ( rowsProcessed == 1) prevIndex = index;
 
-      logger.debug('['+file+'] index : ',index);
       var linedataArr = [measure_time];
       linedataArr = linedataArr.concat(dataArr);
 
@@ -135,7 +140,7 @@ function processData(dirPath, file, nof, x) {
           jsonDataList = [];
         }
       } else {
-        logger.debug('['+file+'] Saving ' + (jsonDataList.length) + ' data..... on index \'' + index + '\'');
+        logger.debug('['+file+'] Saving ' + (jsonDataList.length) + ' data..... on index \'' + prevIndex + '\'');
         jsonDataList.push(indexSettings(prevIndex));
         saveBulkData(prevIndex, CONSTS.SCHEMA_EFMM.EFMM_STACKING_STATUS.TYPE, jsonDataList);
         sleep(jsonDataList.length * sleepMilisPerItem);
@@ -156,6 +161,7 @@ function processData(dirPath, file, nof, x) {
       saveBulkData(index, CONSTS.SCHEMA_EFMM.EFMM_STACKING_STATUS.TYPE, jsonDataList);
     }
     logger.info('['+file+'] Total ' + (rowsProcessed-1) + ' rows processed. (' + ++nopf + '/' + nof + ')');
+    isDone = true;
   });
 }
 function indexSettings(index) {
@@ -170,7 +176,7 @@ function saveBulkData(index, type, jsonDataList) {
   };
   queryProvider.insertBulkQuery(in_data, function(err, out_data){
     if (err) { console.log(err) };
-    logger.debug(out_data);
+    logger.trace(out_data);
     if(out_data.errors == false){
       // console.log(out_data);
       var rtnCode = CONSTS.getErrData("D001");
