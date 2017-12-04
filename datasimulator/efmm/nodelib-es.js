@@ -2,8 +2,8 @@ var queryParser = require('../../routes/dao/queryParser');
 var elasticsearch = require('elasticsearch');
 var client = new elasticsearch.Client({
   // host: 'localhost:9200',
-  host: 'http://m2utech.eastus.cloudapp.azure.com:9200'
-  // host: 'http://m2u-parstream.eastus.cloudapp.azure.com:9200'
+  // host: 'http://m2utech.eastus.cloudapp.azure.com:9200'
+  host: 'http://m2u-parstream.eastus.cloudapp.azure.com:9200'
   // log: 'trace'
 });
 
@@ -12,6 +12,13 @@ var sleep = require('system-sleep');
 QueryProvider = function() {
 };
 
+QueryProvider.prototype.insert = function (data) {
+  logger.trace('Inserting data : ', data);
+  client.create(data, function (err, resp){
+      logger.error('Inserting error !!!',err.message);
+  });
+}
+
 QueryProvider.prototype.insertBulkQuery = function (datas, cb) {
   client.bulk(
     {body : makeBulkData(datas)}
@@ -19,7 +26,7 @@ QueryProvider.prototype.insertBulkQuery = function (datas, cb) {
       // console.log(resp);
       cb(null, resp);
   }, function (err) {
-      console.trace(err.message);
+      logger.error(err.message);
       cb(err.message);
   });
 }

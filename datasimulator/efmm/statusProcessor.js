@@ -19,15 +19,15 @@ function printUsage() {
   데이타 타입은 알람데이터인지 일반데이터인지를 구분
   데이타 소스 디렉토리 내의 모든 파일을 읽어서 데이터 등록
   **/
-  console.log('Data Bulk Processor for EFMM dataset. v1.0')
+  console.log('EFMM Status Data Processor. v1.0')
   console.log('');
-  console.log('Usage : $ node dataProcessor.js [stack number] [data type] [data source dir path]');
+  console.log('Usage : $ node statusProcessor.js [stack number] [data type] [data source dir path]');
   console.log('     []: required');
   console.log('Data Types:');
   console.log('     A, a : Alarm');
   console.log('     M, m : Motor');
   console.log('');
-  console.log('Ex. $ node dataProcessor.js 1 a /home/data/alarmdata');
+  console.log('Ex. $ node statusProcessor.js 1 a /home/data/alarmdata');
 }
 
 const stackNo = process.argv[2];
@@ -38,14 +38,14 @@ const sleepMilisPerItem = 10;
 
 global.log4js = require('log4js');
 log4js.configure({
-  appenders: { datastore: {type: 'file', filename: './dataProcessor_'+stackNo + '_' + dataType + '.log', 'maxLogSize': 1024000, backups: 5 } },
+  appenders: { datastore: {type: 'file', filename: './statusProcessor_'+stackNo + '_' + dataType + '.log', 'maxLogSize': 1024000, backups: 5 } },
   categories: { default: { appenders: ['datastore'], level: 'debug' } }
 });
 global.logger = log4js.getLogger('dataStore');
 
-logger.info('===============================================');
-logger.info('==== Data Bulk Processor has been started. ====');
-logger.info('===============================================');
+logger.info('=================================================');
+logger.info('==== Status Data Processor has been started. ====');
+logger.info('=================================================');
 
 var sleep = require('system-sleep');
 var fs = require('fs');
