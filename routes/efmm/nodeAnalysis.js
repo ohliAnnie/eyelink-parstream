@@ -13,6 +13,7 @@ var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis: 'open selecte
 
 var indexNotchingOee = global.config.es_index.notching_oee;
 var indexStackingOee = global.config.es_index.stacking_oee;
+var indexStackingStatus = global.config.es_index.stacking_status;
 
 var startTime = CONSTS.STARTTIME.KOREA;
 var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
@@ -52,8 +53,8 @@ router.get('/restapi/test', function(req, res, next){
 // get stacking data
 router.get('/restapi/getNotchingOeeRaw', function(req, res, next){
   logger.debug("req.query:", req.query);
-  var sDate = Utils.getDateLocal2UTC(req.query.startDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
-  var eDate = Utils.getDateLocal2UTC(req.query.endDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
+  var sDate = Utils.getDateLocal2UTC(req.query.sDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
+  var eDate = Utils.getDateLocal2UTC(req.query.eDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
   var in_data = { INDEX : indexNotchingOee+'*', TYPE : "oee", START: sDate, END: eDate  };
   queryProvider.selectSingleQueryByID2("analysis", "selectNotchingOeeRaw", in_data, function(err, out_data, params) {
     if (out_data === null) {
@@ -67,6 +68,31 @@ router.get('/restapi/getNotchingOeeRaw', function(req, res, next){
   });
 });
 
+
+// get stacking status
+router.get('/restapi/getStackingStatus', function(req, res, next){
+  logger.debug("req.query:", req.query);
+  var sDate = Utils.getDateLocal2UTC(req.query.sDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
+  var eDate = Utils.getDateLocal2UTC(req.query.eDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
+  var in_data = { 
+    INDEX : indexStackingStatus+'*',
+    TYPE : "status",
+    START: sDate, 
+    END: eDate, 
+    CID: req.query.cid, 
+    STYPE: req.query.sType
+  };
+  queryProvider.selectSingleQueryByID2("analysis", "selectStackingStatus", in_data, function(err, out_data, params) {
+    if (out_data === null) {
+      var rtnCode = CONSTS.getErrData('0001');
+      res.json({rtnCode: rtnCode, rtnData: out_data});
+    } else {
+      var rtnCode = CONSTS.getErrData('0000');
+      res.json({rtnCode: rtnCode, rtnData: out_data });
+    }
+    logger.debug('analysis/restapi/getStackingStatus -> length : %s', out_data.length);
+  });
+});
 
 
 module.exports = router;
