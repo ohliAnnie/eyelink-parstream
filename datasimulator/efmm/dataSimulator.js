@@ -88,8 +88,8 @@ var isTodayDown = false;
 var isDownTime = false;
 var down_time_cnt = 0;
 
-// for test
-var curdateTest = '2017-11-22 08:50:55';
+// // for test
+// var curdateTest = '2017-11-22 08:50:55';
 
 while(true) {
   var isNormal = true;
@@ -97,9 +97,9 @@ while(true) {
 
   var curdate = Utils.getToday(CONSTS.DATEFORMAT.DATETIME, 'Y', 'Y');
 
-  // for test : oee init
-  curdateTest = Utils.getDate(curdateTest, CONSTS.DATEFORMAT.DATETIME, 0, 0, 0, 1);
-  curdate = Utils.getDateLocal2UTC(curdateTest, CONSTS.DATEFORMAT.DATETIME, 'Y');
+  // // for test : oee init
+  // curdateTest = Utils.getDate(curdateTest, CONSTS.DATEFORMAT.DATETIME, 0, 0, 0, 1);
+  // curdate = Utils.getDateLocal2UTC(curdateTest, CONSTS.DATEFORMAT.DATETIME, 'Y');
 
   logger.debug('rdx : %s, today : %s', rdx, curdate);
 
