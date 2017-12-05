@@ -57,6 +57,116 @@ function saveAlarmData(data, cb) {
   });
 }
 
+router.get('/recipe', function(req, res, next) {
+  logger.debug('recipe');
+  // var in_data = { INDEX: '', TYPE: "user" };
+  // queryProvider.selectSingleQueryByID2("management", "selectList", in_data, function(err, out_data, params) {
+  //   var rtnCode = CONSTS.getErrData('0000');
+  //   if (out_data == null) {
+  //     rtnCode = CONSTS.getErrData('0001');
+  //   }
+  //   logger.debug(out_data);
+  //   var users = out_data;
+  // });
+  var out_data = {
+    'step' : 'NOTCHING',
+    'machine' :
+      [
+        {'cid' : '100'},
+        {'cid' : '200'}
+      ],
+    'data' :
+      [
+        {
+          'seq' : 1,
+          'cid' : 100,
+          'type' : 'Motor Parameter(30 Axis)',
+          'variable' : 'P2090 + axis no. * 10',
+          'name' : 'P Gain',
+          'description' : 'PID proportional gain term',
+          'unit' : '',
+          'stepno' : '',
+          'tagname' : '',
+          'datatype' : 'Double',
+          'datasize' : 8,
+          'datavalue' : '',
+          'lastupdate' : '20171204'
+        },
+        {
+          'seq' : 2,
+          'cid' : 100,
+          'type' : 'Motor Parameter(30 Axis)',
+          'variable' : 'P2091 + axis no. * 10',
+          'name' : 'I Gain',
+          'description' : 'Servo velocity feedforward (into integrator) gain term',
+          'unit' : '',
+          'stepno' : '',
+          'tagname' : '',
+          'datatype' : 'Double',
+          'datasize' : 8,
+          'datavalue' : '',
+          'lastupdate' : '20171204'
+        },
+        {
+          'seq' : 3,
+          'cid' : 100,
+          'type' : 'Productive Parameter',
+          'variable' : 'P2700',
+          'name' : '생산 속도',
+          'description' : '생산 속도',
+          'unit' : 'ppm',
+          'stepno' : '',
+          'tagname' : '',
+          'datatype' : '',
+          'datasize' : '',
+          'datavalue' : 2,
+          'lastupdate' : '20171204'
+        },
+        {
+          'seq' : 4,
+          'cid' : 100,
+          'type' : 'Productive Parameter',
+          'variable' : 'P2701',
+          'name' : '극판 폭',
+          'description' : '극판 폭',
+          'unit' : 'mm',
+          'stepno' : '',
+          'tagname' : '',
+          'datatype' : 'Double',
+          'datasize' : 8,
+          'datavalue' : '',
+          'lastupdate' : '20171204'
+        },
+      ]
+  }
+;
+
+    res.render('./'+global.config.pcode+'/management/recipe', { title: global.config.productname, mainmenu:mainmenu, rtnData:out_data });
+});
+
+// recipe 신규 등록.
+router.get('/recipe/:id', function(req, res) {
+  var out_data = {
+    'step' : 'NOTCHING',
+    'cid' : '100',
+    'type' : 'Motor Parameter(30 Axis)',
+    'variable' : 'P2090 + axis no. * 10',
+    'name' : 'P Gain',
+    'description' : 'PID proportional gain term',
+    'unit' : '',
+    'stepno' : '',
+    'tagname' : '',
+    'datatype' : 'Double',
+    'datasize' : 8,
+    'datavalue' : '',
+    'lastupdate' : '20171204'
+  };
+  if (req.params.id === 'NEW') {
+    res.render('./'+global.config.pcode+'/management/recipe_new', { title: global.config.productname, mainmenu:mainmenu, rtnData:out_data});
+  } else {
+    res.render('./'+global.config.pcode+'/management/recipe_edit', { title: global.config.productname, mainmenu:mainmenu, rtnData:out_data});
+  }
+});
 
 module.exports = router;
 module.exports.selectAlarmList = selectAlarmList;

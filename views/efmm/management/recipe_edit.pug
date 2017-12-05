@@ -1,0 +1,86 @@
+extends ../efmm-layout01
+block style
+block script
+  script(type='text/javascript', src='/efsm/scripts/management_recipe_edit.js')
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 #{rtnData.flag} Recipe
+        ol.breadcrumb
+          li
+            a(href='/dashboard') Home
+          li
+            a(href='#') Management
+          li
+            a(href='/management/recipe') Recipes
+          li.active #{rtnData.flag} Recipe
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Recipe Information
+                span.caption-helper  Update recipe information
+            .portlet-body.from
+              form#update_account.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group
+                    label.control-label.col-md-5 Step
+                    .col-md-3
+                      span #{rtnData.step}
+                      input#step(type='hidden', name='step', value=rtnData.step)
+                  .form-group
+                    label.control-label.col-md-5 Machine ID
+                    .col-md-3
+                      span #{rtnData.cid}
+                  .form-group
+                    label.control-label.col-md-5 Type
+                    .col-md-3
+                      input#type.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.type, placeholder='Type', name='type')
+                  .form-group
+                    label.control-label.col-md-5 Machine ID
+                    .col-md-3
+                      input#variable.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.variable, placeholder='Type', name='variable')
+                  .form-group
+                    label.control-label.col-md-5 Name
+                    .col-md-3
+                      input#name.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.name, placeholder='Name', name='name')
+                  .form-group
+                    label.control-label.col-md-5 Description
+                    .col-md-3
+                      input#description.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.description, placeholder='Description', name='description')
+                  .form-group
+                    label.control-label.col-md-5 Unit
+                    .col-md-3
+                      input#unit.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.unit, placeholder='Unit', name='unit')
+                  .form-group
+                    label.control-label.col-md-5 Step No
+                    .col-md-3
+                      input#stepno.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.stepno, placeholder='stepno', name='stepno')
+                  .form-group
+                    label.control-label.col-md-5 Tag Name
+                    .col-md-3
+                      input#tagname.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.tagname, placeholder='tagname', name='tagname')
+                  .form-group
+                    label.control-label.col-md-5 Data Type
+                    .col-md-3
+                      input#datatype.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.datatype, placeholder='datatype', name='datatype')
+                  .form-group
+                    label.control-label.col-md-5 Data Size
+                    .col-md-3
+                      input#datasize.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.datasize, placeholder='datasize', name='datasize')
+                  .form-group
+                    label.control-label.col-md-5 Value
+                    .col-md-3
+                      input#datavalue.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.datavalue, placeholder='datavalue', name='datavalue')
+                  .form-group
+                    #register_tnc_error(style='text-align:center;')
+                    .col-md-10
+                      button#register-submit-btn.btn.btn-default.blue.pull-right Save
+                    .col-md-2
+                      button.btn.btn-default(type='button', onclick="location.href='/management/recipe'") Cancel
+            .portlet-footer
+    p.copyright Copyright M2U Technology All rights reserved.
+    a.go2top(href='#index')
+      i.icon-arrow-up

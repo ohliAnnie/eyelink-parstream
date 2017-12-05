@@ -175,5 +175,28 @@
         }
       }
     ]]></query>
+    <query id='selectStackingStatus'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type"  : #TYPE#,
+        "body" : {
+          "size": 100000,
+          "sort": { "dtTransmitted": { "order" : "asc" } },
+          "query" : {
+            "bool" : {
+              "must": [ 
+                {"term" : {"cid" : #CID#}},
+                {"term" : {"sensorType" : #STYPE#}}
+              ],
+              "filter" : {
+                "range" : {
+                  "dtTransmitted" : { "gte" : #START#, "lte" : #END# }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
   </analysis>
 </queryList>
