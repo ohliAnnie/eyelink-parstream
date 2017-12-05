@@ -5,6 +5,13 @@ if ( process.argv[2] == null || process.argv[3] == null) {
 
 var flag = process.argv[2];
 var cid = process.argv[3];
+var isTest = process.argv[4];
+
+if (isTest == 'Y') {
+  isTest = true;
+} else {
+  isTest = false;
+}
 
 global.log4js = require('log4js');
 log4js.configure({
@@ -48,6 +55,7 @@ const bulkSize = 100;     // bulk insert 하는 데이터 count
 // simuldata = JSON.parse(simuldata);
 
 logger.info('=========================================================');
+logger.info('== Test Mode : ', isTest);
 logger.info('== Simulation Base Data      : ', simuldata);
 logger.info('=========================================================');
 
@@ -88,8 +96,8 @@ var isTodayDown = false;
 var isDownTime = false;
 var down_time_cnt = 0;
 
-// // for test
-// var curdateTest = '2017-11-22 08:50:55';
+// for test
+var curdateTest = '2017-11-22 08:50:55';
 
 while(true) {
   var isNormal = true;
@@ -97,9 +105,11 @@ while(true) {
 
   var curdate = Utils.getToday(CONSTS.DATEFORMAT.DATETIME, 'Y', 'Y');
 
-  // // for test : oee init
-  // curdateTest = Utils.getDate(curdateTest, CONSTS.DATEFORMAT.DATETIME, 0, 0, 0, 1);
-  // curdate = Utils.getDateLocal2UTC(curdateTest, CONSTS.DATEFORMAT.DATETIME, 'Y');
+  if (isTest) {
+    // for test : oee init
+    curdateTest = Utils.getDate(curdateTest, CONSTS.DATEFORMAT.DATETIME, 0, 0, 0, 1);
+    curdate = Utils.getDateLocal2UTC(curdateTest, CONSTS.DATEFORMAT.DATETIME, 'Y');
+  }
 
   logger.debug('rdx : %s, today : %s', rdx, curdate);
 
@@ -165,10 +175,10 @@ while(true) {
 }
 
 function printUsage() {
-  console.log('Usage : $ node dataSimulator.js [notching/stacking] [cid]');
+  console.log('Usage : $ node dataSimulator.js [notching/stacking] [cid] {Test Y/N}');
   console.log('    []: required, {}: optional');
   console.log('');
-  console.log('Ex. $ node dataSimulator.js notching 100');
+  console.log('Ex. $ node dataSimulator.js notching 100 N');
 }
 
 
