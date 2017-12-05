@@ -1,10 +1,13 @@
 extends ../efmm-layout01
 block style
   link(rel='stylesheet', type='text/css', href='/efsm/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
+
 block script
   script(type='text/javascript', src='/efsm/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
   script(type='text/javascript', src='/efsm/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
   script(src='/common/assets/scripts/page/table-managed.js')
+  script(type='text/javascript', src='/efmm/scripts/management_recipe.js')
+
 block content
   .container-fluid
     .page-content
@@ -87,6 +90,17 @@ block content
                           td #{item.datavalue}
                           td #{item.lastupdate}
                           td
-                            a.btn.default.btn-xs.balck(href='/management/recipehistory')
-                              i.fa.fa-edit
-                              |  History
+                            .dropdown-history
+                              a.btn.default.btn-xs.balck(href='javascript:showHistoryView()')
+                                i.fa.fa-edit History
+                              #historyDropdown.dropdown-content
+                                table#assetPartList.table.table-striped.table-bordered.table-hover(style='text-align:center;')
+                                  thread
+                                    th(style='text-align:center;') Value
+                                    th(style='text-align:center;') Date
+                                  tbody
+                                    each hist in item.history
+                                      tr
+                                        td #{hist.value}
+                                        td #{hist.date}
+
