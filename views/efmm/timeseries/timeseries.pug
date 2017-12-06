@@ -1,0 +1,107 @@
+extends ../efmm-layout01
+block style    
+  link(rel='stylesheet', href='/efmm/assets/css/d3_timeseries.css')
+block script  
+  script(type='text/javascript', src='/efmm/assets/scripts/d3_dc.js')
+  script(type='text/javascript', src="/common/scripts/util.js")
+  script(type='text/javascript', src="/efmm/assets/scripts/d3_timeseries_4.js")
+  script(type='text/javascript', src="/efmm/scripts/timeseries.js")
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Time Series
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Time Series
+          li.active Time Series
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Set date and area
+                span.caption-helper Date range and select area
+              .actions
+                .btn-group.btn-group-devided(data-toggle='buttons')
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                    input#syncY.toggle(type='radio', name='options', checked='Y')
+                    i.fa.fa-chain Sync
+                  label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                    input#syncN.toggle(type='radio', name='options')
+                    i.fa.fa-chain-broken Async
+            .portlet-body.form
+              form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group.last
+                    label.control-label.col-md-2 Date Range
+                    .col-md-2
+                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
+                        input#sdate.form-control(type='text', name='from' value='')                        
+                    label.control-label.col-md-2 Select Machine
+                    .col-md-4.form-inline
+                      select.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Machine')
+                        option(value='') All
+                        option(value='') Stacking
+                        option(value='') Notching                        
+                      button#btn_search.btn.blue
+                        i.fa.fa-search Search
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Overall_OEE                
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart#ts-chart01
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Availability                
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart#ts-chart02
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Performance                
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart#ts-chart03
+        .col-md-6
+          .portlet.light.bordered
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Quality                
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              .chart#ts-chart04
+
+
+
