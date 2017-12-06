@@ -88,9 +88,9 @@ router.get('/restapi/getStackingStatus', function(req, res, next){
       res.json({rtnCode: rtnCode, rtnData: out_data});
     } else {
       var rtnCode = CONSTS.getErrData('0000');
-      var data = []
+      var data = [];
       out_data.forEach(function(d){
-        d._source["data"].forEach(function(element, index) {
+        d._source.data.forEach(function(element, index) {
           data.push(element);
         });
       });

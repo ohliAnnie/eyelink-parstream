@@ -3,7 +3,7 @@ var Utils = require('../../util');
 var queryParser = require('../queryParser');
 var elasticsearch = require('elasticsearch');
 var client = new elasticsearch.Client({
-  host: 'http://m2utech.eastus.cloudapp.azure.com:9200',
+  host: 'http://m2u-parstream.eastus.cloudapp.azure.com:9200',
   // log: 'trace'
 });
 
@@ -218,7 +218,7 @@ QueryProvider.prototype.selectSingleQueryByID3 = function (type, queryId, datas,
   client.search(
     sQueryString
   ).then(function (resp) {
-      //console.log(resp.hits);      
+      //console.log(resp.hits);
       var hits = resp.aggregations;
       console.log('nodelib-es/selectSingleQueryByID3 -> total : %d', resp.hits.total);
       cb(null, hits);

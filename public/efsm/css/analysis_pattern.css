@@ -1,9 +1,11 @@
 select {
 	border-radius:5px;
 }
-
+select:focus-within {
+	outline:  none;
+}
 #allStatus {
-	height:33px;
+	height:34px;
 	margin-right:5px;
 	padding:6px 0px;
 	font-size: 14px;
