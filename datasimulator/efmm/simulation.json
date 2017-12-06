@@ -21,6 +21,28 @@
       }
     ]
   },
+  "normal_accept_loss" :
+  {
+    "flag" : "stacking",
+    "type" : "realtime",
+    "cid" : 100,
+    "sensorType" : "oee",
+    "dtTransmitted" : "",
+    "data" :
+    [
+      {
+        "dtSensed" : "",
+        "status" : "Running",
+        "shift_length" : 1,
+        "short_break" : 0,
+        "meal_break" : 0,
+        "down_time" : 0,
+        "ideal_run_rate" : 3,
+        "accept_pieces" : 2,
+        "reject_pieces" : 0
+      }
+    ]
+  },
   "normal_reject" :
   {
     "flag" : "stacking",

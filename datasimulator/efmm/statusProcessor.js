@@ -19,33 +19,33 @@ function printUsage() {
   데이타 타입은 알람데이터인지 일반데이터인지를 구분
   데이타 소스 디렉토리 내의 모든 파일을 읽어서 데이터 등록
   **/
-  console.log('Data Bulk Processor for EFMM dataset. v1.0')
+  console.log('EFMM Status Data Processor. v1.0')
   console.log('');
-  console.log('Usage : $ node dataProcessor.js [stack number] [data type] [data source dir path]');
+  console.log('Usage : $ node statusProcessor.js [stack number] [data type] [data source dir path]');
   console.log('     []: required');
   console.log('Data Types:');
   console.log('     A, a : Alarm');
   console.log('     M, m : Motor');
   console.log('');
-  console.log('Ex. $ node dataProcessor.js 1 a /home/data/alarmdata');
+  console.log('Ex. $ node statusProcessor.js 1 a /home/data/alarmdata');
 }
 
 const stackNo = process.argv[2];
 const dataType = process.argv[3].toLowerCase();
 const sourceDir = process.argv[4];
-const bulkSize = 50;
+const bulkSize = 200;
 const sleepMilisPerItem = 10;
 
 global.log4js = require('log4js');
 log4js.configure({
-  appenders: { datastore: {type: 'file', filename: './dataProcessor_'+stackNo + '_' + dataType + '.log', 'maxLogSize': 1024000, backups: 5 } },
-  categories: { default: { appenders: ['datastore'], level: 'info' } }
+  appenders: { datastore: {type: 'file', filename: './statusProcessor_'+stackNo + '_' + dataType + '.log', 'maxLogSize': 1024000, backups: 5 } },
+  categories: { default: { appenders: ['datastore'], level: 'debug' } }
 });
 global.logger = log4js.getLogger('dataStore');
 
-logger.info('===============================================');
-logger.info('==== Data Bulk Processor has been started. ====');
-logger.info('===============================================');
+logger.info('=================================================');
+logger.info('==== Status Data Processor has been started. ====');
+logger.info('=================================================');
 
 var sleep = require('system-sleep');
 var fs = require('fs');
@@ -55,27 +55,36 @@ var readLineObj = require('readline');
 var QueryProvider = require('./nodelib-es').QueryProvider;
 var queryProvider = new QueryProvider();
 
-var type = '';
-if ( dataType == 'm' ) type = 'status';
-else type = 'alarm';
+var type = 'status';
 
-logger.info('== Stact No. : ', stackNo);
+logger.info('== Stact No.    : ', stackNo);
 logger.info('== Data Type    : ', dataType);
 logger.info('== Source Dir   : ', sourceDir);
 logger.info('=========================================================');
 
 var nopf = 0;  // Number of Processed Files
-fs.readdir(sourceDir, function (err, files){
-  if ( err ) {
-    logger.error(err);
-  }
-  var x = 0;
-  files.forEach(
-    function(file) {
-      processData(sourceDir, file, files.length, ++x);
-      sleep(25000);
-  });
-});
+
+var files = fs.readdirSync(sourceDir);
+var isDone = false;
+var x = 0;
+for ( var i = 0 ; i < files.length ; i++ ) {
+  isDone = false;
+  processData(sourceDir, files[i], files.length, ++x);
+  while(!isDone) { sleep(10000); }
+}
+//------------------------------------------
+// fs.readdir(sourceDir, function (err, files){
+//   if ( err ) {
+//     logger.error(err);
+//   }
+//   var x = 0;
+//   files.forEach(
+//     function(file) {
+//       processData(sourceDir, file, files.length, ++x);
+//       sleep(25000);
+//   });
+// });
+//-------------------------------------
 
 function processData(dirPath, file, nof, x) {
 
@@ -111,7 +120,6 @@ function processData(dirPath, file, nof, x) {
 
       if ( rowsProcessed == 1) prevIndex = index;
 
-      logger.debug('['+file+'] index : ',index);
       var linedataArr = [measure_time];
       linedataArr = linedataArr.concat(dataArr);
 
@@ -132,7 +140,7 @@ function processData(dirPath, file, nof, x) {
           jsonDataList = [];
         }
       } else {
-        logger.debug('['+file+'] Saving ' + (jsonDataList.length) + ' data..... on index \'' + index + '\'');
+        logger.debug('['+file+'] Saving ' + (jsonDataList.length) + ' data..... on index \'' + prevIndex + '\'');
         jsonDataList.push(indexSettings(prevIndex));
         saveBulkData(prevIndex, CONSTS.SCHEMA_EFMM.EFMM_STACKING_STATUS.TYPE, jsonDataList);
         sleep(jsonDataList.length * sleepMilisPerItem);
@@ -143,8 +151,8 @@ function processData(dirPath, file, nof, x) {
       elapsedSeconds += 1;
     }
     rowsProcessed += 1;
-    if ( rowsProcessed % 1000 == 0 )
-      logger.info('['+file+'] ' + rowsProcessed + ' rows processed.');
+    if ( (rowsProcessed-1) % 1000 == 0 && (rowsProcessed-1) > 0 )
+      logger.info('['+file+'] ' + (rowsProcessed-1) + ' rows processed.');
   })
   .on('close', function() {
     if ( jsonDataList.length > 0 ) {
@@ -152,7 +160,8 @@ function processData(dirPath, file, nof, x) {
       jsonDataList.push(indexSettings(index));
       saveBulkData(index, CONSTS.SCHEMA_EFMM.EFMM_STACKING_STATUS.TYPE, jsonDataList);
     }
-    logger.info('['+file+'] Total ' + rowsProcessed + ' rows processed. (' + ++nopf + '/' + nof + ')');
+    logger.info('['+file+'] Total ' + (rowsProcessed-1) + ' rows processed. (' + ++nopf + '/' + nof + ')');
+    isDone = true;
   });
 }
 function indexSettings(index) {
@@ -167,7 +176,7 @@ function saveBulkData(index, type, jsonDataList) {
   };
   queryProvider.insertBulkQuery(in_data, function(err, out_data){
     if (err) { console.log(err) };
-    logger.debug(out_data);
+    logger.trace(out_data);
     if(out_data.errors == false){
       // console.log(out_data);
       var rtnCode = CONSTS.getErrData("D001");

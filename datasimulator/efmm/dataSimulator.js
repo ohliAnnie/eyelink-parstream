@@ -5,6 +5,13 @@ if ( process.argv[2] == null || process.argv[3] == null) {
 
 var flag = process.argv[2];
 var cid = process.argv[3];
+var isTest = process.argv[4];
+
+if (isTest == 'Y') {
+  isTest = true;
+} else {
+  isTest = false;
+}
 
 global.log4js = require('log4js');
 log4js.configure({
@@ -48,6 +55,7 @@ const bulkSize = 100;     // bulk insert 하는 데이터 count
 // simuldata = JSON.parse(simuldata);
 
 logger.info('=========================================================');
+logger.info('== Test Mode : ', isTest);
 logger.info('== Simulation Base Data      : ', simuldata);
 logger.info('=========================================================');
 
@@ -61,10 +69,11 @@ logger.info('=========================================================');
     - 양품 : 초당 3개
 */
 /*
-  1초마다 1회 Random(1,1000) 실행 rdx값이
-    - 1~980 : 양품 생산 이벤트 발생
-    - 981~990 : 불량품 생산 이벤트 발생
-    - 990 ~ 1000 : down_time 발생
+  1초마다 1회 Random(1,10000) 실행 rdx값이
+    - 1~9500 : 양품 3개 생산 이벤트 발생 (97%)
+    - 9501~9900 : 양품 2개 생산 이벤트 발생 (2%)
+    - 9901 ~ 9997 : 양품 2개, 불량품 1개 생산 이벤트 발생 (0.97%)
+    - 9998 ~ 10000 : DownTime (0.03%)
 */
 var cnt = 0;
 var cnt_init_oee = 0;
@@ -75,24 +84,33 @@ var short_break_term = 4 * 60 * 60;
 var short_break_period = 15 * 60;
 var down_time_period = 30 * 60;
 
+var iRandomSize = 10000;
+var iNormalAccept = 9500; // 1s 발생확률 : 97%
+var iNormalAcceptLoss = 9900; // 1s 발생활율 : 2%
+var iNormalReject = 9997; // 1s 발생확률 : 0.97%
+var iDownTime = 9997;  // 1s 발생확률 : 0.03%(3/10000), 1h에 1.08회 발생 가능.
+
 var short_break_cnt = 0;
 var v_short_break_period = short_break_period;
 var isTodayDown = false;
 var isDownTime = false;
 var down_time_cnt = 0;
 
-// // for test
-// var curdateTest = '2017-11-20 08:50:55';
+// for test
+var curdateTest = '2017-11-22 08:50:55';
 
 while(true) {
   var isNormal = true;
-  var rdx = Utils.generateRandom(1, 1000);
-
-  // // for test : oee init
-  // curdateTest = Utils.getDate(curdateTest, CONSTS.DATEFORMAT.DATETIME, 0, 0, 0, 1);
-  // curdate = Utils.getDateLocal2UTC(curdateTest, CONSTS.DATEFORMAT.DATETIME, 'Y');
+  var rdx = Utils.generateRandom(1, iRandomSize);
 
   var curdate = Utils.getToday(CONSTS.DATEFORMAT.DATETIME, 'Y', 'Y');
+
+  if (isTest) {
+    // for test : oee init
+    curdateTest = Utils.getDate(curdateTest, CONSTS.DATEFORMAT.DATETIME, 0, 0, 0, 1);
+    curdate = Utils.getDateLocal2UTC(curdateTest, CONSTS.DATEFORMAT.DATETIME, 'Y');
+  }
+
   logger.debug('rdx : %s, today : %s', rdx, curdate);
 
   // 09:00 이면 OEE 관련 데이터를 초기화한다.
@@ -120,7 +138,7 @@ while(true) {
       short_break_cnt = 0;
       v_short_break_period = short_break_period;
     }
-  } else if (rdx > 990) {   // down_time event
+  } else if (rdx > iDownTime) {   // down_time event
     isNormal = false;
     isDownTime = true;
   }
@@ -135,12 +153,13 @@ while(true) {
       isTodayDown = true;
     }
   } else if (isNormal) {
-    if (rdx <= 980) {
+    if (rdx <= iNormalAccept) {
       // json data에서 날짜값과 양불량품개수 값을 변경
       setDataInEventData('normal_accept', curdate);
-      // 누적 양품 생산량 합산
-
-    } else if (rdx > 980 && rdx < 990) {
+    } else if (rdx <=  iNormalAcceptLoss ) {
+      // json data에서 날짜값과 양불량품개수 값을 변경
+      setDataInEventData('normal_accept_loss', curdate);
+    } else if (rdx <= iNormalReject) {
       // json data에서 날짜값과 양불량품개수 값을 변경
       setDataInEventData('normal_reject', curdate);
     }
@@ -156,10 +175,10 @@ while(true) {
 }
 
 function printUsage() {
-  console.log('Usage : $ node dataSimulator.js [notching/stacking] [cid]');
+  console.log('Usage : $ node dataSimulator.js [notching/stacking] [cid] {Test Y/N}');
   console.log('    []: required, {}: optional');
   console.log('');
-  console.log('Ex. $ node dataSimulator.js notching 100');
+  console.log('Ex. $ node dataSimulator.js notching 100 N');
 }
 
 
@@ -241,9 +260,8 @@ function insertData(index, listData){
       // console.log(out_data);
       var rtnCode = CONSTS.getErrData("D001");
     }
-    logger.info('finished insertData - index : %s, _id : %s, status : %s',
-      out_data.items[0].index._index, out_data.items[0].index._id,
-      in_data.body[0].data[0].status);
+    logger.info('finished insertData - index : %s, status : %s',
+      out_data.items[0].index._index, in_data.body[0].data[0].status);
 
     // cb(err);
   });
