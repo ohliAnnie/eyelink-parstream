@@ -57,7 +57,7 @@ router.get('/restapi/getNotchingOeeRaw', function(req, res, next){
   var eDate = Utils.getDateLocal2UTC(req.query.eDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
   var in_data = { INDEX : indexNotchingOee+'*', TYPE : "oee", START: sDate, END: eDate  };
   queryProvider.selectSingleQueryByID2("analysis", "selectNotchingOeeRaw", in_data, function(err, out_data, params) {
-    if (out_data === null) {
+    if (out_data.length == 0) {
       var rtnCode = CONSTS.getErrData('0001');
       res.json({rtnCode: rtnCode, rtnData: out_data});
     } else {
@@ -83,12 +83,18 @@ router.get('/restapi/getStackingStatus', function(req, res, next){
     STYPE: req.query.sType
   };
   queryProvider.selectSingleQueryByID2("analysis", "selectStackingStatus", in_data, function(err, out_data, params) {
-    if (out_data === null) {
+    if (out_data.length == 0) {
       var rtnCode = CONSTS.getErrData('0001');
       res.json({rtnCode: rtnCode, rtnData: out_data});
     } else {
       var rtnCode = CONSTS.getErrData('0000');
-      res.json({rtnCode: rtnCode, rtnData: out_data });
+      var data = []
+      out_data.forEach(function(d){
+        d._source["data"].forEach(function(element, index) {
+          data.push(element);
+        });
+      });
+      res.json({rtnCode: rtnCode, rtnData: data });
     }
     logger.debug('analysis/restapi/getStackingStatus -> length : %s', out_data.length);
   });

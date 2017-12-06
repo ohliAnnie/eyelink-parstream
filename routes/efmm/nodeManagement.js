@@ -90,7 +90,12 @@ router.get('/recipe', function(req, res, next) {
           'datatype' : 'Double',
           'datasize' : 8,
           'datavalue' : '',
-          'lastupdate' : '20171204'
+          'lastupdate' : '2017-12-05 14:25:31',
+          'history' : [
+            {'date' : '2017-12-01 14:25:31', 'value' : 5},
+            {'date' : '2017-12-03 14:25:31', 'value' : 6},
+            {'date' : '2017-12-05 14:25:31', 'value' : 5},
+          ]
         },
         {
           'seq' : 2,
@@ -105,7 +110,12 @@ router.get('/recipe', function(req, res, next) {
           'datatype' : 'Double',
           'datasize' : 8,
           'datavalue' : '',
-          'lastupdate' : '20171204'
+          'lastupdate' : '2017-12-05 14:25:31',
+          'history' : [
+            {'date' : '2017-12-01 14:25:31', 'value' : 5},
+            {'date' : '2017-12-03 14:25:31', 'value' : 9},
+            {'date' : '2017-12-05 14:25:31', 'value' : 3},
+          ]
         },
         {
           'seq' : 3,
@@ -120,7 +130,12 @@ router.get('/recipe', function(req, res, next) {
           'datatype' : '',
           'datasize' : '',
           'datavalue' : 2,
-          'lastupdate' : '20171204'
+          'lastupdate' : '2017-12-05 14:25:31',
+          'history' : [
+            {'date' : '2017-12-01 14:25:31', 'value' : 5},
+            {'date' : '2017-12-03 14:25:31', 'value' : 7},
+            {'date' : '2017-12-05 14:25:31', 'value' : 8},
+          ]
         },
         {
           'seq' : 4,
@@ -135,8 +150,13 @@ router.get('/recipe', function(req, res, next) {
           'datatype' : 'Double',
           'datasize' : 8,
           'datavalue' : '',
-          'lastupdate' : '20171204'
-        },
+          'lastupdate' : '2017-12-05 14:25:31',
+          'history' : [
+            {'date' : '2017-12-01 14:25:31', 'value' : 5},
+            {'date' : '2017-12-03 14:25:31', 'value' : 7},
+            {'date' : '2017-12-05 14:25:31', 'value' : 6},
+          ]
+        }
       ]
   }
 ;
@@ -159,7 +179,7 @@ router.get('/recipe/:id', function(req, res) {
     'datatype' : 'Double',
     'datasize' : 8,
     'datavalue' : '',
-    'lastupdate' : '20171204'
+    'lastupdate' : '2017-12-04'
   };
   if (req.params.id === 'NEW') {
     res.render('./'+global.config.pcode+'/management/recipe_new', { title: global.config.productname, mainmenu:mainmenu, rtnData:out_data});

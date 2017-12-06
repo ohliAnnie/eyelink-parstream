@@ -180,7 +180,7 @@
         "index" : #INDEX#,
         "type"  : #TYPE#,
         "body" : {
-          "size": 100000,
+          "_source" : [ "data" ],
           "sort": { "dtTransmitted": { "order" : "asc" } },
           "query" : {
             "bool" : {
