@@ -32,6 +32,104 @@
         }
       }
     ]]></query>
+    <query id='selectDashboardLastDate'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+          "size" : 0,
+          "sort" : [{ "dtTransmitted" : "asc" }, { "cid" : "asc" }],          
+          "aggs" : {
+            "cid" : {
+              "terms" : { "field" : "cid" },
+              "aggs" : {
+                "range": {
+                  "date_range" : {
+                    "field" : "dtTransmitted",
+                    "ranges" : [  
+                      { "from" : #gte0#, "to" : #lte0# },
+                      { "from" : #gte1#, "to" : #lte1# },                
+                      { "from" : #gte2#, "to" : #lte2# },                
+                      { "from" : #gte3#, "to" : #lte3# },                
+                      { "from" : #gte4#, "to" : #lte4# },                
+                      { "from" : #gte5#, "to" : #lte5# },                
+                      { "from" : #gte6#, "to" : #lte6# }
+                    ]
+                  },
+                  "aggs" : {
+                    "date_max" : {
+                      "max" : {
+                          "field" : "dtTransmitted"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDashboardLastTime'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {
+          "size" : 0,
+          "sort" : [{ "dtTransmitted" : "asc" }, { "cid" : "asc" }],          
+          "aggs" : {
+            "cid" : {
+              "terms" : { "field" : "cid" },
+              "aggs" : {
+                "range": {
+                  "date_range" : {
+                    "field" : "dtTransmitted",
+                    "ranges" : [                
+                      { "from" : #gte#, "to" : #lte# }
+                    ]
+                  },
+                  "aggs" : {
+                    "date_max" : {
+                      "max" : {
+                          "field" : "dtTransmitted"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDashboardTermData'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+        "sort": [           
+          { "dtTransmitted": { "order": "asc" } },
+          { "cid": { "order": "asc" } } ],
+        "size" : 100,        
+        "query": {
+          "bool": #term# }
+        }
+      }
+    ]]></query>
+    <query id='selectDashboardDetailData'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {
+        "sort": [           
+          { "dtTransmitted": { "order": "asc" } },
+          { "cid": { "order": "asc" } } ],
+        "size" : 100,        
+        "query": {
+          "bool": #term# }
+        }
+      }
+    ]]></query>
     <query id='selectDashboardAggsData'><![CDATA[
       {
         "index" : #index#,
@@ -160,10 +258,10 @@
         "type"  : #TYPE#,
         "body" : {
           "size": 100000,
-          "sort": { "dtTransmitted": { "order" : "asc" } },
+          "_source" : [ "cid", "data" ],
+          "sort": [{ "dtTransmitted" : "desc" },{ "cid" : "asc" }],
           "query" : {
             "bool" : {
-              "must": [ {"match_all" : {} } ],
               "filter" : {
                 "range" : {
                   "dtTransmitted" : { "gte" : #START#, "lte" : #END# }
@@ -171,7 +269,6 @@
               }
             }
           }
-        
         }
       }
     ]]></query>
@@ -180,6 +277,7 @@
         "index" : #INDEX#,
         "type"  : #TYPE#,
         "body" : {
+          "size": 100000,
           "_source" : [ "data" ],
           "sort": { "dtTransmitted": { "order" : "asc" } },
           "query" : {
