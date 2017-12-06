@@ -1,22 +1,63 @@
 extends ../efmm-layout01
-block style  
+block style
   link(type='text/css', rel='stylesheet', href='/efmm/css/chart_style.css')
   link(type='text/css', rel='stylesheet', href='/efmm/css/analysis_clustering.css')
   link(type='text/css', rel='stylesheet', href='/efmm/assets/css/dc.css')
-block script  
+block script
   script(type='text/javascript', src='/efmm/assets/scripts/d3_dc.js')
-  script(src='/efmm/assets/scripts/vue.min.js')  
-  script(type='text/javascript', src='/efmm/assets/scripts/colorbrewer.js')  
+  script(type='text/javascript', src='/efmm/assets/scripts/colorbrewer.js')
+  script(src='/efmm/assets/scripts/vue.min.js')
   script(type='text/javascript', src="/common/scripts/util.js")
-  script(src='/efmm/scripts/analysis_anomaly.js')
+  script(type='text/javascript', src='/efmm/scripts/analysis_anomaly.js')
 block content
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 Anomaly Detection
+        h1 Anomaly
         ol.breadcrumb
           li
             a(href='/dashboard') Home
           li
             a(href='#') Analysis
           li.active Anomaly
+
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Anomaly Chart
+                span.caption-helper  by Overall OEE
+            .portlet-body
+              .chart(style='height:400px;')
+                #overall-oee
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Anomaly Chart
+                span.caption-helper  by Availability
+            .portlet-body
+              .chart(style='height:400px;')
+                #availability
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Anomaly Chart
+                span.caption-helper  by Performance
+            .portlet-body
+              .chart(style='height:400px;')
+                #performance
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Anomaly Chart
+                span.caption-helper  by Quality
+            .portlet-body
+              .chart(style='height:400px;')
+                #quality
