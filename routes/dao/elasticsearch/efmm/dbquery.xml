@@ -258,10 +258,10 @@
         "type"  : #TYPE#,
         "body" : {
           "size": 100000,
-          "sort": { "dtTransmitted": { "order" : "asc" } },
+          "_source" : [ "cid", "data" ],
+          "sort": [{ "dtTransmitted" : "desc" },{ "cid" : "asc" }],
           "query" : {
             "bool" : {
-              "must": [ {"match_all" : {} } ],
               "filter" : {
                 "range" : {
                   "dtTransmitted" : { "gte" : #START#, "lte" : #END# }
@@ -269,7 +269,6 @@
               }
             }
           }
-        
         }
       }
     ]]></query>
@@ -278,6 +277,7 @@
         "index" : #INDEX#,
         "type"  : #TYPE#,
         "body" : {
+          "size": 100000,
           "_source" : [ "data" ],
           "sort": { "dtTransmitted": { "order" : "asc" } },
           "query" : {
