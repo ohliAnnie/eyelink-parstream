@@ -18,7 +18,7 @@ var indexPatternData = global.config.da_index.ad_pattern_data;
 var indexPatternInfo = global.config.da_index.ad_pattern_info;
 var indexPatternMatching = global.config.da_index.ad_pattern_matching;
 
-var startTime = CONSTS.STARTTIME.KOREA;
+var startTime = CONSTS.TIMEZONE.KOREA;
 var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
 var fmt2 = CONSTS.DATEFORMAT.DATETIME; // "YYYY-MM-DD HH:MM:SS",
 var fmt4 = CONSTS.DATEFORMAT.INDEXDATE; // "YYYY.MM.DD",

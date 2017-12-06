@@ -11,7 +11,7 @@ var mainmenu = {dashboard:'', timeseries:'open selected', reports:'', analysis:'
 
 var indexCore = global.config.es_index.es_corecode;
 
-var startTime = CONSTS.STARTTIME.KOREA;
+var startTime = CONSTS.TIMEZONE.KOREA;
 var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
 var fmt2 = CONSTS.DATEFORMAT.DATETIME; // "YYYY-MM-DD HH:MM:SS",
 
@@ -36,28 +36,47 @@ router.get('/restapi/getRangeData', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     } else {    
       var data = [];
+      var ampere = 0, active_power = 0, amount_of_active_power = 0;
+      var als_level = 0, dimming_level = 0, noise_decibel = 0, noise_frequency = 0;
+      var vibration_x = 0, vibration_y = 0, vibration_z = 0, vibration = 0;
       out_data.forEach(function(d) {        
         d = d._source;       
-        d.event_time = Utils.getDateUTC2Local(d.event_time, fmt2);      
-        switch(d.event_type){
-          case "1" :   // 피워
-            d.index = 0;
-            d.event_name = 'POWER';        
-            break;
-          case "17" :   // 조도
-            d.index = 1;
-            d.event_name = 'ALS';
-            break;
-          case "33" :     // 진동
-            d.index = 2;
-            d.vibration = (d.vibration_x + d.vibration_y + d.vibration_z) / 3;
-            d.event_name = 'VIBRATION';
-            break;
-          case "49" :    // 노이즈
-            d.index = 3;
-            d.event_name = 'NOISE';        
-            break;
-        }
+        d.event_time = Utils.getDateUTC2Local(d.event_time, fmt2);         
+        if(d.event_type == "1"){
+          ampere = d.ampere; 
+          active_power = d.active_power; 
+          amount_of_active_power = d.amount_of_active_power; }
+          d.index = 0;
+          d.event_name = 'POWER'; 
+        if(d.event_type == "17"){
+          als_level = d.als_level; 
+          dimming_level = d.dimming_level;
+          d.index = 1;
+          d.event_name = 'ALS'; }
+        if(d.event_type == "49"){ 
+          noise_frequency = d.noise_frequency;
+          noise_decibel = d.noise_frequency 
+          d.index = 3;
+          d.event_name = 'NOISE'; }
+        if(d.event_type == "33"){
+          vibration_x = d.vibration_x; 
+          vibration_y = d.vibration_y; 
+          vibration_z = d.vibration_z; 
+          d.index = 2;         
+          d.event_name = 'VIBRATION';
+          vibration = (d.vibration_x + d.vibration_y + d.vibration_z) / 3; }
+        d.event_time = new Date(d.event_time);
+        d.ampere = ampere;
+        d.active_power = active_power;
+        d.amount_of_active_power = amount_of_active_power;
+        d.als_level = als_level;
+        d.dimming_level = dimming_level;
+        d.noise_decibel = noise_decibel;
+        d.noise_frequency = noise_frequency;
+        d.vibration_x = vibration_x;
+        d.vibration_y = vibration_y;
+        d.vibration_z = vibration_z;
+        d.vibration = vibration;      
         data.push(d);
       });     
     }
