@@ -246,7 +246,7 @@ router.get('/restapi/getDashboardWeekly', function(req, res, next) {
                       }
                     }                                        
                   }
-                  var total = [], week = [], cnt = 0;
+                  var total = [], week = [], cnt = 0, last = '';
                   var now = Utils.getMs2Date(parseInt(req.query.now), fmt1, 'Y', 'Y');                                    
                   for(key1 in sdata) {                    
                     var tot = {}, value = {};
@@ -273,8 +273,10 @@ router.get('/restapi/getDashboardWeekly', function(req, res, next) {
                     value.date = k[1]+'-'+k[2];
                     total.push(value);
                     week[cnt++] = k[1]+'-'+k[2];
-                  }
-                  var data = { stacking : sdata[now], notching : ndata[now], total : total, week : week };
+                    last = key1;
+                  }                                    
+                  var data = { stacking : sdata[key1], notching : ndata[key1], total : total, week : week };
+                  console.log(data);
                 }
                 res.json({rtnCode: rtnCode, rtnData: data});
               });
@@ -465,9 +467,9 @@ router.get('/restapi/getDashboardDetail', function(req, res, next) {
 router.get('/restapi/getDashboardInfo', function(req, res, next) {
   console.log('reports/restapi/getDashboardInfo');  
   var i = indexNotchingOee.split('_');
-  var date = Utils.getDateLocal2UTC(req.query.date, fmt2, 'Y', 'Y');
-  console.log(req.query);  
-  var in_data = { index : i[0]+'_'+req.query.type+'_'+i[2]+Utils.getDateLocal2UTC(req.query.date, fmt4, 'Y', 'Y'), type : "oee",                   
+  
+  var date = Utils.getMs2Date(parseInt(req.query.date), fmt2, 'Y', 'Y');  
+  var in_data = { index : i[0]+'_'+req.query.type+'_'+i[2]+Utils.getDateLocal2UTC(date, fmt4, 'Y', 'Y'), type : "oee",                   
                   sort : "dtTransmitted" , date : date, cid : req.query.cid };
   queryProvider.selectSingleQueryByID2("dashboard","selectDashboardInfo", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
