@@ -187,8 +187,7 @@ router.get('/restapi/getDashboardWeekly', function(req, res, next) {
                     week[cnt++] = k[1]+'-'+k[2];
                     last = key1;
                   }                                    
-                  var data = { stacking : sdata[key1], notching : ndata[key1], total : total, week : week };
-                  console.log(data);
+                  var data = { stacking : sdata[key1], notching : ndata[key1], total : total, week : week };                  
                 }
                 res.json({rtnCode: rtnCode, rtnData: data});
               });
@@ -307,8 +306,7 @@ router.get('/restapi/getDashboardDetail', function(req, res, next) {
                   notching.performance = (ndata.total_pieces/ndata.operating_time)/ndata.ideal_run_rate;
                   notching.quality = ndata.total_accept_pieces/ndata.total_pieces;
                   notching.overall_oee = notching.availability*notching.performance*notching.quality;                  
-                  var data = { stacking : stacking, notching : notching, stack : stack, notch : notch };
-                  console.log(data)
+                  var data = { stacking : stacking, notching : notching, stack : stack, notch : notch };                  
                 }
                 res.json({rtnCode: rtnCode, rtnData: data});
               });

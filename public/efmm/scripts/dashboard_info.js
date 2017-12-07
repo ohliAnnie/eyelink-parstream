@@ -144,14 +144,14 @@ function drawLineChart(data) {
   var maxDate = new Date(data[data.length-1].measure_time);
 
   composite.margins().bottom = 240;
-  composite.margins().right = 35;
+  composite.margins().right = 55;
   composite
     .width(window.innerWidth*0.53)
     .height(550)
     .x(d3.time.scale().domain([minDate,maxDate]))
     //.round(d3.time.day.round)
     //.x(d3.scale.linear().domain([0,data.length-1]))             
-    .y(d3.scale.linear().domain([0, 50]))    
+    .y(d3.scale.linear().domain([0, 90]))    
     .legend(dc.legend().x(5).y(335).itemHeight(12).itemWidth(159).gap(6).horizontal(true))
     .renderHorizontalGridLines(true)
     .title(function(d){ return this.layer+' : '+d.value; })
