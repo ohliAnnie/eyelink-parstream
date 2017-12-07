@@ -185,8 +185,7 @@ function drawTable(data) {
   sb.append(drawTr(data, 'performance', '#FF7012', 'right'));
   sb.append('<tr><th '+style+' colspan="2">Quality</th>');
   sb.append(drawTr(data, 'quality', 'green', 'right'));
-  sb.append('</table>');  
-  console.log(sb.toString());
+  sb.append('</table>');    
   $('#tbody').append(sb.toString());    
 }
 
