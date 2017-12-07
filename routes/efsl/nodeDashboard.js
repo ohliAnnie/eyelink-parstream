@@ -12,7 +12,7 @@ var mainmenu = {dashboard:'open selected', timeseries:'', reports:'', analysis:'
 
 var indexCore = global.config.es_index.es_corecode;
 
-var startTime = CONSTS.STARTTIME.KOREA;
+var startTime = CONSTS.TIMEZONE.KOREA;
 var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
 var fmt2 = CONSTS.DATEFORMAT.DATETIME; // "YYYY-MM-DD HH:MM:SS",
 var fmt4 = CONSTS.DATEFORMAT.INDEXDATE; // "YYYY.MM.DD",

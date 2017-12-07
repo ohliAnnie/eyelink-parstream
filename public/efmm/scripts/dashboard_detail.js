@@ -2,15 +2,15 @@ $(document).ready(function(e) {
   getData();  
 });
 
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
+var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
+    return paramPair.split(/=(.+)?/).slice(0, 2);
+  }).reduce(function(obj, pairArray) {
+    obj[pairArray[0]] = pairArray[1];
+    return obj;
+  }, {});
 
 function getData(){  
-  var data = { date : getParameterByName('date') };
+  var data = { date : urlParams.date };
   var in_data = { url : "/dashboard/restapi/getDashboardDetail", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {
@@ -82,12 +82,14 @@ function innerTable(data, type, event){
   var alarm = (data.state=='active')?'green':(data.state=='idle')?'blue':'red';
   var color = (data.overall_oee>=0.7)?'#6ABC64':(data.overall_oee>=0.5)?'#79ABFF':'#FF7E7E';  
   var sb = '<table class="table table-striped table-bordered"';
-  if(event){
-    sb += ' onclick="location.href='+"'info?date="+getParameterByName('date')+'&type='+type+'&state='+data.state+'&cid='+data.cid+"'"+'"';
-  }  
-  console.log(sb);
+  
   sb += '><tr style="background-color:'+alarm+'"><td colspan="3" style="color:white; text-align:center;" >';
-  sb += '<strong style="font-size:18px;">'+data.cid+'</strong><br>'+data.state+'</td></tr>';    
+  sb += '<strong style="font-size:18px;">'+data.cid+'</strong>';
+  if(event){
+    sb += '<button id="btn_search" class="btn blue btn-xs pull-right" onclick="location.href='+"'info?date=";
+    sb += urlParams.date+'&type='+type+'&state='+data.state+'&cid='+data.cid+"'"+'">Info</button>';
+  }  
+  sb += '<br>'+data.state+'</td></tr>';    
   sb += '<tr><td colspan="3"><div class="gage'+cnt++ +'" style="text-align:center;"></div></td></tr>';
   sb += '<tr style="background-color:'+color+'"><td>Ava<br>'+(data.availability*100).toFixed(1)+'%</td><td>Perf<br>';
   sb += (data.performance*100).toFixed(1)+'%</td><td>Qual<br>'+(data.quality*100).toFixed(1)+'%</td></tr>';

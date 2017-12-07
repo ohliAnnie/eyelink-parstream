@@ -13,7 +13,7 @@ var mainmenu = {dashboard:'', timeseries:'open selected', reports:'', analysis:'
 var indexNotchingOee = global.config.es_index.notching_oee;
 var indexStackingOee = global.config.es_index.stacking_oee;
 
-var startTime = CONSTS.STARTTIME.KOREA;
+var startTime = CONSTS.TIMEZONE.KOREA;
 var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
 var fmt2 = CONSTS.DATEFORMAT.DATETIME; // "YYYY-MM-DD HH:MM:SS",
 var fmt4 = CONSTS.DATEFORMAT.INDEXDATE; // "YYYY.MM.DD",

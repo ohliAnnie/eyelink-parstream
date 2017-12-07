@@ -41,8 +41,10 @@ define("DATEFORMAT", {
 	"INDEXDATE" : "YYYY.MM.DD"
 });
 
-define("STARTTIME", {
-	"KOREA" : "T15:00:00Z"
+define("TIMEZONE", {
+	"KOREA" : "T15:00:00Z",
+	"EFMM_START" : "T00:00:00Z",
+	"EFMM_END" : "T23:59:59Z"
 });
 
 define("ERROR_CODE", {

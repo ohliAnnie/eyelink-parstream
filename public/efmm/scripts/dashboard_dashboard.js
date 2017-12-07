@@ -148,9 +148,9 @@ function drawTable(data) {
   $('#tbody').empty();  
   var sb = new StringBuffer();
   var style3 = 'style="text-align:center;"';
-  sb.append('<table class="table table-striped table-bordered" onclick="location.href=');
-  sb.append("'detail?date="+data.date+"'"+'"><tr style="background-color:#353535; color:white;">');  
-  sb.append('<th colspan="2" '+style3+'>KPIs</th><th '+style3+'>Notching</th><th '+style3+'>Stacking</th>');
+  sb.append('<table class="table table-striped table-bordered"><tr style="background-color:#353535; color:white;">');  
+  sb.append('<th colspan="2" '+style3+'>KPIs<button id="btn_search" class="btn blue btn-xs pull-right" onclick="location.href=');
+  sb.append("'detail?date="+data.date+"'"+'">Detail</button></th><th '+style3+'>Notching</th><th '+style3+'>Stacking</th>');  
   sb.append('<th '+style3+'>Tab Welding</th><th '+style3+'>Packaging</th><th '+style3+'>Degassing</th></tr>');
   var style = 'style="background-color:#9E9E9E;"';
   var style2 = 'text-align:center; background-color:#9E9E9E;';
@@ -185,8 +185,7 @@ function drawTable(data) {
   sb.append(drawTr(data, 'performance', '#FF7012', 'right'));
   sb.append('<tr><th '+style+' colspan="2">Quality</th>');
   sb.append(drawTr(data, 'quality', 'green', 'right'));
-  sb.append('</table>');  
-
+  sb.append('</table>');    
   $('#tbody').append(sb.toString());    
 }
 

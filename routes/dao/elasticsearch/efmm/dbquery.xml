@@ -1,37 +1,6 @@
 <?xml version="1.0"?>
 <queryList>
-  <dashboard>
-    <query id='selectDashboardGageData'><![CDATA[
-      {
-        "index" : [##index##],
-        "type"  : #type#,
-        "body" : {
-          "size" : 10000,
-          "sort" : [{ "dtTransmitted" : "asc" }, { "cid" : "asc" }],
-          "_source" : ["data.dtSensed", "cid", "data.availability", "data.performance", "data.quality", "data.overall_oee"],
-          "query" : {
-            "bool": {
-              "should" : [
-                {"range" : { "dtTransmitted" : 
-                  { "gte" : #gte0#, "lte" : #lte0# }}},
-                {"range" : { "dtTransmitted" : 
-                  { "gte" : #gte1#, "lte" : #lte1# }}},
-                {"range" : { "dtTransmitted" : 
-                  { "gte" : #gte2#, "lte" : #lte2# }}},
-                {"range" : { "dtTransmitted" : 
-                  { "gte" : #gte3#, "lte" : #lte3# }}},
-                {"range" : { "dtTransmitted" : 
-                  { "gte" : #gte4#, "lte" : #lte4# }}},
-                {"range" : { "dtTransmitted" : 
-                  { "gte" : #gte5#, "lte" : #lte5# }}},
-                {"range" : { "dtTransmitted" : 
-                  { "gte" : #gte6#, "lte" : #lte6# }}}
-              ]
-            }
-          }
-        }
-      }
-    ]]></query>
+  <dashboard>    
     <query id='selectDashboardLastDate'><![CDATA[
       {
         "index" : [##index##],
@@ -107,12 +76,13 @@
         "index" : [##index##],
         "type"  : #type#,
         "body" : {
-        "sort": [           
-          { "dtTransmitted": { "order": "asc" } },
-          { "cid": { "order": "asc" } } ],
-        "size" : 100,        
-        "query": {
-          "bool": #term# }
+          "size" : 100,   
+          "sort": [           
+            { "dtTransmitted": { "order": "asc" } },
+            { "cid": { "order": "asc" } } ],             
+          "query": {
+            "bool": #term# 
+          }
         }
       }
     ]]></query>
@@ -121,103 +91,16 @@
         "index" : #index#,
         "type"  : #type#,
         "body" : {
-        "sort": [           
-          { "dtTransmitted": { "order": "asc" } },
-          { "cid": { "order": "asc" } } ],
-        "size" : 100,        
-        "query": {
-          "bool": #term# }
-        }
-      }
-    ]]></query>
-    <query id='selectDashboardAggsData'><![CDATA[
-      {
-        "index" : #index#,
-        "type"  : #type#,
-        "body" : {          
-          "sort" : { "dtTransmitted": { "order" : "asc" } },
-          "query" : {
-            "bool" : {
-              "must" : {
-                "range" : {
-                  "dtTransmitted" : {
-                    "gte" : #gte#,
-                    "lte" : #lte#
-                  }
-                }
-              }
-            }
-          },
-          "aggs" : {
-            "group_by_state" : {
-              "terms": {
-                "field": "dtTransmitted"
-              },
-              "aggs" : {
-                "availability_time" : {
-                  "sum" : {
-                    "field": "data.planned_production_time"
-                  }
-                },
-                "down_time" : {
-                  "sum" : {
-                    "field": "data.total_down_time"
-                  }
-                },
-                "running_time" : {
-                  "sum" : {
-                    "field": "data.operating_time"
-                  }
-                },
-                "expected_unit" : {
-                  "sum" : {
-                    "field": "data.total_expected_unit"
-                  }
-                },
-                "produce_unit" : {
-                  "sum" : {
-                    "field": "data.total_pieces"
-                  }
-                },
-                "good_unit" : {
-                  "sum" : {
-                    "field" : "data.total_accept_pieces"
-                  }
-                },
-                "ng_unit" : {
-                  "sum" : {
-                    "field": "data.total_reject_pieces"
-                  }
-                }
-              }
-            }
+          "size" : 100,
+          "sort": [           
+            { "dtTransmitted": { "order": "asc" } },
+            { "cid": { "order": "asc" } } ],                  
+          "query": {
+            "bool": #term# 
           }
         }
       }
-    ]]></query>
-    <query id='selectDashboardDetail'><![CDATA[
-      {
-        "index" : #index#,
-        "type"  : #type#,
-        "body" : {          
-          "sort" : [{ "dtTransmitted" : "desc" },{ "cid" : "asc" }],
-          "size" : 5,
-          "_source" : ["data.dtSensed", "cid", "data.availability", "data.performance", "data.quality", "data.overall_oee"],
-          "query" : {
-            "bool": {
-              "filter" : {
-                "range" : {
-                  "dtTransmitted" : {
-                    "gte" : #gte#,
-                    "lte" : #lte#
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    ]]></query>
+    ]]></query>        
     <query id='selectDashboardInfo'><![CDATA[
       {
         "index" : #index#,
@@ -231,6 +114,28 @@
               "must" : { 
                 "match" : { "cid" : #cid# }
               }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDashboardInfoStatus'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {
+          "size" : 10000,
+          "sort" : { "dtTransmitted": { "order": "asc" } },
+          "query" : {
+            "bool": {              
+              "filter" : {
+                "range" : {
+                  "dtTransmitted" : { "gte" : #gte#, "lte" : #lte# }
+                }
+              },
+              "must" : [
+                { "match" : { "cid" : #cid# } },
+                { "match" : { "sensorType" : "motor" } }]
             }
           }
         }
