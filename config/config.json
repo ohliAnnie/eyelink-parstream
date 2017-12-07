@@ -21,6 +21,7 @@
 		"#method" : "nodelib-db",
 		"database" : "elasticsearch",
 		"method" : "nodelib-es",
+		"url" : "http://m2u-parstream.eastus.cloudapp.azure.com:9200",
 		"#method" : "jdbc"
 	},
 	"schedule": {
