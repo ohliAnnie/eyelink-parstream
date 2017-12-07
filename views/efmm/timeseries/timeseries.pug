@@ -36,16 +36,18 @@ block content
               form.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
                   .form-group.last
-                    label.control-label.col-md-2 Date Range
-                    .col-md-2
-                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
-                        input#sdate.form-control(type='text', name='from' value='')                        
-                    label.control-label.col-md-2 Select Machine
-                    .col-md-4.form-inline
+                    label.control-label.col-md-2 Start Time
+                    .col-md-4                      
+                      #datetimepicker.input-group.date
+                        input.form-control(type='text')
+                        span.input-group-addon
+                          span.glyphicon.glyphicon-calendar
+                    label.control-label.col-md-2 Range
+                    .col-md-3.form-inline
                       select.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Machine')
-                        option(value='') All
-                        option(value='') Stacking
-                        option(value='') Notching                        
+                        option(value='') 1min
+                        option(value='') 5min
+                        option(value='') 10min
                       button#btn_search.btn.blue
                         i.fa.fa-search Search
       .row

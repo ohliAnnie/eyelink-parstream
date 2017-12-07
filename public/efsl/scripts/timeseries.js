@@ -29,41 +29,6 @@ function drawTimeseries(data) {
 
   d3.selectAll("svg").remove();
 
-  // 데이터 가공
-  var ampere = 0, active_power = 0, amount_of_active_power = 0;
-  var als_level = 0, dimming_level = 0, noise_decibel = 0, noise_frequency = 0;
-  var vibration_x = 0, vibration_y = 0, vibration_z = 0, vibration = 0;
-  data.forEach(function(d) { 
-    if(d.event_type == "1"){
-     ampere = d.ampere; 
-     active_power = d.active_power; 
-     amount_of_active_power = d.amount_of_active_power; }
-    if(d.event_type == "17"){
-     als_level = d.als_level; 
-     dimming_level = d.dimming_level; }
-    if(d.event_type == "49"){ 
-      noise_frequency = d.noise_frequency;
-      noise_decibel = d.noise_frequency }
-    if(d.event_type == "33"){
-     vibration_x = d.vibration_x; 
-     vibration_y = d.vibration_y; 
-     vibration_z = d.vibration_z; 
-     vibration = d.vibration; }
-    d.event_time = new Date(d.event_time);
-    d.ampere = ampere;
-    d.active_power = active_power;
-    d.amount_of_active_power = amount_of_active_power;
-    d.als_level = als_level;
-    d.dimming_level = dimming_level;
-    d.noise_decibel = noise_decibel;
-    d.noise_frequency = noise_frequency;
-    d.vibration_x = vibration_x;
-    d.vibration_y = vibration_y;
-    d.vibration_z = vibration_z;
-    d.vibration = vibration;
-  });
-  // console.log(data);
-
   var chartName = '#ts-chart01';
   chart01 = d3.timeseries()
     .addSerie(data,{x:'event_time',y:'active_power'},{interpolate:'linear'})

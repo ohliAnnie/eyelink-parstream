@@ -2,10 +2,17 @@ var logger = global.log4js.getLogger('nodelib-es');
 var Utils = require('../../util');
 var queryParser = require('../queryParser');
 var elasticsearch = require('elasticsearch');
+
+var vhost = 'http://m2u-parstream.eastus.cloudapp.azure.com:9200';
+if (global.config.fetchData.url != undefined)
+  vhost = global.config.fetchData.url;
+// logger.debug('host url : %s', vhost);
+
 var client = new elasticsearch.Client({
-  host: 'http://m2u-parstream.eastus.cloudapp.azure.com:9200',
+  host: vhost,
   // log: 'trace'
 });
+
 
 QueryProvider = function() {
 

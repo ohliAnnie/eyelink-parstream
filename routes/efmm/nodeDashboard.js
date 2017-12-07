@@ -12,8 +12,10 @@ var mainmenu = {dashboard:'open selected', timeseries:'', reports:'', analysis:'
 
 var indexNotchingOee = global.config.es_index.notching_oee;
 var indexStackingOee = global.config.es_index.stacking_oee;
+var indexStackingStatus = global.config.es_index.stacking_status;
 
-var startTime = CONSTS.STARTTIME.KOREA;
+var startTime = CONSTS.TIMEZONE.EFMM_START;
+var endTime = CONSTS.TIMEZONE.EFMM_END;
 var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
 var fmt2 = CONSTS.DATEFORMAT.DATETIME; // "YYYY-MM-DD HH:MM:SS",
 var fmt4 = CONSTS.DATEFORMAT.INDEXDATE; // "YYYY.MM.DD",
@@ -47,96 +49,6 @@ router.get('/info', function(req, res, next) {
   res.render(global.config.pcode + '/dashboard/dashboard_info', outdata);
 });
 
-router.get('/restapi/getDashboardAggsData', function(req, res, next) {
-  console.log('reports/restapi/getDashboardAggsData');    
-  var lte = Utils.getMs2Date(parseInt(req.query.now), fmt2, 'Y', 'Y');  
-  var gte = Utils.getDate(lte, fmt2, 0, 0, 0, -10, 'Y', 'Y');    
-  var in_data = { index : indexNotchingOee+"*", type : "oee",                   
-                  sort : "dtTransmitted" , gte : gte, lte : lte };    
-  queryProvider.selectSingleQueryByID3("dashboard","selectDashboardAggsData", in_data, function(err, out_data, params) {
-    var rtnCode = CONSTS.getErrData('0000');    
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');
-    } else {
-      var d = out_data.group_by_state.buckets;
-      var notch = (d[d.length-1] > d[d.length-2])?d[d.length-1]:d[d.length-2];      
-      in_data = { index : indexStackingOee+"*", type : "oee",                   
-                  sort : "dtTransmitted" , gte : gte, lte : lte };          
-      queryProvider.selectSingleQueryByID3("dashboard","selectDashboardAggsData", in_data, function(err, out_data, params) {
-        var rtnCode = CONSTS.getErrData('0000');
-        if (out_data == null) {
-          rtnCode = CONSTS.getErrData('0001');
-        } else {    
-          var d = out_data.group_by_state.buckets;
-          var stack = (d[d.length-1] > d[d.length-2])?d[d.length-1]:d[d.length-2];
-          stack.availability = stack.runnig_time/stack.availability_time;
-          stack.performance 
-          var data = { stacking : stack, notching : notch };
-         // console.log(data);
-        }
-        res.json({rtnCode: rtnCode, rtnData: data});
-      });
-    }
-    res.json({rtnCode: rtnCode, rtnData: data});
-  });
-});
-
-router.get('/restapi/getDashboardGageData', function(req, res, next) {
-  console.log('reports/restapi/getDashboardGageData');    
-  var lte = [], gte = [], indexNotch = [], indexStack = [], cnt = 0;
-  lte[6] = Utils.getMs2Date(parseInt(req.query.now), fmt2, 'Y', 'Y');    
-  gte[6] = Utils.getDate(lte[6], fmt2, 0, 0, 0, -1, 'Y', 'Y');
-  indexNotch[6] = indexNotchingOee+Utils.getMs2Date(parseInt(req.query.now), fmt4, 'Y', 'Y');
-  indexStack[6] = indexStackingOee+Utils.getMs2Date(parseInt(req.query.now), fmt4, 'Y', 'Y');  
-  for(i = new Date(lte[6]).getTime()-6*24*60*60*1000; i<new Date(lte[6]).getTime(); i=i+24*60*60*1000){
-    indexNotch[cnt]  = indexNotchingOee+Utils.getMs2Date(i, fmt4);
-    indexStack[cnt]  = indexStackingOee+Utils.getMs2Date(i, fmt4);
-    lte[cnt] = Utils.getMs2Date(i, fmt1, 'Y', 'Y')+'T23:59:59Z';
-    gte[cnt++] = Utils.getMs2Date(i, fmt1, 'Y', 'Y')+'T00:00:00Z';
-  }  
-  var in_data = { index : indexNotch, type : "oee",                   
-                  gte0 : gte[0], lte0 : lte[0],
-                  gte1 : gte[1], lte1 : lte[1],
-                  gte2 : gte[2], lte2 : lte[2],
-                  gte3 : gte[3], lte3 : lte[3],
-                  gte4 : gte[4], lte4 : lte[4],
-                  gte5 : gte[5], lte5 : lte[5],
-                  gte6 : gte[6], lte6 : lte[6] };        
-  queryProvider.selectSingleQueryByID2("dashboard","selectDashboardGageData", in_data, function(err, out_data, params) {    
-    var rtnCode = CONSTS.getErrData('0000');
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');
-    } else {    
-      var notch = out_data;      
-      in_data.index = indexStack;
-      queryProvider.selectSingleQueryByID2("dashboard","selectDashboardGageData", in_data, function(err, out_data, params) {
-        var rtnCode = CONSTS.getErrData('0000');
-        if (out_data == null) {
-          rtnCode = CONSTS.getErrData('0001');
-        } else {    
-          var stack = out_data;
-          var len = (notch.length <= stack.length) ? notch.length : stack.length;          
-          var stacking = [], notching = [], gage = [];                    
-          for(i=0; i<len; i++) {                        
-            n = notch[i]._source.data[0];            
-            n.dtSensed = Utils.getDateUTC2Local(n.dtSensed, fmt2);            
-            n.cid = notch[i]._source.cid;
-            notching.push(n);                        
-            s = stack[i]._source.data[0];            
-            s.dtSensed = Utils.getDateUTC2Local(s.dtSensed, fmt2);
-            s.cid = stack[i]._source.cid;
-            stacking.push(s);
-          };
-          var data = { stacking : stacking, notching : notching };
-         // console.log(data);
-        }
-        res.json({rtnCode: rtnCode, rtnData: data});
-      });
-    }
-    res.json({rtnCode: rtnCode, rtnData: data});
-  });
-});
-
 router.get('/restapi/getDashboardWeekly', function(req, res, next) {
   console.log('reports/restapi/getDashboardWeekly');    
   var lte = [], gte = [], indexNotch = [], indexStack = [], cnt = 0;  
@@ -144,8 +56,8 @@ router.get('/restapi/getDashboardWeekly', function(req, res, next) {
   for(i = new Date(now).getTime()-6*24*60*60*1000; i<=new Date(now).getTime(); i=i+24*60*60*1000){    
     indexNotch[cnt]  = indexNotchingOee+Utils.getMs2Date(i, fmt4);
     indexStack[cnt]  = indexStackingOee+Utils.getMs2Date(i, fmt4);
-    lte[cnt] = Utils.getMs2Date(i, fmt1, 'Y', 'Y')+'T23:59:59Z';
-    gte[cnt++] = Utils.getMs2Date(i, fmt1, 'Y', 'Y')+'T00:00:00Z';
+    lte[cnt] = Utils.getMs2Date(i, fmt1, 'Y', 'Y')+endTime;
+    gte[cnt++] = Utils.getMs2Date(i, fmt1, 'Y', 'Y')+startTime;
   }
   lte[--cnt] = now;
   var in_data = { index : indexNotch, type : "oee",                   
@@ -275,8 +187,7 @@ router.get('/restapi/getDashboardWeekly', function(req, res, next) {
                     week[cnt++] = k[1]+'-'+k[2];
                     last = key1;
                   }                                    
-                  var data = { stacking : sdata[key1], notching : ndata[key1], total : total, week : week };
-                  console.log(data);
+                  var data = { stacking : sdata[key1], notching : ndata[key1], total : total, week : week };                  
                 }
                 res.json({rtnCode: rtnCode, rtnData: data});
               });
@@ -292,7 +203,7 @@ router.get('/restapi/getDashboardDetail', function(req, res, next) {
   console.log('reports/restapi/getDashboardDetail');    
   var lte = [], gte = [], indexNotch = [], indexStack = [], cnt = 0;  
   var now = Utils.getMs2Date(parseInt(req.query.date), fmt2, 'Y', 'Y');
-  var gte = Utils.getMs2Date(parseInt(req.query.date), fmt1, 'Y', 'Y')+'T00:00:00Z';
+  var gte = Utils.getMs2Date(parseInt(req.query.date), fmt1, 'Y', 'Y')+startTime;
   var today = Utils.getMs2Date(parseInt(req.query.date), fmt4, 'Y', 'Y');  
   var indexNotch = indexNotchingOee+today;
   var indexStack = indexStackingOee+today;
@@ -395,8 +306,7 @@ router.get('/restapi/getDashboardDetail', function(req, res, next) {
                   notching.performance = (ndata.total_pieces/ndata.operating_time)/ndata.ideal_run_rate;
                   notching.quality = ndata.total_accept_pieces/ndata.total_pieces;
                   notching.overall_oee = notching.availability*notching.performance*notching.quality;                  
-                  var data = { stacking : stacking, notching : notching, stack : stack, notch : notch };
-                  console.log(data)
+                  var data = { stacking : stacking, notching : notching, stack : stack, notch : notch };                  
                 }
                 res.json({rtnCode: rtnCode, rtnData: data});
               });
@@ -466,8 +376,7 @@ router.get('/restapi/getDashboardDetail', function(req, res, next) {
 
 router.get('/restapi/getDashboardInfo', function(req, res, next) {
   console.log('reports/restapi/getDashboardInfo');  
-  var i = indexNotchingOee.split('_');
-  
+  var i = indexNotchingOee.split('_');  
   var date = Utils.getMs2Date(parseInt(req.query.date), fmt2, 'Y', 'Y');  
   var in_data = { index : i[0]+'_'+req.query.type+'_'+i[2]+Utils.getDateLocal2UTC(date, fmt4, 'Y', 'Y'), type : "oee",                   
                   sort : "dtTransmitted" , date : date, cid : req.query.cid };
@@ -487,6 +396,34 @@ router.get('/restapi/getDashboardInfo', function(req, res, next) {
       data.cid = out_data[0]._source.cid;
       data.sensorType = out_data[0]._source.sensorType;
       data.state = req.query.state;     
+    }
+    res.json({rtnCode: rtnCode, rtnData: data});
+  });
+});
+
+router.get('/restapi/getDashboardInfoStatus', function(req, res, next) {
+  console.log('reports/restapi/getDashboardInfoStatus');    
+  var date = Utils.getMs2Date(parseInt(req.query.date), fmt2, 'Y', 'Y');
+  var gte = Utils.getDate(date, fmt2, 0, 0, -1, 0, 'Y', 'Y')
+  var d = date.split('T');
+  var g = gte.split('T');
+  var in_data = { index : indexStackingStatus+'2017.09.27', type : "status",
+                  sort : "dtTransmitted" , gte : '2017-09-27T'+g[1], lte : '2017-09-27T'+d[1], cid : req.query.cid };  
+  queryProvider.selectSingleQueryByID2("dashboard","selectDashboardInfoStatus", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    var data = [];
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {          
+      for(i=0; i<out_data.length; i++){
+        var d = out_data[i]._source.data[0];
+        d.measure_time = Utils.getDateUTC2Local(d.measure_time, fmt2);
+        d.cid = out_data[i]._source.cid;
+        d.flag = out_data[i]._source.flag;
+        d.sensorType = out_data[i]._source.sensorType;
+        d.type = out_data[i]._source.type2
+        data.push(d);
+      }
     }
     res.json({rtnCode: rtnCode, rtnData: data});
   });

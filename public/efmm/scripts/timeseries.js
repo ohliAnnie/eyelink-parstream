@@ -1,7 +1,8 @@
 $(document).ready(function() {
   var dateFormat = 'YYYY-MM-DD';
-  $('#sdate').val(moment().subtract(0, 'days').format(dateFormat));
-  $('#edate').val(moment().format(dateFormat));
+  //$('#sdate').val(moment().format(dateFormat));   
+  var start = new Date().getTime()-60*1000;  
+  $('#datetimepicker').datetimepicker();
   // time series char를 그린다.
   getData();
 
@@ -33,50 +34,28 @@ function drawTimeseries(data) {
   chart01(chartName);
 
   var chartName = '#ts-chart02';
-  chart02 = d3.timeseries()
-    .addSerie(data,{x:'index',y:'als_level'},{interpolate:'step-before'})
-    .addSerie(data,{x:'index',y:'dimming_level'},{interpolate:'linear'})
-    // .xscale.tickFormat(french_timeformat)
-    .width($(chartName).parent().width()-100)
-    .height(270)
-    // .yscale.tickFormat(french_locale.numberFormat(",f"))
-    .margin.left(0);
-
+  var vList = ["availability", "performance"];    
+  drawChart02(data, chartName, 'index', vList);
   chart02(chartName);
 
-  chartName = '#ts-chart03';
-  chart03 = d3.timeseries()
-    .addSerie(data,{x:'index',y:'noise_decibel'},{interpolate:'step-before'})
-    .addSerie(data,{x:'index',y:'noise_frequency'},{interpolate:'linear'})
-    // .xscale.tickFormat(french_timeformat)
-    .width($(chartName).parent().width()-100)
-    .height(270)
-    // .yscale.tickFormat(french_locale.numberFormat(",f"))
-    .margin.left(0);
-
+  var chartName = '#ts-chart03';
+  var vList = ["availability", "performance"];    
+  drawChart03(data, chartName, 'index', vList);
   chart03(chartName);
 
-  chartName = '#ts-chart04';
-  chart04 = d3.timeseries()
-    .addSerie(data,{x:'index',y:'vibration_x'},{interpolate:'linear'})
-    .addSerie(data,{x:'index',y:'vibration_y'},{interpolate:'step-before'})
-    .addSerie(data,{x:'index',y:'vibration_z'},{interpolate:'linear'})
-    .addSerie(data,{x:'index',y:'vibration'},{interpolate:'linear'})
-    // .xscale.tickFormat(french_timeformat)
-    .width($(chartName).parent().width()-100)
-    .height(270)
-    // .yscale.tickFormat(french_locale.numberFormat(",f"))
-    .margin.left(0);
-
+  var chartName = '#ts-chart04';
+  var vList = ["availability", "performance"];    
+  drawChart04(data, chartName, 'index', vList);
   chart04(chartName);
 
 }
 
 
-function drawChart01(chart, data, chartName, xValue, vList){
+function drawChart01(data, chartName, xValue, vList){
+  console.log(vList)
   chart01 = d3.timeseries()    
     // .xscale.tickFormat(d3.time.format("%b %d"))
-    .width($(chartName).parent().width()-100)
+    .width($(chartName).parent().width()-10)
     .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);    
@@ -85,10 +64,10 @@ function drawChart01(chart, data, chartName, xValue, vList){
   }
 }
 
-function drawChart02(chart, data, chartName, xValue, vList){
+function drawChart02(data, chartName, xValue, vList){
   chart02 = d3.timeseries()    
     // .xscale.tickFormat(d3.time.format("%b %d"))
-    .width($(chartName).parent().width()-100)
+    .width($(chartName).parent().width()-10)
     .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);    
@@ -98,10 +77,10 @@ function drawChart02(chart, data, chartName, xValue, vList){
 }
 
 
-function drawChart03(chart, data, chartName, xValue, vList){
+function drawChart03(data, chartName, xValue, vList){
   chart03 = d3.timeseries()    
     // .xscale.tickFormat(d3.time.format("%b %d"))
-    .width($(chartName).parent().width()-100)
+    .width($(chartName).parent().width()-10)
     .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);    
@@ -110,10 +89,10 @@ function drawChart03(chart, data, chartName, xValue, vList){
   }
 }
 
-function drawChart04(chart, data, chartName, xValue, vList){
+function drawChart04(data, chartName, xValue, vList){
   chart04 = d3.timeseries()    
     // .xscale.tickFormat(d3.time.format("%b %d"))
-    .width($(chartName).parent().width()-100)
+    .width($(chartName).parent().width()-10)
     .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);    
