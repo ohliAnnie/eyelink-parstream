@@ -2,23 +2,32 @@ $(document).ready(function(e) {
   getData();  
 });
 
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
+var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
+    return paramPair.split(/=(.+)?/).slice(0, 2);
+  }).reduce(function(obj, pairArray) {
+    obj[pairArray[0]] = pairArray[1];
+    return obj;
+  }, {});
+
 
 function getData(){  
-  var data = { date : getParameterByName('date'), type : getParameterByName('type'), cid : getParameterByName('cid'), state : getParameterByName('state') };
-  console.log(data);
+  var data = { date : urlParams.date, type : urlParams.type, cid : urlParams.cid, state : urlParams.state };
   var in_data = { url : "/dashboard/restapi/getDashboardInfo", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {
-      var data = result.rtnData;          
+      var data = result.rtnData;       
       console.log(data);
       drawTable(data);
       dataTable(data);
+    } 
+  });
+  var data = { date : urlParams.date, cid : urlParams.cid };
+  var in_data = { url : "/dashboard/restapi/getDashboardInfoStatus", type : "GET", data : data };
+  ajaxTypeData(in_data, function(result){  
+    if (result.rtnCode.code == "0000") {
+      var data = result.rtnData;                
+      console.log(data)
+      drawLineChart(data);
     } 
   });  
 }
@@ -68,7 +77,7 @@ function dataTable(data){
   sbD.append('<table class="table table-striped table-bordered">');  
   sbD.append('<tr style="background-color:#353535; color:white;"><td colspan="2" style="text-align:center;">');
   sbD.append(data.dtSensed+'</td></tr>');
-  sbD.append('<tr><th>Machine ID</th><td>'+data.flag+' '+data.cid+'</td></tr>');
+  sbD.append('<tr><th>Machine ID</th><td>'+data.cid+'</td></tr>');
   sbD.append('<tr><th>Status</th><td>'+data.state+'</td></tr>');  
   sbD.append('<tr><th>OEE</th><td>'+(data.overall_oee*100).toFixed(1)+'%</td></tr>');
   sbD.append('<tr><th>Avaiability</th><td>'+data.availability.toFixed(1)+'%</td></tr>');
@@ -84,4 +93,75 @@ function dataTable(data){
   sbD.append('<tr><th>Reject Pieces</th><td>'+data.total_reject_pieces+'</td></tr>');
   sbD.append('</table>');
   $('#data').append(sbD.toString());
+}
+
+function drawLineChart(data) {
+  var composite = dc.compositeChart("#composed");
+  
+  var ndx = crossfilter(data);
+
+  var dim  = ndx.dimension(function(d){
+    return new Date(d.measure_time);
+  });
+
+  var colorArray = ["Aqua","Aquamarine","Blue","BlueViolet","Brown","BurlyWood","CadetBlue",
+                    "Chartreuse","Chocolate","Coral","Crimson","Cyan","Red","RosyBrown","RoyalBlue",
+                    "DarkBlue","DarkCyan","DarkGoldenRod","DarkGray","DarkGrey","DarkGreen","DarkKhaki",
+                    "DarkMagenta","DarkOliveGreen","Darkorange","DarkOrchid","DarkRed","DarkSalmon",
+                    "DarkSeaGreen","DarkSlateBlue","DarkSlateGray","DarkSlateGrey","DarkTurquoise",
+                    "DarkViolet","DeepPink","DeepSkyBlue","DimGray","DimGrey","DodgerBlue",
+                    "ForestGreen","Gold","GoldenRod","Yellow","LightPink","LightSalmon","LightSeaGreen",
+                    "Gray","Grey","Green","GreenYellow","HoneyDew","HotPink","IndianRed","Indigo",
+                    "Ivory","Khaki","Lavender","LavenderBlush","LawnGreen","LemonChiffon","LightBlue",
+                    "LightCoral","LightCyan","LightGoldenRodYellow","LightGray","LightGrey","LightGreen",
+                    "LightSkyBlue","LightSlateGray","LightSlateGrey",
+                    "LightSteelBlue","LightYellow","Lime","LimeGreen","Linen","Magenta","Maroon","MediumAquaMarine",
+                    "MediumBlue","MediumOrchid","MediumPurple","MediumSeaGreen","MediumSlateBlue","MediumSpringGreen",
+                    "MediumTurquoise","MediumVioletRed","MidnightBlue","MintCream","MistyRose","Moccasin",
+                    "Navy","OldLace","Olive","OliveDrab","Orange","OrangeRed","Orchid","PaleGoldenRod","PaleGreen",
+                    "PaleTurquoise","PaleVioletRed","PapayaWhip","PeachPuff","Peru","Pink","Plum","PowderBlue",
+                    "Purple","SaddleBrown","Salmon","SandyBrown","SeaGreen",
+                    "SeaShell","Sienna","Silver","SkyBlue","SlateBlue","SlateGray","SlateGrey","Snow",
+                    "SpringGreen","SteelBlue","Tan","Teal","Thistle","Tomato","Turquoise","Violet","Wheat","YellowGreen"];
+
+  var group = [], chart = [], cnt = 0, ccnt = 0;
+  for(k in data[0]){        
+    if(k=='measure_time'||k=='flag'||k=='cid'||k=='sensorType'||k=='type'){
+    } else {      
+      group[cnt] = makeGroup(dim, k);
+      console.log(k);
+      console.log(colorArray[ccnt]);
+
+      chart[cnt] = dc.lineChart(composite)
+          .dimension(dim)            
+          .colors(colorArray[ccnt++])
+          .renderDataPoints(true)
+          .group(group[cnt++], k);
+    }
+  }
+  console.log(chart)
+  var minDate = new Date(data[0].measure_time);
+  var maxDate = new Date(data[data.length-1].measure_time);
+
+  composite.margins().bottom = 240;
+  composite.margins().right = 35;
+  composite
+    .width(window.innerWidth*0.53)
+    .height(550)
+    .x(d3.time.scale().domain([minDate,maxDate]))
+    //.round(d3.time.day.round)
+    //.x(d3.scale.linear().domain([0,data.length-1]))             
+    .y(d3.scale.linear().domain([0, 50]))    
+    .legend(dc.legend().x(5).y(335).itemHeight(12).itemWidth(159).gap(6).horizontal(true))
+    .renderHorizontalGridLines(true)
+    .title(function(d){ return this.layer+' : '+d.value; })
+    .compose(chart)
+    .brushOn(false)
+    .render();
+
+  
+}
+
+function makeGroup(dim, key) {
+  return dim.group().reduceSum(function(d){ return d[key];})
 }

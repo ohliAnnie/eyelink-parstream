@@ -82,12 +82,14 @@ function innerTable(data, type, event){
   var alarm = (data.state=='active')?'green':(data.state=='idle')?'blue':'red';
   var color = (data.overall_oee>=0.7)?'#6ABC64':(data.overall_oee>=0.5)?'#79ABFF':'#FF7E7E';  
   var sb = '<table class="table table-striped table-bordered"';
-  if(event){
-    sb += ' onclick="location.href='+"'info?date="+getParameterByName('date')+'&type='+type+'&state='+data.state+'&cid='+data.cid+"'"+'"';
-  }  
-  console.log(sb);
+  
   sb += '><tr style="background-color:'+alarm+'"><td colspan="3" style="color:white; text-align:center;" >';
-  sb += '<strong style="font-size:18px;">'+data.cid+'</strong><br>'+data.state+'</td></tr>';    
+  sb += '<strong style="font-size:18px;">'+data.cid+'</strong><br>'+data.state;
+  if(event){
+    sb += '<button id="btn_search" class="btn blue btn-xs pull-right" onclick="location.href='+"'info?date=";
+    sb += getParameterByName('date')+'&type='+type+'&state='+data.state+'&cid='+data.cid+"'"+'">Detail</button>';
+  }  
+  sb += '</td></tr>';    
   sb += '<tr><td colspan="3"><div class="gage'+cnt++ +'" style="text-align:center;"></div></td></tr>';
   sb += '<tr style="background-color:'+color+'"><td>Ava<br>'+(data.availability*100).toFixed(1)+'%</td><td>Perf<br>';
   sb += (data.performance*100).toFixed(1)+'%</td><td>Qual<br>'+(data.quality*100).toFixed(1)+'%</td></tr>';

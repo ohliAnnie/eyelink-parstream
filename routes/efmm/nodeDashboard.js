@@ -378,8 +378,7 @@ router.get('/restapi/getDashboardDetail', function(req, res, next) {
 
 router.get('/restapi/getDashboardInfo', function(req, res, next) {
   console.log('reports/restapi/getDashboardInfo');  
-  var i = indexNotchingOee.split('_');
-  
+  var i = indexNotchingOee.split('_');  
   var date = Utils.getMs2Date(parseInt(req.query.date), fmt2, 'Y', 'Y');  
   var in_data = { index : i[0]+'_'+req.query.type+'_'+i[2]+Utils.getDateLocal2UTC(date, fmt4, 'Y', 'Y'), type : "oee",                   
                   sort : "dtTransmitted" , date : date, cid : req.query.cid };
@@ -399,6 +398,34 @@ router.get('/restapi/getDashboardInfo', function(req, res, next) {
       data.cid = out_data[0]._source.cid;
       data.sensorType = out_data[0]._source.sensorType;
       data.state = req.query.state;     
+    }
+    res.json({rtnCode: rtnCode, rtnData: data});
+  });
+});
+
+router.get('/restapi/getDashboardInfoStatus', function(req, res, next) {
+  console.log('reports/restapi/getDashboardInfoStatus');    
+  var date = Utils.getMs2Date(parseInt(req.query.date), fmt2, 'Y', 'Y');
+  var gte = Utils.getDate(date, fmt2, 0, 0, -1, 0, 'Y', 'Y')
+  var d = date.split('T');
+  var g = gte.split('T');
+  var in_data = { index : indexStackingStatus+'2017.09.27', type : "status",
+                  sort : "dtTransmitted" , gte : '2017-09-27T'+g[1], lte : '2017-09-27T'+d[1], cid : req.query.cid };  
+  queryProvider.selectSingleQueryByID2("dashboard","selectDashboardInfoStatus", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    var data = [];
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {          
+      for(i=0; i<out_data.length; i++){
+        var d = out_data[i]._source.data[0];
+        d.measure_time = Utils.getDateUTC2Local(d.measure_time, fmt2);
+        d.cid = out_data[i]._source.cid;
+        d.flag = out_data[i]._source.flag;
+        d.sensorType = out_data[i]._source.sensorType;
+        d.type = out_data[i]._source.type2
+        data.push(d);
+      }
     }
     res.json({rtnCode: rtnCode, rtnData: data});
   });
