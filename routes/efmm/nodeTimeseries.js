@@ -21,9 +21,56 @@ var fmt4 = CONSTS.DATEFORMAT.INDEXDATE; // "YYYY.MM.DD",
 router.get('/', function(req, res, next) {
   // console.log(_rawDataByDay);
   var outdata = { title: global.config.productname, mainmenu : mainmenu };
+  var index = [indexNotchingOee+"*", indexStackingOee+"*"];
+  var in_data = { index : index, type : "oee"};  
+  queryProvider.selectSingleQueryByID3("timeseries","selectMachineList", in_data, function(err, out_data, params) {    
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {      
+      var data = out_data.flag.buckets;
+      var list = [], cnt = 0;
+      for(i=0; i<data.length; i++) {
+        var flag = data[i].key;
+        var cid = data[i].cid.buckets;        
+        for(j=0; j<cid.length; j++) {
+          list[cnt++] = flag+'_'+cid[j].key;
+        }
+      }
+      outdata.list = list;      
+    }
+    logger.info('mainmenu : %s, outdata : %s', mainmenu.timeseries, JSON.stringify(outdata));     
+    res.render(global.config.pcode + '/timeseries/timeseries', outdata);
+  });
+});
 
-  logger.info('mainmenu : %s, outdata : %s', mainmenu.timeseries, JSON.stringify(outdata));  
-  res.render(global.config.pcode + '/timeseries/timeseries', outdata);
+router.get('/restapi/getTimeseries', function(req, res, next) {
+  console.log('timeseries/restapi/getTimeseries');
+  var gte = Utils.getMs2Date(req.query.start, fmt2, 'Y', 'Y');
+  var lte = Utils.getDate(gte, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y', 'Y');
+  console.log(gte, lte)
+  var today = Utils.getMs2Date(req.query.start, fmt4, 'Y', 'Y');    
+  var in_data = { index : indexNotchingOee+today, type : "oee", gte : gte, lte : lte};    
+  queryProvider.selectSingleQueryByID2("timeseries","selectTimeseriesData", in_data, function(err, out_data, params) {                
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {                  
+      console.log(out_data)
+    }
+    in_data.index = indexStackingOee+today;
+    queryProvider.selectSingleQueryByID2("timeseries","selecttimeseriesDetailData", in_data, function(err, out_data, params) {
+      var rtnCode = CONSTS.getErrData('0000');
+      if (out_data == null) {
+        rtnCode = CONSTS.getErrData('0001');
+      } else {                      
+        console.log(out_data);
+        var data = {};
+        console.log(data)
+      }
+      res.json({rtnCode: rtnCode, rtnData: data});
+    });        
+  });
 });
 
 module.exports = router;

@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <queryList>
   <dashboard>
-    <query id='selectDashboardLastDate'>
-      <![CDATA[
+    <query id='selectDashboardLastDate'><![CDATA[
       {
         "index" : [##index##],
         "type"  : #type#,
@@ -39,10 +38,8 @@
           }
         }
       }
-    ]]>
-    </query>
-    <query id='selectDashboardLastTime'>
-      <![CDATA[
+    ]]></query>
+    <query id='selectDashboardLastTime'><![CDATA[
       {
         "index" : #index#,
         "type"  : #type#,
@@ -73,10 +70,8 @@
           }
         }
       }
-    ]]>
-    </query>
-    <query id='selectDashboardTermData'>
-      <![CDATA[
+    ]]></query>
+    <query id='selectDashboardTermData'><![CDATA[
       {
         "index" : [##index##],
         "type"  : #type#,
@@ -90,10 +85,8 @@
           }
         }
       }
-    ]]>
-    </query>
-    <query id='selectDashboardDetailData'>
-      <![CDATA[
+    ]]></query>
+    <query id='selectDashboardDetailData'><![CDATA[
       {
         "index" : #index#,
         "type"  : #type#,
@@ -107,10 +100,8 @@
           }
         }
       }
-    ]]>
-    </query>
-    <query id='selectDashboardInfo'>
-      <![CDATA[
+    ]]></query>
+    <query id='selectDashboardInfo'><![CDATA[
       {
         "index" : #index#,
         "type"  : #type#,
@@ -127,10 +118,8 @@
           }
         }
       }
-    ]]>
-    </query>
-    <query id='selectDashboardInfoStatus'>
-      <![CDATA[
+    ]]></query>
+    <query id='selectDashboardInfoStatus'><![CDATA[
       {
         "index" : #index#,
         "type"  : #type#,
@@ -151,133 +140,6 @@
           }
         }
       }
-    ]]>
-    </query>
+    ]]></query>
   </dashboard>
-  <scheduler>
-    <query id='selectApplicationInfo'>
-      <![CDATA[
-      {
-        "index" : #index#,
-        "type" : #type#,
-        "body" : {
-      }
-    }]]>
-    </query>
-    <query id='insertApplicationInfo'>
-      <![CDATA[
-      {
-        body : #BODY#
-      }
-    ]]>
-    </query>
-  </scheduler>
-  <analysis>
-    <query id='selectStackingStatus'>
-      <![CDATA[
-      {
-        "index" : #INDEX#,
-        "type"  : #TYPE#,
-        "body" : {
-          "size": 100000,
-          "_source" : [ "data" ],
-          "sort": { "dtTransmitted": { "order" : "asc" } },
-          "query" : {
-            "bool" : {
-              "must": [
-                {"term" : {"cid" : #CID#}},
-                {"term" : {"sensorType" : #STYPE#}}
-              ],
-              "filter" : {
-                "range" : {
-                  "dtTransmitted" : { "gte" : #START#, "lte" : #END# }
-                }
-              }
-            }
-          }
-        }
-      }
-    ]]>
-    </query>
-
-    <query id='selectNotchingOeeRaw'>
-      <![CDATA[
-      {
-        "index" : #INDEX#,
-        "type"  : #TYPE#,
-        "body" : {
-          "size": 100000,
-          "_source" : "data",
-          "sort": { "dtTransmitted" : "desc" },
-          "query" : {
-            "bool" : {
-              "filter" : {
-                "range" : {
-                  "dtTransmitted" : { "gte" : #START#, "lte" : #END# }
-                }
-              },
-              "must" : [
-                { "term" : { "cid" : #CID# } },
-                { "term" : { "flag": #FLAG# } }
-              ]
-            }
-          }
-        }
-      }
-    ]]>
-    </query>
-
-    <query id='selectPatternList'>
-      <![CDATA[
-      {
-        "index": #INDEX#,
-        "type": #TYPE#,
-        "body": {
-          "size": 10000,
-          "_source" : ["_id" ],
-          "sort": { "_uid": "desc" },
-          "query" : {
-            "bool" : {
-              "should": [
-                { "term": { "_id": #MASTER_ID# }},
-                { "range": {
-                    "da_result.createDate" : {
-                      "gte" : #START_TIMESTAMP#,
-                      "lte" : #END_TIMESTAMP#
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
-    ]]>
-    </query>
-    <query id='selectMatchingPattern'>
-      <![CDATA[
-      {
-        "index" : #INDEX#,
-        "type" : #TYPE#,
-        "body" : {
-          "size"   : 10000,
-          "sort" : { "da_result.timestamp" : { "order" : "desc"  } },
-          "query" : {
-            "bool" : {
-              "must" : { "match_all": {} },
-               "filter" : {
-                "range" : {
-                  "da_result.timestamp" : {
-                    "gte" : #START_TIMESTAMP#,
-                    "lte" : #END_TIMESTAMP#
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    ]]>
-    </query>
-  </analysis>
 </queryList>
