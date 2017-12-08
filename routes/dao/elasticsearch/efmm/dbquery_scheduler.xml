@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<queryList>
+  <scheduler>
+    <query id='selectApplicationInfo'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {
+      }
+    }]]></query>
+    <query id='insertApplicationInfo'><![CDATA[
+      {
+        body : #BODY#
+      }
+    ]]></query>
+  </scheduler>
+</queryList>

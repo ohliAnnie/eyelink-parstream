@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<queryList>
+  <analysis>
+    <query id='selectNotchingOeeRaw'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {
+          "size": 100000,
+          "_source" : "data",
+          "sort": { "dtTransmitted" : "desc" },
+          "query" : {
+            "bool" : {
+              "filter" : {
+                "range" : {
+                  "dtTransmitted" : { "gte" : #start#, "lte" : #end# }
+                }
+              },
+              "must" : [
+                { "term" : { "cid" : #cid# } },
+                { "term" : { "flag": #flag# } }
+              ]
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectStackingStatus'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type"  : #TYPE#,
+        "body" : {
+          "size": 100000,
+          "_source" : [ "data" ],
+          "sort": { "dtTransmitted": { "order" : "asc" } },
+          "query" : {
+            "bool" : {
+              "must": [
+                {"term" : {"cid" : #CID#}},
+                {"term" : {"sensorType" : #STYPE#}}
+              ],
+              "filter" : {
+                "range" : {
+                  "dtTransmitted" : { "gte" : #START#, "lte" : #END# }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+  </analysis>
+</queryList>

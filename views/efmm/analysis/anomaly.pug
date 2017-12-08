@@ -1,8 +1,8 @@
 extends ../efmm-layout01
 block style
-  link(type='text/css', rel='stylesheet', href='/efmm/css/chart_style.css')
-  link(type='text/css', rel='stylesheet', href='/efmm/css/analysis_clustering.css')
-  link(type='text/css', rel='stylesheet', href='/efmm/assets/css/dc.css')
+  link(rel='stylesheet', href='/efmm/css/chart_style.css')
+  link(rel='stylesheet', href='/efmm/css/analysis_anomaly.css')
+  link(rel='stylesheet', href='/efmm/assets/css/dc.css')
 block script
   script(type='text/javascript', src='/efmm/assets/scripts/d3_dc.js')
   script(type='text/javascript', src='/efmm/assets/scripts/colorbrewer.js')
@@ -21,6 +21,17 @@ block content
             a(href='#') Analysis
           li.active Anomaly
 
+      - const steps = [{value: 'notching'}, {value: 'stacking'}]
+      - const machines = [{value: '100'}, {value: '200'}]
+
+      div#selections
+        select#step
+          each step in steps
+            option(value=(step.value)) #{step.value}
+        select#machine
+          each machine in machines
+            option(value=(machine.value)) #{machine.value}
+
       .row
         .col-md-12
           .portlet.light.bordered
@@ -30,7 +41,7 @@ block content
                 span.caption-helper  by Overall OEE
             .portlet-body
               .chart(style='height:400px;')
-                #overall-oee
+                #overall_oee
       .row
         .col-md-12
           .portlet.light.bordered

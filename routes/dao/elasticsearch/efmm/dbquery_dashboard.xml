@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<queryList>
+  <dashboard>
+    <query id='selectDashboardLastDate'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+          "size" : 0,
+          "sort" : [{ "dtTransmitted" : "asc" }, { "cid" : "asc" }],
+          "aggs" : {
+            "cid" : {
+              "terms" : { "field" : "cid" },
+              "aggs" : {
+                "range": {
+                  "date_range" : {
+                    "field" : "dtTransmitted",
+                    "ranges" : [
+                      { "from" : #gte0#, "to" : #lte0# },
+                      { "from" : #gte1#, "to" : #lte1# },
+                      { "from" : #gte2#, "to" : #lte2# },
+                      { "from" : #gte3#, "to" : #lte3# },
+                      { "from" : #gte4#, "to" : #lte4# },
+                      { "from" : #gte5#, "to" : #lte5# },
+                      { "from" : #gte6#, "to" : #lte6# }
+                    ]
+                  },
+                  "aggs" : {
+                    "date_max" : {
+                      "max" : {
+                          "field" : "dtTransmitted"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDashboardLastTime'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {
+          "size" : 0,
+          "sort" : [{ "dtTransmitted" : "asc" }, { "cid" : "asc" }],
+          "aggs" : {
+            "cid" : {
+              "terms" : { "field" : "cid" },
+              "aggs" : {
+                "range": {
+                  "date_range" : {
+                    "field" : "dtTransmitted",
+                    "ranges" : [
+                      { "from" : #gte#, "to" : #lte# }
+                    ]
+                  },
+                  "aggs" : {
+                    "date_max" : {
+                      "max" : {
+                          "field" : "dtTransmitted"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDashboardTermData'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+          "size" : 100,
+          "sort": [
+            { "dtTransmitted": { "order": "asc" } },
+            { "cid": { "order": "asc" } } ],
+          "query": {
+            "bool": #term#
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDashboardDetailData'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {
+          "size" : 100,
+          "sort": [
+            { "dtTransmitted": { "order": "asc" } },
+            { "cid": { "order": "asc" } } ],
+          "query": {
+            "bool": #term#
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDashboardInfo'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {
+          "query" : {
+            "bool": {
+              "filter" : {
+                "term" : { "data.dtSensed" : #date# }
+              },
+              "must" : {
+                "match" : { "cid" : #cid# }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDashboardInfoStatus'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {
+          "size" : 10000,
+          "sort" : { "dtTransmitted": { "order": "asc" } },
+          "query" : {
+            "bool": {
+              "filter" : {
+                "range" : {
+                  "dtTransmitted" : { "gte" : #gte#, "lte" : #lte# }
+                }
+              },
+              "must" : [
+                { "match" : { "cid" : #cid# } },
+                { "match" : { "sensorType" : "motor" } }]
+            }
+          }
+        }
+      }
+    ]]></query>
+  </dashboard>
+</queryList>
