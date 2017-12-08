@@ -55,19 +55,34 @@ router.get('/restapi/getTimeseries', function(req, res, next) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    } else {                  
-      console.log(out_data)
+    } else {                          
+      var notching = {};
+      for(i=0; i<out_data.length; i++){
+        var d = out_data[i]._source.data[0];
+        d.dtSensed = Utils.getDateUTC2Local(d.dtSensed, fmt2);
+        if(notching[out_data[i]._source.cid] == null){
+          notching[out_data[i]._source.cid] = [];          
+        }
+        notching[out_data[i]._source.cid][notching[out_data[i]._source.cid].length] = d;
+      }      
     }
     in_data.index = indexStackingOee+today;
-    queryProvider.selectSingleQueryByID2("timeseries","selecttimeseriesDetailData", in_data, function(err, out_data, params) {
+    queryProvider.selectSingleQueryByID2("timeseries","selectTimeseriesData", in_data, function(err, out_data, params) {
       var rtnCode = CONSTS.getErrData('0000');
       if (out_data == null) {
         rtnCode = CONSTS.getErrData('0001');
-      } else {                      
-        console.log(out_data);
-        var data = {};
-        console.log(data)
+      } else {                              
+        var stacking = {};
+        for(i=0; i<out_data.length; i++){
+          var d = out_data[i]._source.data[0];
+          d.dtSensed = Utils.getDateUTC2Local(d.dtSensed, fmt2);
+          if(stacking[out_data[i]._source.cid] == null){
+            stacking[out_data[i]._source.cid] = [];          
+          }
+          stacking[out_data[i]._source.cid][stacking[out_data[i]._source.cid].length] = d;
+        }              
       }
+      var data = { notching : notching, stacking : stacking };       
       res.json({rtnCode: rtnCode, rtnData: data});
     });        
   });

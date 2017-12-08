@@ -28,7 +28,7 @@
     ]]></query>
     <query id='selectTimeseriesData'><![CDATA[
       {
-        "index" : [##index##],
+        "index" : #index#,
         "type"  : #type#,
         "body" : {
           "size" : 10000,
@@ -38,7 +38,9 @@
           "query": {
             "bool": {
               "filter" : {
-                "ranges" : { "from" : #gte#, "to" : #lte# }
+                "range" : {
+                  "dtTransmitted" : { "gte" : #gte#, "lte" : #lte# }
+                }
               }
             }
           }
