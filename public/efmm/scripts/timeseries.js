@@ -75,8 +75,10 @@ function drawChart02(){
 
 function drawChart03(){
   d3.select("#ts-chart03").select("svg").remove();
-  var id = $('#cid2').val().split('_');
+  var id = $('#cid3').val().split('_');
   var data = chartData[id[0]][id[1]];  
+  console.log(id)
+  console.log(data)
   var chartName = '#ts-chart03';  
   chart03 = d3.timeseries()    
     // .xscale.tickFormat(d3.time.format("%b %d"))
