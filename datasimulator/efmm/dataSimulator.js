@@ -84,11 +84,11 @@ var short_break_term = 4 * 60 * 60;
 var short_break_period = 15 * 60;
 var down_time_period = 30 * 60;
 
-var iRandomSize = 10000;
-var iNormalAccept = 9500; // 1s 발생확률 : 97%
-var iNormalAcceptLoss = 9900; // 1s 발생활율 : 2%
-var iNormalReject = 9997; // 1s 발생확률 : 0.97%
-var iDownTime = 9997;  // 1s 발생확률 : 0.03%(3/10000), 1h에 1.08회 발생 가능.
+var iRandomSize = 50000;
+var iNormalAccept = 48500; // 1s 발생확률 : 97%
+var iNormalAcceptLoss = 49500; // 1s 발생활율 : 2%
+var iNormalReject = 49999; // 1s 발생확률 : 0.998%
+var iDownTime = 49999;  // 1s 발생확률 : 0.002%(1/50000), 1d에 1.x회 발생 가능.
 
 var short_break_cnt = 0;
 var v_short_break_period = short_break_period;
