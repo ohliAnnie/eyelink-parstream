@@ -114,8 +114,8 @@ router.get('/restapi/getOeeDataLive', function(req, res, next) {
     // INDEX : indexNotchingOee+'*',
     INDEX : indexNotchingOee+Utils.getDate(today, fmt2, 0, 0, 0, 1, 'Y', 'Y').split('T')[0].replace(/-/g,'.'),
     TYPE : "oee",
-    START: Utils.getDate(today, fmt2, 0, 0, 0, -1, 'Y', 'Y'),
-    END: Utils.getDate(today, fmt2, 0, 0, 0, 1, 'Y', 'Y'),
+    START: Utils.getDate(today, fmt2, 0, 0, 0, -11, 'Y', 'Y'),
+    END: Utils.getDate(today, fmt2, 0, 0, 0, -2, 'Y', 'Y'),
     FLAG : flag, CID : cid
   };
   logger.debug('in_data : ',in_data);

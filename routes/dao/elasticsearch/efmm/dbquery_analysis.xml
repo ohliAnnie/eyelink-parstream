@@ -4,8 +4,8 @@
     <query id='selectNotchingOeeRaw'>
       <![CDATA[
       {
-        "index" : #index#,
-        "type"  : #type#,
+        "index" : #INDEX#,
+        "type"  : #TYPE#,
         "body" : {
           "size": 100000,
           "_source" : "data",
@@ -14,12 +14,12 @@
             "bool" : {
               "filter" : {
                 "range" : {
-                  "dtTransmitted" : { "gte" : #start#, "lte" : #end# }
+                  "dtTransmitted" : { "gte" : #START#, "lte" : #END# }
                 }
               },
               "must" : [
-                { "term" : { "cid" : #cid# } },
-                { "term" : { "flag": #flag# } }
+                { "term" : { "cid" : #CID# } },
+                { "term" : { "flag": #FLAG# } }
               ]
             }
           }

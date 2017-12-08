@@ -35,9 +35,9 @@ function getData(){
       // var now = new Date().getTime();
       var now = point;
       var tot = { "overall_oee" : [], "availability" : [], "quality" : [], "performance" : []  };
-      for(key in tot){
-        // drawChart(raw, result.tot[key], start, end, now, point, now-point, key, '#'+key, result.pattern);
-        drawChart(raw, 'result.tot[key]', start, end, now, point, now-point, key, '#'+key, 'result.pattern');
+      for(factor in tot){
+        // drawChart(raw, result.tot[factor], start, end, now, point, now-point, factor, '#'+factor, result.pattern);
+        drawChart(raw, 'result.tot[factor]', start, end, now, point, now-point, factor, '#'+factor, 'result.pattern');
       }
       // console.log('point\n'+new Date(point));
       // console.log('start\n'+new Date(start));
@@ -47,23 +47,19 @@ function getData(){
   });
 }
 
-function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern) {
+function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, pattern) {
   // var compare = tot.data;
   // var apt = tot.apt;
   // var cpt = tot.cpt;
   let oriEnd = end;
   var limit = 60,    duration = 1000;
 
-  var margin = {top: 10, right: 50, bottom: 30, left: 50},
-  width = window.innerWidth*0.88 - margin.left - margin.right,
-  height = 400 - margin.top - margin.bottom;
-
   var color = 'green';
-  // if(pattern[id].status.status == "normal"){
+  // if(pattern[factor].status.status == "normal"){
   //   var color = 'green';
-  // } else if(pattern[id].status.status == "caution"){
+  // } else if(pattern[factor].status.status == "caution"){
   //   var color = 'blue';
-  // } else if(pattern[id].status.status == "anomaly"){
+  // } else if(pattern[factor].status.status == "anomaly"){
   //   var color = 'red';
   // } else {
   //   var color = 'gray';
@@ -73,7 +69,7 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
 
   var groups = {
     output: {
-      value: liveValue[id] * 100,
+      value: liveValue[factor] * 100,
       color: 'black',
       data: d3.range(0).map(function() {
         return 0
@@ -81,13 +77,19 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
     }
   }
 
-  now = new Date(liveValue.dtSensed).getTime();
-  // X 축 설정
+  var margin = {top: 10, right: 50, bottom: 30, left: 50};
+  // width = window.innerWidth*0.88 - margin.left - margin.right,
+  let chartWidth = $('#overall_oee').parent().width();
+  let width = chartWidth - margin.left - margin.right;
+  let height = 250 - margin.top - margin.bottom;
+
+  // X 축 범위 설정
   var x = d3.time.scale()
     .domain([start, end])
     .range([0, width]);
 
-  // Y 축 설정
+  x.tickFormat(d3.time.format("%H:%M"))
+  // Y 축 범위 설정
   let yStart = (tot.min*0.1 < 1 ? 0 : tot.min*0.95);
   let yEnd = (tot.max*0.1 < 20 ? tot.max*1.25 : tot.max*1.05);
   yStart = 0;
@@ -96,15 +98,16 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
     .domain([yStart, yEnd])
     .range([height, 3]);
 
-  var line = d3.svg.line()
+  now = new Date(liveValue.dtSensed).getTime();
+  var lineFunction = d3.svg.line()
     .interpolate('basis')
-    .x(function(d, i) { return x(now + i*(duration)) })
-    .y(function(d) { return y(d) })
+    .x(function(d, i) { return x(now + i*(duration)); })
+    .y(function(d) { return y(d); })
 
-  var valueline = d3.svg.line()
+  var valuelineFunction = d3.svg.line()
     .interpolate('basis')
     .x(function(d) { return x(new Date(d.dtSensed)); })
-    .y(function(d) { return y(d[id]); });
+    .y(function(d) { return y(d[factor]); });
 
   var compareline = setLine(d3, x, y, "cardinal", "date", "center");
   var compareline2 = setLine(d3, x, y, "cardinal", "date", "center2");
@@ -123,15 +126,16 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   var xaxis = svgSet(svg, 'g', 'x axis', 0, height)
-    .call(x.axis = d3.svg.axis().scale(x).orient('bottom'));
+    .call(x.axis = d3.svg.axis().scale(x).orient('bottom').tickFormat(d3.time.format("%H:%M")));
 
   var yaxis = svg.append('g')
     .attr('class', 'y axis')
     .call(y.axis = d3.svg.axis().scale(y).orient('left'));
 
   var legendWidth  = 385, legendHeight = 55;
-
   var legend = svgSet(svg, 'g', 'legend', margin.left , 0);
+  // var legendWidth  = 128, legendHeight = 165;
+  // var legend = svgSet(svg, 'g', 'legend', chartWidth - legendWidth*2 , 10);
 
   rectLegendBG(legend, 'legend-bg', legendWidth, legendHeight);
 
@@ -158,9 +162,9 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
   var status = svgSet(svg, 'g', 'status', 500 , 0);
 
   rectLegendBG(status, 'status-bg', statusWidth, statusHeight);
-  // console.log(pattern[id].status.status.length  )
-  // var length = (pattern[id].status.status.length<8)?pattern[id].status.status.length:pattern[id].status.status.length*1.3;
-  // textLegend(status, 20-length, 15, pattern[id].status.status);
+  // console.log(pattern[factor].status.status.length  )
+  // var length = (pattern[factor].status.status.length<8)?pattern[factor].status.status.length:pattern[factor].status.status.length*1.3;
+  // textLegend(status, 20-length, 15, pattern[factor].status.status);
   textLegend(status, 20-'normal'.length, 15, 'normal');
 
   status.append('circle')
@@ -179,15 +183,16 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
   // svgPath(svg, compare, 'compareline2', compareline);
   // svgPath(svg, compare, 'compareline', compareline);
 
-  svgPath(svg, raw, 'valueline', valueline);
+  svgPath(svg, raw, 'valueline', valuelineFunction);
 
-  var formatTime = d3.time.format("%H:%M:%S");
+
 
   // Define the div for the tooltip
   var div = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
 
+  var formatTime = d3.time.format("%H:%M:%S");
   // Add the scatterplot
   svg.selectAll("dot1")
     .data(raw)
@@ -196,11 +201,11 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
     .attr('opacity', 0)
     // .attr("cx", function(d) { return x(new Date(d.event_time)); })
     .attr("cx", function(d) { return x(new Date(d.dtSensed)); })
-    .attr("cy", function(d) { return y(d[id]); })
+    .attr("cy", function(d) { return y(d[factor]); })
     .on("mouseover", function(d) {
       divTransition(div, 200, 1);
-      // div .html(formatTime(new Date(d.event_time)) + "<br/>"  + d[id])
-      div .html(formatTime(new Date(d.dtSensed)) + "<br/>"  + d[id])
+      // div .html(formatTime(new Date(d.event_time)) + "<br/>"  + d[factor])
+      div .html(formatTime(new Date(d.dtSensed)) + "<br/>"  + d[factor])
         .style("left", (d3.event.pageX) + "px")
         .style("top", (d3.event.pageY - 28) + "px");
     })
@@ -270,13 +275,13 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
   oriNow = now;
   function tick() {
     now = new Date().getTime();
-    value = liveValue[id];
+    value = liveValue[factor];
     for (var name in groups) {
       var group = groups[name];
       //group.data.push(group.value) // Real values arrive at irregular intervals
       group.value = value;
       group.data.push(value);
-      group.path.attr('d', line);
+      group.path.attr('d', lineFunction);
     }
     ddata.push({ date:now, value:value});
     var d = ddata[ddata.length-1];
