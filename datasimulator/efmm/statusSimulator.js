@@ -144,7 +144,7 @@ function processData(dirPath, file, nof, x) {
 }
 
 function saveData(index, type, data) {
-  var doc = {index:index, type:type, id:data.dtTransmitted, body: data };
+  var doc = {index:index, type:type, id:data.dtTransmitted+data.sensorType+data.cid, body: data };
   logger.trace('saveData : ', doc)
   queryProvider.insert(doc);
 }
