@@ -50,7 +50,13 @@
 		"clustering_detail" : "clustering_detail",
 		"ad_pattern_data" : "ad_pattern_data",
 		"ad_pattern_info" : "ad_pattern_info",
-		"ad_pattern_matching" : "ad_pattern_matching"
+		"ad_pattern_matching" : "ad_pattern_matching",
+		"notching_oee_pattern_data" : "efmm_notching_oee_pattern_data",
+		"notching_oee_pattern_info" : "efmm_notching_oee_pattern_info",
+		"notching_oee_pattern_matching" : "efmm_notching_oee_pattern_matching",
+		"stacking_oee_pattern_data" : "efmm_stacking_oee_pattern_data",
+		"stacking_oee_pattern_info" : "efmm_stacking_oee_pattern_info",
+		"stacking_oee_pattern_matching" : "efmm_stacking_oee_pattern_matching"
 	},
 	"analysis": {
 		"#host" : "localhost",
