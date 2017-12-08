@@ -1,0 +1,98 @@
+extends ../efmm-layout01
+block style
+  link(rel='stylesheet', href='/efmm/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+  link(rel='stylesheet', href='/efmm/assets/plugins/bootstrap-treeview/bootstrap-treeview.css')
+  link(rel='stylesheet', href='/efmm/css/analysis_pattern.css')
+block script
+  script(type='text/javascript', src='/efmm/assets/scripts/d3_dc.js')
+  script(type='text/javascript', src='/efmm/assets/scripts/colorbrewer.js')
+  script(type='text/javascript', src='/efmm/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+  script(type='text/javascript', src='/efmm/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
+  script(src='/common/assets/scripts/page/table-managed.js')
+  script(src='/efmm/assets/scripts/vue.min.js')
+  script(src='/efmm/assets/plugins/bootstrap-treeview/bootstrap-treeview.js', type='text/javascript')
+  script(type='text/javascript', src="/common/scripts/util.js")
+  script(type='text/javascript', src="/efmm/scripts/analysis_pattern.js")
+
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Pattern management
+        ol.breadcrumb
+          li
+            a(href='/dashboard') Home
+          li
+            a(href='#') Analysys
+          li.active Pattern management
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Date selection
+            .portlet-body.form
+              form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .row
+                    label.control-label.col-md-1 Date Range
+                    .col-md-3
+                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
+                        input#sdate.form-control(type='text', name='from' value='')
+                        span.input-group-addon to
+                        input#edate.form-control(type='text', name='to' value='')
+                    .col-md-1.form-inline
+                      button#btn_search.btn.blue
+                        i.fa.fa-search  Search
+      .row
+        .col-md-2
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Pattern list
+                //- span.caption-helper  By Created date
+            .portlet-body
+              .scroller(style='height: 450px;', data-always-visible='1', data-rail-visible='0')
+                table#patternList.table.table-hover.table-light
+        .col-md-2
+          .portlet.light.bordered.tasks-widget
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Pattern Group
+                //- span.caption-helper  Created Patterns at
+                label#lblCreatedDate
+            .portlet-body
+              .scroller(style='height: 450px;', data-always-visible='1', data-rail-visible='0')
+                #patternTree
+        .col-md-4
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Patterns
+                span.patternGroupLabel.caption-helper  of group :
+                label#lblGroup.patternGroupLabel.control-label.bold
+              .tools
+                - const statuses = [{value: 'Status for All'}, {value: 'normal'}, {value: 'anomaly'}, {value: 'caution'}]
+                select#allStatus.statusUpdate
+                  each allStatus in statuses
+                    option(value=(allStatus.value)) #{allStatus.value}
+                button#btnBatchUpdate.statusUpdate.btn.blue(type='button') Update
+            .portlet-body
+              #sample
+        .col-md-4
+          .portlet.light.bordered.tasks-widget(style='height:545px;')
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Segment
+                span.caption-helper  Pattern shape(120 minutes)
+              .tools
+                a.collapse(href='javascript:;')
+                a.config(href='#portlet-config', data-toggle='modal')
+                a.reload(href='javascript:;')
+                a.fullscreen(href='javascript:;')
+                a.remove(href='javascript:;')
+            .portlet-body
+              //- 차트 들어갈 부분
+              .chart(style='height:500px;')
+                #patternChart

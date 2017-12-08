@@ -1,27 +1,27 @@
-$(document).ready(function(e) {      
+$(document).ready(function(e) {
   getData();
 });
 
 var liveValue = [];
-setInterval(function() { 
+setInterval(function() {
   var in_data = { url : "/analysis/restapi/getClusterNodeLive", type : "GET", data : {} };
-  ajaxTypeData(in_data, function(result){  
-    if (result.rtnCode.code == "0000") {                        
+  ajaxTypeData(in_data, function(result){
+    if (result.rtnCode.code == "0000") {
       if(result.rtnData.length == 1){
-        liveValue = result.rtnData[0];            
+        liveValue = result.rtnData[0];
       }
     }
-  });  
+  });
 }, 5*1000);
 
-function getData(){    
+function getData(){
   var in_data = { url : "/analysis/restapi/getAnomalyChartData", type : "GET", data : {} };
-  ajaxTypeData(in_data, function(result){  
+  ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {
-      var raw = result.raw;      
-      var point = new Date(result.pattern.timestamp).getTime(), start = point -50*60*1000, end = point+10*60*1000;      
-      var now = new Date().getTime();      
-      var tot = { "voltage" : [], "ampere" : [], "active_power" : [], "power_factor" : [] };    
+      var raw = result.raw;
+      var point = new Date(result.pattern.timestamp).getTime(), start = point -50*60*1000, end = point+10*60*1000;
+      var now = new Date().getTime();
+      var tot = { "voltage" : [], "ampere" : [], "active_power" : [], "power_factor" : [] };
       for(key in tot){
         drawChart(raw, result.tot[key], start, end, now, point, now-point, key, '#'+key, result.pattern);
       }
@@ -30,31 +30,31 @@ function getData(){
       console.log('now\n'+new Date(now));
       console.log('end\n'+new Date(end));
     }
-  });  
+  });
 }
 
 function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern) {
   var compare = tot.data;
   var apt = tot.apt;
   var cpt = tot.cpt;
-  oriEnd = end;    
-  var limit = 60,    duration = 1000;   
-  
+  oriEnd = end;
+  var limit = 60,    duration = 1000;
+
   var margin = {top: 10, right: 50, bottom: 30, left: 50},
   width = window.innerWidth*0.88 - margin.left - margin.right,
-  height = 400 - margin.top - margin.bottom;  
-  
+  height = 400 - margin.top - margin.bottom;
+
   if(pattern[id].status == "normal"){
-    var color = 'green';    
-  } else if(pattern[id].status == "caution"){ 
-    var color = 'blue';    
-  } else if(pattern[id].status == "anomaly"){   
+    var color = 'green';
+  } else if(pattern[id].status == "caution"){
+    var color = 'blue';
+  } else if(pattern[id].status == "anomaly"){
     var color = 'red';
   } else {
     var color = 'gray';
   }
-  
-  liveValue = raw[raw.length-1];        
+
+  liveValue = raw[raw.length-1];
   var groups = {
     output: {
       value: liveValue[id],
@@ -65,7 +65,7 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
     }
   }
 
-  now = new Date(liveValue.event_time).getTime();        
+  now = new Date(liveValue.event_time).getTime();
   var x = d3.time.scale()
     .domain([start, end])
     .range([0, width]);
@@ -73,7 +73,7 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
   var yStart = (tot.min*0.1 < 1 ? 0 : tot.min*0.95);
   var yEnd = (tot.max*0.1 < 20 ? tot.max*1.25 : tot.max*1.05);
 
-  var y = d3.scale.linear()    
+  var y = d3.scale.linear()
     .domain([yStart, yEnd])
     .range([height, 3]);
 
@@ -86,18 +86,18 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
     .interpolate('basis')
     .x(function(d) { return x(new Date(d.event_time)); })
     .y(function(d) { return y(d[id]); });
-  
+
   var compareline = setLine(d3, x, y, "cardinal", "date", "center");
-  var compareline2 = setLine(d3, x, y, "cardinal", "date", "center2");  
+  var compareline2 = setLine(d3, x, y, "cardinal", "date", "center2");
   var compareline3 = setLine(d3, x, y, "cardinal", "date", "center3");
-  
+
   var upperOuterArea = setArea(d3, x, y, "basis", "date", "max", "upper");
   var upperInnerArea = setArea(d3, x, y, "basis", "date", "upper", "center");
-  var lowerInnerArea = setArea(d3, x, y, "basis", "date", "center", "lower");  
+  var lowerInnerArea = setArea(d3, x, y, "basis", "date", "center", "lower");
   var lowerOuterArea = setArea(d3, x, y, "basis", "date", "lower", "min");
-  
+
   var svg = d3.select(chart_id)
-    .append('svg')    
+    .append('svg')
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
@@ -107,7 +107,7 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
     .call(x.axis = d3.svg.axis().scale(x).orient('bottom'));
 
   var yaxis = svg.append('g')
-    .attr('class', 'y axis')   
+    .attr('class', 'y axis')
     .call(y.axis = d3.svg.axis().scale(y).orient('left'));
 
   var legendWidth  = 380, legendHeight = 55;
@@ -141,7 +141,7 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
   rectLegendBG(status, 'status-bg', statusWidth, statusHeight);
   textLegend(status, 20-pattern[id].status.length, 15, pattern[id].status);
 
-  status.append('circle')    
+  status.append('circle')
     .attr('class', 'sign')
     .attr('cy',  34)
     .attr('cx', 32)
@@ -152,8 +152,8 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
   svgPath(svg, compare, 'area lower inner', lowerInnerArea);
   svgPath(svg, compare, 'area upper outer', upperOuterArea);
   svgPath(svg, compare, 'area lower outer', lowerOuterArea);
-  
-  svgPath(svg, compare, 'compareline3', compareline);  
+
+  svgPath(svg, compare, 'compareline3', compareline);
   svgPath(svg, compare, 'compareline2', compareline);
   svgPath(svg, compare, 'compareline', compareline);
 
@@ -162,105 +162,105 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
   var formatTime = d3.time.format("%I:%M:%S");
 
   // Define the div for the tooltip
-  var div = d3.select("body").append("div") 
-    .attr("class", "tooltip")       
+  var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
     .style("opacity", 0);
 
   // Add the scatterplot
-  svg.selectAll("dot1")  
-    .data(raw)     
-    .enter().append("circle")               
-    .attr("r", 5)   
+  svg.selectAll("dot1")
+    .data(raw)
+    .enter().append("circle")
+    .attr("r", 5)
     .attr('opacity', 0)
-    .attr("cx", function(d) { return x(new Date(d.event_time)); })     
-    .attr("cy", function(d) { return y(d[id]); })   
-    .on("mouseover", function(d) {    
-      divTransition(div, 200, 1);    
-      div .html(formatTime(new Date(d.event_time)) + "<br/>"  + d[id])  
-        .style("left", (d3.event.pageX) + "px")   
-        .style("top", (d3.event.pageY - 28) + "px");  
-    })          
-    .on("mouseout", function(d) {   
-        divTransition(div, 500, 0); 
+    .attr("cx", function(d) { return x(new Date(d.event_time)); })
+    .attr("cy", function(d) { return y(d[id]); })
+    .on("mouseover", function(d) {
+      divTransition(div, 200, 1);
+      div .html(formatTime(new Date(d.event_time)) + "<br/>"  + d[id])
+        .style("left", (d3.event.pageX) + "px")
+        .style("top", (d3.event.pageY - 28) + "px");
+    })
+    .on("mouseout", function(d) {
+        divTransition(div, 500, 0);
     });
       // Add the scatterplot
   svgCircle(svg, x, y, compare, "dot2", 5, 0, "date", "center")
-    .on("mouseover", function(d, i) {    
-      divTransition(div, 200, 1);      
-      div .html(d.center.toFixed(3))  
-          .style("left", (d3.event.pageX) + "px")   
-          .style("top", (d3.event.pageY - 28) + "px");  
+    .on("mouseover", function(d, i) {
+      divTransition(div, 200, 1);
+      div .html(d.center.toFixed(3))
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
     })
-    .on("mouseout", function(d) {   
-         divTransition(div, 500, 0); 
+    .on("mouseout", function(d) {
+         divTransition(div, 500, 0);
     });
 
   var ddata = [];
   var circle = svgCircle(svg, x, y, ddata, "dot3", 5, 0.5, "date", "value")
-    .on("mouseover", function(d) {    
-      divTransition(div, 200, 1); 
-      div .html(formatTime(new Date(d.date)) + "<br/>"  + d.value)  
-          .style("left", (d3.event.pageX) + "px")   
-          .style("top", (d3.event.pageY - 28) + "px");  
-    })          
-    .on("mouseout", function(d) {   
-        divTransition(div, 500, 0); 
+    .on("mouseover", function(d) {
+      divTransition(div, 200, 1);
+      div .html(formatTime(new Date(d.date)) + "<br/>"  + d.value)
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+    })
+    .on("mouseout", function(d) {
+        divTransition(div, 500, 0);
     });
 
    var circle = svgCircle(svg, x, y, cpt, "dot4", 3, 1, "date", "value")
     .attr('class', 'cpt')
     .attr("fill", "blue")
-    .on("mouseover", function(d) {    
-      divTransition(div, 200, 1).style("fill", "yellow");    
-      div .html('caution</br>'+d.value)  
-          .style("left", (d3.event.pageX) + "px")   
-          .style("top", (d3.event.pageY - 28) + "px");  
-    })          
-    .on("mouseout", function(d) {   
-      divTransition(div, 500, 0); 
-    });   
+    .on("mouseover", function(d) {
+      divTransition(div, 200, 1).style("fill", "yellow");
+      div .html('caution</br>'+d.value)
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+    })
+    .on("mouseout", function(d) {
+      divTransition(div, 500, 0);
+    });
 
   var circle =svgCircle(svg, x, y, apt, "dot5", 3, 0.1, "date", "value")
     .attr('class', 'apt')
     .attr("fill", "red")
-    .on("mouseover", function(d) {    
+    .on("mouseover", function(d) {
       divTransition(div, 200, 1);
-      div .html('anomaly</br>'+d.value)  
-          .style("left", (d3.event.pageX) + "px")   
-          .style("top", (d3.event.pageY - 28) + "px");  
-    })          
-    .on("mouseout", function(d) {   
-      divTransition(div, 500, 0); 
-    });   
+      div .html('anomaly</br>'+d.value)
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+    })
+    .on("mouseout", function(d) {
+      divTransition(div, 500, 0);
+    });
 
   var paths = svg.append('g');
 
   for (var name in groups) {
     var group = groups[name];
-    group.path = paths.append('path')    
+    group.path = paths.append('path')
       .data([group.data])
       .attr('class', name + ' group')
       .style('stroke', group.color);
   }
-  
+
   oriNow = now;
-  function tick() {           
-    now = new Date().getTime();        
-    value = liveValue[id];            
+  function tick() {
+    now = new Date().getTime();
+    value = liveValue[id];
     for (var name in groups) {
       var group = groups[name];
       //group.data.push(group.value) // Real values arrive at irregular intervals
       group.value = value;
       group.data.push(value);
       group.path.attr('d', line);
-    }      
-    ddata.push({ date:now, value:value});     
+    }
+    ddata.push({ date:now, value:value});
     var d = ddata[ddata.length-1];
 
-    x.domain([now-50*60*1000+gap, now+10*60*1000-gap]);     
-    //console.log(new Date(now-50*60*1000+gap), new Date(now+10*60*1000-gap));     
+    x.domain([now-50*60*1000+gap, now+10*60*1000-gap]);
+    //console.log(new Date(now-50*60*1000+gap), new Date(now+10*60*1000-gap));
     //x.domain([start,end]);
-    
+
     // Slide paths left
     paths.attr('transform', null)
       .transition()
@@ -269,9 +269,9 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
       // 트랜지션이 끝나는 시점에 동작할 내역(call back)
       .each('end', tick);
 
-    //.attr('transform', 'translate(' + x(now - (limit) * duration) + ')')         
+    //.attr('transform', 'translate(' + x(now - (limit) * duration) + ')')
     if(oriEnd<=now){
-      if(now > oriEnd+3*60*1000) {        
+      if(now > oriEnd+3*60*1000) {
         window.location.reload(true);
       }
       if(now >= (end+2*60*1000)){
@@ -287,10 +287,10 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
             window.location.reload(true);
           }
         });
-      }        
+      }
     }
   }
-  tick();  
+  tick();
 }
 
 var cnt = 0, oriEnd = 0, oriNow = 0;
@@ -353,25 +353,25 @@ function svgSet(svg, append, className, tX, tY){
 function svgPath(svg, data, className, d){
   return svg
     .append('path')
-    .datum(data)     
+    .datum(data)
     .attr('class', className)
     .attr('d', d)
 }
 
 function svgCircle(svg, x, y, data, className, r, opacity, cx, cy) {
   return svg
-    .selectAll(className)  
-    .data(data)     
-    .enter().append("circle")               
-    .attr("r", r)   
+    .selectAll(className)
+    .data(data)
+    .enter().append("circle")
+    .attr("r", r)
     .attr('opacity', opacity)
-    .attr("cx", function(d, i) { return x(d[cx]); })     
+    .attr("cx", function(d, i) { return x(d[cx]); })
     .attr("cy", function(d) { return y(d[cy]); })
 }
 
 function divTransition(div, duration, opacity){
   return div
-    .transition()    
+    .transition()
     .duration(duration)
     .style("opacity", opacity)
 }
