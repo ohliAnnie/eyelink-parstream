@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <queryList>
   <analysis>
-    <query id='selectNotchingOeeRaw'><![CDATA[
+    <query id='selectNotchingOeeRaw'>
+      <![CDATA[
       {
         "index" : #index#,
         "type"  : #type#,
@@ -24,8 +25,64 @@
           }
         }
       }
-    ]]></query>
-    <query id='selectStackingStatus'><![CDATA[
+    ]]>
+    </query>
+
+    <query id='selectPatternList'>
+      <![CDATA[
+      {
+        "index": #INDEX#,
+        "type": #TYPE#,
+        "body": {
+          "size": 10000,
+          "_source" : ["_id" ],
+          "sort": { "_uid": "desc" },
+          "query" : {
+            "bool" : {
+              "should": [
+                { "term": { "_id": #MASTER_ID# }},
+                { "range": {
+                    "da_result.createDate" : {
+                      "gte" : #START_TIMESTAMP#,
+                      "lte" : #END_TIMESTAMP#
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]]>
+    </query>
+    <query id='selectMatchingPattern'>
+      <![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size"   : 10000,
+          "sort" : { "da_result.timestamp" : { "order" : "desc"  } },
+          "query" : {
+            "bool" : {
+              "must" : { "match_all": {} },
+               "filter" : {
+                "range" : {
+                  "da_result.timestamp" : {
+                    "gte" : #START_TIMESTAMP#,
+                    "lte" : #END_TIMESTAMP#
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]>
+    </query>
+
+    <query id='selectStackingStatus'>
+      <![CDATA[
       {
         "index" : #INDEX#,
         "type"  : #TYPE#,
@@ -48,6 +105,7 @@
           }
         }
       }
-    ]]></query>
+    ]]>
+    </query>
   </analysis>
 </queryList>
