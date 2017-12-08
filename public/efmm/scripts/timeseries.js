@@ -13,11 +13,16 @@ $(document).ready(function() {
 });
 
 var chartData = {};
+
 function getData() {  
   var data = { start : $('#baseTime').val(), gap : $('#gap').val()};  
   var in_data = { url : "/timeseries/restapi/getTimeseries", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {            
+    } else {
+      console.log(result)
+      chartData = result.rtnData;
+      console.log(chartData)
     } 
   });
   var dateFormat = 'YYYY-MM-DD';
