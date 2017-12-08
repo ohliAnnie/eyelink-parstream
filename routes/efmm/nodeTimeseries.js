@@ -35,9 +35,13 @@ router.get('/', function(req, res, next) {
         var cid = data[i].cid.buckets;        
         for(j=0; j<cid.length; j++) {
           list[cnt++] = flag+'_'+cid[j].key;
-        }
+        }        
       }
-      outdata.list = list;      
+      outdata.list = list;
+      if(list.length != 0){
+        outdata.match = { chart01 : list[0%list.length], chart02 : list[1%list.length], chart03 : list[2%list.length], chart04 : list[3%list.length] };
+      }      
+      console.log(outdata.match)
     }
     logger.info('mainmenu : %s, outdata : %s', mainmenu.timeseries, JSON.stringify(outdata));     
     res.render(global.config.pcode + '/timeseries/timeseries', outdata);
@@ -59,9 +63,9 @@ router.get('/restapi/getTimeseries', function(req, res, next) {
       var notching = {};
       for(i=0; i<out_data.length; i++){
         var d = out_data[i]._source.data[0];
-        d.dtSensed = Utils.getDateUTC2Local(d.dtSensed, fmt2);
+        d.dtSensed = new Date(d.dtSensed).getTime();
         if(notching[out_data[i]._source.cid] == null){
-          notching[out_data[i]._source.cid] = [];          
+          notching[out_data[i]._source.cid] = [];
         }
         notching[out_data[i]._source.cid][notching[out_data[i]._source.cid].length] = d;
       }      
@@ -75,14 +79,14 @@ router.get('/restapi/getTimeseries', function(req, res, next) {
         var stacking = {};
         for(i=0; i<out_data.length; i++){
           var d = out_data[i]._source.data[0];
-          d.dtSensed = Utils.getDateUTC2Local(d.dtSensed, fmt2);
+          d.dtSensed = new Date(d.dtSensed).getTime();
           if(stacking[out_data[i]._source.cid] == null){
             stacking[out_data[i]._source.cid] = [];          
           }
           stacking[out_data[i]._source.cid][stacking[out_data[i]._source.cid].length] = d;
         }              
       }
-      var data = { notching : notching, stacking : stacking };       
+      var data = { notching : notching, stacking : stacking };             
       res.json({rtnCode: rtnCode, rtnData: data});
     });        
   });

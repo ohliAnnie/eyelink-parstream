@@ -40,7 +40,7 @@ block content
                   .form-group.last
                     label.control-label.col-md-2 Start Time                    
                     .col-md-3
-                      input#baseTime.form-control.form_datetime(size='20', type='text', name='from', value='')
+                      input#baseTime.form-control.form_datetime(size='20', type='text', name='from', value='' data-date-format='YYYY-MM-DD HH:mm:ss')
                     label.control-label.col-md-2 Time Range
                     .col-md-4.form-inline                      
                       select#gap.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Machine')
@@ -55,9 +55,12 @@ block content
             .portlet-title
               .caption
                 select#cid1.form-control.input-small.select2me.form-md-line-input(name='server' value=server)
-                  each data in list                                            
-                   option #{data}
-                button#btn_search.btn.blue.pull-right(onclick='chart01()') Change
+                  each data in list    
+                    if data==match.chart01
+                      option(selected='selected') #{data}
+                    else                                        
+                      option #{data}
+                button#btn_search.btn.blue.pull-right(onclick='drawChart01()') Change
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -65,15 +68,19 @@ block content
                 a.fullscreen(href='javascript:;')
                 a.remove(href='javascript:;')
             .portlet-body
-              .chart#ts-chart01
+              .chart
+                #ts-chart01
         .col-md-6
           .portlet.light.bordered
             .portlet-title
               .caption
                 select#cid2.form-control.input-small.select2me.form-md-line-input(name='server' value=server)
-                  each data in list                                            
-                   option #{data}
-                button#btn_search.btn.blue.pull-right(onclick='chart02()') Change
+                  each data in list    
+                    if data==match.chart02
+                      option(selected='selected') #{data}
+                    else                                        
+                      option #{data}
+                button#btn_search.btn.blue.pull-right(onclick='drawChart02()') Change
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -81,16 +88,20 @@ block content
                 a.fullscreen(href='javascript:;')
                 a.remove(href='javascript:;')
             .portlet-body
-              .chart#ts-chart02
+              .chart
+                #ts-chart02
       .row
         .col-md-6
           .portlet.light
             .portlet-title
               .caption
-                select#cid3.form-control.input-small.select2me.form-md-line-input(name='server' value=server)
-                  each data in list                                            
-                   option #{data}
-                button#btn_search.btn.blue.pull-right(onclick='chart03()') Change
+                select#cid3.form-control.input-small.select2me.form-md-line-input(name='server' value=server)                  
+                  each data in list    
+                    if data==match.chart03
+                      option(selected='selected') #{data}
+                    else                                        
+                      option #{data}
+                button#btn_search.btn.blue.pull-right(onclick='drawChart03()') Change
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -98,15 +109,19 @@ block content
                 a.fullscreen(href='javascript:;')
                 a.remove(href='javascript:;')
             .portlet-body
-              .chart#ts-chart03
+              .chart
+                #ts-chart03
         .col-md-6
           .portlet.light.bordered
             .portlet-title
               .caption
                 select#cid4.form-control.input-small.select2me.form-md-line-input(name='server' value=server)
-                  each data in list                                            
-                   option #{data}
-                button#btn_search.btn.blue.pull-right(onclick='chart04()') Change
+                  each data in list    
+                    if data==match.chart04
+                      option(selected='selected') #{data}
+                    else                                        
+                      option #{data}
+                button#btn_search.btn.blue.pull-right(onclick='drawChart04()') Change
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -114,7 +129,8 @@ block content
                 a.fullscreen(href='javascript:;')
                 a.remove(href='javascript:;')
             .portlet-body
-              .chart#ts-chart04
+              .chart
+                #ts-chart04
 
 
 

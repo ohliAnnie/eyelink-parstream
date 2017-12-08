@@ -13,16 +13,18 @@ $(document).ready(function() {
 });
 
 var chartData = {};
-
+var vList = ["overall_oee", "availability", "performance", "quality"];
 function getData() {  
   var data = { start : $('#baseTime').val(), gap : $('#gap').val()};  
   var in_data = { url : "/timeseries/restapi/getTimeseries", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
-    if (result.rtnCode.code == "0000") {            
-    } else {
-      console.log(result)
+    console.log(result)
+    if (result.rtnCode.code == "0000") {      
       chartData = result.rtnData;
-      console.log(chartData)
+      drawChart01();
+      drawChart02();
+      drawChart03();
+      drawChart04();
     } 
   });
   var dateFormat = 'YYYY-MM-DD';
@@ -37,38 +39,11 @@ function getData() {
   //drawTimeseries(rawData);
 }
 
-function drawTimeseries(data) {
-  console.log(data);
-  d3.selectAll("svg").remove();
-
+function drawChart01(){  
+  d3.select("#ts-chart01").select("svg").remove();
+  var id = $('#cid1').val().split('_');
+  var data = chartData[id[0]][id[1]];
   var chartName = '#ts-chart01';
-  var vList = ["availability", "performance"];    
-  drawChart01(data, chartName, 'index', vList);
-  chart01(chartName);
-
-  var chartName = '#ts-chart02';
-  var vList = ["availability", "performance"];    
-  drawChart02(data, chartName, 'index', vList);
-  chart02(chartName);
-
-  var chartName = '#ts-chart03';
-  var vList = ["availability", "performance"];    
-  drawChart03(data, chartName, 'index', vList);
-  chart03(chartName);
-
-  var chartName = '#ts-chart04';
-  var vList = ["availability", "performance"];    
-  drawChart04(data, chartName, 'index', vList);
-  chart04(chartName);
-
-}
-
-function chart01(){
-  console.log($('#cid1').val());
-}
-
-function drawChart01(data, chartName, xValue, vList){
-  console.log(vList)
   chart01 = d3.timeseries()    
     // .xscale.tickFormat(d3.time.format("%b %d"))
     .width($(chartName).parent().width()-10)
@@ -76,11 +51,16 @@ function drawChart01(data, chartName, xValue, vList){
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);    
   for(i=0; i<vList.length; i++) {
-    chart01.addSerie(data,{x:xValue,y:vList[i]},{interpolate:'linear'});
-  }
+    chart01.addSerie(data,{x:'dtSensed',y:vList[i]},{interpolate:'linear'});
+  }  
+  chart01(chartName);
 }
 
-function drawChart02(data, chartName, xValue, vList){
+function drawChart02(){
+  d3.select("#ts-chart02").select("svg").remove();
+  var id = $('#cid2').val().split('_');
+  var data = chartData[id[0]][id[1]];
+  var chartName = '#ts-chart02';    
   chart02 = d3.timeseries()    
     // .xscale.tickFormat(d3.time.format("%b %d"))
     .width($(chartName).parent().width()-10)
@@ -88,12 +68,16 @@ function drawChart02(data, chartName, xValue, vList){
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);    
   for(i=0; i<vList.length; i++) {
-    chart02.addSerie(data,{x:xValue,y:vList[i]},{interpolate:'linear'});
+    chart02.addSerie(data,{x:'dtSensed',y:vList[i]},{interpolate:'linear'});
   }
+  chart02(chartName);
 }
 
-
-function drawChart03(data, chartName, xValue, vList){
+function drawChart03(){
+  d3.select("#ts-chart03").select("svg").remove();
+  var id = $('#cid2').val().split('_');
+  var data = chartData[id[0]][id[1]];  
+  var chartName = '#ts-chart03';  
   chart03 = d3.timeseries()    
     // .xscale.tickFormat(d3.time.format("%b %d"))
     .width($(chartName).parent().width()-10)
@@ -101,11 +85,16 @@ function drawChart03(data, chartName, xValue, vList){
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);    
   for(i=0; i<vList.length; i++) {
-    chart03.addSerie(data,{x:xValue,y:vList[i]},{interpolate:'linear'});
-  }
+    chart03.addSerie(data,{x:'dtSensed',y:vList[i]},{interpolate:'linear'});
+  }  
+  chart03(chartName);
 }
 
-function drawChart04(data, chartName, xValue, vList){
+function drawChart04(){
+  d3.select("#ts-chart04").select("svg").remove();
+  var id = $('#cid4').val().split('_');  
+  var data = chartData[id[0]][id[1]];
+  var chartName = '#ts-chart04';  
   chart04 = d3.timeseries()    
     // .xscale.tickFormat(d3.time.format("%b %d"))
     .width($(chartName).parent().width()-10)
@@ -113,6 +102,8 @@ function drawChart04(data, chartName, xValue, vList){
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);    
   for(i=0; i<vList.length; i++) {
-    chart04.addSerie(data,{x:xValue,y:vList[i]},{interpolate:'linear'});
+    chart04.addSerie(data,{x:'dtSensed',y:vList[i]},{interpolate:'linear'});
   }
+  chart04(chartName);
 }
+
