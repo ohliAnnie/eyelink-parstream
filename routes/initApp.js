@@ -10,19 +10,34 @@ var queryProvider = new QueryProvider();
 function loadQuery(callback) {
   var parser = new xml2js.Parser();
 
-  logger.info('loadQuery -> ' + __dirname + '/dao/' + global.config.fetchData.database + '/' + global.config.pcode + '/dbquery.xml')
-  fs.readFile(__dirname + '/dao/' + global.config.fetchData.database + '/' + global.config.pcode + '/dbquery.xml', function(err, data) {
-    parser.parseString(data, function (err, result) {
-    // console.log('initApps/loadQuery -> xml file');
-      // result = cleanXML(result);
-      result = JSON.stringify(result);
-      // console.log('initApps/loadQuery -> %j', result);
-      result = JSON.parse(result)
-      global.query = result;
-      // console.log('initApps/loadQuery : ' + result.dashboard[0]);
-      // console.log('Done');
-      callback();
-    });
+  // global query 최기화.
+  global.query = {"queryList" : {}};
+
+  var datafilepath = __dirname + '/dao/' + global.config.fetchData.database + '/' + global.config.pcode + '/';
+  // Directory 내 파일 list를 읽는다.
+  fs.readdirSync(datafilepath).forEach(function(file) {
+    var ext = file.split('.').pop();
+    if (ext == "xml") {
+      logger.info('loadQuery] found query file [%s]', datafilepath + file)
+      fs.readFile(datafilepath + file, function(err, data) {
+        parser.parseString(data, function (err, result) {
+          // result = cleanXML(result);
+          result = JSON.stringify(result);
+          // logger.debug('loadQuery] xml %j', result);
+          result = JSON.parse(result)
+          // query_xxx.xml 파일에서 읽어서 querylist를 global.query에 추가한다.
+          var keys = Object.keys(result.queryList);
+          keys.forEach(function(key) {
+            global.query.queryList[key] = result.queryList[key];
+          });
+          // logger.debug('loadQuery] global.query [%s]', JSON.stringify(global.query));
+
+          callback();
+        });
+      });
+    } else {
+      logger.info('loadQuery] not load file[%s] in %s', file, datafilepath);
+    }
   });
 }
 

@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<queryList>
+  <management>
+    <query id='selectList'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type"  : #TYPE#,
+        "body" : {
+          "size": 100000,
+          "_source" : "data",
+          "sort": { "dtTransmitted" : "desc" },
+          "query" :
+          {
+           "match" : {
+             "sensorType" : {
+                "query" :  "recipe",
+                "operator" : "and"
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectStackingStatus'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type"  : #TYPE#,
+        "body" : {
+          "size": 100000,
+          "_source" : [ "data" ],
+          "sort": { "dtTransmitted": { "order" : "asc" } },
+          "query" : {
+            "bool" : {
+              "must": [
+                {"term" : {"cid" : #CID#}},
+                {"term" : {"sensorType" : #STYPE#}}
+              ],
+              "filter" : {
+                "range" : {
+                  "dtTransmitted" : { "gte" : #START#, "lte" : #END# }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+  </management>
+</queryList>
