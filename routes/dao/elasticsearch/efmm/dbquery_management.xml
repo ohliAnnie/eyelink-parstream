@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <queryList>
   <management>
-    <query id='selectList'><![CDATA[
+    <query id='selectRecipeList'><![CDATA[
       {
         "index" : #INDEX#,
         "type"  : #TYPE#,
@@ -21,27 +21,42 @@
         }
       }
     ]]></query>
-    <query id='selectStackingStatus'><![CDATA[
+    <query id='selectCheckId'><![CDATA[
       {
-        "index" : #INDEX#,
-        "type"  : #TYPE#,
+        "index" : "efmm_management",
+        "type"  : "management",
         "body" : {
-          "size": 100000,
           "_source" : [ "data" ],
-          "sort": { "dtTransmitted": { "order" : "asc" } },
           "query" : {
             "bool" : {
               "must": [
-                {"term" : {"cid" : #CID#}},
-                {"term" : {"sensorType" : #STYPE#}}
-              ],
-              "filter" : {
-                "range" : {
-                  "dtTransmitted" : { "gte" : #START#, "lte" : #END# }
-                }
-              }
+                {"term" : {"flag" : "recipe"}},
+                {"term" : {"id" : #ID#}}
+              ]
             }
           }
+        }
+      }
+    ]]></query>
+    <query id='insertRecipe'><![CDATA[
+      {
+        "index" : "efmm_management",
+        "type" : "management",
+        "body" : {
+          "flag" : "recipe",
+          "step" : #step#,
+          "cid" : #cid#,
+          "id" : #id#,
+          "type" : #type#,
+          "name" : #name#,
+          "description" : #description#,
+          "unit" : #unit#,
+          "stepno" : #stepno#,
+          "tagname" : #tagname#,
+          "datatype" : #datatype#,
+          "datasize" : #datasize#,
+          "datavalue" : #datavalue#,
+          "lastupdate" : "now"
         }
       }
     ]]></query>
