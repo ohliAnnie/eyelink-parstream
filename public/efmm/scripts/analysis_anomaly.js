@@ -2,9 +2,14 @@ $(document).ready(function(e) {
   getData();
 
   $('#selections.select').change(function(){
+    // TODO : 전체 차트 refresh
     getData();
   });
 });
+
+const past = 55*60*1000;
+const future = 5*60*1000
+const dataCntPerTick = 10;
 
 var liveValue = [];
 setInterval(function() {
@@ -13,14 +18,15 @@ setInterval(function() {
   var in_data = { url : "/analysis/restapi/getOeeDataLive", type : "GET", data : {step:step, machine:machine} };
   ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {
+      // TODO : 라이브 데이터를 10초에 한번 10건씩 조회하긴하는데 그 중 한개만 사용 중, 10개를 다음 데이터 읽어오기 전까지 하나씩 찍어주어야 하는데...
       if(result.rtnData.length > 0){
         liveValue = result.rtnData[0];
+
       }
     }
   });
-}, 10*1000);
-const past = 30*60*1000;
-const future = 10*60*1000
+}, dataCntPerTick*1000);
+
 
 function getData(){
   let step = $('#step option:selected').text();
@@ -35,9 +41,10 @@ function getData(){
       // var now = new Date().getTime();
       var now = point;
       var tot = { "overall_oee" : [], "availability" : [], "quality" : [], "performance" : []  };
+
       for(factor in tot){
-        // drawChart(raw, result.tot[factor], start, end, now, point, now-point, factor, '#'+factor, result.pattern);
-        drawChart(raw, 'result.tot[factor]', start, end, now, point, now-point, factor, '#'+factor, 'result.pattern');
+        drawChart(raw, result.tot[factor], start, end, now, point, now-point, factor, '#'+factor, result.pattern, step, machine);
+        // drawChart(raw, 'result.tot[factor]', start, end, now, point, now-point, factor, '#'+factor, 'result.pattern');
       }
       // console.log('point\n'+new Date(point));
       // console.log('start\n'+new Date(start));
@@ -47,35 +54,30 @@ function getData(){
   });
 }
 
-function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, pattern) {
-  // var compare = tot.data;
-  // var apt = tot.apt;
-  // var cpt = tot.cpt;
+function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, pattern, step, machine) {
+
+  var step = step;
+  var cid = machine;
+  var compare = tot.data;
+  var apt = tot.apt;
+  var cpt = tot.cpt;
+
   let oriEnd = end;
   var limit = 60,    duration = 1000;
 
   var color = 'green';
-  // if(pattern[factor].status.status == "normal"){
-  //   var color = 'green';
-  // } else if(pattern[factor].status.status == "caution"){
-  //   var color = 'blue';
-  // } else if(pattern[factor].status.status == "anomaly"){
-  //   var color = 'red';
-  // } else {
-  //   var color = 'gray';
-  // }
+  if(pattern[factor].status.status == "normal"){
+    var color = 'green';
+  } else if(pattern[factor].status.status == "caution"){
+    var color = 'blue';
+  } else if(pattern[factor].status.status == "anomaly"){
+    var color = 'red';
+  } else {
+    var color = 'gray';
+  }
 
   liveValue = raw[0];
-
-  var groups = {
-    output: {
-      value: liveValue[factor] * 100,
-      color: 'black',
-      data: d3.range(0).map(function() {
-        return 0
-      })
-    }
-  }
+  console.log('liveValue: ',liveValue);
 
   var margin = {top: 10, right: 50, bottom: 30, left: 50};
   // width = window.innerWidth*0.88 - margin.left - margin.right,
@@ -88,12 +90,11 @@ function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, patt
     .domain([start, end])
     .range([0, width]);
 
-  x.tickFormat(d3.time.format("%H:%M"))
   // Y 축 범위 설정
-  let yStart = (tot.min*0.1 < 1 ? 0 : tot.min*0.95);
-  let yEnd = (tot.max*0.1 < 20 ? tot.max*1.25 : tot.max*1.05);
-  yStart = 0;
-  yEnd = 125; // TODO : 위 자동 계산 식 이용하기
+  let yStart = (tot.min * 100 * 0.5);
+  let yEnd = (tot.max * 100 * 1.2);
+  // yStart = 0;
+  // yEnd = 125; // TODO : 위 자동 계산 식 이용하기
   var y = d3.scale.linear()
     .domain([yStart, yEnd])
     .range([height, 3]);
@@ -134,8 +135,6 @@ function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, patt
 
   var legendWidth  = 385, legendHeight = 55;
   var legend = svgSet(svg, 'g', 'legend', margin.left , 0);
-  // var legendWidth  = 128, legendHeight = 165;
-  // var legend = svgSet(svg, 'g', 'legend', chartWidth - legendWidth*2 , 10);
 
   rectLegendBG(legend, 'legend-bg', legendWidth, legendHeight);
 
@@ -163,9 +162,9 @@ function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, patt
 
   rectLegendBG(status, 'status-bg', statusWidth, statusHeight);
   // console.log(pattern[factor].status.status.length  )
-  // var length = (pattern[factor].status.status.length<8)?pattern[factor].status.status.length:pattern[factor].status.status.length*1.3;
-  // textLegend(status, 20-length, 15, pattern[factor].status.status);
-  textLegend(status, 20-'normal'.length, 15, 'normal');
+  var length = (pattern[factor].status.status.length<8)?pattern[factor].status.status.length:pattern[factor].status.status.length*1.3;
+  textLegend(status, 20-length, 15, pattern[factor].status.status);
+  // textLegend(status, 20-'normal'.length, 15, 'normal');
 
   status.append('circle')
     .attr('class', 'sign')
@@ -174,18 +173,16 @@ function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, patt
     .attr('r', 12)
     .style("fill", color );
 
-  // svgPath(svg, compare, 'area upper inner', upperInnerArea);
-  // svgPath(svg, compare, 'area lower inner', lowerInnerArea);
-  // svgPath(svg, compare, 'area upper outer', upperOuterArea);
-  // svgPath(svg, compare, 'area lower outer', lowerOuterArea);
-  //
-  // svgPath(svg, compare, 'compareline3', compareline);
-  // svgPath(svg, compare, 'compareline2', compareline);
-  // svgPath(svg, compare, 'compareline', compareline);
+  svgPath(svg, compare, 'area upper inner', upperInnerArea);
+  svgPath(svg, compare, 'area lower inner', lowerInnerArea);
+  svgPath(svg, compare, 'area upper outer', upperOuterArea);
+  svgPath(svg, compare, 'area lower outer', lowerOuterArea);
+
+  svgPath(svg, compare, 'compareline3', compareline);
+  svgPath(svg, compare, 'compareline2', compareline);
+  svgPath(svg, compare, 'compareline', compareline);
 
   svgPath(svg, raw, 'valueline', valuelineFunction);
-
-
 
   // Define the div for the tooltip
   var div = d3.select("body").append("div")
@@ -199,12 +196,10 @@ function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, patt
     .enter().append("circle")
     .attr("r", 5)
     .attr('opacity', 0)
-    // .attr("cx", function(d) { return x(new Date(d.event_time)); })
     .attr("cx", function(d) { return x(new Date(d.dtSensed)); })
     .attr("cy", function(d) { return y(d[factor]); })
     .on("mouseover", function(d) {
       divTransition(div, 200, 1);
-      // div .html(formatTime(new Date(d.event_time)) + "<br/>"  + d[factor])
       div .html(formatTime(new Date(d.dtSensed)) + "<br/>"  + d[factor])
         .style("left", (d3.event.pageX) + "px")
         .style("top", (d3.event.pageY - 28) + "px");
@@ -213,16 +208,16 @@ function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, patt
         divTransition(div, 500, 0);
     });
       // Add the scatterplot
-  // svgCircle(svg, x, y, compare, "dot2", 5, 0, "date", "center")
-  //   .on("mouseover", function(d, i) {
-  //     divTransition(div, 200, 1);
-  //     div .html(d.center.toFixed(3))
-  //         .style("left", (d3.event.pageX) + "px")
-  //         .style("top", (d3.event.pageY - 28) + "px");
-  //   })
-  //   .on("mouseout", function(d) {
-  //        divTransition(div, 500, 0);
-  //   });
+  svgCircle(svg, x, y, compare, "dot2", 5, 0, "date", "center")
+    .on("mouseover", function(d, i) {
+      divTransition(div, 200, 1);
+      div .html(d.center.toFixed(3))
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+    })
+    .on("mouseout", function(d) {
+         divTransition(div, 500, 0);
+    });
 
   var ddata = [];
   var circle = svgCircle(svg, x, y, ddata, "dot3", 5, 0.5, "date", "value")
@@ -236,33 +231,43 @@ function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, patt
         divTransition(div, 500, 0);
     });
 
-  //  var circle = svgCircle(svg, x, y, cpt, "dot4", 3, 1, "date", "value")
-  //   .attr('class', 'cpt')
-  //   .attr("fill", "blue")
-  //   .on("mouseover", function(d) {
-  //     divTransition(div, 200, 1).style("fill", "yellow");
-  //     div .html('caution</br>'+d.value)
-  //         .style("left", (d3.event.pageX) + "px")
-  //         .style("top", (d3.event.pageY - 28) + "px");
-  //   })
-  //   .on("mouseout", function(d) {
-  //     divTransition(div, 500, 0);
-  //   });
-  //
-  // var circle = svgCircle(svg, x, y, apt, "dot5", 3, 0.1, "date", "value")
-  //   .attr('class', 'apt')
-  //   .attr("fill", "red")
-  //   .on("mouseover", function(d) {
-  //     divTransition(div, 200, 1);
-  //     div .html('anomaly</br>'+d.value)
-  //         .style("left", (d3.event.pageX) + "px")
-  //         .style("top", (d3.event.pageY - 28) + "px");
-  //   })
-  //   .on("mouseout", function(d) {
-  //     divTransition(div, 500, 0);
-  //   });
+   var circle = svgCircle(svg, x, y, cpt, "dot4", 3, 1, "date", "value")
+    .attr('class', 'cpt')
+    .attr("fill", "blue")
+    .on("mouseover", function(d) {
+      divTransition(div, 200, 1).style("fill", "yellow");
+      div .html('caution</br>'+d.value)
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+    })
+    .on("mouseout", function(d) {
+      divTransition(div, 500, 0);
+    });
+
+  var circle = svgCircle(svg, x, y, apt, "dot5", 3, 0.1, "date", "value")
+    .attr('class', 'apt')
+    .attr("fill", "red")
+    .on("mouseover", function(d) {
+      divTransition(div, 200, 1);
+      div .html('anomaly</br>'+d.value)
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+    })
+    .on("mouseout", function(d) {
+      divTransition(div, 500, 0);
+    });
 
   var paths = svg.append('g');
+
+  var groups = {
+    output: {
+      value: liveValue[factor],
+      color: 'black',
+      data: d3.range(0).map(function() {
+        return 0
+      })
+    }
+  }
 
   for (var name in groups) {
     var group = groups[name];
@@ -272,23 +277,21 @@ function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, patt
       .style('stroke', group.color);
   }
 
-  oriNow = now;
+  let oriNow = now;
+
   function tick() {
     now = new Date().getTime();
     value = liveValue[factor];
     for (var name in groups) {
       var group = groups[name];
-      //group.data.push(group.value) // Real values arrive at irregular intervals
       group.value = value;
-      group.data.push(value);
+      group.data.push(value) // Real values arrive at irregular intervals
       group.path.attr('d', lineFunction);
     }
     ddata.push({ date:now, value:value});
     var d = ddata[ddata.length-1];
 
     x.domain([now-past+gap, now+future-gap]);
-    //console.log(new Date(now-50*60*1000+gap), new Date(now+10*60*1000-gap));
-    //x.domain([start,end]);
 
     // Slide paths left
     paths.attr('transform', null)
@@ -308,22 +311,19 @@ function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, patt
       }
       if((oriEnd-end) < 10*1000) {
         oriNow = now;
-        var in_data = { url : "/analysis/restapi/getAnomalyPatternCheck/", type : "GET", data : {} };
-        // ajaxTypeData(in_data, function(result){
-        //   console.log(result.rtnCode.message);
-        //   if (result.rtnCode.code == "0000") {
-        //     console.log('reload');
-        //     window.location.reload(true);
-        //   }
-        // });
+        var in_data = { url : "/analysis/restapi/getAnomalyPatternCheck/", type : "GET", data : {step:step, machine:cid} };
+        ajaxTypeData(in_data, function(result){
+          console.log(result.rtnCode.message);
+          if (result.rtnCode.code == "0000") {
+            console.log('reload');
+            window.location.reload(true);
+          }
+        });
       }
     }
   }
-
   tick();
 }
-
-  var cnt = 0, oriNow = 0;
 
 function setLine(d3, x, y, type, key1, key2) {
   return d3.svg.line()
@@ -396,7 +396,7 @@ function svgCircle(svg, x, y, data, className, r, opacity, cx, cy) {
     .attr("r", r)
     .attr('opacity', opacity)
     .attr("cx", function(d, i) { return x(d[cx]); })
-    .attr("cy", function(d) { return y(d[cy]); })
+    .attr("cy", function(d) { return y(d[cy]*100); })
 }
 
 function divTransition(div, duration, opacity){
@@ -404,4 +404,10 @@ function divTransition(div, duration, opacity){
     .transition()
     .duration(duration)
     .style("opacity", opacity)
+}
+function jsonConcat(o1, o2) {
+ for (var key in o2) {
+  o1[key] = o2[key];
+ }
+ return o1;
 }

@@ -13,8 +13,12 @@ var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis: 'open selecte
 
 var indexStackingOee = global.config.es_index.stacking_oee;
 var indexStackingStatus = global.config.es_index.stacking_status;
+var indexStackingPatternData = global.config.da_index.stacking_oee_pattern_data;
+var indexStackingPatternInfo = global.config.da_index.stacking_oee_pattern_info;
+var indexStackingPatternMatch = global.config.da_index.stacking_oee_pattern_matching;
 
 var indexNotchingOee = global.config.es_index.notching_oee;
+var indexStackingStatus = global.config.es_index.notching_status;
 var indexNotchingPatternData = global.config.da_index.notching_oee_pattern_data;
 var indexNotchingPatternInfo = global.config.da_index.notching_oee_pattern_info;
 var indexNotchingPatternMatch = global.config.da_index.notching_oee_pattern_matching;
@@ -109,13 +113,19 @@ router.get('/restapi/getOeeDataLive', function(req, res, next) {
 
   let flag = req.query.step;
   let cid = req.query.machine;
-  var today = Utils.getToday(fmt2, 'Y', 'Y');
-  var in_data = {
-    // INDEX : indexNotchingOee+'*',
-    INDEX : indexNotchingOee+Utils.getDate(today, fmt2, 0, 0, 0, 1, 'Y', 'Y').split('T')[0].replace(/-/g,'.'),
-    TYPE : "oee",
-    START: Utils.getDate(today, fmt2, 0, 0, 0, -11, 'Y', 'Y'),
-    END: Utils.getDate(today, fmt2, 0, 0, 0, -2, 'Y', 'Y'),
+  let today = Utils.getToday(fmt2, 'Y', 'Y');
+  let startDate = Utils.getDate(today, fmt2, 0, 0, 0, -14, 'Y', 'Y');
+  let endDate = Utils.getDate(today, fmt2, 0, 0, 0, -5, 'Y', 'Y');
+  let startIndexDate = startDate.split('T')[0];
+  let endIndexDate = endDate.split('T')[0];
+  let index = indexNotchingOee+startIndexDate.replace(/-/g,'.');
+  if ( startIndexDate != endIndexDate ) {
+    index += ','+indexNotchingOee+endIndexDate.replace(/-/g,'.');
+  }
+
+  let in_data = {
+    INDEX : index, TYPE : "oee",
+    START: startDate, END: endDate,
     FLAG : flag, CID : cid
   };
   logger.debug('in_data : ',in_data);
@@ -146,17 +156,23 @@ router.get('/restapi/getOeeChartData', function(req, res, next) {
   let flag = req.query.step;
   let cid = req.query.machine;
 
-  var now = Utils.getToday(fmt2, 'Y', 'Y');
-  var in_data = {
-    START: Utils.getDate(now, fmt2, 0, 0, -30, 0, 'Y', 'Y'),
-    END: Utils.getDate(now, fmt2, 0, 0, 0, 10, 'Y', 'Y'),
-    INDEX : indexNotchingOee+Utils.getDate(now, fmt2, 0, 0, 0, 1, 'Y', 'Y').split('T')[0].replace(/-/g,'.'),
-    TYPE : "oee",
+  let indices = getIndicesOfDataAnalysisByStep(flag);
+
+  // 날짜가 넘어가는 시점에는 indexDate를 2틀분 가져오도록 (* 사용 X )
+  let now = Utils.getToday(fmt2, 'Y', 'Y');
+  let rawStartDttm = Utils.getDate(now, fmt2, 0, 0, -55, 0, 'Y', 'Y');
+  let rawEndDttm = Utils.getDate(now, fmt2, 0, 0, 0, 1, 'Y', 'Y');
+  let indicesForRaw = getIndicesForQueryCondition(rawStartDttm, rawEndDttm, indices.raw);
+  let rawData=[];
+
+  var rawDataQueryCondition = {
+    START: rawStartDttm, END: rawEndDttm,
+    INDEX : indicesForRaw, TYPE : "oee",
     FLAG : flag, CID : cid
   };
-  queryProvider.selectSingleQueryByID2("analysis", "selectNotchingOeeRaw", in_data, function(err, out_data, params) {
-     //logger.debug(out_data);
-    var rtnCode = CONSTS.getErrData('0000');
+  queryProvider.selectSingleQueryByID2("analysis", "selectNotchingOeeRaw", rawDataQueryCondition, function(err, out_data) {
+     logger.trace('raw data: ',out_data);
+    let rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       logger.debug('out_data is NULL');
       rtnCode = CONSTS.getErrData('0001');
@@ -164,8 +180,8 @@ router.get('/restapi/getOeeChartData', function(req, res, next) {
       logger.debug('out_data is EMPTY');
       rtnCode = CONSTS.getErrData('0001');
     } else {
-      logger.debug('out_data : ',out_data);
-      var rawData = [];
+      // logger.debug('raw data : ',out_data);
+
       out_data.forEach(function(d1){
         d1._source.data.forEach(function(d2){
           let keys = { "overall_oee" : [], "availability" : [], "quality" : [], "performance" : [] };
@@ -175,10 +191,61 @@ router.get('/restapi/getOeeChartData', function(req, res, next) {
           rawData.push(d2);
         });
       });
-      logger.debug('analysis/restapi/getOeeChartData -> length : %s', out_data.length);
-      // res.json({rtnCode: rtnCode, rtnData: data});
-      res.json({rtnCode: rtnCode, raw : rawData});
+
+      // TODO : 5분 예측 패턴 조회
+      let matchingStartDttm = Utils.getDate(now, fmt2, 0, 0, -500, 0, 'Y', 'Y');  // TODO : 시간 수정
+      let matchingEndDttm = Utils.getDate(now, fmt2, 0, 0, 0, 5, 'Y', 'Y');
+
+      let matchingDataQueryCondition = {
+        START: matchingStartDttm, END: matchingEndDttm,
+        INDEX : indices.match, TYPE : "pattern_matching",
+        SORTFIELD : cid+".timestamp",
+        CID : cid
+      };
+      queryProvider.selectSingleQueryByID2("analysis", "selectMatchedPatternByTimestamp", matchingDataQueryCondition, function(err, out_data) {
+        logger.trace('matching data: ',out_data);
+        let rtnCode = CONSTS.getErrData('0000');
+        if (out_data == null) {
+          logger.debug('null');
+          rtnCode = CONSTS.getErrData('0001');
+        } else if(out_data.length == 0) {
+          logger.debug('No matched pattern exists for now.');
+          rtnCode = CONSTS.getErrData('0001');
+        } else {
+
+          // 55분 매칭 패턴 조회
+          var pattern = out_data[0]._source[cid];
+          let list = makeList(["overall_oee", "availability", "quality", "performance"], pattern, cid);
+          let patternDataQueryCondition = {
+            INDEX: indices.data, TYPE: "pattern_data",
+            ID: "master", LIST : list
+          };
+
+          queryProvider.selectSingleQueryByID2("analysis", "selectPatternData", patternDataQueryCondition, function(err, out_data) {
+            var rtnCode = CONSTS.getErrData('0000');
+            if (out_data == null) {
+              logger.debug('null');
+             rtnCode = CONSTS.getErrData('0001');
+            } else if(out_data.length == 0) {
+              logger.debug('No pattern data found.');
+               rtnCode = CONSTS.getErrData('0001');
+            } else {
+              let clust = out_data[0]._source[cid];
+              logger.trace('clust : ',JSON.stringify(clust));
+              var tot = { "overall_oee" : [], "availability" : [], "quality" : [], "performance" : [] };
+              for(factor in tot) {
+                tot[factor] = arrangeData(clust, pattern, rawStartDttm, factor);
+              }
+              logger.trace('tot : ',tot);
+            }
+            res.json({rtnCode: rtnCode, raw : rawData, pattern : pattern, tot : tot});
+          });
+        }
+        res.json({rtnCode: rtnCode, raw : rawData, pattern : pattern, tot : tot});
+      });
     }
+    logger.debug('analysis/restapi/getOeeChartData -> length : %s', out_data.length);
+    res.json({rtnCode: rtnCode, raw : rawData, pattern : pattern, tot : tot});
   });
 });
 
@@ -277,20 +344,91 @@ router.post('/restapi/getMatchingPattern', function(req, res, next) {
   });
 });
 
-// router.get('/restapi/getAnomalyPatternCheck/', function(req, res, next) {
-//   var now = Utils.getToday(fmt2, 'Y', 'Y');
-//   var start = Utils.getDate(now, fmt2, 0, 0, -2, 0, 'Y', 'Y');
-//   var in_data = {  INDEX: indexNotchingPatternMatch, TYPE: "pattern_matching",
-//         gte : start,     lte : now }
-//   queryProvider.selectSingleQueryByID2("analysis", "selectByAnalysisTimestamp", in_data, function(err, out_data, params) {
-//     var rtnCode = CONSTS.getErrData('0000');
-//     if (out_data == null) {
-//       rtnCode = CONSTS.getErrData('0001');
-//     }
-//     res.json({rtnCode: rtnCode, rtnData : out_data});
-//   });
-// });
+router.get('/restapi/getAnomalyPatternCheck/', function(req, res, next) {
+  let cid = req.query.machine;
+  let step = req.query.step;
+  let indices = getIndicesOfDataAnalysisByStep(step);
 
+  var now = Utils.getToday(fmt2, 'Y', 'Y');
+  var from = Utils.getDate(now, fmt2, 0, 0, -2, 0, 'Y', 'Y');
+  var in_data = {
+        INDEX: indices.match, TYPE: "pattern_matching",
+        START : from,     END : now,
+        SORTFIELD : cid+".timestamp",
+        CID : cid
+      }
+  console.log('in_data: ',in_data);
+  queryProvider.selectSingleQueryByID2("analysis", "selectMatchedPatternByTimestamp", in_data, function(err, out_data) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    res.json({rtnCode: rtnCode, rtnData : out_data});
+  });
+});
 
+function getIndicesOfDataAnalysisByStep(step){
+  let result={};
+  if ( step == 'notching'){
+    result.raw = indexNotchingOee;
+    result.data = indexNotchingPatternData;
+    result.info = indexNotchingPatternInfo;
+    result.match = indexNotchingPatternMatch;
+  } else if ( setp == 'stacking') {
+    result.raw = indexStackingOee;
+    result.data = indexStackingPatternData;
+    result.info = indexStackingPatternInfo;
+    result.match = indexStackingPatternMatch;
+  }
+  return result;
+}
+function getIndicesForQueryCondition(startDttm, endDttm, indexHead){
+  let startIndexDate = startDttm.split('T')[0];
+  let endIndexDate = endDttm.split('T')[0];
+  let indices = indexHead+startIndexDate.replace(/-/g,'.');
+  if ( startIndexDate != endIndexDate ) {
+    indices += ','+indexHead+endIndexDate.replace(/-/g,'.');
+  }
+  return indices;
+}
+function arrangeData(clust, pattern, start, factor){
+  var data = [], cpt = [], apt = [], min = [], max = [];
+  for(i=59; i<120; i++){
+    var date = new Date(start).getTime()+(i-59)*60*1000;
+    min[i-59] = clust[factor][pattern[factor].top_1].min_value[i];
+    max[i-59] = clust[factor][pattern[factor].top_1].max_value[i]
+    data.push({date : date
+              , center : clust[factor][pattern[factor].top_1].center[i] * 100
+              , center2 : clust[factor][pattern[factor].top_2].center[i] * 100
+              , center3 : clust[factor][pattern[factor].top_3].center[i] * 100
+              , min : clust[factor][pattern[factor].top_1].min_value[i] * 100
+              , max : clust[factor][pattern[factor].top_1].max_value[i] * 100
+              , lower : clust[factor][pattern[factor].top_1].lower[i] * 100
+              , upper : clust[factor][pattern[factor].top_1].upper[i] * 100 });
+    if(i<110) {
+      if(pattern[factor].caution_pt[i] != -1){
+        cpt.push({ date : date, value : pattern[factor].caution_pt[i] * 100 });
+      }
+      if(pattern[factor].anomaly_pt[i] != -1){
+        apt.push({ date : date, value : pattern[factor].anomaly_pt[i] * 100 });
+      }
+    }
+  }
+
+  var minValue = Math.min.apply(null, min);
+  var maxValue = Math.max.apply(null, max);
+  var total = { data : data, cpt : cpt, apt : apt, min : minValue, max : maxValue };
+  return total;
+}
+
+function makeList(factors, pattern, cid){
+  var list = [], cnt = 0;
+  for(i=0; i<factors.length; i++){
+    list[cnt++] = cid+"."+factors[i]+"."+pattern[factors[i]].top_1;
+    list[cnt++] = cid+"."+factors[i]+"."+pattern[factors[i]].top_2;
+    list[cnt++] = cid+"."+factors[i]+"."+pattern[factors[i]].top_3;
+  }
+  return list;
+}
 
 module.exports = router;

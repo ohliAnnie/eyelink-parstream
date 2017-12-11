@@ -27,6 +27,41 @@
       }
     ]]>
     </query>
+    <query id='selectPatternData'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "_source" : [##LIST##],
+          "query" : {
+            "term" : { "_id" : #ID# }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectMatchedPatternByTimestamp'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "_source" : #CID#,
+          "size" : 1,
+          "sort" : { #SORTFIELD# : { "order" : "desc" } },
+          "query" : {
+            "bool": {
+              "must" : {
+                "range" : {
+                  #SORTFIELD#: { "gte": #START#, "lte" : #END# }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+
+
+
 
     <query id='selectPatternList'>
       <![CDATA[
@@ -80,6 +115,7 @@
       }
     ]]>
     </query>
+
 
     <query id='selectStackingStatus'>
       <![CDATA[
