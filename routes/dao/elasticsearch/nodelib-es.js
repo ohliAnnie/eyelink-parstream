@@ -27,7 +27,7 @@ QueryProvider.prototype.ping = function (cb) {
       console.trace('elasticsearch cluster is down!');
       cb(false);
     } else {
-      // console.log('All is well');
+      // logger.debug('All is well');
       cb(true);
     }
   });
@@ -38,13 +38,13 @@ QueryProvider.prototype.ping = function (cb) {
 // ex) {q : aaa} : aaa 값을 포함하는 모든 Document 조
 QueryProvider.prototype.selectQueryString = function (qString, cb) {
   var vTimeStamp = Date.now();
-  // console.log('nodelib-es/selectQueryString -> (%j)', qString);
+  // logger.debug('nodelib-es/selectQueryString -> (%j)', qString);
 
   client.search(
     qString
   ).then(function (body) {
     var hits = body.hits.hits;
-    // console.log(body)
+    // logger.debug(body)
     cb(null, body.hits.total, hits);
   }, function (err) {
     console.trace(err.message);
@@ -56,13 +56,13 @@ QueryProvider.prototype.selectQueryString = function (qString, cb) {
 // ex) {q : aaa} : aaa 값을 포함하는 모든 Document 조
 QueryProvider.prototype.selectQueryStringCount = function (qString, cb) {
   var vTimeStamp = Date.now();
-  // console.log('nodelib-es/selectQueryString -> (%j)', qString);
+  // logger.debug('nodelib-es/selectQueryString -> (%j)', qString);
 
   client.count(
     qString
   ).then(function (body) {
     var count = body.count;
-    // console.log(body)
+    // logger.debug(body)
     cb(null, body, count);
   }, function (err) {
     console.trace(err.message);
@@ -71,27 +71,27 @@ QueryProvider.prototype.selectQueryStringCount = function (qString, cb) {
 }
 
 QueryProvider.prototype.insertQueryByID = function (type, queryId, datas, cb) {
-  console.log('queryId : '+queryId);
+  logger.debug('queryId : '+queryId);
    // SQL 내 파라메타를 변경해준다.
   var sQueryString = Utils.replaceSql2(queryParser.getQuery(type, queryId), datas);
-  console.log('nodelib-es/insertQueryByID -> ' + sQueryString);
+  logger.debug('nodelib-es/insertQueryByID -> ' + sQueryString);
 
   sQueryString = JSON.parse(sQueryString);
-  console.log(sQueryString);
+  logger.debug(sQueryString);
 
   client.index(
     sQueryString
   ).then(function (resp) {
-      console.log(resp);
+      logger.debug(resp);
       cb(null, resp);
   }, function (err) {
-      console.trace(err.message);
+      logger.debug(err.message);
       cb(err.message);
   });
 }
 
 QueryProvider.prototype.deleteQueryByID = function (type, queryId, datas, cb) {
-  console.log('queryId : '+queryId);
+  logger.debug('queryId : '+queryId);
    // SQL 내 파라메타를 변경해준다.
   var sQueryString = Utils.replaceSql2(queryParser.getQuery(type, queryId), datas);
   console.log('nodelib-es/deleteQueryByID -> ' + sQueryString);
@@ -118,7 +118,7 @@ QueryProvider.prototype.updateQueryByID = function (type, queryId, datas, cb) {
   client.update(
     sQueryString
   ).then(function (resp) {
-      console.log(resp);
+      logger.debug(resp);
       cb(null, resp);
   }, function (err) {
       console.trace(err.message);
@@ -130,7 +130,7 @@ QueryProvider.prototype.insertBulkQuery = function (datas, cb) {
   client.bulk(
     {body : makeBulkData(datas)}
   ).then(function (resp) {
-      // console.log(resp);
+      // logger.debug(resp);
       cb(null, resp);
   }, function (err) {
       console.trace(err.message);
@@ -149,16 +149,16 @@ makeBulkData = function(datas) {
     bulkData.push(obj);
     bulkData.push(datas.body[idx]);
   }
-  // console.log(bulkData);
+  // logger.debug(bulkData);
   return bulkData;
 }
 
 // query.xml에 정의된 query를 이용한 query수행
 QueryProvider.prototype.selectSingleQueryByID = function (type, queryId, datas, cb) {
   var vTimeStamp = Date.now();
-  console.log('queryId : '+queryId);
+  logger.debug('queryId : '+queryId);
   console.time('nodelib-es/selectSingleQueryByID -> '+ queryId +' total ');
-  console.log('nodelib-es/selectSingleQueryByID -> (%s) queryID', queryId);
+  logger.debug('nodelib-es/selectSingleQueryByID -> (%s) queryID', queryId);
 
   var qString = {
     index: 'corecode-2017-05',
@@ -175,7 +175,7 @@ QueryProvider.prototype.selectSingleQueryByID = function (type, queryId, datas, 
     qString
   ).then(function (resp) {
       var hits = resp.hits.hits;
-      // console.log(body)
+      // logger.debug(body)
       cb(null, resp.hits.total, hits);
   }, function (err) {
       console.trace(err.message);
@@ -199,7 +199,7 @@ QueryProvider.prototype.selectSingleQueryByID2 = function (type, queryId, datas,
   client.search(
     sQueryString
   ).then(function (resp) {
-      //console.log(resp.hits);
+      //logger.debug(resp.hits);
       var hits = resp.hits.hits;
       logger.debug('selectSingleQueryByID2 -> total : ' + resp.hits.total);
       cb(null, hits, resp.hits.total);
@@ -212,22 +212,22 @@ QueryProvider.prototype.selectSingleQueryByID2 = function (type, queryId, datas,
 // query.xml에 정의된 query를 이용한 query수행
 QueryProvider.prototype.selectSingleQueryByID3 = function (type, queryId, datas, cb) {
   var vTimeStamp = Date.now();
-  console.log('queryId : '+queryId);
+  logger.debug('queryId : '+queryId);
   console.time('nodelib-es/selectSingleQueryByID3 -> '+ queryId +' total ');
-  console.log('nodelib-es/selectSingleQueryByID3 -> (%s) queryID', queryId);
+  logger.debug('nodelib-es/selectSingleQueryByID3 -> (%s) queryID', queryId);
 
   // SQL 내 파라메타를 변경해준다.
   var sQueryString = Utils.replaceSql2(queryParser.getQuery(type, queryId), datas);
-  console.log('nodelib-es/selectSingleQueryByID3 -> ' + sQueryString);
+  logger.debug('nodelib-es/selectSingleQueryByID3 -> ' + sQueryString);
 
   sQueryString = JSON.parse(sQueryString);
 
   client.search(
     sQueryString
   ).then(function (resp) {
-      //console.log(resp.hits);
+      //logger.debug(resp.hits);
       var hits = resp.aggregations;
-      console.log('nodelib-es/selectSingleQueryByID3 -> total : %d', resp.hits.total);
+      logger.debug('nodelib-es/selectSingleQueryByID3 -> total : %d', resp.hits.total);
       cb(null, hits);
   }, function (err) {
       console.trace(err.message);
@@ -238,22 +238,22 @@ QueryProvider.prototype.selectSingleQueryByID3 = function (type, queryId, datas,
 // query.xml에 정의된 query를 이용한 query수행
 QueryProvider.prototype.selectSingleQueryCount = function (type, queryId, datas, cb) {
   var vTimeStamp = Date.now();
-  console.log('queryId : '+queryId);
+  logger.debug('queryId : '+queryId);
   console.time('nodelib-es/selectSingleQueryCount -> '+ queryId +' total ');
-  console.log('nodelib-es/selectSingleQueryCount -> (%s) queryID', queryId);
+  logger.debug('nodelib-es/selectSingleQueryCount -> (%s) queryID', queryId);
 
   // SQL 내 파라메타를 변경해준다.
   var sQueryString = Utils.replaceSql2(queryParser.getQuery(type, queryId), datas);
-  console.log('nodelib-es/selectSingleQueryCount -> ' + sQueryString);
+  logger.debug('nodelib-es/selectSingleQueryCount -> ' + sQueryString);
 
   sQueryString = JSON.parse(sQueryString);
 
   client.count(
     sQueryString
   ).then(function (resp) {
-      //console.log(resp.hits);
+      //logger.debug(resp.hits);
       var count = resp.count;
-      console.log('nodelib-es/selectSingleQueryCount -> count : %d', resp.count);
+      logger.debug('nodelib-es/selectSingleQueryCount -> count : %d', resp.count);
       cb(null, count);
   }, function (err) {
       console.trace(err.message);
@@ -271,7 +271,7 @@ QueryProvider.prototype.countDocForTest = function (cb) {
     id: '1',
    }).then(function (resp) {
       // var hits = resp.hits.hits;
-      console.log(resp)
+      logger.debug(resp)
       cb(null, resp);
   }, function (err) {
       console.trace(err.message);
@@ -295,7 +295,7 @@ QueryProvider.prototype.createIndexForTest = function (cb) {
     }
   }).then(function (resp) {
       // var hits = resp.hits.hits;
-      console.log(resp);
+      logger.debug(resp);
       cb(null, resp);
   }, function (err) {
       console.trace(err.message);
@@ -321,7 +321,7 @@ QueryProvider.prototype.updateDocForTest = function (cb) {
     }
   }).then(function (resp) {
       // var hits = resp.hits.hits;
-      console.log(resp);
+      logger.debug(resp);
       cb(null, resp);
   }, function (err) {
       console.trace(err.message);
@@ -339,7 +339,7 @@ QueryProvider.prototype.deleteDocForTest = function (cb) {
     id: '1',
    }).then(function (resp) {
       // var hits = resp.hits.hits;
-      console.log(resp)
+      logger.debug(resp)
       cb(null, resp);
   }, function (err) {
       console.trace(err.message);
@@ -357,7 +357,7 @@ QueryProvider.prototype.getIndicesStats = function (indexName, cb) {
    index: indexName,
    level: "indices"
   }).then(function (resp) {
-    // console.log(resp)
+    // logger.debug(resp)
     cb(null, Object.keys(resp.indices).length, resp.indices);
   }, function (err) {
     console.trace(err.message);

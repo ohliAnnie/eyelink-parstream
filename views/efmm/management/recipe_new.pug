@@ -1,7 +1,7 @@
 extends ../efmm-layout01
 block style
 block script
-  script(type='text/javascript', src='/efsm/scripts/management_recipe_edit.js')
+  script(type='text/javascript', src='/efmm/scripts/management_recipe.js')
 block content
   .container-fluid
     .page-content
@@ -23,63 +23,75 @@ block content
                 span.caption-subject.bold.uppercase.font-green-haze Recipe Information
                 span.caption-helper  Update recipe information
             .portlet-body.from
-              form#update_account.form-horizontal.form-bordered(onsubmit="return false;")
+              form#add_recipe.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
                   .form-group
                     label.control-label.col-md-5 Step
-                    .col-md-3
+                    .col-md-7
                       span #{rtnData.step}
                       input#step(type='hidden', name='step', value=rtnData.step)
+                      input#cid(type='hidden', name='cid', value=rtnData.cid)
                   .form-group
                     label.control-label.col-md-5 Machine ID
-                    .col-md-3
+                    .col-md-7
                       span #{rtnData.cid}
                   .form-group
+                    label.control-label.col-md-5 ID
+                    .col-md-7
+                      input#id.form-control.form-control-inline.input-large(size='16', type='text', value='', placeholder='ID', name='id')
+                      a#check_id.btn.btn-info Check ID
+                  .form-group
                     label.control-label.col-md-5 Type
-                    .col-md-3
+                    .col-md-7
                       input#type.form-control.form-control-inline.input-large(size='16', type='text', value='', placeholder='Type', name='type')
                   .form-group
-                    label.control-label.col-md-5 Machine ID
-                    .col-md-3
-                      input#variable.form-control.form-control-inline.input-large(size='16', type='text', value='', placeholder='Type', name='variable')
-                  .form-group
                     label.control-label.col-md-5 Name
-                    .col-md-3
+                    .col-md-7
                       input#name.form-control.form-control-inline.input-large(size='16', type='text', value='', placeholder='Name', name='name')
                   .form-group
                     label.control-label.col-md-5 Description
-                    .col-md-3
+                    .col-md-7
                       input#description.form-control.form-control-inline.input-large(size='16', type='text', value='', placeholder='Description', name='description')
                   .form-group
                     label.control-label.col-md-5 Unit
-                    .col-md-3
+                    .col-md-7
                       input#unit.form-control.form-control-inline.input-large(size='16', type='text', value='', placeholder='Unit', name='unit')
                   .form-group
                     label.control-label.col-md-5 Step No
-                    .col-md-3
+                    .col-md-7
                       input#stepno.form-control.form-control-inline.input-large(size='16', type='text', value='', placeholder='stepno', name='stepno')
                   .form-group
                     label.control-label.col-md-5 Tag Name
-                    .col-md-3
+                    .col-md-7
                       input#tagname.form-control.form-control-inline.input-large(size='16', type='text', value='', placeholder='tagname', name='tagname')
                   .form-group
                     label.control-label.col-md-5 Data Type
-                    .col-md-3
+                    .col-md-7
                       input#datatype.form-control.form-control-inline.input-large(size='16', type='text', value='', placeholder='datatype', name='datatype')
                   .form-group
                     label.control-label.col-md-5 Data Size
-                    .col-md-3
+                    .col-md-7
                       input#datasize.form-control.form-control-inline.input-large(size='16', type='text', value='', placeholder='datasize', name='datasize')
                   .form-group
                     label.control-label.col-md-5 Value
-                    .col-md-3
+                    .col-md-7
                       input#datavalue.form-control.form-control-inline.input-large(size='16', type='text', value='', placeholder='datavalue', name='datavalue')
                   .form-group
                     #register_tnc_error(style='text-align:center;')
                     .col-md-10
-                      button#register-submit-btn.btn.btn-default.blue.pull-right Save
+                      button#add-recipe-btn.btn.btn-default.blue.pull-right Save
                     .col-md-2
                       button.btn.btn-default(type='button', onclick="location.href='/management/recipe'") Cancel
+              #modal_check_id.modal.fade.in(tabindex="-1", role="basic", aria-hidden="true", style="display: none;")
+                .modal-dialog
+                  .modal-content
+                    .modal-header
+                      button.close(type="button", data-dismiss="modal", aria-hidden="true")
+                      h4.modal-title.font-blue Check ID
+                    #modal-message.modal-body 사용 가능 ID.
+                    .modal-footer
+                      button.btn.default(data-dismiss="modal") Close
+                      button.btn.blue(data-dismiss="modal") Confirm
             .portlet-footer
     p.copyright Copyright M2U Technology All rights reserved.
     a.go2top(href='#index')

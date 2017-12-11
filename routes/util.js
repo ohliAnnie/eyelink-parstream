@@ -1,10 +1,11 @@
+var logger = global.log4js.getLogger('util');
 require('date-utils');
 var dateFormat = require('dateformat');
 
 function replaceSql(sql, params) {
   // var params = {ID : 'AAAA', DATE: '2016-12-12', NUM: 5};
   for (var key in params) {
-    console.log('util/replaceSql -> key : %s, value : %s', key, params[key]);
+    logger.debug('util/replaceSql -> key : %s, value : %s', key, params[key]);
     // if (typeof params[key] === 'object')
     //   console.log('util/replaceSql -> key : %s, value : %s, typeof ', key, params[key], typeof params[key], typeof params[key][0]);
 
@@ -27,9 +28,9 @@ function replaceSql(sql, params) {
         tsql = tsql.substring(0, tsql.length-1);
         sql = sql.replace(re1, tsql);
       } else if (typeof params[key][0] === 'undefined') {
-        console.log('test');
-        console.log(key);
-        console.log(params[key][0]);
+        logger.debug('test');
+        logger.debug(key);
+        logger.debug(params[key][0]);
         throw new Error('Please check sql array params');
       }
     } else if (typeof params[key] === 'string') {
@@ -40,7 +41,7 @@ function replaceSql(sql, params) {
       throw new Error('Please check sql params');
     }
   }
-  // console.log(sql);
+  // logger.debug(sql);
   // sql.should.be.equal("SELECT * FROM A WHERE DATE >= '2016-12-12' AND ID = 'AAAA' AND NUM = 5");
   return sql;
 
@@ -49,9 +50,9 @@ function replaceSql(sql, params) {
 function replaceSql2(sql, params) {
   // var params = {ID : 'AAAA', DATE: '2016-12-12', NUM: 5};
   for (var key in params) {
-    console.log('util/replaceSql2 -> key : %s, value : %s', key, params[key]);
+    logger.debug('util/replaceSql2 -> key : %s, value : %s', key, params[key]);
     // if (typeof params[key] === 'object')
-    //   console.log('util/replaceSql -> key : %s, value : %s, typeof ', key, params[key], typeof params[key], typeof params[key][0]);
+    //   logger.debug('util/replaceSql -> key : %s, value : %s, typeof ', key, params[key], typeof params[key], typeof params[key][0]);
 
     // 먼저 배열 parameter를 처리한다.
     var re = new RegExp("#" + key + "#","g");
@@ -72,9 +73,9 @@ function replaceSql2(sql, params) {
         tsql = tsql.substring(0, tsql.length-1);
         sql = sql.replace(re1, tsql);
       } else if (typeof params[key][0] === 'undefined') {
-        console.log('test');
-        console.log(key);
-        console.log(params[key][0]);
+        logger.debug('test');
+        logger.debug(key);
+        logger.debug(params[key][0]);
         throw new Error('Please check sql array params');
       }
     } else if (typeof params[key] === 'string') {
@@ -103,13 +104,13 @@ function mergeLoadedData(out_data) {
   // console.log('util/mergeLoadedData ->  today : %s', Date.today());
   for (var key in _rawDataByDay) {
     if (_rawDataByDay[key] !== null && _rawDataByDay[key] !== undefined) {
-      console.log('util/mergeLoadedData -> date %s, data count : %s', key, _rawDataByDay[key].length);
+      logger.debug('util/mergeLoadedData -> date %s, data count : %s', key, _rawDataByDay[key].length);
       if (_rawDataByDay[key].length > 0)
         old_out_data = old_out_data.concat(_rawDataByDay[key]);
     }
   }
   try {
-    console.log('util/mergeLoadedData -> old_out_data.length : %s', old_out_data.length);
+    logger.debug('util/mergeLoadedData -> old_out_data.length : %s', old_out_data.length);
   } catch (e) {}
   // console.log('util/mergeLoadedData -> out_data.length : %s', out_data);
   // console.log('util/mergeLoadedData -> out_data : %s', out_data[0]);
@@ -117,7 +118,7 @@ function mergeLoadedData(out_data) {
   if (out_data[0] === undefined || out_data[0] === null)
     return [old_out_data];
   else {
-    console.log('util/mergeLoadedData -> out_data.length : %s', out_data[0].length);
+    logger.debug('util/mergeLoadedData -> out_data.length : %s', out_data[0].length);
     out_data[0] = out_data[0].concat(old_out_data);
     return out_data;
   }
@@ -181,7 +182,7 @@ function getToday(fmt, utcYN, delimYN) {
 function getMs2Date(cur, fmt, delimYN) {
   var d = new Date(cur);
 
-  fmt = convertDateFormat(fmt, 'Y', delimYN);  
+  fmt = convertDateFormat(fmt, 'Y', delimYN);
   return dateFormat(d, fmt);
 }
 
