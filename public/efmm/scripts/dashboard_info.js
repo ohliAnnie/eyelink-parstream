@@ -97,7 +97,14 @@ function dataTable(data){
 
 function drawLineChart(data) {
   var composite = dc.compositeChart("#composed");
-  
+  if(data.length != 0) {
+    var minDate = new Date(data[0].measure_time);
+    var maxDate = new Date(data[data.length-1].measure_time);
+  } else {    
+    var maxDate = new Date();
+    var minDate = new Date(maxDate.getTime()-60*1000);
+  }
+
   var ndx = crossfilter(data);
 
   var dim  = ndx.dimension(function(d){
@@ -129,19 +136,14 @@ function drawLineChart(data) {
     if(k=='measure_time'||k=='flag'||k=='cid'||k=='sensorType'||k=='type'){
     } else {      
       group[cnt] = makeGroup(dim, k);
-      console.log(k);
-      console.log(colorArray[ccnt]);
-
       chart[cnt] = dc.lineChart(composite)
           .dimension(dim)            
           .colors(colorArray[ccnt++])
           .renderDataPoints(true)
           .group(group[cnt++], k);
     }
-  }
-  console.log(chart)
-  var minDate = new Date(data[0].measure_time);
-  var maxDate = new Date(data[data.length-1].measure_time);
+  }  
+  console.log(minDate, maxDate);
 
   composite.margins().bottom = 240;
   composite.margins().right = 55;
