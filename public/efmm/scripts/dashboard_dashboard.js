@@ -16,33 +16,35 @@ function getData(){
   var in_data = { url : "/dashboard/restapi/getDashboardWeekly", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {            
-      var data = result.rtnData;
-      console.log(data);
+      var data = result.rtnData;      
       drawLineChart(data.total, data.week);
       updateGage(data.total[data.total.length-1]);
       var tdata = {};
       tdata.date = in_data.data.now
-      tdata.kpis = { tot : 18, in_pro : 15, stop : 3, alarm : 3 };
+      tdata.kpis = { tot : 0, in_pro : 0, stop : 0, alarm : 0 };
       tdata.tab_welding = { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3600, e_unit : 29500, p_unit : 28970, g_unit : 28889, n_unit : 81 };
       tdata.packaging = { tot : 2, in_pro : 1, stop : 1, alarm : 1, a_time : 7200, r_time : 3540, e_unit : 29000, p_unit : 28700, g_unit : 28618, n_unit : 82 };
       tdata.degassing = { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3590, e_unit : 28500, p_unit : 28470, g_unit : 28392, n_unit : 78 };
-      tdata.leak_inspection = { tot : 2, in_pro : 1, stop : 1, alarm : 1, a_time : 7200, r_time : 3570, e_unit : 28000, p_unit : 27590, g_unit : 27513, n_unit : 77 };
-      tdata.can_swaging = { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3600, e_unit : 27500, p_unit : 26990, g_unit : 26911, n_unit : 79 };
-      data.stacking.tot= 6;
-      data.stacking.in_pro = 5;
-      data.stacking.stop = 1;
-      data.stacking.alarm = 1;
-      data.notching.tot = 2;
-      data.notching.in_pro = 2;
-      data.notching.stop = '';
-      data.notching.alarm = '';
+//      tdata.leak_inspection = { tot : 2, in_pro : 1, stop : 1, alarm : 1, a_time : 7200, r_time : 3570, e_unit : 28000, p_unit : 27590, g_unit : 27513, n_unit : 77 };
+//      tdata.can_swaging = { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3600, e_unit : 27500, p_unit : 26990, g_unit : 26911, n_unit : 79 };      
       for(key in data){
-        tdata[key] = { tot : data[key].tot, in_pro : data[key].in_pro, stop : data[key].stop, alarm : data[key].alarm, a_time : Math.ceil(data[key].planned_production_time/60),
+        if(key != 'week' && key != 'total'){
+          tdata[key] = { tot : data[key].realtime+data[key].stop, in_pro : data[key].realtime, stop : data[key].stop, alarm : data[key].alarm, a_time : Math.ceil(data[key].planned_production_time/60),
           d_time : Math.ceil(data[key].total_down_time/60), r_time :Math.ceil(data[key].operating_time/60), e_unit : data[key].total_expected_unit,
           p_unit : data[key].total_pieces, g_unit : data[key].total_accept_pieces, n_unit : data[key].total_reject_pieces, overall_oee : (data[key].overall_oee*100).toFixed(1),
           availability : (data[key].availability*100).toFixed(1), performance : (data[key].performance*100).toFixed(1), quality : (data[key].quality*100).toFixed(1) };
+        }
+      }      
+      for(key in tdata) {       
+        if(key == 'date' || key == 'kpis') {          
+        } else {
+          tdata.kpis.tot += (tdata[key].tot=='')?0:tdata[key].tot;
+          tdata.kpis.in_pro += (tdata[key].in_pro=='')?0:tdata[key].in_pro;
+          tdata.kpis.stop += (tdata[key].stop=='')?0:tdata[key].stop;
+          tdata.kpis.alarm += (tdata[key].alarm==''||tdata[key].alarm==undefined)?0:tdata[key].alarm;
+        }
       }
-      drawTable(tdata);      
+      drawTable(tdata);
     } 
   }); 
 }
@@ -150,7 +152,7 @@ function drawTable(data) {
   var style3 = 'style="text-align:center;"';
   sb.append('<table class="table table-striped table-bordered"><tr style="background-color:#353535; color:white;">');  
   sb.append('<th colspan="2" '+style3+'>KPIs<button id="btn_search" class="btn blue btn-xs pull-right" onclick="location.href=');
-  sb.append("'detail?date="+data.date+"'"+'">Detail</button></th><th '+style3+'>Notching</th><th '+style3+'>Stacking</th>');  
+  sb.append("'/dashboard/detail?date="+data.date+"'"+'">Detail</button></th><th '+style3+'>Notching</th><th '+style3+'>Stacking</th>');  
   sb.append('<th '+style3+'>Tab Welding</th><th '+style3+'>Packaging</th><th '+style3+'>Degassing</th></tr>');
   var style = 'style="background-color:#9E9E9E;"';
   var style2 = 'text-align:center; background-color:#9E9E9E;';

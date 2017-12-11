@@ -113,11 +113,15 @@ router.get('/restapi/getDashboardWeekly', function(req, res, next) {
             if (out_data == null) {
               rtnCode = CONSTS.getErrData('0001');
             } else {                  
-              var ndata = {};              
+              var ndata = {}, nCount = {};
               for(i=0; i<out_data.length; i++){               
                 var d = out_data[i]._source.data[0];
                 d.date = Utils.getDate(d.dtSensed, fmt1, 0, 0, 0, 0, 'Y');
-                d.timestamp = Utils.getDate(d.dtSensed, fmt2, 0, 0, 0, 0, 'Y')
+                d.timestamp = Utils.getDate(d.dtSensed, fmt2, 0, 0, 0, 0, 'Y');                
+                if(nCount[d.date] == undefined){       
+                  nCount[d.date] = { realtime : 0, stop : 0 };
+                }
+                nCount[d.date][out_data[i]._source.type]++;
                 if(ndata[d.date]==null){
                   ndata[d.date] = { accept_pieces : 0, down_time : 0, ideal_run_rate : 0, meal_break : 0, operating_time : 0,
                                     planned_production_time : 0, reject_pieces : 0, shift_length : 0, short_break : 0,
@@ -130,19 +134,24 @@ router.get('/restapi/getDashboardWeekly', function(req, res, next) {
                   } else {
                     ndata[d.date][key] += d[key];                      
                   }
-                }
-              }                            
+                }                
+              }
+              
               in_data = { index : indexStack, type : "oee", term : JSON.stringify(sque) };
               queryProvider.selectSingleQueryByID2("dashboard","selectDashboardTermData", in_data, function(err, out_data, params) {
                 var rtnCode = CONSTS.getErrData('0000');
                 if (out_data == null) {
                   rtnCode = CONSTS.getErrData('0001');
                 } else {                      
-                  var sdata = {}, days = [], cnt = 0;
-                  for(i=0; i<out_data.length; i++){                    
-                    var d = out_data[i]._source.data[0];                                      
+                  var sdata = {}, sCount = {}, days = [], cnt = 0;                                
+                  for(i=0; i<out_data.length; i++){
+                    var d = out_data[i]._source.data[0];                    
                     d.date = Utils.getDate(d.dtSensed, fmt1, 0, 0, 0, 0, 'Y');
-                    d.timestamp = Utils.getDate(d.dtSensed, fmt2, 0, 0, 0, 0, 'Y')            
+                    d.timestamp = Utils.getDate(d.dtSensed, fmt2, 0, 0, 0, 0, 'Y');
+                    if(sCount[d.date] == undefined){       
+                      sCount[d.date] = { realtime : 0, stop : 0 };
+                    }
+                    sCount[d.date][out_data[i]._source.type]++;         
                     if(sdata[d.date]==null){
                       days[cnt++] = d.date;
                       sdata[d.date] = { accept_pieces : 0, down_time : 0, ideal_run_rate : 0, meal_break : 0, operating_time : 0,
@@ -185,9 +194,13 @@ router.get('/restapi/getDashboardWeekly', function(req, res, next) {
                     value.date = k[1]+'-'+k[2];
                     total.push(value);
                     week[cnt++] = k[1]+'-'+k[2];
-                    last = key1;
-                  }                                    
-                  var data = { stacking : sdata[key1], notching : ndata[key1], total : total, week : week };                  
+                    last = key1;                    
+                    for(key3 in sCount[key1]) {
+                      sdata[key1][key3] = sCount[key1][key3];
+                      ndata[key1][key3] = nCount[key1][key3];
+                    }
+                  }                    
+                  var data = { stacking : sdata[last], notching : ndata[last], total : total, week : week };                  
                 }
                 res.json({rtnCode: rtnCode, rtnData: data});
               });
