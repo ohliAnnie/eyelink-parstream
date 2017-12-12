@@ -1,7 +1,32 @@
 <?xml version="1.0"?>
 <queryList>
   <analysis>
-    <query id='selectNotchingOeeRaw'>
+    <query id='selectMachineList'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+          "size" : 0,
+          "aggs": {
+            "flag": {
+              "terms": {
+                "field": "flag.keyword",
+                "order" : { "_term" : "asc" }
+              },
+              "aggs": {
+                "cid": {
+                  "terms": {
+                    "field": "cid.keyword",
+                    "order" : { "_term" : "asc" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectOeeRaw'>
       <![CDATA[
       {
         "index" : #INDEX#,
@@ -70,7 +95,7 @@
         "type": #TYPE#,
         "body": {
           "size": 10000,
-          "_source" : ["_id" ],
+          "_source" : ["_id", #RANGEFIELD# ],
           "sort": { "_uid": "desc" },
           "query" : {
             "bool" : {

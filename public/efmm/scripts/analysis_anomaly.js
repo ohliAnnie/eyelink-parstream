@@ -38,18 +38,12 @@ function getData(){
     if (result.rtnCode.code == "0000") {
       var raw = result.raw;
       var point = new Date(raw[0].dtSensed).getTime(), start = point-past, end = point+future;
-      // var now = new Date().getTime();
       var now = point;
       var tot = { "overall_oee" : [], "availability" : [], "quality" : [], "performance" : []  };
 
       for(factor in tot){
         drawChart(raw, result.tot[factor], start, end, now, point, now-point, factor, '#'+factor, result.pattern, step, machine);
-        // drawChart(raw, 'result.tot[factor]', start, end, now, point, now-point, factor, '#'+factor, 'result.pattern');
       }
-      // console.log('point\n'+new Date(point));
-      // console.log('start\n'+new Date(start));
-      // console.log('end\n'+new Date(end));
-      // console.log('now\n'+new Date(now));
     }
   });
 }
@@ -93,8 +87,11 @@ function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, patt
   // Y 축 범위 설정
   let yStart = (tot.min * 100 * 0.5);
   let yEnd = (tot.max * 100 * 1.2);
-  // yStart = 0;
-  // yEnd = 125; // TODO : 위 자동 계산 식 이용하기
+  // TODO : raw 데이터의 값을 포함하지 않을 경우 raw 데이터가 안보이는 케이스 발생
+  let rawMin;
+  let rawMax;
+
+
   var y = d3.scale.linear()
     .domain([yStart, yEnd])
     .range([height, 3]);

@@ -46,32 +46,55 @@ router.get('/anomaly', function(req, res, next) {
 
 router.get('/pattern', function(req, res, next) {
   logger.debug(_rawDataByDay);
-  res.render('efmm'+'/analysis/pattern', { title: global.config.productname, mainmenu:mainmenu});
+  var outdata = { title: global.config.productname, mainmenu : mainmenu };
+  var index = [indexNotchingOee+"*", indexStackingOee+"*"];
+  var in_data = { index : index, type : "oee"};
+  queryProvider.selectSingleQueryByID3("analysis","selectMachineList", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {
+      var data = out_data.flag.buckets;
+      var list = [], cnt = 0;
+      for(i=0; i<data.length; i++) {
+        var flag = data[i].key;
+        var cid = data[i].cid.buckets;
+        for(j=0; j<cid.length; j++) {
+          list[cnt++] = flag+'_'+cid[j].key;
+        }
+      }
+      outdata.list = list;
+    }
+    logger.info('mainmenu : %s, outdata : %s', mainmenu.timeseries, JSON.stringify(outdata));
+    res.render('efmm'+'/analysis/pattern', outdata);
+  });
 });
 
 router.get('/patternMatching', function(req, res, next) {
   logger.debug(_rawDataByDay);
-  res.render('efmm'+'/analysis/patternMatching', { title: global.config.productname, mainmenu:mainmenu});
-});
-
-// get notching raw data
-router.get('/restapi/getNotchingOeeRaw', function(req, res, next){
-  logger.debug("req.query:", req.query);
-  var sDate = Utils.getDateLocal2UTC(req.query.sDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
-  var eDate = Utils.getDateLocal2UTC(req.query.eDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
-  var in_data = { INDEX : indexNotchingOee+'*', TYPE : "oee", START: sDate, END: eDate  };
-  queryProvider.selectSingleQueryByID2("analysis", "selectNotchingOeeRaw", in_data, function(err, out_data, params) {
-    if (out_data.length == 0) {
-      var rtnCode = CONSTS.getErrData('0001');
-      res.json({rtnCode: rtnCode, rtnData: out_data});
+  var outdata = { title: global.config.productname, mainmenu : mainmenu };
+  var index = [indexNotchingOee+"*", indexStackingOee+"*"];
+  var in_data = { index : index, type : "oee"};
+  queryProvider.selectSingleQueryByID3("analysis","selectMachineList", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
     } else {
-      var rtnCode = CONSTS.getErrData('0000');
-      res.json({rtnCode: rtnCode, rtnData: out_data });
+      var data = out_data.flag.buckets;
+      var list = [], cnt = 0;
+      for(i=0; i<data.length; i++) {
+        var flag = data[i].key;
+        var cid = data[i].cid.buckets;
+        for(j=0; j<cid.length; j++) {
+          list[cnt++] = flag+'_'+cid[j].key;
+        }
+      }
+      outdata.list = list;
     }
-    logger.debug('analysis/restapi/getAnomaly_Pattern -> length : %s', out_data.length);
+    logger.info('mainmenu : %s, outdata : %s', mainmenu.timeseries, JSON.stringify(outdata));
+    res.render('efmm'+'/analysis/patternMatching', outdata);
   });
 });
-
 
 // get stacking status
 router.get('/restapi/getStackingStatus', function(req, res, next){
@@ -129,7 +152,7 @@ router.get('/restapi/getOeeDataLive', function(req, res, next) {
     FLAG : flag, CID : cid
   };
   logger.debug('in_data : ',in_data);
-  queryProvider.selectSingleQueryByID2("analysis", "selectNotchingOeeRaw", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID2("analysis", "selectOeeRaw", in_data, function(err, out_data, params) {
      //logger.debug(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data === null) {
@@ -170,7 +193,7 @@ router.get('/restapi/getOeeChartData', function(req, res, next) {
     INDEX : indicesForRaw, TYPE : "oee",
     FLAG : flag, CID : cid
   };
-  queryProvider.selectSingleQueryByID2("analysis", "selectNotchingOeeRaw", rawDataQueryCondition, function(err, out_data) {
+  queryProvider.selectSingleQueryByID2("analysis", "selectOeeRaw", rawDataQueryCondition, function(err, out_data) {
      logger.trace('raw data: ',out_data);
     let rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -192,8 +215,8 @@ router.get('/restapi/getOeeChartData', function(req, res, next) {
         });
       });
 
-      // TODO : 5분 예측 패턴 조회
-      let matchingStartDttm = Utils.getDate(now, fmt2, 0, 0, -500, 0, 'Y', 'Y');  // TODO : 시간 수정
+      // 5분 예측 패턴 조회
+      let matchingStartDttm = Utils.getDate(now, fmt2, 0, 0, -5, 0, 'Y', 'Y');
       let matchingEndDttm = Utils.getDate(now, fmt2, 0, 0, 0, 5, 'Y', 'Y');
 
       let matchingDataQueryCondition = {
@@ -251,7 +274,7 @@ router.get('/restapi/getOeeChartData', function(req, res, next) {
 
 // Pattern Management pattern list
 router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
-  logger.debug("req.query: ", req.query);
+  logger.debug("[getAnomalyPatternList] req.query: ", req.query);
   var sDate = Utils.getDate(req.query.startDate, fmt1, -1, 0, 0, 0);
   var eDate = Utils.getMs2Date(req.query.endDate, fmt1);
   let flag = req.query.flag;
@@ -262,7 +285,7 @@ router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
       START_TIMESTAMP: sDate+startTime,
       END_TIMESTAMP: eDate+startTime,
       MASTER_ID: req.query.masterId,
-      RANGEFIELD: cid+'.createDate'
+      RANGEFIELD: cid+'.createDatetime'
     };
   queryProvider.selectSingleQueryByID2("analysis", "selectPatternList", in_data, function(err, out_data, params) {
     // logger.debug(out_data);
@@ -271,7 +294,21 @@ router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     }
     logger.debug('analysis/restapi/getAnomalyPatternList -> length : %s', out_data.length);
-    res.json({rtnCode: rtnCode, rtnData: out_data });
+    // logger.debug('out_data: ',JSON.stringify(out_data));
+    let idList = [];
+    var localDate = '';
+    out_data.forEach(function(d) {
+      if (d._id != 'master'){
+        localDate = Utils.getDateUTC2Local(d._source[cid].createDatetime, CONSTS.DATEFORMAT.DATE, 'N');
+        if ( idList.indexOf(localDate) == -1 ){
+          idList.push(localDate);
+        }
+      }else if ( d._id == 'master') {
+        idList.push('master');
+      }
+    });
+    logger.debug('patternList: ',idList);
+    res.json({rtnCode: rtnCode, rtnData: idList });
   });
 });
 
@@ -412,7 +449,7 @@ router.get('/restapi/getClusterPattern', function(req, res, next) {
         res.json({rtnCode: rtnCode, patternData: patternData, masterData: masterData});
       } else {
         var in_data = {
-          INDEX: indexPatternData, TYPE: "pattern_data",
+          INDEX: index, TYPE: "pattern_data",
           ID: "master", TARGET: req.query.targetMaster
         };
         queryProvider.selectSingleQueryByID2("analysis", "selectClusterPattern", in_data, function(err, out_data, params) {

@@ -6,6 +6,9 @@ $(document).ready(function() {
 
   $('#btn_search').on('click', function(){
     d3.selectAll("svg").remove();
+    // TODO : pattern group, patterns 박스도 클리어하기
+
+
     getPatternList(); // pattern dataset
   });
 
@@ -47,33 +50,35 @@ $(document).ready(function() {
 
 
 function getPatternList() {
-  let step = $('#step option:selected').text();
-  let machine = $('#machine option:selected').text();
+  // let step = $('#step option:selected').text();
+  // let machine = $('#machine option:selected').text();
+  let step_machine = $('#step_machine option:selected').text();
+  let step = step_machine.split('_')[0];
+  let machine = step_machine.split('_')[1];
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
   var masterId = "master";
   var nodeInfo = null;
-  console.log("sDate : %s, eDate : %s", sdate, edate);
   var data = { startDate: sdate, endDate: edate, masterId: masterId, flag:step, cid:machine };
   var in_data = {url: "/analysis/restapi/getAnomalyPatternList", type: "GET", data: data};
   ajaxTypeData(in_data, function(result){
     console.log('getPatternList[CODE]:', result.rtnCode.code);
+    console.log('[getPatternList] result: ',result);
     if (result.rtnCode.code == "0000") {
-      drawPatternList(result.rtnData, nodeInfo);
+      drawPatternList(result.rtnData, machine, nodeInfo);
     }
   });
 }
 
 ///// draw pattern lists /////
-function drawPatternList(patternLists, nodeInfo) {
+function drawPatternList(patternLists, machine, nodeInfo) {
   $('#patternList').empty();
-  var createdDate = patternLists[0]._id;
+  // rtnData에서 machine.createDatetime 의 로컬타임 기준으로 날짜 추출
+  var sb = new StringBuffer();
   patternLists.forEach(function(d) {
-    d = d._id;
-    var sb = new StringBuffer();
-    sb.append('<tr><td class="clickPatternId"><a>' + d + '</td></tr>');
-    $('#patternList').append(sb.toString());
+      sb.append('<tr><td class="clickPatternId"><a>' + d + '</td></tr>');
   });
+  $('#patternList').append(sb.toString());
 
   // 생성된 패턴ID 클릭 이벤트
   $('.clickPatternId').on('click', function(){
@@ -102,8 +107,13 @@ function loadPatternData(createdDate, nodeInfo) {
     // $('#btnBatchUpdate').hide();
     $('.statusUpdate').hide();
   }
-  let step = $('#step option:selected').text();
-  let machine = $('#machine option:selected').text();
+  // let step = $('#step option:selected').text();
+  // let machine = $('#machine option:selected').text();
+  let step_machine = $('#step_machine option:selected').text();
+  let step = step_machine.split('_')[0];
+  let machine = step_machine.split('_')[1];
+  console.log('step: ',step);
+  console.log('machine: ',machine);
   var data = {id : createdDate, flag: step, cid: machine};
   var in_data = {url: "/analysis/restapi/getPatterns", type: "GET", data: data};
   ajaxTypeData(in_data, function(result){
@@ -219,9 +229,11 @@ function drawPatterns(creationDate, parentNode, childNode, patternData){
     $('#sample_2').DataTable().$('.clickClustNo').css({'color':'', 'font-weight': ''});
     $(this).css({'color':'red', 'font-weight': 'bold'});
 
-    let step = $('#step option:selected').text();
-    let machine = $('#machine option:selected').text();
-
+    // let step = $('#step option:selected').text();
+    // let machine = $('#machine option:selected').text();
+    let step_machine = $('#step_machine option:selected').text();
+    let step = step_machine.split('_')[0];
+    let machine = step_machine.split('_')[1];
     var row = $(this).closest('tr');
     var CN = row[0].cells[1].innerText;
     var masterCN = row[0].cells[2].innerText;
@@ -293,9 +305,11 @@ function pad(n, width) {
 }
 
 function insertNewPattern(id, group, CN, newCN){
-  console.log(newCN);
-  let step = $('#step option:selected').text();
-  let machine = $('#machine option:selected').text();
+  // let step = $('#step option:selected').text();
+  // let machine = $('#machine option:selected').text();
+  let step_machine = $('#step_machine option:selected').text();
+  let step = step_machine.split('_')[0];
+  let machine = step_machine.split('_')[1];
   var target = machine+"." + group + "." + CN;
 
   var data = {id : id, target: target};
@@ -326,8 +340,11 @@ function insertNewPattern(id, group, CN, newCN){
 }
 
 function modifyPattern(id, data){
-  let step = $('#step option:selected').text();
-  let machine = $('#machine option:selected').text();
+  // let step = $('#step option:selected').text();
+  // let machine = $('#machine option:selected').text();
+  let step_machine = $('#step_machine option:selected').text();
+  let step = step_machine.split('_')[0];
+  let machine = step_machine.split('_')[1];
   let body = {};
   body.step = step;
   body.machine = machine;

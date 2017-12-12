@@ -22,10 +22,10 @@ block content
         h1 Pattern management
         - const steps = [{value: 'notching'}, {value: 'stacking'}]
         - const machines = [{value: '100'}, {value: '200'}]
-        select#step
+        //-select#step
           each step in steps
             option(value=(step.value)) #{step.value}
-        select#machine
+        //-select#machine
           each machine in machines
             option(value=(machine.value)) #{machine.value}
         ol.breadcrumb
@@ -50,6 +50,10 @@ block content
                         input#sdate.form-control(type='text', name='from' value='')
                         span.input-group-addon to
                         input#edate.form-control(type='text', name='to' value='')
+                    .col-md-2
+                      select#step_machine.form-control.input-small.select2me.form-md-line-input(name='server' value=server)
+                        each data in list
+                          option(value=(data.value)) #{data}
                     .col-md-1.form-inline
                       button#btn_search.btn.blue
                         i.fa.fa-search  Search
