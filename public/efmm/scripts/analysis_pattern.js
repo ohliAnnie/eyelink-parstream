@@ -410,12 +410,12 @@ function getGraphData(pData, mData) {
 
   if (mData == null ){
     for (i=0; i<pData.length; i++) {
-      pSet.push({ x : i, y : pData[i]});
+      pSet.push({ x : i, y : pData[i] * 100});
     }
   } else {
     for (i=0; i<pData.length; i++) {
-      pSet.push({ x : i, y : pData[i]});
-      mSet.push({ x : i, y : mData[i]});
+      pSet.push({ x : i, y : pData[i] * 100});
+      mSet.push({ x : i, y : mData[i] * 100});
     }
   }
   var array;
