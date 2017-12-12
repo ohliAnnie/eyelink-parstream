@@ -77,7 +77,7 @@
               "should": [
                 { "term": { "_id": #MASTER_ID# }},
                 { "range": {
-                    "da_result.createDate" : {
+                    #RANGEFIELD# : {
                       "gte" : #START_TIMESTAMP#,
                       "lte" : #END_TIMESTAMP#
                     }
@@ -96,14 +96,15 @@
         "index" : #INDEX#,
         "type" : #TYPE#,
         "body" : {
+          "_source" : #CID#,
           "size"   : 10000,
-          "sort" : { "da_result.timestamp" : { "order" : "desc"  } },
+          "sort" : { #CID_TIMESTAMP# : { "order" : "desc"  } },
           "query" : {
             "bool" : {
               "must" : { "match_all": {} },
                "filter" : {
                 "range" : {
-                  "da_result.timestamp" : {
+                  #CID_TIMESTAMP# : {
                     "gte" : #START_TIMESTAMP#,
                     "lte" : #END_TIMESTAMP#
                   }
@@ -115,6 +116,80 @@
       }
     ]]>
     </query>
+    <!-- get pattern data -->
+    <query id='selectPatterns'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "_source" : [
+            #CID_OVERALL_OEE#,
+            #CID_PERFORMACE#,
+            #CID_QUALITY#,
+            #CID_AVAILABILITY#
+            ],
+          "query" : {
+            "term" : { "_id" : #ID# }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectClusterPattern'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "_source" : [#TARGET#],
+          "size" : 10000,
+          "query" : {
+            "bool" : {
+              "must" : {
+                "match" : {"_id" : #ID# }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <!-- Pattern data update [0]-->
+    <query id='updatePatternData'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,
+        "body" : {
+          "doc" : {
+            #CID# : #BODY#
+          }
+        }
+      }
+    ]]></query>
+
+    <!-- Pattern infomation update [0]-->
+    <query id='updatePatternInfo'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,
+        "body" : {
+          "doc" : {
+            #CID# : #BODY#
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectById'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "_source" : #CID#,
+          "query" : {
+            "term" : { "_id" : #ID# }
+          }
+        }
+      }
+    ]]></query>
 
 
     <query id='selectStackingStatus'>

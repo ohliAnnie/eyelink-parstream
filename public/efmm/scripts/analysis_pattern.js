@@ -47,12 +47,14 @@ $(document).ready(function() {
 
 
 function getPatternList() {
+  let step = $('#step option:selected').text();
+  let machine = $('#machine option:selected').text();
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
   var masterId = "master";
   var nodeInfo = null;
   console.log("sDate : %s, eDate : %s", sdate, edate);
-  var data = { startDate: sdate, endDate: edate, masterId: masterId };
+  var data = { startDate: sdate, endDate: edate, masterId: masterId, flag:step, cid:machine };
   var in_data = {url: "/analysis/restapi/getAnomalyPatternList", type: "GET", data: data};
   ajaxTypeData(in_data, function(result){
     console.log('getPatternList[CODE]:', result.rtnCode.code);
@@ -100,9 +102,9 @@ function loadPatternData(createdDate, nodeInfo) {
     // $('#btnBatchUpdate').hide();
     $('.statusUpdate').hide();
   }
-
-
-  var data = {id : createdDate};
+  let step = $('#step option:selected').text();
+  let machine = $('#machine option:selected').text();
+  var data = {id : createdDate, flag: step, cid: machine};
   var in_data = {url: "/analysis/restapi/getPatterns", type: "GET", data: data};
   ajaxTypeData(in_data, function(result){
     console.log('loadPatternData[CODE]:', result.rtnCode.code);
@@ -217,18 +219,28 @@ function drawPatterns(creationDate, parentNode, childNode, patternData){
     $('#sample_2').DataTable().$('.clickClustNo').css({'color':'', 'font-weight': ''});
     $(this).css({'color':'red', 'font-weight': 'bold'});
 
+    let step = $('#step option:selected').text();
+    let machine = $('#machine option:selected').text();
+
     var row = $(this).closest('tr');
     var CN = row[0].cells[1].innerText;
     var masterCN = row[0].cells[2].innerText;
-    var tgtCluster = "da_result." + parentNode + "." + CN + ".center";
-    var tgtMaster = "da_result." + parentNode + "." + masterCN + ".center";
+    var tgtCluster = machine+"." + parentNode + "." + CN + ".center";
+    var tgtMaster = machine+"." + parentNode + "." + masterCN + ".center";
     console.log('[cluster]', CN, '| [master]', masterCN);
 
-    var data = {id : creationDate, targetCluster : tgtCluster, targetMaster: tgtMaster};
+    var data = {
+      id : creationDate,
+      targetCluster : tgtCluster,
+      targetMaster: tgtMaster,
+      step: step,
+      machine: machine
+    };
     var in_data = {url: "/analysis/restapi/getClusterPattern", type: "GET", data: data};
 
     ajaxTypeData(in_data, function(result) {
       console.log('clusterClick[CODE]: ', result.rtnCode.code);
+      console.log('result: ',result);
       if (result.rtnCode.code == "0000") {
         var patternGraph = result.patternData[parentNode][CN]["center"];
         var masterGraph;
@@ -282,7 +294,9 @@ function pad(n, width) {
 
 function insertNewPattern(id, group, CN, newCN){
   console.log(newCN);
-  var target = "da_result." + group + "." + CN;
+  let step = $('#step option:selected').text();
+  let machine = $('#machine option:selected').text();
+  var target = machine+"." + group + "." + CN;
 
   var data = {id : id, target: target};
   var in_data = {url: "/analysis/restapi/getClusterData", type: "GET", data: data};
@@ -293,8 +307,13 @@ function insertNewPattern(id, group, CN, newCN){
       var queryBody = {};
       queryBody[group] = {};
       queryBody[group][newCN] = d;
-      console.log(queryBody);
-      var in_data = {url: "/analysis/restapi/pattern_data/master/_update", type: "POST", data: queryBody};
+
+      let body = {};
+      body.step = step;
+      body.machine = machine;
+      body.data = queryBody;
+      console.log('[insertNewPattern] queryBody: ',queryBody);
+      var in_data = {url: "/analysis/restapi/pattern_data/master/_update", type: "POST", data: body};
       ajaxTypeData(in_data, function(result) {
         if (result.rtnCode.code == "D001") {
           console.log('insert completed');
@@ -307,7 +326,13 @@ function insertNewPattern(id, group, CN, newCN){
 }
 
 function modifyPattern(id, data){
-  var in_data = {url: "/analysis/restapi/pattern_info/" + id + "/_update", type: "POST", data: data};
+  let step = $('#step option:selected').text();
+  let machine = $('#machine option:selected').text();
+  let body = {};
+  body.step = step;
+  body.machine = machine;
+  body.data = data;
+  var in_data = {url: "/analysis/restapi/pattern_info/" + id + "/_update", type: "POST", data: body};
   ajaxTypeData(in_data, function(result) {
     if (result.rtnCode.code == "D002") {
       var nodeInfo = $('#patternTree').treeview('getSelected');

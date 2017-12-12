@@ -22,6 +22,14 @@ block content
     .page-content
       .breadcrumbs
         h1 Pattern Matching
+        - const steps = [{value: 'notching'}, {value: 'stacking'}]
+        - const machines = [{value: '100'}, {value: '200'}]
+        select#step
+          each step in steps
+            option(value=(step.value)) #{step.value}
+        select#machine
+          each machine in machines
+            option(value=(machine.value)) #{machine.value}
         ol.breadcrumb
           li
             a(href='/dashboard') Home

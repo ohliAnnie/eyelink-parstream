@@ -251,16 +251,20 @@ router.get('/restapi/getOeeChartData', function(req, res, next) {
 
 // Pattern Management pattern list
 router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
-  logger.debug("req.query:", req.query);
+  logger.debug("req.query: ", req.query);
   var sDate = Utils.getDate(req.query.startDate, fmt1, -1, 0, 0, 0);
   var eDate = Utils.getMs2Date(req.query.endDate, fmt1);
+  let flag = req.query.flag;
+  let cid = req.query.cid;
+  let index = getIndicesOfDataAnalysisByStep(flag).data;
   var in_data = {
-      INDEX : indexNotchingPatternData, TYPE : "pattern_data",
+      INDEX : index, TYPE : "pattern_data",
       START_TIMESTAMP: sDate+startTime,
       END_TIMESTAMP: eDate+startTime,
-      MASTER_ID: req.query.masterId};
-  var sql = "selectPatternList";
-  queryProvider.selectSingleQueryByID2("analysis", sql, in_data, function(err, out_data, params) {
+      MASTER_ID: req.query.masterId,
+      RANGEFIELD: cid+'.createDate'
+    };
+  queryProvider.selectSingleQueryByID2("analysis", "selectPatternList", in_data, function(err, out_data, params) {
     // logger.debug(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data === null) {
@@ -273,32 +277,46 @@ router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
 
 // Pattern Management load patterns data : update 2017-11-07
 router.get('/restapi/getPatterns', function(req, res, next) {
-  logger.debug(req.query);
+  logger.debug('req.query: ',req.query);
+  let flag = req.query.flag;
+  let cid = req.query.cid;
+  let index = getIndicesOfDataAnalysisByStep(flag).info;
   var in_data = {
-    INDEX: indexNotchingPatternInfo,
-    TYPE: "pattern_info",
-    ID: req.query.id
+    INDEX: index,    TYPE: "pattern_info",
+    ID: req.query.id,    CID: cid,
+    CID_QUALITY: cid+'.quality',
+    CID_PERFORMACE: cid+'.performance',
+    CID_OVERALL_OEE: cid+'.overall_oee',
+    CID_AVAILABILITY: cid+'.availability'
   };
   queryProvider.selectSingleQueryByID2("analysis", "selectPatterns", in_data, function(err, out_data, params) {
+    logger.debug('[OUT] getPatterns: ', JSON.stringify(out_data));
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data.length == 0) {
+      logger.debug('No data exists.');
       rtnCode = CONSTS.getErrData('0001');
       res.json({rtnCode: rtnCode});
     } else {
-      var patternData = out_data[0]._source.da_result;
-      logger.debug('######################', patternData.ampere.cluster_032);
+      logger.debug('');
+      var patternData = out_data[0]._source[cid];
       if (req.query.id == "master"){
         res.json({rtnCode: rtnCode, patternData: patternData});
       } else {
-        var in_data = { INDEX: indexPatternInfo, TYPE: "pattern_info", ID: "master"};
+        var in_data = {
+          INDEX: index, TYPE: "pattern_info",
+          ID: "master", CID: cid,
+          CID_QUALITY: cid+'.quality',
+          CID_PERFORMACE: cid+'.performance',
+          CID_OVERALL_OEE: cid+'.overall_oee',
+          CID_AVAILABILITY: cid+'.availability'
+        };
         queryProvider.selectSingleQueryByID2("analysis", "selectPatterns", in_data, function(err, out_data, params) {
           var rtnCode = CONSTS.getErrData('0000');
           if (out_data.length == 0) {
             rtnCode = CONSTS.getErrData('0001');
             res.json({rtnCode: rtnCode});
           } else {
-            var masterData = out_data[0]._source.da_result;
-            logger.debug('######################', masterData.ampere.cluster_121);
+            var masterData = out_data[0]._source[cid];
 
             for (var group in patternData) {
               for (var cno in patternData[group]) {
@@ -322,11 +340,16 @@ router.post('/restapi/getMatchingPattern', function(req, res, next) {
   logger.debug("req.body: ", req.body);
   var sDate = Utils.getDateLocal2UTC(req.body.startDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
   var eDate = Utils.getDateLocal2UTC(req.body.endDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
+  let flag = req.query.flag;
+  let cid = req.query.cid;
+  let index = getIndicesOfDataAnalysisByStep(flag).match;
   var in_data = {
     INDEX: indexNotchingPatternMatch,
     TYPE: "pattern_matching",
     START_TIMESTAMP: sDate,
-    END_TIMESTAMP: eDate
+    END_TIMESTAMP: eDate,
+    CID: cid,
+    CID_TIMESTAMP: cid+'.timestamp'
   };
   queryProvider.selectSingleQueryByID2("analysis", "selectMatchingPattern", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
@@ -334,9 +357,9 @@ router.post('/restapi/getMatchingPattern', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     } else {
       out_data.forEach(function(d){
-        var utcDt = d._source.da_result.timestamp;
+        var utcDt = d._source[cid].timestamp;
         var localDt = Utils.getDateUTC2Local(utcDt, CONSTS.DATEFORMAT.DATETIME, 'Y');
-        d._source.da_result.timestamp = localDt;
+        d._source[cid].timestamp = localDt;
       });
     }
     logger.debug('analysis/restapi/getAnomaly_Pattern -> length : %s', out_data.length);
@@ -367,6 +390,123 @@ router.get('/restapi/getAnomalyPatternCheck/', function(req, res, next) {
   });
 });
 
+// get pattern about selected cluster
+router.get('/restapi/getClusterPattern', function(req, res, next) {
+  logger.debug(req.query);
+  let flag = req.query.step;
+  let cid = req.query.machine;
+  let index = getIndicesOfDataAnalysisByStep(flag).data;
+  var in_data = {
+    INDEX: index, TYPE: "pattern_data",
+    ID: req.query.id, TARGET: req.query.targetCluster
+  };
+  queryProvider.selectSingleQueryByID2("analysis", "selectClusterPattern", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data.length == 0) {
+      rtnCode = CONSTS.getErrData('0001');
+      res.json({rtnCode: rtnCode});
+    } else {
+      var patternData = out_data[0]._source[cid];
+      if (req.query.id == "master"){
+        var masterData = null;
+        res.json({rtnCode: rtnCode, patternData: patternData, masterData: masterData});
+      } else {
+        var in_data = {
+          INDEX: indexPatternData, TYPE: "pattern_data",
+          ID: "master", TARGET: req.query.targetMaster
+        };
+        queryProvider.selectSingleQueryByID2("analysis", "selectClusterPattern", in_data, function(err, out_data, params) {
+          var rtnCode = CONSTS.getErrData('0000');
+          if (out_data.length == 0) {
+            rtnCode = CONSTS.getErrData('0001');
+            res.json({rtnCode: rtnCode});
+          } else {
+            var masterData = out_data[0]._source[cid];
+            logger.debug('analysis/restapi/getClusterPattern -> length : %s', out_data.length);
+            res.json({rtnCode: rtnCode, patternData: patternData, masterData: masterData});
+          }
+        });
+      }
+    }
+  });
+});
+
+// pattern data 업데이트
+router.post('/restapi/pattern_data/:id/_update', function(req, res, next) {
+  logger.debug('/analysis/restapi/pattern_data/:id/_update');
+  logger.debug(JSON.stringify(req.body));
+
+  let flag = req.body.step;
+  let cid = req.body.machine;
+  let index = getIndicesOfDataAnalysisByStep(flag).data;
+  var in_data = {
+    INDEX: index, TYPE: "pattern_data",
+    ID: req.params.id,
+    CID: cid
+  };
+  queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
+    if (out_data[0] == null){
+      var rtnCode = CONSTS.getErrData('E001');
+      logger.debug(rtnCode);
+      res.json({rtnCode: rtnCode});
+    } else {
+      var in_data = {
+        INDEX: index, TYPE: "pattern_data",
+        ID: req.params.id, BODY: JSON.stringify(req.body.data),
+        CID: cid
+      };
+      queryProvider.updateQueryByID("analysis", "updatePatternData", in_data, function(err, out_data) {
+        if(out_data.result == "updated"){
+          var rtnCode = CONSTS.getErrData("D001");
+          logger.debug((out_data.result));
+        } else if (out_data.result == "noop") {
+          var rtnCode = CONSTS.getErrData("D007");
+          logger.debug((out_data.result));
+        }
+        if (err) { logger.debug(err);}
+        res.json({rtnCode: rtnCode});
+      });
+    }
+  });
+});
+
+// pattern_info 정보 수정
+router.post('/restapi/pattern_info/:id/_update/', function(req, res, next) {
+  logger.debug('/analysis/restapi/pattern_info/:id/_update');
+  logger.debug(JSON.stringify(req.body));
+
+  let flag = req.body.step;
+  let cid = req.body.machine;
+  let index = getIndicesOfDataAnalysisByStep(flag).info;
+  var in_data = {
+    INDEX: index, TYPE: "pattern_info",
+    ID: req.params.id,
+    CID: cid
+  };
+  queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
+    if (out_data[0] == null){
+      var rtnCode = CONSTS.getErrData('E001');
+    } else {
+      console.log('1111111    index: ', index);
+      var in_data = {
+        INDEX: index, TYPE: "pattern_info",
+        ID: req.params.id, BODY: JSON.stringify(req.body.data),
+        CID: cid
+      };
+      queryProvider.updateQueryByID("analysis", "updatePatternInfo", in_data, function(err, out_data) {
+        if(out_data.result == "updated"){
+          var rtnCode = CONSTS.getErrData("D002");
+        } else if (out_data.result == "noop") {
+          var rtnCode = CONSTS.getErrData("D007");
+        }
+        if (err) { logger.debug(err);}
+        res.json({rtnCode: rtnCode});
+      });
+    }
+  });
+});
+
+
 function getIndicesOfDataAnalysisByStep(step){
   let result={};
   if ( step == 'notching'){
@@ -374,7 +514,7 @@ function getIndicesOfDataAnalysisByStep(step){
     result.data = indexNotchingPatternData;
     result.info = indexNotchingPatternInfo;
     result.match = indexNotchingPatternMatch;
-  } else if ( setp == 'stacking') {
+  } else if ( step == 'stacking') {
     result.raw = indexStackingOee;
     result.data = indexStackingPatternData;
     result.info = indexStackingPatternInfo;
