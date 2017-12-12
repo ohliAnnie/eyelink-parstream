@@ -59,143 +59,107 @@ function saveAlarmData(data, cb) {
 
 router.get('/recipe', function(req, res, next) {
   logger.debug('recipe');
-  var in_data = { INDEX: 'efmm_stacking_status-2017.12.07', TYPE: "status" };
+  var step = (req.query.step==undefined) ? '': req.query.step.toLowerCase();
+  var cid = (req.query.cid==undefined) ? '': req.query.cid;
+  var in_data = {
+    'step' : step,
+    'cid' : cid };
   queryProvider.selectSingleQueryByID2("management", "selectRecipeList", in_data, function(err, out_data, params) {
+    if (err) {
+      out_data = {};
+    }
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
+    } else {
+      out_data.forEach(function(d){
+        d._source.updatetimestamp = Utils.getDateUTC2Local(d._source.updatetimestamp, CONSTS.DATEFORMAT.DATETIME);
+      });
     }
-    logger.debug(out_data);
-        var out_data = {
-          'step' : 'NOTCHING',
-          'machine' :
-            [
-              {'cid' : '100'},
-              {'cid' : '200'}
-            ],
-          'data' :
-            [
-              {
-                'seq' : 1,
-                'cid' : 100,
-                'type' : 'Motor Parameter(30 Axis)',
-                'variable' : 'P2090 + axis no. * 10',
-                'name' : 'P Gain',
-                'description' : 'PID proportional gain term',
-                'unit' : '',
-                'stepno' : '',
-                'tagname' : '',
-                'datatype' : 'Double',
-                'datasize' : 8,
-                'datavalue' : '',
-                'lastupdate' : '2017-12-05 14:25:31',
-                'history' : [
-                  {'date' : '2017-12-01 14:25:31', 'value' : 5},
-                  {'date' : '2017-12-03 14:25:31', 'value' : 6},
-                  {'date' : '2017-12-05 14:25:31', 'value' : 5},
-                ]
-              },
-              {
-                'seq' : 2,
-                'cid' : 100,
-                'type' : 'Motor Parameter(30 Axis)',
-                'variable' : 'P2091 + axis no. * 10',
-                'name' : 'I Gain',
-                'description' : 'Servo velocity feedforward (into integrator) gain term',
-                'unit' : '',
-                'stepno' : '',
-                'tagname' : '',
-                'datatype' : 'Double',
-                'datasize' : 8,
-                'datavalue' : '',
-                'lastupdate' : '2017-12-05 14:25:31',
-                'history' : [
-                  {'date' : '2017-12-01 14:25:31', 'value' : 5},
-                  {'date' : '2017-12-03 14:25:31', 'value' : 9},
-                  {'date' : '2017-12-05 14:25:31', 'value' : 3},
-                ]
-              },
-              {
-                'seq' : 3,
-                'cid' : 100,
-                'type' : 'Productive Parameter',
-                'variable' : 'P2700',
-                'name' : '생산 속도',
-                'description' : '생산 속도',
-                'unit' : 'ppm',
-                'stepno' : '',
-                'tagname' : '',
-                'datatype' : '',
-                'datasize' : '',
-                'datavalue' : 2,
-                'lastupdate' : '2017-12-05 14:25:31',
-                'history' : [
-                  {'date' : '2017-12-01 14:25:31', 'value' : 5},
-                  {'date' : '2017-12-03 14:25:31', 'value' : 7},
-                  {'date' : '2017-12-05 14:25:31', 'value' : 8},
-                ]
-              },
-              {
-                'seq' : 4,
-                'cid' : 100,
-                'type' : 'Productive Parameter',
-                'variable' : 'P2701',
-                'name' : '극판 폭',
-                'description' : '극판 폭',
-                'unit' : 'mm',
-                'stepno' : '',
-                'tagname' : '',
-                'datatype' : 'Double',
-                'datasize' : 8,
-                'datavalue' : '',
-                'lastupdate' : '2017-12-05 14:25:31',
-                'history' : [
-                  {'date' : '2017-12-01 14:25:31', 'value' : 5},
-                  {'date' : '2017-12-03 14:25:31', 'value' : 7},
-                  {'date' : '2017-12-05 14:25:31', 'value' : 6},
-                ]
-              }
-            ]
-        }
-      ;
 
-    res.render('./'+global.config.pcode+'/management/recipe', { title: global.config.productname, mainmenu:mainmenu, rtnData:out_data });
+    var out_data = {
+      'machine' :
+      [
+        {'cid' : '100'},
+        {'cid' : '200'}
+      ],
+      'data' : out_data
+    };
+    logger.debug(out_data.data);
+    logger.debug(out_data.data.length);
+
+    res.render('./'+global.config.pcode+'/management/recipe_list',
+    {
+      title : global.config.productname,
+      mainmenu : mainmenu,
+      condData : {step : req.query.step, cid : req.query.cid},
+      rtnData : out_data });
   });
 
 });
 
 // recipe 신규/수정 화면 호출.
 router.get('/recipe/:id', function(req, res) {
-  var out_data = {
-    'step' : 'NOTCHING',
-    'cid' : '100',
-    'type' : 'Motor Parameter(30 Axis)',
-    'variable' : 'P2090 + axis no. * 10',
-    'name' : 'P Gain',
-    'description' : 'PID proportional gain term',
-    'unit' : '',
-    'stepno' : '',
-    'tagname' : '',
-    'datatype' : 'Double',
-    'datasize' : 8,
-    'datavalue' : '',
-    'lastupdate' : '2017-12-04'
-  };
   if (req.params.id === 'NEW') {
-    res.render('./'+global.config.pcode+'/management/recipe_new', { title: global.config.productname, mainmenu:mainmenu, rtnData:out_data});
+    var out_data = {
+      'step' : req.query.step,
+      'cid' : req.query.cid,
+    };
+    res.render('./'+global.config.pcode+'/management/recipe_new',
+      { title: global.config.productname,
+        mainmenu:mainmenu,
+        rtnData:out_data});
   } else {
-    res.render('./'+global.config.pcode+'/management/recipe_edit', { title: global.config.productname, mainmenu:mainmenu, rtnData:out_data});
+    var in_data = {id : req.params.id.toLowerCase()};
+    queryProvider.selectSingleQueryByID2("management", "selectRecipeById", in_data, function(err, out_data, params) {
+      var rtnCode = CONSTS.getErrData('0000');
+      if (out_data == null) {
+        rtnCode = CONSTS.getErrData('0001');
+      }
+      // step 은 term query 이므로 toLowerCase()를 하고
+      // field는 field이므로 입력받는 문자 그대로 query로 사용함.
+      var in_data2 = {
+        'step' : req.query.step.toLowerCase(),
+        'cid' : req.query.cid,
+        'field' : 'data.' + req.params.id
+      };
+      queryProvider.selectSingleQueryByID2("management", "selectRecipeHistoryById", in_data2, function(err, out_data2, params) {
+        var rtnCode = CONSTS.getErrData('0000');
+        if (out_data2 == null) {
+          rtnCode = CONSTS.getErrData('0001');
+        }
+        logger.info('out_data2 : %j', out_data2);
+        var out_data3 = [];
+        // History 데이터에서 id값과 일치하는 값만을 화면에 출력하기 위해서 재구성함.
+        out_data2.forEach(function(d) {
+          var item = {dtSensed :  null, value : null};
+          for (var i=0; i<d._source.data.length; i++ ) {
+            item.dtSensed = Utils.getDateUTC2Local(d._source.data[i].dtSensed, CONSTS.DATEFORMAT.DATETIME);
+            item.value = d._source.data[i][req.params.id];
+            out_data3.push(item);
+          }
+        });
+        res.render('./'+global.config.pcode+'/management/recipe_edit',
+          {
+            title : global.config.productname,
+            mainmenu : mainmenu,
+            rtnData : out_data[0],
+            rtnDataHistory : out_data3 });
+      });
+    });
   }
 });
 
+
 // recipe 신규 등록.
-router.put('/recipe/:id', function(req, res) {
+router.post('/recipe/:id', function(req, res) {
   logger.debug(req.body);
   // req.body값을 직접 JSON.parse로 처리하지 못함
   //  이유는 req.body 값은 { key : value} 구조는 맞지만
   // JSON.parse를 하기 위해서는 {"key" : "value"}로 변경해야 하므로 stringify로 변경 후 pasre한다.
   var in_data = JSON.stringify(req.body);
   in_data = JSON.parse(in_data);
+  in_data.updatetimestamp = Utils.getToday(CONSTS.DATEFORMAT.DATETIME, 'Y', 'Y');
   logger.debug('in_data : %j',  in_data);
   queryProvider.insertQueryByID("management", "insertRecipe", in_data, function(err, out_data) {
     if(out_data.result == "created"){
@@ -207,51 +171,29 @@ router.put('/recipe/:id', function(req, res) {
   });
 });
 
+
 // recipe 등록 정보 변경.
-router.post('/recipe/:id', function(req, res) {
-  var in_data = JSON.parse(req.body);
-  // var in_data = {
-  //   STEP: req.body.step,
-  //   CID: req.body.step,
-  //   USERID: req.body.userid,
-  //   PASSWORD: req.body.password[0],
-  //   POSITION: req.body.position,
-  //   TEL: req.body.tel,
-  //   MOBILE: req.body.mobile,
-  //   USE: req.body.use,
-  //   EMAIL: req.body.email,
-  //   NOTE: req.body.note,
-  //   DATE: Utils.getToday(fmt2, 'Y', 'Y')
-  // };
-  queryProvider.insertQueryByID("management", "insertRecipe", in_data, function(err, out_data) {
-    if(out_data.result == "created"){
-      var rtnCode = CONSTS.getErrData("D001");
-      logger.debug(out_data.result);
+router.put('/recipe/:id', function(req, res) {
+  var in_data = JSON.stringify(req.body);
+  in_data = JSON.parse(in_data);
+  in_data.updatetimestamp = Utils.getToday(CONSTS.DATEFORMAT.DATETIME, 'Y', 'Y');
+  logger.debug('in_data : %j',  in_data);
+  queryProvider.updateQueryByID("management", "updateRecipe", in_data, function(err, out_data) {
+    if(out_data.result == "updated"){
+     var rtnCode = CONSTS.getErrData("D002");
     }
-    if (err) { logger.debug(err) };
+    if (err) { logger.debug(err);   }
     res.json({rtnCode: rtnCode});
   });
 });
+
 
 // recipe 등록 정보 삭제.
 router.delete('/recipe/:id', function(req, res) {
-  var in_data = { INDEX: indexUser, TYPE : "user", ID : "user_id", VALUE: req.body.userid  };
-  var in_data = {
-    INDEX: indexUser,
-    NAME: req.body.username,
-    USERID: req.body.userid,
-    PASSWORD: req.body.password[0],
-    POSITION: req.body.position,
-    TEL: req.body.tel,
-    MOBILE: req.body.mobile,
-    USE: req.body.use,
-    EMAIL: req.body.email,
-    NOTE: req.body.note,
-    DATE: Utils.getToday(fmt2, 'Y', 'Y')
-  };
-  queryProvider.insertQueryByID("management", "insertUser", in_data, function(err, out_data) {
-    if(out_data.result == "created"){
-      var rtnCode = CONSTS.getErrData("D001");
+  var in_data = {_id : req.params.id};
+  queryProvider.deleteQueryByID("management", "deleteRecipe", in_data, function(err, out_data) {
+    if(out_data.result == "deleted"){
+      var rtnCode = CONSTS.getErrData("D003");
       logger.debug(out_data.result);
     }
     if (err) { logger.debug(err) };
@@ -259,16 +201,18 @@ router.delete('/recipe/:id', function(req, res) {
   });
 });
 
+
+// ID 중복 여부 체크.
 router.get('/restapi/checkId/:id', function(req, res, next) {
   logger.debug('/restapi/checkId/' + req.params.id);
-  var in_data = {ID : req.params.id};
-  queryProvider.selectSingleQueryByID2("management","selectCheckId", in_data, function(err, out_data, params) {
+  var in_data = {id : req.params.id};
+  queryProvider.selectSingleQueryByID2("management","selectRecipeById", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getCodeValue('MANAGEMENT', 'M002');
     if (out_data == null || out_data == '') {
       rtnCode = CONSTS.getCodeValue('MANAGEMENT', 'M001');
     } else {
     }
-    res.json({rtnCode: rtnCode, rtnData: out_data });
+    res.json({rtnCode: rtnCode, rtnData: 'Y' });
   });
 });
 
