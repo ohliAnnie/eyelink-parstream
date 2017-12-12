@@ -43,10 +43,16 @@ block content
                       input#baseTime.form-control.form_datetime(size='20', type='text', name='from', value='' data-date-format='YYYY-MM-DD HH:mm:ss')
                     label.control-label.col-md-2 Time Range
                     .col-md-4.form-inline                      
-                      select#gap.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Machine')
+                      select#gap.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Range' onchange='checkTimeGap()')
                         option(value='1') 1min
                         option(value='5') 5min
                         option(value='10') 10min
+                        option(value='30') 30min
+                        option(value='60') 1hour
+                        option(value='360') 6hours
+                        option(value='720') 12hours
+                        option(value='1440') 1day
+                        option(value='10080') 7days
                       button#btn_search.btn.blue
                         i.fa.fa-search Search
       .row
@@ -54,13 +60,12 @@ block content
           .portlet.light
             .portlet-title
               .caption
-                select#cid1.form-control.input-small.select2me.form-md-line-input(name='server' value=server)
+                select#cid1.form-control.input-small.select2me.form-md-line-input(onchange='drawChart01()')
                   each data in list    
                     if data==match.chart01
                       option(selected='selected') #{data}
                     else                                        
                       option #{data}
-                button#btn_search.btn.blue.pull-right(onclick='drawChart01()') Change
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -74,13 +79,12 @@ block content
           .portlet.light.bordered
             .portlet-title
               .caption
-                select#cid2.form-control.input-small.select2me.form-md-line-input(name='server' value=server)
+                select#cid2.form-control.input-small.select2me.form-md-line-input(onchange='drawChart02()')
                   each data in list    
                     if data==match.chart02
                       option(selected='selected') #{data}
                     else                                        
                       option #{data}
-                button#btn_search.btn.blue.pull-right(onclick='drawChart02()') Change
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -95,13 +99,12 @@ block content
           .portlet.light
             .portlet-title
               .caption
-                select#cid3.form-control.input-small.select2me.form-md-line-input(name='server' value=server)                  
+                select#cid3.form-control.input-small.select2me.form-md-line-input(onchange='drawChart03()')
                   each data in list    
                     if data==match.chart03
                       option(selected='selected') #{data}
                     else                                        
                       option #{data}
-                button#btn_search.btn.blue.pull-right(onclick='drawChart03()') Change
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -115,13 +118,12 @@ block content
           .portlet.light.bordered
             .portlet-title
               .caption
-                select#cid4.form-control.input-small.select2me.form-md-line-input(name='server' value=server)
+                select#cid4.form-control.input-small.select2me.form-md-line-input(onchange='drawChart04()')
                   each data in list    
                     if data==match.chart04
                       option(selected='selected') #{data}
                     else                                        
                       option #{data}
-                button#btn_search.btn.blue.pull-right(onclick='drawChart04()') Change
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')

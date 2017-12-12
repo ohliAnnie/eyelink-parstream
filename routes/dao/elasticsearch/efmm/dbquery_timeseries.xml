@@ -31,7 +31,7 @@
         "index" : #index#,
         "type"  : #type#,
         "body" : {
-          "size" : 10000,
+          "size" : 100000,
           "sort": [           
             { "dtTransmitted": { "order": "asc" } },
             { "cid": { "order": "asc" } } ],             
@@ -43,6 +43,48 @@
                 }
               }
             }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectTimeRange'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+          "size" : 0,
+          "sort" : [{ "dtTransmitted" : "asc" }, { "cid" : "asc" }],
+          "aggs" : {
+            "cid" : {
+              "terms" : { "field" : "cid" },
+              "aggs" : {
+                "range": {
+                  "date_range" : #range#,
+                  "aggs" : {
+                    "date_max" : {
+                      "max" : {
+                          "field" : "dtTransmitted"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDetailData'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+          "size" : 10000,
+          "sort": [
+            { "dtTransmitted": { "order": "asc" } },
+            { "cid": { "order": "asc" } } ],
+          "query": {
+            "bool": #term#
           }
         }
       }
