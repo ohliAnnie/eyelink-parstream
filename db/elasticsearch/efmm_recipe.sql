@@ -20,7 +20,7 @@ curl -XPUT  http://m2u-parstream.eastus.cloudapp.azure.com:9200/efmm_management 
     }
   }'
 
-curl -XPUT http://m2u-parstream.eastus.cloudapp.azure.com:9200/efmm_stacking_status-2017.12.07/status/1 -d '{
+curl -XPUT http://m2u-parstream.eastus.cloudapp.azure.com:9200/efmm_notching_status-2017.12.07/status/1 -d '{
     "flag": "notching",
     "type": "realtime",
     "cid": "100",

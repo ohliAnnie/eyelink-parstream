@@ -40,6 +40,7 @@ block content
                     .col-md-7
                       input#id.form-control.form-control-inline.input-large(size='16', type='text', value='', placeholder='ID', name='id')
                       a#check_id.btn.btn-info Check ID
+                      input#checked_id(type='hidden', name='checked_id', value='')
                   .form-group
                     label.control-label.col-md-5 Type
                     .col-md-7
@@ -79,10 +80,10 @@ block content
                   .form-group
                     #register_tnc_error(style='text-align:center;')
                     .col-md-10
-                      button#add-recipe-btn.btn.btn-default.blue.pull-right Save
+                      button#new-save-recipe-btn.btn.btn-default.blue.pull-right Save
                     .col-md-2
-                      button.btn.btn-default(type='button', onclick="location.href='/management/recipe'") Cancel
-              #modal_check_id.modal.fade.in(tabindex="-1", role="basic", aria-hidden="true", style="display: none;")
+                      button#cancel-recipe-btn.btn.btn-default Cancel
+              #modal-msg.modal.fade.in(tabindex="-1", role="basic", aria-hidden="true", style="display: none;")
                 .modal-dialog
                   .modal-content
                     .modal-header
@@ -91,7 +92,6 @@ block content
                     #modal-message.modal-body 사용 가능 ID.
                     .modal-footer
                       button.btn.default(data-dismiss="modal") Close
-                      button.btn.blue(data-dismiss="modal") Confirm
             .portlet-footer
     p.copyright Copyright M2U Technology All rights reserved.
     a.go2top(href='#index')
