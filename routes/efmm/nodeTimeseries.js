@@ -41,7 +41,7 @@ router.get('/', function(req, res, next) {
       if(list.length != 0){
         outdata.match = { chart01 : list[0%list.length], chart02 : list[1%list.length], chart03 : list[2%list.length], chart04 : list[3%list.length] };
       }      
-      console.log(outdata.match)
+      
     }
     logger.info('mainmenu : %s, outdata : %s', mainmenu.timeseries, JSON.stringify(outdata));     
     res.render(global.config.pcode + '/timeseries/timeseries', outdata);
@@ -52,9 +52,16 @@ router.get('/restapi/getTimeseries', function(req, res, next) {
   console.log('timeseries/restapi/getTimeseries');
   var gte = Utils.getMs2Date(req.query.start, fmt2, 'Y', 'Y');
   var lte = Utils.getDate(gte, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y', 'Y');
-  console.log(gte, lte)
-  var today = Utils.getMs2Date(req.query.start, fmt4, 'Y', 'Y');    
-  var in_data = { index : indexNotchingOee+today, type : "oee", gte : gte, lte : lte};    
+  console.log(req.query)
+  var lque = [];
+  if(req.query.status != null) {
+    for(i=0; i<req.query.status.length; i++){
+      lque[i] = { match : { "data.status" : req.query.status[i] }};
+    }
+  }
+  var status = { should : lque };    
+  var today = Utils.getMs2Date(req.query.start, fmt4, 'Y', 'Y'); 
+  var in_data = { index : indexNotchingOee+today, type : "oee", gte : gte, lte : lte, status : JSON.stringify(status) };
   queryProvider.selectSingleQueryByID2("timeseries","selectTimeseriesData", in_data, function(err, out_data, params) {                
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -80,6 +87,10 @@ router.get('/restapi/getTimeseries', function(req, res, next) {
         for(i=0; i<out_data.length; i++){
           var d = out_data[i]._source.data[0];
           d.dtSensed = new Date(d.dtSensed).getTime();
+          d.overall_oee *= 100;
+          d.availability *= 100;
+          d.performance *= 100;
+          d.quality *= 100;
           if(stacking[out_data[i]._source.cid] == null){
             stacking[out_data[i]._source.cid] = [];          
           }

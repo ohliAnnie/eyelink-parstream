@@ -37,11 +37,10 @@
             { "cid": { "order": "asc" } } ],             
           "query": {
             "bool": {
-              "filter" : {
-                "range" : {
-                  "dtTransmitted" : { "gte" : #gte#, "lte" : #lte# }
-                }
-              }
+              "filter" : [
+                { "range" : { "dtTransmitted" : { "gte" : #gte#, "lte" : #lte# }}},
+                { "bool" : #status# }]
+              
             }
           }
         }

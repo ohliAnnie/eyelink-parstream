@@ -9,6 +9,22 @@ $(document).ready(function() {
   $('#btn_search').click(function() {
     getData();
   });
+
+  $("#Status_all").click(function(){        
+    if($(this).attr('value')=='false'){
+      document.getElementById("Status_all").value = 'true';
+      $('#Running').prop('checked', true).change();
+      $('#DownTime').prop('checked', true).change();
+      $('#MealBreak').prop('checked', true).change();
+      $('#ShortBreak').prop('checked', true).change();
+    } else {
+      document.getElementById("Status_all").value = 'false';
+      $('#Running').prop('checked', false).change();
+      $('#DownTime').prop('checked', false).change();
+      $('#MealBreak').prop('checked', false).change();
+      $('#ShortBreak').prop('checked', false).change();
+    }
+  });
 });
 
 function checkTimeGap() {
@@ -23,8 +39,15 @@ function checkTimeGap() {
 
 var chartData = {};
 var vList = ["overall_oee", "availability", "performance", "quality"];
-function getData() {  
-  var data = { start : $('#baseTime').val(), gap : $('#gap').val()};    
+function getData() {
+  var selected = [], scnt = 0;
+  $('input:checkbox[name="selected"]').each(function() {          
+    if(this.checked){            
+      selected[scnt++] = this.value;
+    }    
+  });  
+  var data = { start : $('#baseTime').val(), gap : $('#gap').val(), status : selected };
+  console.log(data);
   if(data.gap === '1'||data.gap === '5'||data.gap === '10'){    
     var in_data = { url : "/timeseries/restapi/getTimeseries", type : "GET", data : data };
   } else {
