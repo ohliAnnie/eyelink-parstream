@@ -422,8 +422,8 @@ function getGraphData(pData, mData) {
   if (mData != null){ array = pData.concat(mData); }
   else { array = pData; }
 
-  var minVal = Math.min.apply(null,array);
-  var maxVal = Math.max.apply(null,array);
+  var minVal = Math.min.apply(null,array) * 100;
+  var maxVal = Math.max.apply(null,array) * 100;
 
   console.log(minVal, maxVal);
   graphData.pSet = pSet;
@@ -436,9 +436,11 @@ function getGraphData(pData, mData) {
 
 
 function drawPatternChart(graphData) {
-  var margin = {top: 30, right: 90, bottom: 30, left: 55},
-                width = (window.innerWidth*0.32) - margin.left - margin.right,
-                height = 400 - margin.top - margin.bottom;
+  var margin = {top: 30, right: 90, bottom: 30, left: 55};
+  let chartWidth = $('#patternChart').parent().width();
+  // let width = (window.innerWidth*0.32) - margin.left - margin.right;
+  let width = chartWidth - margin.right;
+  let height = 400 - margin.top;
   var xScale = d3.scale.linear().range([0, width]);
   var yScale = d3.scale.linear().range([height, 0]);
 

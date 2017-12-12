@@ -10,7 +10,7 @@ block script
   script(type='text/javascript', src='/efmm/assets/scripts/colorbrewer.js')
   script(type='text/javascript', src='/efmm/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
   script(type='text/javascript', src='/efmm/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
-  script(src='/common/assets/scripts/page/table-managed.js')
+  script(src='/efmm/assets/scripts/page/table-managed.js')
   script(src='/efmm/assets/scripts/vue.min.js')
   script(type='text/javascript', src='/efmm/assets/plugins/bootstrap-treeview/bootstrap-treeview.js')
   script(type='text/javascript', src='/common/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js')
@@ -61,7 +61,8 @@ block content
                         i.fa.fa-search  Search
       .row
         .col-md-7
-          .portlet.light.bordered(style='height: 500px;')
+          //- .portlet.light.bordered(style='height: 500px;')
+          .portlet.light.bordered
             .portlet-title
               .caption.font-dark
                 span.caption-subject.bold.uppercase.font-green-haze History
@@ -69,7 +70,8 @@ block content
             .portlet-body
               #tblMatchingList
         .col-md-5
-          .portlet.light.bordered.tasks-widget(style='height:500px;')
+          //- .portlet.light.bordered.tasks-widget(style='height:500px;')
+          .portlet.light.bordered.tasks-widget
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Segment
@@ -82,5 +84,5 @@ block content
                 a.remove(href='javascript:;')
             .portlet-body
               //- 차트 들어갈 부분
-              .chart(style='height:500px;')
+              .chart(style='height:480px;')
                 #patternChart

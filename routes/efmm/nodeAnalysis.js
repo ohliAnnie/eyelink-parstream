@@ -337,14 +337,14 @@ router.get('/restapi/getPatterns', function(req, res, next) {
 
 // Pattern Matching
 router.post('/restapi/getMatchingPattern', function(req, res, next) {
-  logger.debug("req.body: ", req.body);
+  logger.debug("[getMatchingPattern] req.body: ", req.body);
   var sDate = Utils.getDateLocal2UTC(req.body.startDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
   var eDate = Utils.getDateLocal2UTC(req.body.endDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
-  let flag = req.query.flag;
-  let cid = req.query.cid;
+  let flag = req.body.step;
+  let cid = req.body.machine;
   let index = getIndicesOfDataAnalysisByStep(flag).match;
   var in_data = {
-    INDEX: indexNotchingPatternMatch,
+    INDEX: index,
     TYPE: "pattern_matching",
     START_TIMESTAMP: sDate,
     END_TIMESTAMP: eDate,

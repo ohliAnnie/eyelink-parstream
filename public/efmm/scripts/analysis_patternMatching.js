@@ -22,6 +22,12 @@ $(document).ready(function() {
   Layout.init(); // init layout
   ComponentsPickers.init();
   TableManaged.init();
+
+  $('#step, #machine').change(function(){
+    // TODO : 전체 차트 refresh
+    d3.selectAll("svg").remove();
+    getMatchingList();
+  });
 });
 
 
@@ -43,46 +49,47 @@ function getMatchingList() {
   // var endDt = new Date(Date.parse(basetime) + (1000*60*timeRange));
   var stime = String(dateConvert(startDt));
   // var etime = String(dateConvert(endDt));
-  console.log('%s, %s', stime, basetime);
+  let step = $('#step option:selected').text();
+  let machine = $('#machine option:selected').text();
 
-  var data = { startDate: stime, endDate: basetime };
+  var data = { startDate: stime, endDate: basetime, step:step, machine:machine };
   var in_data = { url: "/analysis/restapi/getMatchingPattern", type: "POST", data:data};
   ajaxTypeData(in_data, function(result){
-    console.log('getPatternList[CODE]:', result.rtnCode.code);
+    // console.log('getPatternList[CODE]:', result.rtnCode.code);
     if (result.rtnCode.code == "0000") {
       var matchingList = result.rtnData;
-      console.log(matchingList);
-      drawMatchingHistory(matchingList);
+      // console.log('[getMatchingPattern] result: ',matchingList);
+      drawMatchingHistory(matchingList, machine);
     }
   });
 }
 
 
-function drawMatchingHistory(matchingList) {
+function drawMatchingHistory(matchingList, machine) {
   $('#tblMatchingList').empty();
   var sb = new StringBuffer();
   sb.append('<div class="portlet-body form"><div class="historyTable" style="height:auto">');
   sb.append('<table class="table table-striped table-bordered table-hover" id="dtPattern">');
-  sb.append('<thead><tr><th></th><th></th>');
-  sb.append('<th colspan="2"> active_power </th><th colspan="2"> ampere </th><th colspan="2"> power_factor </th><th colspan="2"> voltage </th></tr>');
-  sb.append('<tr><th></th><th> Matching Time </th><th>cluster</th><th>status</th><th>cluster</th><th>status</th><th>cluster</th><th>status</th><th>cluster</th><th>status</th></tr>');
+  sb.append('<thead><tr><th></th>');
+  sb.append('<th colspan="2"> Availability </th><th colspan="2"> Overall OEE </th><th colspan="2"> Performance </th><th colspan="2"> Quality </th></tr>');
+  sb.append('<tr><th> Matching Time </th><th>cluster</th><th>status</th><th>cluster</th><th>status</th><th>cluster</th><th>status</th><th>cluster</th><th>status</th></tr>');
   sb.append('</thead><tbody>');
 
   console.log(matchingList);
   matchingList.forEach(function(d) {
-    d = d._source.da_result;
+    d = d._source[machine];
     var matchingTime = d.timestamp.replace('T', ' ');
     console.log(d);
 
-    sb.append('<tr><td></td><td>' + matchingTime + '</td>');
-    sb.append('<td><a class="clickPattern" group="active_power">' + d.active_power.top_1 + '</td>');
-    sb.append('<td>' + d.active_power.status.status + '</td>');
-    sb.append('<td><a class="clickPattern" group="ampere">' + d.ampere.top_1 + '</td>');
-    sb.append('<td>' + d.ampere.status.status + '</td>');
-    sb.append('<td><a class="clickPattern" group="power_factor">' + d.power_factor.top_1 + '</td>');
-    sb.append('<td>' + d.power_factor.status.status + '</td>');
-    sb.append('<td><a class="clickPattern" group="voltage">' + d.voltage.top_1 + '</td>');
-    sb.append('<td>' + d.voltage.status.status + '</td>');
+    sb.append('<tr><td>' + matchingTime + '</td>');
+    sb.append('<td><a class="clickPattern" factor="availability">' + d.availability.top_1 + '</td>');
+    sb.append('<td>' + d.availability.status.status + '</td>');
+    sb.append('<td><a class="clickPattern" factor="overall_oee">' + d.overall_oee.top_1 + '</td>');
+    sb.append('<td>' + d.overall_oee.status.status + '</td>');
+    sb.append('<td><a class="clickPattern" factor="performance">' + d.performance.top_1 + '</td>');
+    sb.append('<td>' + d.performance.status.status + '</td>');
+    sb.append('<td><a class="clickPattern" factor="quality">' + d.quality.top_1 + '</td>');
+    sb.append('<td>' + d.quality.status.status + '</td>');
     sb.append('</tr>');
   });
   sb.append("</tbody></table></div></div>");
@@ -95,18 +102,10 @@ function drawMatchingHistory(matchingList) {
     $('#dtPattern').DataTable().$('.clickPattern').css({'color':'', 'font-weight': ''});
     $(this).css({'color':'red', 'font-weight': 'bold'});
 
-    var group = $(this).attr("group");
-    // var top1 = $(this).attr("top1");
-    // var top2 = $(this).attr("top2");
-    // var top3 = $(this).attr("top3");
-    // var matchingTime = $(this).closest('tr')[0].cells[0].innerText;
-    // matchingTime = matchingTime.replace(' ', 'T') + 'Z';
-
+    var factor = $(this).attr("factor");
     var rowInd = $('#dtPattern').dataTable().fnGetPosition($(this).closest('tr')[0]);
-    var targetData = matchingList[rowInd]._source.da_result[group];
-    console.log(targetData);
-
-  var graphData = getGraphData(targetData);
+    var targetData = matchingList[rowInd]._source[machine][factor];
+    var graphData = getGraphData(targetData);
     drawPatternChart(graphData);
   });
 }
@@ -119,17 +118,17 @@ function getGraphData(targetData) {
   var top3Set = [];
 
   for (i=0; i<targetData.realValue.length; i++) {
-    realSet.push({ x : i, y : targetData.realValue[i].toFixed(2)});
+    realSet.push({ x : i, y : (targetData.realValue[i] * 100).toFixed(2)});
   }
   for (i=0; i<targetData.top_1_value.length; i++) {
-    top1Set.push({ x : i, y : targetData.top_1_value[i].toFixed(2)});
-    top2Set.push({ x : i, y : targetData.top_2_value[i].toFixed(2)});
-    top3Set.push({ x : i, y : targetData.top_3_value[i].toFixed(2)});
+    top1Set.push({ x : i, y : (targetData.top_1_value[i] * 100).toFixed(2)});
+    top2Set.push({ x : i, y : (targetData.top_2_value[i] * 100).toFixed(2)});
+    top3Set.push({ x : i, y : (targetData.top_3_value[i] * 100).toFixed(2)});
   }
 
   var array = targetData.top_1_value.concat(targetData.top_2_value, targetData.top_3_value, targetData.realValue);
-  var minVal = Math.min.apply(null,array);
-  var maxVal = Math.max.apply(null,array);
+  var minVal = Math.min.apply(null,array) * 100;
+  var maxVal = Math.max.apply(null,array) * 100;
 
   graphData.realSet = realSet;
   graphData.top1Set = top1Set;
