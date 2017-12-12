@@ -15,8 +15,9 @@ function getData(){
   
   var in_data = { url : "/dashboard/restapi/getDashboardWeekly", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
-    if (result.rtnCode.code == "0000") {            
+    if (result.rtnCode.code == "0000") {             
       var data = result.rtnData;      
+      console.log(data)     
       drawLineChart(data.total, data.week);
       updateGage(data.total[data.total.length-1]);
       var tdata = {};
@@ -29,7 +30,8 @@ function getData(){
 //      tdata.can_swaging = { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3600, e_unit : 27500, p_unit : 26990, g_unit : 26911, n_unit : 79 };      
       for(key in data){
         if(key != 'week' && key != 'total'){
-          tdata[key] = { tot : data[key].realtime+data[key].stop, in_pro : data[key].realtime, stop : data[key].stop, alarm : data[key].alarm, a_time : Math.ceil(data[key].planned_production_time/60),
+          tdata[key] = { tot : data[key].DownTime+data[key].Running+data[key].ShortBreak+data[key].MealBreak, in_pro : data[key].Running,
+          stop : data[key].DownTime+data[key].ShortBreak+data[key].MealBreak, alarm : data[key].alarm, a_time : Math.ceil(data[key].planned_production_time/60),
           d_time : Math.ceil(data[key].total_down_time/60), r_time :Math.ceil(data[key].operating_time/60), e_unit : data[key].total_expected_unit,
           p_unit : data[key].total_pieces, g_unit : data[key].total_accept_pieces, n_unit : data[key].total_reject_pieces, overall_oee : (data[key].overall_oee*100).toFixed(1),
           availability : (data[key].availability*100).toFixed(1), performance : (data[key].performance*100).toFixed(1), quality : (data[key].quality*100).toFixed(1) };

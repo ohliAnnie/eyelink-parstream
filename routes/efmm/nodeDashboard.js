@@ -119,9 +119,9 @@ router.get('/restapi/getDashboardWeekly', function(req, res, next) {
                 d.date = Utils.getDate(d.dtSensed, fmt1, 0, 0, 0, 0, 'Y');
                 d.timestamp = Utils.getDate(d.dtSensed, fmt2, 0, 0, 0, 0, 'Y');                
                 if(nCount[d.date] == undefined){       
-                  nCount[d.date] = { realtime : 0, stop : 0 };
-                }
-                nCount[d.date][out_data[i]._source.type]++;
+                  nCount[d.date] = { DownTime : 0, Running : 0, MealBreak : 0, ShortBreak : 0 };
+                }                
+                nCount[d.date][d.status]++;
                 if(ndata[d.date]==null){
                   ndata[d.date] = { accept_pieces : 0, down_time : 0, ideal_run_rate : 0, meal_break : 0, operating_time : 0,
                                     planned_production_time : 0, reject_pieces : 0, shift_length : 0, short_break : 0,
@@ -136,7 +136,7 @@ router.get('/restapi/getDashboardWeekly', function(req, res, next) {
                   }
                 }                
               }
-              
+              console.log(nCount)
               in_data = { index : indexStack, type : "oee", term : JSON.stringify(sque) };
               queryProvider.selectSingleQueryByID2("dashboard","selectDashboardTermData", in_data, function(err, out_data, params) {
                 var rtnCode = CONSTS.getErrData('0000');
@@ -149,9 +149,9 @@ router.get('/restapi/getDashboardWeekly', function(req, res, next) {
                     d.date = Utils.getDate(d.dtSensed, fmt1, 0, 0, 0, 0, 'Y');
                     d.timestamp = Utils.getDate(d.dtSensed, fmt2, 0, 0, 0, 0, 'Y');
                     if(sCount[d.date] == undefined){       
-                      sCount[d.date] = { realtime : 0, stop : 0 };
+                      sCount[d.date] = { DownTime : 0, Running : 0, MealBreak : 0, ShortBreak : 0 };
                     }
-                    sCount[d.date][out_data[i]._source.type]++;         
+                    sCount[d.date][d.status]++;         
                     if(sdata[d.date]==null){
                       days[cnt++] = d.date;
                       sdata[d.date] = { accept_pieces : 0, down_time : 0, ideal_run_rate : 0, meal_break : 0, operating_time : 0,
