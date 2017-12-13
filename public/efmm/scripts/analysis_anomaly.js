@@ -175,8 +175,8 @@ function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, patt
   svgPath(svg, compare, 'area upper outer', upperOuterArea);
   svgPath(svg, compare, 'area lower outer', lowerOuterArea);
 
-  svgPath(svg, compare, 'compareline3', compareline);
-  svgPath(svg, compare, 'compareline2', compareline);
+  svgPath(svg, compare, 'compareline3', compareline3);
+  svgPath(svg, compare, 'compareline2', compareline2);
   svgPath(svg, compare, 'compareline', compareline);
 
   svgPath(svg, raw, 'valueline', valuelineFunction);
