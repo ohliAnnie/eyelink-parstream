@@ -1,9 +1,34 @@
+global.log4js = require('log4js');
+log4js.configure({
+  'appenders':
+  {
+      'console' :
+      {
+        'type': 'console'
+      },
+      'file' :
+      {
+        'type': 'file',
+        'filename': './testSocketio.log',
+        'maxLogSize': 1024000000,
+        'backups': 5,
+        'category': 'eyelink'
+      }
+  },
+  'categories' :
+  {
+    'default' : { 'appenders': ['console'], 'level' : 'debug'}
+  }
+});
 var should = require('should');
 var should = require('should');
 var assert = require("assert")
 var request = require("supertest");
 var expect = require("chai").expect;
 var net = require('net');
+
+var CONSTS = require('../routes/consts');
+var Utils = require('../routes/util');
 
 require('date-utils');
 var io = require('socket.io-client');
@@ -69,7 +94,7 @@ describe("Socketio", function(){
 
   });
 
-  describe("Alarm Test -> ", function() {
+  describe("Agent Alarm Test -> ", function() {
     // it('login', login());
 
     it('socket.io send/receive', function(done) {
@@ -83,8 +108,7 @@ describe("Socketio", function(){
 
       //   client1.emit('getEventListForAlarm', 0);
       // });
-      var d = new Date();
-      var regTimeStamp = d.removeDays(1).toFormat('YYYY-MM-DDTHH24:MI:SS');
+      var regTimeStamp = Utils.getToday(CONSTS.DATEFORMAT.DATETIME, 'Y', 'Y');
       var sendData = {
         applicationType : 'ELAGENT',
         agentId : 'test_app',
@@ -92,6 +116,38 @@ describe("Socketio", function(){
         alarmType : 'CPU_90',
         alarmTypeName : '',
         message : 'CPU over 90%'}
+      client1.emit('receiveAlarmData', sendData);
+
+      client1.on('returnAlarmData', function(data) {
+        console.log(data);
+        done();
+      })
+    })
+  });
+
+  describe.only("mPlus Alarm Test -> ", function() {
+    // it('login', login());
+
+    it('socket.io send/receive', function(done) {
+      var client1 = io.connect(socketURL, options);
+      // var count = 0;
+      // client1.on('refreshData', function(data){
+      //   console.log(data);
+      //   data.count.should.equal(++count);
+      //   // if (data == 5)
+      //   //   done();
+
+      //   client1.emit('getEventListForAlarm', 0);
+      // });
+      var regTimeStamp = Utils.getToday(CONSTS.DATEFORMAT.DATETIME, 'Y', 'Y');
+      var sendData = {
+        flag : 'alarm',
+        step : 'Notching',
+        cid : '100',
+        timestamp : regTimeStamp,
+        alarmType : 'OEE_90',
+        alarmTypeName : '',
+        message : 'Notching 100 - OEE value < 90%'}
       client1.emit('receiveAlarmData', sendData);
 
       client1.on('returnAlarmData', function(data) {

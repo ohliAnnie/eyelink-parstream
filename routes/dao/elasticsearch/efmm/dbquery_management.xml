@@ -143,21 +143,27 @@
     ]]></query>
     <query id='selectAlarmList'><![CDATA[
       {
-        "index" : #INDEX#,
-        "type" : #TYPE#,
+        "index" : "efmm_management",
+        "type" : "efmm_management",
         "body" : {
-          "size" : 10,
-          "sort" : { #SORT#: { "order" : "desc" } },
-          "query" : { "match_all" : { } }
+          "size" : 50,
+          "sort" : { "timestamp" : { "order" : "desc" } },
+          "query" : {
+            "bool" : {
+              "must": [
+                {"term" : {"flag" : "alarm"}}
+              ]
+            }
+          }
         }
       }
     ]]></query>
     <query id='insertAlarmData'><![CDATA[
       {
-        "index" : #INDEX#,
-        "type" : #TYPE#,
+        "index" : "efmm_management",
+        "type" : "efmm_management",
         "body" : #BODY#
       }
-    ]]></query>    
+    ]]></query>
   </management>
 </queryList>
