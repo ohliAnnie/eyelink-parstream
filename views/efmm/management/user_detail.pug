@@ -1,0 +1,50 @@
+extends ../efmm-layout01
+block style
+block script  
+block content
+    .container-fluid
+      .page-content
+        .breadcrumbs
+          h1 Detail User
+          ol.breadcrumb
+            li
+              a(href='#') Home
+            li
+              a(href='#') Management
+            li
+              a(href='user_list.html') Users
+            li.active Detailt User
+        .row
+          .col-md-12
+            .portlet.light
+              .portlet-title
+                .caption
+                  span.caption-subject.bold.uppercase.font-green-haze User Information
+                  |  
+                  span.caption-helper Lorem ipsum dolor sit amet
+                .tools
+                  a.reload(href='javascript:;')
+                  a.remove(href='javascript:;')
+              .portlet-body.from
+                form.form-horizontal.form-bordered(action='#')
+                  .form-body
+                    each user in users
+                      .form-group
+                        label.control-label.col-md-3 User ID
+                        .col-md-9
+                          span #{user.user_id}                       
+                      .form-group
+                        label.control-label.col-md-3 Name
+                        .col-md-9
+                          span #{user.user_name}
+                      .form-group
+                        label.control-label.col-md-3 Password
+                        .col-md-9
+                          span #{user.user_pw}                      
+              .portlet-footer
+                button.btn.btn-default(type='button', onclick="location.href='/management/users'") Cancel
+                |  
+                button.btn.btn-default.blue(type='button', onclick="location.href='/management/edit_user'") Save
+      p.copyright Copyright M2U Technology All rights reserved.
+      a.go2top(href='#index')
+        i.icon-arrow-up

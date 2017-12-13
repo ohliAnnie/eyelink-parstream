@@ -1,0 +1,108 @@
+extends ../efmm-layout01
+block style
+block script
+  script(type='text/javascript', src='/efmm/scripts/management_sign_up.js') 
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Sign up
+        ol.breadcrumb
+          li
+            a(href='/dashboard') Home
+          li
+            a(href='#') Management
+          li
+            a(href='/management/users') Users            
+          li.active Sign up
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Sign Up
+                span.caption-helper  Membership registration
+            .portlet-body
+              form#create_account.form-horizontal.register-form(onsubmit="return false;")
+                .form-body                
+                  .form-group
+                    label.control-label.col-md-5 User ID
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 User ID
+                      .input-icon
+                        i.fa.fa-user
+                        input#userid.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='User ID', name='userid')
+                  .form-group
+                    label.control-label.col-md-5 Name
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 User Name
+                      .input-icon
+                        i.fa.fa-font
+                        input#username.form-control.placeholder-no-fix(type='text', placeholder='User Name', name='username')
+                  .form-group
+                    label.control-label.col-md-5 Password
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Password
+                      .input-icon
+                        i.fa.fa-lock
+                        input#register_password.form-control.placeholder-no-fix(type='password', autocomplete='off', placeholder='Password', name='password')
+                  .form-group
+                    label.control-label.col-md-5 Re-type Your Password
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Re-type Your Password
+                      .controls
+                        .input-icon
+                          i.fa.fa-check
+                          input#register_password_1.form-control.placeholder-no-fix(type='password', autocomplete='off', placeholder='Re-type Your Password', name='password')
+                  .form-body                
+                    .form-group
+                      label.control-label.col-md-5 Position
+                      .col-md-3
+                        label.control-label.visible-ie8.visible-ie9 Position
+                        .input-icon
+                          i.fa.fa-role
+                          input#position.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='Position', name='position')
+                  .form-group
+                    label.control-label.col-md-5 Tel
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Tel
+                      .input-icon
+                        i.fa.fa-font
+                        input#tel.form-control.placeholder-no-fix(type='text', placeholder='Tel', name='tel')
+                  .form-group
+                    label.control-label.col-md-5 Mobile
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Mobile
+                      .input-icon
+                        i.fa.fa-font
+                        input#mobile.form-control.placeholder-no-fix(type='text', placeholder='Mobile', name='mobile')      
+                  .form-group
+                    label.control-label.col-md-5 Email
+                    .col-md-3
+                      .input-icon
+                        i.fa.fa-envelope
+                        input#email.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='Email', name='email')
+                  .form-group
+                    label.control-label.col-md-5 Whether or not
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Whether or not
+                      select#use.select2.form-control(name='use')
+                        option(value='Use' selected) Use
+                        option(value='Not') Not
+                  .form-group
+                    label.control-label.col-md-5 Note
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Note
+                      .input-icon
+                        i.fa.fa-role
+                        input#note.form-control.placeholder-no-fix(type='text', autocomplete='off', placeholder='Note', name='note')
+                  .form-group
+                    #register_tnc_error(style='text-align:center;')
+                    .col-md-10
+                      button#register-submit-btn.btn.blue.pull-right Sign Up                      
+                    .col-md-2
+                      button.btn.btn-default(type='button', onclick="location.href='/management/users'") Cancel                    
+            .portlet-footer
+    p.copyright Copyright M2U Technology All rights reserved.
+    a.go2top(href='#index')
+      i.icon-arrow-up

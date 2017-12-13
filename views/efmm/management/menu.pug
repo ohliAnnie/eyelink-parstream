@@ -1,0 +1,38 @@
+extends ../efmm-layout01
+block style
+  link(rel='stylesheet', type='text/css', href='/efmm/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
+  link(rel='stylesheet', type='text/css', href='/efmm/assets/css/jquery.treegrid.css')  
+block script  
+  script(type='text/javascript', src='/efmm/assets/scripts/jquery.treegrid.bootstrap3.js')
+  script(type='text/javascript', src='/efmm/assets/scripts/jquery.treegrid.js')
+  script(type='text/javascript', src='/efmm/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+  script(type='text/javascript', src='/efmm/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
+  script(src='/common/assets/scripts/page/table-managed.js')
+  script(type='text/javascript', src="/common/scripts/util.js")
+  script(type='text/javascript', src='/efmm/scripts/management_menu.js')
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Menu
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Management
+          li.active Menu
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title              
+              .caption.col-md-10
+                span.caption-subject.bold.uppercase.font-green-haze Menu List
+                span.caption-helper  Detail information about menu
+              .col-md-1
+                .tools
+                  button.btn.btn-default.green(type='button', onclick="location.href='/management/menu_upper'") Upper Menu
+              .col-md-1
+                .tools
+                  button.btn.btn-default.blue(type='button', onclick="location.href='/management/menu/editMenu'") Edit Menu
+            .portlet-body.form
+              #call
