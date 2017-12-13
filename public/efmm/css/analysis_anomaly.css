@@ -107,15 +107,15 @@ select:focus-within {
 	outline:  none;
 }
 
-#step { margin-left: 100px; }
+/* #step { margin-left: 100px; }
 #machine, #step {
 	height:34px;
 	margin-right:5px;
 	padding:6px 0px;
 	font-size: 14px;
 	vertical-align: middle;
-}
+} */
 .chart_item {display:inline-block;}
-.chart { height: 250px;}
+.chart { height: 300px;}
 .portlet { width:100%; }
 ol {display:inline-block; float:right;}

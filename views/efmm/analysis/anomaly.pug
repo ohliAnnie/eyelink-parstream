@@ -14,21 +14,39 @@ block content
     .page-content
       .breadcrumbs
         h1 Anomaly
-        - const steps = [{value: 'notching'}, {value: 'stacking'}]
-        - const machines = [{value: '100'}, {value: '200'}]
-        select#step
-          each step in steps
-            option(value=(step.value)) #{step.value}
-        select#machine
-          each machine in machines
-            option(value=(machine.value)) #{machine.value}
         ol.breadcrumb
           li
             a(href='/dashboard') Home
           li
             a(href='#') Analysis
           li.active Anomaly
-
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp selection
+                span.caption-helper
+            .portlet-body.form
+              form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .row
+                    label.control-label.col-md-1 Step
+                    .col-md-2.form-inline
+                      select#step.form-control.input-small.select2me.form-md-line-input
+                        option(value='notching') Notching
+                        option(value='stacking') Stacking
+                        option(value='tabwelding') Tab Welding
+                        option(value='packaging') Packaging
+                        option(value='degassing') Degassing
+                    label.control-label.col-md-1 Machine
+                    .col-md-2.form-inline
+                      select#machine.form-control.input-small.select2me.form-md-line-input
+                        each machine in list
+                          option(value=(machine.value)) #{machine}
+                    .col-md-2.form-inline
+                      button#btn_search.btn.blue
+                        i.fa.fa-search  Search
       .row
         .col-md-6.chart_item
           .portlet.light.bordered

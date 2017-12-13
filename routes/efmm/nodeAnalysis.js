@@ -41,11 +41,33 @@ router.get('/clustering', function(req, res, next) {
 
 router.get('/anomaly', function(req, res, next) {
   var outdata = { title: global.config.productname, mainmenu : mainmenu };
-  res.render('efmm' + '/analysis/anomaly', outdata);
+  var index = [indexNotchingOee+"*", indexStackingOee+"*"];
+  var in_data = { index : index, type : "oee"};
+  queryProvider.selectSingleQueryByID3("analysis","selectMachineList", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {
+      var data = out_data.flag.buckets;
+      var list = [];
+      for(i=0; i<data.length; i++) {
+        // var flag = data[i].key;
+        var cid = data[i].cid.buckets;
+        for(j=0; j<cid.length; j++) {
+          // list[cnt++] = flag+'_'+cid[j].key;
+          if ( list.indexOf(cid[j].key) < 0 ){
+            list.push(cid[j].key);
+          }
+        }
+      }
+      outdata.list = list;
+    }
+    logger.info('mainmenu : %s, outdata : %s', mainmenu.timeseries, JSON.stringify(outdata));
+    res.render('efmm'+'/analysis/anomaly', outdata);
+  });
 });
 
 router.get('/pattern', function(req, res, next) {
-  logger.debug(_rawDataByDay);
   var outdata = { title: global.config.productname, mainmenu : mainmenu };
   var index = [indexNotchingOee+"*", indexStackingOee+"*"];
   var in_data = { index : index, type : "oee"};
@@ -71,7 +93,6 @@ router.get('/pattern', function(req, res, next) {
 });
 
 router.get('/patternMatching', function(req, res, next) {
-  logger.debug(_rawDataByDay);
   var outdata = { title: global.config.productname, mainmenu : mainmenu };
   var index = [indexNotchingOee+"*", indexStackingOee+"*"];
   var in_data = { index : index, type : "oee"};
@@ -229,10 +250,10 @@ router.get('/restapi/getOeeChartData', function(req, res, next) {
         logger.trace('matching data: ',out_data);
         let rtnCode = CONSTS.getErrData('0000');
         if (out_data == null) {
-          logger.debug('null');
+          logger.error('null');
           rtnCode = CONSTS.getErrData('0001');
         } else if(out_data.length == 0) {
-          logger.debug('No matched pattern exists for now.');
+          logger.error('No matched pattern exists for now.');
           rtnCode = CONSTS.getErrData('0001');
         } else {
 
@@ -248,10 +269,10 @@ router.get('/restapi/getOeeChartData', function(req, res, next) {
           queryProvider.selectSingleQueryByID2("analysis", "selectPatternData", patternDataQueryCondition, function(err, out_data) {
             var rtnCode = CONSTS.getErrData('0000');
             if (out_data == null) {
-              logger.debug('null');
+              logger.error('null');
              rtnCode = CONSTS.getErrData('0001');
             } else if(out_data.length == 0) {
-              logger.debug('No pattern data found.');
+              logger.error('No pattern data found.');
                rtnCode = CONSTS.getErrData('0001');
             } else {
               let clust = out_data[0]._source[cid];
