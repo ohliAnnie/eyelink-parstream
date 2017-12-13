@@ -1,12 +1,12 @@
 extends ../efmm-layout01
 block style
 block script
-  script(type='text/javascript', src='/efsm/scripts/management_recipe_edit.js')
+  script(type='text/javascript', src='/efmm/scripts/management_recipe.js')
 block content
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 #{rtnData.flag} Recipe
+        h1 Recipe
         ol.breadcrumb
           li
             a(href='/dashboard') Home
@@ -14,7 +14,7 @@ block content
             a(href='#') Management
           li
             a(href='/management/recipe') Recipes
-          li.active #{rtnData.flag} Recipe
+          li.active Recipe
       .row
         .col-md-12
           .portlet.light
@@ -23,63 +23,87 @@ block content
                 span.caption-subject.bold.uppercase.font-green-haze Recipe Information
                 span.caption-helper  Update recipe information
             .portlet-body.from
-              form#update_account.form-horizontal.form-bordered(onsubmit="return false;")
+              - var item = rtnData._source
+              form#update_recipe.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
                   .form-group
                     label.control-label.col-md-5 Step
                     .col-md-3
-                      span #{rtnData.step}
-                      input#step(type='hidden', name='step', value=rtnData.step)
+                      span #{item.step}
+                      input#_id(type='hidden', name='_id', value=rtnData._id)
+                      input#step(type='hidden', name='step', value=item.step)
+                      input#cid(type='hidden', name='cid', value=item.cid)
+                      input#id(type='hidden', name='id', value=item.id)
                   .form-group
                     label.control-label.col-md-5 Machine ID
                     .col-md-3
-                      span #{rtnData.cid}
+                      span #{item.cid}
+                  .form-group
+                    label.control-label.col-md-5 ID
+                    .col-md-3
+                      span #{item.id}
                   .form-group
                     label.control-label.col-md-5 Type
                     .col-md-3
-                      input#type.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.type, placeholder='Type', name='type')
-                  .form-group
-                    label.control-label.col-md-5 Machine ID
-                    .col-md-3
-                      input#variable.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.variable, placeholder='Type', name='variable')
+                      input#type.form-control.form-control-inline.input-large(size='16', type='text', value=item.type, placeholder='Type', name='type')
                   .form-group
                     label.control-label.col-md-5 Name
                     .col-md-3
-                      input#name.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.name, placeholder='Name', name='name')
+                      input#name.form-control.form-control-inline.input-large(size='16', type='text', value=item.name, placeholder='Name', name='name')
                   .form-group
                     label.control-label.col-md-5 Description
                     .col-md-3
-                      input#description.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.description, placeholder='Description', name='description')
+                      input#description.form-control.form-control-inline.input-large(size='16', type='text', value=item.description, placeholder='Description', name='description')
                   .form-group
                     label.control-label.col-md-5 Unit
                     .col-md-3
-                      input#unit.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.unit, placeholder='Unit', name='unit')
+                      input#unit.form-control.form-control-inline.input-large(size='16', type='text', value=item.unit, placeholder='Unit', name='unit')
                   .form-group
                     label.control-label.col-md-5 Step No
                     .col-md-3
-                      input#stepno.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.stepno, placeholder='stepno', name='stepno')
+                      input#stepno.form-control.form-control-inline.input-large(size='16', type='text', value=item.stepno, placeholder='stepno', name='stepno')
                   .form-group
                     label.control-label.col-md-5 Tag Name
                     .col-md-3
-                      input#tagname.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.tagname, placeholder='tagname', name='tagname')
+                      input#tagname.form-control.form-control-inline.input-large(size='16', type='text', value=item.tagname, placeholder='tagname', name='tagname')
                   .form-group
                     label.control-label.col-md-5 Data Type
                     .col-md-3
-                      input#datatype.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.datatype, placeholder='datatype', name='datatype')
+                      input#datatype.form-control.form-control-inline.input-large(size='16', type='text', value=item.datatype, placeholder='datatype', name='datatype')
                   .form-group
                     label.control-label.col-md-5 Data Size
                     .col-md-3
-                      input#datasize.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.datasize, placeholder='datasize', name='datasize')
+                      input#datasize.form-control.form-control-inline.input-large(size='16', type='text', value=item.datasize, placeholder='datasize', name='datasize')
                   .form-group
                     label.control-label.col-md-5 Value
                     .col-md-3
-                      input#datavalue.form-control.form-control-inline.input-large(size='16', type='text', value=rtnData.datavalue, placeholder='datavalue', name='datavalue')
+                      input#datavalue.form-control.form-control-inline.input-large(size='16', type='text', value=item.datavalue, placeholder='datavalue', name='datavalue')
                   .form-group
                     #register_tnc_error(style='text-align:center;')
-                    .col-md-10
-                      button#register-submit-btn.btn.btn-default.blue.pull-right Save
-                    .col-md-2
-                      button.btn.btn-default(type='button', onclick="location.href='/management/recipe'") Cancel
+                    .col-md-6 &nbsp;
+                    .col-md-6
+                      button#edit-save-recipe-btn.btn.btn-default.blue Save
+                      button#edit-delete-recipe-btn.btn.btn-default.blue Delete
+                      button#history-recipe-btn.btn.btn-info History
+                      button#cancel-recipe-btn.btn.btn-default Cancel
+              #modal-history.modal.fade.in(tabindex="-1", role="basic", aria-hidden="true", style="display: none;")
+                .modal-dialog
+                  .modal-content
+                    .modal-header
+                      button.close(type="button", data-dismiss="modal", aria-hidden="true")
+                      h4.modal-title.font-blue Data changed history
+                    #modal-message.modal-body
+                      table.table.table-striped.table-bordered.table-hover(style='text-align:center;')
+                        thread
+                          th(style='text-align:center;') Value
+                          th(style='text-align:center;') Sensed Date
+                        tbody
+                          each hist in rtnDataHistory
+                            tr.odd.gradeX
+                              td #{hist.value}
+                              td #{hist.dtSensed}
+                    .modal-footer
+                      button.btn.default(data-dismiss="modal") Close
             .portlet-footer
     p.copyright Copyright M2U Technology All rights reserved.
     a.go2top(href='#index')

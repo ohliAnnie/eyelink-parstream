@@ -1,10 +1,10 @@
-.legend text {   
+.legend text {
     fill: black;
     font-weight: bold;
     font-size: 1rem;
 }
 
-.legend text {   
+.legend text {
     fill: black;
     font-weight: bold;
     font-size: 1rem;
@@ -14,9 +14,9 @@
     fill: rgba(0, 0, 0, 0.5);
     stroke: rgba(0, 0, 0, 0.5);
     opacity: 0.1;
- }     
+ }
 
-.top1Line,     
+.top1Line,
 .legend .top1Line {
   fill: none;
   stroke: darkgreen;
@@ -33,10 +33,26 @@
   fill: none;
   stroke: tan;
   stroke-width: 3;
-}      
+}
 .realLine,
 .legend .realLine {
   fill: none;
   stroke: crimson;
   stroke-width: 3;
 }
+
+select {
+  border-radius:5px;
+}
+select:focus-within {
+	outline:  none;
+}
+#step { margin-left: 100px; }
+#machine, #step {
+	height:34px;
+	margin-right:5px;
+	padding:6px 0px;
+	font-size: 14px;
+	vertical-align: middle;
+}
+ol {display:inline-block; float:right;}

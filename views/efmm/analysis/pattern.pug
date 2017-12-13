@@ -20,6 +20,14 @@ block content
     .page-content
       .breadcrumbs
         h1 Pattern management
+        - const steps = [{value: 'notching'}, {value: 'stacking'}]
+        - const machines = [{value: '100'}, {value: '200'}]
+        //-select#step
+          each step in steps
+            option(value=(step.value)) #{step.value}
+        //-select#machine
+          each machine in machines
+            option(value=(machine.value)) #{machine.value}
         ol.breadcrumb
           li
             a(href='/dashboard') Home
@@ -42,6 +50,10 @@ block content
                         input#sdate.form-control(type='text', name='from' value='')
                         span.input-group-addon to
                         input#edate.form-control(type='text', name='to' value='')
+                    .col-md-2
+                      select#step_machine.form-control.input-small.select2me.form-md-line-input(name='server' value=server)
+                        each data in list
+                          option(value=(data.value)) #{data}
                     .col-md-1.form-inline
                       button#btn_search.btn.blue
                         i.fa.fa-search  Search
@@ -81,7 +93,8 @@ block content
             .portlet-body
               #sample
         .col-md-4
-          .portlet.light.bordered.tasks-widget(style='height:545px;')
+          //- .portlet.light.bordered.tasks-widget(style='height:545px;')
+          .portlet.light.bordered.tasks-widget
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Segment
@@ -94,5 +107,5 @@ block content
                 a.remove(href='javascript:;')
             .portlet-body
               //- 차트 들어갈 부분
-              .chart(style='height:500px;')
+              .chart(style='height:450px;')
                 #patternChart

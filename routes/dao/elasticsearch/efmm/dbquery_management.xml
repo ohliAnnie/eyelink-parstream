@@ -1,48 +1,119 @@
 <?xml version="1.0"?>
 <queryList>
   <management>
-    <query id='selectList'><![CDATA[
+    <query id='selectRecipeList'><![CDATA[
       {
-        "index" : #INDEX#,
-        "type"  : #TYPE#,
+        "index" : "efmm_management",
+        "type"  : "efmm_management",
         "body" : {
-          "size": 100000,
-          "_source" : "data",
-          "sort": { "dtTransmitted" : "desc" },
+          "size": 1000,
+          "_source" : "*",
+          "query" : {
+            "bool" : {
+              "must": [
+                {"term" : {"flag" : "recipe"}},
+                {"term" : {"step" : #step#}},
+                {"term" : {"cid" : #cid#}}
+              ]
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectRecipeById'><![CDATA[
+      {
+        "index" : "efmm_management",
+        "type"  : "efmm_management",
+        "body" : {
+          "_source" : [ "*" ],
+          "query" : {
+            "bool" : {
+              "must": [
+                {"term" : {"flag" : "recipe"}},
+                {"term" : {"id" : #id#}}
+              ]
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectRecipeHistoryById'><![CDATA[
+      {
+        "index" : "efmm_notching_status-2017.12.07",
+        "type"  : "status",
+        "body" : {
+          "size" : 10,
+          "sort": [{"data.dtSensed" : {"order" : "desc"}}],
           "query" :
           {
-           "match" : {
-             "sensorType" : {
-                "query" :  "recipe",
-                "operator" : "and"
+            "bool" :
+            {
+              "must" : [
+                {"term" : {"flag" : #step#}},
+                {"term" : {"cid" : #cid#}},
+                {"term" : {"sensorType": "recipe"}}
+              ],
+              "filter" : {
+                "exists" :
+                {"field" : #field#}
               }
             }
           }
         }
       }
     ]]></query>
-    <query id='selectStackingStatus'><![CDATA[
+    <query id='insertRecipe'><![CDATA[
       {
-        "index" : #INDEX#,
-        "type"  : #TYPE#,
+        "index" : "efmm_management",
+        "type" : "efmm_management",
         "body" : {
-          "size": 100000,
-          "_source" : [ "data" ],
-          "sort": { "dtTransmitted": { "order" : "asc" } },
-          "query" : {
-            "bool" : {
-              "must": [
-                {"term" : {"cid" : #CID#}},
-                {"term" : {"sensorType" : #STYPE#}}
-              ],
-              "filter" : {
-                "range" : {
-                  "dtTransmitted" : { "gte" : #START#, "lte" : #END# }
-                }
-              }
-            }
+          "flag" : "recipe",
+          "step" : #step#,
+          "cid" : #cid#,
+          "id" : #id#,
+          "type" : #type#,
+          "name" : #name#,
+          "description" : #description#,
+          "unit" : #unit#,
+          "stepno" : #stepno#,
+          "tagname" : #tagname#,
+          "datatype" : #datatype#,
+          "datasize" : #datasize#,
+          "datavalue" : #datavalue#,
+          "updatetimestamp" : #updatetimestamp#
+        }
+      }
+    ]]></query>
+    <query id='updateRecipe'><![CDATA[
+      {
+        "index" : "efmm_management",
+        "type" : "efmm_management",
+        "id" : #_id#,
+        "body" : {
+          "doc" : {
+            "flag" : "recipe",
+            "step" : #step#,
+            "cid" : #cid#,
+            "id" : #id#,
+            "type" : #type#,
+            "name" : #name#,
+            "description" : #description#,
+            "unit" : #unit#,
+            "stepno" : #stepno#,
+            "tagname" : #tagname#,
+            "datatype" : #datatype#,
+            "datasize" : #datasize#,
+            "datavalue" : #datavalue#,
+            "updatetimestamp" : #updatetimestamp#
           }
         }
+      }
+    ]]></query>
+    <query id='deleteRecipe'><![CDATA[
+      {
+        "index" : "efmm_management",
+        "type" : "efmm_management",
+        "id" : #_id#
       }
     ]]></query>
   </management>

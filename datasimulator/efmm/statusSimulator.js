@@ -144,7 +144,7 @@ function processData(dirPath, file, nof, x) {
 }
 
 function saveData(index, type, data) {
-  var doc = {index:index, type:type, id:data.dtTransmitted, body: data };
+  var doc = {index:index, type:type, id:data.dtTransmitted+data.sensorType+data.cid, body: data };
   logger.trace('saveData : ', doc)
   queryProvider.insert(doc);
 }
@@ -161,7 +161,7 @@ function makeJsonForData(cid, data) {
     // , "type" : type
     // , "body" : {
         "flag" : flag
-      , "type2" : type2
+      , "type" : type2
       , "cid" : cid
       , "sensorType" : sensorType
       , "dtTransmitted" : linedataArr[0]
@@ -230,7 +230,7 @@ function makeJsonForAlarmData(cid, data) {
     // , "type" : type
     // , "body" : {
         "flag" : flag
-      , "type2" : type2
+      , "type" : type2
       , "cid" : cid
       , "sensorType" : "alarm"
       , "dtTransmitted" : linedataArr[0]

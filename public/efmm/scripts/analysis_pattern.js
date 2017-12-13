@@ -6,6 +6,9 @@ $(document).ready(function() {
 
   $('#btn_search').on('click', function(){
     d3.selectAll("svg").remove();
+    // TODO : pattern group, patterns 박스도 클리어하기
+
+
     getPatternList(); // pattern dataset
   });
 
@@ -47,31 +50,35 @@ $(document).ready(function() {
 
 
 function getPatternList() {
+  // let step = $('#step option:selected').text();
+  // let machine = $('#machine option:selected').text();
+  let step_machine = $('#step_machine option:selected').text();
+  let step = step_machine.split('_')[0];
+  let machine = step_machine.split('_')[1];
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
   var masterId = "master";
   var nodeInfo = null;
-  console.log("sDate : %s, eDate : %s", sdate, edate);
-  var data = { startDate: sdate, endDate: edate, masterId: masterId };
+  var data = { startDate: sdate, endDate: edate, masterId: masterId, flag:step, cid:machine };
   var in_data = {url: "/analysis/restapi/getAnomalyPatternList", type: "GET", data: data};
   ajaxTypeData(in_data, function(result){
     console.log('getPatternList[CODE]:', result.rtnCode.code);
+    console.log('[getPatternList] result: ',result);
     if (result.rtnCode.code == "0000") {
-      drawPatternList(result.rtnData, nodeInfo);
+      drawPatternList(result.rtnData, machine, nodeInfo);
     }
   });
 }
 
 ///// draw pattern lists /////
-function drawPatternList(patternLists, nodeInfo) {
+function drawPatternList(patternLists, machine, nodeInfo) {
   $('#patternList').empty();
-  var createdDate = patternLists[0]._id;
+  // rtnData에서 machine.createDatetime 의 로컬타임 기준으로 날짜 추출
+  var sb = new StringBuffer();
   patternLists.forEach(function(d) {
-    d = d._id;
-    var sb = new StringBuffer();
-    sb.append('<tr><td class="clickPatternId"><a>' + d + '</td></tr>');
-    $('#patternList').append(sb.toString());
+      sb.append('<tr><td class="clickPatternId"><a>' + d + '</td></tr>');
   });
+  $('#patternList').append(sb.toString());
 
   // 생성된 패턴ID 클릭 이벤트
   $('.clickPatternId').on('click', function(){
@@ -100,9 +107,14 @@ function loadPatternData(createdDate, nodeInfo) {
     // $('#btnBatchUpdate').hide();
     $('.statusUpdate').hide();
   }
-
-
-  var data = {id : createdDate};
+  // let step = $('#step option:selected').text();
+  // let machine = $('#machine option:selected').text();
+  let step_machine = $('#step_machine option:selected').text();
+  let step = step_machine.split('_')[0];
+  let machine = step_machine.split('_')[1];
+  console.log('step: ',step);
+  console.log('machine: ',machine);
+  var data = {id : createdDate, flag: step, cid: machine};
   var in_data = {url: "/analysis/restapi/getPatterns", type: "GET", data: data};
   ajaxTypeData(in_data, function(result){
     console.log('loadPatternData[CODE]:', result.rtnCode.code);
@@ -217,18 +229,30 @@ function drawPatterns(creationDate, parentNode, childNode, patternData){
     $('#sample_2').DataTable().$('.clickClustNo').css({'color':'', 'font-weight': ''});
     $(this).css({'color':'red', 'font-weight': 'bold'});
 
+    // let step = $('#step option:selected').text();
+    // let machine = $('#machine option:selected').text();
+    let step_machine = $('#step_machine option:selected').text();
+    let step = step_machine.split('_')[0];
+    let machine = step_machine.split('_')[1];
     var row = $(this).closest('tr');
     var CN = row[0].cells[1].innerText;
     var masterCN = row[0].cells[2].innerText;
-    var tgtCluster = "da_result." + parentNode + "." + CN + ".center";
-    var tgtMaster = "da_result." + parentNode + "." + masterCN + ".center";
+    var tgtCluster = machine+"." + parentNode + "." + CN + ".center";
+    var tgtMaster = machine+"." + parentNode + "." + masterCN + ".center";
     console.log('[cluster]', CN, '| [master]', masterCN);
 
-    var data = {id : creationDate, targetCluster : tgtCluster, targetMaster: tgtMaster};
+    var data = {
+      id : creationDate,
+      targetCluster : tgtCluster,
+      targetMaster: tgtMaster,
+      step: step,
+      machine: machine
+    };
     var in_data = {url: "/analysis/restapi/getClusterPattern", type: "GET", data: data};
 
     ajaxTypeData(in_data, function(result) {
       console.log('clusterClick[CODE]: ', result.rtnCode.code);
+      console.log('result: ',result);
       if (result.rtnCode.code == "0000") {
         var patternGraph = result.patternData[parentNode][CN]["center"];
         var masterGraph;
@@ -281,8 +305,12 @@ function pad(n, width) {
 }
 
 function insertNewPattern(id, group, CN, newCN){
-  console.log(newCN);
-  var target = "da_result." + group + "." + CN;
+  // let step = $('#step option:selected').text();
+  // let machine = $('#machine option:selected').text();
+  let step_machine = $('#step_machine option:selected').text();
+  let step = step_machine.split('_')[0];
+  let machine = step_machine.split('_')[1];
+  var target = machine+"." + group + "." + CN;
 
   var data = {id : id, target: target};
   var in_data = {url: "/analysis/restapi/getClusterData", type: "GET", data: data};
@@ -293,8 +321,13 @@ function insertNewPattern(id, group, CN, newCN){
       var queryBody = {};
       queryBody[group] = {};
       queryBody[group][newCN] = d;
-      console.log(queryBody);
-      var in_data = {url: "/analysis/restapi/pattern_data/master/_update", type: "POST", data: queryBody};
+
+      let body = {};
+      body.step = step;
+      body.machine = machine;
+      body.data = queryBody;
+      console.log('[insertNewPattern] queryBody: ',queryBody);
+      var in_data = {url: "/analysis/restapi/pattern_data/master/_update", type: "POST", data: body};
       ajaxTypeData(in_data, function(result) {
         if (result.rtnCode.code == "D001") {
           console.log('insert completed');
@@ -307,7 +340,16 @@ function insertNewPattern(id, group, CN, newCN){
 }
 
 function modifyPattern(id, data){
-  var in_data = {url: "/analysis/restapi/pattern_info/" + id + "/_update", type: "POST", data: data};
+  // let step = $('#step option:selected').text();
+  // let machine = $('#machine option:selected').text();
+  let step_machine = $('#step_machine option:selected').text();
+  let step = step_machine.split('_')[0];
+  let machine = step_machine.split('_')[1];
+  let body = {};
+  body.step = step;
+  body.machine = machine;
+  body.data = data;
+  var in_data = {url: "/analysis/restapi/pattern_info/" + id + "/_update", type: "POST", data: body};
   ajaxTypeData(in_data, function(result) {
     if (result.rtnCode.code == "D002") {
       var nodeInfo = $('#patternTree').treeview('getSelected');
@@ -385,20 +427,20 @@ function getGraphData(pData, mData) {
 
   if (mData == null ){
     for (i=0; i<pData.length; i++) {
-      pSet.push({ x : i, y : pData[i]});
+      pSet.push({ x : i, y : pData[i] * 100});
     }
   } else {
     for (i=0; i<pData.length; i++) {
-      pSet.push({ x : i, y : pData[i]});
-      mSet.push({ x : i, y : mData[i]});
+      pSet.push({ x : i, y : pData[i] * 100});
+      mSet.push({ x : i, y : mData[i] * 100});
     }
   }
   var array;
   if (mData != null){ array = pData.concat(mData); }
   else { array = pData; }
 
-  var minVal = Math.min.apply(null,array);
-  var maxVal = Math.max.apply(null,array);
+  var minVal = Math.min.apply(null,array) * 100;
+  var maxVal = Math.max.apply(null,array) * 100;
 
   console.log(minVal, maxVal);
   graphData.pSet = pSet;
@@ -411,9 +453,11 @@ function getGraphData(pData, mData) {
 
 
 function drawPatternChart(graphData) {
-  var margin = {top: 30, right: 90, bottom: 30, left: 55},
-                width = (window.innerWidth*0.32) - margin.left - margin.right,
-                height = 400 - margin.top - margin.bottom;
+  var margin = {top: 30, right: 90, bottom: 30, left: 55};
+  let chartWidth = $('#patternChart').parent().width();
+  // let width = (window.innerWidth*0.32) - margin.left - margin.right;
+  let width = chartWidth - margin.right;
+  let height = 400 - margin.top;
   var xScale = d3.scale.linear().range([0, width]);
   var yScale = d3.scale.linear().range([height, 0]);
 

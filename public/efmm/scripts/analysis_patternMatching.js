@@ -22,6 +22,12 @@ $(document).ready(function() {
   Layout.init(); // init layout
   ComponentsPickers.init();
   TableManaged.init();
+
+  $('#step, #machine').change(function(){
+    // TODO : 전체 차트 refresh
+    d3.selectAll("svg").remove();
+    getMatchingList();
+  });
 });
 
 
@@ -40,49 +46,51 @@ function getMatchingList() {
   var basetime = $('#baseTime').val() + ':59';
   var timeRange = $('select[name=timeRange').val();
   var startDt = new Date(Date.parse(basetime) - (1000*60*timeRange));
-  // var endDt = new Date(Date.parse(basetime) + (1000*60*timeRange));
   var stime = String(dateConvert(startDt));
-  // var etime = String(dateConvert(endDt));
-  console.log('%s, %s', stime, basetime);
 
-  var data = { startDate: stime, endDate: basetime };
+  // let step = $('#step option:selected').text();
+  // let machine = $('#machine option:selected').text();
+  let step_machine = $('#step_machine option:selected').text();
+  let step = step_machine.split('_')[0];
+  let machine = step_machine.split('_')[1];
+  var data = { startDate: stime, endDate: basetime, step:step, machine:machine };
   var in_data = { url: "/analysis/restapi/getMatchingPattern", type: "POST", data:data};
   ajaxTypeData(in_data, function(result){
-    console.log('getPatternList[CODE]:', result.rtnCode.code);
+    // console.log('getPatternList[CODE]:', result.rtnCode.code);
     if (result.rtnCode.code == "0000") {
       var matchingList = result.rtnData;
-      console.log(matchingList);
-      drawMatchingHistory(matchingList);
+      // console.log('[getMatchingPattern] result: ',matchingList);
+      drawMatchingHistory(matchingList, machine);
     }
   });
 }
 
 
-function drawMatchingHistory(matchingList) {
+function drawMatchingHistory(matchingList, machine) {
   $('#tblMatchingList').empty();
   var sb = new StringBuffer();
   sb.append('<div class="portlet-body form"><div class="historyTable" style="height:auto">');
   sb.append('<table class="table table-striped table-bordered table-hover" id="dtPattern">');
-  sb.append('<thead><tr><th></th><th></th>');
-  sb.append('<th colspan="2"> active_power </th><th colspan="2"> ampere </th><th colspan="2"> power_factor </th><th colspan="2"> voltage </th></tr>');
-  sb.append('<tr><th></th><th> Matching Time </th><th>cluster</th><th>status</th><th>cluster</th><th>status</th><th>cluster</th><th>status</th><th>cluster</th><th>status</th></tr>');
+  sb.append('<thead><tr><th></th>');
+  sb.append('<th colspan="2"> Availability </th><th colspan="2"> Overall OEE </th><th colspan="2"> Performance </th><th colspan="2"> Quality </th></tr>');
+  sb.append('<tr><th> Matching Time </th><th>cluster</th><th>status</th><th>cluster</th><th>status</th><th>cluster</th><th>status</th><th>cluster</th><th>status</th></tr>');
   sb.append('</thead><tbody>');
 
   console.log(matchingList);
   matchingList.forEach(function(d) {
-    d = d._source.da_result;
+    d = d._source[machine];
     var matchingTime = d.timestamp.replace('T', ' ');
     console.log(d);
 
-    sb.append('<tr><td></td><td>' + matchingTime + '</td>');
-    sb.append('<td><a class="clickPattern" group="active_power">' + d.active_power.top_1 + '</td>');
-    sb.append('<td>' + d.active_power.status.status + '</td>');
-    sb.append('<td><a class="clickPattern" group="ampere">' + d.ampere.top_1 + '</td>');
-    sb.append('<td>' + d.ampere.status.status + '</td>');
-    sb.append('<td><a class="clickPattern" group="power_factor">' + d.power_factor.top_1 + '</td>');
-    sb.append('<td>' + d.power_factor.status.status + '</td>');
-    sb.append('<td><a class="clickPattern" group="voltage">' + d.voltage.top_1 + '</td>');
-    sb.append('<td>' + d.voltage.status.status + '</td>');
+    sb.append('<tr><td>' + matchingTime + '</td>');
+    sb.append('<td><a class="clickPattern" factor="availability">' + d.availability.top_1 + '</td>');
+    sb.append('<td>' + d.availability.status.status + '</td>');
+    sb.append('<td><a class="clickPattern" factor="overall_oee">' + d.overall_oee.top_1 + '</td>');
+    sb.append('<td>' + d.overall_oee.status.status + '</td>');
+    sb.append('<td><a class="clickPattern" factor="performance">' + d.performance.top_1 + '</td>');
+    sb.append('<td>' + d.performance.status.status + '</td>');
+    sb.append('<td><a class="clickPattern" factor="quality">' + d.quality.top_1 + '</td>');
+    sb.append('<td>' + d.quality.status.status + '</td>');
     sb.append('</tr>');
   });
   sb.append("</tbody></table></div></div>");
@@ -95,18 +103,10 @@ function drawMatchingHistory(matchingList) {
     $('#dtPattern').DataTable().$('.clickPattern').css({'color':'', 'font-weight': ''});
     $(this).css({'color':'red', 'font-weight': 'bold'});
 
-    var group = $(this).attr("group");
-    // var top1 = $(this).attr("top1");
-    // var top2 = $(this).attr("top2");
-    // var top3 = $(this).attr("top3");
-    // var matchingTime = $(this).closest('tr')[0].cells[0].innerText;
-    // matchingTime = matchingTime.replace(' ', 'T') + 'Z';
-
+    var factor = $(this).attr("factor");
     var rowInd = $('#dtPattern').dataTable().fnGetPosition($(this).closest('tr')[0]);
-    var targetData = matchingList[rowInd]._source.da_result[group];
-    console.log(targetData);
-
-  var graphData = getGraphData(targetData);
+    var targetData = matchingList[rowInd]._source[machine][factor];
+    var graphData = getGraphData(targetData);
     drawPatternChart(graphData);
   });
 }
@@ -119,22 +119,25 @@ function getGraphData(targetData) {
   var top3Set = [];
 
   for (i=0; i<targetData.realValue.length; i++) {
-    realSet.push({ x : i, y : targetData.realValue[i].toFixed(2)});
+    realSet.push({ x : i, y : (targetData.realValue[i] * 100).toFixed(2)});
   }
   for (i=0; i<targetData.top_1_value.length; i++) {
-    top1Set.push({ x : i, y : targetData.top_1_value[i].toFixed(2)});
-    top2Set.push({ x : i, y : targetData.top_2_value[i].toFixed(2)});
-    top3Set.push({ x : i, y : targetData.top_3_value[i].toFixed(2)});
+    top1Set.push({ x : i, y : (targetData.top_1_value[i] * 100).toFixed(2)});
+    top2Set.push({ x : i, y : (targetData.top_2_value[i] * 100).toFixed(2)});
+    top3Set.push({ x : i, y : (targetData.top_3_value[i] * 100).toFixed(2)});
   }
 
   var array = targetData.top_1_value.concat(targetData.top_2_value, targetData.top_3_value, targetData.realValue);
-  var minVal = Math.min.apply(null,array);
-  var maxVal = Math.max.apply(null,array);
+  var minVal = Math.min.apply(null,array) * 100;
+  var maxVal = Math.max.apply(null,array) * 100;
 
   graphData.realSet = realSet;
   graphData.top1Set = top1Set;
+  graphData.top1rate = targetData.top_1_rate;
   graphData.top2Set = top2Set;
+  graphData.top2rate = targetData.top_2_rate;
   graphData.top3Set = top3Set;
+  graphData.top3rate = targetData.top_3_rate;
   graphData.minVal = minVal;
   graphData.maxVal = maxVal;
 
@@ -146,8 +149,38 @@ function getGraphData(targetData) {
 function drawPatternChart(graphData){
 
   var margin = {top: 30, right: 65, bottom: 30, left: 55},
-                width = (window.innerWidth*0.37) - margin.left - margin.right,
+                // width = (window.innerWidth*0.37) - margin.left - margin.right,
+                width = $('#patternChart').parent().width() - margin.left - margin.right,
                 height = 400 - margin.top - margin.bottom;
+
+  let legendMarginTop = 0;
+  let legendMarginLeft = 55;
+  let legendWidth  = 350, legendHeight = 25;
+  var svgLegend = d3.select("#patternChart")
+      .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", 25)
+      .append("g")
+          .attr("transform", "translate(" + legendMarginLeft + "," + legendMarginTop + ")");
+
+  var legend = svgSet(svgLegend, 'g', 'legend', 0 , 0);
+
+  rectLegendBG(legend, 'legend-bg', legendWidth, legendHeight);
+
+  pathLegend(legend, 'realLine', 'M15,13L40,13');
+  textLegend(legend, 48, 17, 'Real');
+
+  pathLegend(legend, 'top1Line', 'M90,13L115,13');
+  textLegend(legend, 123, 17, 'Top1 ('+Math.round(graphData.top1rate)+')');
+
+  pathLegend(legend, 'top2Line', 'M175,13L200,13');
+  textLegend(legend, 208, 17, 'Top2 ('+Math.round(graphData.top2rate)+')');
+
+  pathLegend(legend, 'top3Line', 'M260,13L285,13');
+  textLegend(legend, 293, 17, 'Top3 ('+Math.round(graphData.top3rate)+')');
+
+
+
   var xScale = d3.scale.linear().range([0, width]);
   var yScale = d3.scale.linear().range([height, 0]);
 
@@ -190,23 +223,8 @@ function drawPatternChart(graphData){
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
 
-  var legendWidth  = 310, legendHeight = 25;
 
-  var legend = svgSet(svg, 'g', 'legend', 17 , 0);
 
-  rectLegendBG(legend, 'legend-bg', legendWidth, legendHeight);
-
-  pathLegend(legend, 'realLine', 'M15,13L40,13');
-  textLegend(legend, 48, 17, 'Real');
-
-  pathLegend(legend, 'top1Line', 'M90,13L115,13');
-  textLegend(legend, 123, 17, 'Top1');
-
-  pathLegend(legend, 'top2Line', 'M165,13L190,13');
-  textLegend(legend, 198, 17, 'Top2');
-
-  pathLegend(legend, 'top3Line', 'M240,13L265,13');
-  textLegend(legend, 273, 17, 'Top3');
 
   // Add the X Axis
   svg.append("g")
@@ -230,13 +248,13 @@ function drawPatternChart(graphData){
       .attr("stroke-width", 4)
       .attr("d", top1Line);
 
-  svg.append("text")
-      .data([graphData.top1Set[graphData.top1Set.length-1]])
-      .attr("transform", function(d) { return "translate(" + xScale(d.x) + "," + yScale(d.y) + ")"; })
-      .attr("x", 3)
-      .attr("dy", "0.35em")
-      .style("font", "10px sans-serif")
-      .text("%");
+  // svg.append("text")
+  //     .data([graphData.top1Set[graphData.top1Set.length-1]])
+  //     .attr("transform", function(d) { return "translate(" + xScale(d.x) + "," + yScale(d.y) + ")"; })
+  //     .attr("x", 3)
+  //     .attr("dy", "0.35em")
+  //     .style("font", "10px sans-serif")
+  //     .text(graphData.top1rate);
 
   svg.append("path")
       .data([graphData.top2Set])
@@ -248,13 +266,13 @@ function drawPatternChart(graphData){
       .attr("stroke-width", 4)
       .attr("d", top2Line);
 
-  svg.append("text")
-      .data([graphData.top2Set[graphData.top2Set.length-1]])
-      .attr("transform", function(d) { return "translate(" + xScale(d.x) + "," + yScale(d.y) + ")"; })
-      .attr("x", 3)
-      .attr("dy", "0.35em")
-      .style("font", "10px sans-serif")
-      .text("%");
+  // svg.append("text")
+  //     .data([graphData.top2Set[graphData.top2Set.length-1]])
+  //     .attr("transform", function(d) { return "translate(" + xScale(d.x) + "," + yScale(d.y) + ")"; })
+  //     .attr("x", 3)
+  //     .attr("dy", "0.35em")
+  //     .style("font", "10px sans-serif")
+  //     .text(graphData.top2rate);
 
   svg.append("path")
       .data([graphData.top3Set])
@@ -266,13 +284,13 @@ function drawPatternChart(graphData){
       .attr("stroke-width", 4)
       .attr("d", top3Line);
 
-  svg.append("text")
-      .data([graphData.top3Set[graphData.top3Set.length-1]])
-      .attr("transform", function(d) { return "translate(" + xScale(d.x) + "," + yScale(d.y) + ")"; })
-      .attr("x", 3)
-      .attr("dy", "0.35em")
-      .style("font", "10px sans-serif")
-      .text("%");
+  // svg.append("text")
+  //     .data([graphData.top3Set[graphData.top3Set.length-1]])
+  //     .attr("transform", function(d) { return "translate(" + xScale(d.x) + "," + yScale(d.y) + ")"; })
+  //     .attr("x", 3)
+  //     .attr("dy", "0.35em")
+  //     .style("font", "10px sans-serif")
+  //     .text(graphData.top3rate);
 
   svg.append("path")
       .data([graphData.realSet])

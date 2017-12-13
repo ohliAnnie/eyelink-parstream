@@ -1,11 +1,36 @@
 <?xml version="1.0"?>
 <queryList>
   <analysis>
-    <query id='selectNotchingOeeRaw'>
+    <query id='selectMachineList'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+          "size" : 0,
+          "aggs": {
+            "flag": {
+              "terms": {
+                "field": "flag.keyword",
+                "order" : { "_term" : "asc" }
+              },
+              "aggs": {
+                "cid": {
+                  "terms": {
+                    "field": "cid.keyword",
+                    "order" : { "_term" : "asc" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectOeeRaw'>
       <![CDATA[
       {
-        "index" : #index#,
-        "type"  : #type#,
+        "index" : #INDEX#,
+        "type"  : #TYPE#,
         "body" : {
           "size": 100000,
           "_source" : "data",
@@ -14,12 +39,12 @@
             "bool" : {
               "filter" : {
                 "range" : {
-                  "dtTransmitted" : { "gte" : #start#, "lte" : #end# }
+                  "dtTransmitted" : { "gte" : #START#, "lte" : #END# }
                 }
               },
               "must" : [
-                { "term" : { "cid" : #cid# } },
-                { "term" : { "flag": #flag# } }
+                { "term" : { "cid" : #CID# } },
+                { "term" : { "flag": #FLAG# } }
               ]
             }
           }
@@ -27,6 +52,41 @@
       }
     ]]>
     </query>
+    <query id='selectPatternData'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "_source" : [##LIST##],
+          "query" : {
+            "term" : { "_id" : #ID# }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectMatchedPatternByTimestamp'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "_source" : #CID#,
+          "size" : 1,
+          "sort" : { #SORTFIELD# : { "order" : "desc" } },
+          "query" : {
+            "bool": {
+              "must" : {
+                "range" : {
+                  #SORTFIELD#: { "gte": #START#, "lte" : #END# }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+
+
+
 
     <query id='selectPatternList'>
       <![CDATA[
@@ -35,14 +95,14 @@
         "type": #TYPE#,
         "body": {
           "size": 10000,
-          "_source" : ["_id" ],
+          "_source" : ["_id", #RANGEFIELD# ],
           "sort": { "_uid": "desc" },
           "query" : {
             "bool" : {
               "should": [
                 { "term": { "_id": #MASTER_ID# }},
                 { "range": {
-                    "da_result.createDate" : {
+                    #RANGEFIELD# : {
                       "gte" : #START_TIMESTAMP#,
                       "lte" : #END_TIMESTAMP#
                     }
@@ -61,14 +121,15 @@
         "index" : #INDEX#,
         "type" : #TYPE#,
         "body" : {
+          "_source" : #CID#,
           "size"   : 10000,
-          "sort" : { "da_result.timestamp" : { "order" : "desc"  } },
+          "sort" : { #CID_TIMESTAMP# : { "order" : "desc"  } },
           "query" : {
             "bool" : {
               "must" : { "match_all": {} },
                "filter" : {
                 "range" : {
-                  "da_result.timestamp" : {
+                  #CID_TIMESTAMP# : {
                     "gte" : #START_TIMESTAMP#,
                     "lte" : #END_TIMESTAMP#
                   }
@@ -80,6 +141,81 @@
       }
     ]]>
     </query>
+    <!-- get pattern data -->
+    <query id='selectPatterns'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "_source" : [
+            #CID_OVERALL_OEE#,
+            #CID_PERFORMACE#,
+            #CID_QUALITY#,
+            #CID_AVAILABILITY#
+            ],
+          "query" : {
+            "term" : { "_id" : #ID# }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectClusterPattern'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "_source" : [#TARGET#],
+          "size" : 10000,
+          "query" : {
+            "bool" : {
+              "must" : {
+                "match" : {"_id" : #ID# }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <!-- Pattern data update [0]-->
+    <query id='updatePatternData'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,
+        "body" : {
+          "doc" : {
+            #CID# : #BODY#
+          }
+        }
+      }
+    ]]></query>
+
+    <!-- Pattern infomation update [0]-->
+    <query id='updatePatternInfo'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,
+        "body" : {
+          "doc" : {
+            #CID# : #BODY#
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectById'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "_source" : #CID#,
+          "query" : {
+            "term" : { "_id" : #ID# }
+          }
+        }
+      }
+    ]]></query>
+
 
     <query id='selectStackingStatus'>
       <![CDATA[

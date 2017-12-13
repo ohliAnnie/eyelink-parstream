@@ -30,8 +30,14 @@ define("APPLICATION_INFO", {
 });
 
 define(	"CODE", {
-	"OFFICE_TYPE" : {"P": "개인병원", "T": "종합병원", "G": "국가기관"},
-	"MEMBER_TYPE" : {"B": "PERSONAL", "C": "OFFICE"}
+	"MANAGEMENT" : {
+		"M001": "사용할 수 있는 ID 입니다.",
+		"M002": "동일한 ID가 이미 존재합니다."
+	},
+	"DASHBOARD" : {
+		"B": "PERSONAL",
+		"C": "OFFICE"
+	}
 });
 
 define("DATEFORMAT", {
@@ -78,9 +84,9 @@ function getErrData(key) {
 function getCodeValue(category, key) {
 	console.log(key);
 	if (key == "*") {
-		return exports.CODE[category];
+		return {code : key, message : exports.CODE[category]};
 	} else {
-		return exports.CODE[category][key];
+		return {code : key, message : exports.CODE[category][key]};
 	}
 }
 

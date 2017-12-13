@@ -14,6 +14,14 @@ block content
     .page-content
       .breadcrumbs
         h1 Anomaly
+        - const steps = [{value: 'notching'}, {value: 'stacking'}]
+        - const machines = [{value: '100'}, {value: '200'}]
+        select#step
+          each step in steps
+            option(value=(step.value)) #{step.value}
+        select#machine
+          each machine in machines
+            option(value=(machine.value)) #{machine.value}
         ol.breadcrumb
           li
             a(href='/dashboard') Home
@@ -21,54 +29,41 @@ block content
             a(href='#') Analysis
           li.active Anomaly
 
-      - const steps = [{value: 'notching'}, {value: 'stacking'}]
-      - const machines = [{value: '100'}, {value: '200'}]
-
-      div#selections
-        select#step
-          each step in steps
-            option(value=(step.value)) #{step.value}
-        select#machine
-          each machine in machines
-            option(value=(machine.value)) #{machine.value}
-
       .row
-        .col-md-12
+        .col-md-6.chart_item
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase Anomaly Chart
-                span.caption-helper  by Overall OEE
-            .portlet-body
-              .chart(style='height:400px;')
-                #overall_oee
-      .row
-        .col-md-12
+                span.caption-subject.bold.uppercase Overall OEE
+                span.caption-helper
+              .portlet-body
+                .chart
+                  #overall_oee
+        .col-md-6.chart_item
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase Anomaly Chart
-                span.caption-helper  by Availability
-            .portlet-body
-              .chart(style='height:400px;')
-                #availability
+                span.caption-subject.bold.uppercase Availability
+                span.caption-helper
+              .portlet-body
+                .chart
+                  #availability
       .row
-        .col-md-12
+        .col-md-6.chart_item
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase Anomaly Chart
-                span.caption-helper  by Performance
-            .portlet-body
-              .chart(style='height:400px;')
-                #performance
-      .row
-        .col-md-12
+                span.caption-subject.bold.uppercase Performance
+                span.caption-helper
+              .portlet-body
+                .chart
+                  #performance
+        .col-md-6.chart_item
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase Anomaly Chart
-                span.caption-helper  by Quality
-            .portlet-body
-              .chart(style='height:400px;')
-                #quality
+                span.caption-subject.bold.uppercase Quality
+                span.caption-helper
+              .portlet-body
+                .chart
+                  #quality

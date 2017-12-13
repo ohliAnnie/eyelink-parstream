@@ -106,10 +106,8 @@ select {
 select:focus-within {
 	outline:  none;
 }
-#selections {
-  float: right;
-  margin-left: 100px;
-}
+
+#step { margin-left: 100px; }
 #machine, #step {
 	height:34px;
 	margin-right:5px;
@@ -117,3 +115,7 @@ select:focus-within {
 	font-size: 14px;
 	vertical-align: middle;
 }
+.chart_item {display:inline-block;}
+.chart { height: 250px;}
+.portlet { width:100%; }
+ol {display:inline-block; float:right;}
