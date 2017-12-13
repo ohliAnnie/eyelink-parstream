@@ -1,10 +1,10 @@
 extends ../efmm-layout01
 block style
-  link(rel='stylesheet', type='text/css', href='/efsm/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
+  link(rel='stylesheet', type='text/css', href='/efmm/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
 
 block script
-  script(type='text/javascript', src='/efsm/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
-  script(type='text/javascript', src='/efsm/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
+  script(type='text/javascript', src='/efmm/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+  script(type='text/javascript', src='/efmm/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
   script(src='/common/assets/scripts/page/table-managed.js')
   script(type='text/javascript', src='/efmm/scripts/management_recipe.js')
 
@@ -33,11 +33,12 @@ block content
                     label.control-label.col-md-1 Step
                     .col-md-2.form-inline
                       select#serachStep.form-control.input-small.select2me.form-md-line-input(name='searchStep', condData=condData.step)
-                        option(value='NOTCHING') Notching
-                        option(value='STACKING') Stacking
-                        option(value='TABWELDING') Tab Welding
-                        option(value='PACKAGING') Packaging
-                        option(value='DEGASSING') Degassing
+                        option(value='')
+                          each code in commoncode.step
+                            - if (code.key.includes(condData.step))
+                              option(value=code.key, selected) #{code.value}
+                            - else
+                              option(value=code.key) #{code.value}
                     label.control-label.col-md-1 Machine
                     .col-md-2.form-inline
                       select#searchCid.form-control.input-small.select2me.form-md-line-input(name='searchCid', condData=condData.cid)
@@ -78,5 +79,3 @@ block content
                           td #{item.unit}
                           td #{item.datavalue}
                           td #{item.updatetimestamp}
-
-

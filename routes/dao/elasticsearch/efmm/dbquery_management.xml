@@ -37,9 +37,34 @@
         }
       }
     ]]></query>
-    <query id='selectRecipeHistoryById'><![CDATA[
+    <query id='selectRecipe_NOTCHING_HistoryById'><![CDATA[
       {
-        "index" : "efmm_notching_status-2017.12.07",
+        "index" : "efmm_notching_status-*",
+        "type"  : "status",
+        "body" : {
+          "size" : 10,
+          "sort": [{"data.dtSensed" : {"order" : "desc"}}],
+          "query" :
+          {
+            "bool" :
+            {
+              "must" : [
+                {"term" : {"flag" : #step#}},
+                {"term" : {"cid" : #cid#}},
+                {"term" : {"sensorType": "recipe"}}
+              ],
+              "filter" : {
+                "exists" :
+                {"field" : #field#}
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectRecipe_STACKING_HistoryById'><![CDATA[
+      {
+        "index" : "efmm_stacking_status-*",
         "type"  : "status",
         "body" : {
           "size" : 10,

@@ -45,7 +45,13 @@ block content
                   .form-group
                     label.control-label.col-md-5 Type
                     .col-md-3
-                      input#type.form-control.form-control-inline.input-large(size='16', type='text', value=item.type, placeholder='Type', name='type')
+                      select#type.select2.form-control(data-show-subtext='true', name='type')
+                        option(value='')
+                        each type in commoncode.type
+                          - if (item.type.includes(type.key))
+                            option(value=type.key, selected) #{type.value}
+                          - else
+                            option(value=type.key) #{type.value}
                   .form-group
                     label.control-label.col-md-5 Name
                     .col-md-3
@@ -57,7 +63,13 @@ block content
                   .form-group
                     label.control-label.col-md-5 Unit
                     .col-md-3
-                      input#unit.form-control.form-control-inline.input-large(size='16', type='text', value=item.unit, placeholder='Unit', name='unit')
+                      select#unit.select2.form-control(data-show-subtext='true', name='unit')
+                        option(value='')
+                          each type in commoncode.unit
+                            - if (item.unit.includes(type.key))
+                              option(value=type.key, selected) #{type.value}
+                            - else
+                              option(value=type.key) #{type.value}
                   .form-group
                     label.control-label.col-md-5 Step No
                     .col-md-3
@@ -69,7 +81,13 @@ block content
                   .form-group
                     label.control-label.col-md-5 Data Type
                     .col-md-3
-                      input#datatype.form-control.form-control-inline.input-large(size='16', type='text', value=item.datatype, placeholder='datatype', name='datatype')
+                      select#datatype.select2.form-control(data-show-subtext='true', name='datatype')
+                        option(value='')
+                          each type in commoncode.datatype
+                            - if (item.datatype.includes(type.key))
+                              option(value=type.key, selected) #{type.value}
+                            - else
+                              option(value=type.key) #{type.value}
                   .form-group
                     label.control-label.col-md-5 Data Size
                     .col-md-3

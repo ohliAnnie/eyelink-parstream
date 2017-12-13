@@ -1,5 +1,6 @@
 var logger = global.log4js.getLogger('nodeManagement');
 var CONSTS = require('../consts');
+var CCODE = require('./commonCode');
 var Utils = require('../util');
 var express = require('express');
 var router = express.Router();
@@ -93,6 +94,7 @@ router.get('/recipe', function(req, res, next) {
       title : global.config.productname,
       mainmenu : mainmenu,
       condData : {step : req.query.step, cid : req.query.cid},
+      commoncode : {step : CCODE.COMMONCODE.STEP},
       rtnData : out_data });
   });
 
@@ -100,6 +102,11 @@ router.get('/recipe', function(req, res, next) {
 
 // recipe 신규/수정 화면 호출.
 router.get('/recipe/:id', function(req, res) {
+  var commoncode = {
+    type : CCODE.COMMONCODE.MACHINE.TYPE,
+    unit : CCODE.COMMONCODE.MACHINE.UNIT,
+    datatype : CCODE.COMMONCODE.MACHINE.DATATYPE,
+  };
   if (req.params.id === 'NEW') {
     var out_data = {
       'step' : req.query.step,
@@ -108,6 +115,7 @@ router.get('/recipe/:id', function(req, res) {
     res.render('./'+global.config.pcode+'/management/recipe_new',
       { title: global.config.productname,
         mainmenu:mainmenu,
+        commoncode : commoncode,
         rtnData:out_data});
   } else {
     var in_data = {id : req.params.id.toLowerCase()};
@@ -123,10 +131,12 @@ router.get('/recipe/:id', function(req, res) {
         'cid' : req.query.cid,
         'field' : 'data.' + req.params.id
       };
-      queryProvider.selectSingleQueryByID2("management", "selectRecipeHistoryById", in_data2, function(err, out_data2, params) {
+      var queryId = "selectRecipe_" + req.query.step + "_HistoryById";
+      queryProvider.selectSingleQueryByID2("management", queryId, in_data2, function(err, out_data2, params) {
         var rtnCode = CONSTS.getErrData('0000');
         if (out_data2 == null) {
           rtnCode = CONSTS.getErrData('0001');
+          out_data2 = [];
         }
         logger.info('out_data2 : %j', out_data2);
         var out_data3 = [];
@@ -143,6 +153,7 @@ router.get('/recipe/:id', function(req, res) {
           {
             title : global.config.productname,
             mainmenu : mainmenu,
+            commoncode : commoncode,
             rtnData : out_data[0],
             rtnDataHistory : out_data3 });
       });
@@ -171,7 +182,6 @@ router.post('/recipe/:id', function(req, res) {
   });
 });
 
-
 // recipe 등록 정보 변경.
 router.put('/recipe/:id', function(req, res) {
   var in_data = JSON.stringify(req.body);
@@ -186,7 +196,6 @@ router.put('/recipe/:id', function(req, res) {
     res.json({rtnCode: rtnCode});
   });
 });
-
 
 // recipe 등록 정보 삭제.
 router.delete('/recipe/:id', function(req, res) {
@@ -205,7 +214,7 @@ router.delete('/recipe/:id', function(req, res) {
 // ID 중복 여부 체크.
 router.get('/restapi/checkId/:id', function(req, res, next) {
   logger.debug('/restapi/checkId/' + req.params.id);
-  var in_data = {id : req.params.id};
+  var in_data = {id : req.params.id.toLowerCase()};
   queryProvider.selectSingleQueryByID2("management","selectRecipeById", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getCodeValue('MANAGEMENT', 'M002');
     if (out_data == null || out_data == '') {

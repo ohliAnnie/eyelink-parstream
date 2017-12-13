@@ -41,8 +41,8 @@ $(document).ready(function() {
 });
 
 function initRecipeList() {
-  $('#serachStep').val($('#serachStep').attr('condData'));
-  $('#searchCid').val($('#searchCid').attr('condData'));
+  // $('#serachStep').val($('#serachStep').attr('condData'));
+  // $('#searchCid').val($('#searchCid').attr('condData'));
 }
 
 function searchRecipeBtn() {
