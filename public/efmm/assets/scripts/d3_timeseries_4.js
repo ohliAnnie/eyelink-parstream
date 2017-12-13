@@ -49,7 +49,14 @@ function(d3,d3tip)
             return '<tr><td style="color:'+d.options.color+'">'+d.options.label+' </td>'+
                   '<td style="color:#333333;text-align:right">'+yscale.setformat(d.item[d.aes.y])+'</td></tr>'
           }).join('')+'</table>'
-        var format = d3.time.format("%H:%M:%S")
+        var gap = $('#gap').val();
+        if(gap==='1'||gap==='5'||gap==='10'||gap==='30') {
+          var format = d3.time.format("%H:%M:%S")  
+        } else if(gap==='60'||gap==='360'||gap==='720') {
+          var format = d3.time.format("%H:%M")  
+        } else {
+          var format = d3.time.format("%b %d %H:00")  
+        }
         return '<h4 style="color:#333333;text-align:center">'+format(date)+'</h4>'+spans
       }
 

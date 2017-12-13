@@ -2,9 +2,11 @@ extends ../efmm-layout01
 block style    
   link(rel='stylesheet', href='/efmm/assets/css/d3_timeseries.css')
   link(type='text/css', rel='stylesheet', href='/common/assets/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css')
+  link(href='https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css', rel='stylesheet')
 block script  
   script(type='text/javascript', src='/common/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js')
   script(type='text/javascript', src='/efmm/assets/scripts/d3_dc.js')
+  script(src='https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js')
   script(type='text/javascript', src="/common/scripts/util.js")
   script(type='text/javascript', src="/efmm/assets/scripts/d3_timeseries_4.js")
   script(type='text/javascript', src="/efmm/scripts/timeseries.js")
@@ -42,25 +44,40 @@ block content
                     .col-md-3
                       input#baseTime.form-control.form_datetime(size='20', type='text', name='from', value='' data-date-format='YYYY-MM-DD HH:mm:ss')
                     label.control-label.col-md-2 Time Range
-                    .col-md-4.form-inline                      
-                      select#gap.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Machine')
+                    .col-md-5.form-inline                      
+                      select#gap.form-control.input-small.select2me.form-md-line-input(data-placeholder='Select Range' onchange='checkTimeGap()')
                         option(value='1') 1min
                         option(value='5') 5min
                         option(value='10') 10min
+                        option(value='30') 30min
+                        option(value='60') 1hour
+                        option(value='360') 6hours
+                        option(value='720') 12hours
+                        option(value='1440') 24hours
+                        option(value='10080') 7days                    
+                    label.control-label.col-md-2 Status
+                    .col-md-7
+                      .btn-group.actions(data-toggle='buttons')
+                        input#Running(type='checkbox', data-toggle='toggle', value='Running', data-on="Running", data-off="Running", name='selected')
+                        input#DownTime(type='checkbox', data-toggle='toggle', value='DownTime', data-on="DownTime", data-off="DownTime", name='selected')
+                        input#MealBreak(type='checkbox', data-toggle='toggle', value='MealBreak', data-on="MealBreak", data-off="MealBreak", name='selected')
+                        input#ShortBreak(type='checkbox', data-toggle='toggle', value='ShortBreak', data-on="ShortBreak", data-off="ShortBreak", name='selected')
+                        button#Status_all.btn.btn-success(value='false') All
+                    .col-md-2
                       button#btn_search.btn.blue
                         i.fa.fa-search Search
+                      
       .row
         .col-md-6
           .portlet.light
             .portlet-title
               .caption
-                select#cid1.form-control.input-small.select2me.form-md-line-input(name='server' value=server)
+                select#cid1.form-control.input-small.select2me.form-md-line-input(onchange='drawChart01()')
                   each data in list    
                     if data==match.chart01
                       option(selected='selected') #{data}
                     else                                        
                       option #{data}
-                button#btn_search.btn.blue.pull-right(onclick='drawChart01()') Change
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -74,13 +91,12 @@ block content
           .portlet.light.bordered
             .portlet-title
               .caption
-                select#cid2.form-control.input-small.select2me.form-md-line-input(name='server' value=server)
+                select#cid2.form-control.input-small.select2me.form-md-line-input(onchange='drawChart02()')
                   each data in list    
                     if data==match.chart02
                       option(selected='selected') #{data}
                     else                                        
                       option #{data}
-                button#btn_search.btn.blue.pull-right(onclick='drawChart02()') Change
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -95,13 +111,12 @@ block content
           .portlet.light
             .portlet-title
               .caption
-                select#cid3.form-control.input-small.select2me.form-md-line-input(name='server' value=server)                  
+                select#cid3.form-control.input-small.select2me.form-md-line-input(onchange='drawChart03()')
                   each data in list    
                     if data==match.chart03
                       option(selected='selected') #{data}
                     else                                        
                       option #{data}
-                button#btn_search.btn.blue.pull-right(onclick='drawChart03()') Change
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
@@ -115,13 +130,12 @@ block content
           .portlet.light.bordered
             .portlet-title
               .caption
-                select#cid4.form-control.input-small.select2me.form-md-line-input(name='server' value=server)
+                select#cid4.form-control.input-small.select2me.form-md-line-input(onchange='drawChart04()')
                   each data in list    
                     if data==match.chart04
                       option(selected='selected') #{data}
                     else                                        
                       option #{data}
-                button#btn_search.btn.blue.pull-right(onclick='drawChart04()') Change
               .tools
                 a.collapse(href='javascript:;')
                 a.config(href='#portlet-config', data-toggle='modal')
