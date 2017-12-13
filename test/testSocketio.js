@@ -8,8 +8,8 @@ var net = require('net');
 require('date-utils');
 var io = require('socket.io-client');
 
-var socketURL = 'http://localhost:5223';
-// var socketURL = 'http://m2utech.eastus.cloudapp.azure.com:5223';
+var socketURL = 'http://localhost:5224';
+// var socketURL = 'http://m2utech.eastus.cloudapp.azure.com:5224';
 
 var options ={
   transports: ['websocket'],
@@ -168,4 +168,3 @@ function writeData(socket, data, callback){
     callback();
   }
 }
-

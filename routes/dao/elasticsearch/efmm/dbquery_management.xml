@@ -141,5 +141,23 @@
         "id" : #_id#
       }
     ]]></query>
+    <query id='selectAlarmList'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size" : 10,
+          "sort" : { #SORT#: { "order" : "desc" } },
+          "query" : { "match_all" : { } }
+        }
+      }
+    ]]></query>
+    <query id='insertAlarmData'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : #BODY#
+      }
+    ]]></query>    
   </management>
 </queryList>
