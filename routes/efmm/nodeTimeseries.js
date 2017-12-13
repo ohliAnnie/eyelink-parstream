@@ -51,8 +51,7 @@ router.get('/', function(req, res, next) {
 router.get('/restapi/getTimeseries', function(req, res, next) {
   console.log('timeseries/restapi/getTimeseries');
   var gte = Utils.getMs2Date(req.query.start, fmt2, 'Y', 'Y');
-  var lte = Utils.getDate(gte, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y', 'Y');
-  console.log(req.query)
+  var lte = Utils.getDate(gte, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y', 'Y');  
   var lque = [];
   if(req.query.status != null) {
     for(i=0; i<req.query.status.length; i++){
@@ -122,11 +121,18 @@ router.get('/restapi/getGapTimeseries', function(req, res, next) {
     from = to;
   }
   var range = { field : "dtTransmitted", ranges : list };
+  var lque = [];
+  if(req.query.status != null) {
+    for(i=0; i<req.query.status.length; i++){
+      lque[i] = { match : { "data.status" : req.query.status[i] }};
+    }
+  }
+  var status = { should : lque };    
   var today = Utils.getMs2Date(req.query.start, fmt4, 'Y', 'Y');    
   var yday = Utils.getDate(gte, fmt4, 0, 0, parseInt(req.query.gap), 0, 'Y', 'Y');
   var indexNotch = indexList(gte, lte, indexNotchingOee);
   var indexStack = indexList(gte, lte, indexStackingOee);
-  var in_data = { index : indexNotch, type : "oee", gte : gte, lte : lte, range : JSON.stringify(range) };    
+  var in_data = { index : indexNotch, type : "oee", gte : gte, lte : lte, range : JSON.stringify(range), status : JSON.stringify(status) };
   queryProvider.selectSingleQueryByID3("timeseries","selectTimeRange", in_data, function(err, out_data, params) {    
     var notch = out_data.cid.buckets;      
     var que = [];

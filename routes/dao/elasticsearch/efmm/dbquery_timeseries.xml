@@ -53,6 +53,9 @@
         "body" : {
           "size" : 0,
           "sort" : [{ "dtTransmitted" : "asc" }, { "cid" : "asc" }],
+          "query" : {
+            "bool" : #status#
+          },
           "aggs" : {
             "cid" : {
               "terms" : { "field" : "cid" },

@@ -4,6 +4,12 @@ $(document).ready(function() {
   $('#baseTime').datetimepicker({
     format: 'yyyy-mm-dd hh:ii:ss'
   });
+  document.getElementById("Status_all").value = 'true';
+  $('#Running').prop('checked', true).change();
+  $('#DownTime').prop('checked', true).change();
+  $('#MealBreak').prop('checked', true).change();
+  $('#ShortBreak').prop('checked', true).change();
+
   var start = new Date().getTime()-60*1000;  
   getData();
   $('#btn_search').click(function() {
@@ -64,10 +70,11 @@ function getData() {
   });
 }
 
-function drawChart01(){  
+function drawChart01(){    
   d3.select("#ts-chart01").select("svg").remove();
   var id = $('#cid1').val().split('_');
   var data = chartData[id[0]][id[1]];
+  console.log(data)
   if(data != undefined) {        
     var chartName = '#ts-chart01';
     chart01 = d3.timeseries()          
@@ -86,6 +93,7 @@ function drawChart02(){
   d3.select("#ts-chart02").select("svg").remove();
   var id = $('#cid2').val().split('_');
   var data = chartData[id[0]][id[1]];  
+  console.log(data);
   if(data != undefined) {
     var chartName = '#ts-chart02';    
     chart02 = d3.timeseries()          
