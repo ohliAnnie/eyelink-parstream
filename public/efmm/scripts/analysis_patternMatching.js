@@ -59,7 +59,7 @@ function getMatchingList() {
     // console.log('getPatternList[CODE]:', result.rtnCode.code);
     if (result.rtnCode.code == "0000") {
       var matchingList = result.rtnData;
-      // console.log('[getMatchingPattern] result: ',matchingList);
+      console.log('[getMatchingPattern] result: ',matchingList);
       drawMatchingHistory(matchingList, machine);
     }
   });
@@ -104,8 +104,8 @@ function drawMatchingHistory(matchingList, machine) {
     $(this).css({'color':'red', 'font-weight': 'bold'});
 
     var factor = $(this).attr("factor");
-    var rowInd = $('#dtPattern').dataTable().fnGetPosition($(this).closest('tr')[0]);
-    var targetData = matchingList[rowInd]._source[machine][factor];
+    var rowIdx = $('#dtPattern').dataTable().fnGetPosition($(this).closest('tr')[0]);
+    var targetData = matchingList[rowIdx]._source[machine][factor];
     var graphData = getGraphData(targetData);
     drawPatternChart(graphData);
   });
@@ -155,7 +155,7 @@ function drawPatternChart(graphData){
 
   let legendMarginTop = 0;
   let legendMarginLeft = 55;
-  let legendWidth  = 350, legendHeight = 25;
+  let legendWidth  = 380, legendHeight = 25;
   var svgLegend = d3.select("#patternChart")
       .append("svg")
           .attr("width", width + margin.left + margin.right)
@@ -171,31 +171,16 @@ function drawPatternChart(graphData){
   textLegend(legend, 48, 17, 'Real');
 
   pathLegend(legend, 'top1Line', 'M90,13L115,13');
-  textLegend(legend, 123, 17, 'Top1 ('+Math.round(graphData.top1rate)+')');
+  textLegend(legend, 123, 17, 'Top1 ('+graphData.top1rate.toFixed(1)+')');
 
-  pathLegend(legend, 'top2Line', 'M175,13L200,13');
-  textLegend(legend, 208, 17, 'Top2 ('+Math.round(graphData.top2rate)+')');
+  pathLegend(legend, 'top2Line', 'M185,13L210,13');
+  textLegend(legend, 218, 17, 'Top2 ('+graphData.top2rate.toFixed(1)+')');
 
-  pathLegend(legend, 'top3Line', 'M260,13L285,13');
-  textLegend(legend, 293, 17, 'Top3 ('+Math.round(graphData.top3rate)+')');
-
-
+  pathLegend(legend, 'top3Line', 'M280,13L305,13');
+  textLegend(legend, 313, 17, 'Top3 ('+graphData.top3rate.toFixed(1)+')');
 
   var xScale = d3.scale.linear().range([0, width]);
   var yScale = d3.scale.linear().range([height, 0]);
-
-  var xAxis = d3.svg.axis()
-      .scale(xScale)
-      .orient("bottom")
-      .innerTickSize(-height)
-      .outerTickSize(1)
-      .tickPadding(10);
-  var yAxis = d3.svg.axis()
-      .scale(yScale)
-      .orient("left")
-      .innerTickSize(-width)
-      .outerTickSize(1)
-      .tickPadding(10);
 
   var svg = d3.select("#patternChart")
       .append("svg")
@@ -206,6 +191,31 @@ function drawPatternChart(graphData){
   xScale.domain([0, d3.max(graphData.top1Set, function(d){ return d.x; })]);
   yScale.domain([graphData.minVal-(graphData.minVal/4), graphData.maxVal+(graphData.minVal/10)]);
 
+
+  // Add the X Axis
+  var xAxis = d3.svg.axis()
+      .scale(xScale)
+      .orient("bottom")
+      .innerTickSize(-height)
+      .outerTickSize(1)
+      .tickPadding(10);
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  // Add the Y Axis
+  var yAxis = d3.svg.axis()
+      .scale(yScale)
+      .orient("left")
+      .innerTickSize(-width)
+      .outerTickSize(1)
+      .tickPadding(10);
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
+
+  // Add Lines
   var top1Line = d3.svg.line()
       .interpolate("basis")
       .x(function(d) { return xScale(d.x); })
@@ -223,29 +233,14 @@ function drawPatternChart(graphData){
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
 
-
-
-
-  // Add the X Axis
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
-
-  // Add the Y Axis
-  svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis);
-
-
   svg.append("path")
       .data([graphData.top1Set])
       .attr("fill", "none")
-      .attr("stroke", "darkgreen")
+      // .attr("stroke", "darkgreen")
+      .attr('class', 'top1Line')
       .attr("opacity", 0.5)
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
-      .attr("stroke-width", 4)
       .attr("d", top1Line);
 
   // svg.append("text")
@@ -259,11 +254,11 @@ function drawPatternChart(graphData){
   svg.append("path")
       .data([graphData.top2Set])
       .attr("fill", "none")
-      .attr("stroke", "steelblue")
+      // .attr("stroke", "steelblue")
+      .attr('class', 'top2Line')
       .attr("opacity", 0.5)
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
-      .attr("stroke-width", 4)
       .attr("d", top2Line);
 
   // svg.append("text")
@@ -277,11 +272,11 @@ function drawPatternChart(graphData){
   svg.append("path")
       .data([graphData.top3Set])
       .attr("fill", "none")
-      .attr("stroke", "tan")
+      // .attr("stroke", "tan")
+      .attr('class', 'top3Line')
       .attr("opacity", 0.5)
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
-      .attr("stroke-width", 4)
       .attr("d", top3Line);
 
   // svg.append("text")
@@ -295,10 +290,10 @@ function drawPatternChart(graphData){
   svg.append("path")
       .data([graphData.realSet])
       .attr("fill", "none")
-      .attr("stroke", "crimson")
+      // .attr("stroke", "crimson")
+      .attr('class', 'realLine')
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
-      .attr("stroke-width", 4)
       .attr("d", realLine);
 }
 
@@ -331,4 +326,3 @@ function svgSet(svg, append, className, tX, tY){
     .attr('class', className)
     .attr('transform', 'translate('+tX+','+tY+')');
 }
-

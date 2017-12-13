@@ -238,6 +238,7 @@ router.get('/restapi/getOeeChartData', function(req, res, next) {
 
           // 55분 매칭 패턴 조회
           var pattern = out_data[0]._source[cid];
+          logger.trace('patttern: ', JSON.stringify(pattern));
           let list = makeList(["overall_oee", "availability", "quality", "performance"], pattern, cid);
           let patternDataQueryCondition = {
             INDEX: indices.data, TYPE: "pattern_data",
@@ -417,7 +418,6 @@ router.get('/restapi/getAnomalyPatternCheck/', function(req, res, next) {
         SORTFIELD : cid+".timestamp",
         CID : cid
       }
-  console.log('in_data: ',in_data);
   queryProvider.selectSingleQueryByID2("analysis", "selectMatchedPatternByTimestamp", in_data, function(err, out_data) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -524,7 +524,6 @@ router.post('/restapi/pattern_info/:id/_update/', function(req, res, next) {
     if (out_data[0] == null){
       var rtnCode = CONSTS.getErrData('E001');
     } else {
-      console.log('1111111    index: ', index);
       var in_data = {
         INDEX: index, TYPE: "pattern_info",
         ID: req.params.id, BODY: JSON.stringify(req.body.data),
