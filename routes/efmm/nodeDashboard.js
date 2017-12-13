@@ -135,8 +135,7 @@ router.get('/restapi/getDashboardWeekly', function(req, res, next) {
                     ndata[d.date][key] += d[key];                      
                   }
                 }                
-              }
-              console.log(nCount)
+              }              
               in_data = { index : indexStack, type : "oee", term : JSON.stringify(sque) };
               queryProvider.selectSingleQueryByID2("dashboard","selectDashboardTermData", in_data, function(err, out_data, params) {
                 var rtnCode = CONSTS.getErrData('0000');

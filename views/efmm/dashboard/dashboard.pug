@@ -14,44 +14,40 @@ block script
 block content
   .container-fluid
     .page-content
+      // BEGIN BREADCRUMBS
       .breadcrumbs
-        h1 Dashboard
+        h1 Overall OEE
         ol.breadcrumb
           li
-            a(href='#') Home
-          li
             a(href='#') Dashboard
-          li.active Dashboard
+          li.active Overall OEE
+      // END BREADCRUMBS
+      .row        
+        .col-lg-3.col-md-3.col-sm-6.col-xs-12
+          .dashboard-stat2.chart-mes
+            h3 Overall OEE
+            .chart
+              .oee
+        .col-lg-3.col-md-3.col-sm-6.col-xs-12
+          .dashboard-stat2.chart-mes
+            h3 Availability
+            .chart
+              .availability
+        .col-lg-3.col-md-3.col-sm-6.col-xs-12
+          .dashboard-stat2.chart-mes
+            h3 Performance
+            .chart
+              .performance
+        .col-lg-3
+          .dashboard-stat2.chart-mes
+            h3 Quality
+            .chart
+              .quality
       .row
-        .col-md-12
-          .portlet.light.bordered
-            .portlet-title
-              .caption.font-dark
-                span.caption-subject.bold.uppercase OVERALL OEE
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body              
-              .chart
-                .col-md-2
-                  .oee
-                .col-md-5
-                  .col-md-4
-                    span.caption-subject.bold.uppercase Availability
-                    .availability
-                  .col-md-4
-                    span.caption-subject.bold.uppercase Performance
-                    .performance
-                  .col-md-4
-                    span.caption-subject.bold.uppercase Quality
-                    .quality
-                .col-md-5
-                  span.caption-subject.bold OEE Last 7 Days
-                  #composed
-      .row
-        .col-md-12
-          .portlet.light
+        .col-lg-4.col-md-3.col-sm-6.col-xs-12
+          .dashboard-stat2.chart-mes
+            span.caption-subject.bold OEE Last 7 Days
+            #composed
+        .col-md-8
+          .dashboard-stat2.chart-mes                             
             #tbody

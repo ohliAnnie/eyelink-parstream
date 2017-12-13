@@ -9,7 +9,7 @@ block script
   script(type='text/javascript', src="/efmm/scripts/dashboard_detail.js")
 block content
   .container-fluid
-    .page-content
+    .page-content(style="height:auto")
       .breadcrumbs
         h1 Dashboard
         ol.breadcrumb
@@ -18,21 +18,9 @@ block content
           li
             a(href='#') Dashboard
           li.active Dashboard
-      .row
-        .col-md-12
-          .portlet.light.bordered
-            .portlet-title
-              .caption.font-dark
-                span.caption-subject.bold.uppercase Detail OEE
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body              
-              .chart(style='height:auto;')                
-                #tbody
+      .col-sm-12
+        .row
+          #tbody
 
                   
       

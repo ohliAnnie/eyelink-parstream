@@ -14,8 +14,7 @@ function getData(){
   var in_data = { url : "/dashboard/restapi/getDashboardDetail", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {
-      var data = result.rtnData;        
-      console.log(data);    
+      var data = result.rtnData;      
       drawTable(data)
     } 
   });  
@@ -24,40 +23,25 @@ function getData(){
 function drawTable(data) {
   console.log(data)
   $('#tbody').empty();  
-  var sb = new StringBuffer();
-  var style3 = 'style="text-align:center;"';
-  sb.append('<table class="table table-striped table-bordered">');  
-  sb.append('<tr style="background-color:#353535; color:yellow;"><th '+style3+'>Notching</th><th '+style3+'>Stacking</th>');  
-  sb.append('<th '+style3+'>Tab Welding</th><th '+style3+'>Packaging</th><th '+style3+'>Degassing</th></tr>');
-  sb.append('<tr style="background-color:#353535; color:white;"><td '+style3+'>'+data.notching.dtSensed+'</td><td '+style3+'>');
-  sb.append(data.stacking.dtSensed+'</td>');  
-  sb.append('<td '+style3+'>Tab Welding</td><td '+style3+'>Packaging</td><td '+style3+'>Degassing</td></tr><tr><td>');  
-  var style = 'style="background-color:#9E9E9E;"';
-  var style2 = 'text-align:center; background-color:#9E9E9E;';  
-  sb.append(innerTable(data.notching, 'notching', false));
-  for(i=0; i<data.notch.length; i++) {
-    sb.append(innerTable(data.notch[i], 'notching', true));
-  }
-  sb.append('</td><td>');
-  sb.append(innerTable(data.stacking, 'stacking', false));
-  for(i=0; i<data.stack.length; i++) {
-    sb.append(innerTable(data.stack[i], 'stacking', true));
-  }
-  sb.append('</td><td>');
+  var sb = new StringBuffer();  
+  sb.append('<div class="col-sm-7 five-thre col-xs-12"><div class="row">');
+  sb.append(drawType(data.notching, data.notch, 'Notching', 4));
+  sb.append(drawType(data.stacking, data.stack, 'Stacking', 4));
+  var list = [];
   var testData = { availability : 0.913, performance : 0.821, quality : 0.997, overall_oee : 0.6 };
-  testData.cid = 300;
-  console.log(testData);
-  sb.append(innerTable(testData, 'welding', false));
-  sb.append('</td><td>');
+  testData.cid = 300;  
+  sb.append(drawType(testData, list, 'Welding', 4));
+  sb.append('</div></div>');
+  sb.append('<div class="col-sm-5 five-two col-xs-12"><div class="row">');
   testData.overall_oee = 30;
-  testData.cid = 400;
-  sb.append(innerTable(testData, 'packaging', false));
-  sb.append('</td><td>');
+  testData.cid = 400;  
+  sb.append(drawType(testData, list, 'Packaging', 6));
   testData.overall_oee = 10;
-  testData.cid = 500;
-  sb.append(innerTable(testData, 'degassing', false));
-  sb.append('</td></tr></table>');    
+  testData.cid = 500;  
+  sb.append(drawType(testData, list, 'Degassing', 6));
+  sb.append('</div>');
   $('#tbody').append(sb.toString());
+  console.log(sb.toString)
   var gCnt = 0;
   gage[gCnt] = getGaguChart("gage"+gCnt++, max, 'green', data.notching.overall_oee, size);
   for(i=0; i<data.notch.length; i++){
@@ -74,26 +58,46 @@ function drawTable(data) {
   gage[gCnt] = getGaguChart("gage"+gCnt++, max, 'green', 0.1, size); 
   console.log(gage);
 }
-
+function drawType(data, list, id, size){
+  var sb = '<div class="col-sm-'+size+' col-xs-12"><div class="portlet light bordered"><div class="portlet-title">';
+  sb += '<div class="caption font-dark"> <span class="caption-subject">'+id+'</span><br></div>';
+  sb += '<div class="tools"><a href="javascript:;" class="collapse"></a><a href="javascript:;" class="fullscreen"></a></div></div>';
+  sb += '<div class="portlet-body chart-mes mes-detail">';
+  sb += innerTable(data, 'notching', false);
+  sb += '</div></div>';    
+  if(list.length != 0) {
+    sb += '<div class="portlet light bordered">';
+    for(i=0; i<list.length; i++) {
+      sb += '<div class="portlet-body chart-mes mes-detail">';
+      sb += innerTable(list[i], 'notching', true);
+      sb += '</div>';
+    }  
+    sb += '</div>';
+  }
+  sb += '</div>';
+  return sb;
+}
 function innerTable(data, type, event){
   //var style = 'style="color:'+color+'; text-align:'+align+'; font-weight:bold;"';
   var state = ['active', 'idle', 'alarm'];
   data.state = state[Math.floor(Math.random() * 10)%3]  
-  var alarm = (data.state=='active')?'green':(data.state=='idle')?'blue':'red';
-  var color = (data.overall_oee>=0.7)?'#6ABC64':(data.overall_oee>=0.5)?'#79ABFF':'#FF7E7E';  
-  var sb = '<table class="table table-striped table-bordered"';
-  
-  sb += '><tr style="background-color:'+alarm+'"><td colspan="3" style="color:white; text-align:center;" >';
-  sb += '<strong style="font-size:18px;">'+data.cid+'</strong>';
+  var alarm = (data.state=='active')?'green':(data.state=='idle')?'blue':'red';  
+  var sb = '';
   if(event){
-    sb += '<button id="btn_search" class="btn blue btn-xs pull-right" onclick="location.href='+"'info?date=";
-    sb += urlParams.date+'&type='+type+'&state='+data.state+'&cid='+data.cid+"'"+'">Info</button>';
-  }  
-  sb += '<br>'+data.state+'</td></tr>';    
-  sb += '<tr><td colspan="3"><div class="gage'+cnt++ +'" style="text-align:center;"></div></td></tr>';
-  sb += '<tr style="background-color:'+color+'"><td>Ava<br>'+(data.availability*100).toFixed(1)+'%</td><td>Perf<br>';
-  sb += (data.performance*100).toFixed(1)+'%</td><td>Qual<br>'+(data.quality*100).toFixed(1)+'%</td></tr>';
-  sb += '</table>'  
+    sb += '<div class="detail-title"><h3>'+type+' '+data.cid+'</h3>';
+    sb += '<a class="btn btn-transparent grey-salsa btn-circle btn-sm active" href='+"'info?date=";
+    sb += urlParams.date+'&type='+type+'&state='+data.state+'&cid='+data.cid+"'"+'"> Info</a></div>';
+  }
+  sb += '<div class="row"><div class="chart">';    
+  sb += '<div class="gage'+cnt++ +'" style="text-align:center;"></div></div>';
+  sb += '<div class="row"><div class="col-sm-12">';
+  sb += '<div class="col-xs-12 label mes-status status-'+data.state+'">'+data.state+'</div>';
+  sb += '<div class="col-xs-12">'
+  sb += '<table class="table table-striped table-bordered">';
+  sb += '<tr><td>Ava</td><td>Perf</td><td>Qual</td></tr>';
+  sb += '<tr><td>'+(data.availability*100).toFixed(1)+'%</td><td>' + (data.performance*100).toFixed(1);
+  sb += '%</td><td>'+(data.quality*100).toFixed(1)+'%</td></tr>';
+  sb += '</table></div></div></div></div>';  
   return sb;
 }
 
