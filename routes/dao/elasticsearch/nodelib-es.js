@@ -3,7 +3,7 @@ var Utils = require('../../util');
 var queryParser = require('../queryParser');
 var elasticsearch = require('elasticsearch');
 
-var vhost = 'http://m2utech.eastus.cloudapp.azure.com:9200';
+var vhost = 'http://m2u-parstream.eastus.cloudapp.azure.com:9200';
 
 // Data Simulator에서는 global 객체를 찾을 수 없으므로 exception 발생함.
 try {
