@@ -256,7 +256,7 @@ function drawChart(raw, factorData, start, end, now, point, gap, factor, chart_i
       divTransition(div, 500, 0);
     });
 
-  var circle = svgCircle(svg, x, y, apt, "dot5", 3, 0.1, "date", "value")
+  var circle = svgCircle(svg, x, y, apt, "dot5", 3, 1, "date", "value")
     .attr('class', 'apt')
     .attr("fill", "red")
     .on("mouseover", function(d) {
@@ -408,7 +408,7 @@ function svgCircle(svg, x, y, data, className, r, opacity, cx, cy) {
     .attr("r", r)
     .attr('opacity', opacity)
     .attr("cx", function(d, i) { return x(d[cx]); })
-    .attr("cy", function(d) { return y(d[cy]*100); })
+    .attr("cy", function(d) { return y(d[cy]); })
 }
 
 function divTransition(div, duration, opacity){

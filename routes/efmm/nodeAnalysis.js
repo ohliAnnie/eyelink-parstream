@@ -594,23 +594,28 @@ function getIndicesForQueryCondition(startDttm, endDttm, indexHead){
   return indices;
 }
 function arrangeData(clust, pattern, start, factor){
-  var data = [], cpt = [], apt = [], min = [], max = [];
+  var data = [], cpt = [], apt = [], min = Infinity, max = -Infinity;
   // 1시간 데이터 3600개, 30초단위로 구간화 -> 120개 데이터
   let patternCnt = 70;  // 30분 데이터, 5분 예측 = 35분 패턴데이터 = 70개, (2개/분)
   let tmp = 120 - patternCnt - 1;
+  let top1 = clust[factor][pattern[factor].top_1];
+  let top2 = clust[factor][pattern[factor].top_2];
+  let top3 = clust[factor][pattern[factor].top_3];
+
   for( i = tmp; i < 120 ; i++ ){
     // var date = new Date(start).getTime()+(i-59)*60*1000;
     var date = new Date(start).getTime()+(i-tmp)*30*1000; // 30초 단위 구간화되어있는 데이터
-    min[i-tmp] = clust[factor][pattern[factor].top_1].min_value[i];
-    max[i-tmp] = clust[factor][pattern[factor].top_1].max_value[i]
+    minValue = Math.min(min, top1.min_value[i], top2.center[i], top3.center[i]);
+    maxValue = Math.max(max, top1.max_value[i], top2.center[i], top3.center[i]);
     data.push({date : date
-              , center : clust[factor][pattern[factor].top_1].center[i] * 100
-              , center2 : clust[factor][pattern[factor].top_2].center[i] * 100
-              , center3 : clust[factor][pattern[factor].top_3].center[i] * 100
-              , min : clust[factor][pattern[factor].top_1].min_value[i] * 100
-              , max : clust[factor][pattern[factor].top_1].max_value[i] * 100
-              , lower : clust[factor][pattern[factor].top_1].lower[i] * 100
-              , upper : clust[factor][pattern[factor].top_1].upper[i] * 100 });
+              , center : top1.center[i] * 100
+              , center2 : top2.center[i] * 100
+              , center3 : top3.center[i] * 100
+              , min : top1.min_value[i] * 100
+              , max : top1.max_value[i] * 100
+              , lower : top1.lower[i] * 100
+              , upper : top1.upper[i] * 100 });
+
     if( i < 110 ) {
       if(pattern[factor].caution_pt[i] != -1){
         cpt.push({ date : date, value : pattern[factor].caution_pt[i] * 100 });
@@ -621,8 +626,6 @@ function arrangeData(clust, pattern, start, factor){
     }
   }
 
-  var minValue = Math.min.apply(null, min);
-  var maxValue = Math.max.apply(null, max);
   var total = { data : data, cpt : cpt, apt : apt, min : minValue, max : maxValue };
   return total;
 }
