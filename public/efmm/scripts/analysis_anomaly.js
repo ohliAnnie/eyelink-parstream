@@ -7,8 +7,9 @@ $(document).ready(function(e) {
   });
 });
 
-const past = 55*60*1000;
-const future = 5*60*1000
+// const pastInMillis = 55*60*1000;
+const pastInMillis = 30*60*1000;
+const futureInMillis = 5*60*1000
 const dataCntPerTick = 10;
 
 var liveValue = [];
@@ -32,12 +33,22 @@ function getData(){
   let step = $('#step option:selected').val();
   let machine = $('#machine option:selected').val();
 
-  var in_data = { url : "/analysis/restapi/getOeeChartData", type : "GET", data : {step:step, machine:machine} };
+  var in_data = { url : "/analysis/restapi/getOeeChartData", type : "GET", data : {step:step, machine:machine, pastInMillis:pastInMillis} };
+
+  // let target = $('.chart_item');
+  // let opts = {
+  //   lines=13,    length=38,    width=17,    radius=45,    scale=0.35
+  //   , corners=1, opacity=0.25, rotate=0, direction=1, speed=1.1, trail=48
+  //   , color=#2995cf, fadeColor=transparent, top=50, left=50, shadow=none
+  // }
+  // let spinner = new Spinner(opts).spin(target);
   ajaxTypeData(in_data, function(result){
     // console.log(result);
+    // spinner.stop();
+
     if (result.rtnCode.code == "0000") {
       var raw = result.raw;
-      var point = new Date(raw[0].dtSensed).getTime(), start = point-past, end = point+future;
+      var point = new Date(raw[0].dtSensed).getTime(), start = point-pastInMillis, end = point+futureInMillis;
       var now = point;
       var tot = { "overall_oee" : [], "availability" : [], "quality" : [], "performance" : []  };
 
@@ -45,13 +56,13 @@ function getData(){
       d3.select("svg").remove();
 
       for(factor in tot){
-        drawChart(raw, result.tot[factor], start, end, now, point, now-point, factor, '#'+factor, result.pattern, step, machine);
+        drawChart(raw, result.tot[factor], start, end, now, point, now-point, factor, '#'+factor, result.patternStatus, step, machine);
       }
     }
   });
 }
 
-function drawChart(raw, factorData, start, end, now, point, gap, factor, chart_id, pattern, step, machine) {
+function drawChart(raw, factorData, start, end, now, point, gap, factor, chart_id, patternStatus, step, machine) {
 
   var step = step;
   var cid = machine;
@@ -63,11 +74,11 @@ function drawChart(raw, factorData, start, end, now, point, gap, factor, chart_i
   var limit = 60,    duration = 1000;
 
   var color = 'green';
-  if(pattern[factor].status.status == "normal"){
+  if(patternStatus[factor].status.status == "normal"){
     var color = 'green';
-  } else if(pattern[factor].status.status == "caution"){
+  } else if(patternStatus[factor].status.status == "caution"){
     var color = 'blue';
-  } else if(pattern[factor].status.status == "anomaly"){
+  } else if(patternStatus[factor].status.status == "anomaly"){
     var color = 'red';
   } else {
     var color = 'gray';
@@ -120,8 +131,8 @@ function drawChart(raw, factorData, start, end, now, point, gap, factor, chart_i
   var status = svgSet(svgLegend, 'g', 'status', 500 , 0);
   rectLegendBG(status, 'status-bg', statusWidth, statusHeight);
   // console.log(pattern[factor].status.status.length  )
-  var length = (pattern[factor].status.status.length<8)?pattern[factor].status.status.length:pattern[factor].status.status.length*1.3;
-  textLegend(status, 20-length, 15, pattern[factor].status.status);
+  var length = (patternStatus[factor].status.status.length<8)?patternStatus[factor].status.status.length:patternStatus[factor].status.status.length*1.3;
+  textLegend(status, 20-length, 15, patternStatus[factor].status.status);
   // textLegend(status, 20-'normal'.length, 15, 'normal');
 
   status.append('circle')
@@ -144,7 +155,8 @@ function drawChart(raw, factorData, start, end, now, point, gap, factor, chart_i
 
   var y = d3.scale.linear()
     .domain([yStart, yEnd])
-    .range([height, 3]);
+    // .range([height, 3]);
+    .range([height, 0]);
 
   now = new Date(liveValue.dtSensed).getTime();
   var lineFunction = d3.svg.line()
@@ -300,7 +312,7 @@ function drawChart(raw, factorData, start, end, now, point, gap, factor, chart_i
     ddata.push({ date:now, value:value});
     var d = ddata[ddata.length-1];
 
-    x.domain([now-past+gap, now+future-gap]);
+    x.domain([now-pastInMillis+gap, now+futureInMillis-gap]);
 
     // Slide paths left
     paths.attr('transform', null)

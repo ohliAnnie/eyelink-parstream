@@ -199,12 +199,12 @@ router.get('/restapi/getOeeChartData', function(req, res, next) {
   logger.debug('analysis/restapi/getOeeChartData');
   let flag = req.query.step;
   let cid = req.query.machine;
-
+  let durationMinutes = req.query.pastInMillis/60/1000;
   let indices = getIndicesOfDataAnalysisByStep(flag);
 
   // 날짜가 넘어가는 시점에는 indexDate를 2틀분 가져오도록 (* 사용 X )
   let now = Utils.getToday(fmt2, 'Y', 'Y');
-  let rawStartDttm = Utils.getDate(now, fmt2, 0, 0, -55, 0, 'Y', 'Y');
+  let rawStartDttm = Utils.getDate(now, fmt2, 0, 0, -durationMinutes, 0, 'Y', 'Y');
   let rawEndDttm = Utils.getDate(now, fmt2, 0, 0, 0, 1, 'Y', 'Y');
   let indicesForRaw = getIndicesForQueryCondition(rawStartDttm, rawEndDttm, indices.raw);
   let rawData=[];
@@ -282,15 +282,20 @@ router.get('/restapi/getOeeChartData', function(req, res, next) {
                 tot[factor] = arrangeData(clust, pattern, rawStartDttm, factor);
               }
               logger.trace('tot : ',tot);
+              var patternStatus={"overall_oee" : {}, "availability" : {}, "quality" : {}, "performance" : {}};
+              patternStatus.availability.status = pattern['availability']['status'];
+              patternStatus.performance.status = pattern['performance']['status'];
+              patternStatus.overall_oee.status = pattern['overall_oee']['status'];
+              patternStatus.quality.status = pattern['quality']['status'];
             }
-            res.json({rtnCode: rtnCode, raw : rawData, pattern : pattern, tot : tot});
+            res.json({rtnCode: rtnCode, raw : rawData, patternStatus : patternStatus, tot : tot});
           });
         }
-        res.json({rtnCode: rtnCode, raw : rawData, pattern : pattern, tot : tot});
+        res.json({rtnCode: rtnCode, raw : rawData, patternStatus : patternStatus, tot : tot});
       });
     }
     logger.debug('analysis/restapi/getOeeChartData -> length : %s', out_data.length);
-    res.json({rtnCode: rtnCode, raw : rawData, pattern : pattern, tot : tot});
+    res.json({rtnCode: rtnCode, raw : rawData, patternStatus : patternStatus, tot : tot});
   });
 });
 
@@ -590,10 +595,14 @@ function getIndicesForQueryCondition(startDttm, endDttm, indexHead){
 }
 function arrangeData(clust, pattern, start, factor){
   var data = [], cpt = [], apt = [], min = [], max = [];
-  for(i=59; i<120; i++){
-    var date = new Date(start).getTime()+(i-59)*60*1000;
-    min[i-59] = clust[factor][pattern[factor].top_1].min_value[i];
-    max[i-59] = clust[factor][pattern[factor].top_1].max_value[i]
+  // 1시간 데이터 3600개, 30초단위로 구간화 -> 120개 데이터
+  let patternCnt = 70;  // 30분 데이터, 5분 예측 = 35분 패턴데이터 = 70개, (2개/분)
+  let tmp = 120 - patternCnt - 1;
+  for( i = tmp; i < 120 ; i++ ){
+    // var date = new Date(start).getTime()+(i-59)*60*1000;
+    var date = new Date(start).getTime()+(i-tmp)*30*1000; // 30초 단위 구간화되어있는 데이터
+    min[i-tmp] = clust[factor][pattern[factor].top_1].min_value[i];
+    max[i-tmp] = clust[factor][pattern[factor].top_1].max_value[i]
     data.push({date : date
               , center : clust[factor][pattern[factor].top_1].center[i] * 100
               , center2 : clust[factor][pattern[factor].top_2].center[i] * 100
@@ -602,7 +611,7 @@ function arrangeData(clust, pattern, start, factor){
               , max : clust[factor][pattern[factor].top_1].max_value[i] * 100
               , lower : clust[factor][pattern[factor].top_1].lower[i] * 100
               , upper : clust[factor][pattern[factor].top_1].upper[i] * 100 });
-    if(i<110) {
+    if( i < 110 ) {
       if(pattern[factor].caution_pt[i] != -1){
         cpt.push({ date : date, value : pattern[factor].caution_pt[i] * 100 });
       }
