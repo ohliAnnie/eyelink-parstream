@@ -11,6 +11,11 @@ a {
    stroke: #ccc;
 }
 
+.dc-legend {
+  font-size: 15px; }
+  .dc-legend .dc-legend-item {
+    cursor: pointer; }
+
 .chart_custom {
   width: 100%;
   position: relative;
