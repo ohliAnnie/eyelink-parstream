@@ -54,3 +54,16 @@ svg {
   fill: rgba(0, 0, 0, 0.5);
   stroke: rgba(0, 0, 0, 0.5);
 }
+
+.dc-chart .axis text {
+  font: 12px "sans-serif"; }
+
+.dc-chart g.row text {
+  fill: #fff;
+  font-size: 12px;
+  cursor: pointer; }
+
+.dc-legend {
+  font-size: 13px; }
+  .dc-legend .dc-legend-item {
+    cursor: pointer; }

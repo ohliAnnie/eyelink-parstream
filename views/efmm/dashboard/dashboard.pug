@@ -1,8 +1,8 @@
 extends ../efmm-layout01
 block style
-  link(type='text/css', rel='stylesheet', href='/efmm/assets/css/dc.css') 
-  link(type='text/css', rel='stylesheet', href='/efmm/css/chart_style.css')
-  link(type='text/css', href="/efmm/css/dashboard_dashboard.css")
+  link(type='text/css', rel='stylesheet', href='/efmm/assets/css/dc.css')   
+  link(type='text/css', rel='stylesheet', href='/efmm/css/chart_style.css')  
+  link(type='text/css', rel='stylesheet', href="/efmm/css/dashboard_dashboard.css")
 block script
   script(type='text/javascript', src='/efmm/assets/scripts/d3_dc.js')
   script(type='text/javascript', src='/efmm/assets/scripts/crossfilter.js')
@@ -44,10 +44,10 @@ block content
             .chart
               .quality
       .row
-        .col-lg-4.col-md-3.col-sm-6.col-xs-12
+        .col-lg-5.col-md-3.col-sm-6.col-xs-12
           .dashboard-stat2.chart-mes
-            span.caption-subject.bold OEE Last 7 Days
+            h3 OEE Last 7 Days
             #composed
-        .col-md-8
+        .col-md-7
           .dashboard-stat2.chart-mes                             
             #tbody

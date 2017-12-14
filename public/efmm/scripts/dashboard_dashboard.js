@@ -110,14 +110,14 @@ function drawLineChart(data, week) {
   composite.xAxis().tickFormat(function(v) {return week[v];});
   composite.yAxis().ticks(7);
   composite
-    .width(window.innerWidth*0.3)
-    .height(350)
+    .width(window.innerWidth*0.36)
+    .height(320)
     //.x(d3.time.scale().domain([minDate,maxDate]))
     //.round(d3.time.day.round)
     .x(d3.scale.linear().domain([0,6]))             
     .y(d3.scale.linear().domain([65, 102]))    
     .yAxisLabel("%")
-    .legend(dc.legend().x(window.innerWidth*0.03).y(328).itemHeight(12).itemWidth(window.innerWidth*0.07).gap(4).horizontal(true))
+    .legend(dc.legend().x(window.innerWidth*0.01).y(308).itemHeight(12).itemWidth(window.innerWidth*0.085).gap(4).horizontal(true))
     .renderHorizontalGridLines(true)
     .title(function(d){ return this.layer+' : '+d.value; })
     .compose([
@@ -152,7 +152,7 @@ function drawTable(data) {
   $('#tbody').empty();  
   var sb = new StringBuffer();  
   sb.append('<table class="table table-hover table-mes"><tr>');  
-  sb.append('<th colspan="2"><i class="icon-speedometer"></i>KPIs<button id="btn_search" class="btn blue btn-xs pull-right" onclick="location.href=');
+  sb.append('<th colspan="2"><i class="icon-speedometer"></i> &nbsp;KPIs<button id="btn_search" class="btn blue btn-xs pull-right" onclick="location.href=');
   sb.append("'/dashboard/detail?date="+data.date+"'"+'">Detail</button></th><th>Notching</th><th>Stacking</th>');  
   sb.append('<th>Tab Welding</th><th>Packaging</th><th>Degassing</th></tr>');  
   sb.append('<tr><th>ToTal</th><th><span class="badge badge-info">'+data.kpis.tot+'</span</th>');
