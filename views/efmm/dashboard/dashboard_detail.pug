@@ -1,7 +1,7 @@
 extends ../efmm-layout01
 block style  
   link(type='text/css', rel='stylesheet', href='/efmm/css/chart_style.css')
-  link(type='text/css', href="/efmm/css/dashboard_dashboard.css")
+  link(type='text/css', rel='stylesheet', href="/efmm/css/dashboard_detail.css")
 block script
   script(type='text/javascript', src='/efmm/assets/scripts/d3_dc.js')
   script(type='text/javascript', src='/efmm/assets/scripts/radial-progress-index.js')
@@ -19,20 +19,8 @@ block content
             a(href='#') Dashboard
           li.active Dashboard
       .row
-        .col-md-12
-          .portlet.light.bordered
-            .portlet-title
-              .caption.font-dark
-                span.caption-subject.bold.uppercase Detail OEE
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body              
-              .chart(style='height:auto;')                
-                #tbody
+        .col-sm-12        
+          #tbody
 
                   
       
