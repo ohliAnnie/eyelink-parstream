@@ -55,7 +55,7 @@ function(d3,d3tip)
         } else if(gap==='60'||gap==='360'||gap==='720') {
           var format = d3.time.format("%H:%M")  
         } else {
-          var format = d3.time.format("%b %d %H:00")  
+          var format = d3.time.format("%b %d %H:%M")  
         }
         return '<h4 style="color:#333333;text-align:center">'+format(date)+'</h4>'+spans
       }

@@ -14115,3 +14115,31 @@ Transparent Button
 .ie8 .smap-icon:hover { filter: none;}
 .sankey-toggler {position:absolute; right:0; top:250px; padding:10px; margin-right:15px;}
 .tab-pane > .actions {  float: right;  display: inline-block;  padding: 6px 0 10px;}
+
+/* mPLUS MES 20171211*/
+.chart-mes {  overflow: hidden;  height: auto;  width: 100%;  font-family: "Open Sans", sans-serif !important;  font-size: 14px; }
+.chart-mes h3 {margin:5px 0; padding-bottom:15px; font-size:16px; font-weight:400;}
+.chart-mes .chart{  overflow: hidden;  height: auto;  width: auto; margin:10px auto; position:relative; text-align:center!important;}
+.chart-mes svg {background-color:#fff; position:relative; }
+
+.table-mes thead th{font-size:18px!important; font-weight:400!important; text-align:center; padding:15px 5px!important; width:15%;}
+.table-mes thead th:first-child {width:25%; text-align:left;}
+.table-mes tbody th{font-size:14px!important; font-weight:600!important;}
+.table-mes tbody th.sum{text-align:right!important;}
+.table-mes tbody th>span{font-size:16px!important; height:24px; padding:5px 10px 5px!important;}
+.table-mes tbody td{text-align:right;}
+
+div.col-sm-7.five-three {    width: 60% !important;    }
+div.col-sm-5.five-two {      width: 40% !important;    }
+.detail-title {text-align:center; overflow:hidden;}
+.detail-title h3 {display:inline-block; float:left; }
+.detail-title a {display:inline-block; float:right; }
+.mes-status {display:inline-block;margin:0 0 10px; padding:10px;}
+.status-active {background-color:#218deb;}
+.status-idle {background-color:#838a8d;}
+.status-alarm {background-color:#f06f21;}
+.mes-detail {}
+
+.mes-ava th {padding:5px!important; font-size:12px!important;}
+.mes-ava td {padding:5px!important; font-size:14px;}
+

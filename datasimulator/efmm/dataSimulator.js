@@ -13,6 +13,7 @@ if (isTest == 'Y') {
   isTest = false;
 }
 
+global.config = require('../../config/config.json');
 global.log4js = require('log4js');
 log4js.configure({
   'appenders':

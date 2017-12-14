@@ -1,0 +1,60 @@
+extends ../efmm-layout01
+block style
+block script
+  script(type='text/javascript', src='/efmm/scripts/manamgement_user_info.js')
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 User Info
+        ol.breadcrumb
+          li
+            a(href='/dashboard') Home
+          li
+            a(href='#') Management
+          li
+            a(href='/management/users') Users
+          li.active User
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze User Information
+                span.caption-helper  #{username}'s information
+            .portlet-body.from
+              form#update_account.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group
+                    label.control-label.col-md-5 User ID
+                    input#id(type='hidden', name='id', value=user._id)
+                    .col-md-3
+                      span #{user._source.user_id}
+                      input#userid(type='hidden', name='userid', value=user._source.user_id)
+                  .form-group
+                    label.control-label.col-md-5 Name
+                    .col-md-3
+                      span #{user._source.user_name}
+                  .form-group
+                    label.control-label.col-md-5 Password
+                    .col-md-3
+                      span #{user._source.user_pw}                  
+                  .form-group
+                    label.control-label.col-md-5 Email
+                    .col-md-3
+                      span #{user._source.user_email}
+                  .form-group
+                    label.control-label.col-md-5 Atteched                    
+                    .col-md-3
+                      each map in maps
+                        span #{map._source.role_id}
+                        br                        
+                  .form-group
+                    #register_tnc_error(style='text-align:center;')            
+                    .col-md-8
+                    .col-md-2
+                      button.btn.btn-default(type='button', onclick="location.href=history.back()") Back        
+            .portlet-footer
+    p.copyright Copyright M2U Technology All rights reserved.
+    a.go2top(href='#index')
+      i.icon-arrow-up

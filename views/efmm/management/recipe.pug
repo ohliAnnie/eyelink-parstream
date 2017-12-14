@@ -1,0 +1,106 @@
+extends ../efmm-layout01
+block style
+  link(rel='stylesheet', type='text/css', href='/common/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
+block script
+  script(type='text/javascript', src='/common/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+  script(type='text/javascript', src='/common/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
+  script(src='/common/assets/scripts/page/table-managed.js')
+  script(type='text/javascript', src='/efmm/scripts/management_recipe.js')
+
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Recipes
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Management
+          li.active Recipes
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp selection
+                span.caption-helper
+            .portlet-body.form
+              form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .row
+                    label.control-label.col-md-1 Step
+                    .col-md-2.form-inline
+                      select.form-control.input-small.select2me.form-md-line-input(name='searchStep')
+                        option(value='NOTCHING') Notching
+                        option(value='STACKING') Stacking
+                        option(value='TABWELDING') Tab Welding
+                        option(value='PACKAGING') Packaging
+                        option(value='DEGASSING') Degassing
+                    label.control-label.col-md-1 Machine
+                    .col-md-2.form-inline
+                      select.form-control.input-small.select2me.form-md-line-input(name='searchCid')
+                        each machine in rtnData.machine
+                          option(value=machine.cid) #{machine.cid}
+                    .col-md-2.form-inline
+                      button#btn_search.btn.blue
+                        i.fa.fa-search  Search
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Recipe List
+                span.caption-helper  Detail information about Recipes
+              .tools
+                button.btn.btn-default.blue(type='button', onclick="location.href='/management/recipe/NEW'") Add
+            .portlet-body.form
+              .row
+                .col-md-12
+                  table#assetPartList.table.table-striped.table-bordered.table-hover(style='text-align:center;')
+                    thead
+                      tr
+                        th(style='text-align:center;') Seq
+                        th(style='text-align:center;') Type
+                        th(style='text-align:center;') Variable
+                        th(style='text-align:center;') Name
+                        th(style='text-align:center;') Description
+                        th(style='text-align:center;') Unit
+                        th(style='text-align:center;') StepNo
+                        th(style='text-align:center;') Tag Name
+                        th(style='text-align:center;') Data Type
+                        th(style='text-align:center;') Data Size
+                        th(style='text-align:center;') Value
+                        th(style='text-align:center;') Last Upd
+                        th(style='text-align:center;')
+                    tbody
+                      each item in rtnData.data
+                        tr.odd.gradeX
+                          td #{item.seq}
+                          td #{item.type}
+                          td #{item.variable}
+                          td
+                            a(href='/management/recipe/' + item.variable) #{item.name}
+                          td #{item.description}
+                          td #{item.unit}
+                          td #{item.stepno}
+                          td #{item.tagname}
+                          td #{item.datatype}
+                          td #{item.datasize}
+                          td #{item.datavalue}
+                          td #{item.lastupdate}
+                          td
+                            .dropdown-history
+                              a.btn.default.btn-xs.balck(href='javascript:showHistoryView()')
+                                i.fa.fa-edit History
+                              #historyDropdown.dropdown-content
+                                table#assetPartList.table.table-striped.table-bordered.table-hover(style='text-align:center;')
+                                  thread
+                                    th(style='text-align:center;') Value
+                                    th(style='text-align:center;') Date
+                                  tbody
+                                    each hist in item.history
+                                      tr
+                                        td #{hist.value}
+                                        td #{hist.date}
+

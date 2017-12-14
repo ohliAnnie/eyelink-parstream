@@ -4,15 +4,20 @@ var queryParser = require('../queryParser');
 var elasticsearch = require('elasticsearch');
 
 var vhost = 'http://m2u-parstream.eastus.cloudapp.azure.com:9200';
-if (global.config.fetchData.url != undefined)
+
+// Data Simulator에서는 global 객체를 찾을 수 없으므로 exception 발생함.
+try {
+  if (global.config.fetchData.url != undefined)
   vhost = global.config.fetchData.url;
-// logger.debug('host url : %s', vhost);
+} catch(e) {
+  logger.info('global.config.fetchData.url is undefined');
+}
+logger.debug('host url : %s', vhost);
 
 var client = new elasticsearch.Client({
   host: vhost,
   // log: 'trace'
 });
-
 
 QueryProvider = function() {
 

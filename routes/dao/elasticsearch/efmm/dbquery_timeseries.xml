@@ -28,7 +28,7 @@
     ]]></query>
     <query id='selectTimeseriesData'><![CDATA[
       {
-        "index" : #index#,
+        "index" : [##index##],
         "type"  : #type#,
         "body" : {
           "size" : 100000,
@@ -38,9 +38,7 @@
           "query": {
             "bool": {
               "filter" : [
-                { "range" : { "dtTransmitted" : { "gte" : #gte#, "lte" : #lte# }}},
-                { "bool" : #status# }]
-              
+                { "range" : { "dtTransmitted" : { "gte" : #gte#, "lte" : #lte# }}}]              
             }
           }
         }
@@ -52,10 +50,7 @@
         "type"  : #type#,
         "body" : {
           "size" : 0,
-          "sort" : [{ "dtTransmitted" : "asc" }, { "cid" : "asc" }],
-          "query" : {
-            "bool" : #status#
-          },
+          "sort" : [{ "dtTransmitted" : "asc" }, { "cid" : "asc" }],          
           "aggs" : {
             "cid" : {
               "terms" : { "field" : "cid" },
