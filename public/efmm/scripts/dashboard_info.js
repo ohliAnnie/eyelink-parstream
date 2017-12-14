@@ -58,14 +58,14 @@ function drawTable(data) {
   $('#gage').empty();
   var sbT = new StringBuffer();    
   sbT.append('<div class="detail-title"><h3>'+data.flag+' '+data.cid+'</h3>');
-  sbT.append('<a class="btn btn-transparent grey-salsa btn-circle btn-sm active" href='+"'detail?date=");
-  sbT.append(urlParams.date+"'"+'">Back</a></div>');  
+  sbT.append('<a class="btn btn-transparent grey-salsa btn-circle btn-sm active" href="detail?date=');
+  sbT.append(urlParams.date+'">Back</a></div>');  
   sbT.append('<div class="row"><div class="chart" style="height:auto">');    
   sbT.append('<div class="gage" style="text-align:center;"></div></div>');
   sbT.append('<div class="row"><div class="col-sm-12">');
   sbT.append('<div class="col-xs-12 label mes-status status-'+data.state+'">'+data.state+'</div>');
   sbT.append('<table class="table table-striped table-bordered">');
-  sbT.append('<tr><td>Ava</td><td>Perf</td><td>Qual</td></tr>');
+  sbT.append('<tr><th>Ava</th><th>Perf</th><th>Qual</th></tr>');
   sbT.append('<tr><td>'+data.availability.toFixed(1)+'%</td><td>' + data.performance.toFixed(1));
   sbT.append('%</td><td>'+data.quality.toFixed(1)+'%</td></tr>');
   sbT.append('</table></div></div></div>'); 
@@ -149,7 +149,7 @@ function drawLineChart(data) {
   composite.margins().bottom = 240;
   composite.margins().right = 55;
   composite
-    .width(window.innerWidth*0.53)
+    .width(window.innerWidth*0.45)
     .height(550)
     .x(d3.time.scale().domain([minDate,maxDate]))
     //.round(d3.time.day.round)
