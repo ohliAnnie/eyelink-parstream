@@ -53,14 +53,14 @@ router.get('/restapi/getTimeseries', function(req, res, next) {
   var gte = Utils.getMs2Date(req.query.start, fmt2, 'Y', 'Y');
   var lte = Utils.getDate(gte, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y', 'Y');  
   var lque = [];
-  if(req.query.status != null) {
+  /*if(req.query.status != null) {
     for(i=0; i<req.query.status.length; i++){
       lque[i] = { match : { "data.status" : req.query.status[i] }};
     }
   }
-  var status = { should : lque };    
-  var today = Utils.getMs2Date(req.query.start, fmt4, 'Y', 'Y'); 
-  var in_data = { index : indexNotchingOee+today, type : "oee", gte : gte, lte : lte, status : JSON.stringify(status) };
+  var status = { should : lque };    */  
+  //var in_data = { index : indexNotchingOee+today, type : "oee", gte : gte, lte : lte, status : JSON.stringify(status) };
+  var in_data = { index : indexList(gte, lte, indexNotchingOee), type : "oee", gte : gte, lte : lte };
   queryProvider.selectSingleQueryByID2("timeseries","selectTimeseriesData", in_data, function(err, out_data, params) {                
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -76,7 +76,7 @@ router.get('/restapi/getTimeseries', function(req, res, next) {
         notching[out_data[i]._source.cid][notching[out_data[i]._source.cid].length] = d;
       }      
     }
-    in_data.index = indexStackingOee+today;
+    in_data.index = indexList(gte, lte, indexStackingOee);
     queryProvider.selectSingleQueryByID2("timeseries","selectTimeseriesData", in_data, function(err, out_data, params) {
       var rtnCode = CONSTS.getErrData('0000');
       if (out_data == null) {
@@ -110,7 +110,7 @@ router.get('/restapi/getGapTimeseries', function(req, res, next) {
   if(req.query.gap === '30'||req.query.gap === '60') {
    var gap = 60*1000; 
   } else if(req.query.gap === '360'||req.query.gap === '720'||req.query.gap === '1440') {
-    var gap = 60*60*1000; 
+    var gap = 10*60*1000; 
   } else {
     var gap = 6*60*60*1000; 
   }

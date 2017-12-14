@@ -4,11 +4,11 @@ $(document).ready(function() {
   $('#baseTime').datetimepicker({
     format: 'yyyy-mm-dd hh:ii:ss'
   });
-  document.getElementById("Status_all").value = 'true';
+  /*document.getElementById("Status_all").value = 'true';
   $('#Running').prop('checked', true).change();
   $('#DownTime').prop('checked', true).change();
   $('#MealBreak').prop('checked', true).change();
-  $('#ShortBreak').prop('checked', true).change();
+  $('#ShortBreak').prop('checked', true).change();*/
 
   var start = new Date().getTime()-60*1000;  
   getData();
@@ -16,7 +16,7 @@ $(document).ready(function() {
     getData();
   });
 
-  $("#Status_all").click(function(){        
+/*  $("#Status_all").click(function(){        
     if($(this).attr('value')=='false'){
       document.getElementById("Status_all").value = 'true';
       $('#Running').prop('checked', true).change();
@@ -30,7 +30,7 @@ $(document).ready(function() {
       $('#MealBreak').prop('checked', false).change();
       $('#ShortBreak').prop('checked', false).change();
     }
-  });
+  });*/
 });
 
 function checkTimeGap() {
@@ -46,13 +46,14 @@ function checkTimeGap() {
 var chartData = {};
 var vList = ["overall_oee", "availability", "performance", "quality"];
 function getData() {
-  var selected = [], scnt = 0;
+  /*var selected = [], scnt = 0;
   $('input:checkbox[name="selected"]').each(function() {          
     if(this.checked){            
       selected[scnt++] = this.value;
     }    
   });  
-  var data = { start : $('#baseTime').val(), gap : $('#gap').val(), status : selected };
+  var data = { start : $('#baseTime').val(), gap : $('#gap').val(), status : selected }; */
+  var data = { start : $('#baseTime').val(), gap : $('#gap').val() };
   console.log(data);
   if(data.gap === '1'||data.gap === '5'||data.gap === '10'){    
     var in_data = { url : "/timeseries/restapi/getTimeseries", type : "GET", data : data };
