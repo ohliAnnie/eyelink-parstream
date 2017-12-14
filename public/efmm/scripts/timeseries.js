@@ -44,7 +44,8 @@ function checkTimeGap() {
 }
 
 var chartData = {};
-var vList = ["overall_oee", "availability", "performance", "quality"];
+var vList = { oee : ["overall_oee", "availability", "performance", "quality"], 
+  oee_factor : ["planned_production_time", "total_down_time", "total_meal_break", "total_short_break", "total_shift_length", "total_accept_pieces", "total_reject_pieces", "operating_time"] };
 function getData() {
   /*var selected = [], scnt = 0;
   $('input:checkbox[name="selected"]').each(function() {          
@@ -73,8 +74,12 @@ function getData() {
 
 function drawChart01(){    
   d3.select("#ts-chart01").select("svg").remove();
-  var id = $('#cid1').val().split('_');
+  var type = $('#cid1').val().split('-');
+  var id = type[0].split('_');
   var data = chartData[id[0]][id[1]];
+  console.log(id)
+  console.log(vList[type[1]])
+  console.log(type[1])
   console.log(data)
   if(data != undefined) {        
     var chartName = '#ts-chart01';
@@ -83,8 +88,8 @@ function drawChart01(){
       .height(270)      
       .margin.left(0);    
 
-    for(i=0; i<vList.length; i++) {
-      chart01.addSerie(data,{x:'dtSensed',y:vList[i]},{interpolate:'linear'});
+    for(i=0; i<vList[type[1]].length; i++) {    
+      chart01.addSerie(data,{x:'dtSensed',y:vList[type[1]][i]},{interpolate:'linear'});
     }  
     chart01(chartName);
   }
@@ -92,7 +97,8 @@ function drawChart01(){
 
 function drawChart02(){
   d3.select("#ts-chart02").select("svg").remove();
-  var id = $('#cid2').val().split('_');
+  var type = $('#cid2').val().split('-');
+  var id = type[0].split('_');
   var data = chartData[id[0]][id[1]];  
   console.log(data);
   if(data != undefined) {
@@ -101,8 +107,8 @@ function drawChart02(){
       .width($(chartName).parent().width()-25)
       .height(270)      
       .margin.left(0);    
-    for(i=0; i<vList.length; i++) {
-      chart02.addSerie(data,{x:'dtSensed',y:vList[i]},{interpolate:'linear'});
+    for(i=0; i<vList[type[1]].length; i++) {
+      chart02.addSerie(data,{x:'dtSensed',y:vList[type[1]][i]},{interpolate:'linear'});
     }
     chart02(chartName);
   }
@@ -110,16 +116,17 @@ function drawChart02(){
 
 function drawChart03(){
   d3.select("#ts-chart03").select("svg").remove();
-  var id = $('#cid3').val().split('_');
-  var data = chartData[id[0]][id[1]];    
+  var type = $('#cid3').val().split('-');
+  var id = type[0].split('_');
+  var data = chartData[id[0]][id[1]];
   if(data != undefined) {
     var chartName = '#ts-chart03';  
     chart03 = d3.timeseries()          
       .width($(chartName).parent().width()-25)
       .height(270)      
       .margin.left(0);    
-    for(i=0; i<vList.length; i++) {
-      chart03.addSerie(data,{x:'dtSensed',y:vList[i]},{interpolate:'linear'});
+    for(i=0; i<vList[type[1]].length; i++) {
+      chart03.addSerie(data,{x:'dtSensed',y:vList[type[1]][i]},{interpolate:'linear'});
     }  
     chart03(chartName);
   }
@@ -127,7 +134,8 @@ function drawChart03(){
 
 function drawChart04(){
   d3.select("#ts-chart04").select("svg").remove();
-  var id = $('#cid4').val().split('_');  
+  var type = $('#cid4').val().split('-');
+  var id = type[0].split('_');  
   var data = chartData[id[0]][id[1]];
   if(data != undefined) {
     var chartName = '#ts-chart04';  
@@ -135,8 +143,8 @@ function drawChart04(){
       .width($(chartName).parent().width()-25)
       .height(270)      
       .margin.left(0);    
-    for(i=0; i<vList.length; i++) {
-      chart04.addSerie(data,{x:'dtSensed',y:vList[i]},{interpolate:'linear'});
+    for(i=0; i<vList[type[1]].length; i++) {
+      chart04.addSerie(data,{x:'dtSensed',y:vList[type[1]][i]},{interpolate:'linear'});
     }
     chart04(chartName);
   }
