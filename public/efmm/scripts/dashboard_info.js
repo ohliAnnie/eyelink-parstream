@@ -55,6 +55,7 @@ function getGaguChart(id, max, color, value, size) {
 }
 
 function drawTable(data) {
+  var color = { oee : '#1492FF', availability : '#04BBC2', performance : '#78B800', quality : '#FF5F00' };
   $('#gage').empty();
   var sbT = new StringBuffer();    
   sbT.append('<div class="detail-title"><h3>'+data.flag+' '+data.cid+'</h3>');
@@ -62,15 +63,15 @@ function drawTable(data) {
   sbT.append(urlParams.date+'">Back</a></div>');  
   sbT.append('<div class="row"><div class="chart" style="height:auto">');    
   sbT.append('<div class="gage" style="text-align:center;"></div></div>');
-  sbT.append('<div class="row"><div class="col-sm-12">');
-  sbT.append('<div class="col-xs-12 label mes-status status-'+data.state+'">'+data.state+'</div>');
+  sbT.append('<div class="row"><div class="col-sm-12">');  
+  sbT.append('<div class="col-xs-12 label mes-status color-'+data.state+'">'+data.state+'</div>');
   sbT.append('<table class="table table-striped table-bordered">');
   sbT.append('<tr><th>Ava</th><th>Perf</th><th>Qual</th></tr>');
   sbT.append('<tr><td>'+data.availability.toFixed(1)+'%</td><td>' + data.performance.toFixed(1));
   sbT.append('%</td><td>'+data.quality.toFixed(1)+'%</td></tr>');
   sbT.append('</table></div></div></div>'); 
   $('#gage').append(sbT.toString());
-  gage = getGaguChart("gage", 100, 'green', data.overall_oee, 0.13);    
+  gage = getGaguChart("gage", 100, color.oee, data.overall_oee, 0.13);    
 }
 function dataTable(data){
   $('#data').empty();
