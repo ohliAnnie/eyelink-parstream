@@ -28,32 +28,23 @@ setInterval(function() {
   });
 }, dataCntPerTick*1000);
 
-
 function getData(){
+
+  // 차트 클리어
+  d3.selectAll('svg').remove();
+
   let step = $('#step option:selected').val();
   let machine = $('#machine option:selected').val();
 
   var in_data = { url : "/analysis/restapi/getOeeChartData", type : "GET", data : {step:step, machine:machine, pastInMillis:pastInMillis} };
 
-  // let target = $('.chart_item');
-  // let opts = {
-  //   lines=13,    length=38,    width=17,    radius=45,    scale=0.35
-  //   , corners=1, opacity=0.25, rotate=0, direction=1, speed=1.1, trail=48
-  //   , color=#2995cf, fadeColor=transparent, top=50, left=50, shadow=none
-  // }
-  // let spinner = new Spinner(opts).spin(target);
   ajaxTypeData(in_data, function(result){
     // console.log(result);
-    // spinner.stop();
-
     if (result.rtnCode.code == "0000") {
       var raw = result.raw;
       var point = new Date(raw[0].dtSensed).getTime(), start = point-pastInMillis, end = point+futureInMillis;
       var now = point;
       var tot = { "overall_oee" : [], "availability" : [], "quality" : [], "performance" : []  };
-
-      // 차트 클리어
-      d3.select("svg").remove();
 
       for(factor in tot){
         drawChart(raw, result.tot[factor], start, end, now, point, now-point, factor, '#'+factor, result.patternStatus, step, machine);
