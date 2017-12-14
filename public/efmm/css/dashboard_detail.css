@@ -1,3 +1,15 @@
 .table.table-striped.table-bordered td {
-   font-size:	11px;
+   font-size: 11px;
+}
+
+.color-alarm {
+  background: #ec8029;
+}
+
+.color-idle {
+  background: #838a8d;
+}
+
+.color-active {
+  background: #139300;
 }

@@ -22,6 +22,7 @@ function getData(){
 }
 
 function drawTable(data) {
+  var color = { oee : '#1492FF', availability : '#04BBC2', performance : '#78B800', quality : '#FF5F00' };
   console.log(data)
   $('#tbody').empty();  
   var sb = new StringBuffer();  
@@ -44,19 +45,19 @@ function drawTable(data) {
   $('#tbody').append(sb.toString());
   console.log(sb.toString());
   var gCnt = 0;
-  gage[gCnt] = getGaguChart("gage"+gCnt++, max, '#1492FF', data.notching.overall_oee, size);
+  gage[gCnt] = getGaguChart("gage"+gCnt++, max, color.oee, data.notching.overall_oee, size);
   for(i=0; i<data.notch.length; i++){
     var max = 100; 
-    gage[gCnt] = getGaguChart("gage"+gCnt++, max, '#1492FF', data.notch[i].overall_oee, size);
+    gage[gCnt] = getGaguChart("gage"+gCnt++, max, color.oee, data.notch[i].overall_oee, size);
   }
-  gage[gCnt] = getGaguChart("gage"+gCnt++, max, '#1492FF', data.stacking.overall_oee, size);  
+  gage[gCnt] = getGaguChart("gage"+gCnt++, max, color.oee, data.stacking.overall_oee, size);  
   for(i=0; i<data.stack.length; i++){
     var max = 100; 
-    gage[gCnt] = getGaguChart("gage"+gCnt++, max, '#1492FF', data.stack[i].overall_oee, size);
+    gage[gCnt] = getGaguChart("gage"+gCnt++, max, color.oee, data.stack[i].overall_oee, size);
   }  
-  gage[gCnt] = getGaguChart("gage"+gCnt++, max, '#1492FF', 0.6, size);
-  gage[gCnt] = getGaguChart("gage"+gCnt++, max, '#1492FF', 0.3, size);
-  gage[gCnt] = getGaguChart("gage"+gCnt++, max, '#1492FF', 0.1, size); 
+  gage[gCnt] = getGaguChart("gage"+gCnt++, max, color.oee, 0.6, size);
+  gage[gCnt] = getGaguChart("gage"+gCnt++, max, color.oee, 0.3, size);
+  gage[gCnt] = getGaguChart("gage"+gCnt++, max, color.oee, 0.1, size); 
   console.log(gage);
 }
 function drawType(data, list, id, size){
@@ -79,20 +80,19 @@ function drawType(data, list, id, size){
   return sb;
 }
 function innerTable(data, event){
-  //var style = 'style="color:'+color+'; text-align:'+align+'; font-weight:bold;"';
-  var state = ['active', 'idle', 'alarm'];
-  data.state = state[Math.floor(Math.random() * 10)%3]  
-  var alarm = (data.state=='active')?'#1492FF':(data.state=='idle')?'blue':'red';  
+  //var style = 'style="color:'+color+'; text-align:'+align+'; font-weight:bold;"';  
+  var state = ['active', 'alarm'];
+  data.state = state[Math.floor(Math.random() * 10)%2];  
   var sb = '';
   if(event){
     sb += '<div class="detail-title"><h3>'+data.flag+' '+data.cid+'</h3>';
     sb += '<a class="btn btn-transparent grey-salsa btn-circle btn-sm active" href="info?date=';
     sb += urlParams.date+'&type='+data.flag+'&state='+data.state+'&cid='+data.cid+'"> Info</a></div>';
   }
-  sb += '<div class="row"><div class="chart">';    
+  sb += '<div class="row"><div class="chart">'; 
   sb += '<div class="gage'+cnt++ +'" style="text-align:center;"></div></div>';
   sb += '<div class="row"><div class="col-sm-12">';
-  sb += '<div class="col-xs-12 label mes-status status-'+data.state+'">'+data.state+'</div>';
+  sb += '<div class="col-xs-12 label mes-status color-'+data.state+'">'+data.state+'</div>';
   sb += '<div class="col-xs-12">'
   sb += '<table class="table table-striped table-bordered">';
   sb += '<tr><th>Ava</th><th>Perf</th><th>Qual</th></tr>';
