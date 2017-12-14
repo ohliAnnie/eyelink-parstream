@@ -64,13 +64,13 @@ function drawType(data, list, id, size){
   sb += '<div class="caption font-dark"> <span class="caption-subject">'+id+'</span><br></div>';
   sb += '<div class="tools"><a href="javascript:;" class="collapse"></a><a href="javascript:;" class="fullscreen"></a></div></div>';
   sb += '<div class="portlet-body chart-mes mes-detail">';
-  sb += innerTable(data, 'notching', false);
+  sb += innerTable(data, false);
   sb += '</div></div>';    
   if(list.length != 0) {
     sb += '<div class="portlet light bordered">';
     for(i=0; i<list.length; i++) {
       sb += '<div class="portlet-body chart-mes mes-detail">';
-      sb += innerTable(list[i], id, true);
+      sb += innerTable(list[i], true);
       sb += '</div>';
     }  
     sb += '</div>';
@@ -78,16 +78,16 @@ function drawType(data, list, id, size){
   sb += '</div>';
   return sb;
 }
-function innerTable(data, type, event){
+function innerTable(data, event){
   //var style = 'style="color:'+color+'; text-align:'+align+'; font-weight:bold;"';
   var state = ['active', 'idle', 'alarm'];
   data.state = state[Math.floor(Math.random() * 10)%3]  
   var alarm = (data.state=='active')?'#1492FF':(data.state=='idle')?'blue':'red';  
   var sb = '';
   if(event){
-    sb += '<div class="detail-title"><h3>'+type+' '+data.cid+'</h3>';
+    sb += '<div class="detail-title"><h3>'+data.flag+' '+data.cid+'</h3>';
     sb += '<a class="btn btn-transparent grey-salsa btn-circle btn-sm active" href="info?date=';
-    sb += urlParams.date+'&type='+type+'&state='+data.state+'&cid='+data.cid+'"> Info</a></div>';
+    sb += urlParams.date+'&type='+data.flag+'&state='+data.state+'&cid='+data.cid+'"> Info</a></div>';
   }
   sb += '<div class="row"><div class="chart">';    
   sb += '<div class="gage'+cnt++ +'" style="text-align:center;"></div></div>';

@@ -272,6 +272,7 @@ router.get('/restapi/getDashboardDetail', function(req, res, next) {
               for(i=0; i<out_data.length; i++){               
                 var d = out_data[i]._source.data[0];                
                 d.cid = out_data[i]._source.cid;
+                d.flag = out_data[i]._source.flag;
                 d.dtSensed = Utils.getDateUTC2Local(d.dtSensed, fmt2);                
                 for(key in ndata) {
                   if(key == 'ideal_run_rate'){
@@ -296,6 +297,7 @@ router.get('/restapi/getDashboardDetail', function(req, res, next) {
                   for(i=0; i<out_data.length; i++){                    
                     var d = out_data[i]._source.data[0];
                     d.cid = out_data[i]._source.cid;
+                    d.flag = out_data[i]._source.flag;
                     d.dtSensed = Utils.getDateUTC2Local(d.dtSensed, fmt2);
                     for(key in sdata) {                      
                       if(key == 'ideal_run_rate'){
