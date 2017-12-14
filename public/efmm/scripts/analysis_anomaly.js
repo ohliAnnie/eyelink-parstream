@@ -1,7 +1,7 @@
 $(document).ready(function(e) {
   getData();
 
-  $('#selections.select').change(function(){
+  $('#btn_search').click(function(){
     // TODO : 전체 차트 refresh
     getData();
   });
@@ -13,8 +13,8 @@ const dataCntPerTick = 10;
 
 var liveValue = [];
 setInterval(function() {
-  let step = $('#step option:selected').text();
-  let machine = $('#machine option:selected').text();
+  let step = $('#step option:selected').val();
+  let machine = $('#machine option:selected').val();
   var in_data = { url : "/analysis/restapi/getOeeDataLive", type : "GET", data : {step:step, machine:machine} };
   ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {
@@ -29,8 +29,8 @@ setInterval(function() {
 
 
 function getData(){
-  let step = $('#step option:selected').text();
-  let machine = $('#machine option:selected').text();
+  let step = $('#step option:selected').val();
+  let machine = $('#machine option:selected').val();
 
   var in_data = { url : "/analysis/restapi/getOeeChartData", type : "GET", data : {step:step, machine:machine} };
   ajaxTypeData(in_data, function(result){
@@ -41,6 +41,9 @@ function getData(){
       var now = point;
       var tot = { "overall_oee" : [], "availability" : [], "quality" : [], "performance" : []  };
 
+      // 차트 클리어
+      d3.select("svg").remove();
+
       for(factor in tot){
         drawChart(raw, result.tot[factor], start, end, now, point, now-point, factor, '#'+factor, result.pattern, step, machine);
       }
@@ -48,13 +51,13 @@ function getData(){
   });
 }
 
-function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, pattern, step, machine) {
+function drawChart(raw, factorData, start, end, now, point, gap, factor, chart_id, pattern, step, machine) {
 
   var step = step;
   var cid = machine;
-  var compare = tot.data;
-  var apt = tot.apt;
-  var cpt = tot.cpt;
+  var compare = factorData.data;
+  var apt = factorData.apt;
+  var cpt = factorData.cpt;
 
   let oriEnd = end;
   var limit = 60,    duration = 1000;
@@ -79,18 +82,65 @@ function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, patt
   let width = chartWidth - margin.left - margin.right;
   let height = 250 - margin.top - margin.bottom;
 
+  // Legend 설정
+  let legendMarginTop = 0;
+  let legendMarginLeft = 55;
+  let legendWidth  = 415, legendHeight = 55;
+  var svgLegend = d3.select(chart_id)
+      .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", legendHeight)
+      .append("g")
+          .attr("transform", "translate(" + legendMarginLeft + "," + legendMarginTop + ")");
+
+  var legend = svgSet(svgLegend, 'g', 'legend', 0 , 0);
+
+  rectLegendBG(legend, 'legend-bg', legendWidth, legendHeight);
+
+  rectLegend(legend, 'inner', 55, 15, 10, 8);
+  textLegend(legend, 75, 19, 'lower-upper');
+
+  rectLegend(legend, 'outer', 55, 15, 10, 33);
+  textLegend(legend, 75, 43, 'min-max');
+
+  pathLegend(legend, 'top1Line', 'M150,15L205,15');
+  textLegend(legend, 215, 19, 'Top1');
+
+  pathLegend(legend, 'valueline', 'M150,40L205,40');
+  textLegend(legend, 215, 43, 'Data');
+
+  pathLegend(legend, 'top2Line', 'M265,15L320,15');
+  textLegend(legend, 330, 19, 'Top2');
+
+  pathLegend(legend, 'top3Line', 'M265,40L320,40');
+  textLegend(legend, 330, 43, 'Top3');
+
+  // 상태 정보 SVG 설정
+  var statusWidth  = 63, statusHeight = 55;
+  var status = svgSet(svgLegend, 'g', 'status', 500 , 0);
+  rectLegendBG(status, 'status-bg', statusWidth, statusHeight);
+  // console.log(pattern[factor].status.status.length  )
+  var length = (pattern[factor].status.status.length<8)?pattern[factor].status.status.length:pattern[factor].status.status.length*1.3;
+  textLegend(status, 20-length, 15, pattern[factor].status.status);
+  // textLegend(status, 20-'normal'.length, 15, 'normal');
+
+  status.append('circle')
+    .attr('class', 'sign')
+    .attr('cy',  34)
+    .attr('cx', 32)
+    .attr('r', 12)
+    .style("fill", color );
+
   // X 축 범위 설정
   var x = d3.time.scale()
     .domain([start, end])
     .range([0, width]);
 
   // Y 축 범위 설정
-  let yStart = (tot.min * 100 * 0.5);
-  let yEnd = (tot.max * 100 * 1.2);
   // TODO : raw 데이터의 값을 포함하지 않을 경우 raw 데이터가 안보이는 케이스 발생
-  let rawMin;
-  let rawMax;
-
+  // TODO : top1, top2, top3의 min, max도 비교해서 모든 라인에 대한 min, max를 구해야 함
+  let yStart = (factorData.min * 100 * 0.9);
+  let yEnd = (factorData.max * 100 * 1.1);
 
   var y = d3.scale.linear()
     .domain([yStart, yEnd])
@@ -107,9 +157,9 @@ function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, patt
     .x(function(d) { return x(new Date(d.dtSensed)); })
     .y(function(d) { return y(d[factor]); });
 
-  var compareline = setLine(d3, x, y, "cardinal", "date", "center");
-  var compareline2 = setLine(d3, x, y, "cardinal", "date", "center2");
-  var compareline3 = setLine(d3, x, y, "cardinal", "date", "center3");
+  var top1Line = setLine(d3, x, y, "cardinal", "date", "center");
+  var top2Line = setLine(d3, x, y, "cardinal", "date", "center2");
+  var top3Line = setLine(d3, x, y, "cardinal", "date", "center3");
 
   var upperOuterArea = setArea(d3, x, y, "basis", "date", "max", "upper");
   var upperInnerArea = setArea(d3, x, y, "basis", "date", "upper", "center");
@@ -123,6 +173,7 @@ function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, patt
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+
   var xaxis = svgSet(svg, 'g', 'x axis', 0, height)
     .call(x.axis = d3.svg.axis().scale(x).orient('bottom').tickFormat(d3.time.format("%H:%M")));
 
@@ -130,54 +181,15 @@ function drawChart(raw, tot, start, end, now, point, gap, factor, chart_id, patt
     .attr('class', 'y axis')
     .call(y.axis = d3.svg.axis().scale(y).orient('left'));
 
-  var legendWidth  = 385, legendHeight = 55;
-  var legend = svgSet(svg, 'g', 'legend', margin.left , 0);
-
-  rectLegendBG(legend, 'legend-bg', legendWidth, legendHeight);
-
-  rectLegend(legend, 'inner', 55, 15, 10, 8);
-  textLegend(legend, 75, 19, 'lower-upper');
-
-  rectLegend(legend, 'outer', 55, 15, 10, 33);
-  textLegend(legend, 75, 43, 'min-max');
-
-  pathLegend(legend, 'compareline', 'M150,15L205,15');
-  textLegend(legend, 215, 19, 'Pattern');
-
-  pathLegend(legend, 'valueline', 'M150,40L205,40');
-  textLegend(legend, 215, 43, 'Data');
-
-  pathLegend(legend, 'compareline2', 'M265,15L320,15');
-  textLegend(legend, 330, 19, 'Pattern2');
-
-  pathLegend(legend, 'compareline3', 'M265,40L320,40');
-  textLegend(legend, 330, 43, 'Pattern3');
-
-  var statusWidth  = 63, statusHeight = 55;
-
-  var status = svgSet(svg, 'g', 'status', 500 , 0);
-
-  rectLegendBG(status, 'status-bg', statusWidth, statusHeight);
-  // console.log(pattern[factor].status.status.length  )
-  var length = (pattern[factor].status.status.length<8)?pattern[factor].status.status.length:pattern[factor].status.status.length*1.3;
-  textLegend(status, 20-length, 15, pattern[factor].status.status);
-  // textLegend(status, 20-'normal'.length, 15, 'normal');
-
-  status.append('circle')
-    .attr('class', 'sign')
-    .attr('cy',  34)
-    .attr('cx', 32)
-    .attr('r', 12)
-    .style("fill", color );
 
   svgPath(svg, compare, 'area upper inner', upperInnerArea);
   svgPath(svg, compare, 'area lower inner', lowerInnerArea);
   svgPath(svg, compare, 'area upper outer', upperOuterArea);
   svgPath(svg, compare, 'area lower outer', lowerOuterArea);
 
-  svgPath(svg, compare, 'compareline3', compareline3);
-  svgPath(svg, compare, 'compareline2', compareline2);
-  svgPath(svg, compare, 'compareline', compareline);
+  svgPath(svg, compare, 'top1Line', top1Line);
+  svgPath(svg, compare, 'top2Line', top2Line);
+  svgPath(svg, compare, 'top3Line', top3Line);
 
   svgPath(svg, raw, 'valueline', valuelineFunction);
 

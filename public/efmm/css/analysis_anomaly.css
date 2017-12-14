@@ -66,22 +66,22 @@ div.tooltip {
   fill: rgba(200, 200, 255, 0.8);
   stroke: rgba(180, 180, 255, 0.8);
 }
-.compareline,
-.legend .compareline {
+.top1Line,
+.legend .top1Line {
   fill: none;
   stroke: red;
   stroke-dasharray: 3;
   stroke-width: 1;
 }
-.compareline2,
-.legend .compareline2 {
+.top2Line,
+.legend .top2Line {
   fill: none;
   stroke: orange;
   stroke-dasharray: 3;
   stroke-width: 1;
 }
-.compareline3,
-.legend .compareline3 {
+.top3Line,
+.legend .top3Line {
   fill: none;
   stroke: green;
   stroke-dasharray: 3;
@@ -107,15 +107,15 @@ select:focus-within {
 	outline:  none;
 }
 
-#step { margin-left: 100px; }
+/* #step { margin-left: 100px; }
 #machine, #step {
 	height:34px;
 	margin-right:5px;
 	padding:6px 0px;
 	font-size: 14px;
 	vertical-align: middle;
-}
+} */
 .chart_item {display:inline-block;}
-.chart { height: 250px;}
+.chart { height: 300px;}
 .portlet { width:100%; }
 ol {display:inline-block; float:right;}
