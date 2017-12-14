@@ -1,6 +1,7 @@
 $(document).ready(function(e) {        
   drawGage();
   getData();  
+  console.log(new Date(1513215749396));
 });
 
 var oee, availability, performance, quality;
@@ -29,6 +30,8 @@ function getData(){
 //      tdata.leak_inspection = { tot : 2, in_pro : 1, stop : 1, alarm : 1, a_time : 7200, r_time : 3570, e_unit : 28000, p_unit : 27590, g_unit : 27513, n_unit : 77 };
 //      tdata.can_swaging = { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3600, e_unit : 27500, p_unit : 26990, g_unit : 26911, n_unit : 79 };      
       for(key in data){
+        console.log(data[key])
+        console.log(new Date(data[key].date))
         if(key != 'week' && key != 'total'){
           tdata[key] = { tot : data[key].DownTime+data[key].Running+data[key].ShortBreak+data[key].MealBreak, in_pro : data[key].Running,
           stop : data[key].DownTime+data[key].ShortBreak+data[key].MealBreak, alarm : data[key].alarm===undefined?'':data[key].alarm, a_time : Math.ceil(data[key].planned_production_time/60),
@@ -149,6 +152,8 @@ function drawLineChart(data, week) {
 
 var cnt = 0
 function drawTable(data) {
+  console.log(data);
+  console.log(new Date(data.date))
   $('#tbody').empty();  
   var sb = new StringBuffer();  
   sb.append('<table class="table table-hover table-mes"><tr>');  
