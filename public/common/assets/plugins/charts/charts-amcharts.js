@@ -11,9 +11,9 @@ var ChartsAmcharts = function() {
             "marginTop": 10,
             "marginBottom": 26,
 
-            "fontFamily": 'Open Sans',            
+            "fontFamily": 'Open Sans',
             "color":    '#888',
-            
+
             "dataProvider": [{
                 "year": 2009,
                 "income": 23.5,
@@ -326,13 +326,13 @@ var ChartsAmcharts = function() {
             "type": "serial",
             "theme": "light",
 
-            "fontFamily": 'Open Sans',            
+            "fontFamily": 'Open Sans',
             "color":    '#888888',
-            
+
             "pathToImages": Metronic.getGlobalPluginsPath() + "charts/amcharts/amcharts/images/",
 
             "dataProvider": [{
-                "lineColor": "#b7e021",  
+                "lineColor": "#b7e021",
                 "date": "2017-01-01",
                 "duration": 408
             }, {
@@ -509,7 +509,7 @@ var ChartsAmcharts = function() {
             "startDuration": 2,
 
             "fontFamily": 'Open Sans',
-            
+
             "color":    '#888',
 
             "dataProvider": [{
@@ -611,7 +611,7 @@ var ChartsAmcharts = function() {
             "theme": "light",
 
             "fontFamily": 'Open Sans',
-            
+
             "color":    '#888',
 
             "dataProvider": [{
@@ -663,7 +663,7 @@ var ChartsAmcharts = function() {
             "theme": "light",
 
             "fontFamily": 'Open Sans',
-            
+
             "color":    '#888',
 
             "dataProvider": [{
@@ -724,7 +724,7 @@ var ChartsAmcharts = function() {
             "theme": "light",
 
             "fontFamily": 'Open Sans',
-            
+
             "color":    '#888',
 
             "dataProvider": [{
@@ -803,7 +803,7 @@ var ChartsAmcharts = function() {
             "theme": "light",
 
             "fontFamily": 'Open Sans',
-            
+
             "color":    '#888',
 
             "dataProvider": [{
@@ -2697,7 +2697,7 @@ var ChartsAmcharts = function() {
             map.fontFamily = 'Open Sans';
             map.fontSize = '13';
             map.color = '#888';
-            
+
             map.addTitle("Population of the World in 2011", 14);
             map.addTitle("source: Gapminder", 11);
             map.areasSettings = {
@@ -2756,9 +2756,9 @@ var ChartsAmcharts = function() {
             pathToImages: Metronic.getGlobalPluginsPath() + "amcharts/ammap/images/",
 
             "fontFamily": 'Open Sans',
-            
+
             "color":    '#888',
-            
+
             dataProvider: {
                 map: "worldLow",
                 linkToObject: "london",
@@ -3042,7 +3042,7 @@ var ChartsAmcharts = function() {
             "theme": "light",
             pathToImages: Metronic.getGlobalPluginsPath() + "amcharts/amcharts/images/",
             "fontFamily": 'Open Sans',
-            
+
             "color":    '#888',
             dataSets: [{
                 color: "#b0de09",
