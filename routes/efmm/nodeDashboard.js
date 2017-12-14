@@ -212,8 +212,7 @@ router.get('/restapi/getDashboardWeekly', function(req, res, next) {
 });
 
 router.get('/restapi/getDashboardDetail', function(req, res, next) {
-  console.log('reports/restapi/getDashboardDetail');    
-  var lte = [], gte = [], indexNotch = [], indexStack = [], cnt = 0;  
+  console.log('reports/restapi/getDashboardDetail');
   var now = Utils.getMs2Date(parseInt(req.query.date), fmt2, 'Y', 'Y');
   var gte = Utils.getMs2Date(parseInt(req.query.date), fmt1, 'Y', 'Y')+startTime;
   var today = Utils.getMs2Date(parseInt(req.query.date), fmt4, 'Y', 'Y');  
@@ -416,11 +415,9 @@ router.get('/restapi/getDashboardInfo', function(req, res, next) {
 router.get('/restapi/getDashboardInfoStatus', function(req, res, next) {
   console.log('reports/restapi/getDashboardInfoStatus');    
   var date = Utils.getMs2Date(parseInt(req.query.date), fmt2, 'Y', 'Y');
-  var gte = Utils.getDate(date, fmt2, 0, 0, -1, 0, 'Y', 'Y')
-  var d = date.split('T');
-  var g = gte.split('T');
-  var in_data = { index : indexStackingStatus+'2017.09.27', type : "status",
-                  sort : "dtTransmitted" , gte : '2017-09-27T'+g[1], lte : '2017-09-27T'+d[1], cid : req.query.cid };  
+  var gte = Utils.getDate(date, fmt2, 0, 0, -1, 0, 'Y', 'Y')  
+  var in_data = { index : indexList(gte, date, indexStackingStatus), type : "status",
+                  sort : "dtTransmitted" , gte : gte, lte : date, cid : req.query.cid };  
   queryProvider.selectSingleQueryByID2("dashboard","selectDashboardInfoStatus", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     var data = [];
@@ -441,5 +438,14 @@ router.get('/restapi/getDashboardInfoStatus', function(req, res, next) {
   });
 });
 
+function indexList(start, end, index) {  
+  var list = [], lcnt = 0;  
+  start = new Date(start).getTime()
+  end = new Date(end).getTime()
+  for(i=start; i<= end; i+=24*60*60*1000){   
+    list[lcnt++] = index+Utils.getMs2Date(i, fmt4, 'Y', 'Y');
+  }
+  return list;
+}
 
 module.exports = router;

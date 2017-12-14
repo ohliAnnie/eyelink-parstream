@@ -1,4 +1,5 @@
 $(document).ready(function(e) {        
+  console.log('test')
   getData();  
 });
 
@@ -39,23 +40,23 @@ function drawTable(data) {
   testData.overall_oee = 10;
   testData.cid = 500;  
   sb.append(drawType(testData, list, 'Degassing', 6));
-  sb.append('</div>');
+  sb.append('</div></div>');
   $('#tbody').append(sb.toString());
-  console.log(sb.toString)
+  console.log(sb.toString());
   var gCnt = 0;
-  gage[gCnt] = getGaguChart("gage"+gCnt++, max, 'green', data.notching.overall_oee, size);
+  gage[gCnt] = getGaguChart("gage"+gCnt++, max, '#1492FF', data.notching.overall_oee, size);
   for(i=0; i<data.notch.length; i++){
     var max = 100; 
-    gage[gCnt] = getGaguChart("gage"+gCnt++, max, 'green', data.notch[i].overall_oee, size);
+    gage[gCnt] = getGaguChart("gage"+gCnt++, max, '#1492FF', data.notch[i].overall_oee, size);
   }
-  gage[gCnt] = getGaguChart("gage"+gCnt++, max, 'green', data.stacking.overall_oee, size);  
+  gage[gCnt] = getGaguChart("gage"+gCnt++, max, '#1492FF', data.stacking.overall_oee, size);  
   for(i=0; i<data.stack.length; i++){
     var max = 100; 
-    gage[gCnt] = getGaguChart("gage"+gCnt++, max, 'green', data.stack[i].overall_oee, size);
+    gage[gCnt] = getGaguChart("gage"+gCnt++, max, '#1492FF', data.stack[i].overall_oee, size);
   }  
-  gage[gCnt] = getGaguChart("gage"+gCnt++, max, 'green', 0.6, size);
-  gage[gCnt] = getGaguChart("gage"+gCnt++, max, 'green', 0.3, size);
-  gage[gCnt] = getGaguChart("gage"+gCnt++, max, 'green', 0.1, size); 
+  gage[gCnt] = getGaguChart("gage"+gCnt++, max, '#1492FF', 0.6, size);
+  gage[gCnt] = getGaguChart("gage"+gCnt++, max, '#1492FF', 0.3, size);
+  gage[gCnt] = getGaguChart("gage"+gCnt++, max, '#1492FF', 0.1, size); 
   console.log(gage);
 }
 function drawType(data, list, id, size){
@@ -69,7 +70,7 @@ function drawType(data, list, id, size){
     sb += '<div class="portlet light bordered">';
     for(i=0; i<list.length; i++) {
       sb += '<div class="portlet-body chart-mes mes-detail">';
-      sb += innerTable(list[i], 'notching', true);
+      sb += innerTable(list[i], id, true);
       sb += '</div>';
     }  
     sb += '</div>';
@@ -81,12 +82,12 @@ function innerTable(data, type, event){
   //var style = 'style="color:'+color+'; text-align:'+align+'; font-weight:bold;"';
   var state = ['active', 'idle', 'alarm'];
   data.state = state[Math.floor(Math.random() * 10)%3]  
-  var alarm = (data.state=='active')?'green':(data.state=='idle')?'blue':'red';  
+  var alarm = (data.state=='active')?'#1492FF':(data.state=='idle')?'blue':'red';  
   var sb = '';
   if(event){
     sb += '<div class="detail-title"><h3>'+type+' '+data.cid+'</h3>';
-    sb += '<a class="btn btn-transparent grey-salsa btn-circle btn-sm active" href='+"'info?date=";
-    sb += urlParams.date+'&type='+type+'&state='+data.state+'&cid='+data.cid+"'"+'"> Info</a></div>';
+    sb += '<a class="btn btn-transparent grey-salsa btn-circle btn-sm active" href="info?date=';
+    sb += urlParams.date+'&type='+type+'&state='+data.state+'&cid='+data.cid+'"> Info</a></div>';
   }
   sb += '<div class="row"><div class="chart">';    
   sb += '<div class="gage'+cnt++ +'" style="text-align:center;"></div></div>';
@@ -94,7 +95,7 @@ function innerTable(data, type, event){
   sb += '<div class="col-xs-12 label mes-status status-'+data.state+'">'+data.state+'</div>';
   sb += '<div class="col-xs-12">'
   sb += '<table class="table table-striped table-bordered">';
-  sb += '<tr><td>Ava</td><td>Perf</td><td>Qual</td></tr>';
+  sb += '<tr><th>Ava</th><th>Perf</th><th>Qual</th></tr>';
   sb += '<tr><td>'+(data.availability*100).toFixed(1)+'%</td><td>' + (data.performance*100).toFixed(1);
   sb += '%</td><td>'+(data.quality*100).toFixed(1)+'%</td></tr>';
   sb += '</table></div></div></div></div>';  
