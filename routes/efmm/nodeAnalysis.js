@@ -279,7 +279,7 @@ router.get('/restapi/getOeeChartData', function(req, res, next) {
               logger.trace('clust : ',JSON.stringify(clust));
               var tot = { "overall_oee" : [], "availability" : [], "quality" : [], "performance" : [] };
               for(factor in tot) {
-                tot[factor] = arrangeData(clust, pattern, rawStartDttm, factor);
+                tot[factor] = arrangeData(clust, pattern, rawStartDttm, factor, rawData);
               }
               logger.trace('tot : ',tot);
               var patternStatus={"overall_oee" : {}, "availability" : {}, "quality" : {}, "performance" : {}};
@@ -593,8 +593,8 @@ function getIndicesForQueryCondition(startDttm, endDttm, indexHead){
   }
   return indices;
 }
-function arrangeData(clust, pattern, start, factor){
-  var data = [], cpt = [], apt = [], min = Infinity, max = -Infinity;
+function arrangeData(clust, pattern, start, factor, rawData){
+  var data = [], cpt = [], apt = [], minValue = Infinity, maxValue = -Infinity;
   // 1시간 데이터 3600개, 30초단위로 구간화 -> 120개 데이터
   let patternCnt = 70;  // 30분 데이터, 5분 예측 = 35분 패턴데이터 = 70개, (2개/분)
   let tmp = 120 - patternCnt - 1;
@@ -605,8 +605,8 @@ function arrangeData(clust, pattern, start, factor){
   for( i = tmp; i < 120 ; i++ ){
     // var date = new Date(start).getTime()+(i-59)*60*1000;
     var date = new Date(start).getTime()+(i-tmp)*30*1000; // 30초 단위 구간화되어있는 데이터
-    minValue = Math.min(min, top1.min_value[i], top2.center[i], top3.center[i]);
-    maxValue = Math.max(max, top1.max_value[i], top2.center[i], top3.center[i]);
+    minValue = Math.min(minValue, top1.min_value[i], top2.center[i], top3.center[i]);
+    maxValue = Math.max(maxValue, top1.max_value[i], top2.center[i], top3.center[i]);
     data.push({date : date
               , center : top1.center[i] * 100
               , center2 : top2.center[i] * 100
@@ -625,6 +625,25 @@ function arrangeData(clust, pattern, start, factor){
       }
     }
   }
+  minValue *= 100;
+  maxValue *= 100;
+
+  // TODO : min, max 값을 raw 데이터와도 비교
+  let rawMin = Infinity;
+  let rawMax = -Infinity;
+  logger.debug('111111111111111111111111111111111');
+  logger.debug('rawData[0]: ',rawData[0]);
+  logger.debug('minValue: ', minValue);
+  logger.debug('maxValue: ', maxValue);
+  rawData.forEach(function (d){
+    rawMin = Math.min(rawMin, d[factor] );
+    rawMax = Math.max(rawMax, d[factor] );
+  });
+  minValue = Math.min(minValue, rawMin);
+  maxValue = Math.max(maxValue, rawMax);
+  logger.debug('111111111111111111111111111111111');
+  logger.debug('minValue: ', minValue);
+  logger.debug('maxValue: ', maxValue);
 
   var total = { data : data, cpt : cpt, apt : apt, min : minValue, max : maxValue };
   return total;

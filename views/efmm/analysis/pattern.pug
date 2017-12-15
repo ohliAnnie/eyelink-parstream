@@ -58,54 +58,56 @@ block content
                       button#btn_search.btn.blue
                         i.fa.fa-search  Search
       .row
-        .col-md-2
-          .portlet.light.bordered
-            .portlet-title
-              .caption.font-dark
-                span.caption-subject.bold.uppercase Pattern list
-                //- span.caption-helper  By Created date
-            .portlet-body
-              .scroller(style='height: 450px;', data-always-visible='1', data-rail-visible='0')
-                table#patternList.table.table-hover.table-light
-        .col-md-2
-          .portlet.light.bordered.tasks-widget
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-green-haze Pattern Group
-                //- span.caption-helper  Created Patterns at
-                label#lblCreatedDate
-            .portlet-body
-              .scroller(style='height: 450px;', data-always-visible='1', data-rail-visible='0')
-                #patternTree
-        .col-md-4
-          .portlet.light
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-green-haze Patterns
-                span.patternGroupLabel.caption-helper  of group :
-                label#lblGroup.patternGroupLabel.control-label.bold
-              .tools
-                - const statuses = [{value: 'Status for All'}, {value: 'normal'}, {value: 'anomaly'}, {value: 'caution'}]
-                select#allStatus.statusUpdate
-                  each allStatus in statuses
-                    option(value=(allStatus.value)) #{allStatus.value}
-                button#btnBatchUpdate.statusUpdate.btn.blue(type='button') Update
-            .portlet-body
-              #sample
-        .col-md-4
-          //- .portlet.light.bordered.tasks-widget(style='height:545px;')
-          .portlet.light.bordered.tasks-widget
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-green-haze Segment
-                span.caption-helper  Pattern shape(120 minutes)
-              .tools
-                a.collapse(href='javascript:;')
-                a.config(href='#portlet-config', data-toggle='modal')
-                a.reload(href='javascript:;')
-                a.fullscreen(href='javascript:;')
-                a.remove(href='javascript:;')
-            .portlet-body
-              //- 차트 들어갈 부분
-              .chart(style='height:450px;')
-                #patternChart
+        div#bottom
+          .col-md-4.no-side-padding
+            .col-md-5.side-padding-5
+              .portlet.light.bordered
+                .portlet-title
+                  .caption.font-dark
+                    span.caption-subject.bold.uppercase List
+                    //- span.caption-helper  By Created date
+                .portlet-body
+                  .scroller(style='height: 450px;', data-always-visible='1', data-rail-visible='0').no-side-padding
+                    table#patternList.table.table-hover.table-light
+            .col-md-7.side-padding-5
+              .portlet.light.bordered.tasks-widget
+                .portlet-title
+                  .caption
+                    span.caption-subject.bold.uppercase.font-green-haze Pattern Group
+                    //- span.caption-helper  Created Patterns at
+                    label#lblCreatedDate
+                .portlet-body
+                  .scroller(style='height: 450px;', data-always-visible='1', data-rail-visible='0').no-side-padding
+                    #patternTree
+          .col-md-4.side-padding-5
+            .portlet.light.bordered
+              .portlet-title
+                .caption
+                  span.caption-subject.bold.uppercase.font-green-haze Patterns
+                  span.patternGroupLabel.caption-helper  of group :
+                  label#lblGroup.patternGroupLabel.control-label.bold
+                .tools
+                  - const statuses = [{value: 'Status for All'}, {value: 'normal'}, {value: 'anomaly'}, {value: 'caution'}]
+                  select#allStatus.statusUpdate
+                    each allStatus in statuses
+                      option(value=(allStatus.value)) #{allStatus.value}
+                  button#btnBatchUpdate.statusUpdate.btn.blue(type='button') Update
+              .portlet-body
+                #sample
+          .col-md-4.side-padding-5
+            //- .portlet.light.bordered.tasks-widget(style='height:545px;')
+            .portlet.light.bordered.tasks-widget
+              .portlet-title
+                .caption
+                  span.caption-subject.bold.uppercase.font-green-haze Segment
+                  span.caption-helper  Pattern shape(120 minutes)
+                .tools
+                  a.collapse(href='javascript:;')
+                  a.config(href='#portlet-config', data-toggle='modal')
+                  a.reload(href='javascript:;')
+                  a.fullscreen(href='javascript:;')
+                  a.remove(href='javascript:;')
+              .portlet-body
+                //- 차트 들어갈 부분
+                .chart(style='height:450px;')
+                  #patternChart

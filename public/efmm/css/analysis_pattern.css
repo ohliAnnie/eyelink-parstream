@@ -28,3 +28,20 @@ select:focus-within {
 	vertical-align: middle;
 }
 ol {display:inline-block; float:right;}
+
+.no-side-padding {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+.side-padding-5 {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+#bottom .portlet.light{
+  padding-left: 10px;
+  padding-right: 10px;
+}
+#bottom .portlet.light.bordered {
+  padding-left: 10px;
+  padding-right: 10px;
+}
