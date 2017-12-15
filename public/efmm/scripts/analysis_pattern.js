@@ -5,7 +5,7 @@ $(document).ready(function() {
   getPatternList();// pattern dataset
 
   $('#btn_search').on('click', function(){
-    d3.selectAll("svg").remove();
+    d3.selectAll('svg').remove();
     // TODO : pattern group, patterns 박스도 클리어하기
 
 
@@ -16,13 +16,13 @@ $(document).ready(function() {
 
   $('#btnBatchUpdate').click(function() {
     var nodes =  $('#sample_2').dataTable().fnGetNodes();
-    var checkbox = $("input[name=patternChk]:checked", nodes).closest('tr');
+    var checkbox = $('input[name=patternChk]:checked', nodes).closest('tr');
     var numOfCheck = checkbox.length;
 
     if(numOfCheck == 0) {
-      alert("There is no checked item");
+      alert('There is no checked item');
     } else {
-      if(confirm("Do you want to batch update checked " + numOfCheck + " patterns ?")){
+      if(confirm('Do you want to batch update checked ' + numOfCheck + ' patterns ?')){
 
         var id = $('#lblCreatedDate').text();
         var queryBody = {};
@@ -57,14 +57,14 @@ function getPatternList() {
   let machine = step_machine.split('_')[1];
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
-  var masterId = "master";
+  var masterId = 'master';
   var nodeInfo = null;
   var data = { startDate: sdate, endDate: edate, masterId: masterId, flag:step, cid:machine };
-  var in_data = {url: "/analysis/restapi/getAnomalyPatternList", type: "GET", data: data};
+  var in_data = {url: '/analysis/restapi/getAnomalyPatternList', type: 'GET', data: data};
   ajaxTypeData(in_data, function(result){
     console.log('getPatternList[CODE]:', result.rtnCode.code);
     console.log('[getPatternList] result: ',result);
-    if (result.rtnCode.code == "0000") {
+    if (result.rtnCode.code == '0000') {
       drawPatternList(result.rtnData, machine, nodeInfo);
     }
   });
@@ -91,14 +91,14 @@ function drawPatternList(patternLists, machine, nodeInfo) {
 
 
 function loadPatternData(createdDate, nodeInfo) {
-  $("#lblCreatedDate").empty();
-  $("#lblCreatedDate").append(createdDate);
-  $("#lblCreatedDate").hide();
-  // $("#lblGroup").empty();
-  // $("#lblGroup").append('parent - child node');
-  d3.selectAll("svg").remove();
-  $("#sample").empty();
-  // $("#sample_2").dataTable().fnClearTable();
+  $('#lblCreatedDate').empty();
+  $('#lblCreatedDate').append(createdDate);
+  $('#lblCreatedDate').hide();
+  // $('#lblGroup').empty();
+  // $('#lblGroup').append('parent - child node');
+  d3.selectAll('svg').remove();
+  $('#sample').empty();
+  // $('#sample_2').dataTable().fnClearTable();
 
   if($('#lblCreatedDate').text() == 'master'){
     // $('#btnBatchUpdate').show();
@@ -115,10 +115,10 @@ function loadPatternData(createdDate, nodeInfo) {
   console.log('step: ',step);
   console.log('machine: ',machine);
   var data = {id : createdDate, flag: step, cid: machine};
-  var in_data = {url: "/analysis/restapi/getPatterns", type: "GET", data: data};
+  var in_data = {url: '/analysis/restapi/getPatterns', type: 'GET', data: data};
   ajaxTypeData(in_data, function(result){
     console.log('loadPatternData[CODE]:', result.rtnCode.code);
-    if (result.rtnCode.code == "0000") {
+    if (result.rtnCode.code == '0000') {
       var d = result.patternData;
       var treeData = sortObject(d);
       drawPatternTree(createdDate, treeData, nodeInfo);
@@ -166,7 +166,7 @@ function drawPatternTree(creationDate, treeData, nodeInfo) {
     var parentNode = nodeText[0];
     var childNode = nodeText[1];
     drawPatterns(creationDate, parentNode, childNode, treeData);
-    $("#sample_2").dataTable().fnPageChange('first');
+    $('#sample_2').dataTable().fnPageChange('first');
   });
 }
 
@@ -177,20 +177,20 @@ function getNodeData(treeData, group){
   var anomalyCnt = 0;
   var undefineCnt = 0;
   for(var cno in treeData){
-    if (treeData[cno]['status'] === "normal")       { normalCnt += 1; }
-    else if (treeData[cno]['status'] === "caution") { cautionCnt += 1; }
-    else if (treeData[cno]['status'] === "anomaly") { anomalyCnt += 1; }
+    if (treeData[cno]['status'] === 'normal')       { normalCnt += 1; }
+    else if (treeData[cno]['status'] === 'caution') { cautionCnt += 1; }
+    else if (treeData[cno]['status'] === 'anomaly') { anomalyCnt += 1; }
     else { undefineCnt += 1; } //undefined
   }
   var totalCnt = normalCnt + cautionCnt + anomalyCnt + undefineCnt;
   var nodeData = {'text': group, href: '#'+ group,
-    icon: "glyphicon glyphicon-copyright-mark",
+    icon: 'glyphicon glyphicon-copyright-mark',
     tags: [totalCnt],
     nodes: [
-      { text: "normal", href: '#' + group + '-normal', color: "green", tags: [normalCnt]},
-      { text: "caution", href: '#' + group + '-caution', color: "blue", tags: [cautionCnt]},
-      { text: "anomaly", href: '#' + group + '-anomaly', color: "red", tags: [anomalyCnt]},
-      { text: "undefined", href: '#' + group + '-undefined', color: "gray", tags: [undefineCnt]}
+      { text: 'normal', href: '#' + group + '-normal', color: 'green', tags: [normalCnt]},
+      { text: 'caution', href: '#' + group + '-caution', color: 'blue', tags: [cautionCnt]},
+      { text: 'anomaly', href: '#' + group + '-anomaly', color: 'red', tags: [anomalyCnt]},
+      { text: 'undefined', href: '#' + group + '-undefined', color: 'gray', tags: [undefineCnt]}
     ]
   };
   return nodeData;
@@ -204,14 +204,14 @@ function isStatusForAllChanged() {
 }
 
 function drawPatterns(creationDate, parentNode, childNode, patternData){
-  d3.selectAll("svg").remove();
-  $("#sample").empty();
+  d3.selectAll('svg').remove();
+  $('#sample').empty();
   $('#lblGroup').text(parentNode);
   if (childNode != undefined) {
     $('#lblGroup').append(' - ', childNode);
   }
 
-  console.log("patternData : ", patternData[parentNode]);
+  console.log('patternData : ', patternData[parentNode]);
   var selectedNodeData = sortObject(patternData[parentNode]);
   var tableTag = getPatternsData(creationDate, parentNode, childNode, selectedNodeData);
 
@@ -225,7 +225,7 @@ function drawPatterns(creationDate, parentNode, childNode, patternData){
 
   // click event about cluster number in patterns table
   $('#sample_2').on('click', '.clickClustNo', function(){
-    d3.selectAll("svg").remove();
+    d3.selectAll('svg').remove();
     $('#sample_2').DataTable().$('.clickClustNo').css({'color':'', 'font-weight': ''});
     $(this).css({'color':'red', 'font-weight': 'bold'});
 
@@ -237,8 +237,8 @@ function drawPatterns(creationDate, parentNode, childNode, patternData){
     var row = $(this).closest('tr');
     var CN = row[0].cells[1].innerText;
     var masterCN = row[0].cells[2].innerText;
-    var tgtCluster = machine+"." + parentNode + "." + CN + ".center";
-    var tgtMaster = machine+"." + parentNode + "." + masterCN + ".center";
+    var tgtCluster = machine+'.' + parentNode + '.' + CN + '.center';
+    var tgtMaster = machine+'.' + parentNode + '.' + masterCN + '.center';
     console.log('[cluster]', CN, '| [master]', masterCN);
 
     var data = {
@@ -248,16 +248,16 @@ function drawPatterns(creationDate, parentNode, childNode, patternData){
       step: step,
       machine: machine
     };
-    var in_data = {url: "/analysis/restapi/getClusterPattern", type: "GET", data: data};
+    var in_data = {url: '/analysis/restapi/getClusterPattern', type: 'GET', data: data};
 
     ajaxTypeData(in_data, function(result) {
       console.log('clusterClick[CODE]: ', result.rtnCode.code);
       console.log('result: ',result);
-      if (result.rtnCode.code == "0000") {
-        var patternGraph = result.patternData[parentNode][CN]["center"];
+      if (result.rtnCode.code == '0000') {
+        var patternGraph = result.patternData[parentNode][CN]['center'];
         var masterGraph;
         if (result.masterData == null) { masterGraph = null; }
-        else { masterGraph = result.masterData[parentNode][masterCN]["center"]; }
+        else { masterGraph = result.masterData[parentNode][masterCN]['center']; }
         var graphData = getGraphData(patternGraph, masterGraph);
         console.log(graphData);
         drawPatternChart(graphData);
@@ -310,13 +310,13 @@ function insertNewPattern(id, group, CN, newCN){
   let step_machine = $('#step_machine option:selected').text();
   let step = step_machine.split('_')[0];
   let machine = step_machine.split('_')[1];
-  var target = machine+"." + group + "." + CN;
+  var target = machine+'.' + group + '.' + CN;
 
   var data = {id : id, target: target};
-  var in_data = {url: "/analysis/restapi/getClusterData", type: "GET", data: data};
+  var in_data = {url: '/analysis/restapi/getClusterData', type: 'GET', data: data};
   ajaxTypeData(in_data, function(result){
     console.log('getPatternData[CODE]:', result.rtnCode.code);
-    if (result.rtnCode.code == "0000") {
+    if (result.rtnCode.code == '0000') {
       var d = result.rtnData[group][CN];
       var queryBody = {};
       queryBody[group] = {};
@@ -327,9 +327,9 @@ function insertNewPattern(id, group, CN, newCN){
       body.machine = machine;
       body.data = queryBody;
       console.log('[insertNewPattern] queryBody: ',queryBody);
-      var in_data = {url: "/analysis/restapi/pattern_data/master/_update", type: "POST", data: body};
+      var in_data = {url: '/analysis/restapi/pattern_data/master/_update', type: 'POST', data: body};
       ajaxTypeData(in_data, function(result) {
-        if (result.rtnCode.code == "D001") {
+        if (result.rtnCode.code == 'D001') {
           console.log('insert completed');
           var nodeInfo = $('#patternTree').treeview('getSelected');
           loadPatternData(id, nodeInfo[0]);
@@ -349,9 +349,9 @@ function modifyPattern(id, data){
   body.step = step;
   body.machine = machine;
   body.data = data;
-  var in_data = {url: "/analysis/restapi/pattern_info/" + id + "/_update", type: "POST", data: body};
+  var in_data = {url: '/analysis/restapi/pattern_info/' + id + '/_update', type: 'POST', data: body};
   ajaxTypeData(in_data, function(result) {
-    if (result.rtnCode.code == "D002") {
+    if (result.rtnCode.code == 'D002') {
       var nodeInfo = $('#patternTree').treeview('getSelected');
       if (confirm('Successfully updated !!')){
         loadPatternData(id, nodeInfo[0]);
@@ -376,7 +376,7 @@ function getPatternsData(patternId, pNode, cNode, nodeData) {
       var tbTag = statusCheck(patternId, cno, nodeData[cno].masterCN, nodeData[cno].status);
       sb.append(tbTag);
     }
-    sb.append("</tbody>");
+    sb.append('</tbody>');
   } else{
     for (var cno in nodeData){
       if (nodeData[cno].status == cNode) {
@@ -384,7 +384,7 @@ function getPatternsData(patternId, pNode, cNode, nodeData) {
         sb.append(tbTag);
       }
     }
-    sb.append("</tbody>");
+    sb.append('</tbody>');
   }
   sb.append('</table></div></div>');
 
@@ -463,64 +463,64 @@ function drawPatternChart(graphData) {
 
   var xAxis = d3.svg.axis()
       .scale(xScale)
-      .orient("bottom")
+      .orient('bottom')
       .innerTickSize(-height)
       .outerTickSize(0)
       .tickPadding(10);
   var yAxis = d3.svg.axis()
       .scale(yScale)
-      .orient("left")
+      .orient('left')
       .innerTickSize(-width)
       .outerTickSize(0)
       .tickPadding(10);
 
   var masterLine = d3.svg.line()
-      .interpolate("basis")
+      .interpolate('basis')
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
   var patternLine = d3.svg.line()
-      .interpolate("basis")
+      .interpolate('basis')
       .x(function(d) { return xScale(d.x); })
       .y(function(d) { return yScale(d.y); });
 
-  var svg = d3.select("#patternChart")
-      .append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.left + margin.bottom)
-      .append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  var svg = d3.select('#patternChart')
+      .append('svg')
+          .attr('width', width + margin.left + margin.right)
+          .attr('height', height + margin.left + margin.bottom)
+      .append('g')
+          .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
   xScale.domain([0, d3.max(graphData.pSet, function(d){ return d.x; })]);
   yScale.domain([graphData.minVal-(graphData.maxVal/100), graphData.maxVal+(graphData.maxVal/100)]);
 
   // Add the X Axis
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
+  svg.append('g')
+      .attr('class', 'x axis')
+      .attr('transform', 'translate(0,' + height + ')')
       .call(xAxis);
 
   // Add the Y Axis
-  svg.append("g")
-      .attr("class", "y axis")
+  svg.append('g')
+      .attr('class', 'y axis')
       .call(yAxis);
 
 
-  svg.append("path")
+  svg.append('path')
       .data([graphData.mSet])
-      .attr("fill", "none")
-      .attr("stroke", "orange")
-      .attr("opacity", 0.4)
-      .attr("stroke-linejoin", "round")
-      .attr("stroke-linecap", "round")
-      .attr("stroke-width", 6)
-      .attr("d", masterLine);
+      .attr('fill', 'none')
+      .attr('stroke', 'orange')
+      .attr('opacity', 0.4)
+      .attr('stroke-linejoin', 'round')
+      .attr('stroke-linecap', 'round')
+      .attr('stroke-width', 6)
+      .attr('d', masterLine);
 
-  svg.append("path")
+  svg.append('path')
       .data([graphData.pSet])
-      .attr("fill", "none")
-      .attr("stroke", "steelblue")
-      .attr("stroke-linejoin", "round")
-      .attr("stroke-linecap", "round")
-      .attr("stroke-width", 2.5)
-      .attr("d", patternLine);
+      .attr('fill', 'none')
+      .attr('stroke', 'steelblue')
+      .attr('stroke-linejoin', 'round')
+      .attr('stroke-linecap', 'round')
+      .attr('stroke-width', 2.5)
+      .attr('d', patternLine);
 
 }
