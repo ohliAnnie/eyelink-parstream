@@ -68,6 +68,47 @@ var TableManaged = function() {
     tableWrapper.find('.dataTables_length select').select2(); // initialize select2 dropdown
   }
 
+  var initTable5 = function () {
+      var table = $('#dtPattern');
+      table.DataTable({
+          // Internationalisation. For more info refer to http://datatables.net/manual/i18n
+          "language": {
+              "aria": {
+                  "sortAscending": ": activate to sort column ascending",
+                  "sortDescending": ": activate to sort column descending"
+              },
+              "emptyTable": "No data available in table",
+              "info": "Showing _START_ to _END_ of _TOTAL_ records",
+              "infoEmpty": "No records found",
+              "infoFiltered": "(filtered1 from _MAX_ total records)",
+              "lengthMenu": "Show _MENU_ records",
+              "paging": {
+                  "previous": "Prev",
+                  "next": "Next"
+              },
+              "search": "Search:",
+              "zeroRecords": "No matching records found"
+          },
+          "bStateSave": true, // save datatable state(pagination, sort, etc) in cookie.
+          "bLengthChange": false,
+          "pageLength": 8,
+          // "bInfo": false,
+          "bFilter": false,
+          //"bPaginate": false,
+          "bSort": true,
+          "columnDefs": [{  // set default column settings
+              'orderable': false,
+              'targets': [0]
+          }, {
+              "searchable": false,
+              "targets": [0]
+          }],
+          "order": [
+              [1, "asc"]
+          ] // set first column as a default sort by asc
+      });
+  };
+
   return {
 
     //main function to initiate the module
@@ -76,6 +117,7 @@ var TableManaged = function() {
         return;
       }
       initTable();
+      initTable5();
       $('.dataTables_filter input').css('{ width: 70px; }');
       $('.dataTables_filter input').attr('placeholder','Search Cluster#');
     }
