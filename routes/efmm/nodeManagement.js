@@ -20,7 +20,7 @@ var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
 var fmt2 = CONSTS.DATEFORMAT.DATETIME; // "YYYY-MM-DD HH:MM:SS",
 
 router.get('/restapi/getAlarmList', function(req, res, next) {
-  logger.debug('start /restapi/getAlarmList');
+  logger.info('start /restapi/getAlarmList');
   selectAlarmList(function(data) {
     res.json({rtnCode: data.rtnCode, rtnData: data.rtnData, rtnCount : data.rtnCount});
   })
@@ -40,7 +40,7 @@ function selectAlarmList(cb) {
         d._source.timestamp = Utils.getDateUTC2Local(d._source.timestamp, CONSTS.DATEFORMAT.DATETIME);
       });
     }
-    logger.debug('selectAlarmList -> count : ' + count);
+    logger.info('selectAlarmList -> count : ' + count);
     cb({rtnCode: rtnCode, rtnData: out_data, rtnCount : count});
   });
 }
@@ -555,8 +555,7 @@ router.get('/mem/:id', function(req, res) {
 // mem 신규 등록
 router.post('/mem/:id', function(req, res) {
   var in_data = { INDEX: indexMap, TYPE: "map", ROLEID: req.params.id, USERID: req.body.userid };
-  queryProvider.selectSingleQueryByID2("management", "selectCheckMap", in_data, function(err, out_data, params) {
-    logger.debug(out_data);
+  queryProvider.selectSingleQueryByID2("management", "selectCheckMap", in_data, function(err, out_data, params) {    
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E006');
       res.json({rtnCode: rtnCode});
@@ -731,8 +730,7 @@ router.put('/menu_auth/:id', function(req, res, next) {
   } else {
     query = "updateAuthMenu";
     var in_data = { INDEX: indexAuthMenu, TYPE:"auth", ID : req.body.id, ROLE : req.body.role };
-  }
-  console.log(in_data);
+  }  
   queryProvider.updateQueryByID("management", query, in_data, function(err, out_data, params) {
     if(out_data.result == "updated"){
       var rtnCode = CONSTS.getErrData("D002");
@@ -767,7 +765,7 @@ router.delete('/menu/:id', function(req, res) {
 });
 
 router.get('/restapi/getCodeList', function(req, res) {
-  logger.debug('getCodeList');
+  logger.info('/restapi/getCodeList');  
   var in_data = { INDEX: indexMenu, TYPE: "menu", SORT : "code", ID: "upcode", VALUE : req.query.upcode };
   queryProvider.selectSingleQueryByID2("management", "selectByIdSort", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
@@ -779,7 +777,7 @@ router.get('/restapi/getCodeList', function(req, res) {
 });
 
 router.get('/restapi/getAuthMenu', function(req, res) {
-  logger.debug('getAuthRole');
+  logger.info('/restapi/getAuthRole');
   var in_data = {  INDEX: indexRole, TYPE: "role" };
   queryProvider.selectSingleQueryByID2("management", "selectList", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
@@ -802,52 +800,11 @@ router.get('/restapi/getAuthMenu', function(req, res) {
 });
 
 router.get('/restapi/getAlarmList', function(req, res, next) {
-  logger.debug('start /restapi/getAlarmList');
+  logger.('start /restapi/getAlarmList');
   selectAlarmList(function(data) {
     res.json({rtnCode: data.rtnCode, rtnData: data.rtnData, rtnCount : data.rtnCount});
   })
 });
-
-function selectAlarmList(cb) {
-  var d = new Date();
-  var in_data = {
-    INDEX: CONSTS.SCHEMA.EFSM_ALARM.INDEX + d.toFormat('YYYY.MM.DD'),
-    TYPE: 'AgentAlarm',
-    SORT: "timestamp" };
-  var rtnCode = CONSTS.getErrData('0000');
-  queryProvider.selectSingleQueryByID2("management", "selectAlarmList", in_data, function(err, out_data, count) {
-    // logger.debug(out_data);
-    if (count == 0) {
-      rtnCode = CONSTS.getErrData('0001');
-      res.json({rtnCode: rtnCode});
-    }
-    logger.debug('selectAlarmList -> count : ' + count);
-    cb({rtnCode: rtnCode, rtnData: out_data, rtnCount : count});
-  });
-}
-
-function saveAlarmData(data, cb) {
-  logger.debug('start saveAlarmData');
-  var d = new Date();
-  var in_data = {
-    INDEX: CONSTS.SCHEMA.EFSM_ALARM.INDEX + d.toFormat('YYYY.MM.DD'),
-    TYPE: 'AgentAlarm',
-    BODY : JSON.stringify(data)};
-  queryProvider.insertQueryByID("management", "insertAlarmData", in_data, function(err, out_data) {
-    logger.debug(out_data);
-    var rtnCode = CONSTS.getErrData('0000');
-    if (err) {
-      logger.debug(err)
-      rtnCode.code = 'UNDEFINED';
-      rtnCode.message = err;
-    };
-    if(out_data.result == "created"){
-      rtnCode = CONSTS.getErrData("D001");
-    }
-    logger.debug('end saveAlarmData');
-    cb({rtnCode: rtnCode});
-  });
-}
 
 router.get('/authority', function(req, res, next) {
   logger.debug('management/restapi/authority');

@@ -158,7 +158,7 @@
         "index" : #INDEX#,
         "type" : #TYPE#,
         "body" : {
-          "size" : 10000,
+          "size" : 1000,
           "sort" : { #SORT#: { "order" : "asc" } },
           "query" : {
             "match"  : { #ID# : #VALUE# }
