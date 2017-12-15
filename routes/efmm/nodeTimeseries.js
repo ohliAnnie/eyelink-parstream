@@ -108,16 +108,20 @@ router.get('/restapi/getTimeseries', function(req, res, next) {
 });
 
 router.get('/restapi/getGapTimeseries', function(req, res, next) {
-  console.log('timeseries/restapi/getGapTimeseries');  
-  var gte = Utils.getMs2Date(req.query.start, fmt2, 'Y', 'Y');
-  var lte = Utils.getDate(gte, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y', 'Y');  
+  console.log('timeseries/restapi/getGapTimeseries');    
+  var gte = Utils.getMs2Date(req.query.start, fmt2, 'Y', 'Y');  
+  if(req.query.gap === 'day'){    
+    var lte = Utils.getDate(gte, fmt2, 0, 23, 59, 59, 'Y', 'Y');      
+  } else {
+    var lte = Utils.getDate(gte, fmt2, 0, 0, parseInt(req.query.gap), 0, 'Y', 'Y');   
+  }    
   var from = gte, to = gte;
   if(req.query.gap === '30'||req.query.gap === '60') {
    var gap = 60*1000; 
-  } else if(req.query.gap === '360'||req.query.gap === '720'||req.query.gap === '1440') {
+  } else if(req.query.gap === '360'||req.query.gap === '720'||req.query.gap === '1440'||req.query.gap === 'day') {
     var gap = 10*60*1000; 
   } else {
-    var gap = 6*60*60*1000; 
+    var gap = 1*60*60*1000; 
   }
   var list = [], qcnt = 0;
   for(i = new Date(gte).getTime()+gap; i<=new Date(lte).getTime(); i=i+gap){     
@@ -133,8 +137,6 @@ router.get('/restapi/getGapTimeseries', function(req, res, next) {
     }
   }
   var status = { should : lque };    
-  var today = Utils.getMs2Date(req.query.start, fmt4, 'Y', 'Y');    
-  var yday = Utils.getDate(gte, fmt4, 0, 0, parseInt(req.query.gap), 0, 'Y', 'Y');
   var indexNotch = indexList(gte, lte, indexNotchingOee);
   var indexStack = indexList(gte, lte, indexStackingOee);
   var in_data = { index : indexNotch, type : "oee", gte : gte, lte : lte, range : JSON.stringify(range), status : JSON.stringify(status) };

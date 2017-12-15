@@ -34,12 +34,19 @@ $(document).ready(function() {
 });
 
 function checkTimeGap() {
-  var gap = parseInt($('#gap').val());
-  var now = new Date().getTime();
-  var base = new Date($('#baseTime').val()).getTime();  
-  if(now-base < gap*60*1000){    
-    var dateFormat = 'YYYY-MM-DD HH:mm:ss';   
-    $('#baseTime').val(moment().seconds(0).subtract(parseInt($('#gap').val())-1,'minutes').format(dateFormat)); 
+  var dateFormat = 'YYYY-MM-DD HH:mm:ss';
+  var gap = $('#gap').val();
+  if(gap === 'day') {
+    console.log($('#baseTime').val())
+    $('#baseTime').val(moment().hours(9).minutes(0).seconds(0).format(dateFormat));   
+    console.log($('#baseTime').val())
+  } else {
+    gap = parseInt($('#gap').val());
+    var now = new Date().getTime();
+    var base = new Date($('#baseTime').val()).getTime();
+    if(now-base < gap*60*1000){    
+      $('#baseTime').val(moment().seconds(0).subtract(parseInt($('#gap').val())-1,'minutes').format(dateFormat)); 
+    }
   }
 }
 
@@ -53,7 +60,7 @@ function getData() {
       selected[scnt++] = this.value;
     }    
   });  
-  var data = { start : $('#baseTime').val(), gap : $('#gap').val(), status : selected }; */
+  var data = { start : $('#baseTime').val(), gap : $('#gap').val(), status : selected }; */  
   var data = { start : $('#baseTime').val(), gap : $('#gap').val() };
   console.log(data);
   if(data.gap === '1'||data.gap === '5'||data.gap === '10'){    
