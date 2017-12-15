@@ -245,7 +245,7 @@ router.get('/users', function(req, res, next) {
     }
     out_data.forEach(function(d){
       d._source.reg_date = Utils.getDateUTC2Local(d._source.reg_date, fmt2);
-    });    
+    });
     res.render('./'+global.config.pcode+'/management/users', { title: global.config.productname, mainmenu:mainmenu, users:out_data });
   });
 });
@@ -800,31 +800,6 @@ router.get('/restapi/getAuthMenu', function(req, res) {
     res.json({rtnCode: rtnCode, menuAuth : menuAuth, roleList : roleList });
   });
 });
-
-router.get('/restapi/getAlarmList', function(req, res, next) {
-  logger.debug('start /restapi/getAlarmList');
-  selectAlarmList(function(data) {
-    res.json({rtnCode: data.rtnCode, rtnData: data.rtnData, rtnCount : data.rtnCount});
-  })
-});
-
-function selectAlarmList(cb) {
-  var d = new Date();
-  var in_data = {
-    INDEX: CONSTS.SCHEMA.EFSM_ALARM.INDEX + d.toFormat('YYYY.MM.DD'),
-    TYPE: 'AgentAlarm',
-    SORT: "timestamp" };
-  var rtnCode = CONSTS.getErrData('0000');
-  queryProvider.selectSingleQueryByID2("management", "selectAlarmList", in_data, function(err, out_data, count) {
-    // logger.debug(out_data);
-    if (count == 0) {
-      rtnCode = CONSTS.getErrData('0001');
-      res.json({rtnCode: rtnCode});
-    }
-    logger.debug('selectAlarmList -> count : ' + count);
-    cb({rtnCode: rtnCode, rtnData: out_data, rtnCount : count});
-  });
-}
 
 function saveAlarmData(data, cb) {
   logger.debug('start saveAlarmData');
