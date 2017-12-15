@@ -631,19 +631,12 @@ function arrangeData(clust, pattern, start, factor, rawData){
   // TODO : min, max 값을 raw 데이터와도 비교
   let rawMin = Infinity;
   let rawMax = -Infinity;
-  logger.debug('111111111111111111111111111111111');
-  logger.debug('rawData[0]: ',rawData[0]);
-  logger.debug('minValue: ', minValue);
-  logger.debug('maxValue: ', maxValue);
   rawData.forEach(function (d){
     rawMin = Math.min(rawMin, d[factor] );
     rawMax = Math.max(rawMax, d[factor] );
   });
   minValue = Math.min(minValue, rawMin);
   maxValue = Math.max(maxValue, rawMax);
-  logger.debug('111111111111111111111111111111111');
-  logger.debug('minValue: ', minValue);
-  logger.debug('maxValue: ', maxValue);
 
   var total = { data : data, cpt : cpt, apt : apt, min : minValue, max : maxValue };
   return total;
