@@ -245,7 +245,7 @@ router.get('/users', function(req, res, next) {
     }
     out_data.forEach(function(d){
       d._source.reg_date = Utils.getDateUTC2Local(d._source.reg_date, fmt2);
-    });    
+    });
     res.render('./'+global.config.pcode+'/management/users', { title: global.config.productname, mainmenu:mainmenu, users:out_data });
   });
 });
@@ -799,12 +799,6 @@ router.get('/restapi/getAuthMenu', function(req, res) {
   });
 });
 
-router.get('/restapi/getAlarmList', function(req, res, next) {
-  logger.('start /restapi/getAlarmList');
-  selectAlarmList(function(data) {
-    res.json({rtnCode: data.rtnCode, rtnData: data.rtnData, rtnCount : data.rtnCount});
-  })
-});
 
 router.get('/authority', function(req, res, next) {
   logger.debug('management/restapi/authority');

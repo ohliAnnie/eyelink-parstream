@@ -141,8 +141,8 @@ function drawChart(raw, factorData, start, end, now, point, gap, factor, chart_i
   // Y 축 범위 설정
   // TODO : raw 데이터의 값을 포함하지 않을 경우 raw 데이터가 안보이는 케이스 발생
   // TODO : top1, top2, top3의 min, max도 비교해서 모든 라인에 대한 min, max를 구해야 함
-  let yStart = (factorData.min * 100 * 0.9);
-  let yEnd = (factorData.max * 100 * 1.1);
+  let yStart = Math.floor(factorData.min * 0.98);
+  let yEnd = Math.ceil(factorData.max * 1.02);
 
   var y = d3.scale.linear()
     .domain([yStart, yEnd])
@@ -256,7 +256,7 @@ function drawChart(raw, factorData, start, end, now, point, gap, factor, chart_i
       divTransition(div, 500, 0);
     });
 
-  var circle = svgCircle(svg, x, y, apt, "dot5", 3, 0.1, "date", "value")
+  var circle = svgCircle(svg, x, y, apt, "dot5", 3, 1, "date", "value")
     .attr('class', 'apt')
     .attr("fill", "red")
     .on("mouseover", function(d) {
@@ -408,7 +408,7 @@ function svgCircle(svg, x, y, data, className, r, opacity, cx, cy) {
     .attr("r", r)
     .attr('opacity', opacity)
     .attr("cx", function(d, i) { return x(d[cx]); })
-    .attr("cy", function(d) { return y(d[cy]*100); })
+    .attr("cy", function(d) { return y(d[cy]); })
 }
 
 function divTransition(div, duration, opacity){
