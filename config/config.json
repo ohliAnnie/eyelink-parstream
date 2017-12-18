@@ -2,6 +2,7 @@
 	"#comment": "Customer module configs",
 	"productname": "EyeLink",
 	"pcode": "efsm",
+	"language" : "",
 	"products": {
 		"efsm" : {"productName" : "EFSM", "port" : 5223},
 		"efmm" : {"productName" : "EFMM", "port" : 5224},
