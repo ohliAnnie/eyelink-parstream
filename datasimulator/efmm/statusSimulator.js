@@ -39,7 +39,7 @@ const sleepMilisPerItem = 10;
 global.log4js = require('log4js');
 log4js.configure({
   appenders: { datastore: {type: 'file', filename: './statusSimulator_'+stackNo + '_' + dataType + '.log', 'maxLogSize': 1024000, backups: 5 } },
-  categories: { default: { appenders: ['datastore'], level: 'info' } }
+  categories: { default: { appenders: ['datastore'], level: 'debug' } }
 });
 global.logger = log4js.getLogger('dataStore');
 
@@ -56,7 +56,8 @@ var readLineObj = require('readline');
 var QueryProvider = require('./nodelib-es').QueryProvider;
 var queryProvider = new QueryProvider();
 const dttmFormat = 'YYYY-MM-DD HH:mm:ss';
-var type = 'status';
+const indexHeader = CONSTS.SCHEMA_EFMM.EFMM_STACKING_STATUS.INDEX + '-';
+const type = 'status';
 
 logger.info('== Stact No.    : ', stackNo);
 logger.info('== Data Type    : ', dataType);
@@ -108,7 +109,8 @@ function processData(dirPath, file, nof, x) {
       if ( dataType == 'a') // 알람 데이터의 경우 가장 좌측 컬럼이 null
         dataArr.shift();
 
-      var indexHeader = CONSTS.SCHEMA_EFMM.EFMM_STACKING_STATUS.INDEX + '-';
+      // TODO : dataArr에 의미없는 데이터만 있을 경우 pass하도록 수정
+
       var indexDate = utcDttm.substr(0,10).replace(/-/g,'.');
       index = indexHeader + indexDate;
 
@@ -117,8 +119,10 @@ function processData(dirPath, file, nof, x) {
 
       var jsonData;
       if ( dataType == 'm' ) {
-        jsonData = makeJsonForData(stackNo, linedataArr)
+        logger.debug('Generating json for mortor data.');
+        jsonData = makeJsonForData(stackNo, linedataArr);
       } else {
+        logger.debug('Generating json for alarm data.');
         jsonData = makeJsonForAlarmData(stackNo, linedataArr);
       }
 
@@ -144,8 +148,12 @@ function processData(dirPath, file, nof, x) {
 }
 
 function saveData(index, type, data) {
+  logger.debug(data);
+  logger.debug(data.dtTransmitted);
+  logger.debug(data.sensorType);
+  logger.debug(data.cid);
   var doc = {index:index, type:type, id:data.dtTransmitted+data.sensorType+data.cid, body: data };
-  logger.trace('saveData : ', doc)
+  logger.debug('saveData : ', doc)
   queryProvider.insert(doc);
 }
 
@@ -219,6 +227,29 @@ function makeJsonForData(cid, data) {
 }
 
 function makeJsonForAlarmData(cid, data) {
+
+  let linedataArr = data;
+  let flag = "stacking";
+  let type2 = "realtime";
+  let sensorType = "alarm";
+
+  let str = '';
+  for ( let i = 1 ; i < linedataArr.length ; i++ ){
+    if ( linedataArr[i] != 0 ){
+      str += ', \"L' + (10000 + i-1) + '\": ' + parseInt(linedataArr[i]);
+    }
+  }
+  var jsonData = '{ "flag": \"' + flag + '\", "type": \"' + type2 + '\", "cid": \"' + cid + '\", "sensorType": \"alarm\", "dtTransmitted": \"' + linedataArr[0]
+      + '\", "data": [{ "measure_time" : \"' + linedataArr[0] + '\"'+ str + '}]}';
+
+  logger.debug('jsonData: ',jsonData);
+  return JSON.parse(jsonData);
+}
+
+/**
+ Deprecated
+*/
+function makeJsonForAlarmData2(cid, data) {
 
   var linedataArr = data;
   var flag = "stacking";
@@ -1070,5 +1101,6 @@ function makeJsonForAlarmData(cid, data) {
       }]
     // }
   }
+  logger.error('jsonData (origin): ',jsonData);
   return jsonData;
 }

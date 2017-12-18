@@ -13,9 +13,11 @@ QueryProvider = function() {
 };
 
 QueryProvider.prototype.insert = function (data) {
-  logger.trace('Inserting data : ', data);
+  logger.debug('Inserting data : ', data);
   client.create(data, function (err, resp){
-      logger.error('Inserting error !!!',err.message);
+    if ( err ) {
+      logger.error('Inserting error !!!',err);
+    }
   });
 }
 
