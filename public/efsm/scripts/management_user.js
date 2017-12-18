@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function() {  
   TableManaged.init();
   $('a').click(function(event){         
     if ('deleteUser' != $(this).attr('flag')) return;        
@@ -17,4 +17,5 @@ $(document).ready(function() {
       var result = ajaxTypeData(link, "DELETE", data);
     }
   });
+
 });

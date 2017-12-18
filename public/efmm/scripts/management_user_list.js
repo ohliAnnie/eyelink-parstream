@@ -1,8 +1,7 @@
  $(document).ready(function() {
   $('a').click(function(event){
     //- event.preventDefault();
-    if ('deleteUser' != $(this).attr('flag')) return;
-
+    if ('deleteUser' != $(this).attr('flag')) return;     
     var userid = $(this).attr('userid');
     if (userid == "") { return false; }
     // TODO 메시지 공통 영역으로
@@ -16,4 +15,6 @@
       });
     }
   });
+
+
 });
