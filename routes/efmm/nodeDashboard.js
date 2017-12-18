@@ -39,14 +39,21 @@ router.get('/detail', function(req, res, next) {
     mainmenu : mainmenu
   }
   logger.info('mainmenu : %s, outdata : %s' , mainmenu.dashboard, JSON.stringify(outdata));  
-  res.render(global.config.pcode + '/dashboard/dashboard_detail', outdata);
+  res.render(global.config.pcode + '/dashboard/detail', outdata);
 });
 
 router.get('/info', function(req, res, next) {
    console.log('/dashboard/info');  
   var outdata = { title: global.config.productname, mainmenu : mainmenu }
   logger.info('mainmenu : %s, outdata : %s' , mainmenu.dashboard, JSON.stringify(outdata));  
-  res.render(global.config.pcode + '/dashboard/dashboard_info', outdata);
+  res.render(global.config.pcode + '/dashboard/info', outdata);
+});
+
+router.get('/compare', function(req, res, next) {
+   console.log('/dashboard/info');  
+  var outdata = { title: global.config.productname, mainmenu : mainmenu }
+  logger.info('mainmenu : %s, outdata : %s' , mainmenu.dashboard, JSON.stringify(outdata));  
+  res.render(global.config.pcode + '/dashboard/compare', outdata);
 });
 
 router.get('/restapi/getDashboardWeekly', function(req, res, next) {
@@ -273,6 +280,7 @@ router.get('/restapi/getDashboardDetail', function(req, res, next) {
                 var d = out_data[i]._source.data[0];                
                 d.cid = out_data[i]._source.cid;
                 d.flag = out_data[i]._source.flag;
+                d.id = out_data[i]._id;
                 d.dtSensed = Utils.getDateUTC2Local(d.dtSensed, fmt2);                
                 for(key in ndata) {
                   if(key == 'ideal_run_rate'){
@@ -298,6 +306,7 @@ router.get('/restapi/getDashboardDetail', function(req, res, next) {
                     var d = out_data[i]._source.data[0];
                     d.cid = out_data[i]._source.cid;
                     d.flag = out_data[i]._source.flag;
+                    d.id = out_data[i]._id;
                     d.dtSensed = Utils.getDateUTC2Local(d.dtSensed, fmt2);
                     for(key in sdata) {                      
                       if(key == 'ideal_run_rate'){
@@ -328,6 +337,38 @@ router.get('/restapi/getDashboardDetail', function(req, res, next) {
         }     
       });
     }    
+  });
+});
+
+router.get('/restapi/getDashboardCompare', function(req, res, next) {
+  console.log('reports/restapi/getDashboardCompare');  
+  var index = (req.query.flag === 'notching')?indexNotchingOee+'*':indexStackingOee+'*';
+  console.log(req.queyr)
+  var in_data = { index : index, type : "oee", id : [req.query.com1, req.query.com2] };  
+  queryProvider.selectSingleQueryByID2("dashboard","selectDashboardCompare", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {                            
+      var data = [];
+      var state = [req.query.state1, req.query.state2];
+      for(i=0; i<out_data.length; i++){                    
+        var d = out_data[i]._source.data[0];       
+        d.id = out_data[i]._id;
+        d.dtSensed = Utils.getDateUTC2Local(d.dtSensed, fmt2);
+        d.availability *= 100;
+        d.quality *= 100;
+        d.performance *= 100;
+        d.flag = out_data[i]._source.flag;
+        d.type = out_data[i]._source.type;
+        d.cid = out_data[i]._source.cid;
+        d.sensorType = out_data[i]._source.sensorType;
+        d.state = state[i];
+        data.push(d);
+      }     
+      
+    }
+    res.json({rtnCode: rtnCode, rtnData: data});
   });
 });
 

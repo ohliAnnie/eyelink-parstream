@@ -143,5 +143,17 @@
         }
       }
     ]]></query>
+    <query id='selectDashboardCompare'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {                    
+          "query" : {
+            "terms" : { "_id" : [##id##] }
+          }
+        }
+      }
+    ]]></query>
+
   </dashboard>
 </queryList>
