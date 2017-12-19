@@ -74,6 +74,28 @@
         }
       }
     ]]></query>
+    <query id='selectDashboardAlarmCount'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+          "size" : 0,
+          "query" : {          
+            "bool": {           
+              "must" : [{ "match" : { "sensorType" : "alarm" } }]                
+            }
+          },
+          "aggs" : {
+            "flag" : {
+              "terms" : { 
+                "field" : "flag",
+                "order" : { "_term" : "asc" }
+               }
+            }
+          }
+        }
+      }
+    ]]></query>
     <query id='selectDashboardTermData'><![CDATA[
       {
         "index" : [##index##],
@@ -138,6 +160,23 @@
               "must" : [
                 { "match" : { "cid" : #cid# } },
                 { "match" : { "sensorType" : "motor" } }]
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectAlarmHistory'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {
+          "size" : 10000,
+          "sort": { "dtTransmitted": { "order": "asc" } },
+          "query" : {
+            "bool": {              
+              "must" : [
+                { "match" : { "cid" : #cid# } },
+                { "match" : { "sensorType" : "alarm" } }]
             }
           }
         }

@@ -14,11 +14,11 @@ function getData(){
   var data = { date : urlParams.date, type : urlParams.type, cid : urlParams.cid, state : urlParams.state };
   var in_data = { url : "/dashboard/restapi/getDashboardInfo", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
-    if (result.rtnCode.code == "0000") {
-      var data = result.rtnData;       
-      console.log(data);
+    if (result.rtnCode.code == "0000") {      
+      var data = result.rtnData;             
       drawTable(data);
       dataTable(data);
+      historyTable(result.alarm);
     } 
   });
   var data = { date : urlParams.date, cid : urlParams.cid };
@@ -79,8 +79,8 @@ function dataTable(data){
   sbD.append('<table class="table table-striped table-hover">');  
   sbD.append('<tr><th><i class="icon-clock"></i> &nbsp;');
   sbD.append(data.dtSensed+'</th><th>Property</th></tr>');
-  sbD.append('<tr><td>Machine ID</td><td>'+data.cid+'</td></tr>');
-  sbD.append('<tr><td>Status</td><td>'+data.state+'</td></tr>');  
+  //sbD.append('<tr><td>Machine ID</td><td>'+data.cid+'</td></tr>');
+  //sbD.append('<tr><td>Status</td><td>'+data.state+'</td></tr>');  
 /*  sbD.append('<tr><td>OEE</td><td>'+(data.overall_oee*100).toFixed(1)+'%</td></tr>');
   sbD.append('<tr><td>Avaiability</td><td>'+data.availability.toFixed(1)+'%</td></tr>');
   sbD.append('<tr><td>Performance</td><td>'+data.performance.toFixed(1)+'%</td></tr>');
@@ -93,8 +93,27 @@ function dataTable(data){
   sbD.append('<tr><td>Total Pieces</td><td>'+data.total_pieces+'</td></tr>');
   sbD.append('<tr><td>Good Pieces</td><td>'+data.total_accept_pieces+'</td></tr>');
   sbD.append('<tr><td>Reject Pieces</td><td>'+data.total_reject_pieces+'</td></tr>');
-  sbD.append('</table>');
+  //sbD.append('<tr><td colspan="2">');
+  //sbD.append('</td></tr>');
+  sbD.append('</table>');  
   $('#data').append(sbD.toString());
+}
+function historyTable(alarm){
+  $('#history').empty();
+  var sbH = new StringBuffer();
+  sbH.append('<div style="height:220px; overflow:auto;">')
+  sbH.append('<table class="table table-fixed" >');  
+  sbH.append('<tr><th>Alarm History <span class="badge badge-warning">'+alarm.length+'</span></th></tr>');  
+  for(i=0; i<alarm.length; i++) {    
+    sbH.append('<tr><th>'+alarm[i].date+'</th><tr><tr><td>');    
+    for(j=0; j<alarm[i].list.length; j++){
+      if(j!=0){ sbH.append(','); }      
+      sbH.append(alarm[i].list[j]);
+    }
+    sbH.append('</td></tr>');
+  }
+  sbH.append('</tr></table></div>');
+  $('#history').append(sbH.toString());
 }
 
 function drawLineChart(data) {
@@ -148,7 +167,7 @@ function drawLineChart(data) {
   console.log(minDate, maxDate);
 
   composite.margins().bottom = 240;
-  composite.margins().right = 55;
+  composite.margins().right = 55;  
   composite
     .width(window.innerWidth*0.45)
     .height(550)
@@ -156,7 +175,7 @@ function drawLineChart(data) {
     //.round(d3.time.day.round)
     //.x(d3.scale.linear().domain([0,data.length-1]))             
     .y(d3.scale.linear().domain([0, 90]))    
-    .legend(dc.legend().x(5).y(335).itemHeight(12).itemWidth(159).gap(6).horizontal(true))
+    .legend(dc.legend().x(0).y(335).itemHeight(12).itemWidth(159).gap(6).horizontal(true))
     .renderHorizontalGridLines(true)
     .title(function(d){ return this.layer+' : '+d.value; })
     .compose(chart)
