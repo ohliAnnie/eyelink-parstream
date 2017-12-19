@@ -44,8 +44,8 @@ function getGaguChart(id, max, color, value, size) {
   });
 }
 
-function drawGage(data) {
-  var color = { oee : '#1492FF', availability : '#04BBC2', performance : '#78B800', quality : '#FF5F00' };
+var color = { oee : '#1492FF', availability : '#04BBC2', performance : '#78B800', quality : '#FF5F00' };
+function drawGage(data) {  
   $('#gage').empty();  
   var sb = new StringBuffer();
   for(i=0; i<data.length; i++){
@@ -66,15 +66,15 @@ function innerTable(data){
   var sb = '';  
   sb += '<div class="detail-title"><h3>'+data.flag+' '+data.cid+'</h3>';
   sb += '<a class="btn btn-transparent grey-salsa btn-circle btn-sm active" href="info?date=';
-  sb += urlParams.date+'&type='+data.flag+'&state='+data.state+'&cid='+data.cid+'"> Info</a></div>';    
+  sb += new Date(data.dtSensed).getTime()+'&type='+data.flag+'&state='+data.state+'&cid='+data.cid+'"> Info</a></div>';    
   sb += '<div class="gage'+cnt++ +'" style="text-align:center;"></div></div>';
   sb += '<div class="row"><div class="col-sm-12">';
   sb += '<div class="col-xs-12 label mes-status color-'+data.state+'">'+data.state+'</div>';
   sb += '<div class="col-xs-12">'
   sb += '<table class="table table-striped table-bordered">';
   sb += '<tr><th>Ava</th><th>Perf</th><th>Qual</th></tr>';
-  sb += '<tr><td>'+(data.availability*100).toFixed(1)+'%</td><td>' + (data.performance*100).toFixed(1);
-  sb += '%</td><td>'+(data.quality*100).toFixed(1)+'%</td></tr>';
+  sb += '<tr><td>'+data.availability.toFixed(1)+'%</td><td>' + data.performance.toFixed(1);
+  sb += '%</td><td>'+data.quality.toFixed(1)+'%</td></tr>';
   sb += '</table></div></div></div></div>';  
   return sb;
 }
@@ -87,16 +87,17 @@ function drawTable(data) {
   sb.append('<table class="table table-hover table-mes">');  
   sb.append(drawTr([data[0].flag+' '+data[0].cid, data[1].flag+' '+data[1].cid], 'MachineID', 'black'));
   sb.append(drawTr([data[0].state, data[1].state], 'Status', 'black'))
-  /*sb.append(drawTr([data[0].overall_oee, data[1].overall_oee], 'OEE', 'black'))
-  sb.append(drawTr([data[0].availability, data[1].availability], 'Availability', 'black'))
-  sb.append(drawTr([data[0].performance, data[1].performance], 'Performance', 'black'))*/
-  sb.append(drawTr([data[0].total_shift_length, data[1].shift_length], 'Shift Length', 'black'));    
-  sb.append(drawTr([data[0].total_down_time, data[1].shift_length], 'Down Time', 'black'));  
-  sb.append(drawTr([data[0].planned_production_time, data[1].shift_length], 'Planned Production Time', 'black'));  
-  sb.append(drawTr([data[0].ideal_run_rate, data[1].shift_length], 'Ideal Run Rate', 'black'));  
-  sb.append(drawTr([data[0].total_pieces, data[1].shift_length], 'Total Pieces', 'black'));  
-  sb.append(drawTr([data[0].total_accept_pieces, data[1].shift_length], 'Good Pieces', 'black'));  
-  sb.append(drawTr([data[0].total_reject_pieces, data[1].shift_length], 'Reject Pieces', 'black'));  
+  sb.append(drawTr([(data[0].overall_oee*100).toFixed(3)+' %', (data[1].overall_oee*100).toFixed(3)+' %'], 'OEE', color.oee))
+  sb.append(drawTr([data[0].availability.toFixed(3)+' %', data[1].availability.toFixed(3)+' %'], 'Availability', color.availability))
+  sb.append(drawTr([data[0].performance.toFixed(3)+' %', data[1].performance.toFixed(3)+' %'], 'Performance', color.performance))
+  sb.append(drawTr([data[0].quality.toFixed(3)+' %', data[1].quality.toFixed(3)+' %'], 'Quality', color.quality))
+  sb.append(drawTr([data[0].total_shift_length, data[1].total_shift_length], 'Shift Length', 'black'));    
+  sb.append(drawTr([data[0].total_down_time, data[1].total_down_time], 'Down Time', 'black'));  
+  sb.append(drawTr([data[0].planned_production_time, data[1].planned_production_time], 'Planned Production Time', 'black'));  
+  sb.append(drawTr([data[0].ideal_run_rate, data[1].ideal_run_rate], 'Ideal Run Rate', 'black'));  
+  sb.append(drawTr([data[0].total_pieces, data[1].total_pieces], 'Total Pieces', 'black'));  
+  sb.append(drawTr([data[0].total_accept_pieces, data[1].total_accept_pieces], 'Good Pieces', 'black'));  
+  sb.append(drawTr([data[0].total_reject_pieces, data[1].total_reject_pieces], 'Reject Pieces', 'black'));  
   sb.append('</table>');    
   $('#tbody').append(sb.toString());    
 }
