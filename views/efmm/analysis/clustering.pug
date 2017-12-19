@@ -20,3 +20,96 @@ block content
           li
             a(href='#') Analysis
           li.active Clustering
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Set date and Time interval
+            .portlet-body.form
+              form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .row
+                    label.control-label.col-md-1 Date Range
+                    .col-md-3
+                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
+                        input#sdate.form-control(type='text', name='from' value='')
+                        span.input-group-addon to
+                        input#edate.form-control(type='text', name='to' value='')
+                    label.control-label.col-md-1 Interval
+                    .col-md-2.form-inline
+                      select.form-control.input-small.select2me.form-md-line-input(name='interval')
+                        option(value='all') All
+                        option(value=15) 15min
+                        option(value=30) 30min
+                        option(value=60) 60min
+                        option(value=180) 3hour
+                        option(value=360) 6hour
+                    label.control-label.col-md-1 Machine
+                    .col-md-2.form-inline
+                      select.form-control.input-small.select2me.form-md-line-input(name='machine')
+                        option(value=100) 100
+                        option(value=200) 200
+                        option(value=300) 300
+                    .col-md-1.form-inline
+                      button#btn_search.btn.blue
+                        i.fa.fa-search  Search
+      .row
+        .col-md-5
+          .portlet.light.bordered(style='height: 520px;')
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase History
+                span.caption-helper  Run analysis list
+            .portlet-body
+              .scroller(style='height: 430px;', data-always-visible='1', data-rail-visible='0')
+                table#masterList.table.table-hover.table-light
+        .col-md-7
+          .portlet.light.bordered(style='height: 520px;')
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase Clustering Chart
+                span.caption-helper  by Machine
+            .form-group.last
+              label.control-label.col-md-2 Machine
+              .col-md-10
+                .btn-group.btn-group-devided(data-toggle='buttons')
+                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm.active
+                    input#factor0.toggle(type='radio', name='options', value='100', checked='Y')
+                    | 100
+                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
+                    input#factor1.toggle(type='radio', name='options', value='200')
+                    | 200
+                //-
+                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
+                    input#factor2.toggle(type='radio', name='options', value='ampere')
+                    | Ampere
+                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
+                    input#factor3.toggle(type='radio', name='options', value='power_factor')
+                    | PowerFactor
+                //
+            .portlet-body
+              .chart(style='height:445px;')
+                input#dadate(type='hidden', name='hidden', value='')
+                #table
+                  .panel.panel-card
+                    .panel-body
+                      .col-xm-2.col-sm-2.col-md-2.panel-checkbox.hidden-xs.hidden-sm
+                        input#c0.click_checkbox(type='checkbox', name='c0', value='1', v-on='click:checkOpt', checked='true')
+                        text  Cluster0
+                        br
+                        input#c1.click_checkbox(type='checkbox', name='c1', value='2', v-on='click:checkOpt', checked='true')
+                        text  Cluster1
+                        br
+                        input#c2.click_checkbox(type='checkbox', name='c2', value='3', v-on='click:checkOpt', checked='true')
+                        text  Cluster2
+                        br
+                        input#c3.click_checkbox(type='checkbox', name='c3', value='4', v-on='click:checkOpt', checked='true')
+                        text  Cluster3
+                        br
+                      //-
+                        input#c3.click_checkbox(type='checkbox', name='c4', value='5', v-on='click:checkOpt', checked='true')
+                        text  Cluster4
+                      //
+                      .col-xm-12.col-sm-12.col-md-10.col-xs-12
+                        #Cluster(style='width:100%;height:395px;')

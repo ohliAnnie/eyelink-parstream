@@ -22,6 +22,8 @@ var indexStackingStatus = global.config.es_index.notching_status;
 var indexNotchingPatternData = global.config.da_index.notching_oee_pattern_data;
 var indexNotchingPatternInfo = global.config.da_index.notching_oee_pattern_info;
 var indexNotchingPatternMatch = global.config.da_index.notching_oee_pattern_matching;
+var indexClusteringMaster = global.config.da_index.stacking_status_clustering_master;
+var indexClusteringDetail = global.config.da_index.stacking_status_clustering_detail;
 
 var startTime = CONSTS.TIMEZONE.KOREA;
 var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
@@ -37,6 +39,10 @@ router.get('/', function(req, res, next) {
 router.get('/clustering', function(req, res, next) {
   var outdata = { title: global.config.productname, mainmenu : mainmenu };
   res.render('efmm' + '/analysis/clustering', outdata);
+});
+
+router.get('/clusteringPop', function(req, res, next) {
+  res.render('efmm' + '/analysis/clustering_popup', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/anomaly', function(req, res, next) {
@@ -339,8 +345,10 @@ router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
   });
 });
 
-// Pattern Management load patterns data : update 2017-11-07
+// Pattern Management load patterns data
 router.get('/restapi/getPatterns', function(req, res, next) {
+  // TODO : 패턴 데이터가 없어도 RAW 데이터는 차트에 뿌려줄 수 있도록!
+  // --> queryProvider를 nested하지 않도록 리팩토링 필요
   logger.debug('req.query: ',req.query);
   let flag = req.query.flag;
   let cid = req.query.cid;
@@ -651,5 +659,122 @@ function makeList(factors, pattern, cid){
   }
   return list;
 }
+
+// Clustering 메뉴
+// Master 인덱스에서 히스토리 조회
+router.get('/restapi/getDaClusterMaster', function(req, res, next) {
+
+  let gte = Utils.getDateLocal2UTC(gte, fmt1, 'Y');
+  let lt = Utils.getDate(req.query.edate, fmt1, 1, 0, 0, 0);
+  lt = Utils.getDateLocal2UTC(lt, fmt1, 'Y');
+
+  let cid = req.query.machine;
+  let interval = req.query.interval;
+  let source = [];
+  source.push('da_result.'+cid);
+  source.push('da_result.start_date');
+  source.push('da_result.end_date');
+  source.push('da_result.da_time');
+  source.push('da_result.time_interval');
+  let in_data = {
+      INDEX : indexClusteringMaster, TYPE : "master",
+      START: Utils.getDateLocal2UTC(gte, CONSTS.DATEFORMAT.DATETIME, 'Y'),
+      END: Utils.getDateLocal2UTC(lt, CONSTS.DATEFORMAT.DATETIME, 'Y'),
+      // START: gte+startTime,
+      // END: lte+startTime,
+      INTERVAL: interval,
+      SOURCE: source
+  };
+  if(req.query.interval === 'all')  {
+    var sql = "selectDaClusterMasterAll";
+  } else {
+    var sql = "selectDaClusterMaster";
+  }
+  queryProvider.selectSingleQueryByID2("analysis", sql, in_data, function(err, out_data, params) {
+    // logger.debug(out_data);
+    let rtnCode = CONSTS.getErrData('0000');
+    if (out_data === null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {
+      var data = [];
+      out_data.forEach(function(d){
+        logger.debug('Output of selectDaClusterMaster: ',d);
+        d = d._source.da_result;
+        logger.debug('Output of selectDaClusterMaster: ',d);
+        d.da_time = Utils.getDateUTC2Local(d.da_time, fmt2);
+        d.start_date = Utils.getDateUTC2Local(d.start_date, fmt1);
+        d.end_date = Utils.getDateUTC2Local(d.end_date, fmt1);
+        data.push(d);
+      });
+    }
+    logger.debug('analysis/restapi/getDaClusterMaster -> length : %s', out_data.length);
+    res.json({rtnCode: rtnCode, rtnData: data });
+  });
+});
+
+// Clustering > Clustering Chart 조회
+router.get('/restapi/getDaClusterDetail', function(req, res, next) {
+  var dadate = Utils.getDateLocal2UTC(req.query.dadate, fmt2, 'Y');
+  let cid = req.query.machine;
+  let source = [];
+  source.push('da_result.'+cid);
+  source.push('da_result.start_date');
+  source.push('da_result.end_date');
+  source.push('da_result.da_time');
+  source.push('da_result.time_interval');
+  source.push('da_result.event_time');
+
+  var in_data = { INDEX : indexClusteringDetail, TYPE : "detail", ID : dadate, SOURCE : source };
+  queryProvider.selectSingleQueryByID2("analysis", "selectByIdForClusteringChart", in_data, function(err, out_data, params) {
+    if (out_data === null) {
+      var rtnCode = CONSTS.getErrData('0001');
+      res.json({rtnCode: rtnCode, rtnData: out_data});
+    } else {
+      var rtnCode = CONSTS.getErrData('0000');
+      var data = [];
+      // logger.debug('Output for selectByIdForClusteringChart: ',JSON.stringify(out_data));
+      var d = out_data[0]._source.da_result;
+      // logger.debug('output: ', d);
+      d.da_time = Utils.getDateUTC2Local(d.da_time, fmt2);
+      for( i = 0 ; i < d[cid]['cluster_00'].length ; i++){
+        var event_time = Utils.getDateUTC2Local(d['event_time'][i], fmt2);
+        // data.push({ time : event_time, c0:d['cluster_00'][i], c1:d['cluster_01'][i], c2:d['cluster_02'][i], c3:d['cluster_03'][i], c4:d['cluster_04'][i]});
+        data.push({ time : event_time, c0:d[cid]['cluster_00'][i], c1:d[cid]['cluster_01'][i], c2:d[cid]['cluster_02'][i], c3:d[cid]['cluster_03'][i]});
+      }
+      //console.log(data);
+      logger.debug('analysis/restapi/getDaClusterDetail -> length : %s', out_data.length);
+    }
+    res.json({rtnCode: rtnCode, rtnData : data });
+  });
+});
+
+// Clustering > Cluster Detail(Pop-up)
+router.get('/restapi/getDaClusterMasterBydadate', function(req, res, next) {
+  var dadate = Utils.getDateLocal2UTC(req.query.dadate, fmt2, 'Y');
+  var in_data = { INDEX : indexClusteringMaster, TYPE : "master", ID : dadate };
+  queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
+    logger.debug(out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data === null) {
+      rtnCode = CONSTS.getErrData('0001');
+      var d = out_data[0]._source;
+      console.log(d);
+      var nodeList = [];
+      if(factor === 'voltage') {
+        nodeList.push({ c0 : d['c0_voltage'], c1 : d['c1_voltage'], c2 : d['c2_voltage'], c3 : d['c3_voltage'] })
+      } else if(factor === 'ampere') {
+        nodeList.push({ c0 : d['c0_ampere'], c1 : d['c1_ampere'], c2 : d['c2_ampere'], c3 : d['c3_ampere'] })
+      } else if(factor === 'active_power') {
+        nodeList.push({ c0 : d['c0_active_power'], c1 : d['c1_active_power'], c2 : d['c2_active_power'], c3 : d['c3_active_power'] })
+      } else if(factor === 'power_factor') {
+        nodeList.push({ c0 : d['c0_power_factor'], c1 : d['c1_power_factor'], c2 : d['c2_power_factor'], c3 : d['c3_power_factor'] })
+      }
+    }
+    logger.debug('analysis/restapi/getDaClusterMaster -> length : %s', out_data.length);
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]._source.master_result });
+  });
+});
+
+
 
 module.exports = router;

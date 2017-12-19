@@ -39,7 +39,7 @@
             "bool" : {
               "filter" : {
                 "range" : {
-                  "dtTransmitted" : { "gte" : #START#, "lte" : #END# }
+                  "dtTransmitted" : { "gte" : #START#, "lt" : #END# }
                 }
               },
               "must" : [
@@ -76,7 +76,7 @@
             "bool": {
               "must" : {
                 "range" : {
-                  #SORTFIELD#: { "gte": #START#, "lte" : #END# }
+                  #SORTFIELD#: { "gte": #START#, "lt" : #END# }
                 }
               }
             }
@@ -104,7 +104,7 @@
                 { "range": {
                     #RANGEFIELD# : {
                       "gte" : #START_TIMESTAMP#,
-                      "lte" : #END_TIMESTAMP#
+                      "lt" : #END_TIMESTAMP#
                     }
                   }
                 }
@@ -215,6 +215,62 @@
         }
       }
     ]]></query>
+
+    <query id='selectByIdForClusteringChart'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "_source" : [##SOURCE##],
+          "query" : {
+            "term" : { "_id" : #ID# }
+          }
+        }
+      }
+    ]]></query>
+    <!-- Clustering -->
+    <query id='selectDaClusterMasterAll'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "_source" : [##SOURCE##],
+        "body" : {
+          "query" : {
+            "bool" : {
+              "must" : { "match_all": {} },
+              "filter" : {
+                "range" : {
+                  "da_result.da_time" : { "gte" : #START#, "lt" : #END# }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDaClusterMaster'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "_source" : [##SOURCE##],
+        "body" : {
+          "query" : {
+            "bool" : {
+              "must" : { "match" : { interval : #INTERVAL#} },
+              "filter" : {
+                "range" : {
+                  "master_result.da_time" : { "gte" : #START#, "lt" : #END# }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+
+
+
+
 
 
     <query id='selectStackingStatus'>
