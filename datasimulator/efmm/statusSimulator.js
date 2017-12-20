@@ -125,9 +125,11 @@ function processData(dirPath, file, nof, x) {
         logger.debug('Generating json for alarm data.');
         jsonData = makeJsonForAlarmData(stackNo, linedataArr);
       }
+      if ( jsonData != null ){
+        logger.debug('['+file+'] Saving data..... on index \'' + index + '\'');
+        saveData(index, CONSTS.SCHEMA_EFMM.EFMM_STACKING_STATUS.TYPE, jsonData);
+      }
 
-      logger.debug('['+file+'] Saving data..... on index \'' + index + '\'');
-      saveData(index, CONSTS.SCHEMA_EFMM.EFMM_STACKING_STATUS.TYPE, jsonData);
       var curTime = moment(new Date());
       logger.debug('curTime : ',curTime.format(dttmFormat));
       var timeDiffInMillis = curTime.diff(processTime, 'milliseconds');
@@ -135,6 +137,7 @@ function processData(dirPath, file, nof, x) {
       if ( timeDiffInMillis < 1000 ){
         sleep(Math.abs(timeDiffInMillis));
       }
+
       processTime.add(1, 'seconds'); // 1초 증가
     }
     if ( rowsProcessed > 0  && rowsProcessed % 1000 == 0 )
@@ -239,6 +242,7 @@ function makeJsonForAlarmData(cid, data) {
       str += ', \"L' + (10000 + i-1) + '\": ' + parseInt(linedataArr[i]);
     }
   }
+  if (  str === '' ) return null;
   var jsonData = '{ "flag": \"' + flag + '\", "type": \"' + type2 + '\", "cid": \"' + cid + '\", "sensorType": \"alarm\", "dtTransmitted": \"' + linedataArr[0]
       + '\", "data": [{ "measure_time" : \"' + linedataArr[0] + '\"'+ str + '}]}';
 
