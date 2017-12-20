@@ -73,7 +73,7 @@ html
     script(src='/common/assets/scripts/page/components-dropdowns.js', type='text/javascript')
     script(src='/common/assets/scripts/page/layout.js', type='text/javascript')
     script(src='/common/assets/scripts/page/demo.js', type='text/javascript')
-    script(src='/efmm/resources/' + (global.config.language==''? 'message.js': 'message-' + global.config.language + '.js'), type='text/javascript')
+    script(src='/efmm/resources/message.js', type='text/javascript')
     script(src='/socket.io/socket.io.js', type='text/javascript')
     block style
     block script
@@ -346,4 +346,6 @@ html
                       a(href='/management/menu') Menu
                     li
                       a(href='/management/authority') Authority
+                    li
+                      a(href='/management/rule') Rule & Alarm
       block content

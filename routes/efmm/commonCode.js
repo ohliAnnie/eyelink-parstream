@@ -84,5 +84,32 @@ define(	"COMMONCODE", {
 				"value" : "Integer"
 			}
 		]
-	}
+	},
+    "RULE" : {
+        "TYPE" : [
+            { "key" : "oee", "value" : "OEE"},
+            { "key" : "status", "value" : "STATUS"}
+        ],
+        "RULENAME" : [
+            { "key" : "ooee", "value" : "Overall OEE", "pkey" : "oee"},
+            { "key" : "availability", "value" : "Availability", "pkey" : "oee"},
+            { "key" : "performance", "value" : "Performance", "pkey" : "oee"},
+            { "key" : "quality", "value" : "Quality", "pkey" : "oee"},
+            { "key" : "downtime", "value" : "Down Time", "pkey" : "oee"},
+            { "key" : "plannedbreaktime", "value" : "Planned Break Time", "pkey" : "oee"},
+            { "key" : "down", "value" : "Down", "pkey" : "status"},
+            { "key" : "sepa_unwind", "value" : "Sepa Unwind", "pkey" : "status"},
+        ],
+        "CONDITION" : [
+            { "key" : "less", "value" : "<"},
+            { "key" : "lesseq", "value" : "<="},
+            { "key" : "eq", "value" : "="},
+            { "key" : "great", "value" : ">"},
+            { "key" : "greateq", "value" : ">="},
+        ],
+        "ALARMTYPE" : [
+            { "key" : "email", "value" : "E-mail"},
+            { "key" : "sms", "value" : "SMS"}
+        ]
+    }
 });

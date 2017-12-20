@@ -33,8 +33,8 @@ var Utils = require('../routes/util');
 require('date-utils');
 var io = require('socket.io-client');
 
-var socketURL = 'http://localhost:5224';
-// var socketURL = 'http://m2utech.eastus.cloudapp.azure.com:5224';
+// var socketURL = 'http://localhost:5224';
+var socketURL = 'http://m2utech.eastus.cloudapp.azure.com:5224';
 
 var options ={
   transports: ['websocket'],
@@ -147,7 +147,7 @@ describe("Socketio", function(){
         timestamp : regTimeStamp,
         alarmType : 'OEE_90',
         alarmTypeName : '',
-        message : 'Notching 100 - OEE value < 90%'}
+        message : 'Stacing 200 - Availability value < 95%'}
       client1.emit('receiveAlarmData', sendData);
 
       client1.on('returnAlarmData', function(data) {
