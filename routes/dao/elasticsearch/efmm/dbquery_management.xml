@@ -389,5 +389,83 @@
         "body" : #BODY#
       }
     ]]></query>
+    <query id='selectRuleList'><![CDATA[
+      {
+        "index" : "efmm_management",
+        "type"  : "efmm_management",
+        "body" : {
+          "size": 1000,
+          "_source" : "*",
+          "query" : {
+            "bool" : {
+              "must": [
+                {"term" : {"flag" : "rule"}}
+              ]
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='insertRule'><![CDATA[
+      {
+        "index" : "efmm_management",
+        "type" : "efmm_management",
+        "body" : {
+          "flag" : "rule",
+          "type" : #type#,
+          "rulename" : #rule_name#,
+          "description" : #description#,
+          "role" : #role#,
+          "condition" : #condition#,
+          "threshold" : #threshold#,
+          "alarmtype" : #alarm_type#,
+          "updatetimestamp" : #updatetimestamp#
+        }
+      }
+    ]]></query>
+    <query id='selectRuleById'><![CDATA[
+      {
+        "index" : "efmm_management",
+        "type"  : "efmm_management",
+        "body" : {
+          "_source" : [ "*" ],
+          "query" : {
+            "bool" : {
+              "must": [
+                {"term" : {"flag" : "rule"}},
+                {"term" : {"_id" : #_id#}}
+              ]
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='updateRule'><![CDATA[
+      {
+        "index" : "efmm_management",
+        "type" : "efmm_management",
+        "id" : #_id#,
+        "body" : {
+          "doc" : {
+            "flag" : "rule",
+            "type" : #type#,
+            "rulename" : #rule_name#,
+            "description" : #description#,
+            "role" : #role#,
+            "condition" : #condition#,
+            "threshold" : #threshold#,
+            "alarmtype" : #alarm_type#,
+            "updatetimestamp" : #updatetimestamp#
+          }
+        }
+      }
+    ]]></query>
+    <query id='deleteRule'><![CDATA[
+      {
+        "index" : "efmm_management",
+        "type" : "efmm_management",
+        "id" : #_id#
+      }
+    ]]></query>
   </management>
 </queryList>

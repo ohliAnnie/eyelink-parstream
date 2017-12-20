@@ -148,7 +148,7 @@ router.get('/recipe/:id', function(req, res) {
           rtnCode = CONSTS.getErrData('0001');
           out_data2 = [];
         }
-        logger.info('out_data2 : %j', out_data2);
+        logger.debug('out_data2 : %j', out_data2);
         var out_data3 = [];
         // History 데이터에서 id값과 일치하는 값만을 화면에 출력하기 위해서 재구성함.
         out_data2.forEach(function(d) {
@@ -841,6 +841,144 @@ router.get('/asset', function(req, res, next) {
     logger.debug(out_data);
     var users = out_data;
     res.render('./'+global.config.pcode+'/management/asset', { title: global.config.productname, mainmenu:mainmenu, users:users });
+  });
+});
+
+router.get('/rule', function(req, res, next) {
+  logger.debug('rule');
+  var commoncode = {
+    type : CCODE.COMMONCODE.RULE.TYPE,
+    rulename: CCODE.COMMONCODE.RULE.RULENAME,
+    alarmtype : CCODE.COMMONCODE.RULE.ALARMTYPE,
+  };
+  var in_data = {};
+  queryProvider.selectSingleQueryByID2("management", "selectRuleList", in_data, function(err, out_data, params) {
+    if (err) {
+      out_data = {};
+    }
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {
+        // TODO Role 조회 기능 구현 필요.
+        var role = [
+            {'key' : 'ug1', 'value' : 'UserGroup01'}, 
+            {'key' : 'ug2', 'value' : 'UserGroup02'}, 
+            ];
+ 
+      out_data.forEach(function(d){
+        d._source.type = Utils.getCommonCode(CCODE.COMMONCODE.RULE.TYPE, d._source.type);
+        d._source.rulename  = Utils.getCommonCode(CCODE.COMMONCODE.RULE.RULENAME, d._source.rulename);
+        d._source.role  = Utils.getCommonCode(role, d._source.role);
+        d._source.condition  = Utils.getCommonCode(CCODE.COMMONCODE.RULE.CONDITION, d._source.condition);
+        d._source.alarmtype = Utils.getCommonCode(CCODE.COMMONCODE.RULE.ALARMTYPE, d._source.alarmtype);
+        d._source.updatetimestamp = Utils.getDateUTC2Local(d._source.updatetimestamp, CONSTS.DATEFORMAT.DATETIME);
+      });
+    }
+
+    var out_data = {
+      'data' : out_data
+    };
+    logger.debug(out_data.data);
+    logger.debug(out_data.data.length);
+
+    res.render('./'+global.config.pcode+'/management/rule_list',
+    {
+      title : global.config.productname,
+      mainmenu : mainmenu,
+      commoncode : commoncode,
+      rtnData : out_data });
+  });
+
+});
+
+// rule 신규/수정 화면 호출.
+router.get('/rule/:id', function(req, res) {
+  var commoncode = {
+    type : CCODE.COMMONCODE.RULE.TYPE,
+    rulename: CCODE.COMMONCODE.RULE.RULENAME,
+    condition: CCODE.COMMONCODE.RULE.CONDITION,
+    alarmtype : CCODE.COMMONCODE.RULE.ALARMTYPE,
+  };
+  var role = [
+            {'key' : 'ug1', 'value' : 'UserGroup01'}, 
+            {'key' : 'ug2', 'value' : 'UserGroup02'} ];
+  if (req.params.id === 'NEW') {
+    var out_data = {};
+    res.render('./'+global.config.pcode+'/management/rule_new',
+      { title: global.config.productname,
+        mainmenu:mainmenu,
+        commoncode : commoncode,
+        role : role,
+        rtnData:out_data});
+  } else {
+    var in_data = {_id : req.params.id};
+    queryProvider.selectSingleQueryByID2("management", "selectRuleById", in_data, function(err, out_data, params) {
+      var rtnCode = CONSTS.getErrData('0000');
+      if (out_data == null) {
+        rtnCode = CONSTS.getErrData('0001');
+      }
+      out_data.forEach(function(d){
+        d._source.updatetimestamp = Utils.getDateUTC2Local(d._source.updatetimestamp, CONSTS.DATEFORMAT.DATETIME);
+      });
+       logger.debug('out_data : %j', out_data);
+      res.render('./'+global.config.pcode+'/management/rule_edit',
+        {
+          title : global.config.productname,
+          mainmenu : mainmenu,
+          commoncode : commoncode,
+          role : role,
+          rtnData : out_data[0] });
+    });
+  }
+});
+
+
+// rule 신규 등록.
+router.post('/rule/:id', function(req, res) {
+  logger.debug(req.body);
+  // req.body값을 직접 JSON.parse로 처리하지 못함
+  //  이유는 req.body 값은 { key : value} 구조는 맞지만
+  // JSON.parse를 하기 위해서는 {"key" : "value"}로 변경해야 하므로 stringify로 변경 후 pasre한다.
+  var in_data = JSON.stringify(req.body);
+  in_data = JSON.parse(in_data);
+  in_data.updatetimestamp = Utils.getToday(CONSTS.DATEFORMAT.DATETIME, 'Y', 'Y');
+  logger.debug('in_data : %j',  in_data);
+  queryProvider.insertQueryByID("management", "insertRule", in_data, function(err, out_data) {
+    if(out_data.result == "created"){
+      var rtnCode = CONSTS.getErrData("D001");
+      logger.debug(out_data.result);
+    }
+    if (err) { logger.debug(err) };
+    res.json({rtnCode: rtnCode});
+  });
+});
+
+// rule 등록 정보 변경.
+router.put('/rule/:id', function(req, res) {
+  var in_data = JSON.stringify(req.body);
+  in_data = JSON.parse(in_data);
+  in_data.updatetimestamp = Utils.getToday(CONSTS.DATEFORMAT.DATETIME, 'Y', 'Y');
+  logger.debug('in_data : %j',  in_data);
+  queryProvider.updateQueryByID("management", "updateRule", in_data, function(err, out_data) {
+    if(out_data.result == "updated"){
+     var rtnCode = CONSTS.getErrData("D002");
+    }
+    if (err) { logger.debug(err);   }
+    res.json({rtnCode: rtnCode});
+  });
+});
+
+// rule 등록 정보 삭제.
+router.delete('/rule/:id', function(req, res) {
+  var in_data = {_id : req.params.id};
+  queryProvider.deleteQueryByID("management", "deleteRule", in_data, function(err, out_data) {
+    if(out_data.result == "deleted"){
+      var rtnCode = CONSTS.getErrData("D003");
+      logger.debug(out_data.result);
+    }
+    if (err) { logger.debug(err) };
+    res.json({rtnCode: rtnCode});
   });
 });
 
