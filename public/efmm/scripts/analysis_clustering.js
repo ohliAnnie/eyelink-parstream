@@ -16,10 +16,13 @@ $(document).ready(function(e) {
   });
 
   $('input[type="radio"]').on('click change', function(e) {
+
     if ($('#factor0').is(':checked') === true) {
       var factor = $('#factor0').val();
+      console.log('[clickfunc] factor0: ',factor);
     } else if ($('#factor1').is(':checked') === true) {
       var factor = $('#factor1').val();
+      console.log('[clickfunc] factor1: ',factor);
     }
     // else if ($('#factor2').is(':checked') === true) {
     //   var factor = $('#factor2').val();
@@ -38,15 +41,19 @@ $(document).ready(function(e) {
     $('#dadate').val(dadate);
     if ($('#factor0').is(':checked') === true) {
       var factor = $('#factor0').val();
+      console.log('[clickfunc] factor0: ',factor);
     } else if ($('#factor1').is(':checked') === true) {
       var factor = $('#factor1').val();
-    } else if ($('#factor2').is(':checked') === true) {
-      var factor = $('#factor2').val();
-    } else if ($('#factor3').is(':checked') === true) {
-      var factor = $('#factor3').val();
-    } else if ($('#factor4').is(':checked') === true) {
-      var factor = $('#factor4').val();
+      console.log('[clickfunc] factor1: ',factor);
     }
+    // else if ($('#factor2').is(':checked') === true) {
+    //   var factor = $('#factor2').val();
+    // } else if ($('#factor3').is(':checked') === true) {
+    //   var factor = $('#factor3').val();
+    // }
+    // else if ($('#factor4').is(':checked') === true) {
+    //   var factor = $('#factor4').val();
+    // }
     d3.selectAll("svg").remove();
     drawCheckChart(factor, dadate);
   };
@@ -106,6 +113,7 @@ function drawMaster(master) {
 }
 
 function drawCheckChart(machine, dadate) {
+  console.log('[drawCheckChart] machine:',machine);
   var data = {
     dadate: dadate,
     machine: machine

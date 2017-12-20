@@ -6,17 +6,17 @@ jQuery(document).ready(function() {
   $('#edate').val(edate.split('T')[0]);
   $('#interval').val(interval);
   if ($('#factor0').is(':checked') === true) {
-    var factor = $('#factor0').val();
+    var machine = $('#factor0').val();
   } else if ($('#factor1').is(':checked') === true) {
-    var factor = $('#factor1').val();
+    var machine = $('#factor1').val();
   }
   // else if ($('#factor2').is(':checked') === true) {
   //   var factor = $('#factor2').val();
   // } else if ($('#factor3').is(':checked') === true) {
   //   var factor = $('#factor3').val();
   // }
-  drawCheckChart(factor);
-  getNodeList(factor);
+  drawCheckChart(machine);
+  getNodeList(machine);
   Metronic.init(); // init metronic core componets
   eyelinkLayout.init(); // init layout
   QuickSidebar.init(); // init quick sidebar
@@ -494,16 +494,17 @@ function drawCheckCluster(data, dadate, machine) {
   });
 }
 
-function getNodeList(factor) {
+function getNodeList(machine) {
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
-  var data = { dadate : dadate, factor : factor };
+  var data = { dadate : dadate, machine : machine };
   var in_data = { url : "/analysis/restapi/getDaClusterMasterBydadate", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){
+    console.log('[getNodeList.getDaClusterMasterBydadate] result: ', result);
     if (result.rtnCode.code == "0000") {
       console.log(result.rtnData);
 
-      drawDirectory(result.rtnData[factor]);
+      drawDirectory(result.rtnData[machine]);
     }
   });
 }
@@ -514,7 +515,7 @@ function drawDirectory(data) {
   $('#tblClusterDir').empty();
   var sb = new StringBuffer();
   if(cnt == 0) {
-    sb.append('<tr><th>Cluster</th><th>Node_id</th></tr>');
+    sb.append('<tr><th>Cluster</th><th>Motor Name</th></tr>');
     cnt++;
   }
   if(data.cluster_00.length != 0) {
@@ -529,21 +530,30 @@ function drawDirectory(data) {
   if(data.cluster_03.length != 0) {
     sb.append(clusterNodeList(data.cluster_03, 'cluster_03'));
   }
-  if(data.cluster_04.length != 0) {
-    sb.append(clusterNodeList(data.cluster_04, 'cluster_04'));
-  }
+  // if(data.cluster_04.length != 0) {
+  //   sb.append(clusterNodeList(data.cluster_04, 'cluster_04'));
+  // }
   $('#tblClusterDir').append(sb.toString());
 }
 
 function clusterNodeList(data, clusterName){
-  var script = "javascript:getNodePower('"+data+"',"+data.length+");";
-  var sb = '<tr><td><span class="bold theme-fone"><a href="'+script+'">'+clusterName+'</a></span></td><td></td></tr>';
+  var sb = '<tr><td><span class="bold theme-fone">'+clusterName+'</span></td><td></td></tr>';
   for(var i=0; i < data.length; i++) {
     sb +='<tr><td></td><td>';
-    var script = "javascript:clickNode('"+data[i]+"');";
+    var script = "javascript:getNodePower('"+data[i]+"');";
     sb +='<a class="primary-link" href="'+script+'">' + data[i] + '</a></td></tr>';
+    // var script = "javascript:clickMotorName('"+data[i]+"');";
+    // sb +='<a class="primary-link" href="'+script+'">' + data[i] + '</a></td></tr>';
   }
   return sb;
+  // var script = "javascript:getNodePower('"+data+"',"+data.length+");";
+  // var sb = '<tr><td><span class="bold theme-fone"><a href="'+script+'">'+clusterName+'</a></span></td><td></td></tr>';
+  // for(var i=0; i < data.length; i++) {
+  //   sb +='<tr><td></td><td>';
+  //   var script = "javascript:clickMotorName('"+data[i]+"');";
+  //   sb +='<a class="primary-link" href="'+script+'">' + data[i] + '</a></td></tr>';
+  // }
+  // return sb;
 }
 
 function getNodePower(nodeList, len){
@@ -564,8 +574,8 @@ function getNodePower(nodeList, len){
   var end = urlParams.end;
   var last, start;
 
-  var data = { startDate:start, endDate:end, nodeId: node, factor : factor };
-  var in_data = { url : "/analysis/restapi/getClusterNodePowerPop", type : "GET", data : data };
+  var data = { startDate:start, endDate:end, motorName: node, machine : factor };
+  var in_data = { url : "/analysis/restapi/getClusterRawDataByMotorPop", type : "POST", data : data };
   ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {
       console.log(result.rtnData);
@@ -577,7 +587,10 @@ function getNodePower(nodeList, len){
 }
 var oldL = 0;
 function drawNode(rtnData, idCnt, len) {
-  console.log(oldL);
+  idCnt = 1;
+  len = 1;
+  console.log('[drawNode] rtnData: ',rtnData);
+
   var data = rtnData.data;
   var max = rtnData.max + 5;
   for(var i = 0; i <= oldL; i++) {
@@ -642,7 +655,8 @@ var svg = d3.select("#nodeChart")
 
  var legend = d3.select("#nodeChart").append("svg")
           .attr("class", "legend")
-          .attr("width", width/4)
+          // .attr("width", 50 + d.key.length*20)
+          .attr("width", width)
           .attr("height", 15)
           .selectAll("g")
           .data(data)
@@ -656,7 +670,8 @@ var svg = d3.select("#nodeChart")
              return d.color = color(d.key); });
 
       legend.append("text")
-          .attr("x", 50)
+          // .attr("x", 50)
+          .attr("x", 20)
           .attr("y", 7)
           .attr("dy", ".25em")
           .text(d.key);
@@ -674,13 +689,13 @@ var svg = d3.select("#nodeChart")
         .call(yAxis);
 }
 
-function clickNode(nodeId) {
+function clickMotorName(motorName) {
 
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
-
-  var data = { sdate:sdate, edate:edate, node:nodeId };
-  var in_data = { url : "/analysis/restapi/getClusterRawDataByNodePop", type : "GET", data : data };
+  let machine = $('.machine-label>label.active>input').val();
+  var data = { sdate:sdate, edate:edate, motor:motorName, machine:machine };
+  var in_data = { url : "/analysis/restapi/getClusterRawDataByMotorPop", type : "POST", data : data };
   ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {
       var data = result.rtnData;
@@ -692,7 +707,7 @@ function clickNode(nodeId) {
 }
 
 function drawTimeseries(data) {
-  console.log(data);
+  console.log('[drawTimeseries] data: ',data);
    d3.select("#ts-chart01").select("svg").remove();
    d3.select("#ts-chart02").select("svg").remove();
    d3.select("#ts-chart03").select("svg").remove();

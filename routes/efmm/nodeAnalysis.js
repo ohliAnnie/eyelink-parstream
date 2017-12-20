@@ -4,6 +4,7 @@ var Utils = require('../util');
 var express = require('express');
 var fs = require('fs');
 var net = require('net');
+var moment = require('moment');
 var router = express.Router();
 var QueryProvider = require('../dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
 
@@ -18,7 +19,7 @@ var indexStackingPatternInfo = global.config.da_index.stacking_oee_pattern_info;
 var indexStackingPatternMatch = global.config.da_index.stacking_oee_pattern_matching;
 
 var indexNotchingOee = global.config.es_index.notching_oee;
-var indexStackingStatus = global.config.es_index.notching_status;
+var indexNotchingStatus = global.config.es_index.notching_status;
 var indexNotchingPatternData = global.config.da_index.notching_oee_pattern_data;
 var indexNotchingPatternInfo = global.config.da_index.notching_oee_pattern_info;
 var indexNotchingPatternMatch = global.config.da_index.notching_oee_pattern_matching;
@@ -664,7 +665,7 @@ function makeList(factors, pattern, cid){
 // Master 인덱스에서 히스토리 조회
 router.get('/restapi/getDaClusterMaster', function(req, res, next) {
 
-  let gte = Utils.getDateLocal2UTC(gte, fmt1, 'Y');
+  let gte = Utils.getDateLocal2UTC(req.query.sdate, fmt1, 'Y');
   let lt = Utils.getDate(req.query.edate, fmt1, 1, 0, 0, 0);
   lt = Utils.getDateLocal2UTC(lt, fmt1, 'Y');
 
@@ -700,7 +701,6 @@ router.get('/restapi/getDaClusterMaster', function(req, res, next) {
       out_data.forEach(function(d){
         logger.debug('Output of selectDaClusterMaster: ',d);
         d = d._source.da_result;
-        logger.debug('Output of selectDaClusterMaster: ',d);
         d.da_time = Utils.getDateUTC2Local(d.da_time, fmt2);
         d.start_date = Utils.getDateUTC2Local(d.start_date, fmt1);
         d.end_date = Utils.getDateUTC2Local(d.end_date, fmt1);
@@ -751,30 +751,129 @@ router.get('/restapi/getDaClusterDetail', function(req, res, next) {
 // Clustering > Cluster Detail(Pop-up)
 router.get('/restapi/getDaClusterMasterBydadate', function(req, res, next) {
   var dadate = Utils.getDateLocal2UTC(req.query.dadate, fmt2, 'Y');
-  var in_data = { INDEX : indexClusteringMaster, TYPE : "master", ID : dadate };
-  queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
-    logger.debug(out_data);
+  let cid = req.query.machine;
+  var in_data = { INDEX : indexClusteringMaster, TYPE : "master", ID : dadate, CID : cid };
+  queryProvider.selectSingleQueryByID2("analysis", "selectByIdForClusteringDetailPopup", in_data, function(err, out_data, params) {
+    logger.debug('[selectByIdForClusteringDetailPopup] output: ', out_data);
     var rtnCode = CONSTS.getErrData('0000');
-    if (out_data === null) {
+    if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-      var d = out_data[0]._source;
-      console.log(d);
-      var nodeList = [];
-      if(factor === 'voltage') {
-        nodeList.push({ c0 : d['c0_voltage'], c1 : d['c1_voltage'], c2 : d['c2_voltage'], c3 : d['c3_voltage'] })
-      } else if(factor === 'ampere') {
-        nodeList.push({ c0 : d['c0_ampere'], c1 : d['c1_ampere'], c2 : d['c2_ampere'], c3 : d['c3_ampere'] })
-      } else if(factor === 'active_power') {
-        nodeList.push({ c0 : d['c0_active_power'], c1 : d['c1_active_power'], c2 : d['c2_active_power'], c3 : d['c3_active_power'] })
-      } else if(factor === 'power_factor') {
-        nodeList.push({ c0 : d['c0_power_factor'], c1 : d['c1_power_factor'], c2 : d['c2_power_factor'], c3 : d['c3_power_factor'] })
-      }
     }
-    logger.debug('analysis/restapi/getDaClusterMaster -> length : %s', out_data.length);
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]._source.master_result });
+    logger.debug('analysis/restapi/getDaClusterMasterBydadate -> length : %s', out_data.length);
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]._source.da_result });
   });
 });
 
+// Clustering > Cluster Detail(Pop-up) > Clustering
+router.post('/restapi/getClusterRawDataByMotorPop', function(req, res, next) {
+  logger.debug('[getClusterRawDataByMotorPop] req.body: ',req.body);
+  var from = Utils.getDate(req.body.startDate, fmt1, -1, 0, 0, 0);
+  var to = Utils.getMs2Date(req.body.endDate, fmt1);
+  let cid = req.body.machine;
+  let indices = geneerateIndicesList(req.body.startDate, req.body.endDate, indexStackingStatus);
+  let source = [];
+  source.push('data.'+req.body.motorName);
+  source.push('data.measure_time');
 
+  var in_data = {  INDEX : indices, TYPE : "status",
+      FROM : from+startTime, TO : to+startTime
+      , CID : cid
+      , FLAG : 'stacking'
+      , SOURCE : source
+    };
+  queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawDataByMotor", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    logger.debug('analysis/restapi/getClusterRawDataByMotorPop -> length : %s', out_data.length);
+    // var power = [], vib = [], noise = [], als = [];
+    // out_data.forEach(function(d){
+    //   d = d._source;
+    //   logger.debug('[selectClusterRawDataByMotor] output: ', d);
+    //   d.event_time = new Date(d.event_time).getTime();
+    //   if(d.event_type == "1"){
+    //     power.push({ "time" : d.event_time, "active_power" : d.active_power, "ampere" : d.ampere, "amount_active_power" : d.amount_of_active_power });
+    //   } else if(d.event_type =="33")   {
+    //     vib.push({ "time" : d.event_time,  "vibration_x" : d.vibration_x, "vibration_y" : d.vibration_y, "vibration_z" : d.vibration_z, "vibration" : (d.vibration_x+d.vibration_y+d.vibration_z)/3 });
+    //   } else if(d.event_type == "49"){
+    //     noise.push({ "time" : d.event_time, "decibel" : d.noise_decibel, "frequency" : d.noise_frequency });
+    //   } else if(d.event_type == "17") {
+    //     als.push({ "time" : d.event_time, "dimming_level" : d.dimming_level, "als_level" : d.als_level });
+    //   }
+    // });
+    // var data = { als : als, noise : noise, vib : vib, power : power };
+
+    let set = [];
+    let max = 0;
+    out_data.forEach(function(d){
+      d = d._source.data[0];
+      logger.debug('[selectClusterRawDataByMotor] output: ', JSON.stringify(d));
+      var item = { time: d.measure_time, id: req.body.motorName, value: d[req.body.motorName] };
+      set.push(item);
+      if ( max < d[req.body.motorName] ){
+        max = d[req.body.motorName];
+      }
+    });
+    logger.debug('[getClusterRawDataByMotorPop] output: ', out_data);
+    var data = { data: set, max : max};
+
+    res.json({rtnCode: rtnCode, rtnData: data});
+  });
+});
+function geneerateIndicesList(from, to, indexHeader){
+  let mFrom = moment(from);
+  let mTo = moment(to);
+
+  let diff = mTo.diff(mFrom, 'days');
+  if ( diff == 0 ) {
+    return [indexHeader + mTo.format('YYYY.MM.DD').toString()];
+  } else  {
+    let indices = [];
+    let tmp = mFrom;
+    indices.push(indexHeader + tmp.format('YYYY.MM.DD').toString());
+
+    for ( let i = 0; i < diff; i++ ){
+      tmp = tmp.add(1, 'day');
+      indices.push(indexHeader + tmp.format('YYYY.MM.DD').toString());
+    }
+    return indices;
+  }
+}
+// // Clustering > Cluster Detail(Pop-up) > Cluster Chart
+// router.post('/restapi/getClusterChartByMachine', function(req, res, next) {
+//   logger.debug("[getClusterChartByMachine] req.body: ", req.body);
+//   var from = Utils.getDateLocal2UTC(req.body.startDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
+//   var to = Utils.getDateLocal2UTC(req.body.endDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
+//   let cid = req.body.machine;
+//
+//   var in_data = {
+//         INDEX : indexCore+'*',   TYPE : "corecode",
+//         FROM: from, TO: to,
+//         NODE: req.body.nodeId.split(',')
+//       };
+//   queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
+//      //logger.debug(out_data);
+//     var rtnCode = CONSTS.getErrData('0000');
+//     if (out_data === null) {
+//       rtnCode = CONSTS.getErrData('0001');
+//     } else {
+//       var set = [];
+//       var max = 0;
+//       out_data.forEach(function(d){
+//         d = d._source;
+//
+//         d.event_time = Utils.getDateUTC2Local(d.event_time, fmt2);
+//         set.push({ time:d.event_time, id: d.node_id, value: d[req.query.factor]});
+//         if(d[req.query.factor] > max){
+//           max = d[req.query.factor];
+//         }
+//       });
+//       var data = { data : set, max : max };
+//     }
+//     logger.debug('analysis/restapi/getClusterNodeLive -> length : %s', out_data.length);
+//     res.json({rtnCode: rtnCode, rtnData: data});
+//   });
+// });
 
 module.exports = router;
