@@ -6,7 +6,7 @@ block content
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 Recipe
+        h1 Rule 
         ol.breadcrumb
           li
             a(href='/dashboard') Home
@@ -24,7 +24,6 @@ block content
                 span.caption-helper  Update rule information
             .portlet-body.from
               - var item = rtnData._source
-              - console.log('rtnData : ' + JSON.stringify(rtnData))
               form#update_rule.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
                   .form-group
@@ -86,6 +85,10 @@ block content
                             option(value=type.key, selected) #{type.value}
                           - else
                             option(value=type.key) #{type.value}
+                  .form-group
+                    label.control-label.col-md-5 Last Update
+                    .col-md-3
+                      span #{item.updatetimestamp}
                   .form-group
                     #register_tnc_error(style='text-align:center;')
                     .col-md-6 &nbsp;

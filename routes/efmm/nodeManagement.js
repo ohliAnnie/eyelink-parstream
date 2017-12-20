@@ -918,7 +918,10 @@ router.get('/rule/:id', function(req, res) {
       if (out_data == null) {
         rtnCode = CONSTS.getErrData('0001');
       }
-      logger.debug('out_data : %j', out_data);
+      out_data.forEach(function(d){
+        d._source.updatetimestamp = Utils.getDateUTC2Local(d._source.updatetimestamp, CONSTS.DATEFORMAT.DATETIME);
+      });
+       logger.debug('out_data : %j', out_data);
       res.render('./'+global.config.pcode+'/management/rule_edit',
         {
           title : global.config.productname,
