@@ -74,6 +74,28 @@
         }
       }
     ]]></query>
+    <query id='selectDashboardAlarmCount'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+          "size" : 0,
+          "query" : {          
+            "bool": {           
+              "must" : [{ "match" : { "sensorType" : "alarm" } }]                
+            }
+          },
+          "aggs" : {
+            "flag" : {
+              "terms" : { 
+                "field" : "flag",
+                "order" : { "_term" : "asc" }
+               }
+            }
+          }
+        }
+      }
+    ]]></query>
     <query id='selectDashboardTermData'><![CDATA[
       {
         "index" : [##index##],
@@ -103,6 +125,74 @@
           }
         }
       }
+    ]]></query>
+    <query id='selectDetailAlarm'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : { 
+          "size" : 0, 
+          "query" : {          
+            "bool": {           
+              "must" : [{ "match" : { "sensorType" : "alarm" } }],
+              "must_not" : { "match" : { "check" : true } }
+            }
+          },
+          "aggs" : {      
+            "flag" : {
+              "terms" : {
+                "field" : "flag",       
+                "order" : { "_term" : "asc" } 
+              },
+              "aggs" : {  
+                "cid": {        
+                  "terms" : {     
+                    "field" : "cid",      
+                    "order" : { "_term" : "asc" }
+                  },
+                  "aggs" : { 
+                    "max_date" : {
+                      "max" : { "field" : "dtTransmitted" }
+                    }
+                  }
+                }
+              }
+            }
+          } 
+        }
+      }      
+    ]]></query>
+    <query id='selectDetailAlarmList'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : { 
+          "size" : 10,
+          "sort": { "dtTransmitted": { "order": "desc" } },
+          "query" : {          
+            "bool": {           
+              "must" : [
+                { "match" : { "sensorType" : "alarm" } },
+                { "match" : { "flag" : #flag# } },
+                { "match" : { "cid" : #cid# } }
+              ],
+              "must_not" : { "match" : { "check" : true } }
+            }
+          } 
+        }
+      }      
+    ]]></query>
+    <query id='updateAlarm'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "id" : #id#,
+        "body" : {     
+          "doc": {
+            "check" : true     
+          } 
+        }
+      }      
     ]]></query>
     <query id='selectDashboardInfo'><![CDATA[
       {
@@ -143,5 +233,34 @@
         }
       }
     ]]></query>
+    <query id='selectAlarmHistory'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {
+          "size" : 10,
+          "sort": { "dtTransmitted": { "order": "desc" } },
+          "query" : {
+            "bool": {              
+              "must" : [
+                { "match" : { "cid" : #cid# } },
+                { "match" : { "sensorType" : "alarm" } }]
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDashboardCompare'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {                    
+          "query" : {
+            "terms" : { "_id" : [##id##] }
+          }
+        }
+      }
+    ]]></query>
+
   </dashboard>
 </queryList>

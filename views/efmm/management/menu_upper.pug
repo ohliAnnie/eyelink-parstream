@@ -62,7 +62,7 @@ block content
                         a.btn.default.btn-xs.balck(onclick='drawUpdate("'+menu._id+'",'+menu._source.code+',"'+menu._source.name+'")')
                           i.fa.fa-edit
                           |  Update
-                        a.btn.default.btn-xs.balck(flag='deleteMenu', id=''+menu._source.code)
+                        a.btn.default.btn-xs.balck(flag='deleteMenu', id=''+menu._id, code=''+menu._source.code)
                           i.fa.fa-trash-o
                           |  Delete      
       #call    

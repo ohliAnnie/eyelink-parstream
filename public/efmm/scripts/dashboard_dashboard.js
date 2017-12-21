@@ -1,44 +1,38 @@
 $(document).ready(function(e) {        
   drawGage();
-  getData();  
-  console.log(new Date(1513215749396));
+  sDate = new Date().getTime();
+  getData(sDate);    
 });
-
+var sDate = 0;
 var oee, availability, performance, quality;
 var color = { oee : '#1492FF', availability : '#04BBC2', performance : '#78B800', quality : '#FF5F00' };
 (function loop() {
+  sDate = new Date().getTime();
   getData();
   setTimeout(loop, 30*1000);
 })();
 
 function getData(){
-  var data = { now : new Date().getTime() };
-  
+  var data = { now : sDate };  
   var in_data = { url : "/dashboard/restapi/getDashboardWeekly", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
-    if (result.rtnCode.code == "0000") {             
-      var data = result.rtnData;      
-      console.log(data)     
-      drawLineChart(data.total, data.week);
-      updateGage(data.total[data.total.length-1]);
+    if (result.rtnCode.code == "0000") {    
+    console.log(result)         
+      var data = result.rtnData;            
+      drawLineChart(result.total, result.week);
+      updateGage(result.total[result.total.length-1]);
       var tdata = {};
       tdata.date = in_data.data.now
       tdata.kpis = { tot : 0, in_pro : 0, stop : 0, alarm : 0 };
       tdata.tab_welding = { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3600, e_unit : 29500, p_unit : 28970, g_unit : 28889, n_unit : 81 };
       tdata.packaging = { tot : 2, in_pro : 1, stop : 1, alarm : 1, a_time : 7200, r_time : 3540, e_unit : 29000, p_unit : 28700, g_unit : 28618, n_unit : 82 };
       tdata.degassing = { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3590, e_unit : 28500, p_unit : 28470, g_unit : 28392, n_unit : 78 };
-//      tdata.leak_inspection = { tot : 2, in_pro : 1, stop : 1, alarm : 1, a_time : 7200, r_time : 3570, e_unit : 28000, p_unit : 27590, g_unit : 27513, n_unit : 77 };
-//      tdata.can_swaging = { tot : 2, in_pro : 2, stop : '', alarm : '', a_time : 7200, r_time : 3600, e_unit : 27500, p_unit : 26990, g_unit : 26911, n_unit : 79 };      
-      for(key in data){
-        console.log(data[key])
-        console.log(new Date(data[key].date))
-        if(key != 'week' && key != 'total'){
-          tdata[key] = { tot : data[key].DownTime+data[key].Running+data[key].ShortBreak+data[key].MealBreak, in_pro : data[key].Running,
-          stop : data[key].DownTime+data[key].ShortBreak+data[key].MealBreak, alarm : data[key].alarm===undefined?'':data[key].alarm, a_time : Math.ceil(data[key].planned_production_time/60),
-          d_time : Math.ceil(data[key].total_down_time/60), r_time :Math.ceil(data[key].operating_time/60), e_unit : data[key].total_expected_unit,
-          p_unit : data[key].total_pieces, g_unit : data[key].total_accept_pieces, n_unit : data[key].total_reject_pieces, overall_oee : (data[key].overall_oee*100).toFixed(1),
-          availability : (data[key].availability*100).toFixed(1), performance : (data[key].performance*100).toFixed(1), quality : (data[key].quality*100).toFixed(1) };
-        }
+      for(key in data){ 
+        tdata[key] = { tot : data[key].DownTime+data[key].Running+data[key].ShortBreak+data[key].MealBreak, in_pro : data[key].Running,
+        stop : data[key].DownTime+data[key].ShortBreak+data[key].MealBreak, alarm : result.alarm[key]===undefined?'':result.alarm[key], a_time : Math.ceil(data[key].planned_production_time/60),
+        d_time : Math.ceil(data[key].total_down_time/60), r_time :Math.ceil(data[key].operating_time/60), e_unit : data[key].total_expected_unit,
+        p_unit : data[key].total_pieces, g_unit : data[key].total_accept_pieces, n_unit : data[key].total_reject_pieces, overall_oee : (data[key].overall_oee*100).toFixed(1),
+        availability : (data[key].availability*100).toFixed(1), performance : (data[key].performance*100).toFixed(1), quality : (data[key].quality*100).toFixed(1) };
       }      
       for(key in tdata) {       
         if(key == 'date' || key == 'kpis') {          
@@ -152,13 +146,12 @@ function drawLineChart(data, week) {
 
 var cnt = 0
 function drawTable(data) {
-  console.log(data);
-  console.log(new Date(data.date))
+  console.log(data);  
   $('#tbody').empty();  
   var sb = new StringBuffer();  
   sb.append('<table class="table table-hover table-mes"><tr>');  
   sb.append('<th colspan="2"><i class="icon-speedometer"></i> &nbsp;KPIs<button id="btn_search" class="btn blue btn-xs pull-right" onclick="location.href=');
-  sb.append("'/dashboard/detail?date="+data.date+"'"+'">Detail</button></th><th>Notching</th><th>Stacking</th>');  
+  sb.append("'/dashboard/detail?date="+sDate+"'"+'">Detail</button></th><th>Notching</th><th>Stacking</th>');  
   sb.append('<th>Tab Welding</th><th>Packaging</th><th>Degassing</th></tr>');  
   sb.append('<tr><th>ToTal</th><th><span class="badge badge-info">'+data.kpis.tot+'</span</th>');
   //sb.append('<tr><th >ToTal</th><th style="'+style2+'">'+data.kpis.tot+'</th>');

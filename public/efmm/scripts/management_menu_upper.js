@@ -46,21 +46,22 @@ $(document).ready(function() {
      return;        
     } else {
       var id = $(this).attr('id');
+      var upcode = $(this).attr('code');
       if (id == "") { return false;  }
       if (confirm("삭제 하시겠습니까? ")) {
-        getList(id);
+        getList(id, upcode);
       }
     }        
   });
 });
 
-function getList(id){  
-  var in_data = { url : "/management/restapi/getCodeList", type : "GET", data : { id : id} };
+function getList(id, upcode){  
+  var in_data = { url : "/management/restapi/getCodeList", type : "GET", data : { upcode : upcode} };
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "D003") {                
     } else {        
       result.rtnData.forEach(function(d){          
-        deleteMenu(d._source.code, false);
+        deleteMenu(d._id, false);
       });        
       deleteMenu(id, true);        
     }    
@@ -167,8 +168,9 @@ function getMenuList(upcode, oldCode){
   var in_data = { url : "/management/restapi/getCodeList", type : "GET", data : { upcode : oldCode } };
   ajaxTypeData(in_data, function(result){  
     result.rtnData.forEach(function(d){
-    var code = upcode.substring(0,1)+d._source.code.substring(1,4);
-    updateMenu(d._id, code,d._source.name, upcode);
+      var code = upcode.substring(0,1)+d._source.code.substring(1,4);
+      updateMenu(d._id, code,d._source.name, upcode);
+    });
   });
 }
 
