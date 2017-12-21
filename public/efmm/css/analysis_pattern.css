@@ -45,3 +45,7 @@ ol {display:inline-block; float:right;}
   padding-left: 10px;
   padding-right: 10px;
 }
+.l-padding-5 { padding-left: 5px}
+.l-padding-15 { padding-left: 15px}
+.r-padding-5 { padding-right: 5px}
+.r-padding-15 { padding-right: 15px}

@@ -1,0 +1,83 @@
+extends ../efmm-layout01
+block style
+block script
+  script(type='text/javascript', src='/efmm/scripts/management_rule.js')
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 #{rtnData.flag} Rule
+        ol.breadcrumb
+          li
+            a(href='/dashboard') Home
+          li
+            a(href='#') Management
+          li
+            a(href='/management/rule') Rule
+          li.active #{rtnData.flag} Rule 
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Rule Information
+                span.caption-helper  Update rule information
+            .portlet-body.from
+              form#add_rule.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group
+                    label.control-label.col-md-5 Type
+                    .col-md-3
+                      span #{rtnData.type}
+                      input#id(type='hidden', name='id', value='new')
+                      select#type.select2.form-control(data-show-subtext='true', name='type')
+                        option(value='')
+                        each type in commoncode.type
+                          option(value=type.key) #{type.value}
+                  .form-group
+                    label.control-label.col-md-5 Rule Name
+                    .col-md-3
+                      select#rule_name.select2.form-control(data-show-subtext='true', name='rule_name')
+                        option(value='')
+                        each type in commoncode.rulename
+                          option(value=type.key) #{type.value}
+                  .form-group
+                    label.control-label.col-md-5 Description
+                    .col-md-3
+                      label.control-label.visible-ie8.visible-ie9 Description
+                      input#description.form-control.form-control-inline.input-large(size='16', type='text', value='', placeholder='Description', name='description')
+                  .form-group
+                    label.control-label.col-md-5 Role
+                    .col-md-3
+                      select#role.select2.form-control(data-show-subtext='true', name='role')
+                        option(value='')
+                        each ug in role 
+                          option(value=ug.key) #{ug.value}
+                  .form-group
+                    label.control-label.col-md-5 Condition 
+                    .col-md-3
+                      select#condition.select2.form-control(data-show-subtext='true', name='condition')
+                        option(value='')
+                        each type in commoncode.condition
+                          option(value=type.key) #{type.value}
+                  .form-group
+                    label.control-label.col-md-5 Threshold
+                    .col-md-7
+                      input#threshold.form-control.form-control-inline.input-large(size='16', type='text', value='', placeholder='Threshold', name='threshold')
+                  .form-group
+                    label.control-label.col-md-5 Alarm Type
+                    .col-md-3
+                      select#alarm_type.select2.form-control(data-show-subtext='true', name='alarm_type')
+                        option(value='')
+                        each type in commoncode.alarmtype
+                          option(value=type.key) #{type.value}
+                  .form-group
+                    #register_tnc_error(style='text-align:center;')
+                    .col-md-10
+                      button#new-save-rule-btn.btn.btn-default.blue.pull-right Save
+                    .col-md-2
+                      button#cancel-rule-btn.btn.btn-default Cancel
+            .portlet-footer
+    p.copyright Copyright M2U Technology All rights reserved.
+    a.go2top(href='#index')
+      i.icon-arrow-up

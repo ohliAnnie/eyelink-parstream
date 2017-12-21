@@ -2,6 +2,7 @@
 	"#comment": "Customer module configs",
 	"productname": "EyeLink",
 	"pcode": "efsm",
+	"language" : "",
 	"products": {
 		"efsm" : {"productName" : "EFSM", "port" : 5223},
 		"efmm" : {"productName" : "EFMM", "port" : 5224},
@@ -56,7 +57,9 @@
 		"notching_oee_pattern_matching" : "efmm_notching_oee_pattern_matching",
 		"stacking_oee_pattern_data" : "efmm_stacking_oee_pattern_data",
 		"stacking_oee_pattern_info" : "efmm_stacking_oee_pattern_info",
-		"stacking_oee_pattern_matching" : "efmm_stacking_oee_pattern_matching"
+		"stacking_oee_pattern_matching" : "efmm_stacking_oee_pattern_matching",
+    "stacking_status_clustering_master" : "efmm_stacking_status_clustering_master",
+    "stacking_status_clustering_detail" : "efmm_stacking_status_clustering_detail"
 	},
 	"analysis": {
 		"#host" : "localhost",

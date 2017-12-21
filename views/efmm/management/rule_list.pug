@@ -1,0 +1,56 @@
+extends ../efmm-layout01
+block style
+  link(rel='stylesheet', type='text/css', href='/common/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
+block script
+  script(type='text/javascript', src='/common/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+  script(type='text/javascript', src='/common/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
+  script(src='/common/assets/scripts/page/table-managed.js')
+  script(type='text/javascript', src='/efmm/scripts/management_rule.js')
+
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Rule & Alarm 
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Management
+          li.active Rule & Alarm
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Rule & Alarm List
+                span.caption-helper  Detail information about Rules
+              .tools
+                button#list-add-btn.btn.btn-default.blue Add
+            .portlet-body.form
+              .row
+                .col-md-12
+                  table#assetPartList.table.table-striped.table-bordered.table-hover(style='text-align:center;')
+                    thead
+                      tr
+                        th(style='text-align:center;') Type
+                        th(style='text-align:center;') Rule Name
+                        th(style='text-align:center;') Description
+                        th(style='text-align:center;') User Group
+                        th(style='text-align:center;') Condition
+                        th(style='text-align:center;') Threshold
+                        th(style='text-align:center;') Alarm
+                        th(style='text-align:center;') Last Update
+                    tbody
+                      each data in rtnData.data
+                        - var item = data._source
+                        tr.odd.gradeX
+                          td #{item.type}
+                          td
+                            a(href='javascript:goViewEditRule("'+data._id+ '")') #{item.rulename}
+                          td #{item.description}
+                          td #{item.role}
+                          td #{item.condition}
+                          td #{item.threshold}
+                          td #{item.alarmtype}
+                          td #{item.updatetimestamp}

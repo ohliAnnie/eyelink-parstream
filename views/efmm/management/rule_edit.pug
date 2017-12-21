@@ -1,0 +1,102 @@
+extends ../efmm-layout01
+block style
+block script
+  script(type='text/javascript', src='/efmm/scripts/management_rule.js')
+block content
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Rule 
+        ol.breadcrumb
+          li
+            a(href='/dashboard') Home
+          li
+            a(href='#') Management
+          li
+            a(href='/management/rule') Rules
+          li.active Rule
+      .row
+        .col-md-12
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Rule Information
+                span.caption-helper  Update rule information
+            .portlet-body.from
+              - var item = rtnData._source
+              form#update_rule.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group
+                    label.control-label.col-md-5 Type 
+                    .col-md-3
+                      input#_id(type='hidden', name='_id', value=rtnData._id)
+                      select#type.select2.form-control(data-show-subtext='true', name='type')
+                        option(value='')
+                        each type in commoncode.type
+                          - if (item.type.includes(type.key))
+                            option(value=type.key, selected) #{type.value}
+                          - else
+                            option(value=type.key) #{type.value}
+                  .form-group
+                    label.control-label.col-md-5 Rule Name
+                    .col-md-3
+                      select#rule_name.select2.form-control(data-show-subtext='true', name='rule_name')
+                        option(value='')
+                        each type in commoncode.rulename
+                          - if (item.rulename.includes(type.key))
+                            option(value=type.key, selected) #{type.value}
+                          - else
+                            option(value=type.key) #{type.value}
+                  .form-group
+                    label.control-label.col-md-5 Description
+                    .col-md-3
+                      input#description.form-control.form-control-inline.input-large(size='16', type='text', value=item.description, placeholder='Description', name='description')
+                  .form-group
+                    label.control-label.col-md-5 Role
+                    .col-md-3
+                      select#role.select2.form-control(data-show-subtext='true', name='role')
+                        option(value='')
+                          each itm in role
+                            - if (item.role.includes(itm.key))
+                              option(value=itm.key, selected) #{itm.value}
+                            - else
+                              option(value=itm.key) #{itm.value}
+                  .form-group
+                    label.control-label.col-md-5 Condition 
+                    .col-md-3
+                      select#condition.select2.form-control(data-show-subtext='true', name='condition')
+                        option(value='')
+                        each type in commoncode.condition
+                          - if (item.condition.includes(type.key))
+                            option(value=type.key, selected) #{type.value}
+                          - else
+                            option(value=type.key) #{type.value}
+                  .form-group
+                    label.control-label.col-md-5 Threshold
+                    .col-md-3
+                      input#threshold.form-control.form-control-inline.input-large(size='16', type='text', value=item.threshold, placeholder='Threshold', name='threshold')
+                  .form-group
+                    label.control-label.col-md-5 Alarm Type 
+                    .col-md-3
+                      select#alarm_type.select2.form-control(data-show-subtext='true', name='alarm_type')
+                        option(value='')
+                        each type in commoncode.alarmtype
+                          - if (item.alarmtype.includes(type.key))
+                            option(value=type.key, selected) #{type.value}
+                          - else
+                            option(value=type.key) #{type.value}
+                  .form-group
+                    label.control-label.col-md-5 Last Update
+                    .col-md-3
+                      span #{item.updatetimestamp}
+                  .form-group
+                    #register_tnc_error(style='text-align:center;')
+                    .col-md-6 &nbsp;
+                    .col-md-6
+                      button#edit-save-rule-btn.btn.btn-default.blue Save
+                      button#edit-delete-rule-btn.btn.btn-default.blue Delete
+                      button#cancel-rule-btn.btn.btn-default Cancel
+            .portlet-footer
+    p.copyright Copyright M2U Technology All rights reserved.
+    a.go2top(href='#index')
+      i.icon-arrow-up

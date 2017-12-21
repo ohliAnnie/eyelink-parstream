@@ -73,6 +73,7 @@ html
     script(src='/common/assets/scripts/page/components-dropdowns.js', type='text/javascript')
     script(src='/common/assets/scripts/page/layout.js', type='text/javascript')
     script(src='/common/assets/scripts/page/demo.js', type='text/javascript')
+    script(src='/efmm/resources/message.js', type='text/javascript')
     script(src='/socket.io/socket.io.js', type='text/javascript')
     block style
     block script
@@ -327,6 +328,8 @@ html
                     li
                       a(href='/analysis/anomaly') Anomaly
                     li
+                      a(href='/analysis/clustering') Clustering
+                    li
                       a(href='/analysis/pattern') Pattern Management
                     li
                       a(href='/analysis/patternMatching') Pattern Matching
@@ -343,4 +346,6 @@ html
                       a(href='/management/menu') Menu
                     li
                       a(href='/management/authority') Authority
+                    li
+                      a(href='/management/rule') Rule & Alarm
       block content

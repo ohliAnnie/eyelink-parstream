@@ -223,6 +223,14 @@ function getDate(dt, fmt, d, h, m, s, utcYN, delimYN) {
   return dateFormat(dt, fmt);
 }
 
+function getCommonCode(arr, key) {
+  for(var i=0; i<arr.length; i++) {
+    if (arr[i].key == key) {
+      return arr[i].value;
+    }
+  }
+}
+
 module.exports.replaceSql = replaceSql;
 module.exports.replaceSql2 = replaceSql2;
 module.exports.mergeLoadedData = mergeLoadedData;
@@ -232,3 +240,4 @@ module.exports.getDate = getDate;
 module.exports.getMs2Date = getMs2Date;
 module.exports.getDateLocal2UTC = getDateLocal2UTC;
 module.exports.getDateUTC2Local = getDateUTC2Local;
+module.exports.getCommonCode = getCommonCode;

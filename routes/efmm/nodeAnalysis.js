@@ -4,6 +4,7 @@ var Utils = require('../util');
 var express = require('express');
 var fs = require('fs');
 var net = require('net');
+var moment = require('moment');
 var router = express.Router();
 var QueryProvider = require('../dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
 
@@ -18,10 +19,12 @@ var indexStackingPatternInfo = global.config.da_index.stacking_oee_pattern_info;
 var indexStackingPatternMatch = global.config.da_index.stacking_oee_pattern_matching;
 
 var indexNotchingOee = global.config.es_index.notching_oee;
-var indexStackingStatus = global.config.es_index.notching_status;
+var indexNotchingStatus = global.config.es_index.notching_status;
 var indexNotchingPatternData = global.config.da_index.notching_oee_pattern_data;
 var indexNotchingPatternInfo = global.config.da_index.notching_oee_pattern_info;
 var indexNotchingPatternMatch = global.config.da_index.notching_oee_pattern_matching;
+var indexClusteringMaster = global.config.da_index.stacking_status_clustering_master;
+var indexClusteringDetail = global.config.da_index.stacking_status_clustering_detail;
 
 var startTime = CONSTS.TIMEZONE.KOREA;
 var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
@@ -37,6 +40,10 @@ router.get('/', function(req, res, next) {
 router.get('/clustering', function(req, res, next) {
   var outdata = { title: global.config.productname, mainmenu : mainmenu };
   res.render('efmm' + '/analysis/clustering', outdata);
+});
+
+router.get('/clusteringPop', function(req, res, next) {
+  res.render('efmm' + '/analysis/clustering_popup', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/anomaly', function(req, res, next) {
@@ -339,8 +346,10 @@ router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
   });
 });
 
-// Pattern Management load patterns data : update 2017-11-07
+// Pattern Management load patterns data
 router.get('/restapi/getPatterns', function(req, res, next) {
+  // TODO : 패턴 데이터가 없어도 RAW 데이터는 차트에 뿌려줄 수 있도록!
+  // --> queryProvider를 nested하지 않도록 리팩토링 필요
   logger.debug('req.query: ',req.query);
   let flag = req.query.flag;
   let cid = req.query.cid;
@@ -631,19 +640,12 @@ function arrangeData(clust, pattern, start, factor, rawData){
   // TODO : min, max 값을 raw 데이터와도 비교
   let rawMin = Infinity;
   let rawMax = -Infinity;
-  logger.debug('111111111111111111111111111111111');
-  logger.debug('rawData[0]: ',rawData[0]);
-  logger.debug('minValue: ', minValue);
-  logger.debug('maxValue: ', maxValue);
   rawData.forEach(function (d){
     rawMin = Math.min(rawMin, d[factor] );
     rawMax = Math.max(rawMax, d[factor] );
   });
   minValue = Math.min(minValue, rawMin);
   maxValue = Math.max(maxValue, rawMax);
-  logger.debug('111111111111111111111111111111111');
-  logger.debug('minValue: ', minValue);
-  logger.debug('maxValue: ', maxValue);
 
   var total = { data : data, cpt : cpt, apt : apt, min : minValue, max : maxValue };
   return total;
@@ -658,5 +660,220 @@ function makeList(factors, pattern, cid){
   }
   return list;
 }
+
+// Clustering 메뉴
+// Master 인덱스에서 히스토리 조회
+router.get('/restapi/getDaClusterMaster', function(req, res, next) {
+
+  let gte = Utils.getDateLocal2UTC(req.query.sdate, fmt1, 'Y');
+  let lt = Utils.getDate(req.query.edate, fmt1, 1, 0, 0, 0);
+  lt = Utils.getDateLocal2UTC(lt, fmt1, 'Y');
+
+  let cid = req.query.machine;
+  let interval = req.query.interval;
+  let source = [];
+  source.push('da_result.'+cid);
+  source.push('da_result.start_date');
+  source.push('da_result.end_date');
+  source.push('da_result.da_time');
+  source.push('da_result.time_interval');
+  let in_data = {
+      INDEX : indexClusteringMaster, TYPE : "master",
+      START: Utils.getDateLocal2UTC(gte, CONSTS.DATEFORMAT.DATETIME, 'Y'),
+      END: Utils.getDateLocal2UTC(lt, CONSTS.DATEFORMAT.DATETIME, 'Y'),
+      // START: gte+startTime,
+      // END: lte+startTime,
+      INTERVAL: interval,
+      SOURCE: source
+  };
+  if(req.query.interval === 'all')  {
+    var sql = "selectDaClusterMasterAll";
+  } else {
+    var sql = "selectDaClusterMaster";
+  }
+  queryProvider.selectSingleQueryByID2("analysis", sql, in_data, function(err, out_data, params) {
+    // logger.debug(out_data);
+    let rtnCode = CONSTS.getErrData('0000');
+    if (out_data === null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {
+      var data = [];
+      out_data.forEach(function(d){
+        logger.debug('Output of selectDaClusterMaster: ',d);
+        d = d._source.da_result;
+        d.da_time = Utils.getDateUTC2Local(d.da_time, fmt2);
+        d.start_date = Utils.getDateUTC2Local(d.start_date, fmt1);
+        d.end_date = Utils.getDateUTC2Local(d.end_date, fmt1);
+        data.push(d);
+      });
+    }
+    logger.debug('analysis/restapi/getDaClusterMaster -> length : %s', out_data.length);
+    res.json({rtnCode: rtnCode, rtnData: data });
+  });
+});
+
+// Clustering > Clustering Chart 조회
+router.get('/restapi/getDaClusterDetail', function(req, res, next) {
+  var dadate = Utils.getDateLocal2UTC(req.query.dadate, fmt2, 'Y');
+  let cid = req.query.machine;
+  let source = [];
+  source.push('da_result.'+cid);
+  source.push('da_result.start_date');
+  source.push('da_result.end_date');
+  source.push('da_result.da_time');
+  source.push('da_result.time_interval');
+  source.push('da_result.event_time');
+
+  var in_data = { INDEX : indexClusteringDetail, TYPE : "detail", ID : dadate, SOURCE : source };
+  queryProvider.selectSingleQueryByID2("analysis", "selectByIdForClusteringChart", in_data, function(err, out_data, params) {
+    if (out_data === null) {
+      var rtnCode = CONSTS.getErrData('0001');
+      res.json({rtnCode: rtnCode, rtnData: out_data});
+    } else {
+      var rtnCode = CONSTS.getErrData('0000');
+      var data = [];
+      // logger.debug('Output for selectByIdForClusteringChart: ',JSON.stringify(out_data));
+      var d = out_data[0]._source.da_result;
+      // logger.debug('output: ', d);
+      d.da_time = Utils.getDateUTC2Local(d.da_time, fmt2);
+      for( i = 0 ; i < d[cid]['cluster_00'].length ; i++){
+        var event_time = Utils.getDateUTC2Local(d['event_time'][i], fmt2);
+        // data.push({ time : event_time, c0:d['cluster_00'][i], c1:d['cluster_01'][i], c2:d['cluster_02'][i], c3:d['cluster_03'][i], c4:d['cluster_04'][i]});
+        data.push({ time : event_time, c0:d[cid]['cluster_00'][i], c1:d[cid]['cluster_01'][i], c2:d[cid]['cluster_02'][i], c3:d[cid]['cluster_03'][i]});
+      }
+      //console.log(data);
+      logger.debug('analysis/restapi/getDaClusterDetail -> length : %s', out_data.length);
+    }
+    res.json({rtnCode: rtnCode, rtnData : data });
+  });
+});
+
+// Clustering > Cluster Detail(Pop-up)
+router.get('/restapi/getDaClusterMasterBydadate', function(req, res, next) {
+  var dadate = Utils.getDateLocal2UTC(req.query.dadate, fmt2, 'Y');
+  let cid = req.query.machine;
+  var in_data = { INDEX : indexClusteringMaster, TYPE : "master", ID : dadate, CID : cid };
+  queryProvider.selectSingleQueryByID2("analysis", "selectByIdForClusteringDetailPopup", in_data, function(err, out_data, params) {
+    logger.debug('[selectByIdForClusteringDetailPopup] output: ', out_data);
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    logger.debug('analysis/restapi/getDaClusterMasterBydadate -> length : %s', out_data.length);
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]._source.da_result });
+  });
+});
+
+// Clustering > Cluster Detail(Pop-up) > Clustering
+router.post('/restapi/getClusterRawDataByMotorPop', function(req, res, next) {
+  logger.debug('[getClusterRawDataByMotorPop] req.body: ',req.body);
+  var from = Utils.getDate(req.body.startDate, fmt1, -1, 0, 0, 0);
+  var to = Utils.getMs2Date(req.body.endDate, fmt1);
+  let cid = req.body.machine;
+  let indices = geneerateIndicesList(req.body.startDate, req.body.endDate, indexStackingStatus);
+  let source = [];
+  source.push('data.'+req.body.motorName);
+  source.push('data.measure_time');
+
+  var in_data = {  INDEX : indices, TYPE : "status",
+      FROM : from+startTime, TO : to+startTime
+      , CID : cid
+      , FLAG : 'stacking'
+      , SOURCE : source
+    };
+  queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawDataByMotor", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    }
+    logger.debug('analysis/restapi/getClusterRawDataByMotorPop -> length : %s', out_data.length);
+    // var power = [], vib = [], noise = [], als = [];
+    // out_data.forEach(function(d){
+    //   d = d._source;
+    //   logger.debug('[selectClusterRawDataByMotor] output: ', d);
+    //   d.event_time = new Date(d.event_time).getTime();
+    //   if(d.event_type == "1"){
+    //     power.push({ "time" : d.event_time, "active_power" : d.active_power, "ampere" : d.ampere, "amount_active_power" : d.amount_of_active_power });
+    //   } else if(d.event_type =="33")   {
+    //     vib.push({ "time" : d.event_time,  "vibration_x" : d.vibration_x, "vibration_y" : d.vibration_y, "vibration_z" : d.vibration_z, "vibration" : (d.vibration_x+d.vibration_y+d.vibration_z)/3 });
+    //   } else if(d.event_type == "49"){
+    //     noise.push({ "time" : d.event_time, "decibel" : d.noise_decibel, "frequency" : d.noise_frequency });
+    //   } else if(d.event_type == "17") {
+    //     als.push({ "time" : d.event_time, "dimming_level" : d.dimming_level, "als_level" : d.als_level });
+    //   }
+    // });
+    // var data = { als : als, noise : noise, vib : vib, power : power };
+
+    let set = [];
+    let max = 0;
+    out_data.forEach(function(d){
+      d = d._source.data[0];
+      logger.debug('[selectClusterRawDataByMotor] output: ', JSON.stringify(d));
+      var item = { time: d.measure_time, id: req.body.motorName, value: d[req.body.motorName] };
+      set.push(item);
+      if ( max < d[req.body.motorName] ){
+        max = d[req.body.motorName];
+      }
+    });
+    logger.debug('[getClusterRawDataByMotorPop] output: ', out_data);
+    var data = { data: set, max : max};
+
+    res.json({rtnCode: rtnCode, rtnData: data});
+  });
+});
+function geneerateIndicesList(from, to, indexHeader){
+  let mFrom = moment(from);
+  let mTo = moment(to);
+
+  let diff = mTo.diff(mFrom, 'days');
+  if ( diff == 0 ) {
+    return [indexHeader + mTo.format('YYYY.MM.DD').toString()];
+  } else  {
+    let indices = [];
+    let tmp = mFrom;
+    indices.push(indexHeader + tmp.format('YYYY.MM.DD').toString());
+
+    for ( let i = 0; i < diff; i++ ){
+      tmp = tmp.add(1, 'day');
+      indices.push(indexHeader + tmp.format('YYYY.MM.DD').toString());
+    }
+    return indices;
+  }
+}
+// // Clustering > Cluster Detail(Pop-up) > Cluster Chart
+// router.post('/restapi/getClusterChartByMachine', function(req, res, next) {
+//   logger.debug("[getClusterChartByMachine] req.body: ", req.body);
+//   var from = Utils.getDateLocal2UTC(req.body.startDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
+//   var to = Utils.getDateLocal2UTC(req.body.endDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
+//   let cid = req.body.machine;
+//
+//   var in_data = {
+//         INDEX : indexCore+'*',   TYPE : "corecode",
+//         FROM: from, TO: to,
+//         NODE: req.body.nodeId.split(',')
+//       };
+//   queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
+//      //logger.debug(out_data);
+//     var rtnCode = CONSTS.getErrData('0000');
+//     if (out_data === null) {
+//       rtnCode = CONSTS.getErrData('0001');
+//     } else {
+//       var set = [];
+//       var max = 0;
+//       out_data.forEach(function(d){
+//         d = d._source;
+//
+//         d.event_time = Utils.getDateUTC2Local(d.event_time, fmt2);
+//         set.push({ time:d.event_time, id: d.node_id, value: d[req.query.factor]});
+//         if(d[req.query.factor] > max){
+//           max = d[req.query.factor];
+//         }
+//       });
+//       var data = { data : set, max : max };
+//     }
+//     logger.debug('analysis/restapi/getClusterNodeLive -> length : %s', out_data.length);
+//     res.json({rtnCode: rtnCode, rtnData: data});
+//   });
+// });
 
 module.exports = router;

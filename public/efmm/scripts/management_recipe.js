@@ -62,7 +62,7 @@ function addNewRecipeBtn() {
   if(checkInvalidId()) return false;
 
   // TODO 메시지 공통 영역으로
-  if (confirm("저장 하시겠습니까? ")) {
+  if (confirm(m.common.confirm.save)) {
     var id = $("#id").val();
     var data = $('#add_recipe').serialize();
     var in_data = { url : "/management/recipe/"+id, type : "POST", data : data };
@@ -79,7 +79,7 @@ function saveEditRecipeBtn() {
   if(checkInvalidInput()) return false;
 
   // TODO 메시지 공통 영역으로
-  if (confirm("저장 하시겠습니까? ")) {
+  if (confirm(m.common.confirm.save)) {
     var id = $("#_id").val();
     var data = $('#update_recipe').serialize();
     var in_data = { url : "/management/recipe/"+id, type : "PUT", data : data };
@@ -94,7 +94,7 @@ function saveEditRecipeBtn() {
 
 function deleteEditRecipeBtn() {
   // TODO 메시지 공통 영역으로
-  if (confirm("삭제 하시겠습니까? ")) {
+  if (confirm(m.common.confirm.delete)) {
     var id = $("#_id").val();
     var data = $('#update_recipe').serialize();
     var in_data = { url : "/management/recipe/"+id, type : "DELETE", data : data };
@@ -135,14 +135,14 @@ function checkId() {
 function checkInvalidInput(checkIdOnly) {
   if ($("#id").val() == "") {
     $("#id").focus();
-    changeErrMsg(true, "ID를 입력하세요.");
+    changeErrMsg(true, m.common.check.id);
     return true;
   }
   if (checkIdOnly) return false;
 
   if ($("#name").val() == "") {
     $("#name").focus();
-    changeErrMsg(true, "Name을 입력하세요.");
+    changeErrMsg(true, m.common.check.name);
     return true;
   }
   return false;
@@ -154,7 +154,7 @@ function checkInvalidId() {
     return false;
   } else {
     $("#id").focus();
-    changeErrMsg(true, "Check ID를 수행해 주세요.");
+    changeErrMsg(true, m.recipe.check_id);
     return true;
   }
 }
