@@ -1,5 +1,6 @@
 $(document).ready(function(e) {        
-  getData();  
+  console.log(new Date(urlParams.date))
+  getData(urlParams.date);
 });
 
 var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
@@ -9,24 +10,33 @@ var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
     return obj;
   }, {});
 
+function refreshOnChange() {  
+  first = false;
+  $("input[name='refresh']:checked").each(function() {        
+    (function loop() {      
+      console.log('test')
+      getData(new Date().getTime());
+      setTimeout(loop, 30*1000);
+    })();
+  });      
+}
 
-function getData(){  
-  var data = { date : urlParams.date, type : urlParams.type, cid : urlParams.cid, state : urlParams.state };
+function getData(date){  
+  var data = { date : date, type : urlParams.type, cid : urlParams.cid, state : urlParams.state };
   var in_data = { url : "/dashboard/restapi/getDashboardInfo", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {      
       var data = result.rtnData;             
       drawTable(data);
       dataTable(data);
-      historyTable(result.alarm);
+      historyTable(result.alarm, result.alarmCount);
     } 
   });
   var data = { date : urlParams.date, cid : urlParams.cid };
   var in_data = { url : "/dashboard/restapi/getDashboardInfoStatus", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {
-      var data = result.rtnData;                
-      console.log(data)
+      var data = result.rtnData;        
       drawLineChart(data);
     } 
   });  
@@ -74,6 +84,7 @@ function drawTable(data) {
   gage = getGaguChart("gage", 100, color.oee, data.overall_oee, 0.13);    
 }
 function dataTable(data){
+  console.log(data)
   $('#data').empty();
   var sbD = new StringBuffer();
   sbD.append('<table class="table table-striped table-hover">');  
@@ -98,12 +109,12 @@ function dataTable(data){
   sbD.append('</table>');  
   $('#data').append(sbD.toString());
 }
-function historyTable(alarm){
+function historyTable(alarm, alarmCount){
   $('#history').empty();
   var sbH = new StringBuffer();
   sbH.append('<div style="height:220px; overflow:auto;">')
   sbH.append('<table class="table table-fixed" >');  
-  sbH.append('<tr><th>Alarm History <span class="badge badge-warning">'+alarm.length+'</span></th></tr>');  
+  sbH.append('<tr><th>Alarm History <span class="badge badge-warning">'+alarmCount+'</span></th></tr>');  
   for(i=0; i<alarm.length; i++) {    
     sbH.append('<tr><th>'+alarm[i].date+'</th><tr><tr><td>');    
     for(j=0; j<alarm[i].list.length; j++){
@@ -163,8 +174,7 @@ function drawLineChart(data) {
           .renderDataPoints(true)
           .group(group[cnt++], k);
     }
-  }  
-  console.log(minDate, maxDate);
+  }   
 
   composite.margins().bottom = 240;
   composite.margins().right = 55;  

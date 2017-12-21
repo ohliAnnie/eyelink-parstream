@@ -3,25 +3,31 @@ block style
   link(type='text/css', rel='stylesheet', href='/efmm/assets/css/dc.css') 
   link(type='text/css', rel='stylesheet', href='/efmm/css/chart_style.css')  
   link(type='text/css', rel='stylesheet', href='/efmm/css/dashboard_info.css')  
+  link(href='https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css', rel='stylesheet')
 block script
   script(type='text/javascript', src='/efmm/assets/scripts/d3_dc.js')
-  script(type='text/javascript', src='/efmm/assets/scripts/crossfilter.js')
+  script(type='text/javascript', src='/efmm/assets/scripts/crossfilter.js')  
   script(type='text/javascript', src='/efmm/assets/scripts/dc.js')  
-  script(type='text/javascript', src='/efmm/assets/scripts/colorbrewer.js')
+  script(type='text/javascript', src='/efmm/assets/scripts/colorbrewer.js')    
   script(type='text/javascript', src='/efmm/assets/scripts/radial-progress-index.js')
+  script(src='https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js')  
   script(type='text/javascript', src="/common/scripts/util.js")
   script(type='text/javascript', src="/efmm/scripts/dashboard_info.js")
 block content
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 Info
-        ol.breadcrumb
-          li
-            a(href='#') Home
-          li
-            a(href='#') Dashboard
-          li.active Dashboard
+        .col-md-7
+          h1 Info
+        .col-md-2  
+          input#refresh(type='checkbox', data-toggle='toggle', value='false', data-on="Refresh", data-off="Stop", name='refresh', onchange='refreshOnChange()')
+        .col-md-3
+          ol.breadcrumb
+            li
+              a(href='#') Home
+            li
+              a(href='#') Dashboard
+            li.active Dashboard
       .row
         .col-md-12
           .portlet.light.bordered
