@@ -47,10 +47,7 @@ function getGaguChart(id, max, color, value, size) {
 var color = { oee : '#1492FF', availability : '#04BBC2', performance : '#78B800', quality : '#FF5F00' };
 function drawGage(data) {  
   $('#gage').empty();  
-  var sb = new StringBuffer();
-  for(i=0; i<data.length; i++){
-    sb.append(innerTable(data[i]));
-  }
+  var sb = new StringBuffer();  
   $('#gage').append(sb.toString());  
   var gCnt = 0;  
   for(i=0; i<data.length; i++){
@@ -59,34 +56,30 @@ function drawGage(data) {
   }
 }
 
-function innerTable(data){
-  //var style = 'style="color:'+color+'; text-align:'+align+'; font-weight:bold;"';  
-  var state = ['active', 'alarm'];
-  data.state = state[Math.floor(Math.random() * 10)%2];  
-  var sb = '';  
-  sb += '<div class="detail-title"><h3>'+data.flag+' '+data.cid+'</h3>';
-  sb += '<a class="btn btn-transparent grey-salsa btn-circle btn-sm active" href="info?date=';
-  sb += new Date(data.dtSensed).getTime()+'&type='+data.flag+'&state='+data.state+'&cid='+data.cid+'"> Info</a></div>';    
-  sb += '<div class="gage'+cnt++ +'" style="text-align:center;"></div></div>';
-  sb += '<div class="row"><div class="col-sm-12">';
-  sb += '<div class="col-xs-12 label mes-status color-'+data.state+'">'+data.state+'</div>';
-  sb += '<div class="col-xs-12">'
-  sb += '<table class="table table-striped table-bordered">';
-  sb += '<tr><th>Ava</th><th>Perf</th><th>Qual</th></tr>';
-  sb += '<tr><td>'+data.availability.toFixed(1)+'%</td><td>' + data.performance.toFixed(1);
-  sb += '%</td><td>'+data.quality.toFixed(1)+'%</td></tr>';
-  sb += '</table></div></div></div></div>';  
-  return sb;
-}
-
-
 function drawTable(data) {
   console.log(data);
   $('#tbody').empty();  
   var sb = new StringBuffer();  
   sb.append('<table class="table table-hover table-mes">');  
-  sb.append(drawTr([data[0].flag+' '+data[0].cid, data[1].flag+' '+data[1].cid], 'MachineID', 'black'));
-  sb.append(drawTr([data[0].state, data[1].state], 'Status', 'black'))
+  sb.append('<tr><th></th><td>');
+  sb.append('<div class="detail-title">');
+  sb.append('<a class="btn btn-transparent grey-salsa btn-circle btn-sm active" href="info?date=');
+  sb.append(new Date(data[0].dtSensed).getTime()+'&type='+data[0].flag+'&state='+data[0].state+'&cid='+data[0].cid+'"> Info</a></div>');    
+  sb.append('<div class="gage'+cnt++ +'" style="text-align:center;"></div></div>');
+  sb.append('<div class="row"><div class="col-sm-12">');  
+  sb.append('</td><td>');
+  sb.append('<div class="detail-title">');
+  sb.append('<a class="btn btn-transparent grey-salsa btn-circle btn-sm active" href="info?date=');
+  sb.append(new Date(data[1].dtSensed).getTime()+'&type='+data[1].flag+'&state='+data[1].state+'&cid='+data[1].cid+'"> Info</a></div>');    
+  sb.append('<div class="gage'+cnt++ +'" style="text-align:center;"></div></div>');
+  sb.append('<div class="row"><div class="col-sm-12">');  
+  sb.append('</td></tr>');    
+  sb.append(drawTr(['<h4 align="center">'+data[0].flag+' '+data[0].cid+'</h4>', '<h4 align="center">'+data[1].flag+' '+data[1].cid+'</h4>'], 'MachineID', 'black'));    
+  sb.append('<tr><th>Status</th><td>');
+  sb.append('<div class="col-xs-12 label mes-status color-'+data[0].state+'">'+data[0].state+'</div>');
+  sb.append('</td><td>');
+  sb.append('<div class="col-xs-12 label mes-status color-'+data[1].state+'">'+data[1].state+'</div>');
+  sb.append('</td></tr>');      
   sb.append(drawTr([(data[0].overall_oee*100).toFixed(3)+' %', (data[1].overall_oee*100).toFixed(3)+' %'], 'OEE', color.oee))
   sb.append(drawTr([data[0].availability.toFixed(3)+' %', data[1].availability.toFixed(3)+' %'], 'Availability', color.availability))
   sb.append(drawTr([data[0].performance.toFixed(3)+' %', data[1].performance.toFixed(3)+' %'], 'Performance', color.performance))
