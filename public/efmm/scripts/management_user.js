@@ -10,7 +10,7 @@ $(document).ready(function() {
       var data = JSON.parse(dataStr);
       console.log(data);
     // TODO 메시지 공통 영역으로        
-    if (confirm("삭제하시겠습니까?")) {
+    if (confirm(m.common.confirm.delete)) {
       var link = "/management/users/" + userid;          
       var dataStr = '{id : "'+id+'" }';
       var data = JSON.parse(dataStr);

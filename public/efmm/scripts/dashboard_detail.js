@@ -22,7 +22,7 @@ function refreshOnChange() {
 
 function stackingOnChange() {  
   if(document.querySelectorAll('input[name="stacking"]:checked').length == 2){
-    if (confirm("비교해 보시겠습니까?")) {      
+    if (confirm(m.dashboard.confirm.compare)) {      
       var value = [], cnt = 0;
       $("input[type='checkbox']:checked").each(function() {
         value[cnt++] = $(this).val().split(',');      
@@ -34,7 +34,7 @@ function stackingOnChange() {
 
 function notchingOnChange(){
   if(document.querySelectorAll('input[name="notching"]:checked').length == 2){
-    if (confirm("비교해 보시겠습니까?")) {      
+    if (confirm(m.dashboard.confirm.compare)) {      
       var value = [], cnt = 0;
       $("input[type='checkbox']:checked").each(function() {
            value[cnt++] = $(this).val().split(',');      
