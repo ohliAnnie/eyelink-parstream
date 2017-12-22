@@ -1,6 +1,7 @@
 var logger = global.log4js.getLogger('util');
 require('date-utils');
 var dateFormat = require('dateformat');
+var CONSTS = require('./consts');
 
 function replaceSql(sql, params) {
   // var params = {ID : 'AAAA', DATE: '2016-12-12', NUM: 5};
@@ -231,6 +232,16 @@ function getCommonCode(arr, key) {
   }
 }
 
+function getIndexList(start, end, indexHeader){
+  var list = [], lcnt = 0;
+  start = new Date(start).getTime();
+  end = new Date(end).getTime();
+  for( i = start; i <= end; i += 24*60*60*1000){
+    list[lcnt++] = indexHeader + getMs2Date(i, CONSTS.DATEFORMAT.INDEXDATE, 'Y', 'Y');
+  }
+  return list;
+}
+
 module.exports.replaceSql = replaceSql;
 module.exports.replaceSql2 = replaceSql2;
 module.exports.mergeLoadedData = mergeLoadedData;
@@ -241,3 +252,4 @@ module.exports.getMs2Date = getMs2Date;
 module.exports.getDateLocal2UTC = getDateLocal2UTC;
 module.exports.getDateUTC2Local = getDateUTC2Local;
 module.exports.getCommonCode = getCommonCode;
+module.exports.getIndexList = getIndexList;

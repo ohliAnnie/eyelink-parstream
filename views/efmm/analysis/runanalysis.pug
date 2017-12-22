@@ -37,22 +37,23 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Step
                       .input-icon
-                        select.form-control.input-small.select2me.form-md-line-input(name='step')
+                        select.form-control.input-small.select2.form-md-line-input(name='step')
                           option(value='stacking') Stacking
                   .form-group
                     label.control-label.col-md-5 Data Type
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Data Type
                       .input-icon
-                        select.form-control.input-small.select2me.form-md-line-input(name='data-type')
+                        select.form-control.input-small.select2.form-md-line-input(name='data-type')
                           option(value='status') Status
                   .form-group
                     label.control-label.col-md-5 Machine
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Machine
                       .input-icon
-                        select.form-control.input-small.select2me.form-md-line-input(name='machine')
+                        select.form-control.input-small.select2.form-md-line-input(name='machine')
                           //- TODO : 서버에서 조회해온 값 세팅하도록 수정 필요
+                          option(value=all) ALL
                           option(value=100) 100
                           option(value=200) 200
                           option(value=300) 300
@@ -61,7 +62,7 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Interval
                       .input-icon
-                        select.form-control.input-small.select2me.form-md-line-input(name='interval')
+                        select.form-control.input-small.select2.form-md-line-input(name='interval')
                           option(value=15) 15min
                           option(value=30) 30min
                           option(value=60) 60min
@@ -72,7 +73,7 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Clusters
                       .input-icon
-                        select.form-control.input-small.select2me.form-md-line-input(name='n_cluster')
+                        select.form-control.input-small.select2.form-md-line-input(name='n_cluster')
                           //- TOOD : 서버에서 동적으로 min, max 값을 가지고 옵션 생성하도록 수정 필요
                           option(value=2) 2
                           option(value=3) 3

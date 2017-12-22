@@ -775,9 +775,10 @@ router.post('/restapi/getClusterRawDataByMotorPop', function(req, res, next) {
   var from = Utils.getDate(req.body.startDate, fmt1, -1, 0, 0, 0);
   var to = Utils.getMs2Date(req.body.endDate, fmt1);
   let cid = req.body.machine;
-  let indices = geneerateIndicesList(req.body.startDate, req.body.endDate, indexStackingStatus);
+  let indices = Utils.getIndexList(req.body.startDate, req.body.endDate, indexStackingStatus);
   let source = [];
-  req.body.motorNames.forEach(function(motorName){
+  let motorNames = req.body.motorNames;
+  motorNames.forEach(function(motorName){
     source.push('data.'+motorName);
   });
   source.push('data.measure_time');
@@ -788,6 +789,7 @@ router.post('/restapi/getClusterRawDataByMotorPop', function(req, res, next) {
       , FLAG : 'stacking'
       , SOURCE : source
     };
+    // TODO : 쿼리 사이즈 및 interval을 줘서 검색해올 수 있도록 수정 필요
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawDataByMotor", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -812,128 +814,68 @@ router.post('/restapi/getClusterRawDataByMotorPop', function(req, res, next) {
     // var data = { als : als, noise : noise, vib : vib, power : power };
 
     let set = [];
-    let max = 0;
-    var data1 = {};
-    var data2 = [];
-    // out_data.forEach(function(d){
-    //   d = d._source.data[0];
-    //   logger.debug('[selectClusterRawDataByMotor] output: ', JSON.stringify(d));
-    //   if ( isForClusterChart == 'true'){
-    //     let motorName = req.body.motorNames[0];
-    //     var item = { time: d.measure_time, id: motorName, value: d[motorName] };
-    //     set.push(item);
-    //     if ( max < d[motorName] ){
-    //       max = d[motorName];
-    //     }
-    //     data1 = { data: set, max : max };
-    //   } else {
-    //     // for related factors chart (below 4 charts)
-    //     let a = [];
-    //
-    //     req.body.motorNames.forEach(function(motorName){
-    //       var item = { time: d.measure_time, id: motorName, value: d[motorName] };
-    //       a.push(item);
-    //       if ( max < d[motorName] ){
-    //         max = d[motorName];
-    //       }
-    //     });
-    //     let itemData = { data: a, max : max };
-    //     data2.push(itemData);
-    //   }
-    // });
+    var data = {};
     if ( isForClusterChart == 'true'){
+      let max = 0;
       out_data.forEach(function(d){
         d = d._source.data[0];
-        logger.debug('[selectClusterRawDataByMotor] output: ', JSON.stringify(d));
+        // logger.debug('[selectClusterRawDataByMotor] output: ', JSON.stringify(d));
 
-        let motorName = req.body.motorNames[0];
+        let motorName = motorNames[0];
         var item = { time: d.measure_time, id: motorName, value: d[motorName] };
         set.push(item);
         if ( max < d[motorName] ){
           max = d[motorName];
         }
-        data1 = { data: set, max : max };
+        data = { data: set, max : max };
       });
     } else {
       // for related factors chart (below 4 charts)
-      req.body.motorNames.forEach(function(motorName){
+      // TODO : nested-loop 사용하지 않고 데이터 가공하기
+      for ( let i = 0 ; i < motorNames.length ; i++ ){
         let a = [];
+        let max = 0;
+        let motorName = motorNames[i];
         out_data.forEach(function(d){
           d = d._source.data[0];
-          logger.debug('[selectClusterRawDataByMotor] output: ', JSON.stringify(d));
-          var item = { time: d.measure_time, id: motorName, value: d[motorName] };
+          // logger.debug('[selectClusterRawDataByMotor] output: ', JSON.stringify(d));
+          let time = new Date(d.measure_time).getTime();
+          var item = { time: time, value: d[motorName] };
+          item[motorName] = item.value;
           a.push(item);
           if ( max < d[motorName] ){
             max = d[motorName];
           }
         });
-        let itemData = { data: a, max : max };
-        data2.push(itemData);
-      });
+        let itemData = { data: a, max : max, chartIdx: i };
+        data[motorName] = itemData;
+      }
+      // motorNames.forEach(function(motorName){
+      //   let a = [];
+      //   let max = 0;
+      //   out_data.forEach(function(d){
+      //     d = d._source.data[0];
+      //     logger.debug('[selectClusterRawDataByMotor] output: ', JSON.stringify(d));
+      //     var item = { time: d.measure_time, value: d[motorName] };
+      //     a.push(item);
+      //     if ( max < d[motorName] ){
+      //       max = d[motorName];
+      //     }
+      //   });
+      //   let itemData = { data: a, max : max };
+      //   data[motorName] = itemData;
+      // });
     }
 
     // logger.debug('[getClusterRawDataByMotorPop] output: ', out_data);
     if ( isForClusterChart == 'true'){
-      res.json({rtnCode: rtnCode, rtnData: data1});
+      res.json({rtnCode: rtnCode, rtnData: data});
     } else {
-      res.json({rtnCode: rtnCode, rtnData: data2});
+      res.json({rtnCode: rtnCode, rtnData: data});
     }
   });
 });
-function geneerateIndicesList(from, to, indexHeader){
-  let mFrom = moment(from);
-  let mTo = moment(to);
 
-  let diff = mTo.diff(mFrom, 'days');
-  if ( diff == 0 ) {
-    return [indexHeader + mTo.format('YYYY.MM.DD').toString()];
-  } else  {
-    let indices = [];
-    let tmp = mFrom;
-    indices.push(indexHeader + tmp.format('YYYY.MM.DD').toString());
-
-    for ( let i = 0; i < diff; i++ ){
-      tmp = tmp.add(1, 'day');
-      indices.push(indexHeader + tmp.format('YYYY.MM.DD').toString());
-    }
-    return indices;
-  }
-}
-// // Clustering > Cluster Detail(Pop-up) > Cluster Chart
-// router.post('/restapi/getClusterChartByMachine', function(req, res, next) {
-//   logger.debug("[getClusterChartByMachine] req.body: ", req.body);
-//   var from = Utils.getDateLocal2UTC(req.body.startDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
-//   var to = Utils.getDateLocal2UTC(req.body.endDate, CONSTS.DATEFORMAT.DATETIME, 'Y');
-//   let cid = req.body.machine;
-//
-//   var in_data = {
-//         INDEX : indexCore+'*',   TYPE : "corecode",
-//         FROM: from, TO: to,
-//         NODE: req.body.nodeId.split(',')
-//       };
-//   queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
-//      //logger.debug(out_data);
-//     var rtnCode = CONSTS.getErrData('0000');
-//     if (out_data === null) {
-//       rtnCode = CONSTS.getErrData('0001');
-//     } else {
-//       var set = [];
-//       var max = 0;
-//       out_data.forEach(function(d){
-//         d = d._source;
-//
-//         d.event_time = Utils.getDateUTC2Local(d.event_time, fmt2);
-//         set.push({ time:d.event_time, id: d.node_id, value: d[req.query.factor]});
-//         if(d[req.query.factor] > max){
-//           max = d[req.query.factor];
-//         }
-//       });
-//       var data = { data : set, max : max };
-//     }
-//     logger.debug('analysis/restapi/getClusterNodeLive -> length : %s', out_data.length);
-//     res.json({rtnCode: rtnCode, rtnData: data});
-//   });
-// });
 
 // Run Analysis
 router.post('/restapi/runAnalysis', function(req, res, next) {
@@ -941,7 +883,13 @@ router.post('/restapi/runAnalysis', function(req, res, next) {
   var gte = Utils.getDate(req.body.startDate, fmt1, -1, 0, 0, 0);
   var in_data = {"start_date": gte+startTime,
                 "end_date": req.body.endDate+startTime,
-                "time_interval": parseInt(req.body.interval)};
+                "time_interval": parseInt(req.body.interval),
+                "cid": req.body.machine,
+                "type": req.body.dataType,
+                "n_cluster": req.body.n_cluster,
+                "step": req.body.step
+              };
+
   in_data = JSON.stringify(in_data, null, 4);
   logger.debug(in_data);
   // FIX-ME Socket Connection Close 처리 로직 보완 필요함.

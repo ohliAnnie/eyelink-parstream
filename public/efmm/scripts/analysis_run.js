@@ -5,7 +5,6 @@ $(document).ready(function(e) {
   $('#sdate').val(moment().format(dateFormat));
   $('#edate').val(moment().format(dateFormat));
   $('#btn_runanalysis').click(function() {
-
     runAnalysis();
   });
 });

@@ -540,7 +540,7 @@ function clusterNodeList(data, clusterName){
   var sb = '<tr><td><span class="bold theme-fone">'+clusterName+'</span></td><td></td></tr>';
   for(var i=0; i < data.length; i++) {
     sb +='<tr><td></td><td>';
-    var script = "javascript:getNodePower('"+data[i]+"');";
+    var script = "javascript:getNodePower('"+data[i]+"');"; // data[i] == Motor Name
     sb +='<a class="primary-link" href="'+script+'">' + data[i] + '</a></td></tr>';
     // var script = "javascript:clickMotorName('"+data[i]+"');";
     // sb +='<a class="primary-link" href="'+script+'">' + data[i] + '</a></td></tr>';
@@ -556,7 +556,8 @@ function clusterNodeList(data, clusterName){
   // return sb;
 }
 
-function getNodePower(nodeList, len){
+function getNodePower(motorName, len){
+
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
   if ($('#factor0').is(':checked') === true) {
@@ -568,23 +569,25 @@ function getNodePower(nodeList, len){
   } else if ($('#factor3').is(':checked') === true) {
     var factor = $('#factor3').val();
   }
-  var node = nodeList;
-  var idCnt = node.length;
+  var idCnt = motorName.length;
   var start = urlParams.start;
   var end = urlParams.end;
   var last, start;
 
-  var data = { startDate:start, endDate:end, motorName: node, machine : factor };
+  var data = { startDate:start, endDate:end, motorNames: [motorName], machine : factor, isForClusterChart: true };
   var in_data = { url : "/analysis/restapi/getClusterRawDataByMotorPop", type : "POST", data : data };
   ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {
       console.log(result.rtnData);
-      drawNode(result.rtnData, node.split(',').length, len);
+      drawNode(result.rtnData, motorName.split(',').length, len);
     } else {
       //- $("#errormsg").html(result.message);
     }
   });
+
+  clickMotorName(motorName);
 }
+
 var oldL = 0;
 function drawNode(rtnData, idCnt, len) {
   idCnt = 1;
@@ -601,100 +604,101 @@ function drawNode(rtnData, idCnt, len) {
   var edate = new Date(data[data.length-1].time);
 
   // Set the dimensions of the canvas / graph
-var margin = {top: 5, right: 20, bottom: 20, left: 30},
+  var margin = {top: 5, right: 20, bottom: 20, left: 30},
     width = (window.innerWidth*0.3) - margin.left - margin.right,
     height = 315 - margin.top - margin.bottom - 15*idCnt/4;
     //- (20*(idCnt/(width/100)));
 
-// Set the ranges
-var x = d3.time.scale().range([0, width]);
-var y = d3.scale.linear().range([height, 0]);
+  // Set the ranges
+  var x = d3.time.scale().range([0, width]);
+  var y = d3.scale.linear().range([height, 0]);
 
-// Define the axes
-var xAxis = d3.svg.axis().scale(x)
-    .orient("bottom").ticks(5);
-var yAxis = d3.svg.axis().scale(y)
-    .orient("left").ticks(5);
+  // Define the axes
+  var xAxis = d3.svg.axis().scale(x)
+      .orient("bottom").ticks(5);
+  var yAxis = d3.svg.axis().scale(y)
+      .orient("left").ticks(5);
 
-// Define the line
-var priceline = d3.svg.line()
-    .x(function(d) { return x(new Date(d.time)); })
-    .y(function(d) { return y(d.value); });
+  // Define the line
+  var priceline = d3.svg.line()
+      .x(function(d) { return x(new Date(d.time)); })
+      .y(function(d) { return y(d.value); });
 
 
-// Adds the svg canvas
-var svg = d3.select("#nodeChart")
-    .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-        .attr("transform",
-              "translate(" + margin.left + "," + margin.top + ")");
+  // Adds the svg canvas
+  var svg = d3.select("#nodeChart")
+      .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+          .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
 
-    // Scale the range of the data
-    x.domain(d3.extent(data, function(d) {
-         return new Date(d.time); }));
-    y.domain([0, max]);
+  // Scale the range of the data
+  x.domain(d3.extent(data, function(d) {
+       return new Date(d.time); }));
+  y.domain([0, max]);
 
-    // Nest the entries by symbol
-    var dataNest = d3.nest()
-        .key(function(d) {return d.id;})
-        .entries(data);
+  // Nest the entries by symbol
+  var dataNest = d3.nest()
+      .key(function(d) {return d.id;})
+      .entries(data);
 
   var color = d3.scale.category20();
 
-    legendSpace = width/dataNest.length; // spacing for legend // ******
+  legendSpace = width/dataNest.length; // spacing for legend // ******
 
-    // Loop through each symbol / key
-    dataNest.forEach(function(d,i) {                           // ******
-        svg.append("path")
-            .attr("class", "line")
-            .style("stroke", function() { // Add the colours dynamically
-                return d.color = color(d.key); })
-            .attr("d", priceline(d.values));
+  // Loop through each symbol / key
+  dataNest.forEach(function(d,i) {                           // ******
+    svg.append("path")
+        .attr("class", "line")
+        .style("stroke", function() { // Add the colours dynamically
+            return d.color = color(d.key); })
+        .attr("d", priceline(d.values));
 
- var legend = d3.select("#nodeChart").append("svg")
-          .attr("class", "legend")
-          // .attr("width", 50 + d.key.length*20)
-          .attr("width", width)
-          .attr("height", 15)
-          .selectAll("g")
-          .data(data)
-          .enter().append("g")
-          .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+    var legend = d3.select("#nodeChart").append("svg")
+            .attr("class", "legend")
+            // .attr("width", 50 + d.key.length*20)
+            .attr("width", width)
+            .attr("height", 15)
+            .selectAll("g")
+            .data(data)
+            .enter().append("g")
+            .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
-      legend.append("rect")
-          .attr("width", 10)
-          .attr("height", 10)
-          .style("fill", function() { // dynamic colours    // *******
-             return d.color = color(d.key); });
+    legend.append("rect")
+        .attr("width", 10)
+        .attr("height", 10)
+        .style("fill", function() { // dynamic colours    // *******
+           return d.color = color(d.key); });
 
-      legend.append("text")
-          // .attr("x", 50)
-          .attr("x", 20)
-          .attr("y", 7)
-          .attr("dy", ".25em")
-          .text(d.key);
-    });
+    legend.append("text")
+        // .attr("x", 50)
+        .attr("x", 20)
+        .attr("y", 7)
+        .attr("dy", ".25em")
+        .text(d.key);
+  });
 
-    // Add the X Axis
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+  // Add the X Axis
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
 
-    // Add the Y Axis
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis);
+  // Add the Y Axis
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
 }
 
 function clickMotorName(motorName) {
-
+  // 팝업 하단에 선택된 모터의 전후 2개씩의 모터에 대한 정보 조회 및 차트 그리기
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
   let machine = $('.machine-label>label.active>input').val();
-  var data = { sdate:sdate, edate:edate, motor:motorName, machine:machine };
+  let motorNames = getMotorNames(motorName);
+  var data = { startDate:sdate, endDate:edate, motorNames:motorNames, machine:machine, isForClusterChart: false };
   var in_data = { url : "/analysis/restapi/getClusterRawDataByMotorPop", type : "POST", data : data };
   ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {
@@ -705,64 +709,102 @@ function clickMotorName(motorName) {
     }
   });
 }
+function getMotorNames(motorName){
+  let motorNamesArr = ['sepa_unwind', 'sepa_epc', 'feeding_roll', 'an_el_supply_x', 'ca_el_supply_x', 'an_align_y1',
+                        'an_align_y2', 'an_align_x', 'an_el_supply_z', 'ca_el_supply_z', 'ca_align_y1',
+                        'ca_align_y2', 'ca_align_x', 'sepa_guide_y', 'sub_epc', 'swing_s', 'swing_an_z',
+                        'swing_ca_z', 'stack_table_z', 'stack_anode_mandrel_x1', 'stack_anode_mandrel_x2',
+                        'stack_anode_mandrel_z', 'stack_cathode_mandrel_x1', 'stack_cathode_mandrel_x2',
+                        'stack_cathode_mandrel_z', 'cutter_y', 'pull_s', 'pull_y', 'winder_x1', 'winder_x2',
+                        'winder_s1', 'winder_s2', 'bonding_x', 'bonding_z', 'turn_table_x', 'turn_table_s',
+                        'unloader_y', 'an_mgn_l_z', 'an_el_l_z', 'ca_mgn_l_z', 'ca_el_l_z',
+                        'unloader_z', 'stack_sepa_guide_z', 'swing_an_z-sub', 'swing_ca_z-sub'];
 
+  let motorNamesResult = ['', '', '', ''];
+
+  for ( let i = 0 ; i < motorNamesArr.length ; i++ ){
+    // console.log('momtorName: ',motorName,', motorNamesArr[i]: ',motorNamesArr[i]);
+
+    if ( motorNamesArr[i] == motorName ){
+      if ( i >= 2 )
+        motorNamesResult[0] = motorNamesArr[i-2];
+      if ( i >= 1 )
+        motorNamesResult[1] = motorNamesArr[i-1];
+      if ( i <= motorNamesArr.length - 1 )
+        motorNamesResult[2] = motorNamesArr[i+1];
+      if ( i <= motorNamesArr.length - 2 )
+        motorNamesResult[3] = motorNamesArr[i+2];
+      break;
+    }
+  }
+  console.log('[getMotorNames] : ',motorNamesResult);
+  return motorNamesResult;
+}
 function drawTimeseries(data) {
   console.log('[drawTimeseries] data: ',data);
-   d3.select("#ts-chart01").select("svg").remove();
-   d3.select("#ts-chart02").select("svg").remove();
-   d3.select("#ts-chart03").select("svg").remove();
-   d3.select("#ts-chart04").select("svg").remove();
+
+  // TODO : key에 따라 차트 그리기
+  d3.select("#ts-chart01").select("svg").remove();
+  d3.select("#ts-chart02").select("svg").remove();
+  d3.select("#ts-chart03").select("svg").remove();
+  d3.select("#ts-chart04").select("svg").remove();
+
+  let keys = Object.keys(data);
+  for ( let i=0; i < keys.length; i++ ) {
+      let chartInfo = data[keys[i]];
+      console.log('[chartInfo]',chartInfo);
+      let chartData = chartInfo.data;
+      console.log('[chartData]',chartData);
+
+      if ( chartInfo.chartIdx == 0 ){
+        var chartName = '#ts-chart01';
+        chart01 = d3.timeseries()
+          .addSerie(chartData,{x:'time',y:keys[i]},{interpolate:'linear'})
+          // .xscale.tickFormat(d3.time.format("%b %d"))
+          .width(window.innerWidth*0.2)
+          .height(270)
+          // .yscale.tickFormat(french_locale.numberFormat(",f"))
+          .margin.left(0);
+        chart01(chartName);
+      } else if ( chartInfo.chartIdx == 1 ) {
+        var chartName = '#ts-chart02';
+        chart02 = d3.timeseries()
+          .addSerie(chartData,{x:'time',y:keys[i]},{interpolate:'linear'})
+          // .xscale.tickFormat(french_timeformat)
+          .width(window.innerWidth*0.2)
+          .height(270)
+          // .yscale.tickFormat(french_locale.numberFormat(",f"))
+          .margin.left(0);
+        chart02(chartName);
+      } else if ( chartInfo.chartIdx == 2 ) {
+        chartName = '#ts-chart03';
+        chart03 = d3.timeseries()
+          .addSerie(chartData,{x:'time',y:keys[i]},{interpolate:'linear'})
+          // .xscale.tickFormat(french_timeformat)
+          .width(window.innerWidth*0.2)
+          .height(270)
+          // .yscale.tickFormat(french_locale.numberFormat(",f"))
+          .margin.left(0);
+        chart03(chartName);
+      } else if ( chartInfo.chartIdx == 3 ) {
+        chartName = '#ts-chart04';
+        chart04 = d3.timeseries()
+          .addSerie(chartData,{x:'time',y:keys[i]},{interpolate:'linear'})
+          // .xscale.tickFormat(french_timeformat)
+          .width(window.innerWidth*0.2)
+          .height(270)
+          // .yscale.tickFormat(french_locale.numberFormat(",f"))
+          .margin.left(0);
+        chart04(chartName);
+      } else {
+        // do nothing
+      }
+  }
+
+
   // 데이터 가공
   var df = d3.time.format('%Y-%m-%dT%H:%M:%S');
-  var chartName = '#ts-chart01';
-  chart01 = d3.timeseries()
-    .addSerie(data.power,{x:'time',y:'active_power'},{interpolate:'linear'})
-    .addSerie(data.power,{x:'time',y:'ampere'},{interpolate:'step-before'})
-    .addSerie(data.power,{x:'time',y:'amount_active_power'},{interpolate:'linear'})
-    // .xscale.tickFormat(d3.time.format("%b %d"))
-    .width(window.innerWidth*0.2)
-    .height(270)
-    // .yscale.tickFormat(french_locale.numberFormat(",f"))
-    .margin.left(0);
 
-  chart01(chartName);
 
-  var chartName = '#ts-chart02';
-  chart02 = d3.timeseries()
-    .addSerie(data.als,{x:'time',y:'als_level'},{interpolate:'step-before'})
-    .addSerie(data.als,{x:'time',y:'dimming_level'},{interpolate:'linear'})
-    // .xscale.tickFormat(french_timeformat)
-    .width(window.innerWidth*0.2)
-    .height(270)
-    // .yscale.tickFormat(french_locale.numberFormat(",f"))
-    .margin.left(0);
-
-  chart02(chartName);
-
-  chartName = '#ts-chart03';
-  chart03 = d3.timeseries()
-    .addSerie(data.noise,{x:'time',y:'decibel'},{interpolate:'step-before'})
-    .addSerie(data.noise,{x:'time',y:'frequency'},{interpolate:'linear'})
-    // .xscale.tickFormat(french_timeformat)
-    .width(window.innerWidth*0.2)
-    .height(270)
-    // .yscale.tickFormat(french_locale.numberFormat(",f"))
-    .margin.left(0);
-
-  chart03(chartName);
-
-  chartName = '#ts-chart04';
-  chart04 = d3.timeseries()
-    .addSerie(data.vib,{x:'time',y:'vibration_x'},{interpolate:'linear'})
-    .addSerie(data.vib,{x:'time',y:'vibration_y'},{interpolate:'step-before'})
-    .addSerie(data.vib,{x:'time',y:'vibration_z'},{interpolate:'linear'})
-    .addSerie(data.vib,{x:'time',y:'vibration'},{interpolate:'linear'})
-    // .xscale.tickFormat(french_timeformat)
-    .width(window.innerWidth*0.2)
-    .height(270)
-    // .yscale.tickFormat(french_locale.numberFormat(",f"))
-    .margin.left(0);
-
-  chart04(chartName);
 }
 

@@ -76,10 +76,10 @@ html
                         label.control-label.col-md-1 Machine
                         .col-md-4
                           .machine-label.btn-group.btn-group-devided(data-toggle='buttons')
-                            label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm.active
+                            label.btn.btn-transparent.green-sharp.btn-circle.btn-sm.active
                               input#factor0.toggle(type='radio', name='options', value='100', checked='Y')
                               | 100
-                            label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
+                            label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
                               input#factor1.toggle(type='radio', name='options', value='200')
                               | 200
                           //-
@@ -137,7 +137,7 @@ html
                 .portlet-title
                   .caption.font-dark
                     span.caption-subject.bold.uppercase Cluster Chart
-                    span.caption-helper  by Nodes real data
+                    span.caption-helper  by Motor real data
                 .portlet-body
                   .chart(style='height:350px;')
                     #nodeChart
@@ -156,8 +156,8 @@ html
               .portlet.light(style='height:370px;')
                 .portlet-title
                   .caption
-                    span.caption-subject.bold.uppercase.font-blue-sharp Power
-                    span.caption-helper  by Node real data
+                    span.caption-subject.bold.uppercase.font-blue-sharp#1th-factor Motor Not Chosen
+                    span.caption-helper  by Motor real data
                 .portlet-body(style='height:auto;')
                  .chart
                   #ts-chart01
@@ -165,8 +165,8 @@ html
               .portlet.light.bordered(style='height:370px;')
                 .portlet-title
                   .caption
-                    span.caption-subject.bold.uppercase.font-green-haze ALS/Dimming
-                    span.caption-helper  by Node real data
+                    span.caption-subject.bold.uppercase.font-blue-sharp#2th-factor Motor Not Chosen
+                    span.caption-helper  by Motor real data
                 .portlet-body
                   .chart
                     #ts-chart02
@@ -174,8 +174,8 @@ html
               .portlet.light.bordered(style='height:370px;')
                 .portlet-title
                   .caption
-                    span.caption-subject.bold.uppercase.font-green-haze Noise
-                    span.caption-helper  by Node real data
+                    span.caption-subject.bold.uppercase.font-green-haze#3th-factor Motor Not Chosen
+                    span.caption-helper  by Motor real data
                 .portlet-body
                   .chart
                     #ts-chart03
@@ -183,8 +183,8 @@ html
               .portlet.light.bordered(style='height:370px;')
                 .portlet-title
                   .caption
-                    span.caption-subject.bold.uppercase.font-green-haze Vibration
-                    span.caption-helper  by Node real data
+                    span.caption-subject.bold.uppercase.font-green-haze#4th-factor Motor Not Chosen
+                    span.caption-helper  by Motor real data
                 .portlet-body
                   .chart
                     #ts-chart04
