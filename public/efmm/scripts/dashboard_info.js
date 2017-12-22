@@ -118,7 +118,7 @@ function historyTable(alarm, alarmCount){
   for(i=0; i<alarm.length; i++) {    
     sbH.append('<tr><th>'+alarm[i].date+'</th><tr><tr><td>');    
     for(j=0; j<alarm[i].list.length; j++){
-      if(j!=0){ sbH.append(','); }      
+      if(j!=0){ sbH.append('<br>'); }      
       sbH.append(alarm[i].list[j]);
     }
     sbH.append('</td></tr>');

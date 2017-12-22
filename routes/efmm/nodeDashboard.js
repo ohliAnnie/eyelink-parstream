@@ -1,5 +1,6 @@
 var logger = global.log4js.getLogger('nodeDashboard');
 var CONSTS = require('../consts');
+var CCODE = require('./commonCode');
 var Utils = require('../util');
 var express = require('express');
 require('date-utils');
@@ -398,7 +399,7 @@ router.get('/restapi/getDetailAlarmList', function(req, res, next) {
           if(key === "measure_time"){
             c.date = Utils.getDateUTC2Local(d[key], fmt2);
           } else {
-            list[lcnt++] = key;
+            list[lcnt++] = CCODE.COMMONCODE.ALARM[req.query.flag][key];
           }        
         }
         c.list = list;
@@ -571,13 +572,14 @@ router.get('/restapi/getDashboardInfo', function(req, res, next) {
       } else {                      
         console.log(alarm)        
         for(i=0; i<out_data.length; i++){        
+          console.log(out_data[i]._source)
           var d = out_data[i]._source.data[0];
           var c = {}, list = [], ccnt = 0;
           for(key in d){
             if(key === "measure_time"){
               c.date = Utils.getDateUTC2Local(d[key], fmt2);
             } else {
-              list[ccnt++] = key;
+              list[ccnt++] = CCODE.COMMONCODE.ALARM[out_data[i]._source.flag][key];
             }
             c.list = list;
           }

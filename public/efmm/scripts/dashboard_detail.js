@@ -132,7 +132,7 @@ function innerTable(data, event){
   sb += '<div class="row"><div class="col-sm-12">';
   sb += '<div class="col-xs-12 label mes-status color-'+data.state+'">'+data.state;
   if(data.alarmCount != undefined) {
-    sb += ' <span class="badge badge-warning" onclick="getAlarmHistory('+"'"+data.flag+"','"+data.cid+"'"+')">'+data.alarmCount+'</span>';    
+    sb += ' <button type="button" class="btn btn-warning btn-xs" onclick="getAlarmHistory('+"'"+data.flag+"','"+data.cid+"'"+')">'+data.alarmCount+'</button>';    
   }
 
   sb += '</div>';
@@ -184,9 +184,9 @@ function drawAlarmModal(data, flag, cid){
   sbM.append('<thread><th style="text-align:center;">Date</th><th style="text-align:center;">List</th>');
   sbM.append('<th>Check</th></thread><tbody>');
   for(i=0; i<data.length; i++) {      
-    sbM.append('<tr><td>'+data[i].date+'</td><td>');
+    sbM.append('<tr><td>'+data[i].date+'</td><td style="text-align:left;">');
     for(j=0; j<data[i].list.length; j++) {
-      if(j!=0){ sbM.append(', ') }
+      if(j!=0){ sbM.append('<br>') }
       sbM.append(data[i].list[j]);
     }    
     sbM.append('</td><td><button type="button" class="btn btn-primary btn-xs" onclick="updateAlarm(');
