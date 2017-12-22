@@ -37,15 +37,6 @@ router.get('/', function(req, res, next) {
   res.render('efmm' + '/analysis/anomaly', outdata);
 });
 
-router.get('/clustering', function(req, res, next) {
-  var outdata = { title: global.config.productname, mainmenu : mainmenu };
-  res.render('efmm' + '/analysis/clustering', outdata);
-});
-
-router.get('/clusteringPop', function(req, res, next) {
-  res.render('efmm' + '/analysis/clustering_popup', { title: global.config.productname, mainmenu:mainmenu});
-});
-
 router.get('/anomaly', function(req, res, next) {
   var outdata = { title: global.config.productname, mainmenu : mainmenu };
   var index = [indexNotchingOee+"*", indexStackingOee+"*"];
@@ -70,8 +61,21 @@ router.get('/anomaly', function(req, res, next) {
       outdata.list = list;
     }
     logger.info('mainmenu : %s, outdata : %s', mainmenu.timeseries, JSON.stringify(outdata));
-    res.render('efmm'+'/analysis/anomaly', outdata);
+    res.render('efmm/analysis/anomaly', outdata);
   });
+});
+
+router.get('/clustering', function(req, res, next) {
+  var outdata = { title: global.config.productname, mainmenu : mainmenu };
+  res.render('efmm/analysis/clustering', outdata);
+});
+
+router.get('/clusteringPop', function(req, res, next) {
+  res.render('efmm/analysis/clustering_popup', { title: global.config.productname, mainmenu:mainmenu});
+});
+
+router.get('/runanalysis', function(req, res, next) {
+  res.render('efmm/analysis/runanalysis', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/pattern', function(req, res, next) {
@@ -672,11 +676,11 @@ router.get('/restapi/getDaClusterMaster', function(req, res, next) {
   let cid = req.query.machine;
   let interval = req.query.interval;
   let source = [];
-  source.push('da_result.'+cid);
-  source.push('da_result.start_date');
-  source.push('da_result.end_date');
-  source.push('da_result.da_time');
-  source.push('da_result.time_interval');
+  source.push(''+cid);
+  source.push('start_date');
+  source.push('end_date');
+  source.push('da_time');
+  source.push('time_interval');
   let in_data = {
       INDEX : indexClusteringMaster, TYPE : "master",
       START: Utils.getDateLocal2UTC(gte, CONSTS.DATEFORMAT.DATETIME, 'Y'),
@@ -700,7 +704,7 @@ router.get('/restapi/getDaClusterMaster', function(req, res, next) {
       var data = [];
       out_data.forEach(function(d){
         logger.debug('Output of selectDaClusterMaster: ',d);
-        d = d._source.da_result;
+        d = d._source;
         d.da_time = Utils.getDateUTC2Local(d.da_time, fmt2);
         d.start_date = Utils.getDateUTC2Local(d.start_date, fmt1);
         d.end_date = Utils.getDateUTC2Local(d.end_date, fmt1);
@@ -717,12 +721,12 @@ router.get('/restapi/getDaClusterDetail', function(req, res, next) {
   var dadate = Utils.getDateLocal2UTC(req.query.dadate, fmt2, 'Y');
   let cid = req.query.machine;
   let source = [];
-  source.push('da_result.'+cid);
-  source.push('da_result.start_date');
-  source.push('da_result.end_date');
-  source.push('da_result.da_time');
-  source.push('da_result.time_interval');
-  source.push('da_result.event_time');
+  source.push(''+cid);
+  source.push('start_date');
+  source.push('end_date');
+  source.push('da_time');
+  source.push('time_interval');
+  source.push('measure_time');
 
   var in_data = { INDEX : indexClusteringDetail, TYPE : "detail", ID : dadate, SOURCE : source };
   queryProvider.selectSingleQueryByID2("analysis", "selectByIdForClusteringChart", in_data, function(err, out_data, params) {
@@ -733,13 +737,13 @@ router.get('/restapi/getDaClusterDetail', function(req, res, next) {
       var rtnCode = CONSTS.getErrData('0000');
       var data = [];
       // logger.debug('Output for selectByIdForClusteringChart: ',JSON.stringify(out_data));
-      var d = out_data[0]._source.da_result;
-      // logger.debug('output: ', d);
+      var d = out_data[0]._source;
+      logger.debug('[selectByIdForClusteringChart] output: ', d);
       d.da_time = Utils.getDateUTC2Local(d.da_time, fmt2);
       for( i = 0 ; i < d[cid]['cluster_00'].length ; i++){
-        var event_time = Utils.getDateUTC2Local(d['event_time'][i], fmt2);
+        var measure_time = Utils.getDateUTC2Local(d['measure_time'][i], fmt2);
         // data.push({ time : event_time, c0:d['cluster_00'][i], c1:d['cluster_01'][i], c2:d['cluster_02'][i], c3:d['cluster_03'][i], c4:d['cluster_04'][i]});
-        data.push({ time : event_time, c0:d[cid]['cluster_00'][i], c1:d[cid]['cluster_01'][i], c2:d[cid]['cluster_02'][i], c3:d[cid]['cluster_03'][i]});
+        data.push({ time : measure_time, c0:d[cid]['cluster_00'][i], c1:d[cid]['cluster_01'][i], c2:d[cid]['cluster_02'][i], c3:d[cid]['cluster_03'][i]});
       }
       //console.log(data);
       logger.debug('analysis/restapi/getDaClusterDetail -> length : %s', out_data.length);
@@ -760,19 +764,22 @@ router.get('/restapi/getDaClusterMasterBydadate', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     }
     logger.debug('analysis/restapi/getDaClusterMasterBydadate -> length : %s', out_data.length);
-    res.json({rtnCode: rtnCode, rtnData: out_data[0]._source.da_result });
+    res.json({rtnCode: rtnCode, rtnData: out_data[0]._source });
   });
 });
 
 // Clustering > Cluster Detail(Pop-up) > Clustering
 router.post('/restapi/getClusterRawDataByMotorPop', function(req, res, next) {
   logger.debug('[getClusterRawDataByMotorPop] req.body: ',req.body);
+  var isForClusterChart = req.body.isForClusterChart;
   var from = Utils.getDate(req.body.startDate, fmt1, -1, 0, 0, 0);
   var to = Utils.getMs2Date(req.body.endDate, fmt1);
   let cid = req.body.machine;
   let indices = geneerateIndicesList(req.body.startDate, req.body.endDate, indexStackingStatus);
   let source = [];
-  source.push('data.'+req.body.motorName);
+  req.body.motorNames.forEach(function(motorName){
+    source.push('data.'+motorName);
+  });
   source.push('data.measure_time');
 
   var in_data = {  INDEX : indices, TYPE : "status",
@@ -806,19 +813,71 @@ router.post('/restapi/getClusterRawDataByMotorPop', function(req, res, next) {
 
     let set = [];
     let max = 0;
-    out_data.forEach(function(d){
-      d = d._source.data[0];
-      logger.debug('[selectClusterRawDataByMotor] output: ', JSON.stringify(d));
-      var item = { time: d.measure_time, id: req.body.motorName, value: d[req.body.motorName] };
-      set.push(item);
-      if ( max < d[req.body.motorName] ){
-        max = d[req.body.motorName];
-      }
-    });
-    logger.debug('[getClusterRawDataByMotorPop] output: ', out_data);
-    var data = { data: set, max : max};
+    var data1 = {};
+    var data2 = [];
+    // out_data.forEach(function(d){
+    //   d = d._source.data[0];
+    //   logger.debug('[selectClusterRawDataByMotor] output: ', JSON.stringify(d));
+    //   if ( isForClusterChart == 'true'){
+    //     let motorName = req.body.motorNames[0];
+    //     var item = { time: d.measure_time, id: motorName, value: d[motorName] };
+    //     set.push(item);
+    //     if ( max < d[motorName] ){
+    //       max = d[motorName];
+    //     }
+    //     data1 = { data: set, max : max };
+    //   } else {
+    //     // for related factors chart (below 4 charts)
+    //     let a = [];
+    //
+    //     req.body.motorNames.forEach(function(motorName){
+    //       var item = { time: d.measure_time, id: motorName, value: d[motorName] };
+    //       a.push(item);
+    //       if ( max < d[motorName] ){
+    //         max = d[motorName];
+    //       }
+    //     });
+    //     let itemData = { data: a, max : max };
+    //     data2.push(itemData);
+    //   }
+    // });
+    if ( isForClusterChart == 'true'){
+      out_data.forEach(function(d){
+        d = d._source.data[0];
+        logger.debug('[selectClusterRawDataByMotor] output: ', JSON.stringify(d));
 
-    res.json({rtnCode: rtnCode, rtnData: data});
+        let motorName = req.body.motorNames[0];
+        var item = { time: d.measure_time, id: motorName, value: d[motorName] };
+        set.push(item);
+        if ( max < d[motorName] ){
+          max = d[motorName];
+        }
+        data1 = { data: set, max : max };
+      });
+    } else {
+      // for related factors chart (below 4 charts)
+      req.body.motorNames.forEach(function(motorName){
+        let a = [];
+        out_data.forEach(function(d){
+          d = d._source.data[0];
+          logger.debug('[selectClusterRawDataByMotor] output: ', JSON.stringify(d));
+          var item = { time: d.measure_time, id: motorName, value: d[motorName] };
+          a.push(item);
+          if ( max < d[motorName] ){
+            max = d[motorName];
+          }
+        });
+        let itemData = { data: a, max : max };
+        data2.push(itemData);
+      });
+    }
+
+    // logger.debug('[getClusterRawDataByMotorPop] output: ', out_data);
+    if ( isForClusterChart == 'true'){
+      res.json({rtnCode: rtnCode, rtnData: data1});
+    } else {
+      res.json({rtnCode: rtnCode, rtnData: data2});
+    }
   });
 });
 function geneerateIndicesList(from, to, indexHeader){
@@ -875,5 +934,75 @@ function geneerateIndicesList(from, to, indexHeader){
 //     res.json({rtnCode: rtnCode, rtnData: data});
 //   });
 // });
+
+// Run Analysis
+router.post('/restapi/runAnalysis', function(req, res, next) {
+  logger.debug(req.body);
+  var gte = Utils.getDate(req.body.startDate, fmt1, -1, 0, 0, 0);
+  var in_data = {"start_date": gte+startTime,
+                "end_date": req.body.endDate+startTime,
+                "time_interval": parseInt(req.body.interval)};
+  in_data = JSON.stringify(in_data, null, 4);
+  logger.debug(in_data);
+  // FIX-ME Socket Connection Close 처리 로직 보완 필요함.
+  getConnectionToDA("DataAnalysis", function(socket) {
+    logger.debug(socket);
+    writeDataToDA(socket, in_data, function() {
+      var rtnCode = CONSTS.getErrData('0000');
+      res.json({rtnCode: rtnCode, rtnData: ''});
+    });
+  });
+});
+
+function getConnectionToDA(connName, callback){
+  var pUrl = global.config.analysis.host;
+  var pPort = global.config.analysis.port;
+  // var pUrl = 'm2u-da.eastus.cloudapp.azure.com';
+  // var pUrl = 'localhost';
+  logger.debug(pUrl);
+  logger.debug(pPort);
+  var client = net.connect({port: pPort, host:pUrl}, function() {
+    logger.debug(connName + ' Connected: ');
+    logger.debug('   local = %s:%s', this.localAddress, this.localPort);
+    logger.debug('   remote = %s:%s', this.remoteAddress, this.remotePort);
+    this.setTimeout(500);
+    this.setEncoding('utf8');
+    this.on('data', function(data) {
+      logger.debug(connName + " From Server: " + data.toString());
+      this.end();
+    });
+    this.on('end', function() {
+      logger.debug(connName + ' Client disconnected');
+    });
+    this.on('error', function(err) {
+      logger.debug('Socket Error: ', JSON.stringify(err));
+    });
+    this.on('timeout', function() {
+      logger.debug('Socket Timed Out');
+    });
+    this.on('close', function() {
+      logger.debug('Socket Closed');
+    });
+    callback(client);
+  });
+  // return client;
+}
+
+function writeDataToDA(socket, data, callback){
+  var success = !socket.write(data);
+  logger.debug('success : ' + success);
+  if (!success){
+    (function(socket, data){
+      socket.once('drain', function(){
+        logger.debug('drain');
+        writeData(socket, data, callback);
+      });
+    })(socket, data);
+  }
+
+  if (success) {
+    callback();
+  }
+}
 
 module.exports = router;
