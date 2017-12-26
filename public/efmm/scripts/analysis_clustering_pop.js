@@ -934,20 +934,22 @@ function getRelatedMotorNames(motorName) {
     'unloader_z', 'stack_sepa_guide_z', 'swing_an_z-sub', 'swing_ca_z-sub'
   ];
 
-  let motorNamesResult = ['', '', '', ''];
+  let motorNamesResult = ['1', '2', '3', '4'];
 
   for (let i = 0; i < motorNamesArr.length; i++) {
-    // console.log('momtorName: ',motorName,', motorNamesArr[i]: ',motorNamesArr[i]);
-
     if (motorNamesArr[i] == motorName) {
-      if (i >= 2)
+      if (i >= 2) {
         motorNamesResult[0] = motorNamesArr[i - 2];
-      if (i >= 1)
+      }
+      if (i >= 1) {
         motorNamesResult[1] = motorNamesArr[i - 1];
-      if (i <= motorNamesArr.length - 1)
+      }
+      if (i <= motorNamesArr.length - 1) {
         motorNamesResult[2] = motorNamesArr[i + 1];
-      if (i <= motorNamesArr.length - 2)
+      }
+      if (i <= motorNamesArr.length - 2) {
         motorNamesResult[3] = motorNamesArr[i + 2];
+      }
       break;
     }
   }
@@ -971,70 +973,31 @@ function drawTimeseries(data) {
     let chartData = chartInfo.data;
     console.log('[chartData]', chartData);
 
+    chart = d3.timeseries()
+      .addSerie(chartData, {
+        x: 'time',
+        y: keys[i]
+      }, {
+        interpolate: 'linear'
+      })
+      // .xscale.tickFormat(french_timeformat)
+      .width(window.innerWidth * 0.2)
+      .height(270)
+      // .yscale.tickFormat(french_locale.numberFormat(",f"))
+      .margin.left(0);
+
     if (chartInfo.chartIdx == 0) {
-      var chartName = '#ts-chart01';
-      chart01 = d3.timeseries()
-        .addSerie(chartData, {
-          x: 'time',
-          y: keys[i]
-        }, {
-          interpolate: 'linear'
-        })
-        // .xscale.tickFormat(d3.time.format("%b %d"))
-        .width(window.innerWidth * 0.2)
-        .height(270)
-        // .yscale.tickFormat(french_locale.numberFormat(",f"))
-        .margin.left(0);
-      chart01(chartName);
-      $('#1th-factor').text(keys[i]);
+      chart('#ts-chart01');
+      $('#1th-factor').text((keys[i] == '1' ? 'No Pre-Motor 2' : keys[i]));
     } else if (chartInfo.chartIdx == 1) {
-      var chartName = '#ts-chart02';
-      chart02 = d3.timeseries()
-        .addSerie(chartData, {
-          x: 'time',
-          y: keys[i]
-        }, {
-          interpolate: 'linear'
-        })
-        // .xscale.tickFormat(french_timeformat)
-        .width(window.innerWidth * 0.2)
-        .height(270)
-        // .yscale.tickFormat(french_locale.numberFormat(",f"))
-        .margin.left(0);
-      chart02(chartName);
-      $('#2th-factor').text(keys[i]);
+      chart('#ts-chart02');
+      $('#2th-factor').text((keys[i] == '2' ? 'No Pre-Motor 1' : keys[i]));
     } else if (chartInfo.chartIdx == 2) {
-      chartName = '#ts-chart03';
-      chart03 = d3.timeseries()
-        .addSerie(chartData, {
-          x: 'time',
-          y: keys[i]
-        }, {
-          interpolate: 'linear'
-        })
-        // .xscale.tickFormat(french_timeformat)
-        .width(window.innerWidth * 0.2)
-        .height(270)
-        // .yscale.tickFormat(french_locale.numberFormat(",f"))
-        .margin.left(0);
-      chart03(chartName);
-      $('#3th-factor').text(keys[i]);
+      chart('#ts-chart03');
+      $('#3th-factor').text((keys[i] == '3' ? 'No Post-Motor 1' : keys[i]));
     } else if (chartInfo.chartIdx == 3) {
-      chartName = '#ts-chart04';
-      chart04 = d3.timeseries()
-        .addSerie(chartData, {
-          x: 'time',
-          y: keys[i]
-        }, {
-          interpolate: 'linear'
-        })
-        // .xscale.tickFormat(french_timeformat)
-        .width(window.innerWidth * 0.2)
-        .height(270)
-        // .yscale.tickFormat(french_locale.numberFormat(",f"))
-        .margin.left(0);
-      chart04(chartName);
-      $('#4th-factor').text(keys[i]);
+      chart('#ts-chart04');
+      $('#4th-factor').text((keys[i] == '4' ? 'No Post-Motor 2' : keys[i]));
     } else {
       // do nothing
     }

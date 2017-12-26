@@ -791,7 +791,9 @@ router.post('/restapi/getClusterRawDataByMotorPop', function(req, res, next) {
   let source = [];
   let motorNames = req.body.motorNames;
   motorNames.forEach(function(motorName){
-    source.push('data.'+motorName);
+    if ( motorName.length > 0 ) {
+      source.push('data.'+motorName);
+    }
   });
   source.push('data.measure_time');
 
@@ -802,7 +804,7 @@ router.post('/restapi/getClusterRawDataByMotorPop', function(req, res, next) {
     , SOURCE : source
     , INTERVAL_DTTM : '{"match_all": {}}'
   };
-  // TODO : interval을 줘서 검색해올 수 있도록 수정 필요
+  // interval을 줘서 검색해올 수 있도록 수정 필요
   let interval = req.body.interval;
   let dtTransmitted_times = getIntervaledDateTime(in_data.FROM, in_data.TO, interval);
   if ( dtTransmitted_times.length > 0 ) {
@@ -838,21 +840,21 @@ router.post('/restapi/getClusterRawDataByMotorPop', function(req, res, next) {
       // for related factors chart (below 4 charts)
       // TODO : nested-loop 사용하지 않고 데이터 가공하기
       for ( let i = 0 ; i < motorNames.length ; i++ ){
-        let a = [];
+        let tmp = [];
         let max = 0;
         let motorName = motorNames[i];
         out_data.forEach(function(d){
           d = d._source.data[0];
           // logger.debug('[selectClusterRawDataByMotor] output: ', JSON.stringify(d));
           let time = new Date(d.measure_time).getTime();
-          var item = { time: time, value: d[motorName] };
+          var item = { time: time, value: d[motorName] == null ? 0 : d[motorName] };
           item[motorName] = item.value;
-          a.push(item);
+          tmp.push(item);
           if ( max < d[motorName] ){
             max = d[motorName];
           }
         });
-        let itemData = { data: a, max : max, chartIdx: i };
+        let itemData = { data: tmp, max : max, chartIdx: i };
         data[motorName] = itemData;
       }
     }
@@ -892,14 +894,16 @@ function getIntervaledDateTime(startDttm, endDttm, interval){
 router.post('/restapi/runAnalysis', function(req, res, next) {
   logger.debug(req.body);
   var gte = Utils.getDate(req.body.startDate, fmt1, -1, 0, 0, 0);
-  var in_data = {"start_date": gte+startTime,
-                "end_date": req.body.endDate+startTime,
-                "time_interval": parseInt(req.body.interval),
-                "cid": req.body.machine,
-                "type": req.body.dataType,
-                "n_cluster": req.body.n_cluster,
-                "step": req.body.step
-              };
+  var in_data = {
+    "type": "clustering",
+    "esIndex": req.body.step,
+    "docType": req.body.dataType,
+    "sDate": gte+startTime,
+    "eDate": req.body.endDate+startTime,
+    "tInterval": parseInt(req.body.interval),
+    "cid": req.body.machine,
+    "nCluster": req.body.n_cluster
+  };
 
   in_data = JSON.stringify(in_data, null, 4);
   logger.debug(in_data);
