@@ -62,8 +62,18 @@
     "stacking_status_clustering_detail" : "efmm_stacking_status_clustering_detail"
 	},
 	"analysis": {
-		"#host" : "localhost",
-		"host" : "m2u-da.eastus.cloudapp.azure.com",
-		"port" : 5225
+    "efsm" : {
+  		"#host" : "localhost",
+  		"host" : "m2u-da.eastus.cloudapp.azure.com",
+  		"port" : 5226
+    },
+    "efsl" : {
+      "host" : "m2u-da.eastus.cloudapp.azure.com",
+  		"port" : 5225
+    },
+    "efmm" : {
+      "host" : "m2u-da.eastus.cloudapp.azure.com",
+  		"port" : 5224
+    }
 	}
 }

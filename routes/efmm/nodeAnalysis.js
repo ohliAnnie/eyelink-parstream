@@ -902,7 +902,7 @@ router.post('/restapi/runAnalysis', function(req, res, next) {
     "eDate": req.body.endDate+startTime,
     "tInterval": parseInt(req.body.interval),
     "cid": req.body.machine,
-    "nCluster": req.body.n_cluster
+    "nCluster": parseInt(req.body.n_cluster)
   };
 
   in_data = JSON.stringify(in_data, null, 4);
