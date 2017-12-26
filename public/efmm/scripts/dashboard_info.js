@@ -1,7 +1,22 @@
 $(document).ready(function(e) {        
   console.log(new Date(urlParams.date))
   getData(urlParams.date);
+  $("#refresh").change(function(){
+    if($("#refresh").is(":checked")){
+      check = true;      
+      (function loop() {      
+        console.log('test')
+        getData(new Date().getTime());
+        if(check){
+          setTimeout(loop, 30*1000);
+        }
+      })();      
+    } else{    
+      check = false;  
+    }
+  });
 });
+var check = false;
 
 var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
     return paramPair.split(/=(.+)?/).slice(0, 2);
@@ -9,17 +24,6 @@ var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
     obj[pairArray[0]] = pairArray[1];
     return obj;
   }, {});
-
-function refreshOnChange() {  
-  first = false;
-  $("input[name='refresh']:checked").each(function() {        
-    (function loop() {      
-      console.log('test')
-      getData(new Date().getTime());
-      setTimeout(loop, 30*1000);
-    })();
-  });      
-}
 
 function getData(date){  
   var data = { date : date, type : urlParams.type, cid : urlParams.cid, state : urlParams.state };
