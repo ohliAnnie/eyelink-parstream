@@ -236,8 +236,8 @@ router.post('/restapi/insertClusterRawData', function(req, res, next) {
 
 
 function getConnectionToDA(connName, callback){
-  var pUrl = global.config.analysis.host;
-  var pPort = global.config.analysis.port;
+  var pUrl = global.config.analysis.efsl.host;
+  var pPort = global.config.analysis.efsl.port;
   // var pUrl = 'm2u-da.eastus.cloudapp.azure.com';
   // var pUrl = 'localhost';
   var client = net.connect({port: pPort, host:pUrl}, function() {

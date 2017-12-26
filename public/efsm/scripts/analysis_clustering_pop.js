@@ -20,12 +20,12 @@ jQuery(document).ready(function() {
   eyelinkLayout.init(); // init layout
   QuickSidebar.init(); // init quick sidebar
   Layout.init(); // init layout
-  Tasks.initDashboardWidget(); // init tash dashboard widget      
-   $('input[type="radio"]').on('click change', function(e) {   
+  Tasks.initDashboardWidget(); // init tash dashboard widget
+   $('input[type="radio"]').on('click change', function(e) {
     if(e.target.value === 'ampere' || e.target.value === 'active_power' || e.target.value === 'voltage' || e.target.value === 'power_factor') {
      console.log(e.target.value);
       d3.selectAll("svg").remove();
-      //d3.selectAll("rect").remove();      
+      //d3.selectAll("rect").remove();
       drawCheckChart(e.target.value);
       getNodeList(e.target.value);
     }
@@ -40,27 +40,27 @@ jQuery(document).ready(function() {
   }, {});
 
 var dadate = urlParams.dadate.replace('%20', ' ');
-function drawCheckChart(factor) {  
-  var data = { dadate : dadate, factor : factor }    
-  var in_data = { url : "/analysis/restapi/getDaClusterDetail", type : "GET", data : data };  
-  ajaxTypeData(in_data, function(result){ 
-    if (result.rtnCode.code == "0000") {              
+function drawCheckChart(factor) {
+  var data = { dadate : dadate, factor : factor }
+  var in_data = { url : "/analysis/restapi/getDaClusterDetail", type : "GET", data : data };
+  ajaxTypeData(in_data, function(result){
+    if (result.rtnCode.code == "0000") {
       drawCheckCluster(result.rtnData, dadate, factor);
-    }    
+    }
   });
 }
 
 function drawCheckCluster(data, dadate, factor) {
   var cate = new Array();
   var idx = 0;
-  if($('input[name="c0"]').prop('checked')) 
+  if($('input[name="c0"]').prop('checked'))
     cate[idx++] = 'c0';
   if($('input[name="c1"]').prop('checked'))
     cate[idx++] = 'c1';
   if($('input[name="c2"]').prop('checked'))
     cate[idx++] = 'c2';
   if($('input[name="c3"]').prop('checked'))
-    cate[idx++] = 'c3';    
+    cate[idx++] = 'c3';
   var demo = new Vue({
     el: '#table',
     data: {
@@ -364,14 +364,14 @@ function drawCheckCluster(data, dadate, factor) {
 
       self.selectCate = [];
       for (var i=0; i<self.lineCategory.length; i++) {
-        if ($("#"+self.lineCategory[i]).prop("checked")) {          
+        if ($("#"+self.lineCategory[i]).prop("checked")) {
           self.selectCate.push(self.lineCategory[i]);
           d3.selectAll(".click_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'inherit');
           d3.selectAll(".tipNetPoints_"+self.lineCategory[i]).transition().duration(300).style("display", 'inherit');
         } else {
           d3.selectAll(".click_line_"+self.lineCategory[i]).transition().duration(300).style("display", 'none');
           d3.selectAll(".tipNetPoints_"+self.lineCategory[i]).transition().duration(300).style("display", 'none');
-        }          
+        }
       }
 
       //redraw the legend and chart
@@ -486,34 +486,34 @@ function drawCheckCluster(data, dadate, factor) {
   },
   compiled: function () {
    var self = this;
-    self.displayLine();      
+    self.displayLine();
   }
   });
 }
 
 function getNodeList(factor) {
   var sdate = $('#sdate').val();
-  var edate = $('#edate').val();    
+  var edate = $('#edate').val();
   var data = { dadate : dadate, factor : factor };
-  var in_data = { url : "/analysis/restapi/getDaClusterMasterBydadate", type : "GET", data : data };  
+  var in_data = { url : "/analysis/restapi/getDaClusterMasterBydadate", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){
-    if (result.rtnCode.code == "0000") {     
+    if (result.rtnCode.code == "0000") {
       console.log(result.rtnData);
-           
+
       drawDirectory(result.rtnData[factor]);
     }
   });
 }
 
-function drawDirectory(data) {     
-  var seatvar = document.getElementsByClassName("tblClusterDir");                   
+function drawDirectory(data) {
+  var seatvar = document.getElementsByClassName("tblClusterDir");
   var cnt = 0;
-  $('#tblClusterDir').empty();    
+  $('#tblClusterDir').empty();
   var sb = new StringBuffer();
   if(cnt == 0) {
     sb.append('<tr><th>Cluster</th><th>Node_id</th></tr>');
     cnt++;
-  }       
+  }
   if(data.cluster_00.length != 0) {
     sb.append(clusterNodeList(data.cluster_00, 'cluster_00'));
   }
@@ -529,11 +529,11 @@ function drawDirectory(data) {
   if(data.cluster_04.length != 0) {
     sb.append(clusterNodeList(data.cluster_04, 'cluster_04'));
   }
-  $('#tblClusterDir').append(sb.toString());  
+  $('#tblClusterDir').append(sb.toString());
 }
 
-function clusterNodeList(data, clusterName){  
-  var script = "javascript:getNodePower('"+data+"',"+data.length+");"; 
+function clusterNodeList(data, clusterName){
+  var script = "javascript:getNodePower('"+data+"',"+data.length+");";
   var sb = '<tr><td><span class="bold theme-fone"><a href="'+script+'">'+clusterName+'</a></span></td><td></td></tr>';
   for(var i=0; i < data.length; i++) {
     sb +='<tr><td></td><td>';
@@ -543,7 +543,7 @@ function clusterNodeList(data, clusterName){
   return sb;
 }
 
-function getNodePower(nodeList, len){  
+function getNodePower(nodeList, len){
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
   if ($('#factor0').is(':checked') === true) {
@@ -562,21 +562,21 @@ function getNodePower(nodeList, len){
   var last, start;
 
   var data = { startDate:start, endDate:end, nodeId: node, factor : factor };
-  var in_data = { url : "/analysis/restapi/getClusterNodePowerPop", type : "GET", data : data };  
-  ajaxTypeData(in_data, function(result){         
+  var in_data = { url : "/analysis/restapi/getClusterNodePowerPop", type : "GET", data : data };
+  ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {
       console.log(result.rtnData);
       drawNode(result.rtnData, node.split(',').length, len);
     } else {
       //- $("#errormsg").html(result.message);
-    }    
+    }
   });
 }
 var oldL = 0;
-function drawNode(rtnData, idCnt, len) {    
+function drawNode(rtnData, idCnt, len) {
   console.log(oldL);
   var data = rtnData.data;
-  var max = rtnData.max + 5;  
+  var max = rtnData.max + 5;
   for(var i = 0; i <= oldL; i++) {
     d3.select("#nodeChart").select("svg").remove();
   }
@@ -586,10 +586,10 @@ function drawNode(rtnData, idCnt, len) {
 
   // Set the dimensions of the canvas / graph
 var margin = {top: 5, right: 20, bottom: 20, left: 30},
-    width = (window.innerWidth*0.3) - margin.left - margin.right,       
+    width = (window.innerWidth*0.3) - margin.left - margin.right,
     height = 315 - margin.top - margin.bottom - 15*idCnt/4;
     //- (20*(idCnt/(width/100)));
-    
+
 // Set the ranges
 var x = d3.time.scale().range([0, width]);
 var y = d3.scale.linear().range([height, 0]);
@@ -604,21 +604,21 @@ var yAxis = d3.svg.axis().scale(y)
 var priceline = d3.svg.line()
     .x(function(d) { return x(new Date(d.time)); })
     .y(function(d) { return y(d.value); });
-    
-    
+
+
 // Adds the svg canvas
 var svg = d3.select("#nodeChart")
     .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
     .append("g")
-        .attr("transform", 
+        .attr("transform",
               "translate(" + margin.left + "," + margin.top + ")");
 
     // Scale the range of the data
     x.domain(d3.extent(data, function(d) {
          return new Date(d.time); }));
-    y.domain([0, max]); 
+    y.domain([0, max]);
 
     // Nest the entries by symbol
     var dataNest = d3.nest()
@@ -630,7 +630,7 @@ var svg = d3.select("#nodeChart")
     legendSpace = width/dataNest.length; // spacing for legend // ******
 
     // Loop through each symbol / key
-    dataNest.forEach(function(d,i) {                           // ******      
+    dataNest.forEach(function(d,i) {                           // ******
         svg.append("path")
             .attr("class", "line")
             .style("stroke", function() { // Add the colours dynamically
@@ -638,7 +638,7 @@ var svg = d3.select("#nodeChart")
             .attr("d", priceline(d.values));
 
  var legend = d3.select("#nodeChart").append("svg")
-          .attr("class", "legend")          
+          .attr("class", "legend")
           .attr("width", width/4)
           .attr("height", 15)
           .selectAll("g")
@@ -658,7 +658,7 @@ var svg = d3.select("#nodeChart")
           .attr("dy", ".25em")
           .text(d.key);
     });
-    
+
     // Add the X Axis
     svg.append("g")
         .attr("class", "x axis")
@@ -677,14 +677,14 @@ function clickNode(nodeId) {
   var edate = $('#edate').val();
 
   var data = { sdate:sdate, edate:edate, node:nodeId };
-  var in_data = { url : "/analysis/restapi/getClusterRawDataByNodePop", type : "GET", data : data };  
-  ajaxTypeData(in_data, function(result){  
-    if (result.rtnCode.code == "0000") {        
-      var data = result.rtnData;           
+  var in_data = { url : "/analysis/restapi/getClusterRawDataByNodePop", type : "GET", data : data };
+  ajaxTypeData(in_data, function(result){
+    if (result.rtnCode.code == "0000") {
+      var data = result.rtnData;
        drawTimeseries(data);
     } else {
       //- $("#errormsg").html(result.message);
-    }    
+    }
   });
 }
 
