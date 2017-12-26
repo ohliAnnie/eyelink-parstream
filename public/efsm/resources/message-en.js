@@ -18,7 +18,10 @@ m = {
     confirm : {
       compare : "Do you want to compare?"
     }
-  }
+  },
+  recipe : {
+    check_id : 'Check ID를 수행해 주세요.'
+  },
   menu : {
     check : {
       upcode : "Please register Upper Menu first.",

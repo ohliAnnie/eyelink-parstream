@@ -118,7 +118,7 @@ function clickEdit(id, oldCode){
     if (parseInt($("#ecode").val())%1000 != 0) {
       console.log(parseInt($("#ecode").val()));
       $("#ecode").focus();
-      $("#register_tnc_error_edit").html(m.menu.check.upcode_start);
+      $("#register_tnc_error_edit").html(m.menu.check.code_start);
       $("#register_tnc_error_edit").show();
       return false;
     }
