@@ -167,8 +167,9 @@
         "index" : #index#,
         "type"  : #type#,
         "body" : { 
-          "size" : 10,
-          "sort": { "dtTransmitted": { "order": "desc" } },
+          "from" : #from#,
+          "size" : #size#,
+          "sort": { "dtTransmitted": { "order": #dir# } },
           "query" : {          
             "bool": {           
               "must" : [

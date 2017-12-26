@@ -1,6 +1,27 @@
 $(document).ready(function(e) {          
-  getData(urlParams.date);
+  getData(urlParams.date);  
+  $("#refresh").change(function(){
+    if($("#refresh").is(":checked")){
+      check = true;      
+      (function loop() {              
+        getData(new Date().getTime());
+        if(check){
+          setTimeout(loop, 30*1000);
+        }
+      })();      
+    } else {    
+      check = false;  
+    }
+  });  
+  $('#datatable_container').bind( 'click', function (event) {
+    var $target = $(event.target);
+    console.log('tt')
+    if($target.prop("tagName") == "TR") {
+      console.log('test')
+    }
+  });
 });
+var check = false;
 
 var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
     return paramPair.split(/=(.+)?/).slice(0, 2);
@@ -8,17 +29,6 @@ var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
     obj[pairArray[0]] = pairArray[1];
     return obj;
   }, {});
-
-var first = true;
-function refreshOnChange() {  
-  first = false;
-  $("input[name='refresh']:checked").each(function() {        
-    (function loop() {      
-      getData(new Date().getTime());
-      setTimeout(loop, 30*1000);
-    })();
-  });      
-}
 
 function stackingOnChange() {  
   if(document.querySelectorAll('input[name="stacking"]:checked').length == 2){
@@ -132,9 +142,8 @@ function innerTable(data, event){
   sb += '<div class="row"><div class="col-sm-12">';
   sb += '<div class="col-xs-12 label mes-status color-'+data.state+'">'+data.state;
   if(data.alarmCount != undefined) {
-    sb += ' <button type="button" class="btn btn-warning btn-xs" onclick="getAlarmHistory('+"'"+data.flag+"','"+data.cid+"'"+')">'+data.alarmCount+'</button>';    
+    sb += ' <button type="button" class="btn btn-warning btn-xs" onclick="drawAlarmModal('+"'"+data.flag+"','"+data.cid+"'"+')">'+data.alarmCount+'</button>';
   }
-
   sb += '</div>';
   sb += '<div class="col-xs-12">'
   sb += '<table class="table table-striped table-bordered">';
@@ -176,14 +185,15 @@ function getAlarmHistory(flag, cid) {
     } 
   });  
 }
-function drawAlarmModal(data, flag, cid){  
+function drawAlarmModal(flag, cid){  
   $('#mbody').empty();    
   var sbM = new StringBuffer(); 
-  sbM.append('<div style="height:220px; overflow:auto;">')
-  sbM.append('<table style="text-align:center;" class="table table-striped table-bordered table-hover">');
-  sbM.append('<thread><th style="text-align:center;">Date</th><th style="text-align:center;">List</th>');
-  sbM.append('<th>Check</th></thread><tbody>');
-  for(i=0; i<data.length; i++) {      
+  sbM.append('<div id="datatable_container" style="height:360px; overflow:auto;">')
+  sbM.append('<table id="sample" class="table table-striped table-bordered table-hover">');
+  sbM.append('<thead><tr><th style="text-align:center;">Date</th><th style="text-align:center;">List</th>');
+  sbM.append('</tr></thead>');
+  //'<tbody>');
+/*  for(i=0; i<data.length; i++) {      
     sbM.append('<tr><td>'+data[i].date+'</td><td style="text-align:left;">');
     for(j=0; j<data[i].list.length; j++) {
       if(j!=0){ sbM.append('<br>') }
@@ -191,14 +201,36 @@ function drawAlarmModal(data, flag, cid){
     }    
     sbM.append('</td><td><button type="button" class="btn btn-primary btn-xs" onclick="updateAlarm(');
     sbM.append("'"+data[i].id+"','"+flag+"','"+cid+"'"+')">check</button></td></tr>');
-  }
-  sbM.append('</tbody></table></div>');  
-  $('#mbody').append(sbM.toString());    
+  }*/
+  //sbM.append('</tbody>  
+  sbM.append('</tr></tfoot>');
+  sbM.append('</table></div>');  
+  $('#mbody').append(sbM.toString());      
+  console.log(sbM.toString())
+  $('#sample').DataTable( {
+    "order": [[ 0, "desc" ]],
+    "searching": false,
+    "processing": true,
+    "serverSide": true,
+    "paging" : true,
+    "ajax": {
+      url : "/dashboard/restapi/getAlarmListPaging",
+      type : 'GET',
+      //dataType: "jsonp",
+      data: function ( d ) {        
+        console.log(d)
+        d.cid = cid;
+        d.flag = flag;         
+        d.search_key = d.search.value;
+      }      
+    },
+    "columns" : [{ data: "date" },{ data: "list", "bSortable": false }]    
+  });  
   showAlarmView();
 }
 
-function showAlarmView() {    
-  $('#modal-alarm').modal("show");
+function showAlarmView() {      
+  $('#modal-alarm').modal("show");  
 }
 
 function updateAlarm(id, flag, cid){  

@@ -411,6 +411,44 @@ router.get('/restapi/getDetailAlarmList', function(req, res, next) {
   });
 });
 
+
+router.get('/restapi/getAlarmListPaging', function(req, res, next) {
+  console.log('reports/restapi/getAlarmListPaging');  
+  console.log(req.query);  
+  var index = (req.query.flag === 'notching')?indexNotchingStatus:indexStackingStatus
+  var in_data = { index : index+Utils.getToday(fmt4, 'Y'), type : "status", 
+                  from : parseInt(req.query.start), size : parseInt(req.query.length),
+                  dir : req.query.order[0].dir,  flag : req.query.flag, cid : req.query.cid };  
+  queryProvider.selectSingleQueryByID2("dashboard","selectDetailAlarmList", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    var data = [];
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {      
+      for(i=0; i<out_data.length; i++){
+        var c = {}, list = [], lcnt = 0;
+        var d = out_data[i]._source.data[0];
+        for(key in d){          
+          if(key === "measure_time"){
+            c.date = Utils.getDateUTC2Local(d[key], fmt2);
+          } else {
+            list[lcnt++] = CCODE.COMMONCODE.ALARM[req.query.flag][key];
+          }        
+        }
+        c.list = list;
+        c.id = out_data[i]._id;
+        data.push(c);
+      }      
+    }    
+    var total = {};
+    total.draw = req.query.draw;
+    total.recordsTotal = params;
+    total.recordsFiltered = params;
+    total.data = data;    
+    res.json(total);
+  });
+});
+
 // alarm 정보 수정
 router.put('/alarm/:id', function(req, res) {
   console.log('alarmUpdate');    
@@ -435,7 +473,7 @@ router.put('/alarm/:id', function(req, res) {
               if(key === "measure_time"){
                 c.date = Utils.getDateUTC2Local(d[key], fmt2);
               } else {
-                list[lcnt++] = key;
+                list[lcnt++] = CCODE.COMMONCODE.ALARM[req.query.flag][key];                
               }        
             }
             c.list = list;
@@ -569,10 +607,8 @@ router.get('/restapi/getDashboardInfo', function(req, res, next) {
       var rtnCode = CONSTS.getErrData('0000');        
       if (out_data == null) {
         rtnCode = CONSTS.getErrData('0001');
-      } else {                      
-        console.log(alarm)        
-        for(i=0; i<out_data.length; i++){        
-          console.log(out_data[i]._source)
+      } else {
+        for(i=0; i<out_data.length; i++){
           var d = out_data[i]._source.data[0];
           var c = {}, list = [], ccnt = 0;
           for(key in d){
