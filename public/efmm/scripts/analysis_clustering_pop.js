@@ -944,10 +944,10 @@ function getRelatedMotorNames(motorName) {
       if (i >= 1) {
         motorNamesResult[1] = motorNamesArr[i - 1];
       }
-      if (i <= motorNamesArr.length - 1) {
+      if (i <= motorNamesArr.length - 2) {
         motorNamesResult[2] = motorNamesArr[i + 1];
       }
-      if (i <= motorNamesArr.length - 2) {
+      if (i <= motorNamesArr.length - 3) {
         motorNamesResult[3] = motorNamesArr[i + 2];
       }
       break;
@@ -973,30 +973,66 @@ function drawTimeseries(data) {
     let chartData = chartInfo.data;
     console.log('[chartData]', chartData);
 
-    chart = d3.timeseries()
-      .addSerie(chartData, {
-        x: 'time',
-        y: keys[i]
-      }, {
-        interpolate: 'linear'
-      })
-      // .xscale.tickFormat(french_timeformat)
-      .width(window.innerWidth * 0.2)
-      .height(270)
-      // .yscale.tickFormat(french_locale.numberFormat(",f"))
-      .margin.left(0);
-
     if (chartInfo.chartIdx == 0) {
-      chart('#ts-chart01');
+      chart01 = d3.timeseries()
+        .addSerie(chartData, {
+          x: 'time',
+          y: keys[i]
+        }, {
+          interpolate: 'linear'
+        })
+        // .xscale.tickFormat(french_timeformat)
+        .width(window.innerWidth * 0.2)
+        .height(270)
+        // .yscale.tickFormat(french_locale.numberFormat(",f"))
+        .margin.left(0);
+
+      chart01('#ts-chart01');
       $('#1th-factor').text((keys[i] == '1' ? 'No Pre-Motor 2' : keys[i]));
     } else if (chartInfo.chartIdx == 1) {
-      chart('#ts-chart02');
+      chart02 = d3.timeseries()
+        .addSerie(chartData, {
+          x: 'time',
+          y: keys[i]
+        }, {
+          interpolate: 'linear'
+        })
+        // .xscale.tickFormat(french_timeformat)
+        .width(window.innerWidth * 0.2)
+        .height(270)
+        // .yscale.tickFormat(french_locale.numberFormat(",f"))
+        .margin.left(0);
+      chart02('#ts-chart02');
       $('#2th-factor').text((keys[i] == '2' ? 'No Pre-Motor 1' : keys[i]));
     } else if (chartInfo.chartIdx == 2) {
-      chart('#ts-chart03');
+      chart03 = d3.timeseries()
+        .addSerie(chartData, {
+          x: 'time',
+          y: keys[i]
+        }, {
+          interpolate: 'linear'
+        })
+        // .xscale.tickFormat(french_timeformat)
+        .width(window.innerWidth * 0.2)
+        .height(270)
+        // .yscale.tickFormat(french_locale.numberFormat(",f"))
+        .margin.left(0);
+      chart03('#ts-chart03');
       $('#3th-factor').text((keys[i] == '3' ? 'No Post-Motor 1' : keys[i]));
     } else if (chartInfo.chartIdx == 3) {
-      chart('#ts-chart04');
+      chart04 = d3.timeseries()
+        .addSerie(chartData, {
+          x: 'time',
+          y: keys[i]
+        }, {
+          interpolate: 'linear'
+        })
+        // .xscale.tickFormat(french_timeformat)
+        .width(window.innerWidth * 0.2)
+        .height(270)
+        // .yscale.tickFormat(french_locale.numberFormat(",f"))
+        .margin.left(0);
+      chart04('#ts-chart04');
       $('#4th-factor').text((keys[i] == '4' ? 'No Post-Motor 2' : keys[i]));
     } else {
       // do nothing

@@ -811,6 +811,7 @@ router.post('/restapi/getClusterRawDataByMotorPop', function(req, res, next) {
     in_data.INTERVAL_DTTM = dtTransmitted_times;
   }
 
+  logger.debug('[getClusterRawDataByMotorPop] query input: ', in_data);
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawDataByMotor", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -901,16 +902,16 @@ router.post('/restapi/runAnalysis', function(req, res, next) {
     "sDate": gte+startTime,
     "eDate": req.body.endDate+startTime,
     "tInterval": parseInt(req.body.interval),
-    "cid": req.body.machine,
+    "cid": req.body.cid,
     "nCluster": parseInt(req.body.n_cluster)
   };
 
   in_data = JSON.stringify(in_data, null, 4);
-  logger.debug(in_data);
+  logger.debug('[runAnalysis] in_data: ', in_data);
   // FIX-ME Socket Connection Close 처리 로직 보완 필요함.
   getConnectionToDA("DataAnalysis", function(socket) {
     logger.debug(socket);
-    writeDataToDA(socket, in_data, function() {
+    writeDataToDA(socket, in_data.replace(/\n/g, ''), function() {
       var rtnCode = CONSTS.getErrData('0000');
       res.json({rtnCode: rtnCode, rtnData: ''});
     });
@@ -918,34 +919,33 @@ router.post('/restapi/runAnalysis', function(req, res, next) {
 });
 
 function getConnectionToDA(connName, callback){
-  var pUrl = global.config.analysis.host;
-  var pPort = global.config.analysis.port;
-  // var pUrl = 'm2u-da.eastus.cloudapp.azure.com';
-  // var pUrl = 'localhost';
-  logger.debug(pUrl);
-  logger.debug(pPort);
+  var pUrl = global.config.analysis.efmm.host;
+  var pPort = global.config.analysis.efmm.port;
+  logger.debug('DA API Info - url: ', pUrl,', port: ', pPort);
+
   var client = net.connect({port: pPort, host:pUrl}, function() {
-    logger.debug(connName + ' Connected: ');
+    logger.debug(' Connecting to ', connName, ' server.' );
     logger.debug('   local = %s:%s', this.localAddress, this.localPort);
     logger.debug('   remote = %s:%s', this.remoteAddress, this.remotePort);
+
     this.setTimeout(500);
     this.setEncoding('utf8');
     this.on('data', function(data) {
       logger.debug(connName + " From Server: " + data.toString());
       this.end();
     });
-    this.on('end', function() {
-      logger.debug(connName + ' Client disconnected');
-    });
+    // this.on('end', function() {
+    //   logger.debug(connName + ' Client disconnected');
+    // });
     this.on('error', function(err) {
       logger.debug('Socket Error: ', JSON.stringify(err));
     });
-    this.on('timeout', function() {
-      logger.debug('Socket Timed Out');
-    });
-    this.on('close', function() {
-      logger.debug('Socket Closed');
-    });
+    // this.on('timeout', function() {
+    //   logger.debug('Socket Timed Out');
+    // });
+    // this.on('close', function() {
+    //   logger.debug('Socket Closed');
+    // });
     callback(client);
   });
   // return client;
