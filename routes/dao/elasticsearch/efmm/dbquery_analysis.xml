@@ -286,20 +286,26 @@
         "type" : #TYPE#,
         "body" : {
           "_source" : [##SOURCE##],
-          "size" : 10000,
           "sort" : { "dtTransmitted" : { "order" : "desc" } },
           "query" : {
-            "bool" : {
+            "constant_score" : {
               "filter" : {
-                "range" : {
-                  "dtTransmitted" : { "gte" : #FROM#, "lt" : #TO# }
+                "bool" : {
+                  "filter" : {
+                    "range" : {
+                      "dtTransmitted" : { "gte" : #FROM#, "lt" : #TO# }
+                    }
+                  },
+                  "must" : [
+                    { "term" : {  "cid" : #CID#} },
+                    { "term" : { "flag": #FLAG# } },
+                    { "term" : { "sensorType": "motor" } }
+                  ],
+                  "should": [
+                    #INTERVAL_DTTM#
+                  ]
                 }
-              },
-              "must" : [
-                { "term" : {  "cid" : #CID#} },
-                { "term" : { "flag": #FLAG# } },
-                { "term" : { "sensorType": "motor" } }
-              ]
+              }
             }
           }
         }
