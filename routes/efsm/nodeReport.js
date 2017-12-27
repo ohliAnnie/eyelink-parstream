@@ -19,7 +19,7 @@ var fmt4 = CONSTS.DATEFORMAT.INDEXDATE; // "YYYY.MM.DD",
 
 /* GET reports page. */
 router.get('/', function(req, res, next) {
-  res.render('./'+global.config.pcode+'/reports/report_all', { title: global.config.productname, mainmenu:mainmenu, indexs: global.config.es_index });
+  res.render('./'+global.config.pcode+'/reports/all', { title: global.config.productname, mainmenu:mainmenu, indexs: global.config.es_index });
 });
 
 router.get('/res_req', function(req, res, next) {
@@ -39,7 +39,7 @@ router.get('/error', function(req, res, next) {
 });
 
 router.get('/all', function(req, res, next) {
-  res.render('./'+global.config.pcode+'/reports/report_all', { title: global.config.productname, mainmenu:mainmenu });
+  res.render('./'+global.config.pcode+'/reports/all', { title: global.config.productname, mainmenu:mainmenu });
 });
 
 // query Report
