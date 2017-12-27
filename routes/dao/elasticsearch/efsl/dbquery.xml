@@ -87,7 +87,7 @@
   <timeseries>
     <query id='selectRangeData'><![CDATA[
       {
-        "index" : #index#,
+        "index" : [##index##],
         "type"  : #type#,
         "body" : {
           "size" : 100000,
@@ -95,7 +95,7 @@
           "sort" : { #sort#: { "order" : "asc" } },
           "query" : {
             "bool": {              
-              "filter" : {
+              "must" : {
                 "range" : {
                   #sort# : { "gte" : #gte#, "lte" : #lte# }
                 }
