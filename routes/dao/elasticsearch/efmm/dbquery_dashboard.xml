@@ -28,7 +28,7 @@
                   "aggs" : {
                     "date_max" : {
                       "max" : {
-                          "field" : "dtTransmitted"
+                         "field" : "dtTransmitted"
                       }
                     }
                   }
@@ -167,8 +167,9 @@
         "index" : #index#,
         "type"  : #type#,
         "body" : { 
-          "size" : 10,
-          "sort": { "dtTransmitted": { "order": "desc" } },
+          "from" : #from#,
+          "size" : #size#,
+          "sort": { "dtTransmitted": { "order": #dir# } },
           "query" : {          
             "bool": {           
               "must" : [
@@ -238,7 +239,7 @@
         "index" : #index#,
         "type"  : #type#,
         "body" : {
-          "size" : 10,
+          "size" : 0,
           "sort": { "dtTransmitted": { "order": "desc" } },
           "query" : {
             "bool": {              
@@ -249,6 +250,26 @@
           }
         }
       }
+    ]]></query>
+    <query id='selectInfoAlarmList'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : { 
+          "from" : #from#,
+          "size" : #size#,
+          "sort": { "dtTransmitted": { "order": #dir# } },
+          "query" : {          
+            "bool": {           
+              "must" : [
+                { "match" : { "sensorType" : "alarm" } },
+                { "match" : { "flag" : #flag# } },
+                { "match" : { "cid" : #cid# } }
+              ]
+            }
+          } 
+        }
+      }      
     ]]></query>
     <query id='selectDashboardCompare'><![CDATA[
       {

@@ -22,19 +22,6 @@ m = {
       compare : "비교해 보시겠습니까?"
     }
   },
-  recipe : {
-    check_id : 'Check ID를 수행해 주세요.'
-  },
-  rule : {
-      check : {
-          type : 'Type을 선택하세요.',
-          rule_name : 'Rule Name을 선택하세요.',
-          user_group : 'User Group을 선택하세요.',
-          condition : 'Condition을 선택하세요.',
-          threshold : 'Threshold를 입력하세요.',
-          alarm_type : 'Alarm Type을 선택하세요.',
-      }
-  },
   menu : {
     check : {
       upcode : "Upper Menu를 먼저 등록하세요.",

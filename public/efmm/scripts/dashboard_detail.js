@@ -1,6 +1,20 @@
 $(document).ready(function(e) {          
-  getData(urlParams.date);
+  getData(urlParams.date);  
+  $("#refresh").change(function(){
+    if($("#refresh").is(":checked")){
+      check = true;      
+      (function loop() {              
+        getData(new Date().getTime());
+        if(check){
+          setTimeout(loop, 30*1000);
+        }
+      })();      
+    } else {    
+      check = false;  
+    }
+  });    
 });
+var check = false;
 
 var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
     return paramPair.split(/=(.+)?/).slice(0, 2);
@@ -9,20 +23,9 @@ var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
     return obj;
   }, {});
 
-var first = true;
-function refreshOnChange() {  
-  first = false;
-  $("input[name='refresh']:checked").each(function() {        
-    (function loop() {      
-      getData(new Date().getTime());
-      setTimeout(loop, 30*1000);
-    })();
-  });      
-}
-
 function stackingOnChange() {  
   if(document.querySelectorAll('input[name="stacking"]:checked').length == 2){
-    if (confirm("비교해 보시겠습니까?")) {      
+    if (confirm(m.dashboard.confirm.compare)) {      
       var value = [], cnt = 0;
       $("input[type='checkbox']:checked").each(function() {
         value[cnt++] = $(this).val().split(',');      
@@ -34,7 +37,7 @@ function stackingOnChange() {
 
 function notchingOnChange(){
   if(document.querySelectorAll('input[name="notching"]:checked').length == 2){
-    if (confirm("비교해 보시겠습니까?")) {      
+    if (confirm(m.dashboard.confirm.compare)) {      
       var value = [], cnt = 0;
       $("input[type='checkbox']:checked").each(function() {
            value[cnt++] = $(this).val().split(',');      
@@ -132,9 +135,8 @@ function innerTable(data, event){
   sb += '<div class="row"><div class="col-sm-12">';
   sb += '<div class="col-xs-12 label mes-status color-'+data.state+'">'+data.state;
   if(data.alarmCount != undefined) {
-    sb += ' <span class="badge badge-warning" onclick="getAlarmHistory('+"'"+data.flag+"','"+data.cid+"'"+')">'+data.alarmCount+'</span>';    
+    sb += ' <button type="button" class="btn btn-warning btn-xs" onclick="drawAlarmModal('+"'"+data.flag+"','"+data.cid+"'"+')">'+data.alarmCount+'</button>';
   }
-
   sb += '</div>';
   sb += '<div class="col-xs-12">'
   sb += '<table class="table table-striped table-bordered">';
@@ -167,48 +169,72 @@ function getGaguChart(id, max, color, value, size) {
   });
 }
 
-function getAlarmHistory(flag, cid) {  
-  var data = { flag : flag, cid : cid };
-  var in_data = { url : "/dashboard/restapi/getDetailAlarmList", type : "GET", data : data };
-  ajaxTypeData(in_data, function(result){  
-    if (result.rtnCode.code == "0000") { 
-      drawAlarmModal(result.rtnData, flag, cid);
-    } 
-  });  
-}
-function drawAlarmModal(data, flag, cid){  
+function drawAlarmModal(flag, cid){  
   $('#mbody').empty();    
   var sbM = new StringBuffer(); 
-  sbM.append('<div style="height:220px; overflow:auto;">')
-  sbM.append('<table style="text-align:center;" class="table table-striped table-bordered table-hover">');
-  sbM.append('<thread><th style="text-align:center;">Date</th><th style="text-align:center;">List</th>');
-  sbM.append('<th>Check</th></thread><tbody>');
-  for(i=0; i<data.length; i++) {      
-    sbM.append('<tr><td>'+data[i].date+'</td><td>');
-    for(j=0; j<data[i].list.length; j++) {
-      if(j!=0){ sbM.append(', ') }
-      sbM.append(data[i].list[j]);
-    }    
-    sbM.append('</td><td><button type="button" class="btn btn-primary btn-xs" onclick="updateAlarm(');
-    sbM.append("'"+data[i].id+"','"+flag+"','"+cid+"'"+')">check</button></td></tr>');
-  }
-  sbM.append('</tbody></table></div>');  
-  $('#mbody').append(sbM.toString());    
+  sbM.append('<div id="datatable_container" style="height:360px; overflow:auto;">')
+  sbM.append('<table id="sample" class="table table-striped table-bordered table-hover">');
+  sbM.append('<thead><tr><th style="text-align:center;">Date</th><th style="text-align:center;">List</th>');
+  sbM.append('<th>check</th></tr></thead>');
+  sbM.append('</table></div>');  
+  $('#mbody').append(sbM.toString());
+  $('#sample').DataTable( {
+    "order": [[ 0, "desc" ]],
+    "searching": false,
+    "processing": true,
+    "serverSide": true,
+    "paging" : true,
+    "ajax": {
+      url : "/dashboard/restapi/getAlarmListPaging",
+      type : 'GET',
+      //dataType: "jsonp",
+      data: function ( d ) {             
+        d.cid = cid;
+        d.flag = flag;         
+        d.search_key = d.search.value;         
+      }      
+    },
+    "columns" : [
+      { data: "date" },
+      { "targets" : -1,
+        "data": null,
+        render: function(data, type, full, meta){         
+          var d = '';
+          for(i=0; i<full.list.length; i++){
+            if(i!=0){ d += '<br>'; }
+            d += full.list[i];
+          }
+          return d;
+        }
+      },
+   //  { data : null, "defaultContent": '<button onclick="update()">Click!</button>', "targets": -1, "bSortable": false },
+      {
+        "targets": -1,
+        "data": null,
+        render : function(data, type, full, meta){          
+          if(type === 'display'){
+            data =  '<button onclick="updateAlarm('+"'"+full.id+"','"+cid+"','"+flag+"'"+')">Click!</button>';
+          }
+          return data;
+        }
+     }]
+  });  
   showAlarmView();
 }
 
-function showAlarmView() {    
-  $('#modal-alarm').modal("show");
+function showAlarmView() {      
+  $('#modal-alarm').modal("show");  
 }
 
-function updateAlarm(id, flag, cid){  
+function updateAlarm(id, cid, flag){    
   if (confirm("확인 하셨습니까?")) { 
-    var data = { id : id, flag : flag, cid : cid };
+    var data = { id : id, flag : flag, cid : cid };    
     var in_data = { url : "/dashboard/alarm/"+id, type : "PUT", data : data };
     ajaxTypeData(in_data, function(result){        
-      if (result.rtnCode.code == "0000") { 
-        drawAlarmModal(result.rtnData, flag, cid);
-      } 
+      console.log(result)
+      if (confirm(result.rtnCode.message)) { 
+        drawAlarmModal(flag, cid);
+      }
     });  
   }
 }

@@ -1,7 +1,26 @@
-$(document).ready(function(e) {        
-  console.log(new Date(urlParams.date))
+$(document).ready(function(e) {          
   getData(urlParams.date);
+  $("#refresh").change(function(){
+    if($("#refresh").is(":checked")){
+      check = true;      
+      (function loop() {      
+        console.log('test')
+        getData(new Date().getTime());
+        if(check){
+          setTimeout(loop, 30*1000);
+        }
+      })();      
+    } else{    
+      check = false;  
+    }
+  });
+
+    $('#sample tbody').on( 'click', 'button', function () {
+        var data = table.row( $(this).parents('tr') ).data();
+        alert( data[0] +"'s salary is: "+ data[ 5 ] );
+    } );
 });
+var check = false;
 
 var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
     return paramPair.split(/=(.+)?/).slice(0, 2);
@@ -10,26 +29,14 @@ var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
     return obj;
   }, {});
 
-function refreshOnChange() {  
-  first = false;
-  $("input[name='refresh']:checked").each(function() {        
-    (function loop() {      
-      console.log('test')
-      getData(new Date().getTime());
-      setTimeout(loop, 30*1000);
-    })();
-  });      
-}
-
 function getData(date){  
   var data = { date : date, type : urlParams.type, cid : urlParams.cid, state : urlParams.state };
   var in_data = { url : "/dashboard/restapi/getDashboardInfo", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {      
       var data = result.rtnData;             
-      drawTable(data);
+      drawTable(data, result.alarmCount);
       dataTable(data);
-      historyTable(result.alarm, result.alarmCount);
     } 
   });
   var data = { date : urlParams.date, cid : urlParams.cid };
@@ -64,7 +71,8 @@ function getGaguChart(id, max, color, value, size) {
   });
 }
 
-function drawTable(data) {
+function drawTable(data, alarmCount) {
+  console.log(alarmCount)
   var color = { oee : '#1492FF', availability : '#04BBC2', performance : '#78B800', quality : '#FF5F00' };
   $('#gage').empty();
   var sbT = new StringBuffer();    
@@ -74,7 +82,11 @@ function drawTable(data) {
   sbT.append('<div class="row"><div class="chart" style="height:auto">');    
   sbT.append('<div class="gage" style="text-align:center;"></div></div>');
   sbT.append('<div class="row"><div class="col-sm-12">');  
-  sbT.append('<div class="col-xs-12 label mes-status color-'+data.state+'">'+data.state+'</div>');
+  sbT.append('<div class="col-xs-12 label mes-status color-'+data.state+'">'+data.state);
+  if(alarmCount != undefined) {
+    sbT.append(' <button type="button" class="btn btn-warning btn-xs" onclick="drawAlarmModal('+"'"+data.flag+"','"+data.cid+"'"+')">'+alarmCount+'</button>');
+  }
+  sbT.append('</div>');
   sbT.append('<table class="table table-striped table-bordered">');
   sbT.append('<tr><th>Ava</th><th>Perf</th><th>Qual</th></tr>');
   sbT.append('<tr><td>'+data.availability.toFixed(1)+'%</td><td>' + data.performance.toFixed(1));
@@ -83,6 +95,41 @@ function drawTable(data) {
   $('#gage').append(sbT.toString());
   gage = getGaguChart("gage", 100, color.oee, data.overall_oee, 0.13);    
 }
+
+function drawAlarmModal(flag, cid){  
+  $('#mbody').empty();    
+  var sbM = new StringBuffer(); 
+  sbM.append('<div id="datatable_container" style="height:360px; overflow:auto;">')
+  sbM.append('<table id="sample" class="table table-striped table-bordered table-hover">');
+  sbM.append('<thead><tr><th style="text-align:center;">Date</th><th style="text-align:center;">List</th>');
+  sbM.append('</tr></thead>');
+  sbM.append('</table></div>');  
+  $('#mbody').append(sbM.toString());        
+  $('#sample').DataTable( {
+    "order": [[ 0, "desc" ]],
+    "searching": false,
+    "processing": true,
+    "serverSide": true,
+    "paging" : true,
+    "ajax": {
+      url : "/dashboard/restapi/getAlarmListPagingInfo",
+      type : 'GET',      
+      data: function ( d ) {                
+        d.cid = cid;
+        d.flag = flag;         
+        d.search_key = d.search.value;
+      }      
+    },
+    "columns" : [{ data: "date" },{ data: "list", "bSortable": false }]    
+  });  
+  showAlarmView();
+}
+
+function showAlarmView() {      
+  $('#modal-alarm').modal("show");  
+}
+
+
 function dataTable(data){
   console.log(data)
   $('#data').empty();
@@ -108,23 +155,6 @@ function dataTable(data){
   //sbD.append('</td></tr>');
   sbD.append('</table>');  
   $('#data').append(sbD.toString());
-}
-function historyTable(alarm, alarmCount){
-  $('#history').empty();
-  var sbH = new StringBuffer();
-  sbH.append('<div style="height:220px; overflow:auto;">')
-  sbH.append('<table class="table table-fixed" >');  
-  sbH.append('<tr><th>Alarm History <span class="badge badge-warning">'+alarmCount+'</span></th></tr>');  
-  for(i=0; i<alarm.length; i++) {    
-    sbH.append('<tr><th>'+alarm[i].date+'</th><tr><tr><td>');    
-    for(j=0; j<alarm[i].list.length; j++){
-      if(j!=0){ sbH.append(','); }      
-      sbH.append(alarm[i].list[j]);
-    }
-    sbH.append('</td></tr>');
-  }
-  sbH.append('</tr></table></div>');
-  $('#history').append(sbH.toString());
 }
 
 function drawLineChart(data) {

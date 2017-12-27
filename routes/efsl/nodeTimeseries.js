@@ -28,7 +28,7 @@ router.get('/restapi/getRangeData', function(req, res, next) {
   for(i = new Date(gte).getTime(); i<=new Date(lte).getTime(); i=i+24*60*60*1000){    
     index[cnt++]  = indexCore+Utils.getMs2Date(i, fmt4);
   }  */
-  var in_data = { index : indexCore+"*", type : "corecode",                   
+  var in_data = { index : Utils.getIndexList(gte, lte, indexCore), type : "corecode",                   
                   sort : "event_time" , gte : gte, lte : lte };    
   queryProvider.selectSingleQueryByID2("timeseries","selectRangeData", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
@@ -40,8 +40,9 @@ router.get('/restapi/getRangeData', function(req, res, next) {
       var als_level = 0, dimming_level = 0, noise_decibel = 0, noise_frequency = 0;
       var vibration_x = 0, vibration_y = 0, vibration_z = 0, vibration = 0;
       out_data.forEach(function(d) {        
-        d = d._source;       
-        d.event_time = Utils.getDateUTC2Local(d.event_time, fmt2);         
+        d = d._source;               
+        console.log(d.event_time)
+        d.event_time = new Date(Utils.getDateUTC2Local(d.event_time, fmt2)).getTime();
         if(d.event_type == "1"){
           ampere = d.ampere; 
           active_power = d.active_power; 
@@ -64,8 +65,7 @@ router.get('/restapi/getRangeData', function(req, res, next) {
           vibration_z = d.vibration_z; 
           d.index = 2;         
           d.event_name = 'VIBRATION';
-          vibration = (d.vibration_x + d.vibration_y + d.vibration_z) / 3; }
-        d.event_time = new Date(d.event_time);
+          vibration = (d.vibration_x + d.vibration_y + d.vibration_z) / 3; }                
         d.ampere = ampere;
         d.active_power = active_power;
         d.amount_of_active_power = amount_of_active_power;
@@ -78,7 +78,7 @@ router.get('/restapi/getRangeData', function(req, res, next) {
         d.vibration_z = vibration_z;
         d.vibration = vibration;      
         data.push(d);
-      });     
+      });           
     }
     res.json({rtnCode: rtnCode, rtnData: data});
   });

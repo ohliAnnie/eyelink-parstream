@@ -35,7 +35,7 @@ function drawTimeseries(data) {
     .addSerie(data,{x:'event_time',y:'ampere'},{interpolate:'step-before'})
     .addSerie(data,{x:'event_time',y:'amount_of_active_power'},{interpolate:'linear'})
     // .xscale.tickFormat(d3.time.format("%b %d"))
-    .width($(chartName).parent().width()-100)
+    .width($(chartName).parent().width()-60)
     .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);
@@ -48,7 +48,7 @@ function drawTimeseries(data) {
     .addSerie(data,{x:'event_time',y:'als_level'},{interpolate:'step-before'})
     .addSerie(data,{x:'event_time',y:'dimming_level'},{interpolate:'linear'})
     // .xscale.tickFormat(french_timeformat)
-    .width($(chartName).parent().width()-100)
+    .width($(chartName).parent().width()-60)
     .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);
@@ -60,7 +60,7 @@ function drawTimeseries(data) {
     .addSerie(data,{x:'event_time',y:'noise_decibel'},{interpolate:'step-before'})
     .addSerie(data,{x:'event_time',y:'noise_frequency'},{interpolate:'linear'})
     // .xscale.tickFormat(french_timeformat)
-    .width($(chartName).parent().width()-100)
+    .width($(chartName).parent().width()-60)
     .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);
@@ -74,7 +74,7 @@ function drawTimeseries(data) {
     .addSerie(data,{x:'event_time',y:'vibration_z'},{interpolate:'linear'})
     .addSerie(data,{x:'event_time',y:'vibration'},{interpolate:'linear'})
     // .xscale.tickFormat(french_timeformat)
-    .width($(chartName).parent().width()-100)
+    .width($(chartName).parent().width()-60)
     .height(270)
     // .yscale.tickFormat(french_locale.numberFormat(",f"))
     .margin.left(0);

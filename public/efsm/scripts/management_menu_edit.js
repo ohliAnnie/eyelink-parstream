@@ -2,20 +2,20 @@ $(document).ready(function(e) {
   getMenu();    
   $("#register-submit-btn").click(function() {
     if ($("#upcode").val() == "") {          
-      $("#register_tnc_error").html("Upper Menu를 먼저 등록하세요.");
+      $("#register_tnc_error").html(m.menu.check.upcode);
       $("#register_tnc_error").show();
       return false;
     }
     if ($("#code").val() == "") {
       $("#code").focus();
-      $("#register_tnc_error").html("Code를 입력하세요.");
+      $("#register_tnc_error").html(m.menu.check.code);
       $("#register_tnc_error").show();
       return false;
     }
     if (9999<parseInt($("#code").val())||parseInt($("#code").val())<999) {
       console.log(parseInt($("#code").val()));
       $("#code").focus();
-      $("#register_tnc_error").html("Code는 4자리 숫자로 입력하세요");
+      $("#register_tnc_error").html(m.menu.check.code_num);
       $("#register_tnc_error").show();
       return false;
     }
@@ -23,19 +23,19 @@ $(document).ready(function(e) {
       console.log(($("#code").val()).substring(0,1));
       console.log(parseInt($("#upcode").val()));
       $("#code").focus();
-      $("#register_tnc_error").html("첫자리는 Upper Menu code와 동일하게 입력해주세요");
+      $("#register_tnc_error").html(m.menu.check.code_start);
       $("#register_tnc_error").show();
       return false;
     }        
     if ($("#name").val() == "") {
       $("#name").focus();
-      $("#register_tnc_error").html("Name을 입력하세요.");
+      $("#register_tnc_error").html(m.common.check.name);
       $("#register_tnc_error").show();
       return false;
     }      
 
     // TODO 메시지 공통 영역으로
-    if (confirm("등록 하시겠습니까? ")) {
+    if (confirm(m.common.confirm.add)) {
       var code = $("#code").val();
       var in_data = { url : "/management/menu/"+code, type : "POST", data : $('#create_account').serialize() };
       ajaxTypeData(in_data, function(result){      
@@ -81,7 +81,7 @@ function drawMenuList(data){
 }
 
 function clickDelete(id){
-  if (confirm("삭제 하시겠습니까? ")) {
+  if (confirm(m.common.confirm.delete)) {
     deleteMenu(id, true);    
   }
 }
@@ -132,14 +132,14 @@ function drawUpdate(id, code, name, upcode){
 function clickUpdate(id){
   if ($("#ecode").val() == "") {
     $("#ecode").focus();
-    $("#register_tnc_eerror").html("Code를 입력하세요.");
+    $("#register_tnc_eerror").html(m.menu.check.code);
     $("#register_tnc_eerror").show();
     return false;
   }
   if (9999<parseInt($("#ecode").val())||parseInt($("#ecode").val())<999) {
     console.log(parseInt($("#ecode").val()));
     $("#ecode").focus();
-    $("#register_tnc_eerror").html("Code는 4자리 숫자로 입력하세요");
+    $("#register_tnc_eerror").html(m.menu.check.code_num);
     $("#register_tnc_eerror").show();
     return false;
   }
@@ -147,18 +147,18 @@ function clickUpdate(id){
     console.log(($("#ecode").val()).substring(0,1));
     console.log(parseInt($("#eupcode").val()));
     $("#ecode").focus();
-    $("#register_tnc_eerror").html("첫자리는 Upper Menu code와 동일하게 입력해주세요");
+    $("#register_tnc_eerror").html(m.menu.check.code_start);
     $("#register_tnc_eerror").show();
     return false;
   }        
   if ($("#ename").val() == "") {
     $("#ename").focus();
-    $("#register_tnc_eerror").html("Name을 입력하세요.");
+    $("#register_tnc_eerror").html(m.common.check.name);
     $("#register_tnc_eerror").show();
     return false;
   }  
 
-  if (confirm("수정 하시겠습니까? ")) {
+  if (confirm(m.common.confirm.update)) {
     var code = $("#ecode").val();
     var data = { id : id, code : code, name : $("#ename").val(), upcode : $("#eupcode").val() }
     var in_data = { url : "/management/menu/"+code, type : "PUT", data : data };

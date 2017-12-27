@@ -1,12 +1,15 @@
 extends ../efmm-layout01
 block style  
+  link(rel='stylesheet', type='text/css', href='/common/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
   link(type='text/css', rel='stylesheet', href='/efmm/css/chart_style.css')
   link(type='text/css', rel='stylesheet', href="/efmm/css/dashboard_detail.css")
   link(type='text/css', rel='stylesheet', href="/efmm/assets/plugins/bootstrap-toggle/bootstrap-toggle.min.css")  
 block script
-  script(type='text/javascript', src='/efmm/assets/scripts/d3_dc.js')
+  script(type='text/javascript', src='/common/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+  script(type='text/javascript', src='/common/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
+  script(type='text/javascript', src='/efmm/assets/scripts/d3_dc.js')    
   script(type='text/javascript', src='/efmm/assets/scripts/radial-progress-index.js')
-  script(type='text/javascript', src="/efmm/assets/plugins/bootstrap-toggle/bootstrap-toggle.min.js")  
+  script(type='text/javascript', src="/efmm/assets/plugins/bootstrap-toggle/bootstrap-toggle.min.js") 
   script(type='text/javascript', src="/common/scripts/util.js")
   script(type='text/javascript', src="/efmm/scripts/dashboard_detail.js")
 block content
@@ -16,7 +19,7 @@ block content
         .col-md-7
           h1 Detail
         .col-md-2  
-          input#refresh(type='checkbox', data-toggle='toggle', value='false', data-on="Refresh", data-off="Stop", name='refresh', onchange='refreshOnChange()')
+          input#refresh(type='checkbox', data-toggle='toggle', value='false', data-on="Refresh", data-off="Stop", name='refresh')
         .col-md-3
           ol.breadcrumb
             li

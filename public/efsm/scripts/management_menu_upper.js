@@ -6,37 +6,9 @@ $(document).ready(function() {
     var code =$("#code").val();
     var name = $("#name").val();
     console.log(code , name)        
-    if (code == "") {
-      $("#code").focus();
-      $("#register_tnc_error").html("Code를 입력하세요.");
-      $("#register_tnc_error").show();
-      return false;
-      }
-      if (9999<parseInt($("#code").val())||parseInt($("#code").val())<999) {
-        console.log(parseInt($("#code").val()));
-        $("#code").focus();
-        $("#register_tnc_error").html("Code는 4자리 숫자로 입력하세요");
-        $("#register_tnc_error").show();
-        return false;
-      }
-      if (parseInt($("#code").val())%1000 != 0) {
-        console.log(parseInt($("#code").val()));
-        $("#code").focus();
-        $("#register_tnc_error").html("Upper Menu Code는 천의 배수로 입력하세요");
-        $("#register_tnc_error").show();
-        return false;
-      }
-      if ($("#name").val() == "") {
-        $("#name").focus();
-        $("#register_tnc_error").html("Name을 입력하세요.");
-        $("#register_tnc_error").show();
-        return false;
-      }
-      if (code == "" || name == "") {
-        return false;
-      }
+
     // TODO 메시지 공통 영역으로
-    if (confirm("등록 하시겠습니까? ")) {          
+    if (confirm(m.common.confirm.add)) {          
       insertMenu(code, name, "0000", true);
     }
   });
@@ -47,12 +19,44 @@ $(document).ready(function() {
     } else {
       var id = $(this).attr('id');
       if (id == "") { return false;  }
-      if (confirm("삭제 하시겠습니까? ")) {
+      if (confirm(m.common.confirm.delete)) {
         getList(id);
       }
     }        
   });
 });
+
+function check(code, name){
+  if (code == "") {
+    $("#code").focus();
+    $("#register_tnc_error").html(m.menu.check.code);
+    $("#register_tnc_error").show();
+    return false;
+  }
+  if (9999<parseInt($("#code").val())||parseInt($("#code").val())<999) {
+    console.log(parseInt($("#code").val()));
+    $("#code").focus();
+    $("#register_tnc_error").html(m.menu.check.code_num);
+    $("#register_tnc_error").show();
+    return false;
+  }
+  if (parseInt($("#code").val())%1000 != 0) {
+    console.log(parseInt($("#code").val()));
+    $("#code").focus();
+    $("#register_tnc_error").html(m.menu.check.code_start);
+    $("#register_tnc_error").show();
+    return false;
+  }
+  if ($("#name").val() == "") {
+    $("#name").focus();
+    $("#register_tnc_error").html(m.common.check.name);
+    $("#register_tnc_error").show();
+    return false;
+  }
+  if (code == "" || name == "") {
+    return false;
+  }
+}
 
 function getList(id){  
   var in_data = { url : "/management/restapi/getCodeList", type : "GET", data : { id : id} };
@@ -103,27 +107,27 @@ function clickEdit(id, oldCode){
   console.log(code , name);  
   if (code == "") {
     $("#ecode").focus();
-    $("#register_tnc_error_edit").html("Code를 입력하세요.");
+    $("#register_tnc_error_edit").html(m.menu.check.code);
     $("#register_tnc_error_edit").show();
     return false;
     }
     if (9999<parseInt($("#ecode").val())||parseInt($("#ecode").val())<999) {
       console.log(parseInt($("#ecode").val()));
       $("#ecode").focus();
-      $("#register_tnc_error_edit").html("Code는 4자리 숫자로 입력하세요");
+      $("#register_tnc_error_edit").html(m.menu.check.code_num);
       $("#register_tnc_error_edit").show();
       return false;
     }
     if (parseInt($("#ecode").val())%1000 != 0) {
       console.log(parseInt($("#ecode").val()));
       $("#ecode").focus();
-      $("#register_tnc_error_edit").html("Upper Menu Code는 천의 배수로 입력하세요");
+      $("#register_tnc_error_edit").html(m.menu.check.code_start);
       $("#register_tnc_error_edit").show();
       return false;
     }
     if ($("#ename").val() == "") {
       $("#ename").focus();
-      $("#register_tnc_error_edit").html("Name을 입력하세요.");
+      $("#register_tnc_error_edit").html(m.common.check.name);
       $("#register_tnc_error_edit").show();
       return false;
     }
@@ -158,7 +162,7 @@ function updateUpperMenu(id, code, name, oldCode){
       alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);       
       location.href = "/management/menu_upper";
     } else {
-      alert('수정할 내용이 없습니다.');
+      alert(m.common.info.update);
     }    
   });
 }

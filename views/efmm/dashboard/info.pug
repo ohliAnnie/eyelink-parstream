@@ -1,10 +1,13 @@
 extends ../efmm-layout01
 block style
+  link(rel='stylesheet', type='text/css', href='/common/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')
   link(type='text/css', rel='stylesheet', href='/efmm/assets/css/dc.css') 
   link(type='text/css', rel='stylesheet', href='/efmm/css/chart_style.css')  
   link(type='text/css', rel='stylesheet', href='/efmm/css/dashboard_info.css')  
   link(type='text/css', rel='stylesheet', href="/efmm/assets/plugins/bootstrap-toggle/bootstrap-toggle.min.css")  
 block script
+  script(type='text/javascript', src='/common/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+  script(type='text/javascript', src='/common/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
   script(type='text/javascript', src='/efmm/assets/scripts/d3_dc.js')
   script(type='text/javascript', src='/efmm/assets/scripts/crossfilter.js')  
   script(type='text/javascript', src='/efmm/assets/scripts/dc.js')  
@@ -20,7 +23,7 @@ block content
         .col-md-7
           h1 Info
         .col-md-2  
-          input#refresh(type='checkbox', data-toggle='toggle', value='false', data-on="Refresh", data-off="Stop", name='refresh', onchange='refreshOnChange()')
+          input#refresh(type='checkbox', data-toggle='toggle', value='false', data-on="Refresh", data-off="Stop", name='refresh')
         .col-md-3
           ol.breadcrumb
             li
@@ -46,10 +49,18 @@ block content
                   .raw
                     .col-md-5
                       #gage
+                      #modal-alarm.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+                        .modal-dialog
+                          .modal-content
+                            .modal-header
+                              button.close(type='button', data-dismiss='modal', aria-label='Close')
+                                span(aria-hidden='true') ×
+                              h4#myModalLabel.modal-title Alarm History
+                            .modal-body
+                              #mbody
+                            .modal-footer
+                              button.btn.btn-default(type='button', data-dismiss='modal') Close
                     .col-md-7
-                      #data
-                  .raw
-                    .col-md-12
-                      #history
+                      #data                  
                 .col-md-6
                   #composed
