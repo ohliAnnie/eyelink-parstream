@@ -382,36 +382,6 @@ router.get('/restapi/getDashboardDetail', function(req, res, next) {
   });
 });
 
-router.get('/restapi/getDetailAlarmList', function(req, res, next) {
-  console.log('reports/restapi/getDetailAlarmList');  
-  var index = (req.query.flag === 'notching')?indexNotchingStatus:indexStackingStatus
-  var in_data = { index : index+Utils.getToday(fmt4, 'Y'), type : "status", flag : req.query.flag, cid : req.query.cid };  
-  queryProvider.selectSingleQueryByID2("dashboard","selectDetailAlarmList", in_data, function(err, out_data, params) {
-    var rtnCode = CONSTS.getErrData('0000');
-    var data = [];
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');
-    } else {      
-      for(i=0; i<out_data.length; i++){
-        var c = {}, list = [], lcnt = 0;
-        var d = out_data[i]._source.data[0];
-        for(key in d){          
-          if(key === "measure_time"){
-            c.date = Utils.getDateUTC2Local(d[key], fmt2);
-          } else {
-            list[lcnt++] = CCODE.COMMONCODE.ALARM[req.query.flag][key];
-          }        
-        }
-        c.list = list;
-        c.id = out_data[i]._id;
-        data.push(c);
-      }      
-    }
-    res.json({rtnCode: rtnCode, rtnData: data});
-  });
-});
-
-
 router.get('/restapi/getAlarmListPaging', function(req, res, next) {
   console.log('reports/restapi/getAlarmListPaging');  
   console.log(req.query);  
@@ -451,40 +421,16 @@ router.get('/restapi/getAlarmListPaging', function(req, res, next) {
 
 // alarm 정보 수정
 router.put('/alarm/:id', function(req, res) {
-  console.log('alarmUpdate');    
+  console.log('alarmUpdate');      
   var index = (req.body.flag === 'notching')?indexNotchingStatus:indexStackingStatus;
   var in_data = { index : index+Utils.getToday(fmt4, 'Y'), type : "status", id : req.body.id };    
   logger.debug(in_data);
   queryProvider.updateQueryByID("dashboard", "updateAlarm", in_data, function(err, out_data) {
     if(out_data.result == "updated"){
       var rtnCode = CONSTS.getErrData("D002");
-      var index = (req.query.flag === 'notching')?indexNotchingStatus:indexStackingStatus
-      var in_data = { index : index+Utils.getToday(fmt4, 'Y'), type : "status", flag : req.body.flag, cid : req.body.cid };  
-      queryProvider.selectSingleQueryByID2("dashboard","selectDetailAlarmList", in_data, function(err, out_data, params) {
-        var rtnCode = CONSTS.getErrData('0000');
-        var data = [];
-        if (out_data == null) {
-          rtnCode = CONSTS.getErrData('0001');
-        } else {      
-          for(i=0; i<out_data.length; i++){
-            var c = {}, list = [], lcnt = 0;
-            var d = out_data[i]._source.data[0];
-            for(key in d){          
-              if(key === "measure_time"){
-                c.date = Utils.getDateUTC2Local(d[key], fmt2);
-              } else {
-                list[lcnt++] = CCODE.COMMONCODE.ALARM[req.query.flag][key];                
-              }        
-            }
-            c.list = list;
-            c.id = out_data[i]._id;
-            data.push(c);
-          }      
-        }
-        res.json({rtnCode: rtnCode, rtnData: data});
-      });    
     }
     if (err) { logger.debug(err);   }
+    res.json({rtnCode: rtnCode});
   });
 });
 
@@ -520,62 +466,6 @@ router.get('/restapi/getDashboardCompare', function(req, res, next) {
   });
 });
 
-/*router.get('/restapi/getDashboardDetail', function(req, res, next) {
-  console.log('reports/restapi/getDashboardDetail');
-  var gte = Utils.getDate(req.query.date, fmt2, 0, 0, 0, -60, 'Y', 'Y');    
-  var in_data = { index : indexNotchingOee+Utils.getDate(req.query.date, fmt4, 0, 0, 0, -30, 'Y', 'Y'), type : "oee",                   
-                  gte : gte, lte : req.query.date };
-  queryProvider.selectSingleQueryByID2("dashboard","selectDashboardDetail", in_data, function(err, out_data, params) {
-    var rtnCode = CONSTS.getErrData('0000');
-    if (out_data == null) {
-      rtnCode = CONSTS.getErrData('0001');
-    } else {    
-      var notch = out_data;                        
-      in_data.index = indexStackingOee+"*";
-      queryProvider.selectSingleQueryByID2("dashboard","selectDashboardDetail", in_data, function(err, out_data, params) {
-        var rtnCode = CONSTS.getErrData('0000');
-        if (out_data == null) {
-          rtnCode = CONSTS.getErrData('0001');
-        } else {    
-          var stack = out_data;          
-          var stacking = [], notching = [];          
-          var ndate = notch[0]._source.data[0].dtSensed;          
-          for(i=0; i<notch.length; i++){            
-            if(ndate == notch[i]._source.data[0].dtSensed){            
-              var n = notch[i]._source.data[0];
-              n.dtSensed = Utils.getDateUTC2Local(n.dtSensed, fmt2);            
-              n.cid = notch[i]._source.cid;       
-              n.availability *= 100;
-              n.quality *= 100;
-              n.performance *= 100;
-              notching.push(n);    
-            } else {
-              i = notch.length;
-            }
-          };
-          var sdate = stack[0]._source.data[0].dtSensed;
-          for(i=0; i<stack.length; i++){            
-            if(sdate == stack[i]._source.data[0].dtSensed){              
-              var s = stack[i]._source.data[0];            
-              s.dtSensed = Utils.getDateUTC2Local(s.dtSensed, fmt2);     
-              s.cid = stack[i]._source.cid;
-              s.availability *= 100;
-              s.quality *= 100;
-              s.performance *= 100;
-              stacking.push(s);
-            } else {
-              i = stack.length;
-            }
-          };
-          var data = { stacking : stacking, notching : notching };
-        }
-        res.json({rtnCode: rtnCode, rtnData: data});
-      });
-    }
-    res.json({rtnCode: rtnCode, rtnData: data});
-  });
-});*/
-
 router.get('/restapi/getDashboardInfo', function(req, res, next) {
   console.log('reports/restapi/getDashboardInfo');  
   var i = indexNotchingOee.split('_');  
@@ -598,8 +488,7 @@ router.get('/restapi/getDashboardInfo', function(req, res, next) {
       data.cid = out_data[0]._source.cid;
       data.sensorType = out_data[0]._source.sensorType;
       data.state = req.query.state;     
-    }    
-    var alarm = [];    
+    }        
     var i = indexStackingStatus.split('_');    
     var in_data = { index : i[0]+'_'+req.query.type+'_'+i[2]+Utils.getDateLocal2UTC(date, fmt4, 'Y', 'Y'), 
                     type : "status", cid : req.query.cid };
@@ -607,22 +496,8 @@ router.get('/restapi/getDashboardInfo', function(req, res, next) {
       var rtnCode = CONSTS.getErrData('0000');        
       if (out_data == null) {
         rtnCode = CONSTS.getErrData('0001');
-      } else {
-        for(i=0; i<out_data.length; i++){
-          var d = out_data[i]._source.data[0];
-          var c = {}, list = [], ccnt = 0;
-          for(key in d){
-            if(key === "measure_time"){
-              c.date = Utils.getDateUTC2Local(d[key], fmt2);
-            } else {
-              list[ccnt++] = CCODE.COMMONCODE.ALARM[out_data[i]._source.flag][key];
-            }
-            c.list = list;
-          }
-          alarm.push(c);
-        }
       }        
-      res.json({rtnCode: rtnCode, rtnData: data, alarm : alarm, alarmCount : params});
+      res.json({rtnCode: rtnCode, rtnData: data, alarmCount : params});
     });
   });
 });
@@ -650,6 +525,44 @@ router.get('/restapi/getDashboardInfoStatus', function(req, res, next) {
       }
     }
     res.json({rtnCode: rtnCode, rtnData: data});
+  });
+});
+
+
+router.get('/restapi/getAlarmListPagingInfo', function(req, res, next) {
+  console.log('reports/restapi/getAlarmListPagingInfo');  
+  console.log(req.query);  
+  var index = (req.query.flag === 'notching')?indexNotchingStatus:indexStackingStatus
+  var in_data = { index : index+Utils.getToday(fmt4, 'Y'), type : "status", 
+                  from : parseInt(req.query.start), size : parseInt(req.query.length),
+                  dir : req.query.order[0].dir,  flag : req.query.flag, cid : req.query.cid };  
+  queryProvider.selectSingleQueryByID2("dashboard","selectInfoAlarmList", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    var data = [];
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {      
+      for(i=0; i<out_data.length; i++){
+        var c = {}, list = [], lcnt = 0;
+        var d = out_data[i]._source.data[0];
+        for(key in d){          
+          if(key === "measure_time"){
+            c.date = Utils.getDateUTC2Local(d[key], fmt2);
+          } else {
+            list[lcnt++] = CCODE.COMMONCODE.ALARM[req.query.flag][key];
+          }        
+        }
+        c.list = list;
+        c.id = out_data[i]._id;
+        data.push(c);
+      }      
+    }    
+    var total = {};
+    total.draw = req.query.draw;
+    total.recordsTotal = params;
+    total.recordsFiltered = params;
+    total.data = data;    
+    res.json(total);
   });
 });
 

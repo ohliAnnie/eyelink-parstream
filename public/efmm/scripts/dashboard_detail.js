@@ -12,14 +12,7 @@ $(document).ready(function(e) {
     } else {    
       check = false;  
     }
-  });  
-  $('#datatable_container').bind( 'click', function (event) {
-    var $target = $(event.target);
-    console.log('tt')
-    if($target.prop("tagName") == "TR") {
-      console.log('test')
-    }
-  });
+  });    
 });
 var check = false;
 
@@ -176,37 +169,15 @@ function getGaguChart(id, max, color, value, size) {
   });
 }
 
-function getAlarmHistory(flag, cid) {  
-  var data = { flag : flag, cid : cid };
-  var in_data = { url : "/dashboard/restapi/getDetailAlarmList", type : "GET", data : data };
-  ajaxTypeData(in_data, function(result){  
-    if (result.rtnCode.code == "0000") { 
-      drawAlarmModal(result.rtnData, flag, cid);
-    } 
-  });  
-}
 function drawAlarmModal(flag, cid){  
   $('#mbody').empty();    
   var sbM = new StringBuffer(); 
   sbM.append('<div id="datatable_container" style="height:360px; overflow:auto;">')
   sbM.append('<table id="sample" class="table table-striped table-bordered table-hover">');
   sbM.append('<thead><tr><th style="text-align:center;">Date</th><th style="text-align:center;">List</th>');
-  sbM.append('</tr></thead>');
-  //'<tbody>');
-/*  for(i=0; i<data.length; i++) {      
-    sbM.append('<tr><td>'+data[i].date+'</td><td style="text-align:left;">');
-    for(j=0; j<data[i].list.length; j++) {
-      if(j!=0){ sbM.append('<br>') }
-      sbM.append(data[i].list[j]);
-    }    
-    sbM.append('</td><td><button type="button" class="btn btn-primary btn-xs" onclick="updateAlarm(');
-    sbM.append("'"+data[i].id+"','"+flag+"','"+cid+"'"+')">check</button></td></tr>');
-  }*/
-  //sbM.append('</tbody>  
-  sbM.append('</tr></tfoot>');
+  sbM.append('<th>check</th></tr></thead>');
   sbM.append('</table></div>');  
-  $('#mbody').append(sbM.toString());      
-  console.log(sbM.toString())
+  $('#mbody').append(sbM.toString());
   $('#sample').DataTable( {
     "order": [[ 0, "desc" ]],
     "searching": false,
@@ -217,14 +188,36 @@ function drawAlarmModal(flag, cid){
       url : "/dashboard/restapi/getAlarmListPaging",
       type : 'GET',
       //dataType: "jsonp",
-      data: function ( d ) {        
-        console.log(d)
+      data: function ( d ) {             
         d.cid = cid;
         d.flag = flag;         
-        d.search_key = d.search.value;
+        d.search_key = d.search.value;         
       }      
     },
-    "columns" : [{ data: "date" },{ data: "list", "bSortable": false }]    
+    "columns" : [
+      { data: "date" },
+      { "targets" : -1,
+        "data": null,
+        render: function(data, type, full, meta){         
+          var d = '';
+          for(i=0; i<full.list.length; i++){
+            if(i!=0){ d += '<br>'; }
+            d += full.list[i];
+          }
+          return d;
+        }
+      },
+   //  { data : null, "defaultContent": '<button onclick="update()">Click!</button>', "targets": -1, "bSortable": false },
+      {
+        "targets": -1,
+        "data": null,
+        render : function(data, type, full, meta){          
+          if(type === 'display'){
+            data =  '<button onclick="updateAlarm('+"'"+full.id+"','"+cid+"','"+flag+"'"+')">Click!</button>';
+          }
+          return data;
+        }
+     }]
   });  
   showAlarmView();
 }
@@ -233,14 +226,15 @@ function showAlarmView() {
   $('#modal-alarm').modal("show");  
 }
 
-function updateAlarm(id, flag, cid){  
+function updateAlarm(id, cid, flag){    
   if (confirm("확인 하셨습니까?")) { 
-    var data = { id : id, flag : flag, cid : cid };
+    var data = { id : id, flag : flag, cid : cid };    
     var in_data = { url : "/dashboard/alarm/"+id, type : "PUT", data : data };
     ajaxTypeData(in_data, function(result){        
-      if (result.rtnCode.code == "0000") { 
-        drawAlarmModal(result.rtnData, flag, cid);
-      } 
+      console.log(result)
+      if (confirm(result.rtnCode.message)) { 
+        drawAlarmModal(flag, cid);
+      }
     });  
   }
 }
