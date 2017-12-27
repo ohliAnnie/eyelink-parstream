@@ -286,7 +286,7 @@
         "type" : #TYPE#,
         "body" : {
           "_source" : [##SOURCE##],
-          "sort" : { "dtTransmitted" : { "order" : "desc" } },
+          "sort" : { "dtTransmitted" : { "order" : "asc" } },
           "query" : {
             "constant_score" : {
               "filter" : {
