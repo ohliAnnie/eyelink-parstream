@@ -28,10 +28,10 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Date Range
                       .input-icon
-                        .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
-                          input#sdate.form-control(type='text', name='from' value='')
+                        .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd  09:00')
+                          input#sdate.form-control(type='text', name='from' value='')(style="width: 145px")
                           span.input-group-addon to
-                          input#edate.form-control(type='text', name='to' value='')
+                          input#edate.form-control(type='text', name='to' value='')(style="width: 145px")
                   .form-group
                     label.control-label.col-md-5 Step
                     .col-md-3
@@ -63,11 +63,10 @@ block content
                       label.control-label.visible-ie8.visible-ie9 Interval
                       .input-icon
                         select.form-control.input-small.select2.form-md-line-input(name='interval')
-                          option(value=15) 15min
-                          option(value=30) 30min
-                          option(value=60) 60min
-                          option(value=180) 3hour
-                          option(value=360) 6hour
+                          option(value=1) 1 min
+                          option(value=5) 5 min
+                          option(value=10) 10 min
+                          option(value=15) 15 min
                   .form-group
                     label.control-label.col-md-5 Clusters
                     .col-md-3

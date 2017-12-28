@@ -2,8 +2,8 @@
 .b-margin-0 {margin-bottom: 0px !important;}
 .t-padding-0 {padding-top: 0px !important;}
 .table>tbody>tr>th {border-top: 0px !important;}
-
-
+.inline { display: inline-block;}
+.warning-msg { color:red; margin: 0px 20px; float:right; font-size: 13px; vertical-align: middle;}
 
 
 

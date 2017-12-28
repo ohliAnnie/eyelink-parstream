@@ -184,3 +184,13 @@ html
                 .portlet-body
                   .chart
                     #ts-chart04
+        #chooseMotor.modal.fade(role='dialog')
+          .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(data-dismiss='modal') &times;
+                h4.modal-title.inline Choose max of 4 motors.
+                .warning-msg.inline
+              .modal-body
+              .modal-footer
+                button#motor-modal-apply.btn.btn-default Apply

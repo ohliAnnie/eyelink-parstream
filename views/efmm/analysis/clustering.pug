@@ -40,11 +40,10 @@ block content
                     .col-md-2.form-inline
                       select#interval.form-control.input-small.select2me.form-md-line-input(name='interval')
                         option(value='all') All
-                        option(value=15) 15min
-                        option(value=30) 30min
-                        option(value=60) 60min
-                        option(value=180) 3hour
-                        option(value=360) 6hour
+                        option(value=1) 1 min
+                        option(value=5) 5 min
+                        option(value=10) 10 min
+                        option(value=15) 15 min
                     label.control-label.col-md-1 Machine
                     .col-md-2.form-inline
                       select.form-control.input-small.select2me.form-md-line-input(name='machine')
@@ -74,6 +73,7 @@ block content
               label.control-label.col-md-2 Machine
               .col-md-10
                 .btn-group.btn-group-devided(data-toggle='buttons')
+                  //- TODO : 머신 종류를 동적으로 조회하여 생성해야 하는 부분
                   label.btn.btn-transparent.green-sharp.btn-circle.btn-sm.active
                     input#factor0.toggle(type='radio', name='options', value='100', checked='Y')
                     | 100
@@ -94,22 +94,7 @@ block content
                 #table
                   .panel.panel-card
                     .panel-body
-                      .col-xm-2.col-sm-2.col-md-2.panel-checkbox.hidden-xs.hidden-sm
-                        input#c0.click_checkbox(type='checkbox', name='c0', value='1', v-on='click:checkOpt', checked='true')
-                        text  Cluster0
-                        br
-                        input#c1.click_checkbox(type='checkbox', name='c1', value='2', v-on='click:checkOpt', checked='true')
-                        text  Cluster1
-                        br
-                        input#c2.click_checkbox(type='checkbox', name='c2', value='3', v-on='click:checkOpt', checked='true')
-                        text  Cluster2
-                        br
-                        input#c3.click_checkbox(type='checkbox', name='c3', value='4', v-on='click:checkOpt', checked='true')
-                        text  Cluster3
-                        br
-                      //-
-                        input#c3.click_checkbox(type='checkbox', name='c4', value='5', v-on='click:checkOpt', checked='true')
-                        text  Cluster4
-                      //
+                      #panel-cluster-list.col-xm-2.col-sm-2.col-md-2.panel-checkbox.hidden-xs.hidden-sm
+                        //- 클러스터 개수에 따라 동적으로 생성되는 부분
                       .col-xm-12.col-sm-12.col-md-10.col-xs-12
                         #Cluster(style='width:100%;height:395px;')

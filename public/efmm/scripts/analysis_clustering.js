@@ -16,7 +16,7 @@ $(document).ready(function(e) {
   });
 
   $('input[type="radio"]').on('click change', function(e) {
-
+    // TODO : 장비 개수에 따라 동적으로 로직이 추가되어야 함
     if ($('#factor0').is(':checked') === true) {
       var factor = $('#factor0').val();
       console.log('[clickfunc] factor0: ',factor);
@@ -39,6 +39,7 @@ $(document).ready(function(e) {
     var dadate = link.innerText || link.textContent;
     dadate = dadate.replace(' ', 'T');
     $('#dadate').val(dadate);
+    // TODO : 장비 개수에 따라 동적으로 로직이 추가되어야 함
     if ($('#factor0').is(':checked') === true) {
       var factor = $('#factor0').val();
       console.log('[clickfunc] factor0: ',factor);
@@ -132,22 +133,36 @@ function drawCheckChart(machine, dadate) {
 }
 
 function drawCheckCluster(data, dadate, machine) {
-  var cate = new Array();
-  var idx = 0;
-  if ($('input[name="c0"]').prop('checked'))
-    cate[idx++] = 'c0';
-  if ($('input[name="c1"]').prop('checked'))
-    cate[idx++] = 'c1';
-  if ($('input[name="c2"]').prop('checked'))
-    cate[idx++] = 'c2';
-  if ($('input[name="c3"]').prop('checked'))
-    cate[idx++] = 'c3';
+
+  console.log('[drawClusteringChart] data: ', data, '\n,dadate: ', dadate, '\n,machine: ', machine);
+
+  // #panel-cluster-list 에 동적으로 클러스터 목록 넣기
+  let clusterCnt = Object.keys(data[0]).length - 1;
+  let dynamicClusters = '';
+  let lineCategories = [];
+  for ( let idx = 0 ; idx < clusterCnt ; idx++ ){
+    dynamicClusters += '<div class="checker" id="uniform-c'+idx+'"><span class="checked"><input class="click_checkbox" id="c'+idx+'" type="checkbox" name="c'+idx+'" value="'+(idx+1) + '" checked="true" v-on="click:checkOpt"></span></div>';
+    dynamicClusters += '<text> Cluster'+ idx +'</text>';
+    if ( idx == clusterCnt-1 ) {
+      // do nothing
+    } else {
+      dynamicClusters += '<br>';
+    }
+    lineCategories.push('c'+idx);
+  }
+  $('#panel-cluster-list').html(dynamicClusters);
+  $('.checker').click(function(){
+    let element = $(this).children('span:nth-child(1)');
+    element.toggleClass('checked unchecked');
+  });
+
+
   var demo = new Vue({
     el: '#table',
     data: {
       people_count: 200,
-      lineCategory: ['c0', 'c1', 'c2', 'c3'],
-      selectCate: cate,
+      lineCategory: lineCategories,
+      selectCate: lineCategories,
       lineFunc: null
     },
     methods: {
@@ -168,7 +183,6 @@ function drawCheckCluster(data, dadate, machine) {
 
           var legendSize = 10,
             color = d3.scale.category20();
-
           var x = d3.time.scale().range([0, width]);
           var y = d3.scale.linear().range([height, 0]);
 
@@ -198,16 +212,7 @@ function drawCheckCluster(data, dadate, machine) {
           x.domain(d3.extent(data, function(d) {
             return new Date(d.time);
           }));
-          if (machine === '100') {
-            y.domain([0, 100]);
-          } else if (machine === '200') {
-            y.domain([0, 100]);
-          }
-          // else if(machine === 'voltage') {
-          //   y.domain([0, 240]);
-          // } else if(machine === 'power_factor') {
-          //   y.domain([0, 1.5]);
-          // }
+          y.domain([0, 100]);
 
           //data.length/10 is set for the garantte of timeseries's fitting effect in svg chart
           var xAxis = d3.svg.axis()
@@ -231,12 +236,22 @@ function drawCheckCluster(data, dadate, machine) {
 
           d3.select('#svg-path').remove();
 
+          // 레전드 개수에 따라 한줄에 4개씩 출력하면서 height가 변동되도록 변경 (2017/12/24)
+          let dynamicHeight = height + margin.top + margin.bottom + Math.floor(clusterCnt/4)*legendSize*2.3;
+
           var svg = d3.select(id).append("svg")
             .attr("id", "#svg-path")
             .attr("width", width + margin.right + margin.left)
-            .attr("height", height + margin.top + margin.bottom)
+            // height는 클러스터 개수에 따라 동적 적용
+            .attr("height", dynamicHeight)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+          let clusterOriginHeight = $('#Cluster').outerHeight();
+          $('#Cluster').css('height', dynamicHeight);
+          let portlet = $('#Cluster').parents('div.portlet');
+          let newPortletHeight = portlet.outerHeight() + Math.abs(clusterOriginHeight - dynamicHeight);
+          portlet.css('height', newPortletHeight);
 
           svg.append("g")
             .attr("class", "x axis")
@@ -293,7 +308,8 @@ function drawCheckCluster(data, dadate, machine) {
             .append('g')
             .attr('class', 'path_legend')
             .attr('transform', function(d, i) {
-              return 'translate(' + ((5 + (width - 20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
+              // 한 줄에 4개씩만 뿌리도록 수정 (2017-12-28)
+              return 'translate(' + ((5 + (width - 20) / 4) * (i%4) + 5) + ',' + ((height + margin.bottom - legendSize - 15) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
             });
 
           singLegend.append('rect')
@@ -314,18 +330,7 @@ function drawCheckCluster(data, dadate, machine) {
               }
             })
             .text(function(d) {
-              if (d === 'c0') {
-                var rename = "Cluster0";
-              } else if (d === 'c1') {
-                var rename = "Cluster1";
-              } else if (d === 'c2') {
-                var rename = "Cluster2";
-              } else if (d === 'c3') {
-                var rename = "Cluster3";
-              } else {
-                var rename = "Cluster4";
-              }
-              return rename;
+              return d.replace('c','Cluster');
             });
 
           //draw the rect for legends
@@ -340,7 +345,10 @@ function drawCheckCluster(data, dadate, machine) {
             .attr('width', (width - 20) / 4)
             .attr('height', legendSize + 10)
             .attr('transform', function(d, i) {
-              return 'translate(' + (i * (5 + (width - 20) / 4)) + ',' + (height + margin.bottom - legendSize - 20) + ')';
+              // 한 줄에 4개씩만 뿌리도록 수정 (2017-12-28)
+              // console.log('306 d: ',d);
+              // return 'translate(' + (i * (5 + (width - 20) / 4)) + ',' + (height + margin.bottom - legendSize - 20) + ')';
+              return 'translate(' + ((5 + (width - 20) / 4) * (i%4)) + ',' + ((height + margin.bottom - legendSize - 20) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
             });
 
           var points = svg.selectAll(".seriesPoints")
@@ -372,18 +380,7 @@ function drawCheckCluster(data, dadate, machine) {
 
               var mainCate = (function() {
                 if (d['num'] != 0) {
-                  if (d['category'] === 'c0') {
-                    var rename = "Cluster0";
-                  } else if (d['category'] === 'c1') {
-                    var rename = "Cluster1";
-                  } else if (d['category'] === 'c2') {
-                    var rename = "Cluster2";
-                  } else if (d['category'] === 'c3') {
-                    var rename = "Cluster3";
-                  } else {
-                    var rename = "Cluster3";
-                  }
-                  return rename + ' | ';
+                  return d['category'].replace('c','Cluster') + ' | ';
                 } else
                   return '';
               })();
@@ -504,8 +501,9 @@ function drawCheckCluster(data, dadate, machine) {
           .transition()
           .duration(200)
           .attr('transform', function(d, i) {
-            return 'translate(' + ((5 + (width - 20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
-          })
+            // 한 줄에 4개씩만 뿌리도록 수정 (2017-12-28)
+            return 'translate(' + ((5 + (width - 20) / 4) * (i%4) + 5) + ',' + ((height + margin.bottom - legendSize - 15) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
+          });
 
         legend.selectAll('rect')
           .data(selectCate)
@@ -525,20 +523,8 @@ function drawCheckCluster(data, dadate, machine) {
             }
           })
           .text(function(d) {
-            if (d === 'c0') {
-              var rename = "Cluster0";
-            } else if (d === 'c1') {
-              var rename = "Cluster1";
-            } else if (d === 'c2') {
-              var rename = "Cluster2";
-            } else if (d === 'c3') {
-              var rename = "Cluster3";
-            } else {
-              var rename = "Cluster4";
-            }
-            return rename;
+            return d.replace('c','Cluster');
           });
-
 
         //create new legends
         var singLegend = legend.selectAll('.path_legend')
@@ -547,7 +533,8 @@ function drawCheckCluster(data, dadate, machine) {
           .append('g')
           .attr('class', 'path_legend')
           .attr('transform', function(d, i) {
-            return 'translate(' + ((5 + (width - 20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
+            // 한 줄에 4개씩만 뿌리도록 수정 (2017-12-28)
+            return 'translate(' + ((5 + (width - 20) / 4) * (i%4) + 5) + ',' + ((height + margin.bottom - legendSize - 15) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
           });
 
         singLegend.append('rect')
@@ -568,18 +555,7 @@ function drawCheckCluster(data, dadate, machine) {
             }
           })
           .text(function(d) {
-            if (d === 'c0') {
-              var rename = "Cluster0";
-            } else if (d === 'c1') {
-              var rename = "Cluster1";
-            } else if (d === 'c2') {
-              var rename = "Cluster2";
-            } else if (d === 'c3') {
-              var rename = "Cluster3";
-            } else {
-              var rename = "Cluster4";
-            }
-            return rename;
+            return d.replace('c','Cluster');
           });
 
         //remove the old legends
@@ -587,24 +563,6 @@ function drawCheckCluster(data, dadate, machine) {
           .data(selectCate)
           .exit()
           .remove();
-
-        //redraw the rect around the legend
-        rect.selectAll('.legendRect')
-          .data(selectCate)
-          .attr('transform', function(d, i) {
-            return 'translate(' + ((5 + (width - 20) / 4) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
-          });
-
-        rect.selectAll('.legendRect')
-          .data(selectCate)
-          .enter()
-          .append('rect')
-          .attr('class', 'legendRect')
-          .attr('width', (width - 20) / 4)
-          .attr('height', legendSize + 10)
-          .attr('transform', function(d, i) {
-            return 'translate(' + ((5 + (width - 20) / 4) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
-          });
 
         rect.selectAll('.legendRect')
           .data(selectCate)
