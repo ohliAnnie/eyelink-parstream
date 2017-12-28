@@ -85,6 +85,9 @@ app.use('/socketapp', socketapp);
 global._rawDataByDay = {};
 // dbquery.xml 파일 내용을 loading
 initapps.loadQuery(function() {
+  // Management 관련 데이터를 Caching
+  initapps.loadManagementData(function() {});
+
   // 지정된 기간의 Raw Data를 서버 시작시 메모리에 Loading
   if (config.loaddataonstartup.active === true)
     initapps.loadData(function(in_params) {});

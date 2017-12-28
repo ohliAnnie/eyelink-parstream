@@ -38,23 +38,27 @@ $(document).ready(function() {
     $('#checked_id').val('');
     changeErrMsg(false, '');
   });
+
+  $('#searchStep').change(function() {
+    makeSelectOption($('#searchCid'), machineList[$('#searchStep').val()]);
+  });
 });
 
 function initRecipeList() {
-  // $('#serachStep').val($('#serachStep').attr('condData'));
+  // $('#searchStep').val($('#searchStep').attr('condData'));
   // $('#searchCid').val($('#searchCid').attr('condData'));
 }
 
 function searchRecipeBtn() {
-  location.href = '/management/recipe?step=' + $('#serachStep').val() + '&cid=' + $('#searchCid').val();
+  location.href = '/management/recipe?step=' + $('#searchStep').val() + '&cid=' + $('#searchCid').val();
 }
 
 function goViewAddRecipe() {
-  location.href = '/management/recipe/NEW?step=' + $('#serachStep').val() + '&cid=' + $('#searchCid').val();
+  location.href = '/management/recipe/NEW?step=' + $('#searchStep').val() + '&cid=' + $('#searchCid').val();
 }
 
 function goViewEditRecipe(vId) {
-  location.href = '/management/recipe/'+ vId + '?step=' + $('#serachStep').val() + '&cid=' + $('#searchCid').val();
+  location.href = '/management/recipe/'+ vId + '?step=' + $('#searchStep').val() + '&cid=' + $('#searchCid').val();
 }
 
 function addNewRecipeBtn() {

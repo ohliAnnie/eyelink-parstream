@@ -45,7 +45,7 @@ block content
                       each data in rtnData.data
                         - var item = data._source
                         tr.odd.gradeX
-                          td #{item.type}
+                          td #{item.typename}
                           td
                             a(href='javascript:goViewEditRule("'+data._id+ '")') #{item.rulename}
                           td #{item.description}

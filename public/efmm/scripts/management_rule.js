@@ -35,6 +35,10 @@ $(document).ready(function() {
     $('#checked_id').val('');
     changeErrMsg(false, '');
   });
+
+  $('#type').change(function() {
+    makeSelectOption($('#rule_name'), commoncode.rulename[$('#type').val()]);
+  });
 });
 
 function initRuleList() {

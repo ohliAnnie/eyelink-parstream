@@ -1,5 +1,6 @@
 var logger = global.log4js.getLogger('initApp');
 var CONSTS = require('./consts');
+var async = require('async');
 require('date-utils');
 var fs = require('fs'),
     xml2js = require('xml2js');
@@ -15,7 +16,8 @@ function loadQuery(callback) {
 
   var datafilepath = __dirname + '/dao/' + global.config.fetchData.database + '/' + global.config.pcode + '/';
   // Directory 내 파일 list를 읽는다.
-  fs.readdirSync(datafilepath).forEach(function(file) {
+  var cnt_queryloaded = 0;
+  fs.readdirSync(datafilepath).forEach(function(file, index, arr) {
     var ext = file.split('.').pop();
     if (ext == "xml") {
       logger.info('loadQuery] found query file [%s]', datafilepath + file)
@@ -31,14 +33,75 @@ function loadQuery(callback) {
             global.query.queryList[key] = result.queryList[key];
           });
           // logger.debug('loadQuery] global.query [%s]', JSON.stringify(global.query));
-
-          callback();
+          cnt_queryloaded++; 
+          if (cnt_queryloaded == arr.length)
+            callback();
         });
       });
     } else {
       logger.info('loadQuery] not load file[%s] in %s', file, datafilepath);
+      cnt_queryloaded++;
     }
   });
+}
+
+// Management 관련 데이터를 메모리로 로딩.
+//  - 대상 : machine, role, user, menu
+function loadManagementData(callback) {
+
+  // global query 최기화.
+  global.management = {
+    "machine" : [],
+    "role" : [],
+    "user" : [],
+    "menu" : [] 
+  };
+
+  global.management.machine = {};
+
+  async.parallel([
+    function(callback) {
+      queryProvider.selectSingleQueryByID2("initapp", "selectUserList", {}, function(err, out_data) {
+        out_data.forEach(function(d) {
+          let item = d._source;
+          global.management.user.push({"key" : item.user_id, "value" : item.user_name});
+        });
+        callback();
+      });
+    },
+    function(callback) {
+      queryProvider.selectSingleQueryByID2("initapp", "selectRoleList", {}, function(err, out_data) {
+        out_data.forEach(function(d) {
+          let item = d._source;
+          global.management.role.push({"key" : item.role_id, "value" : item.role_name});
+        });
+        callback();
+      });
+    },
+    function(callback) {
+      queryProvider.selectSingleQueryByID3("initapp", "selectMachineList", {}, function(err, out_data) {
+        logger.debug('out_data : %j', out_data);
+        if (out_data != null) {
+          var data = out_data.flag.buckets;
+          for(var i=0; i<data.length; i++) {
+            var key = data[i].key;
+            var cids = data[i].cid.buckets;
+            global.management.machine[key] = [];
+            logger.debug('global.management.machine : %j', global.management.machine);
+            for (var j=0; j<cids.length; j++) {
+              global.management.machine[key].push({"key" : cids[j].key, "value" : cids[j].key});
+            }
+          }
+        }
+        logger.debug('global.management.machine : %j', global.management.machine);
+        callback();
+      });
+    }],
+    function(err, results) {
+      logger.info('completed global.management.XXX Data Loading!!!');
+      //callback();
+      return;
+    });
 }
 
 var cleanXML = function(xml){
@@ -152,4 +215,5 @@ function loadData(callback) {
 
 
 module.exports.loadQuery = loadQuery;
+module.exports.loadManagementData = loadManagementData;
 module.exports.loadData = loadData;
