@@ -6,6 +6,8 @@ block script
   script(type='text/javascript', src='/common/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
   script(src='/common/assets/scripts/page/table-managed.js')
   script(type='text/javascript', src='/efmm/scripts/management_recipe.js')
+  script.
+    var machineList = !{JSON.stringify(rtnData.machineList)};
 
 block content
   .container-fluid
@@ -31,7 +33,7 @@ block content
                   .row
                     label.control-label.col-md-1 Step
                     .col-md-2.form-inline
-                      select#serachStep.form-control.input-small.select2me.form-md-line-input(name='searchStep', condData=condData.step)
+                      select#searchStep.form-control.input-small.select2me.form-md-line-input(name='searchStep', condData=condData.step)
                         option(value='')
                           each code in commoncode.step
                             - if (code.key.includes(condData.step))
@@ -42,7 +44,7 @@ block content
                     .col-md-2.form-inline
                       select#searchCid.form-control.input-small.select2me.form-md-line-input(name='searchCid', condData=condData.cid)
                         each machine in rtnData.machine
-                          option(value=machine.cid) #{machine.cid}
+                          option(value=machine.key) #{machine.value}
                     .col-md-2.form-inline
                       button#search-recipe-btn.btn.blue
                         i.fa.fa-search  Search
