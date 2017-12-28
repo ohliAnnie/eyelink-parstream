@@ -16,14 +16,15 @@ $(document).ready(function(e) {
   });
 
   $('input[type="radio"]').on('click change', function(e) {
-    // TODO : 장비 개수에 따라 동적으로 로직이 추가되어야 함
-    if ($('#factor0').is(':checked') === true) {
-      var factor = $('#factor0').val();
-      console.log('[clickfunc] factor0: ',factor);
-    } else if ($('#factor1').is(':checked') === true) {
-      var factor = $('#factor1').val();
-      console.log('[clickfunc] factor1: ',factor);
-    }
+    // 장비 개수에 따라 동적으로 로직이 추가되어야 함
+    let factor = $('input[type="radio"]:checked').val();
+    // if ($('#factor0').is(':checked') === true) {
+    //   var factor = $('#factor0').val();
+    //   console.log('[clickfunc] factor0: ',factor);
+    // } else if ($('#factor1').is(':checked') === true) {
+    //   var factor = $('#factor1').val();
+    //   console.log('[clickfunc] factor1: ',factor);
+    // }
     // else if ($('#factor2').is(':checked') === true) {
     //   var factor = $('#factor2').val();
     // } else if ($('#factor3').is(':checked') === true) {
@@ -39,14 +40,15 @@ $(document).ready(function(e) {
     var dadate = link.innerText || link.textContent;
     dadate = dadate.replace(' ', 'T');
     $('#dadate').val(dadate);
-    // TODO : 장비 개수에 따라 동적으로 로직이 추가되어야 함
-    if ($('#factor0').is(':checked') === true) {
-      var factor = $('#factor0').val();
-      console.log('[clickfunc] factor0: ',factor);
-    } else if ($('#factor1').is(':checked') === true) {
-      var factor = $('#factor1').val();
-      console.log('[clickfunc] factor1: ',factor);
-    }
+    // 장비 개수에 따라 동적으로 로직이 추가되어야 함
+    let factor = $('input[type="radio"]:checked').val();
+    // if ($('#factor0').is(':checked') === true) {
+    //   var factor = $('#factor0').val();
+    //   console.log('[clickfunc] factor0: ',factor);
+    // } else if ($('#factor1').is(':checked') === true) {
+    //   var factor = $('#factor1').val();
+    //   console.log('[clickfunc] factor1: ',factor);
+    // }
     // else if ($('#factor2').is(':checked') === true) {
     //   var factor = $('#factor2').val();
     // } else if ($('#factor3').is(':checked') === true) {
@@ -96,7 +98,7 @@ function drawMaster(master) {
     }
     var sdate = d.start_date.split(' ');
     var edate = d.end_date.split(' ');
-    sb.append('<tr><td><a href="#" onclick="clickfunc(this)">' + d.da_time + '</td><td> ' + d.start_date + ' ~ ' + d.end_date + ' </td>');
+    sb.append('<tr><td><a onclick="clickfunc(this)">' + d.da_time + '</td><td> ' + d.start_date + ' ~ ' + d.end_date + ' </td>');
     if (d.time_interval == 180) {
       var interval = '3hours';
     } else if (d.time_interval == 360) {
@@ -105,7 +107,7 @@ function drawMaster(master) {
       var interval = d.time_interval + 'mins';
     }
     sb.append('<td>' + interval + '</td>');
-    sb.append('<td><a href="#" onclick="javascript_:window.open(');
+    sb.append('<td><a onclick="javascript_:window.open(');
     var script = "'clusteringPop?dadate=" + d.da_time + "&interval=" + interval + "&start=" + d.start_date + "&end=" + d.end_date + "', '', 'menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50'";
     sb.append(script + ');" class="btn red"> Detail </a></td></tr>')
 
@@ -114,7 +116,7 @@ function drawMaster(master) {
 }
 
 function drawCheckChart(machine, dadate) {
-  console.log('[drawCheckChart] machine:',machine);
+  // console.log('[drawCheckChart] machine:',machine);
   var data = {
     dadate: dadate,
     machine: machine
@@ -126,7 +128,7 @@ function drawCheckChart(machine, dadate) {
   };
   ajaxTypeData(in_data, function(result) {
     if (result.rtnCode.code == "0000") {
-      console.log(result.rtnData);
+      // console.log(result.rtnData);
       drawCheckCluster(result.rtnData, dadate, machine);
     }
   });
@@ -134,7 +136,7 @@ function drawCheckChart(machine, dadate) {
 
 function drawCheckCluster(data, dadate, machine) {
 
-  console.log('[drawClusteringChart] data: ', data, '\n,dadate: ', dadate, '\n,machine: ', machine);
+  // console.log('[drawClusteringChart] data: ', data, '\n,dadate: ', dadate, '\n,machine: ', machine);
 
   // #panel-cluster-list 에 동적으로 클러스터 목록 넣기
   let clusterCnt = Object.keys(data[0]).length - 1;
@@ -346,8 +348,6 @@ function drawCheckCluster(data, dadate, machine) {
             .attr('height', legendSize + 10)
             .attr('transform', function(d, i) {
               // 한 줄에 4개씩만 뿌리도록 수정 (2017-12-28)
-              // console.log('306 d: ',d);
-              // return 'translate(' + (i * (5 + (width - 20) / 4)) + ',' + (height + margin.bottom - legendSize - 20) + ')';
               return 'translate(' + ((5 + (width - 20) / 4) * (i%4)) + ',' + ((height + margin.bottom - legendSize - 20) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
             });
 

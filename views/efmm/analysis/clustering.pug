@@ -46,10 +46,9 @@ block content
                         option(value=15) 15 min
                     label.control-label.col-md-1 Machine
                     .col-md-2.form-inline
-                      select.form-control.input-small.select2me.form-md-line-input(name='machine')
-                        option(value=100) 100
-                        option(value=200) 200
-                        option(value=300) 300
+                      select#machine-list.form-control.input-small.select2me.form-md-line-input(name='machine')
+                        each machine in list
+                          option(value=(machine.value)) #{machine}
                     .col-md-1.form-inline
                       button#btn_search.btn.blue
                         i.fa.fa-search  Search
@@ -73,23 +72,20 @@ block content
               label.control-label.col-md-2 Machine
               .col-md-10
                 .btn-group.btn-group-devided(data-toggle='buttons')
-                  //- TODO : 머신 종류를 동적으로 조회하여 생성해야 하는 부분
-                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm.active
-                    input#factor0.toggle(type='radio', name='options', value='100', checked='Y')
-                    | 100
-                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
-                    input#factor1.toggle(type='radio', name='options', value='200')
-                    | 200
-                //-
-                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
-                    input#factor2.toggle(type='radio', name='options', value='ampere')
-                    | Ampere
-                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
-                    input#factor3.toggle(type='radio', name='options', value='power_factor')
-                    | PowerFactor
-                //
-            .portlet-body
-              .chart(style='height:445px;')
+                  - for (let i = 0; i < list.length; i++ ) {
+                    - let machineId = list[i];
+                    - let factor = 'factor'+i;
+                      if (i == 0)
+                        label.btn.btn-transparent.green-sharp.btn-circle.btn-sm.active
+                          input.toggle(type='radio', name='options', value=machineId, checked='Y', id=factor)
+                          | #{machineId}
+                      else
+                        label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
+                          input.toggle(type='radio', name='options', value=machineId, id=factor)
+                          | #{machineId}
+                  - }
+            .portlet-body(style='height:auto;')
+              .chart(style='height:auto;')
                 input#dadate(type='hidden', name='hidden', value='')
                 #table
                   .panel.panel-card

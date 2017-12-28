@@ -49,10 +49,8 @@ router.get('/anomaly', function(req, res, next) {
       var data = out_data.flag.buckets;
       var list = [];
       for(i=0; i<data.length; i++) {
-        // var flag = data[i].key;
         var cid = data[i].cid.buckets;
         for(j=0; j<cid.length; j++) {
-          // list[cnt++] = flag+'_'+cid[j].key;
           if ( list.indexOf(cid[j].key) < 0 ){
             list.push(cid[j].key);
           }
@@ -67,16 +65,44 @@ router.get('/anomaly', function(req, res, next) {
 
 router.get('/clustering', function(req, res, next) {
   var outdata = { title: global.config.productname, mainmenu : mainmenu };
-  res.render('efmm/analysis/clustering', outdata);
+  // 머신 종류 동적 조회 // 추후에는 config에 설정하는 것으로 변경하는 것이 맞을 듯
+  setMachineListForStatus(res, 'efmm/analysis/clustering', outdata);
 });
 
 router.get('/clusteringPop', function(req, res, next) {
-  res.render('efmm/analysis/clustering_popup', { title: global.config.productname, mainmenu:mainmenu});
+  var outdata = { title: global.config.productname, mainmenu : mainmenu };
+  // 머신 종류 동적 조회 // 추후에는 config에 설정하는 것으로 변경하는 것이 맞을 듯
+  setMachineListForStatus(res, 'efmm/analysis/clustering_popup', outdata);
 });
 
 router.get('/runanalysis', function(req, res, next) {
-  res.render('efmm/analysis/runanalysis', { title: global.config.productname, mainmenu:mainmenu});
+  var outdata = { title: global.config.productname, mainmenu : mainmenu };
+  // 머신 종류 동적 조회 // 추후에는 config에 설정하는 것으로 변경하는 것이 맞을 듯
+  setMachineListForStatus(res, 'efmm/analysis/runanalysis', outdata);
 });
+function setMachineListForStatus(res, uri, outdata){
+  var index = [indexStackingStatus+"*"];
+  var in_data = { index : index, type : "status"};
+  queryProvider.selectSingleQueryByID3("analysis","selectMachineList", in_data, function(err, out_data, params) {
+    var rtnCode = CONSTS.getErrData('0000');
+    if (out_data == null) {
+      rtnCode = CONSTS.getErrData('0001');
+    } else {
+      var data = out_data.flag.buckets;
+      var list = [];
+      for(i=0; i<data.length; i++) {
+        var cid = data[i].cid.buckets;
+        for(j=0; j<cid.length; j++) {
+          if ( list.indexOf(cid[j].key) < 0 ){
+            list.push(cid[j].key);
+          }
+        }
+      }
+      outdata.list = list;
+    }
+    res.render(uri, outdata);
+  });
+}
 
 router.get('/pattern', function(req, res, next) {
   var outdata = { title: global.config.productname, mainmenu : mainmenu };
@@ -779,95 +805,6 @@ router.get('/restapi/getDaClusterMasterBydadate', function(req, res, next) {
     res.json({rtnCode: rtnCode, rtnData: out_data[0]._source });
   });
 });
-
-// Clustering > Cluster Detail(Pop-up) > Cluster Chart
-// router.post('/restapi/getClusterRawDataByMotorPop', function(req, res, next) {
-//   logger.debug('[getClusterRawDataByMotorPop] req.body: ',req.body);
-//   var isForClusterChart = req.body.isForClusterChart;
-//   var from = Utils.getDate(req.body.startDate, fmt1);
-//   var to = Utils.getMs2Date(req.body.endDate, fmt1);
-//   let cid = req.body.machine;
-//   let indices = Utils.getIndexList(req.body.startDate, req.body.endDate, indexStackingStatus);
-//   let source = [];
-//   let motorNames = req.body.motorNames;
-//   motorNames.forEach(function(motorName){
-//     if ( motorName.length > 0 ) {
-//       source.push('data.'+motorName);
-//     }
-//   });
-//   source.push('data.measure_time');
-//
-//   var in_data = {  INDEX : indices, TYPE : "status",
-//     FROM : from+dfltTime, TO : to+dfltTime
-//     , CID : cid
-//     , FLAG : 'stacking'
-//     , SOURCE : source
-//     , INTERVAL_DTTM : '{"match_all": {}}'
-//   };
-//
-//   // let interval = req.body.interval;
-//   let dtTransmitted_times = getIntervaledDateTime(in_data.FROM, in_data.TO);
-//   if ( dtTransmitted_times.length > 0 ) {
-//     in_data.INTERVAL_DTTM = dtTransmitted_times;
-//   }
-//   // TODO : aggregation 사용하는 쿼리 만들기
-//   let ranges = getRanges(in_data.FROM, in_data.TO);
-//   in_data.RANGES = ranges;
-//   let avgs = getAvgs(motorNames);
-//   in_data.AVGS = avgs;
-//
-//   logger.debug('[getClusterRawDataByMotorPop] query input: ', in_data);
-//   queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawDataByMotor", in_data, function(err, out_data, params) {
-//     var rtnCode = CONSTS.getErrData('0000');
-//     if (out_data == null) {
-//       rtnCode = CONSTS.getErrData('0001');
-//     }
-//     logger.debug('analysis/restapi/getClusterRawDataByMotorPop -> length : %s', out_data.length);
-//
-//     let set = [];
-//     var data = {};
-//     if ( isForClusterChart == 'true'){
-//       let max = 0;
-//       out_data.forEach(function(d){
-//         d = d._source.data[0];
-//         // logger.debug('[selectClusterRawDataByMotor] output: ', JSON.stringify(d));
-//
-//         for ( let i = 0; i < motorNames.length; i++ ){
-//           let motorName = motorNames[i];
-//           var item = { time: d.measure_time, id: motorName, value: d[motorName] };
-//           set.push(item);
-//           if ( max < d[motorName] ){
-//             max = d[motorName];
-//           }
-//         }
-//         data = { data: set, max : max };
-//       });
-//     } else {
-//       // for related factors chart (below 4 charts)
-//       // TODO : nested-loop 사용하지 않고 데이터 가공하기
-//       for ( let i = 0 ; i < motorNames.length ; i++ ){
-//         let tmp = [];
-//         let max = 0;
-//         let motorName = motorNames[i];
-//         out_data.forEach(function(d){
-//           d = d._source.data[0];
-//           // logger.debug('[selectClusterRawDataByMotor] output: ', JSON.stringify(d));
-//           let time = new Date(d.measure_time).getTime();
-//           var item = { time: time, value: d[motorName] == null ? 0 : d[motorName] };
-//           item[motorName] = item.value;
-//           tmp.push(item);
-//           if ( max < d[motorName] ){
-//             max = d[motorName];
-//           }
-//         });
-//         let itemData = { data: tmp, max : max, chartIdx: i };
-//         data[motorName] = itemData;
-//       }
-//     }
-//     // logger.debug('[getClusterRawDataByMotorPop] output: ', out_data);
-//     res.json({rtnCode: rtnCode, rtnData: data});
-//   });
-// });
 
 router.post('/restapi/getClusterRawDataByMotorPop', function(req, res, next) {
   logger.debug('[getClusterRawDataByMotorPop] req.body: ',req.body);

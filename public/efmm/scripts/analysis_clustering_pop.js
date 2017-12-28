@@ -7,16 +7,10 @@ jQuery(document).ready(function() {
   $('#sdate').val(sdate.split('T')[0]);
   $('#edate').val(edate.split('T')[0]);
   $('#interval').val(interval);
-  if ($('#factor0').is(':checked') === true) {
-    var machine = $('#factor0').val();
-  } else if ($('#factor1').is(':checked') === true) {
-    var machine = $('#factor1').val();
-  }
-  // else if ($('#factor2').is(':checked') === true) {
-  //   var factor = $('#factor2').val();
-  // } else if ($('#factor3').is(':checked') === true) {
-  //   var factor = $('#factor3').val();
-  // }
+
+  // 장비 개수에 따라 동적으로 로직이 추가되어야 함
+  let machine = $('input[type="radio"]:checked').val();
+
   drawCheckChart(machine);
   getMotorList(machine);
   Metronic.init(); // init metronic core componets
@@ -75,7 +69,7 @@ function drawCheckChart(machine) {
 
 function drawClusteringChart(data, dadate, machine) {
 
-  console.log('[drawClusteringChart] data: ', data, '\n,dadate: ', dadate, '\n,machine: ', machine);
+  // console.log('[drawClusteringChart] data: ', data, '\n,dadate: ', dadate, '\n,machine: ', machine);
 
   // #panel-cluster-list 에 동적으로 클러스터 목록 넣기
   let clusterCnt = Object.keys(data[0]).length - 1;
@@ -250,8 +244,6 @@ function drawClusteringChart(data, dadate, machine) {
             .attr('class', 'path_legend')
             .attr('transform', function(d, i) {
               // 한 줄에 4개씩만 뿌리도록 수정 (2017-12-24)
-              // console.log('258 d: ',d);
-              // return 'translate(' + ((5 + (width - 20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
               return 'translate(' + ((5 + (width - 20) / 4) * (i%4) + 5) + ',' + ((height + margin.bottom - legendSize - 15) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
             });
 
@@ -531,7 +523,7 @@ function getMotorList(machine) {
     data: data
   };
   ajaxTypeData(in_data, function(result) {
-    console.log('[getMotorList.getDaClusterMasterBydadate] result: ', result);
+    // console.log('[getMotorList.getDaClusterMasterBydadate] result: ', result);
     if (result.rtnCode.code == "0000") {
       drawClusterTree(result.rtnData[machine]);
     }
@@ -539,7 +531,7 @@ function getMotorList(machine) {
 }
 
 function drawClusterTree(treeData) {
-  console.log('treeData: ', treeData);
+  // console.log('treeData: ', treeData);
   $('#cluster-list').empty();
 
   var treeNode = [];
@@ -612,7 +604,7 @@ function openModal(motorNames) {
     modalBody += motorNames[i];
     modalBody += '<p/>';
   }
-  console.log('modalBody: ', modalBody);
+  // console.log('modalBody: ', modalBody);
   $('.modal-body').html(modalBody);
   $('#chooseMotor').modal('toggle');
 }
@@ -639,17 +631,18 @@ function drawClusterChart(motorNames) {
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
 
-  // TODO : 장비 번호 동적으로 적용가능하도록 수정 필요
-  if ($('#factor0').is(':checked') === true) {
-    var factor = $('#factor0').val();
-  } else if ($('#factor1').is(':checked') === true) {
-    var factor = $('#factor1').val();
-  } else if ($('#factor2').is(':checked') === true) {
-    var factor = $('#factor2').val();
-  } else if ($('#factor3').is(':checked') === true) {
-    var factor = $('#factor3').val();
-  }
-  console.log('factor: ',factor);
+  // 장비 번호 동적으로 적용가능하도록 수정 필요
+  let factor = $('input[type="radio"]:checked').val();
+  // if ($('#factor0').is(':checked') === true) {
+  //   var factor = $('#factor0').val();
+  // } else if ($('#factor1').is(':checked') === true) {
+  //   var factor = $('#factor1').val();
+  // } else if ($('#factor2').is(':checked') === true) {
+  //   var factor = $('#factor2').val();
+  // } else if ($('#factor3').is(':checked') === true) {
+  //   var factor = $('#factor3').val();
+  // }
+  // console.log('factor: ',factor);
 
   var idCnt = motorNames.length;
   var start = urlParams.start;
@@ -684,7 +677,7 @@ var oldL = 0;
 function drawClusterChartForMotorsWithRawData(rtnData, idCnt) {
   // idCnt = 1; // 1개만 그릴 때
   // len = 1; // 1개만 그릴 때
-  console.log('[drawClusterChartForMotorsWithRawData] rtnData: ', rtnData);
+  // console.log('[drawClusterChartForMotorsWithRawData] rtnData: ', rtnData);
 
   var data = rtnData.data;
   var max = rtnData.max + 5;
@@ -856,12 +849,12 @@ function getRelatedMotorNames(motorName) {
       break;
     }
   }
-  console.log('[getRelatedMotorNames] : ', motorNamesResult);
+  // console.log('[getRelatedMotorNames] : ', motorNamesResult);
   return motorNamesResult;
 }
 
 function drawTimeseries(data) {
-  console.log('[drawTimeseries] data: ', data);
+  // console.log('[drawTimeseries] data: ', data);
 
   d3.select("#ts-chart01").select("svg").remove();
   d3.select("#ts-chart02").select("svg").remove();
