@@ -31,13 +31,15 @@ function selectAlarmList(cb) {
   var in_data = {};
   var rtnCode = CONSTS.getErrData('0000');
   queryProvider.selectSingleQueryByID2("management", "selectAlarmList", in_data, function(err, out_data, count) {
-    // logger.debug(out_data);
+    logger.debug(out_data);
     if (count == 0) {
       rtnCode = CONSTS.getErrData('0001');
       res.json({rtnCode: rtnCode});
     } else {
       out_data.forEach(function(d){
-        d._source.timestamp = Utils.getDateUTC2Local(d._source.timestamp, CONSTS.DATEFORMAT.DATETIME);
+        try {
+          d._source.timestamp = Utils.getDateUTC2Local(d._source.timestamp, CONSTS.DATEFORMAT.DATETIME);
+        } catch(e) {;}
       });
     }
     logger.info('selectAlarmList -> count : ' + count);

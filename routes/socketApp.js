@@ -1,5 +1,4 @@
-var Logger = require('./log4js-utils').Logger;
-var logger = new Logger('socketApp');
+var logger = global.log4js.getLogger('socketApp');
 var socketio = require('socket.io');
 var CONSTS = require('./consts');
 var express = require('express');
