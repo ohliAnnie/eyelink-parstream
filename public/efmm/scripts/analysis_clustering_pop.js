@@ -497,6 +497,24 @@ function drawClusteringChart(data, dadate, machine) {
           .exit()
           .remove();
 
+        //redraw the rect around the legend
+        rect.selectAll('.legendRect')
+          .data(selectCate)
+          .attr('transform', function(d, i) {
+            return 'translate(' + ((5 + (width - 20) / 4) * (i%4)) + ',' + ((height + margin.bottom - legendSize - 20) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
+        });
+
+        rect.selectAll('.legendRect')
+          .data(selectCate)
+          .enter()
+          .append('rect')
+          .attr('class', 'legendRect')
+          .attr('width', (width - 20) / 4)
+          .attr('height', legendSize + 10)
+          .attr('transform', function(d, i) {
+            return 'translate(' + ((5 + (width - 20) / 4) * (i%4)) + ',' + ((height + margin.bottom - legendSize - 20) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
+        });
+
         rect.selectAll('.legendRect')
           .data(selectCate)
           .exit()

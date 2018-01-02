@@ -60,6 +60,7 @@ $(document).ready(function(e) {
     d3.selectAll("svg").remove();
     drawCheckChart(factor, dadate);
   };
+
 });
 
 function getMasterList(interval, machine) {
@@ -138,6 +139,12 @@ function drawCheckCluster(data, dadate, machine) {
 
   // console.log('[drawClusteringChart] data: ', data, '\n,dadate: ', dadate, '\n,machine: ', machine);
 
+  // TODO : 윈도우창 사이즈 변경시 차트 사이즈도 변경되도록
+  // $(window).resize(function(){
+  //   // $('#svg-path').width($('#Cluster').width());
+  //   drawCheckCluster(data, dadate, machine);
+  // });
+
   // #panel-cluster-list 에 동적으로 클러스터 목록 넣기
   let clusterCnt = Object.keys(data[0]).length - 1;
   let dynamicClusters = '';
@@ -157,7 +164,6 @@ function drawCheckCluster(data, dadate, machine) {
     let element = $(this).children('span:nth-child(1)');
     element.toggleClass('checked unchecked');
   });
-
 
   var demo = new Vue({
     el: '#table',
@@ -236,14 +242,15 @@ function drawCheckCluster(data, dadate, machine) {
             .attr("class", "tip")
             .style("opacity", 0);
 
-          d3.select('#svg-path').remove();
+          d3.select('svg-path').remove();
 
           // 레전드 개수에 따라 한줄에 4개씩 출력하면서 height가 변동되도록 변경 (2017/12/24)
           let dynamicHeight = height + margin.top + margin.bottom + Math.floor(clusterCnt/4)*legendSize*2.3;
-
+          let dynamicWidth = $('#Cluster').width();
           var svg = d3.select(id).append("svg")
-            .attr("id", "#svg-path")
-            .attr("width", width + margin.right + margin.left)
+            .attr("id", "svg-path")
+            // .attr("width", width + margin.right + margin.left)
+            .attr("width", dynamicWidth)
             // height는 클러스터 개수에 따라 동적 적용
             .attr("height", dynamicHeight)
             .append("g")
@@ -563,6 +570,24 @@ function drawCheckCluster(data, dadate, machine) {
           .data(selectCate)
           .exit()
           .remove();
+
+        //redraw the rect around the legend
+        rect.selectAll('.legendRect')
+          .data(selectCate)
+          .attr('transform', function(d, i) {
+            return 'translate(' + ((5 + (width - 20) / 4) * (i%4)) + ',' + ((height + margin.bottom - legendSize - 20) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
+        });
+
+        rect.selectAll('.legendRect')
+          .data(selectCate)
+          .enter()
+          .append('rect')
+          .attr('class', 'legendRect')
+          .attr('width', (width - 20) / 4)
+          .attr('height', legendSize + 10)
+          .attr('transform', function(d, i) {
+            return 'translate(' + ((5 + (width - 20) / 4) * (i%4)) + ',' + ((height + margin.bottom - legendSize - 20) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
+        });
 
         rect.selectAll('.legendRect')
           .data(selectCate)
