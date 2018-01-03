@@ -36,8 +36,11 @@ $(document).ready(function(e) {
       drawCheckChart(factor, dadate);
     }
   });
-  clickfunc = function(link) {
-    var dadate = link.innerText || link.textContent;
+  // clickfunc = function(link) {
+  //   console.log('link: ',link);
+  //
+  //   var dadate = link.innerText || link.textContent;
+  clickfunc = function(dadate) {
     dadate = dadate.replace(' ', 'T');
     $('#dadate').val(dadate);
     // 장비 개수에 따라 동적으로 로직이 추가되어야 함
@@ -81,25 +84,27 @@ function getMasterList(interval, machine) {
   ajaxTypeData(in_data, function(result) {
     if (result.rtnCode.code == "0000") {
       var master = result.rtnData;
-      drawMaster(master);
+      drawMaster(master, machine);
     }
   });
 }
 
-function drawMaster(master) {
+function drawMaster(master, machine) {
 
   var seatvar = document.getElementsByClassName("masterList");
   var cnt = 0
   $('#masterList').empty();
+
   master.forEach(function(d) {
     var sb = new StringBuffer();
     if (cnt == 0) {
-      sb.append('<tr><th>DA Time</th><th>Start Date-End Date</th><th>Interval</th><th></th></tr>');
+      sb.append('<tr><th>DA Time</th><th>Start Date-End Date</th><th>Interval</th><th>Clusters</th><th></th></tr>');
       cnt++;
     }
     var sdate = d.start_date.split(' ');
     var edate = d.end_date.split(' ');
-    sb.append('<tr><td><a onclick="clickfunc(this)">' + d.da_time + '</td><td> ' + d.start_date + ' ~ ' + d.end_date + ' </td>');
+    // sb.append('<tr><td><a onclick="clickfunc(this)">' + d.da_time + '</td><td> ' + d.start_date + ' ~ ' + d.end_date + ' </td>');
+    sb.append('<tr><td><a class="showChart">' + d.da_time + '</a></td><td> ' + d.start_date + ' ~ ' + d.end_date + ' </td>');
     if (d.time_interval == 180) {
       var interval = '3hours';
     } else if (d.time_interval == 360) {
@@ -108,11 +113,22 @@ function drawMaster(master) {
       var interval = d.time_interval + 'mins';
     }
     sb.append('<td>' + interval + '</td>');
+
+    // 클러스터 개수 구하기
+    let clusters = Object.keys(d[machine]).length;
+    sb.append('<td>' + clusters + '</td>');
     sb.append('<td><a onclick="javascript_:window.open(');
     var script = "'clusteringPop?dadate=" + d.da_time + "&interval=" + interval + "&start=" + d.start_date + "&end=" + d.end_date + "', '', 'menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50'";
     sb.append(script + ');" class="btn red"> Detail </a></td></tr>')
 
     $('#masterList').append(sb.toString());
+  });
+
+  $('.showChart').click(function(event){
+    $(event.target).closest('tr').siblings('tr').css('background-color','#fff');
+    $(event.target).closest('tr').css('background-color','#ddd');
+    let dadate = $(event.target)[0].innerHTML;
+    clickfunc(dadate);
   });
 }
 
@@ -135,6 +151,7 @@ function drawCheckChart(machine, dadate) {
   });
 }
 
+var checkClusterHeight = 0;
 function drawCheckCluster(data, dadate, machine) {
 
   // console.log('[drawClusteringChart] data: ', data, '\n,dadate: ', dadate, '\n,machine: ', machine);
@@ -149,9 +166,12 @@ function drawCheckCluster(data, dadate, machine) {
   let clusterCnt = Object.keys(data[0]).length - 1;
   let dynamicClusters = '';
   let lineCategories = [];
+  let motorCnt = 0;
   for ( let idx = 0 ; idx < clusterCnt ; idx++ ){
     dynamicClusters += '<div class="checker" id="uniform-c'+idx+'"><span class="checked"><input class="click_checkbox" id="c'+idx+'" type="checkbox" name="c'+idx+'" value="'+(idx+1) + '" checked="true" v-on="click:checkOpt"></span></div>';
+    // motorCnt = clusterNames[idx]
     dynamicClusters += '<text> Cluster'+ idx +'</text>';
+    // dynamicClusters += '<text> Cluster'+ idx +' (' + motorCnt + ')</text>';
     if ( idx == clusterCnt-1 ) {
       // do nothing
     } else {
@@ -177,7 +197,8 @@ function drawCheckCluster(data, dadate, machine) {
       displayLine: function() {
         var self = this;
         var input = 0;
-
+        let width = 0;
+        let height = 0;
         //generation function
         function generate(data, id, lineType, axisNum) {
           var margin = {
@@ -185,9 +206,12 @@ function drawCheckCluster(data, dadate, machine) {
               right: 10,
               bottom: 60,
               left: 30
-            },
-            width = $(id).width() - margin.left - margin.right,
-            height = $(id).height() - margin.top - margin.bottom;
+            };
+          width = $(id).width() - margin.left - margin.right;
+          if ( checkClusterHeight == 0 ) {
+            checkClusterHeight = $(id).height() - margin.top - margin.bottom;
+          }
+          height = checkClusterHeight;
 
           var legendSize = 10,
             color = d3.scale.category20();

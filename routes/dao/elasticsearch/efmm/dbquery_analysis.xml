@@ -223,6 +223,7 @@
         "type" : #TYPE#,
         "_source" : [##SOURCE##],
         "body" : {
+          "size":100000,
           "sort":{ "da_time" : {"order":"desc" }},
           "query" : {
             "bool" : {
@@ -243,6 +244,7 @@
         "type" : #TYPE#,
         "_source" : [##SOURCE##],
         "body" : {
+          "size":100000,
           "sort":{ "da_time" : {"order":"desc" }},
           "query" : {
             "bool" : {
