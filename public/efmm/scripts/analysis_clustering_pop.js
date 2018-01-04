@@ -1,3 +1,5 @@
+const maxClusterChartItemCnt = 4;
+
 jQuery(document).ready(function() {
   var sdate = urlParams.start;
   var edate = urlParams.end;
@@ -5,16 +7,10 @@ jQuery(document).ready(function() {
   $('#sdate').val(sdate.split('T')[0]);
   $('#edate').val(edate.split('T')[0]);
   $('#interval').val(interval);
-  if ($('#factor0').is(':checked') === true) {
-    var machine = $('#factor0').val();
-  } else if ($('#factor1').is(':checked') === true) {
-    var machine = $('#factor1').val();
-  }
-  // else if ($('#factor2').is(':checked') === true) {
-  //   var factor = $('#factor2').val();
-  // } else if ($('#factor3').is(':checked') === true) {
-  //   var factor = $('#factor3').val();
-  // }
+
+  // 장비 개수에 따라 동적으로 로직이 추가되어야 함
+  let machine = $('input[type="radio"]:checked').val();
+
   drawCheckChart(machine);
   getMotorList(machine);
   Metronic.init(); // init metronic core componets
@@ -29,6 +25,18 @@ jQuery(document).ready(function() {
       //d3.selectAll("rect").remove();
       drawCheckChart(e.target.value);
       getMotorList(e.target.value);
+    }
+  });
+
+  $('#motor-modal-apply').click(function(){
+    if ( checkMotorCount() ) {
+      let motorNames = [];
+      $('input:checkbox[name=motors]:checked').each(function (){
+        motorNames.push($(this).val());
+      });
+      console.log('[MODAL] applying motorNames: ', motorNames);
+      drawClusterChart(motorNames);
+      $('#chooseMotor').modal('toggle');
     }
   });
 });
@@ -61,7 +69,7 @@ function drawCheckChart(machine) {
 
 function drawClusteringChart(data, dadate, machine) {
 
-  console.log('[drawClusteringChart] data: ', data, '\n,dadate: ', dadate, '\n,machine: ', machine);
+  // console.log('[drawClusteringChart] data: ', data, '\n,dadate: ', dadate, '\n,machine: ', machine);
 
   // #panel-cluster-list 에 동적으로 클러스터 목록 넣기
   let clusterCnt = Object.keys(data[0]).length - 1;
@@ -134,13 +142,11 @@ function drawClusteringChart(data, dadate, machine) {
                 });
               });
             });
-
             return seriesArr;
           })();
           x.domain(d3.extent(data, function(d) {
             return new Date(d.time);
           }));
-
           y.domain([0, 100]);
 
           //data.length/10 is set for the garantte of timeseries's fitting effect in svg chart
@@ -238,8 +244,6 @@ function drawClusteringChart(data, dadate, machine) {
             .attr('class', 'path_legend')
             .attr('transform', function(d, i) {
               // 한 줄에 4개씩만 뿌리도록 수정 (2017-12-24)
-              // console.log('258 d: ',d);
-              // return 'translate(' + ((5 + (width - 20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
               return 'translate(' + ((5 + (width - 20) / 4) * (i%4) + 5) + ',' + ((height + margin.bottom - legendSize - 15) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
             });
 
@@ -261,17 +265,6 @@ function drawClusteringChart(data, dadate, machine) {
               }
             })
             .text(function(d) {
-              // TODO : 동적으로 클러스터 개수만큼 적용해야되는 부분
-              // if (d === 'c0') {
-              //   var rename = "Cluster0";
-              // } else if (d === 'c1') {
-              //   var rename = "Cluster1";
-              // } else if (d === 'c2') {
-              //   var rename = "Cluster2"
-              // } else {
-              //   var rename = "Cluster3";
-              // }
-              // return rename;
               return d.replace('c','Cluster');
             });
 
@@ -288,8 +281,6 @@ function drawClusteringChart(data, dadate, machine) {
             .attr('height', legendSize + 10)
             .attr('transform', function(d, i) {
               // 한 줄에 4개씩만 뿌리도록 수정 (2017-12-24)
-              // console.log('306 d: ',d);
-              // return 'translate(' + (i * (5 + (width - 20) / 4)) + ',' + (height + margin.bottom - legendSize - 20) + ')';
               return 'translate(' + ((5 + (width - 20) / 4) * (i%4)) + ',' + ((height + margin.bottom - legendSize - 20) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
             });
 
@@ -322,17 +313,6 @@ function drawClusteringChart(data, dadate, machine) {
 
               var mainCate = (function() {
                 if (d['num'] != 0) {
-                  // TODO : 동적으로 클러스터 개수만큼 적용해야되는 부분
-                  // if (d['category'] === 'c0') {
-                  //   var rename = "Cluster0";
-                  // } else if (d['category'] === 'c1') {
-                  //   var rename = "Cluster1";
-                  // } else if (d['category'] === 'c2') {
-                  //   var rename = "Cluster2"
-                  // } else {
-                  //   var rename = "Cluster3";
-                  // }
-                  // return rename + ' | ';
                   return d['category'].replace('c','Cluster') + ' | ';
                 } else
                   return '';
@@ -455,9 +435,8 @@ function drawClusteringChart(data, dadate, machine) {
           .duration(200)
           .attr('transform', function(d, i) {
             // 한 줄에 4개씩만 뿌리도록 수정 (2017-12-24)
-            // return 'translate(' + ((5 + (width - 20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
             return 'translate(' + ((5 + (width - 20) / 4) * (i%4) + 5) + ',' + ((height + margin.bottom - legendSize - 15) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
-          })
+          });
 
         legend.selectAll('rect')
           .data(selectCate)
@@ -477,17 +456,6 @@ function drawClusteringChart(data, dadate, machine) {
             }
           })
           .text(function(d) {
-            // TODO : 동적으로 클러스터 개수만큼 적용해야되는 부분
-            // if (d === 'c0') {
-            //   var rename = "Cluster0";
-            // } else if (d === 'c1') {
-            //   var rename = "Cluster1";
-            // } else if (d === 'c2') {
-            //   var rename = "Cluster2"
-            // } else {
-            //   var rename = "Cluster3";
-            // }
-            // return rename;
             return d.replace('c','Cluster');
           });
 
@@ -499,8 +467,6 @@ function drawClusteringChart(data, dadate, machine) {
           .attr('class', 'path_legend')
           .attr('transform', function(d, i) {
             // 한 줄에 4개씩만 뿌리도록 수정 (2017-12-24)
-            // console.log('514 d: ',d);
-            // return 'translate(' + ((5 + (width - 20) / 4) * i + 5) + ',' + (height + margin.bottom - legendSize - 15) + ')';
             return 'translate(' + ((5 + (width - 20) / 4) * (i%4) + 5) + ',' + ((height + margin.bottom - legendSize - 15) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
           });
 
@@ -522,17 +488,6 @@ function drawClusteringChart(data, dadate, machine) {
             }
           })
           .text(function(d) {
-           // TODO : 동적으로 클러스터 개수만큼 적용해야되는 부분
-            // if (d === 'c0') {
-            //   var rename = "Cluster0";
-            // } else if (d === 'c1') {
-            //   var rename = "Cluster1";
-            // } else if (d === 'c2') {
-            //   var rename = "Cluster2"
-            // } else {
-            //   var rename = "Cluster3";
-            // }
-            // return rename;
             return d.replace('c','Cluster');
           });
 
@@ -543,28 +498,22 @@ function drawClusteringChart(data, dadate, machine) {
           .remove();
 
         //redraw the rect around the legend
-        // rect.selectAll('.legendRect')
-        //   .data(selectCate)
-        //   .attr('transform', function(d, i) {
-        //     // 한 줄에 4개씩만 뿌리도록 수정 (2017-12-24)
-        //     console.log('561 d: ',d);
-        //     // return 'translate(' + ((5 + (width - 20) / 4) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
-        //     return 'translate(' + ((5 + (width - 20) / 4) * (i%4)) + ',' + ((height + margin.bottom - legendSize - 20) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
-        //   });
+        rect.selectAll('.legendRect')
+          .data(selectCate)
+          .attr('transform', function(d, i) {
+            return 'translate(' + ((5 + (width - 20) / 4) * (i%4)) + ',' + ((height + margin.bottom - legendSize - 20) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
+        });
 
-        // rect.selectAll('.legendRect')
-        //   .data(selectCate)
-        //   .enter()
-        //   .append('rect')
-        //   .attr('class', 'legendRect')
-        //   .attr('width', (width - 20) / 4)
-        //   .attr('height', legendSize + 10)
-        //   .attr('transform', function(d, i) {
-        //     // TODO : 한 줄에 4개씩만 뿌리도록 수정
-        //     console.log('573 d: ',d);
-        //     // return 'translate(' + ((5 + (width - 20) / 4) * i) + ',' + (height + margin.bottom - legendSize - 20) + ')';
-        //     return 'translate(' + ((5 + (width - 20) / 4) * (i%4)) + ',' + ((height + margin.bottom - legendSize - 20) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
-        //   });
+        rect.selectAll('.legendRect')
+          .data(selectCate)
+          .enter()
+          .append('rect')
+          .attr('class', 'legendRect')
+          .attr('width', (width - 20) / 4)
+          .attr('height', legendSize + 10)
+          .attr('transform', function(d, i) {
+            return 'translate(' + ((5 + (width - 20) / 4) * (i%4)) + ',' + ((height + margin.bottom - legendSize - 20) + ( Math.floor(i/4)*legendSize*2.3 )) + ')';
+        });
 
         rect.selectAll('.legendRect')
           .data(selectCate)
@@ -592,7 +541,7 @@ function getMotorList(machine) {
     data: data
   };
   ajaxTypeData(in_data, function(result) {
-    console.log('[getMotorList.getDaClusterMasterBydadate] result: ', result);
+    // console.log('[getMotorList.getDaClusterMasterBydadate] result: ', result);
     if (result.rtnCode.code == "0000") {
       drawClusterTree(result.rtnData[machine]);
     }
@@ -600,7 +549,7 @@ function getMotorList(machine) {
 }
 
 function drawClusterTree(treeData) {
-  console.log('treeData: ', treeData);
+  // console.log('treeData: ', treeData);
   $('#cluster-list').empty();
 
   var treeNode = [];
@@ -624,39 +573,58 @@ function drawClusterTree(treeData) {
     data: treeNode
   });
 
-  // if (nodeInfo != null){
-  //   var nodeText = nodeInfo.href.replace(/#/g,'').split('-');
-  //   drawPatterns(creationDate, nodeText[0], nodeText[1], treeData);
-  //   $('#cluster-list').treeview('selectNode', [nodeInfo.nodeId, {silent: true}]);
-  //   if (nodeInfo.parentId != undefined){
-  //     $('#cluster-list').treeview('expandNode', [nodeInfo.parentId, {levels:2, silent: true}]);
-  //   }
-  // }
-
-  // TODO : 클릭시 차트 그려주는 로직
   // 노드 선택시 이벤트
   $('#cluster-list').on('nodeSelected', function(event, node) {
-    console.log('selected node: ', node.href);
-    // var nodeText = node.href.replace(/#/g, '');
-    // nodeText = nodeText.split('-');
-    // var parentNode = nodeText[0];
-    // var childNode = nodeText[1];
-    // drawPatterns(creationDate, parentNode, childNode, treeData);
-    // $('#sample_2').dataTable().fnPageChange('first');
     if ( node.href.startsWith('#') ){
       // 클러스터 그룹 선택시
-      // 해당 클러스터 그룹내 모터 개수가 5개(max값 설정) 이하일 시
       let motorNames = treeData[node.href.replace('#','')];
-      getNodePower(motorNames);
-      // 이상일 시에는 div창 띄워서 선택하도록
 
+      if ( motorNames.length > maxClusterChartItemCnt ) {
+        // 해당 클러스터 그룹내 모터 개수가 이상일 시에는 div창 띄워서 선택하도록
+        openModal(motorNames);
+      } else {
+        // 해당 클러스터 그룹내 모터 개수가 4개(max값 설정) 이하일 시
+        drawClusterChart(motorNames);
+      }
     } else {
       // 모터 이름 선택시
       // 하단의 4개 차트 그려주기
       clickMotorName(node.href);
     }
   });
+}
+function checkMotorCount(element) {
+  // console.log('[checkMotorCount] called.');
+  let checkedMotors = $('input:checkbox[name=motors]:checked').length;
+  // console.log('[checkMotorCount] checkedMotors: ',checkedMotors);
 
+  if ( checkedMotors > maxClusterChartItemCnt ) {
+    $('.modal-header>div.warning-msg').html(getWarningMessage());
+    return false;
+  } else {
+    $('.modal-header>div.warning-msg').html('');
+    return true;
+  }
+}
+function getWarningMessage() {
+  let msg = 'More than '+maxClusterChartItemCnt+' motors are chosen.';
+  return msg;
+}
+function openModal(motorNames) {
+  // 모터 목록을 체크박스로 선택할 수 있도록 모달창 생성
+  let head = '<input type="checkbox" name="motors" style="margin-left:5px; margin-right:5px;" onchange="checkMotorCount(this)" value="';
+  let middle = '">';
+  let modalBody = '';
+  for ( let i = 0 ; i < motorNames.length ; i++ ){
+    modalBody += head;
+    modalBody += motorNames[i];
+    modalBody += middle;
+    modalBody += motorNames[i];
+    modalBody += '<p/>';
+  }
+  // console.log('modalBody: ', modalBody);
+  $('.modal-body').html(modalBody);
+  $('#chooseMotor').modal('toggle');
 }
 function getTreeViewData(motorNames, group) {
   var clusteredMotorCnt = motorNames.length;
@@ -676,76 +644,23 @@ function getTreeViewData(motorNames, group) {
   return treeViewData;
 }
 
-function drawDirectory(data) {
-  var seatvar = document.getElementsByClassName("tblClusterDir");
-  var cnt = 0;
-  $('#tblClusterDir').empty();
-  var sb = new StringBuffer();
-  if (cnt == 0) {
-    sb.append('<tr><th>Cluster</th><th>Motor Name</th></tr>');
-    cnt++;
-  }
-  if (data.cluster_00.length != 0) {
-    sb.append(clusterNodeList(data.cluster_00, 'cluster_00'));
-  }
-  if (data.cluster_01.length != 0) {
-    sb.append(clusterNodeList(data.cluster_01, 'cluster_01'));
-  }
-  if (data.cluster_02.length != 0) {
-    sb.append(clusterNodeList(data.cluster_02, 'cluster_02'));
-  }
-  if (data.cluster_03.length != 0) {
-    sb.append(clusterNodeList(data.cluster_03, 'cluster_03'));
-  }
-  // if(data.cluster_04.length != 0) {
-  //   sb.append(clusterNodeList(data.cluster_04, 'cluster_04'));
-  // }
-  $('#tblClusterDir').append(sb.toString());
-}
+function drawClusterChart(motorNames) {
 
-function clusterNodeList(data, clusterName) {
-  var sb = '<tr><td><span class="bold theme-fone">' + clusterName + '</span></td><td></td></tr>';
-  for (var i = 0; i < data.length; i++) {
-    sb += '<tr><td></td><td>';
-    var script = "javascript:getNodePower('" + data[i] + "');"; // data[i] == Motor Name
-    sb += '<a class="primary-link" href="' + script + '">' + data[i] + '</a></td></tr>';
-  }
-  return sb;
-  //-----------------------------origin--------------------
-  // var sb = '<tr><td><span class="bold theme-fone">' + clusterName + '</span></td><td></td></tr>';
-  // for (var i = 0; i < data.length; i++) {
-  //   sb += '<tr><td></td><td>';
-  //   var script = "javascript:getNodePower('" + data[i] + "');"; // data[i] == Motor Name
-  //   sb += '<a class="primary-link" href="' + script + '">' + data[i] + '</a></td></tr>';
-  // }
-  // return sb;
-  //---------------------------efsm-------------------------
-  // var script = "javascript:getNodePower('"+data+"',"+data.length+");";
-  // var sb = '<tr><td><span class="bold theme-fone"><a href="'+script+'">'+clusterName+'</a></span></td><td></td></tr>';
-  // for(var i=0; i < data.length; i++) {
-  //   sb +='<tr><td></td><td>';
-  //   var script = "javascript:clickMotorName('"+data[i]+"');";
-  //   sb +='<a class="primary-link" href="'+script+'">' + data[i] + '</a></td></tr>';
-  // }
-  // return sb;
-}
-
-function getNodePower(motorNames) {
-  // TODO : 여러 모터에 대한 차트를 그릴 수 있도록 수정
   var sdate = $('#sdate').val();
   var edate = $('#edate').val();
 
-  // TODO : 장비 번호 동적으로 적용가능하도록 수정 필요
-  if ($('#factor0').is(':checked') === true) {
-    var factor = $('#factor0').val();
-  } else if ($('#factor1').is(':checked') === true) {
-    var factor = $('#factor1').val();
-  } else if ($('#factor2').is(':checked') === true) {
-    var factor = $('#factor2').val();
-  } else if ($('#factor3').is(':checked') === true) {
-    var factor = $('#factor3').val();
-  }
-  console.log('factor: ',factor);
+  // 장비 번호 동적으로 적용가능하도록 수정 필요
+  let factor = $('input[type="radio"]:checked').val();
+  // if ($('#factor0').is(':checked') === true) {
+  //   var factor = $('#factor0').val();
+  // } else if ($('#factor1').is(':checked') === true) {
+  //   var factor = $('#factor1').val();
+  // } else if ($('#factor2').is(':checked') === true) {
+  //   var factor = $('#factor2').val();
+  // } else if ($('#factor3').is(':checked') === true) {
+  //   var factor = $('#factor3').val();
+  // }
+  // console.log('factor: ',factor);
 
   var idCnt = motorNames.length;
   var start = urlParams.start;
@@ -767,9 +682,8 @@ function getNodePower(motorNames) {
   };
   ajaxTypeData(in_data, function(result) {
     if (result.rtnCode.code == "0000") {
-      console.log('[getNodePower.getClusterRawDataByMotorPop] output: ', result.rtnData);
-      // drawNode(result.rtnData, motorNames.split(',').length, len);
-      drawNode(result.rtnData, motorNames.length);
+      console.log('[drawClusterChart.getClusterRawDataByMotorPop] output: ', result.rtnData);
+      drawClusterChartForMotorsWithRawData(result.rtnData, motorNames.length);
     } else {
       //- $("#errormsg").html(result.message);
     }
@@ -778,10 +692,10 @@ function getNodePower(motorNames) {
 
 var oldL = 0;
 
-function drawNode(rtnData, idCnt) {
+function drawClusterChartForMotorsWithRawData(rtnData, idCnt) {
   // idCnt = 1; // 1개만 그릴 때
   // len = 1; // 1개만 그릴 때
-  console.log('[drawNode] rtnData: ', rtnData);
+  // console.log('[drawClusterChartForMotorsWithRawData] rtnData: ', rtnData);
 
   var data = rtnData.data;
   var max = rtnData.max + 5;
@@ -953,14 +867,13 @@ function getRelatedMotorNames(motorName) {
       break;
     }
   }
-  console.log('[getRelatedMotorNames] : ', motorNamesResult);
+  // console.log('[getRelatedMotorNames] : ', motorNamesResult);
   return motorNamesResult;
 }
 
 function drawTimeseries(data) {
-  console.log('[drawTimeseries] data: ', data);
+  // console.log('[drawTimeseries] data: ', data);
 
-  // TODO : key에 따라 차트 그리기
   d3.select("#ts-chart01").select("svg").remove();
   d3.select("#ts-chart02").select("svg").remove();
   d3.select("#ts-chart03").select("svg").remove();

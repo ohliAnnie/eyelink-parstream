@@ -10,7 +10,7 @@ log4js.configure({
       {
         'type': 'file',
         'filename': './testSocketio.log',
-        'maxLogSize': 1024000000,
+        'maxLogSize': 1024000,
         'backups': 5,
         'category': 'eyelink'
       }
@@ -33,8 +33,8 @@ var Utils = require('../routes/util');
 require('date-utils');
 var io = require('socket.io-client');
 
-// var socketURL = 'http://localhost:5224';
-var socketURL = 'http://m2utech.eastus.cloudapp.azure.com:5224';
+var socketURL = 'http://localhost:5224';
+//var socketURL = 'http://m2utech.eastus.cloudapp.azure.com:5224';
 
 var options ={
   transports: ['websocket'],
@@ -142,12 +142,15 @@ describe("Socketio", function(){
       var regTimeStamp = Utils.getToday(CONSTS.DATEFORMAT.DATETIME, 'Y', 'Y');
       var sendData = {
         flag : 'alarm',
-        step : 'Notching',
-        cid : '100',
-        timestamp : regTimeStamp,
-        alarmType : 'OEE_90',
-        alarmTypeName : '',
-        message : 'Stacing 200 - Availability value < 95%'}
+        alarmType : 'oee',
+        alarmTypeName : 'OEE',
+        ruleId : 'availability',
+        ruleName : 'Availability',
+        level : 'warning',
+        message : 'Stacking 200 - Availability value < 95%',
+        data : {step : 'notching', cid : '100'},
+        timestamp : regTimeStamp
+        }
       client1.emit('receiveAlarmData', sendData);
 
       client1.on('returnAlarmData', function(data) {

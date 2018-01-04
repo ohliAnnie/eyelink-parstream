@@ -7,11 +7,11 @@ function define(name, value) {
 
 define( "COMMONCODE", {
   "STEP" : [
-    {"key" : "NOTCHING", "value" : "Notching"},
-    {"key" : "STACKING", "value" : "Stacking"},
-    {"key" : "TABWELDING", "value" : "Tab Welding"},
-    {"key" : "STACPACKAGINGKING", "value" : "Packaging"},
-    {"key" : "DEGASSING", "value" : "Degassing"},
+    {"key" : "notching", "value" : "Notching"},
+    {"key" : "stacking", "value" : "Stacking"},
+    {"key" : "tabwelding", "value" : "Tab Welding"},
+    {"key" : "packaging", "value" : "Packaging"},
+    {"key" : "degassing", "value" : "Degassing"},
   ],
   "MACHINE" : {
     "TYPE" : [
@@ -90,16 +90,20 @@ define( "COMMONCODE", {
           { "key" : "oee", "value" : "OEE"},
           { "key" : "status", "value" : "STATUS"}
       ],
-      "RULENAME" : [
-          { "key" : "ooee", "value" : "Overall OEE", "pkey" : "oee"},
-          { "key" : "availability", "value" : "Availability", "pkey" : "oee"},
-          { "key" : "performance", "value" : "Performance", "pkey" : "oee"},
-          { "key" : "quality", "value" : "Quality", "pkey" : "oee"},
-          { "key" : "downtime", "value" : "Down Time", "pkey" : "oee"},
-          { "key" : "plannedbreaktime", "value" : "Planned Break Time", "pkey" : "oee"},
-          { "key" : "down", "value" : "Down", "pkey" : "status"},
-          { "key" : "sepa_unwind", "value" : "Sepa Unwind", "pkey" : "status"},
-      ],
+      "RULENAME" : {
+        "oee" : [
+          { "key" : "ooee", "value" : "Overall OEE"},
+          { "key" : "availability", "value" : "Availability"},
+          { "key" : "performance", "value" : "Performance"},
+          { "key" : "quality", "value" : "Quality"},
+          { "key" : "downtime", "value" : "Down Time"},
+          { "key" : "plannedbreaktime", "value" : "Planned Break Time"}
+        ],
+        "status" : [
+          { "key" : "down", "value" : "Down"},
+          { "key" : "sepa_unwind", "value" : "Sepa Unwind"}
+        ]
+      },
       "CONDITION" : [
           { "key" : "less", "value" : "<"},
           { "key" : "lesseq", "value" : "<="},

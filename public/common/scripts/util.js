@@ -28,3 +28,12 @@ function ajaxTypeData(data, callback) {
     }
   });
 }
+
+function makeSelectOption(obj, options) {
+  obj.html();
+  var opts = '';
+  for(var i=0, len=options.length; i<len; i++) {
+    opts = opts + '<option value="' + options[i].key + '">' + options[i].value + '</option>';
+  }
+  obj.html(opts);
+}

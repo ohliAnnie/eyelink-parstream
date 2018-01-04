@@ -2,6 +2,10 @@ extends ../efmm-layout01
 block style
 block script
   script(type='text/javascript', src='/efmm/scripts/management_rule.js')
+  script.
+    var commoncode = !{JSON.stringify(commoncode)};
+    console.log(commoncode.rulename);
+    
 block content
   .container-fluid
     .page-content

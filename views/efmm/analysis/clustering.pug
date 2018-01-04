@@ -40,17 +40,15 @@ block content
                     .col-md-2.form-inline
                       select#interval.form-control.input-small.select2me.form-md-line-input(name='interval')
                         option(value='all') All
-                        option(value=15) 15min
-                        option(value=30) 30min
-                        option(value=60) 60min
-                        option(value=180) 3hour
-                        option(value=360) 6hour
+                        option(value=1) 1 min
+                        option(value=5) 5 min
+                        option(value=10) 10 min
+                        option(value=15) 15 min
                     label.control-label.col-md-1 Machine
                     .col-md-2.form-inline
-                      select.form-control.input-small.select2me.form-md-line-input(name='machine')
-                        option(value=100) 100
-                        option(value=200) 200
-                        option(value=300) 300
+                      select#machine-list.form-control.input-small.select2me.form-md-line-input(name='machine')
+                        each machine in list
+                          option(value=(machine.value)) #{machine}
                     .col-md-1.form-inline
                       button#btn_search.btn.blue
                         i.fa.fa-search  Search
@@ -74,42 +72,25 @@ block content
               label.control-label.col-md-2 Machine
               .col-md-10
                 .btn-group.btn-group-devided(data-toggle='buttons')
-                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm.active
-                    input#factor0.toggle(type='radio', name='options', value='100', checked='Y')
-                    | 100
-                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
-                    input#factor1.toggle(type='radio', name='options', value='200')
-                    | 200
-                //-
-                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
-                    input#factor2.toggle(type='radio', name='options', value='ampere')
-                    | Ampere
-                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
-                    input#factor3.toggle(type='radio', name='options', value='power_factor')
-                    | PowerFactor
-                //
-            .portlet-body
-              .chart(style='height:445px;')
+                  - for (let i = 0; i < list.length; i++ ) {
+                    - let machineId = list[i];
+                    - let factor = 'factor'+i;
+                      if (i == 0)
+                        label.btn.btn-transparent.green-sharp.btn-circle.btn-sm.active
+                          input.toggle(type='radio', name='options', value=machineId, checked='Y', id=factor)
+                          | #{machineId}
+                      else
+                        label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
+                          input.toggle(type='radio', name='options', value=machineId, id=factor)
+                          | #{machineId}
+                  - }
+            .portlet-body(style='height:auto;')
+              .chart(style='height:auto;')
                 input#dadate(type='hidden', name='hidden', value='')
                 #table
                   .panel.panel-card
                     .panel-body
-                      .col-xm-2.col-sm-2.col-md-2.panel-checkbox.hidden-xs.hidden-sm
-                        input#c0.click_checkbox(type='checkbox', name='c0', value='1', v-on='click:checkOpt', checked='true')
-                        text  Cluster0
-                        br
-                        input#c1.click_checkbox(type='checkbox', name='c1', value='2', v-on='click:checkOpt', checked='true')
-                        text  Cluster1
-                        br
-                        input#c2.click_checkbox(type='checkbox', name='c2', value='3', v-on='click:checkOpt', checked='true')
-                        text  Cluster2
-                        br
-                        input#c3.click_checkbox(type='checkbox', name='c3', value='4', v-on='click:checkOpt', checked='true')
-                        text  Cluster3
-                        br
-                      //-
-                        input#c3.click_checkbox(type='checkbox', name='c4', value='5', v-on='click:checkOpt', checked='true')
-                        text  Cluster4
-                      //
+                      #panel-cluster-list.col-xm-2.col-sm-2.col-md-2.panel-checkbox.hidden-xs.hidden-sm
+                        //- 클러스터 개수에 따라 동적으로 생성되는 부분
                       .col-xm-12.col-sm-12.col-md-10.col-xs-12
                         #Cluster(style='width:100%;height:395px;')

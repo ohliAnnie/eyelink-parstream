@@ -2,8 +2,8 @@ $(document).ready(function(e) {
   var dateFormat = 'YYYY-MM-DD';
   var dateFormat = 'YYYY-MM-DD';
   var daDate = '';
-  $('#sdate').val(moment().format(dateFormat));
-  $('#edate').val(moment().format(dateFormat));
+  $('#sdate').val(moment().subtract(1,'day').format(dateFormat) + '  09:00');
+  $('#edate').val(moment().format(dateFormat) + '  09:00');
   $('#btn_runanalysis').click(function() {
     runAnalysis();
   });

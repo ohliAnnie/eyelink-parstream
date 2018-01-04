@@ -2,6 +2,8 @@ extends ../efmm-layout01
 block style
 block script
   script(type='text/javascript', src='/efmm/scripts/management_rule.js')
+  script.
+    var commoncode = !{JSON.stringify(commoncode)};
 block content
   .container-fluid
     .page-content
@@ -42,7 +44,7 @@ block content
                     .col-md-3
                       select#rule_name.select2.form-control(data-show-subtext='true', name='rule_name')
                         option(value='')
-                        each type in commoncode.rulename
+                        each type in rule
                           - if (item.rulename.includes(type.key))
                             option(value=type.key, selected) #{type.value}
                           - else

@@ -223,6 +223,7 @@
         "type" : #TYPE#,
         "_source" : [##SOURCE##],
         "body" : {
+          "size":100000,
           "sort":{ "da_time" : {"order":"desc" }},
           "query" : {
             "bool" : {
@@ -243,10 +244,11 @@
         "type" : #TYPE#,
         "_source" : [##SOURCE##],
         "body" : {
+          "size":100000,
           "sort":{ "da_time" : {"order":"desc" }},
           "query" : {
             "bool" : {
-              "must" : { "match" : { interval : #INTERVAL#} },
+              "must" : { "match" : { "time_interval" : #INTERVAL#} },
               "filter" : {
                 "range" : {
                   "da_time" : { "gte" : #START#, "lt" : #END# }
@@ -280,7 +282,46 @@
         }
       }
     ]]></query>
+
     <query id='selectClusterRawDataByMotor'><![CDATA[
+     {
+        "index" : [##INDEX##],
+        "type" : #TYPE#,
+        "body" : {
+          "_source" : [##SOURCE##],
+          "size" : 0,
+          "sort" : { "dtTransmitted" : { "order" : "asc" } },
+          "query" : {
+            "constant_score" : {
+              "filter" : {
+                "bool" : {
+                  "filter" : {
+                    "range" : {
+                      "dtTransmitted" : { "gte" : #FROM#, "lt" : #TO# }
+                    }
+                  },
+                  "must" : [
+                    { "term" : {  "cid" : #CID#} },
+                    { "term" : { "flag": #FLAG# } },
+                    { "term" : { "sensorType": "motor" } }
+                  ]
+                }
+              }
+            }
+          },
+          "aggs" : {
+            "range" : {
+              "date_range": {
+                "field": "dtTransmitted",
+                "ranges": [#RANGES#]
+              },
+              "aggs" : #AVGS#
+            }
+          }
+        }
+      }
+    ]]></query>
+    <!-- <query id='selectClusterRawDataByMotor'><![CDATA[
      {
         "index" : [##INDEX##],
         "type" : #TYPE#,
@@ -310,7 +351,7 @@
           }
         }
       }
-    ]]></query>
+    ]]></query> -->
 
 
 

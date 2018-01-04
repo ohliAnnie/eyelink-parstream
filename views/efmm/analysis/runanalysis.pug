@@ -7,13 +7,13 @@ block content
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 Run Analysis
+        h1 Run Clustering
         ol.breadcrumb
           li
             a(href='/dashboard') Home
           li
             a(href='#') Analysis
-          li.active Run Analysis
+          li.active Run Clustering
       .row
         .col-md-12
           .portlet.light.bordered
@@ -28,10 +28,10 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Date Range
                       .input-icon
-                        .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
-                          input#sdate.form-control(type='text', name='from' value='')
+                        .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd  09:00')
+                          input#sdate.form-control(type='text', name='from' value='')(style="width: 145px")
                           span.input-group-addon to
-                          input#edate.form-control(type='text', name='to' value='')
+                          input#edate.form-control(type='text', name='to' value='')(style="width: 145px")
                   .form-group
                     label.control-label.col-md-5 Step
                     .col-md-3
@@ -51,23 +51,25 @@ block content
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Machine
                       .input-icon
-                        select.form-control.input-small.select2.form-md-line-input(name='machine')
-                          //- TODO : 서버에서 조회해온 값 세팅하도록 수정 필요
+                        select#machine-list.form-control.input-small.select2.form-md-line-input(name='machine')
                           option(value='all') ALL
-                          option(value=100) 100
-                          option(value=200) 200
-                          option(value=300) 300
+                          each machine in list
+                            option(value=(machine.value)) #{machine}
+                          //- TODO : 서버에서 조회해온 값 세팅하도록 수정 필요
+                            option(value=100) 100
+                            option(value=200) 200
+                            option(value=300) 300
+                          //
                   .form-group
                     label.control-label.col-md-5 Interval
                     .col-md-3
                       label.control-label.visible-ie8.visible-ie9 Interval
                       .input-icon
                         select.form-control.input-small.select2.form-md-line-input(name='interval')
-                          option(value=15) 15min
-                          option(value=30) 30min
-                          option(value=60) 60min
-                          option(value=180) 3hour
-                          option(value=360) 6hour
+                          option(value=1) 1 min
+                          option(value=5) 5 min
+                          option(value=10) 10 min
+                          option(value=15) 15 min
                   .form-group
                     label.control-label.col-md-5 Clusters
                     .col-md-3
@@ -89,4 +91,4 @@ block content
                     #register_tnc_error(style='text-align:center;')
                     .col-md-10
                     .col-md-2
-                      button#btn_runanalysis.btn.blue Run Analysis
+                      button#btn_runanalysis.btn.blue Run Clustering

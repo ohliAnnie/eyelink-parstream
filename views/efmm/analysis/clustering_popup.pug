@@ -77,20 +77,18 @@ html
                         label.control-label.col-md-1 Machine
                         .col-md-4
                           .machine-label.btn-group.btn-group-devided(data-toggle='buttons')
-                            label.btn.btn-transparent.green-sharp.btn-circle.btn-sm.active
-                              input#factor0.toggle(type='radio', name='options', value='100', checked='Y')
-                              | 100
-                            label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
-                              input#factor1.toggle(type='radio', name='options', value='200')
-                              | 200
-                          //-
-                            label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
-                              input#factor2.toggle(type='radio', name='options', value='ampere')
-                              | Ampere
-                            label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
-                              input#factor3.toggle(type='radio', name='options', value='power_factor')
-                              | PowerFactor
-                          //
+                            - for (let i = 0; i < list.length; i++ ) {
+                              - let machineId = list[i];
+                              - let factor = 'factor'+i;
+                                if (i == 0)
+                                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm.active
+                                    input.toggle(type='radio', name='options', value=machineId, checked='Y', id=factor)
+                                    | #{machineId}
+                                else
+                                  label.btn.btn-transparent.green-sharp.btn-circle.btn-sm
+                                    input.toggle(type='radio', name='options', value=machineId, id=factor)
+                                    | #{machineId}
+                            - }
           .row.middle-chart
             .col-md-5
               .portlet.light.bordered(style='height:450px;')
@@ -98,8 +96,8 @@ html
                   .caption.font-dark
                     span.caption-subject.bold.uppercase Clustering chart
                     span.caption-helper  by Analytic data
-                .portlet-body.t-padding-0
-                  .chart(style='height:900px;')
+                .portlet-body.t-padding-0(style='height:auto;')
+                  .chart(style='height:auto;')
                     #table
                       .panel.panel-card
                         .panel-body
@@ -184,3 +182,13 @@ html
                 .portlet-body
                   .chart
                     #ts-chart04
+        #chooseMotor.modal.fade(role='dialog')
+          .modal-dialog
+            .modal-content
+              .modal-header
+                button.close(data-dismiss='modal') &times;
+                h4.modal-title.inline Choose max of 4 motors.
+                .warning-msg.inline
+              .modal-body
+              .modal-footer
+                button#motor-modal-apply.btn.btn-default Apply

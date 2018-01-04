@@ -31,13 +31,15 @@ function selectAlarmList(cb) {
   var in_data = {};
   var rtnCode = CONSTS.getErrData('0000');
   queryProvider.selectSingleQueryByID2("management", "selectAlarmList", in_data, function(err, out_data, count) {
-    // logger.debug(out_data);
+    logger.debug(out_data);
     if (count == 0) {
       rtnCode = CONSTS.getErrData('0001');
       res.json({rtnCode: rtnCode});
     } else {
       out_data.forEach(function(d){
-        d._source.timestamp = Utils.getDateUTC2Local(d._source.timestamp, CONSTS.DATEFORMAT.DATETIME);
+        try {
+          d._source.timestamp = Utils.getDateUTC2Local(d._source.timestamp, CONSTS.DATEFORMAT.DATETIME);
+        } catch(e) {;}
       });
     }
     logger.info('selectAlarmList -> count : ' + count);
@@ -70,7 +72,7 @@ function saveAlarmData(data, cb) {
 
 router.get('/recipe', function(req, res, next) {
   logger.debug('recipe');
-  var step = (req.query.step==undefined) ? '': req.query.step.toLowerCase();
+  var step = (req.query.step==undefined) ? 'notching': req.query.step.toLowerCase();
   var cid = (req.query.cid==undefined) ? '': req.query.cid;
   var in_data = {
     'step' : step,
@@ -89,15 +91,11 @@ router.get('/recipe', function(req, res, next) {
     }
 
     var out_data = {
-      'machine' :
-      [
-        {'cid' : '100'},
-        {'cid' : '200'}
-      ],
+      'machineList' : global.management.machine,
+      'machine' : global.management.machine[step],
       'data' : out_data
     };
     logger.debug(out_data.data);
-    logger.debug(out_data.data.length);
 
     res.render('./'+global.config.pcode+'/management/recipe_list',
     {
@@ -433,6 +431,7 @@ router.get('/role/:id', function(req, res) {
 });
 
 // role 신규 등록
+// TODO role 등록시 global.management.role 정보 갱신 로직 추가 필요.
 router.post('/role/:id', function(req, res) {
   var in_data = { INDEX: indexRole, TYPE: "role", ID: "role_id", VALUE: req.body.roleid };
   queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
@@ -454,6 +453,7 @@ router.post('/role/:id', function(req, res) {
 });
 
 // ROLE 정보 수정
+// TODO role 수정시 global.management.role 정보 갱신 로직 추가 필요.
 router.put('/role/:id', function(req, res) {
   var in_data = { INDEX: indexRole, ID : req.body.id, NAME: req.body.rolename };
   queryProvider.updateQueryByID("management", "updateRole", in_data, function(err, out_data) {
@@ -466,6 +466,7 @@ router.put('/role/:id', function(req, res) {
 });
 
 // role 정보 삭제
+// TODO role 삭제시 global.management.role 정보 갱신 로직 추가 필요.
 router.delete('/role/:id', function(req, res) {
   logger.debug('delete role');
   var in_data = { INDEX: indexRole, TYPE: "role", ID: req.body.id  };
@@ -836,16 +837,10 @@ router.get('/rule', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {
-        // TODO Role 조회 기능 구현 필요.
-        var role = [
-            {'key' : 'ug1', 'value' : 'UserGroup01'}, 
-            {'key' : 'ug2', 'value' : 'UserGroup02'}, 
-            ];
- 
       out_data.forEach(function(d){
-        d._source.type = Utils.getCommonCode(CCODE.COMMONCODE.RULE.TYPE, d._source.type);
-        d._source.rulename  = Utils.getCommonCode(CCODE.COMMONCODE.RULE.RULENAME, d._source.rulename);
-        d._source.role  = Utils.getCommonCode(role, d._source.role);
+        d._source.typename = Utils.getCommonCode(CCODE.COMMONCODE.RULE.TYPE, d._source.type);
+        d._source.rulename  = Utils.getCommonCode(CCODE.COMMONCODE.RULE.RULENAME[d._source.type], d._source.rulename);
+        d._source.role  = Utils.getCommonCode(global.management.role, d._source.role);
         d._source.condition  = Utils.getCommonCode(CCODE.COMMONCODE.RULE.CONDITION, d._source.condition);
         d._source.alarmtype = Utils.getCommonCode(CCODE.COMMONCODE.RULE.ALARMTYPE, d._source.alarmtype);
         d._source.updatetimestamp = Utils.getDateUTC2Local(d._source.updatetimestamp, CONSTS.DATEFORMAT.DATETIME);
@@ -876,16 +871,14 @@ router.get('/rule/:id', function(req, res) {
     condition: CCODE.COMMONCODE.RULE.CONDITION,
     alarmtype : CCODE.COMMONCODE.RULE.ALARMTYPE,
   };
-  var role = [
-            {'key' : 'ug1', 'value' : 'UserGroup01'}, 
-            {'key' : 'ug2', 'value' : 'UserGroup02'} ];
+
   if (req.params.id === 'NEW') {
     var out_data = {};
     res.render('./'+global.config.pcode+'/management/rule_new',
       { title: global.config.productname,
         mainmenu:mainmenu,
         commoncode : commoncode,
-        role : role,
+        role : global.management.role,
         rtnData:out_data});
   } else {
     var in_data = {_id : req.params.id};
@@ -897,13 +890,13 @@ router.get('/rule/:id', function(req, res) {
       out_data.forEach(function(d){
         d._source.updatetimestamp = Utils.getDateUTC2Local(d._source.updatetimestamp, CONSTS.DATEFORMAT.DATETIME);
       });
-       logger.debug('out_data : %j', out_data);
       res.render('./'+global.config.pcode+'/management/rule_edit',
         {
           title : global.config.productname,
           mainmenu : mainmenu,
           commoncode : commoncode,
-          role : role,
+          rule : commoncode.rulename[out_data[0]._source.type],
+          role : global.management.role,
           rtnData : out_data[0] });
     });
   }
