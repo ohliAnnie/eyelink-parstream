@@ -326,6 +326,3 @@ router.get('/restapi/getMultiIndexCount', function(req, res, next) {
     res.json({rtnCode: rtnCode, rtnData: data, max: max});
   });
 });
-
-
-module.exports = router;

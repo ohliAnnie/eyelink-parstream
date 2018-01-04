@@ -19,7 +19,8 @@ m = {
   },
   dashboard : {
     confirm : {
-      compare : "비교해 보시겠습니까?"
+      compare : "비교해 보시겠습니까?",
+      check : "확인 하셨습니까?"
     }
   },
   recipe : {

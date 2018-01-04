@@ -35,8 +35,9 @@ function getData(date){
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {      
       var data = result.rtnData;             
+      console.log(data)
       drawTable(data, result.alarmCount);
-      dataTable(data);
+      dataTable(data);      
     } 
   });
   var data = { date : urlParams.date, cid : urlParams.cid };
@@ -83,7 +84,7 @@ function drawTable(data, alarmCount) {
   sbT.append('<div class="gage" style="text-align:center;"></div></div>');
   sbT.append('<div class="row"><div class="col-sm-12">');  
   sbT.append('<div class="col-xs-12 label mes-status color-'+data.state+'">'+data.state);
-  if(alarmCount != undefined) {
+  if(alarmCount != 0) {
     sbT.append(' <button type="button" class="btn btn-warning btn-xs" onclick="drawAlarmModal('+"'"+data.flag+"','"+data.cid+"'"+')">'+alarmCount+'</button>');
   }
   sbT.append('</div>');
@@ -120,11 +121,22 @@ function drawAlarmModal(flag, cid){
         d.search_key = d.search.value;
       }      
     },
-    "columns" : [{ data: "date" },{ data: "list", "bSortable": false }]    
+    "columns" : [{ data: "date" },
+      { "targets" : -1,
+        "data": null,
+        "bSortable": false,
+        render: function(data, type, full, meta){         
+          var d = '';
+          for(i=0; i<full.list.length; i++){
+            if(i!=0){ d += '<br>'; }
+            d += full.list[i];
+          }
+          return d;
+        }
+      }]    
   });  
   showAlarmView();
 }
-
 function showAlarmView() {      
   $('#modal-alarm').modal("show");  
 }
