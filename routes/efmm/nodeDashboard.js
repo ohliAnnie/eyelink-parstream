@@ -468,9 +468,9 @@ router.get('/restapi/getDashboardCompare', function(req, res, next) {
 
 router.get('/restapi/getDashboardInfo', function(req, res, next) {
   console.log('reports/restapi/getDashboardInfo');  
-  var i = indexNotchingOee.split('_');  
+  var index = (req.query.type == 'notching')?indexNotchingOee:indexStackingOee;
   var date = Utils.getMs2Date(parseInt(req.query.date), fmt2, 'Y', 'Y');  
-  var in_data = { index : i[0]+'_'+req.query.type+'_'+i[2]+Utils.getDateLocal2UTC(date, fmt4, 'Y', 'Y'), type : "oee",                   
+  var in_data = { index : index+Utils.getDateLocal2UTC(date, fmt4, 'Y', 'Y'), type : "oee",                   
                   sort : "dtTransmitted" , date : date, cid : req.query.cid };
   queryProvider.selectSingleQueryByID2("dashboard","selectDashboardInfo", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
@@ -490,13 +490,16 @@ router.get('/restapi/getDashboardInfo', function(req, res, next) {
       data.state = req.query.state;     
     }        
     var i = indexStackingStatus.split('_');    
-    var in_data = { index : i[0]+'_'+req.query.type+'_'+i[2]+Utils.getDateLocal2UTC(date, fmt4, 'Y', 'Y'), 
+    var in_data = { index : indexStackingOee+Utils.getDateLocal2UTC(date, fmt4, 'Y', 'Y'), 
                     type : "status", cid : req.query.cid };
     queryProvider.selectSingleQueryByID2("dashboard","selectAlarmHistory", in_data, function(err, out_data, params) {
       var rtnCode = CONSTS.getErrData('0000');        
       if (out_data == null) {
         rtnCode = CONSTS.getErrData('0001');
-      }        
+      }
+      if(req.query.type == 'notching') {
+        params = 0;
+      }
       res.json({rtnCode: rtnCode, rtnData: data, alarmCount : params});
     });
   });
@@ -506,7 +509,7 @@ router.get('/restapi/getDashboardInfoStatus', function(req, res, next) {
   console.log('reports/restapi/getDashboardInfoStatus');    
   var date = Utils.getMs2Date(parseInt(req.query.date), fmt2, 'Y', 'Y');
   var gte = Utils.getDate(date, fmt2, 0, 0, -1, 0, 'Y', 'Y')  
-  var in_data = { index : indexList(gte, date, indexStackingStatus), type : "status",
+  var in_data = { index : Utils.getIndexList(gte, date, indexStackingStatus), type : "status",
                   sort : "dtTransmitted" , gte : gte, lte : date, cid : req.query.cid };  
   queryProvider.selectSingleQueryByID2("dashboard","selectDashboardInfoStatus", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
