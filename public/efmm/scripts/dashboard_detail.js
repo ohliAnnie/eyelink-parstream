@@ -4,8 +4,8 @@ $(document).ready(function(e) {
     if($("#refresh").is(":checked")){
       check = true;      
       (function loop() {              
-        getData(new Date().getTime());
         if(check){
+          getData(new Date().getTime());        
           setTimeout(loop, 30*1000);
         }
       })();      
@@ -198,6 +198,7 @@ function drawAlarmModal(flag, cid){
       { data: "date" },
       { "targets" : -1,
         "data": null,
+        "bSortable": false,
         render: function(data, type, full, meta){         
           var d = '';
           for(i=0; i<full.list.length; i++){
@@ -206,11 +207,11 @@ function drawAlarmModal(flag, cid){
           }
           return d;
         }
-      },
-   //  { data : null, "defaultContent": '<button onclick="update()">Click!</button>', "targets": -1, "bSortable": false },
+      },   
       {
         "targets": -1,
         "data": null,
+
         render : function(data, type, full, meta){          
           if(type === 'display'){
             data =  '<button onclick="updateAlarm('+"'"+full.id+"','"+cid+"','"+flag+"'"+')">Click!</button>';
@@ -227,7 +228,7 @@ function showAlarmView() {
 }
 
 function updateAlarm(id, cid, flag){    
-  if (confirm("확인 하셨습니까?")) { 
+  if (confirm(m.dashboard.confirm.check)) { 
     var data = { id : id, flag : flag, cid : cid };    
     var in_data = { url : "/dashboard/alarm/"+id, type : "PUT", data : data };
     ajaxTypeData(in_data, function(result){        
