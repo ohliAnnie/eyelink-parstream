@@ -218,16 +218,16 @@ function drawLineChart(data) {
     }
   }   
 
-  composite.margins().bottom = 240;
+  composite.margins().bottom = 245;
   composite.margins().right = 55;  
   composite
-    .width(window.innerWidth*0.45)
-    .height(550)
+    .width(window.innerWidth*0.65)
+    .height(690)
     .x(d3.time.scale().domain([minDate,maxDate]))
     //.round(d3.time.day.round)
     //.x(d3.scale.linear().domain([0,data.length-1]))             
     .y(d3.scale.linear().domain([0, 90]))    
-    .legend(dc.legend().x(0).y(335).itemHeight(12).itemWidth(159).gap(6).horizontal(true))
+    .legend(dc.legend().x(40).y(480).itemHeight(12).itemWidth(175).gap(6).horizontal(true))
     .renderHorizontalGridLines(true)
     .title(function(d){ return this.layer+' : '+d.value; })
     .compose(chart)
