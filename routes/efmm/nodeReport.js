@@ -18,7 +18,7 @@ var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
 var fmt2 = CONSTS.DATEFORMAT.DATETIME; // "YYYY-MM-DD HH:MM:SS",
 var fmt4 = CONSTS.DATEFORMAT.INDEXDATE; // "YYYY.MM.DD",
 
-router.get('/', function(req, res, next) {    
+router.get('/weekly', function(req, res, next) {    
   var index = [indexNotchingOee+"*", indexStackingOee+"*"];
   var in_data = { index : index, type : "oee"};  
   queryProvider.selectSingleQueryByID3("timeseries","selectMachineList", in_data, function(err, out_data, params) {    
@@ -36,11 +36,11 @@ router.get('/', function(req, res, next) {
         }        
       }            
     }
-    res.render('./'+global.config.pcode+'/reports/report', { title: global.config.productname, mainmenu:mainmenu, list : list });
+    res.render('./'+global.config.pcode+'/reports/weekly', { title: global.config.productname, mainmenu:mainmenu, list : list });
   });
 });
 
-router.get('/bar', function(req, res, next) {    
+router.get('/lastpoint', function(req, res, next) {    
   var index = [indexNotchingOee+"*", indexStackingOee+"*"];
   var in_data = { index : index, type : "oee"};  
   queryProvider.selectSingleQueryByID3("timeseries","selectMachineList", in_data, function(err, out_data, params) {    
@@ -58,7 +58,7 @@ router.get('/bar', function(req, res, next) {
         }        
       }            
     }
-    res.render('./'+global.config.pcode+'/reports/report_bar', { title: global.config.productname, mainmenu:mainmenu, list : list });
+    res.render('./'+global.config.pcode+'/reports/lastpoint', { title: global.config.productname, mainmenu:mainmenu, list : list });
   });
 });
 

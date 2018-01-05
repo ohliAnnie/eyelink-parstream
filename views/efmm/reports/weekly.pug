@@ -13,13 +13,13 @@ block content
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 Reports_All
+        h1 Report Weekly
         ol.breadcrumb
           li
             a(href='#') Home
           li
             a(href='#') Reports
-          li.active OverView
+          li.active Line
       .row
         .col-md-12
           .portlet.light.bordered
@@ -31,7 +31,7 @@ block content
                form.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
                   .form-group.last                    
-                    label.control-label.col-md-2 Date Range
+                    label.control-label.col-md-2 End Date
                     .col-md-4
                       .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
                         input#date.form-control(type='text', name='from' value='' style='width:160px;')
@@ -43,14 +43,12 @@ block content
                     .col-md-1.form-inline                     
                       button#btn_search.btn.blue
                         i.fa.fa-search Search
-      a(href='javascript:dc.filterAll(); dc.renderAll();') Reset All
       .row
         .col-md-12
-          .portlet.light(style='height:415px; ')
+          .portlet.light
             .portlet-title
               .caption
-                span.caption-subject.bold.uppercase.font-green-haze Weekly chart
-                span.caption-helper  Retrieves the last seven days of data for the base date
+                span.caption-subject.bold.uppercase.font-green-haze Weekly chart                
               .actions
                 a.btn.btn-default.btn-sm(href='#')
                   i.fa.fa-print
@@ -58,15 +56,15 @@ block content
                 a.collapse(href='javascript:;')
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
-              .chart(style='height:400px; ')
+              .chart(style='height:310px;')
                 #composed        
       .row
         .col-md-12
-          .portlet.light.bordered(style='height:450px; ')
+          .portlet.light.bordered
             .portlet-title              
               .caption                
-                span.caption-subject.bold.uppercase.font-green-haze  Count by Server
-                span.caption-helper   Responsetime Type Count by Server                
+                span.caption-subject.bold.uppercase.font-green-haze  Daily chart                       
+              .actions
                 .machine-label.btn-group.btn-group-devided(data-toggle='buttons')
                   #toggle      
             .portlet-body                    

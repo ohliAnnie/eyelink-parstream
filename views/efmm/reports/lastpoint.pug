@@ -14,25 +14,24 @@ block content
   .container-fluid
     .page-content
       .breadcrumbs
-        h1 Reports_Factor
+        h1 Reports_LastPoint
         ol.breadcrumb
           li
             a(href='#') Home
           li
             a(href='#') Reports
-          li.active OverView
+          li.active LastPoint
       .row
         .col-md-12
           .portlet.light.bordered
             .portlet-title
               .caption.font-dark
-                span.caption-subject.bold.uppercase.font-blue-sharp Set date
-                span.caption-helper  Date range 
+                span.caption-subject.bold.uppercase.font-blue-sharp Set date                
             .portlet-body.form
                form.form-horizontal.form-bordered(onsubmit="return false;")
                 .form-body
                   .form-group.last                    
-                    label.control-label.col-md-2 Date Range
+                    label.control-label.col-md-2 Date
                     .col-md-4                      
                       .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
                         input#date.form-control(type='text', name='from' value='' style='width:160px;')
@@ -46,7 +45,21 @@ block content
                         i.fa.fa-search Search
       .row
         .col-md-6
-          .portlet.light(style='height:490px; ')
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Oee Loss
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print
+                a.collapse(href='javascript:;')
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:370px; ')
+                #oee
+        .col-md-6
+          .portlet.light
             .portlet-title
               .caption
                 span.caption-subject.bold.uppercase.font-green-haze Oee Factor                
@@ -57,22 +70,8 @@ block content
                 a.collapse(href='javascript:;')
                 a.btn.btn-icon-only.btn-default.fullscreen(href='#')
             .portlet-body
-              .chart(style='height:400px; ')
+              .chart(style='height:370px; ')
                 #bar
-        .col-md-6
-          .portlet.light(style='height:490px;')
-            .portlet-title
-              .caption
-                span.caption-subject.bold.uppercase.font-green-haze Oee
-              .actions
-                a.btn.btn-default.btn-sm(href='#')
-                  i.fa.fa-print
-                  |  Print
-                a.collapse(href='javascript:;')
-                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
-            .portlet-body
-              .chart(style='height:400px; ')
-                #oee
     p.copyright Copyright M2U Technology All rights reserved.
   a.go2top(href='#index')
     i.icon-arrow-up
