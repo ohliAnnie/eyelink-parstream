@@ -55,13 +55,13 @@ function drawChart(data, min) {
   composite.yAxis().ticks(7);
   composite
     .width(window.innerWidth*0.88)
-    .height(320)
+    .height(300)
     .x(d3.time.scale().domain([minDate,maxDate]))
     //.round(d3.time.day.round)
     //.x(d3.scale.linear().domain([0,6]))             
     .y(d3.scale.linear().domain([min, 102]))    
     .yAxisLabel("%")
-    .legend(dc.legend().x(window.innerWidth*0.08).y(308).itemHeight(12).itemWidth(window.innerWidth*0.1).gap(4).horizontal(true))
+    .legend(dc.legend().x(window.innerWidth*0.08).y(288).itemHeight(12).itemWidth(window.innerWidth*0.1).gap(4).horizontal(true))
     .renderHorizontalGridLines(true)
     .title(function(d){ return d.key+'\n'+this.layer+' : '+d.value+' %'; })
     .compose([
@@ -150,13 +150,13 @@ function drawToggleChart(data, min, max) {
   comoee.yAxis().ticks(7);
   comoee
     .width(window.innerWidth*0.36)
-    .height(320)
+    .height(300)
     .x(d3.time.scale().domain([minDate,maxDate]))
     //.round(d3.time.day.round)
     //.x(d3.scale.linear().domain([0,6]))             
     .y(d3.scale.linear().domain([min, 102]))    
     .yAxisLabel("%")
-    .legend(dc.legend().x(window.innerWidth*0.03).y(300).itemHeight(12).itemWidth(window.innerWidth*0.08).gap(4).horizontal(true))
+    .legend(dc.legend().x(window.innerWidth*0.03).y(280).itemHeight(12).itemWidth(window.innerWidth*0.08).gap(4).horizontal(true))
     .renderHorizontalGridLines(true)
     .title(function(d){ return d.key+'\n'+this.layer+' : '+d.value+' %'; })
     .compose([
@@ -206,7 +206,7 @@ function drawToggleChart(data, min, max) {
   comfactor.yAxis().ticks(7);
   comfactor
     .width(window.innerWidth*0.5)
-    .height(325)
+    .height(305)
     .x(d3.time.scale().domain([minDate,maxDate]))
     //.round(d3.time.day.round)
     //.x(d3.scale.linear().domain([0,6]))             
