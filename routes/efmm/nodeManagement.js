@@ -31,7 +31,7 @@ function selectAlarmList(cb) {
   var in_data = {};
   var rtnCode = CONSTS.getErrData('0000');
   queryProvider.selectSingleQueryByID2("management", "selectAlarmList", in_data, function(err, out_data, count) {
-    logger.debug(out_data);
+    //logger.debug(out_data);
     if (count == 0) {
       rtnCode = CONSTS.getErrData('0001');
       res.json({rtnCode: rtnCode});
