@@ -21,7 +21,7 @@ router.get('/timeseries', function(req, res, next) {
 });
 
 router.get('/restapi/getRangeData', function(req, res, next) {
-  console.log('reports/restapi/getRangeData');    
+  logger.info('reports/restapi/getRangeData');    
   var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0, 'Y', 'Y')+startTime;
   var lte = Utils.getMs2Date(req.query.edate, fmt1, 'N', 'Y')+startTime;    
 /*  var index = [], cnt = 0;  
@@ -40,8 +40,7 @@ router.get('/restapi/getRangeData', function(req, res, next) {
       var als_level = 0, dimming_level = 0, noise_decibel = 0, noise_frequency = 0;
       var vibration_x = 0, vibration_y = 0, vibration_z = 0, vibration = 0;
       out_data.forEach(function(d) {        
-        d = d._source;               
-        console.log(d.event_time)
+        d = d._source;                       
         d.event_time = new Date(Utils.getDateUTC2Local(d.event_time, fmt2)).getTime();
         if(d.event_type == "1"){
           ampere = d.ampere; 

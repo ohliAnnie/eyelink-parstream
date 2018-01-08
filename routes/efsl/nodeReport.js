@@ -39,7 +39,7 @@ router.get('/live', function(req, res, next) {
 
 // query Report
 router.get('/restapi/getRangeData', function(req, res, next) {
-  console.log('reports/restapi/getRangeData');    
+  logger.info('reports/restapi/getRangeData');    
   var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0, 'Y', 'Y')+startTime;
   var lte = Utils.getMs2Date(req.query.edate, fmt1, 'N', 'Y')+startTime;    
 /*  var index = [], cnt = 0;  
@@ -103,7 +103,7 @@ router.get('/restapi/getRangeData', function(req, res, next) {
 
 // query Report
 router.get('/restapi/getRangePowerData', function(req, res, next) {
-  console.log('reports/restapi/getRangePowerData');      
+  logger.info('reports/restapi/getRangePowerData');      
   var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0, 'Y', 'Y')+startTime;
   var lte = Utils.getMs2Date(req.query.edate, fmt1, 'N', 'Y')+startTime;    
 /*  var index = [], cnt = 0;  
@@ -126,8 +126,7 @@ router.get('/restapi/getRangePowerData', function(req, res, next) {
         d.geo = (d.node_id === '0001.00000001') ? '37.457271, 127.042861':'37.468271, 127.032861';
         d.zone_id = 'ZONE-04'
         data.push(d);
-      });      
-      console.log(data);
+      });            
     }
     res.json({rtnCode: rtnCode, rtnData: data});
   });
