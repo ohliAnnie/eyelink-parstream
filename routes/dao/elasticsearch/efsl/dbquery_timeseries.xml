@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<queryList>
+	<timeseries>
+    <query id='selectRangeData'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+          "size" : 100000,
+          "_source" : ["event_time", "event_type", "ampere", "active_power", "amount_of_active_power", "als_level", "dimming_level", "noise_decibel", "noise_frequency", "vibration_x", "vibration_y", "vibration_z", "vibration"],
+          "sort" : { #sort#: { "order" : "asc" } },
+          "query" : {
+            "bool": {              
+              "must" : {
+                "range" : {
+                  #sort# : { "gte" : #gte#, "lte" : #lte# }
+                }
+              },
+              "filter" : {            
+                "terms" : {"event_type" : ["1", "17", "33", "49"] }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+  </timeseries>
+</queryList>

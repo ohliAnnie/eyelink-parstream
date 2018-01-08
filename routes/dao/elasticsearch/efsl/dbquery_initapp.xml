@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<queryList>
+  <initapp>
+    <query id='selectRoleList'><![CDATA[
+      {
+        "index" : "efsm_role",
+        "type" : "role",
+        "body" : {
+          "size" : 1000,
+          "query" : { "match_all" : { } }
+        }
+      }
+    ]]></query>
+    <query id='selectUserList'><![CDATA[
+      {
+        "index" : "efsm_user",
+        "type" : "user",
+        "body" : {
+          "size" : 1000,
+          "query" : { "match_all" : { } }
+        }
+      }
+    ]]></query>   
+  </initapp>
+</queryList>
