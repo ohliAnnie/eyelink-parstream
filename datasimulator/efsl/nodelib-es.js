@@ -1,7 +1,7 @@
 var queryParser = require('./queryParser');
 var elasticsearch = require('elasticsearch');
 var client = new elasticsearch.Client({
-  host: 'http://m2utech.eastus.cloudapp.azure.com:9200',
+  host: 'http://m2u-parstream.eastus.cloudapp.azure.com:9200',
   // log: 'trace'
 });
 
@@ -87,7 +87,7 @@ QueryProvider.prototype.indexSettings = function (newIndex, failCount) {
   }
 }
 
-QueryProvider.prototype.insertData = function (type, queryId, datas) {  
+QueryProvider.prototype.insertData = function (type, queryId, datas) {
   // console.log('queryId : '+queryId);
    // SQL 내 파라메타를 변경해준다.
   var sQueryString = replaceSql2(queryParser.getQuery(type, queryId), datas);
@@ -99,7 +99,7 @@ QueryProvider.prototype.insertData = function (type, queryId, datas) {
 
   client.index(
     sQueryString
-  ).then(function (resp) {      
+  ).then(function (resp) {
       // console.log(resp);
   }, function (err) {
       logger.error(err.message);
@@ -119,7 +119,7 @@ function replaceSql2(sql, params) {
 
     // 먼저 배열 parameter를 처리한다.
     var re = new RegExp("#" + key + "#","g");
-    var re1 = new RegExp("##" + key + "##","g");    
+    var re1 = new RegExp("##" + key + "##","g");
     if (typeof params[key] === 'object') {
       if (typeof params[key][0] === 'string') {
         var tsql = '';
@@ -143,10 +143,10 @@ function replaceSql2(sql, params) {
       }
     } else if (typeof params[key] === 'string') {
        if(params[key].substring(0,1) == '{'){
-       sql = sql.replace(re, params[key]); 
+       sql = sql.replace(re, params[key]);
       } else {
         sql = sql.replace(re, '"' + params[key] + '"');
-      }      
+      }
     } else if (typeof params[key] === 'number') {
       sql = sql.replace(re, params[key]);
     } else {

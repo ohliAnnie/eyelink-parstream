@@ -4,28 +4,32 @@ if ( process.argv[2] == null || process.argv[3] == null ) {
 }
 
 const log4js = require('log4js');
-log4js.configure({
-  // appenders: [
-  //             { type: 'file', filename: './datagen.log', backups: 5 }
-  //             ],
-  // categories: { default: { appenders: ['datagen'], level: 'debug' } }
-  
-    "appenders": [
-      {
-        "type": "console"
-      },
-      {
-        "type": "file",
-        "filename": "./datagen.log",
-        "maxLogSize": 1024000,
-        "backups": 5,
-        "category": "eyelink"
-      }
-    ]
-  
-});
-global.logger = log4js.getLogger('datagen');
 
+log4js.configure({
+  'appenders':
+  {
+      'console' :
+      {
+        'type': 'console'
+      },
+      'file' :
+      {
+        'type': 'file',
+        'filename': './datagen.log',
+        'maxLogSize': 1024000000,
+        'backups': 5,
+        'category': 'eyelink'
+      }
+  },
+  'categories' :
+  {
+    'default' : { 'appenders': ['console', 'file'], 'level' : 'debug'}
+  }
+});
+// global.logger = log4js.getLogger('datagen');
+global.log4js = require('log4js');
+
+var logger = log4js.getLogger('datagen');
 logger.info('Data Simulator has been started.');
 
 var fs = require('fs');
@@ -33,21 +37,21 @@ var sleep = require('system-sleep');
 var moment = require('moment-timezone');
 var datetime = require('node-datetime');
 var xml2js = require('xml2js');
-var Utils = require('../routes/util');
-var CONSTS = require('../routes/consts');
+var Utils = require('../../routes/util');
+var CONSTS = require('../../routes/consts');
 var QueryProvider = require('./nodelib-es').QueryProvider;
 var queryProvider = new QueryProvider();
 
 const datafilepath = process.argv[2];
 const nodeId = process.argv[3];
 const type = 'corecode';
-const initialDataInDays = ( process.argv[4] == null ? 0 : process.argv[4] ); 
+const initialDataInDays = ( process.argv[4] == null ? 0 : process.argv[4] );
 
 // startDatetimeToSkip : 실제로 데이터가 insert되어야 하는 일시 입력받는다. (Next Event DateTime 기준)
 const startDatetimeToSkip = ( process.argv[5] == null ? null : moment(process.argv[5]) );
 
 // TODO : 현재까지 입력된 데이터 이후의 데이터부터 입력하려면 initialDataInDays로 일자 기준을 잡고, startDatetimeToSkip로 시간을 잡아줘야 한다.
-// 이것을 startDatetimeToSkip 하나로만 처리할 수 있도록 하면 좋을 듯 
+// 이것을 startDatetimeToSkip 하나로만 처리할 수 있도록 하면 좋을 듯
 logger.info('=========================================================');
 logger.info('== Data File Path        : ', datafilepath);
 logger.info('== Node ID               : ', nodeId);
@@ -69,7 +73,7 @@ loadQuery('./dbquery.xml');
 var initialDataProcessed = false;
 var processedDays = 0;
 
-// sample csv line data 
+// sample csv line data
 // 0002.00000038,49,2016-11-17 11:49:01.533,2016-11-17 11:49:01,,,,,,,,,,,,,,11,100,1.1,10000,,,,,,,,,,,,,,,0,
 
 // var cur_datetime = moment(datetime.create().format('Y-m-d H:M:S'));
@@ -88,7 +92,7 @@ lineReader.on('line', function (line) {
       //   logger.info('---------------------------------------------------------------------------');
       //   logger.info('Processing data : ', line);
       // }
-      
+
       cur_datetime = moment(datetime.create().format('Y-m-d H:M:S'));
 
       var data_arr = line.split(',');
@@ -127,14 +131,14 @@ lineReader.on('line', function (line) {
 
       var diffSeconds = nextEventDateTime.diff(cur_datetime)/1000;
       // logger.debug('nextEventDateTime: ',nextEventDateTime,', curDateTime: ',cur_datetime,', diffMillis: ',diffSeconds);
-      
+
       // logger.debug('ProcessingDateTime : ',event_date + ' ' + cur_kor_datetime.split(' ')[1],', Next Event DateTime : ',data_arr[3].split('T').join(' '),', diffSeconds : ',diffSeconds);
       if ( (processedDays >= initialDataInDays) && (nextEventDateTime.diff(startDatetimeToSkip, 'seconds') > 0) ){
-          // 17.08.29 info로 로그를 남기는 아래 두 라인은 사실 최상단에 있는 것이 맞으나, 
+          // 17.08.29 info로 로그를 남기는 아래 두 라인은 사실 최상단에 있는 것이 맞으나,
           // 과거 데이터를  skip할 때 너무 많은 로그를 남기면서 hang 걸리는 문제가 발생하여 아래쪽으로 내렸음
           logger.info('---------------------------------------------------------------------------');
           logger.info('Processing data : ', line);
-          
+
           logger.debug('Processing DateTime : ',event_date + ' ' + data_arr[3].split('T')[1],', Next Event DateTime : ',data_arr[3].split('T').join(' '),', diffSeconds : ',diffSeconds );
       }
       // 17.11.02 로컬 시간을 UTC 시간으로 변경하기 위한 로직 추가
@@ -151,14 +155,14 @@ lineReader.on('line', function (line) {
           if ( !initialDataProcessed ){
               sleep(1000);
               insertData(index, type, data_arr.join(','));
-          } 
+          }
           else {
 
               if ( diffSeconds <= 0 ) {
                   sleep(1000);
                   insertData(index, type, data_arr.join(','));
               } else if ( diffSeconds > 0 ){
-                
+
                   logger.info('Waiting ', diffSeconds, ' seconds.....');
 
                   sleep(diffSeconds * 1000);
@@ -184,7 +188,7 @@ function printUsage() {
   console.log('Ex. $ node dataSimulator.js ./source.csv 0002.00000039 30 \'2017-08-11 11:00:00\'');
   // node dataSimulator.js ../source/busan_tb_node_raw.0315.csv 0002.00000039 49 '2017-08-29 16:58:27'
   // forever start dataSimulator.js ./busan_tb_node_raw.0315.csv 0 1 '2017-10-10 15:20:00'
-  // TODO : forever start dataSimulator.js ./busan_tb_node_raw.0315.csv 0 0 으로 실행 시에도 문제없이 돌아야 함., 로직 수정 필요 
+  // TODO : forever start dataSimulator.js ./busan_tb_node_raw.0315.csv 0 0 으로 실행 시에도 문제없이 돌아야 함., 로직 수정 필요
 }
 function insertData(index, type, linedata){
 
