@@ -45,22 +45,20 @@ block content
                 a.remove(href='javascript:;')
             .portlet-body                            
               .chart(style='height:auto;')
-                .col-md-6
-                  .raw
-                    .col-md-5
-                      #gage
-                      #modal-alarm.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
-                        .modal-dialog
-                          .modal-content
-                            .modal-header
-                              button.close(type='button', data-dismiss='modal', aria-label='Close')
-                                span(aria-hidden='true') ×
-                              h4#myModalLabel.modal-title Alarm History
-                            .modal-body
-                              #mbody
-                            .modal-footer
-                              button.btn.btn-default(type='button', data-dismiss='modal') Close
-                    .col-md-7
-                      #data                  
-                .col-md-6
+                .col-md-4
+                  .raw                    
+                    #gage
+                    #modal-alarm.modal.fade(tabindex='-1', role='dialog', aria-labelledby='myModalLabel', aria-hidden='true')
+                      .modal-dialog.modal-lg
+                        .modal-content
+                          .modal-header
+                            button.close(type='button', data-dismiss='modal', aria-label='Close')
+                              span(aria-hidden='true') ×
+                            h4#myModalLabel.modal-title Alarm History
+                          .modal-body
+                            #mbody
+                          .modal-footer
+                            button.btn.btn-default(type='button', data-dismiss='modal') Close                    
+                    #data                  
+                .col-md-8
                   #composed

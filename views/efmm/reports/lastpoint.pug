@@ -1,0 +1,77 @@
+extends ../efmm-layout01
+block style      
+  link(type='text/css', rel='stylesheet', href='/efmm/assets/css/dc.css') 
+  link(type='text/css', rel='stylesheet', href='/efmm/css/chart_style.css')
+  link(type='text/css', rel='stylesheet', href='/efmm/css/report_bar.css')
+block script
+  script(type='text/javascript', src='/efmm/assets/scripts/d3_dc.js')
+  script(type='text/javascript', src='/efmm/assets/scripts/crossfilter.js')
+  script(type='text/javascript', src='/efmm/assets/scripts/dc.js')  
+  script(type='text/javascript', src='/efmm/assets/scripts/colorbrewer.js')
+  script(type='text/javascript', src="/common/scripts/util.js")
+  script(type='text/javascript', src='/efmm/scripts/report_bar.js')
+block content  
+  .container-fluid
+    .page-content
+      .breadcrumbs
+        h1 Reports_LastPoint
+        ol.breadcrumb
+          li
+            a(href='#') Home
+          li
+            a(href='#') Reports
+          li.active LastPoint
+      .row
+        .col-md-12
+          .portlet.light.bordered
+            .portlet-title
+              .caption.font-dark
+                span.caption-subject.bold.uppercase.font-blue-sharp Set date                
+            .portlet-body.form
+               form.form-horizontal.form-bordered(onsubmit="return false;")
+                .form-body
+                  .form-group.last                    
+                    label.control-label.col-md-2 Date
+                    .col-md-4                      
+                      .input-group.input-large.date-picker.input-daterange(data-date='2017-01-01', data-date-format='yyyy-mm-dd')
+                        input#date.form-control(type='text', name='from' value='' style='width:160px;')
+                    .col-md-3
+                      select#machine.form-control.input-medium.select2me.form-md-line-input(onchange='getData()')
+                        each data in list                              
+                          option #{data}
+                    label.control-label.col-md-1 
+                    .col-md-1.form-inline                     
+                      button#btn_search.btn.blue
+                        i.fa.fa-search Search
+      .row
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Oee Loss
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print
+                a.collapse(href='javascript:;')
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:370px; ')
+                #oee
+        .col-md-6
+          .portlet.light
+            .portlet-title
+              .caption
+                span.caption-subject.bold.uppercase.font-green-haze Oee Factor                
+              .actions
+                a.btn.btn-default.btn-sm(href='#')
+                  i.fa.fa-print
+                  |  Print
+                a.collapse(href='javascript:;')
+                a.btn.btn-icon-only.btn-default.fullscreen(href='#')
+            .portlet-body
+              .chart(style='height:370px; ')
+                #bar
+    p.copyright Copyright M2U Technology All rights reserved.
+  a.go2top(href='#index')
+    i.icon-arrow-up

@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<queryList>
+  <reports>
+    <query id='selectMachineList'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {          
+          "size" : 0,          
+          "aggs": {
+            "flag": {
+              "terms": {
+                "field": "flag.keyword",
+                "order" : { "_term" : "asc" }
+              },
+              "aggs": {
+                "cid": {
+                  "terms": {
+                    "field": "cid.keyword",
+                    "order" : { "_term" : "asc" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectTimeRange'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+          "size" : 0,
+          "sort" : [{ "dtTransmitted" : "asc" }, { "cid" : "asc" }],
+          "query" : {
+            "bool" : {
+              "must" : { "match" : { "cid" : #cid# }}
+            }
+          },
+          "aggs" : {
+            "cid" : {
+              "terms" : { "field" : "cid" },
+              "aggs" : {
+                "range": {
+                  "date_range" : #range#,
+                  "aggs" : {
+                    "date_max" : {
+                      "max" : {
+                          "field" : "dtTransmitted"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDetailData'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+          "size" : 100000,
+          "sort": [
+            { "dtTransmitted": { "order": "asc" } },
+            { "cid": { "order": "asc" } } ],
+          "query": {
+            "bool": #term#
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectData'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {
+          "size" : 1,
+          "sort": { "dtTransmitted": { "order": "desc" } },
+          "query": {
+            "bool": {              
+              "must" : { "match" : { "cid" : #cid# } }
+            }
+          }
+        }
+      }
+    ]]></query>
+  </reports>
+</queryList>

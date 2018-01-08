@@ -124,7 +124,7 @@ router.get('/restapi/getGapTimeseries', function(req, res, next) {
     var gap = 1*60*60*1000; 
   }
   var list = [], qcnt = 0;
-  for(i = new Date(gte).getTime()+gap; i<=new Date(lte).getTime(); i=i+gap){     
+  for(i = new Date(gte).getTime()+gap; i<=new Date(lte).getTime()+gap; i=i+gap){     
     to = Utils.getMs2Date(i, fmt2, 'Y', 'Y');
     list[qcnt++] = { from : from, to : to };
     from = to;
@@ -141,7 +141,7 @@ router.get('/restapi/getGapTimeseries', function(req, res, next) {
   var indexStack = indexList(gte, lte, indexStackingOee);
   var in_data = { index : indexNotch, type : "oee", gte : gte, lte : lte, range : JSON.stringify(range), status : JSON.stringify(status) };
   queryProvider.selectSingleQueryByID3("timeseries","selectTimeRange", in_data, function(err, out_data, params) {    
-    var notch = out_data.cid.buckets;      
+    var notch = out_data.cid.buckets;
     var que = [];
     for(i=0; i<notch.length; i++){
       var key = [], cnt = 0; 

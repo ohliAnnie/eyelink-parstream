@@ -35,8 +35,9 @@ function getData(date){
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {      
       var data = result.rtnData;             
+      console.log(data)
       drawTable(data, result.alarmCount);
-      dataTable(data);
+      dataTable(data);      
     } 
   });
   var data = { date : urlParams.date, cid : urlParams.cid };
@@ -83,7 +84,7 @@ function drawTable(data, alarmCount) {
   sbT.append('<div class="gage" style="text-align:center;"></div></div>');
   sbT.append('<div class="row"><div class="col-sm-12">');  
   sbT.append('<div class="col-xs-12 label mes-status color-'+data.state+'">'+data.state);
-  if(alarmCount != undefined) {
+  if(alarmCount != 0) {
     sbT.append(' <button type="button" class="btn btn-warning btn-xs" onclick="drawAlarmModal('+"'"+data.flag+"','"+data.cid+"'"+')">'+alarmCount+'</button>');
   }
   sbT.append('</div>');
@@ -120,11 +121,22 @@ function drawAlarmModal(flag, cid){
         d.search_key = d.search.value;
       }      
     },
-    "columns" : [{ data: "date" },{ data: "list", "bSortable": false }]    
+    "columns" : [{ data: "date" },
+      { "targets" : -1,
+        "data": null,
+        "bSortable": false,
+        render: function(data, type, full, meta){         
+          var d = '';
+          for(i=0; i<full.list.length; i++){
+            if(i!=0){ d += '<br>'; }
+            d += full.list[i];
+          }
+          return d;
+        }
+      }]    
   });  
   showAlarmView();
 }
-
 function showAlarmView() {      
   $('#modal-alarm').modal("show");  
 }
@@ -206,16 +218,16 @@ function drawLineChart(data) {
     }
   }   
 
-  composite.margins().bottom = 240;
+  composite.margins().bottom = 245;
   composite.margins().right = 55;  
   composite
-    .width(window.innerWidth*0.45)
-    .height(550)
+    .width(window.innerWidth*0.65)
+    .height(690)
     .x(d3.time.scale().domain([minDate,maxDate]))
     //.round(d3.time.day.round)
     //.x(d3.scale.linear().domain([0,data.length-1]))             
     .y(d3.scale.linear().domain([0, 90]))    
-    .legend(dc.legend().x(0).y(335).itemHeight(12).itemWidth(159).gap(6).horizontal(true))
+    .legend(dc.legend().x(40).y(480).itemHeight(12).itemWidth(175).gap(6).horizontal(true))
     .renderHorizontalGridLines(true)
     .title(function(d){ return this.layer+' : '+d.value; })
     .compose(chart)
