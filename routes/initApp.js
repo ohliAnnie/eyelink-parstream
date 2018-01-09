@@ -16,8 +16,9 @@ function loadQuery(callback) {
 
   var datafilepath = __dirname + '/dao/' + global.config.fetchData.database + '/' + global.config.pcode + '/';
   // Directory 내 파일 list를 읽는다.
+
   var cnt_queryloaded = 0;
-  fs.readdirSync(datafilepath).forEach(function(file, index, arr) {
+  fs.readdirSync(datafilepath).forEach(function(file, index, arr) {        
     var ext = file.split('.').pop();
     if (ext == "xml") {
       logger.info('loadQuery] found query file [%s]', datafilepath + file)
@@ -58,7 +59,7 @@ function loadManagementData(callback) {
   };
 
   global.management.machine = {};
-
+/*
   async.parallel([
     function(callback) {
       queryProvider.selectSingleQueryByID2("initapp", "selectUserList", {}, function(err, out_data) {
@@ -101,7 +102,7 @@ function loadManagementData(callback) {
       logger.info('completed global.management.XXX Data Loading!!!');
       //callback();
       return;
-    });
+    });*/
 }
 
 var cleanXML = function(xml){
