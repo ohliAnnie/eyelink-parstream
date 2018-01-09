@@ -351,8 +351,7 @@ router.get('/restapi/getDashboardDetail', function(req, res, next) {
                 var total = { stacking : stack, notching : notch };
                 var alarm = {};
                 in_data = { index : [indexStackingStatus+Utils.getToday(fmt4, 'Y')], type : "status" };                
-                queryProvider.selectSingleQueryByID3("dashboard","selectDetailAlarm", in_data, function(err, out_data, params) {
-                  console.log('test')
+                queryProvider.selectSingleQueryByID3("dashboard","selectDetailAlarm", in_data, function(err, out_data, params) {                  
                   var rtnCode = CONSTS.getErrData('0000');
                   if (out_data == null) {
                     rtnCode = CONSTS.getErrData('0001');
@@ -370,7 +369,7 @@ router.get('/restapi/getDashboardDetail', function(req, res, next) {
                         }                        
                       }
                     }
-                  }
+                  }                      
                   res.json({rtnCode: rtnCode, rtnData: data, total : total });
                 });                
               });

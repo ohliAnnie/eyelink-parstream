@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<queryList>
+	<dashboard>
+    <query id='selectDashboardRawData'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {
+          "size" : 100000,
+          "sort" : { #sort#: { "order" : "asc" } },
+          "query" : {
+            "bool": {
+              "filter" : {
+                "range" : {
+                  #sort# : { "gte" : #gte#, "lte" : #lte# }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='countEvent'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {
+          "query" : {
+            "bool": {
+              "must" : {
+                "range" : {
+                  "event_time" : { "gte" : #START#, "lte" : #END#  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='countFaultEvent'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {
+          "query" : {
+            "bool": {
+              "must" : {
+                "range" : { 
+                  "event_time" : {  "gte": #start#, "lte" : #end#  } 
+                }
+              },
+              "filter" : {            
+                "terms" : {"event_type" : ["81"] }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='sumActivePower'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {
+          "size" : 0,
+          "query" : {
+            "bool": {
+              "must" : {
+                "range" : { 
+                  "event_time" : { "gte": #start#, "lte" : #end#  } 
+                }
+              },
+              "filter" : {            
+                "terms" : {"event_type" : ["1"] }
+              }
+            }
+          },
+          "aggs" : {
+            "active_power" : {
+              "sum" : { "field": "amount_of_active_power" }
+            }
+          }
+        }
+      }
+    ]]></query>
+  </dashboard>
+</queryList>

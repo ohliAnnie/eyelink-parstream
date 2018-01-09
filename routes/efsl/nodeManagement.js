@@ -19,7 +19,7 @@ var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
 var fmt2 = CONSTS.DATEFORMAT.DATETIME; // "YYYY-MM-DD HH:MM:SS",
 
 router.get('/users', function(req, res, next) {
-  logger.debug('user/restapi/selectUserList');
+  logger.debug('user/restapi/selectUserList');  
   var in_data = { INDEX: indexUser, TYPE: "user" };
   queryProvider.selectSingleQueryByID2("management", "selectList", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');

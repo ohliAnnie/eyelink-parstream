@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<queryList>
+	<reports>
+    <query id='selectRangeData'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,
+        "body" : {
+          "size" : 100000,
+          "sort" : { #sort#: { "order" : "asc" } },
+          "query" : {
+            "bool": {
+              "filter" : {
+                "range" : {
+                  #sort# : { "gte" : #gte#, "lte" : #lte# }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectRangePowerData'><![CDATA[
+      {
+        "index" : #index#,
+        "type"  : #type#,        
+        "body" : {
+          "size" : 100000,          
+          "_source" : ["event_time", "node_id", "active_power", "amount_of_active_power", "apparent_power", "power_factor", "reactive_power", "voltage", "ampere"],
+          "sort" : { #sort#: { "order" : "asc" } },
+          "query" : {
+            "bool": {
+              "must" : {
+                "term" : {"event_type" : "1" }
+              },
+              "filter" : {
+                "range" : {
+                  #sort# : { "gte" : #gte#, "lte" : #lte# }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+  </reports>
+</queryList>

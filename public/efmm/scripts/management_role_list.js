@@ -10,7 +10,7 @@ $(document).ready(function() {
       return false;
     }        
     // TODO 메시지 공통 영역으로
-    if (confirm("m.common.confirm.delete)) {
+    if (confirm(m.common.confirm.delete)) {
       var in_data = { url : "/management/role/"+roleid, type : "DELETE", data : { id : id } };
       ajaxTypeData(in_data, function(result){
         alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
