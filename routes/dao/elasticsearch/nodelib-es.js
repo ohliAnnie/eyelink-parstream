@@ -191,12 +191,15 @@ QueryProvider.prototype.selectSingleQueryByID = function (type, queryId, datas, 
 // query.xml에 정의된 query를 이용한 query수행
 QueryProvider.prototype.selectSingleQueryByID2 = function (type, queryId, datas, cb) {
   var vTimeStamp = Date.now();
-  logger.debug('queryId : '+queryId);
   console.time('nodelib-es/selectSingleQueryByID2-> '+ queryId +' total ');
-  logger.debug('selectSingleQueryByID2 -> (' + queryId + ') queryID', queryId);
+  logger.debug('selectSingleQueryByID2 -> queryID : %s', queryId);
 
   // SQL 내 파라메타를 변경해준다.
-  var sQueryString = Utils.replaceSql2(queryParser.getQuery(type, queryId), datas);
+  var sql = queryParser.getQuery(type, queryId);
+  if (sql == '') {
+    return cb('Query is not found', {});
+  }
+  var sQueryString = Utils.replaceSql2(sql, datas);
   logger.debug('selectSingleQueryByID2 -> ' + sQueryString);
 
   sQueryString = JSON.parse(sQueryString);
@@ -217,13 +220,16 @@ QueryProvider.prototype.selectSingleQueryByID2 = function (type, queryId, datas,
 // query.xml에 정의된 query를 이용한 query수행
 QueryProvider.prototype.selectSingleQueryByID3 = function (type, queryId, datas, cb) {
   var vTimeStamp = Date.now();
-  logger.debug('queryId : '+queryId);
   console.time('nodelib-es/selectSingleQueryByID3 -> '+ queryId +' total ');
-  logger.debug('nodelib-es/selectSingleQueryByID3 -> (%s) queryID', queryId);
+  logger.debug('electSingleQueryByID3 -> (%s) queryID', queryId);
 
   // SQL 내 파라메타를 변경해준다.
-  var sQueryString = Utils.replaceSql2(queryParser.getQuery(type, queryId), datas);
-  logger.debug('nodelib-es/selectSingleQueryByID3 -> ' + sQueryString);
+   var sql = queryParser.getQuery(type, queryId);
+  if (sql == '') {
+    return cb('Query is not found', {});
+  }
+  var sQueryString = Utils.replaceSql2(sql, datas);
+  logger.debug('selectSingleQueryByID3 -> ' + sQueryString);
 
   sQueryString = JSON.parse(sQueryString);
 
@@ -232,7 +238,7 @@ QueryProvider.prototype.selectSingleQueryByID3 = function (type, queryId, datas,
   ).then(function (resp) {
       //logger.debug(resp.hits);
       var hits = resp.aggregations;
-      logger.debug('nodelib-es/selectSingleQueryByID3 -> total : %d', resp.hits.total);
+      logger.debug('selectSingleQueryByID3 -> total : %d', resp.hits.total);
       cb(null, hits);
   }, function (err) {
       console.trace(err.message);

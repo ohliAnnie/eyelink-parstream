@@ -5,10 +5,29 @@ if ( process.argv[2] == null || process.argv[3] == null ) {
 
 const log4js = require('log4js');
 log4js.configure({
-  appenders: { datagen: {type: 'file', filename: './datagen.log', backups: 5 } },
-  categories: { default: { appenders: ['datagen'], level: 'debug' } }
+  'appenders':
+  {
+      'console' :
+      {
+        'type': 'console'
+      },
+      'file' :
+      {
+        'type': 'file',
+        'filename': './datagen.log',
+        'maxLogSize': 1024000000,
+        'backups': 5,
+        'category': 'eyelink'
+      }
+  },
+  'categories' :
+  {
+    'default' : { 'appenders': ['console', 'file'], 'level' : 'debug'}
+  }
 });
-global.logger = log4js.getLogger('datagen');
+global.log4js = require('log4js');
+
+var logger = log4js.getLogger('datagen');
 
 logger.info('Data Simulator has been started.');
 

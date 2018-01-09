@@ -47,7 +47,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 var intro = require('./routes/intro');
 var login = require('./routes/nodeLogin');
-var initapps = require('./routes/initApp');
+var initapps = require('./routes/'+global.config.pcode+'/initApp');
 var socketapp = require('./routes/socketApp');
 var node = require('./routes/nodeCon');
 var sample = require('./routes/nodeSample');
