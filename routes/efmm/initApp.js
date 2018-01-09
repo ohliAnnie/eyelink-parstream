@@ -59,7 +59,7 @@ function loadManagementData(callback) {
   };
 
   global.management.machine = {};
-/*
+
   async.parallel([
     function(callback) {
       queryProvider.selectSingleQueryByID2("initapp", "selectUserList", {}, function(err, out_data) {
@@ -106,7 +106,7 @@ function loadManagementData(callback) {
       logger.info('completed global.management.XXX Data Loading!!!');
       //callback();
       return;
-    });*/
+    });
 }
 
 var cleanXML = function(xml){
