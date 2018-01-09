@@ -1,0 +1,52 @@
+.legend text {
+    fill: black;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.legend .legend-bg {
+    fill: rgba(0, 0, 0, 0.5);
+    stroke: rgba(0, 0, 0, 0.5);
+    opacity: 0.1;
+ }
+
+.top1Line,
+.legend .top1Line {
+  fill: none;
+  stroke: red;
+  stroke-width: 2;
+}
+.top2Line,
+.legend .top2Line {
+  fill: none;
+  stroke: orange;
+  stroke-width: 2;
+}
+.top3Line,
+.legend .top3Line {
+  fill: none;
+  stroke: green;
+  stroke-width: 2;
+}
+.realLine,
+.legend .realLine {
+  fill: none;
+  stroke: black;
+  stroke-width: 2;
+}
+
+select {
+  border-radius:5px;
+}
+select:focus-within {
+	outline:  none;
+}
+#step { margin-left: 100px; }
+#machine, #step {
+	height:34px;
+	margin-right:5px;
+	padding:6px 0px;
+	font-size: 14px;
+	vertical-align: middle;
+}
+ol {display:inline-block; float:right;}

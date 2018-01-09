@@ -14,50 +14,49 @@ var mainmenu = {dashboard:'', timeseries:'', reports:'', analysis: 'open selecte
 
 /* GET reports page. */
 router.get('/', function(req, res, next) {
-  console.log(_rawDataByDay);
+  logger.debug(_rawDataByDay);
   res.render('./'+global.config.pcode+'/analysis/clustering', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/clustering', function(req, res, next) {
-  console.log(_rawDataByDay);
+  logger.debug(_rawDataByDay);
   res.render('./'+global.config.pcode+'/analysis/clustering', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/cluster_detail', function(req, res, next) {
-  console.log(_rawDataByDay);
+  logger.debug(_rawDataByDay);
   res.render('./'+global.config.pcode+'/analysis/cluster_detail', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/clusteringPop', function(req, res, next) {
-  console.log(_rawDataByDay);
+  logger.debug(_rawDataByDay);
   res.render('./'+global.config.pcode+'/analysis/clustering_popup', { title: global.config.productname, mainmenu:mainmenu});
 });
 
 router.get('/runalaysis', function(req, res, next) {
-  console.log(_rawDataByDay);
+  logger.debug(_rawDataByDay);
   res.render('./'+global.config.pcode+'/analysis/runanalysis', { title: global.config.productname, mainmenu:mainmenu});
 });
-/*router.get('/clustering', function(req, res, next) {
-   var in_data = {};
-  queryProvider.selectSingleQueryByID("analysis", "selectDaClusterMasterAll", in_data, function(err, out_data, params) {
-    // console.log(out_data);
-    var rtnCode = CONSTS.getErrData('0000');
-    if (out_data[0] === null) {
-      rtnCode = CONSTS.getErrData('0001');
-    }
-    console.log(out_data[0]);
-    var master = out_data[0];
-    queryProvider.selectSingleQueryByID("analysis", "selectDaClusterDetailAll", in_data, function(err, out_data, params) {
-      var rtnCode = CONSTS.getErrData('0000');
-      if (out_data[0] === null) {
-        rtnCode = CONSTS.getErrData('0001');
-      }
-      console.log(out_data[0]);
-      var detail = out_data[0];
-      res.render('./analysis/clustering', { title: 'EyeLink for ParStream', mainmenu:mainmenu, master:master, detail:detail});
-    });
-  });
-});*/
+
+router.get('/anomaly', function(req, res, next) {
+  logger.debug(_rawDataByDay);
+  res.render('./'+global.config.pcode+'/analysis/anomaly', { title: global.config.productname, mainmenu:mainmenu});
+});
+
+router.get('/anomaly_new', function(req, res, next) {
+  logger.debug(_rawDataByDay);
+  res.render('./'+global.config.pcode+'/analysis/anomaly_new', { title: global.config.productname, mainmenu:mainmenu});
+});
+
+router.get('/pattern', function(req, res, next) {
+  logger.debug(_rawDataByDay);
+  res.render('./'+global.config.pcode+'/analysis/pattern', { title: global.config.productname, mainmenu:mainmenu});
+});
+
+router.get('/patternMatching', function(req, res, next) {
+  logger.debug(_rawDataByDay);
+  res.render('./'+global.config.pcode+'/analysis/patternMatching', { title: global.config.productname, mainmenu:mainmenu});
+});
 
 // query RawData
 router.get('/restapi/getDaClusterDetail', function(req, res, next) {
@@ -75,8 +74,6 @@ router.get('/restapi/getDaClusterDetail', function(req, res, next) {
     res.json({rtnCode: rtnCode, rtnData: out_data[0]});
   });
 });
-
-
 
 router.get('/restapi/getDaClusterMasterByDadate', function(req, res, next) {
   console.log(req.query);

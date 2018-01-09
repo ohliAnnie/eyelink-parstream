@@ -1,0 +1,51 @@
+select {
+	border-radius:5px;
+}
+select:focus-within {
+	outline:  none;
+}
+#allStatus {
+	height:34px;
+	margin-right:5px;
+	padding:6px 0px;
+	font-size: 14px;
+	background-color: #ddd;
+	vertical-align: middle;
+}
+
+select {
+  border-radius:5px;
+}
+select:focus-within {
+	outline:  none;
+}
+#step { margin-left: 100px; }
+#machine, #step {
+	height:34px;
+	margin-right:5px;
+	padding:6px 0px;
+	font-size: 14px;
+	vertical-align: middle;
+}
+ol {display:inline-block; float:right;}
+
+.no-side-padding {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+.side-padding-5 {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+#bottom .portlet.light{
+  padding-left: 10px;
+  padding-right: 10px;
+}
+#bottom .portlet.light.bordered {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.l-padding-5 { padding-left: 5px}
+.l-padding-15 { padding-left: 15px}
+.r-padding-5 { padding-right: 5px}
+.r-padding-15 { padding-right: 15px}

@@ -1,17 +1,14 @@
 extends ../layout-type01
-block style
-  link(rel='stylesheet', href='/assets/leaflet/leaflet.css')
-  link(rel='stylesheet', href='/assets/leaflet/leaflet.markercluster.css')
-  link(rel='stylesheet', href='/assets/leaflet/dc.css')
-  link(rel='stylesheet', href='/stylesheets/style.css')
-  link(rel='stylesheet', href='/scripts/d3_timeseries.css')
-  link(rel='stylesheet', type='text/css', href='/assets/annie/css/style.css')
-block script
-  script(type='text/javascript', src='/assets/leaflet/d3.js')
-  script(src='/assets/annie/js/vue.min.js')
-  script(type='text/javascript', src='/assets/annie/js/colorbrewer.js')
-  script(type='text/javascript', src="/scripts/util.js")
-  script(src='/scripts/analysis_clustering.js')
+block style  
+  link(type='text/css', rel='stylesheet', href='/efsm/css/chart_style.css')
+  link(type='text/css', rel='stylesheet', href='/efsm/css/analysis_clustering.css')
+  link(type='text/css', rel='stylesheet', href='/efsm/assets/css/dc.css')
+block script  
+  script(type='text/javascript', src='/efsm/assets/scripts/d3_dc.js')
+  script(src='/efsm/assets/scripts/vue.min.js')  
+  script(type='text/javascript', src='/efsm/assets/scripts/colorbrewer.js')  
+  script(type='text/javascript', src="/common/scripts/util.js")
+  script(src='/efsm/scripts/analysis_clustering.js')
 block content
   .container-fluid
     .page-content
@@ -85,7 +82,7 @@ block content
                     | PowerFactor
             .portlet-body
               .chart(style='height:445px;')
-                input#daDate(type='hidden', name='hidden', value='')
+                input#dadate(type='hidden', name='hidden', value='')
                 #table
                   .panel.panel-card
                     .panel-body
@@ -101,5 +98,8 @@ block content
                         br
                         input#c3.click_checkbox(type='checkbox', name='c3', value='4', v-on='click:checkOpt', checked='true')
                         text  Cluster3
+                        br
+                        input#c3.click_checkbox(type='checkbox', name='c4', value='5', v-on='click:checkOpt', checked='true')
+                        text  Cluster4
                       .col-xm-12.col-sm-12.col-md-10.col-xs-12
                         #Cluster(style='width:100%;height:395px;')
