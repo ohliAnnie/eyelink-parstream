@@ -37,7 +37,7 @@
         }
       }
     ]]></query>
-    <query id='selectRecipe_NOTCHING_HistoryById'><![CDATA[
+    <query id='selectRecipe_notching_HistoryById'><![CDATA[
       {
         "index" : "efmm_notching_status-*",
         "type"  : "status",
@@ -62,7 +62,7 @@
         }
       }
     ]]></query>
-    <query id='selectRecipe_STACKING_HistoryById'><![CDATA[
+    <query id='selectRecipe_stacking_HistoryById'><![CDATA[
       {
         "index" : "efmm_stacking_status-*",
         "type"  : "status",
