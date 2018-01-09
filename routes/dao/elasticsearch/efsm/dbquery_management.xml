@@ -1,0 +1,247 @@
+<?xml version="1.0"?>
+<queryList>
+  <management>
+    <query id='selectById'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size" : 10000,
+          "query" : {
+            "match"  : { #ID# : #VALUE# }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectByIdSort'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size" : 10000,
+          "sort" : { #SORT#: { "order" : "asc" } },
+          "query" : {
+            "match"  : { #ID# : #VALUE# }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectList'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size" : 1000,
+          "query" : { "match_all" : { } }
+        }
+      }
+    ]]></query>
+    <query id='selectSortList'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size" : 1000,
+          "sort" : { #SORT#: { "order" : "asc" } },
+          "query" : { "match_all" : { } }
+        }
+      }
+    ]]></query>
+    <query id='selectListById'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size" : 1000,
+          "query" : {
+            "bool": {
+              "must" : [
+                { "match": { #ID# : #VALUE#}}
+              ]
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='insertUser'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : "user",
+        "body" : {
+          "user_id" : #USERID#,
+          "user_pw" : #PASSWORD#,
+          "user_name" : #NAME#,
+          "user_email" : #EMAIL#,
+          "reg_date" : #DATE#,
+          "position" : #POSITION#,
+          "tel" : #TEL#,
+          "mobile" : #MOBILE#,
+          "use" : #USE#,
+          "note" : #NOTE#
+        }
+      }
+    ]]></query>
+    <query id='deleteById'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#
+      }
+    ]]></query>
+    <query id='updateUser'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : "user",
+        "id" : #ID#,
+        "body" : {
+          "doc" : {
+            "user_pw" : #PASSWORD#,
+            "user_name" : #NAME#,
+            "user_email" : #EMAIL#,
+            "position" : #POSITION#,
+            "tel" : #TEL#,
+            "mobile" : #MOBILE#,
+            "use" : #USE#,
+            "note" : #NOTE#
+          }
+        }
+      }
+    ]]></query>
+    <query id='insertRole'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : "role",
+        "body" : {
+          "role_id" : #ROLEID#,
+          "role_name" : #NAME#
+        }
+      }
+    ]]></query>
+    <query id='updateRole'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : "role",
+        "id" : #ID#,
+        "body" : {
+          "doc" : {
+            "role_name" : #NAME#
+          }
+        }
+      }
+    ]]></query>
+    <query id='updateAuthMenu'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,
+        "body" : {
+          "doc" : {
+            "role" : [##ROLE##]            
+          }
+        }
+      }
+    ]]></query>
+    <query id='updateAuthMenuNone'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,
+        "body" : {
+          "doc" : {
+            "role" : []            
+          }
+        }
+      }
+    ]]></query>
+    <query id='updateAuthMenuCode'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,
+        "body" : {
+          "doc" : {  "code" : #CODE#  }
+        }
+      }
+    ]]></query>
+    <query id='selectCheckMap'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "query": {
+            "bool": {
+              "must" : [
+                { "match": { "role_id" : #ROLEID#}},
+                { "match": { "user_id" : #USERID#}}
+              ]
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='insertMap'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : "map",
+        "body" : {
+          "role_id" : #ROLEID#,
+          "user_id" : #USERID#
+        }
+      }
+    ]]></query>
+    <query id='insertMenu'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,          
+        "body" : {
+          "code" : #VALUE#,
+          "name" : #NAME#,
+          "upcode" : #UPCODE#
+        }
+      }
+    ]]></query>
+    <query id='insertAuthMenu'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,      
+        "id" : #ID#,
+        "body" : {
+          "code" : #CODE#,
+          "role" : []
+        }
+      }
+    ]]></query>
+    <query id='updateMenu'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,
+        "body" : {
+          "doc" : {
+            "upcode" : #UPCODE#,
+            "code" : #CODE#,
+            "name" : #NAME#
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectAlarmList'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size" : 10,
+          "sort" : { #SORT#: { "order" : "desc" } },
+          "query" : { "match_all" : { } }
+        }
+      }
+    ]]></query>
+    <query id='insertAlarmData'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : #BODY#
+      }
+    ]]></query>
+  </management>
+</queryList>
