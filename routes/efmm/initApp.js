@@ -1,11 +1,11 @@
 var logger = global.log4js.getLogger('initApp');
-var CONSTS = require('./consts');
+var CONSTS = require('../consts');
 var async = require('async');
 require('date-utils');
 var fs = require('fs'),
     xml2js = require('xml2js');
 
-var QueryProvider = require('./dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
+var QueryProvider = require('../dao/' + global.config.fetchData.database + '/'+ config.fetchData.method).QueryProvider;
 var queryProvider = new QueryProvider();
 
 function loadQuery(callback) {
@@ -14,7 +14,7 @@ function loadQuery(callback) {
   // global query 최기화.
   global.query = {"queryList" : {}};
 
-  var datafilepath = __dirname + '/dao/' + global.config.fetchData.database + '/' + global.config.pcode + '/';
+  var datafilepath = __dirname + '/../dao/' + global.config.fetchData.database + '/' + global.config.pcode + '/';
   // Directory 내 파일 list를 읽는다.
   var cnt_queryloaded = 0;
   fs.readdirSync(datafilepath).forEach(function(file, index, arr) {
@@ -62,6 +62,7 @@ function loadManagementData(callback) {
   async.parallel([
     function(callback) {
       queryProvider.selectSingleQueryByID2("initapp", "selectUserList", {}, function(err, out_data) {
+        if (err) { return callback(); }
         out_data.forEach(function(d) {
           let item = d._source;
           global.management.user.push({"key" : item.user_id, "value" : item.user_name});
@@ -71,6 +72,8 @@ function loadManagementData(callback) {
     },
     function(callback) {
       queryProvider.selectSingleQueryByID2("initapp", "selectRoleList", {}, function(err, out_data) {
+        if(err) { return callback(); } 
+
         out_data.forEach(function(d) {
           let item = d._source;
           global.management.role.push({"key" : item.role_id, "value" : item.role_name});
@@ -80,6 +83,7 @@ function loadManagementData(callback) {
     },
     function(callback) {
       queryProvider.selectSingleQueryByID3("initapp", "selectMachineList", {}, function(err, out_data) {
+        if (err) { return callback(); }
         logger.debug('out_data : %j', out_data);
         if (out_data != null) {
           var data = out_data.flag.buckets;

@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<queryList>
+  <initapp>
+    <query id='selectRoleList'><![CDATA[
+      {
+        "index" : "efsm_role",
+        "type" : "role",
+        "body" : {
+          "size" : 1000,
+          "query" : { "match_all" : { } }
+        }
+      }
+    ]]></query>
+    <query id='selectUserList'><![CDATA[
+      {
+        "index" : "efsm_user",
+        "type" : "user",
+        "body" : {
+          "size" : 1000,
+          "query" : { "match_all" : { } }
+        }
+      }
+    ]]></query>
+    <query id='selectMachineList'><![CDATA[
+      {
+        "index" : ["efmm_notching_oee-*", "efmm_stacking_oee-*"],
+        "type"  : "oee",
+        "body" : {          
+          "size" : 0,          
+          "aggs": {
+            "flag": {
+              "terms": {
+                "field": "flag.keyword",
+                "order" : { "_term" : "asc" }
+              },
+              "aggs": {
+                "cid": {
+                  "terms": {
+                    "field": "cid.keyword",
+                    "order" : { "_term" : "asc" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+  </initapp>
+</queryList>
