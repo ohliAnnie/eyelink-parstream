@@ -47,8 +47,8 @@
 		"stacking_status" : "efmm_stacking_status-"
 	},
 	"da_index" : {
-		"clustering_master" : "clustering_master",
-		"clustering_detail" : "clustering_detail",
+		"clustering_master" : "efsl_clustering_master",
+		"clustering_detail" : "efsl_clustering_detail",
 		"ad_pattern_data" : "ad_pattern_data",
 		"ad_pattern_info" : "ad_pattern_info",
 		"ad_pattern_matching" : "ad_pattern_matching",
