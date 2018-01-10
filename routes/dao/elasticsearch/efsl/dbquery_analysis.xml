@@ -1,3 +1,329 @@
 <?xml version="1.0"?>
 <queryList>
+	<query id='insertById'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,
+        "body" : #BODY#
+      }
+    ]]></query>
+    <query id='selectById'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "query" : {
+            "term" : { "_id" : #ID# }
+          }
+        }
+      }
+    ]]></query>
+    <query id='deleteById'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#
+      }
+    ]]></query>
+    <query id='selectByAnalysisTimestamp'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size" : 1,
+          "sort" : { "da_result.timestamp" : { "order" : "desc" } },
+          "query" : {
+            "bool": {
+              "must" : {
+                "range" : {
+                  "da_result.timestamp": { "gte": #gte#, "lte" : #lte# }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDaClusterMasterAll'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {
+          "size"   : 10000,
+          "query" : {
+            "bool" : {
+              "must" : { "match_all": {} },
+              "filter" : {
+                "range" : {
+                  "master_result.da_time" : { "gte" : #gte#, "lte" : #lte# }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDaClusterMaster'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {
+          "size"   : 10000,
+          "query" : {
+            "bool" : {
+              "must" : { "match" : { interval : #INTERVAL#} },
+              "filter" : {
+                "range" : {
+                  "master_result.da_time" : { "gte" : #gte#, "lte" : #lte# }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <!-- 2017-11-07 updated -->
+    <query id='selectPatternList'><![CDATA[
+      {
+        "index": #INDEX#,
+        "type": #TYPE#,
+        "body": {
+          "size": 10000,
+          "_source" : ["_id" ],
+          "sort": { "_uid": "desc" },
+          "query" : {
+            "bool" : {
+              "should": [
+                { "term": { "_id": #MASTER_ID# }},
+                { "range": {
+                    "da_result.createDate" : {
+                      "gte" : #START_TIMESTAMP#, 
+                      "lte" : #END_TIMESTAMP# 
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectMatchingPattern'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size"   : 10000,
+          "sort" : { "da_result.timestamp" : { "order" : "asc"  } },
+          "query" : {
+            "bool" : {
+              "must" : { "match_all": {} },
+               "filter" : {
+                "range" : {
+                  "da_result.timestamp" : {
+                    "gte" : #START_TIMESTAMP#, 
+                    "lte" : #END_TIMESTAMP#
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectAnomalyMatch'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,          
+        "body" : {
+          "_source" : [##list##],
+          "query" : {
+            "term" : { "_id" : #ID# }
+          }
+        }
+      }
+    ]]></query>
+
+    <!-- get pattern data -->
+    <query id='selectPatterns'><![CDATA[
+      {
+        "index" : #INDEX#, 
+        "type" : #TYPE#,
+        "body" : {
+          "_source" : [
+            "da_result.active_power", 
+            "da_result.ampere",
+            "da_result.power_factor",
+            "da_result.voltage"
+            ],
+          "query" : {
+            "term" : { "_id" : #ID# }
+          }
+        }
+      }
+    ]]></query>
+
+    <query id='selectClusterPattern'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "_source" : [#TARGET#],
+          "size" : 10000,
+          "query" : {
+            "bool" : {
+              "must" : {
+                "match" : {"_id" : #ID# }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <!-- Pattern data update [0]-->
+    <query id='updatePatternData'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,
+        "body" : {
+          "doc" : {
+            "da_result" : #BODY#
+          }
+        }
+      }
+    ]]></query>
+    
+    <!-- Pattern infomation update [0]-->
+    <query id='updatePatternInfo'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,
+        "body" : {
+          "doc" : {
+            "da_result" : #BODY#
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDaClusterMasterByDadate'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {
+          "size"   : 10000,
+          "query" : {
+            "bool": {
+              "must" : {
+                "match" : { "master_result.da_time" : #DADATE# }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDaClusterDetail'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {
+          "size"   : 10000,
+          "query" : {
+            "bool": {
+              "must" : { "match" : { "_id" : #DADATE# } }
+            }
+          }
+        }
+      }
+     ]]></query>
+    <!--  (vibration_x + vibration_y + vibration_z) / 3 as vibration 없음 -->
+    <query id='selectClusterNodePower'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : "corecode",
+        "body" : {
+          "size" : 100000,
+          "sort" : { "event_time" : { "order" : "asc" }},
+          "_source" : ["event_time", "active_power", "ampere", "power_factor", "voltage", "node_id"],
+          "query" : {
+            "bool" : {
+              "must" : { "match": { "event_type" : "1" } },
+              "filter" : [
+                { "terms" : { "node_id": [##NODE##] }  },
+                { "range" : { "event_time" :{ "gte" : #gte#, "lte" : #lte# } } }
+              ]
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectClusterRawData'><![CDATA[
+      {
+        "index" : "corecode-*",
+        "type" : "corecode",
+        "body" : {
+          "size" : 100000,
+          "_source" : ["event_time", "active_power", "ampere", "power_factor", "voltage", "node_id"],
+          "sort" : { "event_time" : { "order" : "asc" }},
+          "query" : {
+            "bool" : {
+              "must" : { "match": { "event_type" : "1" } },
+              "filter" : {
+                "range" : {
+                  "event_time" : { "gte" : #gte#, "lte" : #lte# }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectClusterRawDataByNode'><![CDATA[
+     {
+        "index" : "corecode-*",
+        "type" : "corecode",
+        "body" : {
+          "size" : 100000,
+          "sort" : { "event_time" : { "order" : "asc" } },
+          "query" : {
+            "bool" : {
+              "must" : {
+                "match" : {
+                  "node_id" : #node#
+                }
+              },
+              "filter" : {
+                "range" : {
+                  "event_time" : { "gte" : #gte#,  "lte" : #lte# }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectDataBySource'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {
+          "size" : 100000,
+          "sort" : { "event_time" : { "order" : "asc" }},
+          "_source" : [##Source##],
+          "query" : {
+            "bool" : {
+              "must" : [ { "match_all": {} } ],
+              "filter" : {
+                "range" : {
+                  "event_time" : { "gte" : #gte#,  "lte" : #lte# }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+  </analysis>
 </queryList>
