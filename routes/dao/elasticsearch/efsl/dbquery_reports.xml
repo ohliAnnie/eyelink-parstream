@@ -3,7 +3,7 @@
 	<reports>
     <query id='selectRangeData'><![CDATA[
       {
-        "index" : #index#,
+        "index" : [##index##],
         "type"  : #type#,
         "body" : {
           "size" : 100000,
@@ -22,7 +22,7 @@
     ]]></query>
     <query id='selectRangePowerData'><![CDATA[
       {
-        "index" : #index#,
+        "index" : [##index##],
         "type"  : #type#,        
         "body" : {
           "size" : 100000,          
