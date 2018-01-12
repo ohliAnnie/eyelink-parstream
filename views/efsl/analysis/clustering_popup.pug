@@ -12,16 +12,16 @@ html
     link(href='/common/assets/fonts/simple-line-icons/simple-line-icons.min.css', rel='stylesheet', type='text/css')
     link(href='/common/assets/css/bootstrap.min.css', rel='stylesheet', type='text/css')
     link(href='/common/assets/css/uniform.default.css', rel='stylesheet', type='text/css')
-    link(href='/common/assets/css/bootstrap-switch.min.css', rel='stylesheet', type='text/css')    
+    link(href='/common/assets/css/bootstrap-switch.min.css', rel='stylesheet', type='text/css')
     link(href='/common/assets/css/morris.css', rel='stylesheet', type='text/css')
     link(href='/common/assets/css/tasks.css', rel='stylesheet', type='text/css')
     link#style_components(href='/common/assets/css/eyelink-components.css', rel='stylesheet', type='text/css')
     link(type='text/css', href='/common/assets/css/plugins.css', rel='stylesheet')
     link(type='text/css', href='/common/assets/css/eyelink-layout.css', rel='stylesheet')
     link(type='text/css', href='/common/assets/css/eyelink-custom.css', rel='stylesheet')
-    link(rel='shortcut icon', href='/common/assets/images/favicon.ico')    
-    link(rel='stylesheet', href='/efsl/assets/css/d3_timeseries.css')    
-    link(type='text/css', rel='stylesheet', href='/efsl/css/analysis_clustering.css')
+    link(rel='shortcut icon', href='/common/assets/images/favicon.ico')
+    link(rel='stylesheet', href='/efsl/assets/css/d3_timeseries.css')
+    link(rel='stylesheet', href='/efsl/css/analysis_clustering.css')
     script(src='/assets/scripts/libs/jquery.min.js', type='text/javascript')
     script(src='/common/assets/scripts/libs/jquery-migrate.min.js', type='text/javascript')
     script(src='/common/assets/scripts/libs/bootstrap.min.js', type='text/javascript')
@@ -32,11 +32,12 @@ html
     script(src='/common/assets/scripts/libs/bootstrap-switch.min.js', type='text/javascript')
     script(src='/common/assets/scripts/eyelink-ui.js', type='text/javascript')
     script(src='/common/assets/scripts/eyelink-layout.js', type='text/javascript')
-    script(src='/common/assets/scripts/eyelink-quick-sidebar.js', type='text/javascript')    
+    script(src='/common/assets/scripts/eyelink-quick-sidebar.js', type='text/javascript')
     script(src='/common/assets/scripts/tasks.js', type='text/javascript')
     script(src='/assets/scripts/page/layout.js', type='text/javascript')
-    script(type='text/javascript', src='/efsl/assets/scripts/d3_dc.js')    
-    script(src='/efsl/assets/scripts/vue.min.js')  
+    script(type='text/javascript', src='/efsl/assets/scripts/d3_dc.js')
+    script(type='text/javascript', src='/efsl/assets/plugins/bootstrap-treeview/bootstrap-treeview.js')
+    script(src='/efsl/assets/scripts/vue.min.js')
     script(type='text/javascript', src='/efsl/assets/scripts/crossfilter.js')
     script(type='text/javascript', src='/efsl/assets/scripts/colorbrewer.js')
     script(type='text/javascript', src="/efsl/assets/scripts/d3_timeseries_4.js")
@@ -71,7 +72,7 @@ html
                             input#edate.form-control(type='text' name='to' value='' style = 'text-align:center; width: 120px;'  readonly)
                         label.control-label.col-md-1 Interval
                         .col-md-2
-                          input#interval.form-control(type='text' name='interval' value='' style = 'text-align:center; width: 100px;'  readonly)                              
+                          input#interval.form-control(type='text' name='interval' value='' style = 'text-align:center; width: 100px;'  readonly)
                         label.control-label.col-md-1 Factor
                         .col-md-4
                           .btn-group.btn-group-devided(data-toggle='buttons')
@@ -87,7 +88,7 @@ html
                             label.btn.btn-transparent.grey-salsa.btn-circle.btn-sm
                               input#factor3.toggle(type='radio', name='options', value='power_factor')
                               | PowerFactor                       
-          .row
+          .row.middle-chart
             .col-md-5
               .portlet.light.bordered(style='height:450px;')
                 .portlet-title
@@ -99,18 +100,7 @@ html
                       #table
                         .panel.panel-card
                           .panel-body
-                            .col-xm-2.col-sm-2.col-md-2.panel-checkbox.hidden-xs.hidden-sm
-                              input#c0.click_checkbox(type='checkbox', name='c0', value='1', v-on='click:checkOpt', checked='true')
-                              text  Cluster0
-                              br
-                              input#c1.click_checkbox(type='checkbox', name='c1', value='2', v-on='click:checkOpt', checked='true')
-                              text  Cluster1
-                              br
-                              input#c2.click_checkbox(type='checkbox', name='c2', value='3', v-on='click:checkOpt', checked='true')
-                              text  Cluster2
-                              br
-                              input#c3.click_checkbox(type='checkbox', name='c3', value='4', v-on='click:checkOpt', checked='true')
-                              text  Cluster3
+                            #panel-cluster-list.col-xm-2.col-sm-2.col-md-2.panel-checkbox.hidden-xs.hidden-sm
                             .col-xm-12.col-sm-12.col-md-10.col-xs-12
                               #Cluster(style='width:100%;height:370px;')
             .col-md-3
@@ -121,8 +111,7 @@ html
                 .portlet-body
                   .scroller(style='height: 345px;', data-always-visible='1', data-rail-visible1='0', data-handle-color='#D7DCE2')
                     .table-scrollable.table-scrollable-borderless
-                      table#tblClusterDir.table.table-hover.table-light
-                        thead   
+                      #cluster-list
             .col-md-4
               .portlet.light.bordered(style='height:445px;')
                 .portlet-title
