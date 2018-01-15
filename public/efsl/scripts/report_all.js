@@ -1,6 +1,6 @@
 $(document).ready(function() {               
   var dateFormat = 'YYYY-MM-DD';
-  $('#sdate').val(moment().subtract(3, 'days').format(dateFormat));
+  $('#sdate').val(moment().subtract(1, 'days').format(dateFormat));
   $('#edate').val(moment().format(dateFormat));      
   drawChart();
   $('#btn_search').click(function() {          
@@ -14,8 +14,9 @@ function drawChart() {
   var data = { sdate : sdate, edate :edate };
   var in_data = { url : "/reports/restapi/getRangeData", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
-    if (result.rtnCode.code == "0000") {
-      var data = result.rtnData;              
+    if (result.rtnCode.code == "0000") {      
+      var data = result.rtnData;        
+      console.log(data)      
       drawAll(data, sdate, edate);
     } 
   });
@@ -316,8 +317,8 @@ function drawAll(data, sdate, edate) {
 
 // Dimension by Node_ID
   var zoneDim = nyx.dimension(function(d) { 
-    
-    return d.zone_id; });
+    var id = d.node_id.split('_');
+    return d.node_id; });
   var nodeBarGroup = zoneDim.group().reduceCount(function(d) {
     return 1;
   });
@@ -397,13 +398,15 @@ function drawAll(data, sdate, edate) {
     .brushOn(false)
     .mouseZoomable(true)
     .x(d3.time.scale().domain([minDate+12*60*60*1000, maxDate-6*60*60*1000]))
-    .y(d3.scale.linear().domain([0, 100]))
+    //.y(d3.scale.linear().domain([0, 100]))
+    .elasticY(true)
     .xUnits(d3.time.days)
     .round(d3.time.days.round)
     .renderHorizontalGridLines(true)
     .renderVerticalGridLines(true)
  //   .yAxisLabel("Date")
     .title(function(d) {        
+      console.log(d);
       return "\nCount : " + d.value.cnt;
     })
     .legend(dc.legend().x(20).y(10).itemHeight(13).gap(5))
