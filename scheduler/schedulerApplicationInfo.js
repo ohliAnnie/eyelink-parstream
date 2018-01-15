@@ -1,3 +1,15 @@
+global.log4js = require('log4js');
+log4js.configure({
+  'appenders':
+  {
+    'console' : { 'type' : 'console' },
+    'file' : {'type' : 'file', 'filename' : './schedulerApplicationInfo.log', 'maxLogSize' : 1024000, 'backups' : 5, 'category' : 'eyelink' }
+  },
+  'categories' : 
+  {
+    'default' : { 'appenders' : ['console'], 'level' : 'debug'}
+  }
+});
 var CONSTS = require('../routes/consts');
 var config = require('../config/config.json');
 global.config = config;
@@ -13,7 +25,7 @@ var exports = module.exports = Scheduler = {}
 
 
 // Query Loading from Query.xml
-var initapps = require('../routes/initApp');
+var initapps = require('../routes/efsm/initApp');
 initapps.loadQuery(function() {
 });
 
