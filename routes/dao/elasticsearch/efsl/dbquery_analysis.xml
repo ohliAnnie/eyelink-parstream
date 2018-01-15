@@ -249,12 +249,8 @@
           "sort" : { "event_time" : { "order" : "asc" }},
           "_source" : ["event_time", "active_power", "ampere", "power_factor", "voltage", "node_id"],
           "query" : {
-            "bool" : {
-              "must" : { "match": { "event_type" : "1" } },
-              "filter" : [
-                { "terms" : { "node_id": [##NODE##] }  },
-                { "range" : { "event_time" :{ "gte" : #gte#, "lte" : #lte# } } }
-              ]
+            "bool" : {              
+              "should" : [#NODE#]
             }
           }
         }

@@ -67,9 +67,9 @@ html
                         label.control-label.col-md-1 Period
                         .col-md-3        
                           .input-group.input-large.date-picker.input-daterange
-                            input#sdate.form-control(type='text' name='from' value='' style = 'text-align:center; width: 120px;' readonly)
+                            input#sdate.form-control(type='text' name='from' value='' style = 'text-align:center; width: 140px;' readonly)
                             input.form-control(type='text' name='period' value='to' style = 'text-align:center; width: 40px;' readonly)
-                            input#edate.form-control(type='text' name='to' value='' style = 'text-align:center; width: 120px;'  readonly)
+                            input#edate.form-control(type='text' name='to' value='' style = 'text-align:center; width: 140px;'  readonly)
                         label.control-label.col-md-1 Interval
                         .col-md-2
                           input#interval.form-control(type='text' name='interval' value='' style = 'text-align:center; width: 100px;'  readonly)
@@ -90,13 +90,13 @@ html
                               | PowerFactor                       
           .row.middle-chart
             .col-md-5
-              .portlet.light.bordered(style='height:450px;')
+              .portlet.light.bordered(style='height:470px;')
                 .portlet-title
                   .caption.font-dark
                     span.caption-subject.bold.uppercase Clustering chart
                     span.caption-helper  by Analytic data
                   .portlet-body
-                    .chart(style='height:900px;')
+                    .chart(style='height:auto;')
                       #table
                         .panel.panel-card
                           .panel-body
@@ -104,16 +104,16 @@ html
                             .col-xm-12.col-sm-12.col-md-10.col-xs-12
                               #Cluster(style='width:100%;height:370px;')
             .col-md-3
-              .portlet.light.bordered.tasks-widget(style='height:445px;')
+              .portlet.light.bordered.tasks-widget(style='height:470px;')
                 .portlet-title
                   .caption.font-dark
                     span.caption-subject.theme-font.bold.uppercase Clustering
                 .portlet-body
-                  .scroller(style='height: 345px;', data-always-visible='1', data-rail-visible1='0', data-handle-color='#D7DCE2')
+                  .scroller(style='height: 385px;', data-always-visible='1', data-rail-visible1='0', data-handle-color='#D7DCE2')
                     .table-scrollable.table-scrollable-borderless
                       #cluster-list
             .col-md-4
-              .portlet.light.bordered(style='height:445px;')
+              .portlet.light.bordered.tasks-widget(style='height:470px;')
                 .portlet-title
                   .caption.font-dark
                     span.caption-subject.bold.uppercase Cluster Chart                    

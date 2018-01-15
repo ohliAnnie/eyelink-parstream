@@ -525,23 +525,46 @@ router.get('/restapi/getClusterNodeLive', function(req, res, next) {
 // query RawData
 router.get('/restapi/getClusterNodePower', function(req, res, next) {
   logger.debug('analysis/restapi/getClusterNodePower');
-  var today = Utils.getToday(fmt2);
+  var start = Utils.getMs2Date(req.query.startDate, fmt2, 'Y', 'Y');
+  var end = Utils.getMs2Date(req.query.endDate, fmt2, 'Y', 'Y');
+  var node = req.query.nodeId;
+  console.log(node);
+  var nodeList = "";
+  for(i=0; i<node.length; i++){
+    if(i!=0){
+      nodeList += ",";
+    }
+    nodeList += '{ "bool" : { "must" : [{ "match": { "event_type" : "1" } },{"match" : { "node_id" : "';
+    nodeList += node[i];
+    nodeList += '"}},{ "range" : { "event_time" :{ "gte" : "';
+    nodeList += start;
+    nodeList += '", "lte" : "';
+    nodeList += end;
+    nodeList += '" } } }]}}';
+  }  
+  var today = Utils.getToday(fmt2);  
   var in_data = {
         index : indexCore+'*',   type : "corecode",
-        gte: req.query.startDate, lte: req.query.endDate,
-        NODE: req.query.nodeId.split(','), FLAG : 'N'};
+        gte: start, lte: end,
+        NODE: nodeList, FLAG : 'N'};
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
      //logger.debug(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data === null) {
       rtnCode = CONSTS.getErrData('0001');
     }
-   var data = [];
+   var data = [], max = 0;
+   var factor = req.query.factor;
     out_data.forEach(function(d){
-      data.push(d._source);
+      d = d._source;
+      d.event_time = Utils.getDateUTC2Local(d.event_time, fmt2);
+      data.push({ time:d.event_time, id: d.node_id, value: parseFloat(d[factor])});
+      if(d[factor] > max){
+        max = parseFloat(d[factor]);      
+      }
     });
     logger.debug('analysis/restapi/getClusterNodeLive -> length : %s', out_data.length);
-    res.json({rtnCode: rtnCode, rtnData: data});
+    res.json({rtnCode: rtnCode, rtnData: data, max : max });
   });
 });
 
@@ -642,8 +665,8 @@ router.get('/restapi/getClusterRawDataByNode', function(req, res, next) {
   logger.debug(req.query);
   var in_data = {
       index : "corecode-*", type : "corecode",
-      gte: req.query.startDate+startTime,
-      lte: req.query.endDate+startTime,
+      gte: Utils.getDateLocal2UTC(req.query.startDate, fmt2, 'Y', 'Y'),
+      lte: Utils.getDateLocal2UTC(req.query.endDate, fmt2, 'Y', 'Y'),
       node : req.query.node
     };
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterRawDataByNode", in_data, function(err, out_data, params) {
@@ -808,9 +831,8 @@ router.get('/restapi/getDaClusterDetail', function(req, res, next) {
       var d = out_data[0]._source[factor];
       d.da_time = Utils.getDateUTC2Local(out_data[0]._source.da_time, fmt2);
       let clusterNames = Object.keys(d);  
-      clusterNames.sort();
-      console.log(clusterNames)
-      for(i=0; i<d['cluster_00'].length;i++){        
+      clusterNames.sort();      
+      for(i=0; i<d[clusterNames[0]].length;i++){        
         var event_time = Utils.getDateUTC2Local(out_data[0]._source['event_time'][i], fmt2)
         let item = '{ "time" : "'+ event_time+'"';
 
@@ -878,8 +900,8 @@ router.get('/restapi/getDaClusterMaster', function(req, res, next) {
       out_data.forEach(function(d){
         d = d._source;
         d.da_time = Utils.getDateUTC2Local(d.da_time, fmt2);
-        d.start_date = Utils.getDateUTC2Local(d.start_date, fmt1);
-        d.end_date = Utils.getDateUTC2Local(d.end_date, fmt1);
+        d.start_date = Utils.getDateUTC2Local(d.start_date, fmt2);
+        d.end_date = Utils.getDateUTC2Local(d.end_date, fmt2);
         data.push(d);
       });
     }    
