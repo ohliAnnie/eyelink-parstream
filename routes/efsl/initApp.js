@@ -15,18 +15,20 @@ function loadQuery(callback) {
   global.query = {"queryList" : {}};
 
   var datafilepath = __dirname + '/../dao/' + global.config.fetchData.database + '/' + global.config.pcode + '/';
+  
   // Directory 내 파일 list를 읽는다.
   var cnt_queryloaded = 0;
-  fs.readdirSync(datafilepath).forEach(function(file, index, arr) {
+  fs.readdirSync(datafilepath).forEach(function(file, index, arr) {    
     var ext = file.split('.').pop();
     if (ext == "xml") {
       logger.info('loadQuery] found query file [%s]', datafilepath + file)
       fs.readFile(datafilepath + file, function(err, data) {
-        parser.parseString(data, function (err, result) {
+        parser.parseString(data, function (err, result) {          
           // result = cleanXML(result);
-          result = JSON.stringify(result);
-          // logger.debug('loadQuery] xml %j', result);
+          result = JSON.stringify(result);          
+          // logger.debug('loadQuery] xml %j', result);          
           result = JSON.parse(result)
+          
           // query_xxx.xml 파일에서 읽어서 querylist를 global.query에 추가한다.
           var keys = Object.keys(result.queryList);
           keys.forEach(function(key) {
