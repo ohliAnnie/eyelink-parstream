@@ -24,12 +24,12 @@ $(document).ready(function(e) {
     var type = $("#type").val();                   
     if(server=="all"){
       if(cyclick == "TESTAPP") {
-        location.href='/dashboard/timeseriesAgent?server=test-agent';
+        location.href='/timeseries/timeseriesAgent?server=test-agent';
       } else if(cyclick == "jira") {
-        location.href='/dashboard/timeseriesLog?server=jira_access';
+        location.href='/timeseries/timeseriesLog?server=jira_access';
       }
     } else {
-      location.href='/dashboard/timeseries'+type+'?server='+server;
+      location.href='/timeseries/timeseries'+type+'?server='+server;
     }
   });  
   $('input[type="radio"]').on('click change', function(e) {
