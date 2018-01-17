@@ -11,7 +11,7 @@
         }
       }
     ]]></query>
-    <query id='selectListById'><![CDATA[
+    <query id='selectById'><![CDATA[
       {
         "index" : #INDEX#,
         "type" : #TYPE#,
@@ -151,6 +151,17 @@
           "code" : #VALUE#,
           "name" : #NAME#,
           "upcode" : #UPCODE#
+        }
+      }
+    ]]></query>
+    <query id='insertAuthMenu'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,      
+        "id" : #ID#,
+        "body" : {
+          "code" : #CODE#,
+          "role" : []
         }
       }
     ]]></query>
