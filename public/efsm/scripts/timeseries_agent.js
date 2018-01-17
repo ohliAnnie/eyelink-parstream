@@ -16,8 +16,9 @@ $(document).ready(function() {
 });
 
 function drawCountChart() {  
-  var data = { date : $('#sdate').val(), type : 'normal' };
-
+  var server = $('#server').val().split('&')[1];   
+  console.log(server)
+  var data = { date : $('#sdate').val(), type : 'normal', server : server };
   var in_data = { url : "/timeseries/restapi/getHeapData", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {        
