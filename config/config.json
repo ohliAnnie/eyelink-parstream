@@ -39,7 +39,7 @@
 		"es_auth_menu" : "efsm_auth_menu",
 		"es_menu" : "efsm_menu",
 		"es_appinfo" : "efsm_applicationinfo",
-		"es_elagent" : "elagent_test-agent-",
+		"es_elagent" : "elagent_",
 		"es_alarm" : "efsm_alarm-",
 		"es_corecode" : "corecode-",
 		"notching_oee" : "efmm_notching_oee-",
