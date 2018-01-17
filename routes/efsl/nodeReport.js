@@ -29,14 +29,6 @@ router.get('/fault', function(req, res, next) {
   res.render('./'+global.config.pcode+'/reports/fault', { title: global.config.productname, mainmenu:mainmenu });
 });
 
-router.get('/d3', function(req, res, next) {
-  res.render('./'+global.config.pcode+'/reports/d3', { title: 'Report_d3', mainmenu:mainmenu });
-});
-
-router.get('/live', function(req, res, next) {
-  res.render('./'+global.config.pcode+'/reports/report_live', { title: global.config.productname, mainmenu:mainmenu });
-});
-
 // query Report
 router.get('/restapi/getRangeData', function(req, res, next) {
   logger.info('reports/restapi/getRangeData');    
