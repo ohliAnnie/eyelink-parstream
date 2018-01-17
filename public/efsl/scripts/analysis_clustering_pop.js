@@ -581,7 +581,7 @@ function drawNode(data, maxValue, idCnt) {
   // Set the dimensions of the canvas / graph
   var margin = {top: 5, right: 20, bottom: 20, left: 30},
   width = (window.innerWidth*0.3) - margin.left - margin.right,       
-  height = 315 - margin.top - margin.bottom - 15*idCnt/4;
+  height = 400 - margin.top - margin.bottom - 15*idCnt/4;
     //- (20*(idCnt/(width/100)));
 
   // Set the ranges
