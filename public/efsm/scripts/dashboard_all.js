@@ -3,7 +3,7 @@ $(document).ready(function(e) {
   var type = $("#type").val();   
   if(cyclick == ''){ cyclick = "jira";  }
   var now = new Date();      
-  if(server === "test-agent"){
+  if(server === "test-agent"||server === "pp2"){
     getAgentData(now);
     displayCountAgent();        
   } else if(server === "jira_access"){

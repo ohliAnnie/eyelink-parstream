@@ -1,5 +1,6 @@
 function getAgentData(day){
-  var data = { date : day.getTime(), gap : 0 }
+  var server = $("#server").val();  
+  var data = { date : day.getTime(), gap : 0, server : server };
   drawDashAgent(data);
 }
 
@@ -15,7 +16,7 @@ function drawDashAgent(data){
     });
   }
   var in_data = { url : "/dashboard/restapi/getAgentData", type : "GET", data : data };  
-  ajaxTypeData(in_data, function(result){
+  ajaxTypeData(in_data, function(result){    
     if (result.rtnCode.code == "0000") {                              
       summaryAgent(result.data, result.start, result.end);
       drawAgentScattor(result.data, result.start, result.end, result.max);
@@ -35,8 +36,7 @@ function summaryAgent(data, start, end) {
   }
   
   var minDate = new Date(start); 
-  var maxDate = new Date(end);
-  console.log(minDate, maxDate);  
+  var maxDate = new Date(end);  
   var gap = (end-start)/(24 * 60 * 60 * 1000);
 
   var nyx = crossfilter(data);
@@ -124,8 +124,8 @@ function summaryAgent(data, start, end) {
 
 function displayCountAgent() {      
   var day = new Date().getTime();
-
-  var data = { date : day, gap : 'day' };
+  var server = $("#server").val();  
+  var data = { date : day, gap : 'day', server : server };
   var in_data = { url : "/dashboard/restapi/countAgentDay", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {
@@ -134,7 +134,7 @@ function displayCountAgent() {
     }
   });
 
-  var data = { date : day, gap : 'mon' };
+  var data = { date : day, gap : 'mon', server : server };
   var in_data = { url : "/dashboard/restapi/countAgentMon", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {    
@@ -143,7 +143,8 @@ function displayCountAgent() {
     }
   });
  
-  var in_data = { url : "/dashboard/restapi/countAgentError", type : "GET", data : { date : day }};
+  var data = { date : day, server : server };
+  var in_data = { url : "/dashboard/restapi/countAgentError", type : "GET", data : data};
   ajaxTypeData(in_data, function(result){            
     if (result.rtnCode.code == "0000") {      
        $('#errCnt').text(result.today);                       
@@ -151,7 +152,7 @@ function displayCountAgent() {
     } 
   });         
 
-  var in_data = { url : "/dashboard/restapi/getAgentOneWeek", type : "GET", data : {} };
+  var in_data = { url : "/dashboard/restapi/getAgentOneWeek", type : "GET", data : { server : server } };
   ajaxTypeData(in_data, function(result){    
     if (result.rtnCode.code == "0000") {      
       drawAgentWeekly(result.rtnData);
@@ -229,16 +230,16 @@ var type = ['success', 'error'];
         d3.select("#test").select("svg").remove();
         d3.select("#load").select("svg").remove();        
         //d3.select("#cy").select("svg").remove();
-        /*document.createElement('chart1');*/        
-        getAgentData(d.x);        
+        /*document.createElement('chart1');*/                        
+        var date = new Date(d.x.getTime()+12*60*60*1000)
+        getAgentData(date);
       });  
     });    
     dc.renderAll(markerName); 
 }
 
 
-function drawAgentScattor(data, start, end, max){  
-  console.log(data, start, end);
+function drawAgentScattor(data, start, end, max){    
   if(Modernizr.canvas){
     doBigScatterChart(start, end);
   }

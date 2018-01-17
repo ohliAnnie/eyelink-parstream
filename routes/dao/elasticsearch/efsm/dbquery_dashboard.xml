@@ -458,7 +458,7 @@
           "query" : {
             "bool": {
               "must" : [
-                {"range" : { "startTime" : {  "gte": #start#  } } },
+                {"range" : { "startTime" : { "gte" : #START#, "lte" : #END#  } } },
                 {"match" : { "isError" : true } }
               ]
             }

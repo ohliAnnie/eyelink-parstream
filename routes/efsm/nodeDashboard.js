@@ -72,8 +72,9 @@ router.get('/error_pop_jira', function(req, res, next) {
 
 router.get('/error_pop_agent', function(req, res, next) {
   var today = Utils.getToday(fmt1);  
+  var index = indexElagent.split('_');
   var in_data = {
-    index:  [indexElagent+'*'],
+    index : indexElagent+req.query.server+'*',  
     //index:  [indexElagent+Utils.getDate(today, fmt4, -1, 0, 0, 0),  indexElagent+Utils.getToday(fmt4)],
     type : "TraceDetail",
     start : Utils.getDate(today, fmt1, -1, 0, 0, 0)+startTime,
@@ -372,7 +373,8 @@ router.get('/selected_detail_jira', function(req, res, next) {
 router.get('/selected_detail_agent', function(req, res, next) {    
   var start = Utils.getMs2Date(new Date(parseInt(req.query.start)), fmt2, 'Y');  
   var end = Utils.getMs2Date(new Date(parseInt(req.query.end)), fmt2, 'Y');   
-  var in_data = {    index : [indexElagent+'*'] , type : "TraceDetail",
+  var index = indexElagent.split('_');
+  var in_data = { index : [indexElagent+req.query.server+'*'], type : "TraceDetail",
             start : start, end : end, min : parseInt(req.query.min), max : parseInt(req.query.max)  }; 
   queryProvider.selectSingleQueryByID2("dashboard","getTransaction", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');    
@@ -388,8 +390,9 @@ router.get('/selected_detail_agent', function(req, res, next) {
 
 router.get('/restapi/getTransactionDetail', function(req, res, next) {
   logger.debug('dashboard/restapi/getTransactionDetail');      
+  var index = indexElagent.split('_');
   var in_data = {
-    index : indexElagent+Utils.getMs2Date(new Date(req.query.date),fmt4) ,
+    index : indexElagent+req.query.server+'-'+Utils.getMs2Date(new Date(req.query.date),fmt4) ,
     type : "TraceDetail",
     id : "transactionId",    value : req.query.id,
     sort : "startTime"
@@ -512,8 +515,9 @@ router.get('/restapi/getJiraAccOneWeek', function(req, res, next) {
 });
 
 router.get('/restapi/getAgentOneWeek', function(req, res, next) {  
+  var index = indexElagent.split('_');
   var in_data = {
-    index : indexElagent+'*', type : "ApplicationLinkData",    
+    index : indexElagent+req.query.server+'*', type : "ApplicationLinkData",    
     id : "startTime",
     start: Utils.getDate(Utils.getToday(fmt2,'N','Y'), fmt1, -7, 0, 0, 0)+startTime  
   };
@@ -645,9 +649,9 @@ router.get('/restapi/getAllMapData', function(req, res, next) {
           d.data.color = color[1];
         }
       });      
-    logger.debug('dashboard/restapi/getAgentMap');    
+    logger.debug('dashboard/restapi/getAgentMap');        
     var in_data = {
-      index : indexElagent+"*",
+      index : indexElagent+'*',
       type : "ApplicationLinkData",
       start : from+startTime,  end : day+startTime,
       id : "startTime"
@@ -715,8 +719,9 @@ router.get('/restapi/getHeapData', function(req, res, next) {
   } else if(req.query.type == 'normal') {  
     var lte = Utils.getMs2Date(req.query.date, fmt1, 'N')+startTime;      
     var gte = Utils.getDate(lte, fmt2, -1, 0, 0, 0, 'Y');
-  }
-  var in_data = { index : indexElagent+'*', type : "AgentStatJvmGc", gte : gte, lte : lte };
+  }  
+  var in_data = {
+    index : indexElagent+req.query.server+'*', type : "AgentStatJvmGc", gte : gte, lte : lte };
   queryProvider.selectSingleQueryByID2("dashboard","selectByTimestamp", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');        
     if (out_data == null) {
@@ -741,8 +746,8 @@ router.get('/restapi/getJvmSysData', function(req, res, next) {
   } else if(req.query.type == 'normal') {  
     var lte = Utils.getMs2Date(req.query.date, fmt1, 'N')+startTime;      
     var gte = Utils.getDate(lte, fmt2, -1, 0, 0, 0, 'Y');
-  }
-  var in_data = { index : indexElagent+'*', type : "AgentStatCpuLoad",gte : gte, lte : lte };  
+  }  
+  var in_data = { index : indexElagent+req.query.server+'*', type : "AgentStatCpuLoad",gte : gte, lte : lte };  
   queryProvider.selectSingleQueryByID2("dashboard","selectByTimestamp", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');        
     if (out_data == null) {
@@ -768,7 +773,7 @@ router.get('/restapi/getStatTransaction', function(req, res, next) {
     var lte = Utils.getMs2Date(req.query.date, fmt1, 'N')+startTime;      
     var gte = Utils.getDate(lte, fmt2, -1, 0, 0, 0, 'Y');
   }
-  var in_data = { index : indexElagent+'*', type : "AgentStatTransaction", gte : gte, lte : lte };
+  var in_data = { index : indexElagent+req.query.server+'*', type : "AgentStatTransaction", gte : gte, lte : lte };
   queryProvider.selectSingleQueryByID2("dashboard","selectByTimestamp", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');        
     if (out_data == null) {
@@ -793,7 +798,8 @@ router.get('/restapi/getActiveTrace', function(req, res, next) {
     var lte = Utils.getMs2Date(req.query.date, fmt1, 'N')+startTime;      
     var gte = Utils.getDate(lte, fmt2, -1, 0, 0, 0, 'Y');
   }
-  var in_data = { index : indexElagent+'*', type : "AgentStatActiveTrace", gte : gte, lte : lte };
+  var in_data = {
+    index : indexElagent+req.query.server+'*', type : "AgentStatActiveTrace", gte : gte, lte : lte };
   queryProvider.selectSingleQueryByID2("dashboard","selectByTimestamp", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');        
     if (out_data == null) {
@@ -834,16 +840,16 @@ router.get('/restapi/getAgentMap', function(req, res, next) {
   logger.debug('dashboard/restapi/getAgentMap');    
   if(req.query.gap == 0){
     var day = Utils.getMs2Date(parseInt(req.query.date), fmt1, 'N');
-    var from = Utils.getDate(day, fmt1, -1, 0, 0, 0);    
-    var in_data = {      
-      index : indexElagent+'*', type : "ApplicationLinkData", 
+    var from = Utils.getDate(day, fmt1, -1, 0, 0, 0);
+    var in_data = {
+      index : indexElagent+req.query.server+'*', type : "ApplicationLinkData", 
       start : from+startTime, end : day+startTime,  id : "startTime"
     };
   } else {       
     var now = Utils.getMs2Date(parseInt(req.query.date),fmt2,'Y');
-    var start = Utils.getMs2Date(parseInt(req.query.date)-parseInt(req.query.gap),fmt2,'Y');
-    var in_data = { 
-      index : indexElagent+'*', type : "ApplicationLinkData",
+    var start = Utils.getMs2Date(parseInt(req.query.date)-parseInt(req.query.gap),fmt2,'Y');    
+    var in_data = {
+      index : indexElagent+req.query.server+'*', type : "ApplicationLinkData",
       start : start,  end : now, id : "startTime" };  
   };
   queryProvider.selectSingleQueryByID2("dashboard","selectByRange", in_data, function(err, out_data, params) {    
@@ -898,10 +904,11 @@ router.get('/restapi/getAgentMap', function(req, res, next) {
 });
 
 router.get('/restapi/getAgentData', function(req, res, next) {
-  logger.debug('dashboard/restapi/getAgentData');    
-  if(req.query.gap == 0){
+  logger.debug('dashboard/restapi/getAgentData');        
+  console.log(new Date(parseInt(req.query.date)))
+  if(req.query.gap == '0'){    
     var end = Utils.getMs2Date(parseInt(req.query.date), fmt1, 'N')+startTime;
-    var start = Utils.getDate(end, fmt1, -1, 0, 0, 0) + startTime;            
+    var start = Utils.getDate(end, fmt1, -1, 0, 0, 0, 'Y') + startTime;    
   } else if(req.query.gap == 'range') {
     var start = Utils.getDate(req.query.date, fmt2, 0, 0, -parseInt(req.query.range), 0, 'N', 'Y');
     var end = Utils.getDate(req.query.date, fmt2, 0, 0, parseInt(req.query.range), 0, 'N', 'Y');
@@ -909,14 +916,14 @@ router.get('/restapi/getAgentData', function(req, res, next) {
     var end = Utils.getMs2Date(parseInt(req.query.date),fmt2,'Y');
     var start = Utils.getMs2Date(parseInt(req.query.date)-parseInt(req.query.gap),fmt2,'Y');    
   };  
-  var in_data = { 
-      index : indexElagent+'*', type : "ApplicationLinkData",
-      start : start,  end : end, id : "startTime" };  
+  var in_data = {
+    index : indexElagent+req.query.server+'*', type : "ApplicationLinkData",
+    start : start,  end : end, id : "startTime" };  
   queryProvider.selectSingleQueryByID2("dashboard","selectByRange", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');    
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');      
-    }      
+    }          
     var data = [], rtnData = [], max = 0;
     var start=new Date().getTime(), end=new Date(1990,0,0,0,0,0).getTime();        
     out_data.forEach(function(d){
@@ -950,8 +957,9 @@ router.get('/restapi/getAgentData', function(req, res, next) {
 router.get('/restapi/countAgentDay', function(req, res, next) {
   logger.debug('dashboard/restapi/countAgent');        
   var end = Utils.getMs2Date(parseInt(req.query.date),fmt1,'Y')+startTime;  
-  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;  
-  var in_data = { index : indexElagent+'*', type : "ApplicationLinkData", START : start, END : end  };  
+  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0, 'Y')+startTime;  
+  var in_data = {
+    index : indexElagent+req.query.server+'*', type : "ApplicationLinkData", START : start, END : end  };  
   queryProvider.selectSingleQueryCount("dashboard","countAgent", in_data, function(err, out_data, params) {
     var today = out_data;
     var rtnCode = CONSTS.getErrData('0000');
@@ -959,8 +967,9 @@ router.get('/restapi/countAgentDay', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     } else {
       end = start;
-      start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;        
-      var in_data = { index : indexElagent+'*', type : "ApplicationLinkData", START : start, END : end  };  
+      start = Utils.getDate(end, fmt1, -1, 0, 0, 0, 'Y')+startTime;           
+      var in_data = {
+        index : indexElagent+req.query.server+'*', type : "ApplicationLinkData", START : start, END : end  };  
       queryProvider.selectSingleQueryCount("dashboard","countAgent", in_data, function(err, out_data, params) {
         var yday = out_data;
         var rtnCode = CONSTS.getErrData('0000');
@@ -977,8 +986,9 @@ router.get('/restapi/countAgentDay', function(req, res, next) {
 router.get('/restapi/countAgentMon', function(req, res, next) {
   logger.debug('dashboard/restapi/countAgent');      
   var end = Utils.getMs2Date(parseInt(req.query.date),fmt1,'Y')+startTime;  
-  var start = Utils.getDate(end, fmt1, -(new Date(parseInt(req.query.date)).getDate()), 0, 0, 0)+startTime;    
-  var in_data = { index : indexElagent+'*', type : "ApplicationLinkData", START : start, END : end  };  
+  var start = Utils.getDate(end, fmt1, -(new Date(parseInt(req.query.date)).getDate()), 0, 0, 0, 'Y')+startTime;      
+  var in_data = {
+    index : indexElagent+req.query.server+'*', type : "ApplicationLinkData", START : start, END : end  };  
   queryProvider.selectSingleQueryCount("dashboard","countAgent", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     var tmon = out_data;
@@ -986,8 +996,8 @@ router.get('/restapi/countAgentMon', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     } else {
       end = start;
-      start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;  
-      var in_data = { index : indexElagent+'*', type : "ApplicationLinkData", START : start, END : end  };  
+      start = Utils.getDate(end, fmt1, -1, 0, 0, 0, 'Y')+startTime;        
+    var in_data = { index : indexElagent+req.query.server+'*', type : "ApplicationLinkData", START : start, END : end  };  
       queryProvider.selectSingleQueryCount("dashboard","countAgent", in_data, function(err, out_data, params) {
         var ymon = out_data;
         var rtnCode = CONSTS.getErrData('0000');
@@ -1003,15 +1013,19 @@ router.get('/restapi/countAgentMon', function(req, res, next) {
 
 router.get('/restapi/countAgentError', function(req, res, next) {
   var end = Utils.getMs2Date(parseInt(req.query.date),fmt1,'Y')+startTime;  
-  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;
-  var in_data = { index : indexElagent+'*', type : "ApplicationLinkData", start : start  };  
+  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0, 'Y')+startTime;  
+  var in_data = {
+    index : indexElagent+req.query.server+'*', type : "ApplicationLinkData", START : start, END : end  };  
   queryProvider.selectSingleQueryCount("dashboard","countAgentError", in_data, function(err, out_data, params) {
     var today = out_data;
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
-    } else {
-      var in_data = { index : indexElagent+'*', type : "ApplicationLinkData", start : start  };  
+    } else {      
+      end = start;
+      start = Utils.getDate(end, fmt1, -1, 0, 0, 0, 'Y')+startTime;           
+      var in_data = {
+        index : indexElagent+req.query.server+'*', type : "ApplicationLinkData", START : start, END : end  };  
       queryProvider.selectSingleQueryCount("dashboard","countAgentError", in_data, function(err, out_data, params) {
         var yday = out_data;        
         var rtnCode = CONSTS.getErrData('0000');
