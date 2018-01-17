@@ -34,6 +34,7 @@ router.get('/timeseriesLOG', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     } else {
       out_data.forEach(function(d){
+        console.log(d);
         if(check[d._source.applicationId]==null){
           check[d._source.applicationId] = { no : cnt++};
           list.push({ id : d._source.collection, name : d._source.applicationId, type : d._source.collection });
@@ -202,7 +203,7 @@ router.get('/restapi/getHeapData', function(req, res, next) {
     var lte = Utils.getMs2Date(req.query.date, fmt1, 'N')+startTime;      
     var gte = Utils.getDate(lte, fmt2, -1, 0, 0, 0, 'N', 'Y');
   }
-  var in_data = { index : indexElagent+'*', type : "AgentStatJvmGc", gte : gte, lte : lte };
+  var in_data = { index : indexElagent+'*', type : "AgentStatJvmGc", gte : gte, lte : lte, server : req.query.server };  
   queryProvider.selectSingleQueryByID2("timeseries","selectByTimestamp", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');        
     if (out_data == null) {
@@ -228,7 +229,7 @@ router.get('/restapi/getJvmSysData', function(req, res, next) {
     var lte = Utils.getMs2Date(req.query.date, fmt1, 'N')+startTime;      
     var gte = Utils.getDate(lte, fmt2, -1, 0, 0, 0, 'N', 'Y');
   }
-  var in_data = { index : indexElagent+'*', type : "AgentStatCpuLoad",gte : gte, lte : lte };  
+  var in_data = { index : indexElagent+'*', type : "AgentStatCpuLoad",gte : gte, lte : lte, server : req.query.server };  
   queryProvider.selectSingleQueryByID2("timeseries","selectByTimestamp", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');        
     if (out_data == null) {
@@ -254,7 +255,7 @@ router.get('/restapi/getStatTransaction', function(req, res, next) {
     var lte = Utils.getMs2Date(req.query.date, fmt1, 'N')+startTime;      
     var gte = Utils.getDate(lte, fmt2, -1, 0, 0, 0, 'N', 'Y');
   }
-  var in_data = { index : indexElagent+'*', type : "AgentStatTransaction", gte : gte, lte : lte };
+  var in_data = { index : indexElagent+'*', type : "AgentStatTransaction", gte : gte, lte : lte, server : req.query.server };  
   queryProvider.selectSingleQueryByID2("timeseries","selectByTimestamp", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');        
     if (out_data == null) {
@@ -279,7 +280,7 @@ router.get('/restapi/getActiveTrace', function(req, res, next) {
     var lte = Utils.getMs2Date(req.query.date, fmt1, 'N')+startTime;      
     var gte = Utils.getDate(lte, fmt2, -1, 0, 0, 0, 'N', 'Y');
   }
-  var in_data = { index : indexElagent+'*', type : "AgentStatActiveTrace", gte : gte, lte : lte };
+  var in_data = { index : indexElagent+'*', type : "AgentStatActiveTrace", gte : gte, lte : lte, server : req.query.server };  
   queryProvider.selectSingleQueryByID2("timeseries","selectByTimestamp", in_data, function(err, out_data, params) {    
     var rtnCode = CONSTS.getErrData('0000');        
     if (out_data == null) {

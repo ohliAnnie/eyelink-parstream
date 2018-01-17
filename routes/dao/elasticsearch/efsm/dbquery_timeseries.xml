@@ -131,11 +131,13 @@
           "sort" : { "timestamp" : { "order" : "asc"  } },
           "query" : {
             "bool": {
-              "must" : {
+              "must" : [{
                 "range" : {
                   "timestamp": {  "gte": #gte#, "lte" : #lte#  }
                 }
-              }
+              },{
+                "match" : { "agentId" : #server# }
+              }]
             }
           }
         }
