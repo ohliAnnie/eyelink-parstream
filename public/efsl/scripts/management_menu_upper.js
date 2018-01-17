@@ -55,7 +55,7 @@ $(document).ready(function() {
 });
 
 function getList(id){  
-  var in_data = { url : "/management/restapi/getCodeList", type : "GET", data : { id : id} };
+  var in_data = { url : "/management/restapi/getCodeList", type : "GET", data : { upcode : id} };
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "D003") {                
     } else {        
@@ -167,8 +167,9 @@ function getMenuList(upcode, oldCode){
   var in_data = { url : "/management/restapi/getCodeList", type : "GET", data : { upcode : oldCode } };
   ajaxTypeData(in_data, function(result){  
     result.rtnData.forEach(function(d){
-    var code = upcode.substring(0,1)+d._source.code.substring(1,4);
-    updateMenu(d._id, code,d._source.name, upcode);
+      var code = upcode.substring(0,1)+d._source.code.substring(1,4);
+      updateMenu(d._id, code,d._source.name, upcode);
+    });
   });
 }
 
