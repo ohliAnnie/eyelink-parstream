@@ -14,8 +14,10 @@ function drawChart() {
   var data = { sdate : sdate, edate : edate };
   var in_data = { url : "/reports/restapi/getJiraAcc", type : "GET", data : data };  
   ajaxTypeData(in_data, function(result){  
+    console.log(result)
     if (result.rtnCode.code == "0000") {                     
       drawAll(result.rtnData, sdate, edate, result.minTime, result.maxTime);
+      console.log(result.rtnData, sdate, edate, result.minTime, result.maxTime);
     }
   });
 }
@@ -42,7 +44,7 @@ function drawAll(data, sdate, edate, minTime, maxTime) {
   var nyx = crossfilter(data);
   var all = nyx.groupAll();
 
-  var sectionDim = nyx.dimension(function(d){    
+  var sectionDim = nyx.dimension(function(d){        
     return d.section;
   }); 
 
@@ -51,16 +53,16 @@ function drawAll(data, sdate, edate, minTime, maxTime) {
   });
 
   if(sdate != edate) {    
-    var dayDim = nyx.dimension(function(d){                  
+    var dayDim = nyx.dimension(function(d){    
       return d3.time.day(new Date(d.timestamp));
-
-    });  } else {
-    var dayDim = nyx.dimension(function(d) {                        
-      return d3.time.hour(new Date(d.timestamp));
+    });  
+  } else {
+    var dayDim = nyx.dimension(function(d) {           
+      return d3.time.hour(new Date(d.timestamp));      
     });
   }
 
-  var stackGroup = dayDim.group().reduce(function(p, v){
+  var stackGroup = dayDim.group().reduce(function(p, v){    
     p[v.index] = (p[v.index] || 0) + 1;    
     return p;
   }, function(p, v) {
@@ -293,10 +295,9 @@ function drawAll(data, sdate, edate, minTime, maxTime) {
     return items.reverse();    
   });
 
-
   for(var i = 1; i<term.length; ++i){
     serverCount.stack(typeGroup, term[i], sel_stack(i));
   }  
 
-  ;
+  dc.renderAll();
 }
