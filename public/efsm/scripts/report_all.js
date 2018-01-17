@@ -13,11 +13,9 @@ function drawChart() {
   var edate = $('#edate').val();  
   var data = { sdate : sdate, edate : edate };
   var in_data = { url : "/reports/restapi/getJiraAcc", type : "GET", data : data };  
-  ajaxTypeData(in_data, function(result){  
-    console.log(result)
+  ajaxTypeData(in_data, function(result){   
     if (result.rtnCode.code == "0000") {                     
-      drawAll(result.rtnData, sdate, edate, result.minTime, result.maxTime);
-      console.log(result.rtnData, sdate, edate, result.minTime, result.maxTime);
+      drawAll(result.rtnData, sdate, edate, result.minTime, result.maxTime);      
     }
   });
 }
@@ -232,8 +230,7 @@ function drawAll(data, sdate, edate, minTime, maxTime) {
     }})
     .renderHorizontalGridLines(true)
     .renderVerticalGridLines(true) 
-    .title(function(d) {
-      console.log(d);
+    .title(function(d) {      
       return "\nCount : " + d.value.cnt;
     })
     .legend(dc.legend().x(20).y(10).itemHeight(13).gap(5))
