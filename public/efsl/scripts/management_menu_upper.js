@@ -8,27 +8,27 @@ $(document).ready(function() {
     console.log(code , name)        
     if (code == "") {
       $("#code").focus();
-      $("#register_tnc_error").html("Code를 입력하세요.");
+      $("#register_tnc_error").html(m.menu.check.code);
       $("#register_tnc_error").show();
       return false;
       }
       if (9999<parseInt($("#code").val())||parseInt($("#code").val())<999) {
         console.log(parseInt($("#code").val()));
         $("#code").focus();
-        $("#register_tnc_error").html("Code는 4자리 숫자로 입력하세요");
+        $("#register_tnc_error").html(m.menu.check.code_num);
         $("#register_tnc_error").show();
         return false;
       }
       if (parseInt($("#code").val())%1000 != 0) {
         console.log(parseInt($("#code").val()));
         $("#code").focus();
-        $("#register_tnc_error").html("Upper Menu Code는 천의 배수로 입력하세요");
+        $("#register_tnc_error").html(m.menu.check.code_start);
         $("#register_tnc_error").show();
         return false;
       }
       if ($("#name").val() == "") {
         $("#name").focus();
-        $("#register_tnc_error").html("Name을 입력하세요.");
+        $("#register_tnc_error").html(m.common.check.name);
         $("#register_tnc_error").show();
         return false;
       }
@@ -47,7 +47,7 @@ $(document).ready(function() {
     } else {
       var id = $(this).attr('id');
       if (id == "") { return false;  }
-      if (confirm("삭제 하시겠습니까? ")) {
+      if (confirm(m.common.confirm.delete)) {
         getList(id);
       }
     }        
@@ -55,7 +55,7 @@ $(document).ready(function() {
 });
 
 function getList(id){  
-  var in_data = { url : "/management/restapi/getCodeList", type : "GET", data : { id : id} };
+  var in_data = { url : "/management/restapi/getCodeList", type : "GET", data : { upcode : id} };
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "D003") {                
     } else {        
@@ -167,8 +167,9 @@ function getMenuList(upcode, oldCode){
   var in_data = { url : "/management/restapi/getCodeList", type : "GET", data : { upcode : oldCode } };
   ajaxTypeData(in_data, function(result){  
     result.rtnData.forEach(function(d){
-    var code = upcode.substring(0,1)+d._source.code.substring(1,4);
-    updateMenu(d._id, code,d._source.name, upcode);
+      var code = upcode.substring(0,1)+d._source.code.substring(1,4);
+      updateMenu(d._id, code,d._source.name, upcode);
+    });
   });
 }
 

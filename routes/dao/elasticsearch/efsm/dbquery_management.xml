@@ -1,6 +1,31 @@
 <?xml version="1.0"?>
 <queryList>
   <management>
+    <query id='selectById'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size" : 10000,
+          "query" : {
+            "match"  : { #ID# : #VALUE# }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectByIdSort'><![CDATA[
+     {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "body" : {
+          "size" : 10000,
+          "sort" : { #SORT#: { "order" : "asc" } },
+          "query" : {
+            "match"  : { #ID# : #VALUE# }
+          }
+        }
+      }
+    ]]></query>
     <query id='selectList'><![CDATA[
       {
         "index" : #INDEX#,
@@ -8,22 +33,6 @@
         "body" : {
           "size" : 1000,
           "query" : { "match_all" : { } }
-        }
-      }
-    ]]></query>
-    <query id='selectById'><![CDATA[
-      {
-        "index" : #INDEX#,
-        "type" : #TYPE#,
-        "body" : {
-          "size" : 1000,
-          "query" : {
-            "bool": {
-              "must" : [
-                { "match": { #ID# : #VALUE#}}
-              ]
-            }
-          }
         }
       }
     ]]></query>
@@ -38,22 +47,18 @@
         }
       }
     ]]></query>
-    <query id='deleteById'><![CDATA[
+    <query id='selectListById'><![CDATA[
       {
         "index" : #INDEX#,
         "type" : #TYPE#,
-        "id" : #ID#
-      }
-    ]]></query>
-    <query id='selectByIdSort'><![CDATA[
-     {
-        "index" : #INDEX#,
-        "type" : #TYPE#,
         "body" : {
-          "size" : 10000,
-          "sort" : { #SORT#: { "order" : "asc" } },
+          "size" : 1000,
           "query" : {
-            "match"  : { #ID# : #VALUE# }
+            "bool": {
+              "must" : [
+                { "match": { #ID# : #VALUE#}}
+              ]
+            }
           }
         }
       }
@@ -74,6 +79,13 @@
           "use" : #USE#,
           "note" : #NOTE#
         }
+      }
+    ]]></query>
+    <query id='deleteById'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#
       }
     ]]></query>
     <query id='updateUser'><![CDATA[
@@ -114,6 +126,40 @@
           "doc" : {
             "role_name" : #NAME#
           }
+        }
+      }
+    ]]></query>
+    <query id='updateAuthMenu'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,
+        "body" : {
+          "doc" : {
+            "role" : [##ROLE##]            
+          }
+        }
+      }
+    ]]></query>
+    <query id='updateAuthMenuNone'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,
+        "body" : {
+          "doc" : {
+            "role" : []            
+          }
+        }
+      }
+    ]]></query>
+    <query id='updateAuthMenuCode'><![CDATA[
+      {
+        "index" : #INDEX#,
+        "type" : #TYPE#,
+        "id" : #ID#,
+        "body" : {
+          "doc" : {  "code" : #CODE#  }
         }
       }
     ]]></query>
@@ -179,38 +225,22 @@
         }
       }
     ]]></query>
-    <query id='updateAuthMenu'><![CDATA[
+    <query id='selectAlarmList'><![CDATA[
       {
         "index" : #INDEX#,
         "type" : #TYPE#,
-        "id" : #ID#,
         "body" : {
-          "doc" : {
-            "role" : [##ROLE##]            
-          }
+          "size" : 10,
+          "sort" : { #SORT#: { "order" : "desc" } },
+          "query" : { "match_all" : { } }
         }
       }
     ]]></query>
-    <query id='updateAuthMenuNone'><![CDATA[
+    <query id='insertAlarmData'><![CDATA[
       {
         "index" : #INDEX#,
         "type" : #TYPE#,
-        "id" : #ID#,
-        "body" : {
-          "doc" : {
-            "role" : []            
-          }
-        }
-      }
-    ]]></query>
-    <query id='updateAuthMenuCode'><![CDATA[
-      {
-        "index" : #INDEX#,
-        "type" : #TYPE#,
-        "id" : #ID#,
-        "body" : {
-          "doc" : {  "code" : #CODE#  }
-        }
+        "body" : #BODY#
       }
     ]]></query>
   </management>

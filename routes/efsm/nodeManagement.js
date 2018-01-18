@@ -52,7 +52,7 @@ router.get('/users/:id', function(req, res) {
             var rtnCode = CONSTS.getErrData('0001');
             var maps = [];
           }
-          res.render('./'+global.config.pcode+'/management/user_edit', { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps, tnc_error : tnc_error});
+          res.render('./'+global.config.pcode+'/management/user_edit', { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps });
         });
       } else {
         var rtnCode = CONSTS.getErrData('0001');

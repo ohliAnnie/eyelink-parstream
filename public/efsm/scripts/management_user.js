@@ -1,21 +1,22 @@
-$(document).ready(function() {  
+$(document).ready(function() {
   TableManaged.init();
   $('a').click(function(event){         
     if ('deleteUser' != $(this).attr('flag')) return;        
     var id = $(this).attr('id');
+    var userid = $(this).attr('userid');
     if (id == "") {
       return false;
     }
-    var dataStr = "{id : "+id+"}";
-      var data = JSON.parse(dataStr);
-      console.log(data);
-    // TODO 메시지 공통 영역으로        
-    if (confirm("삭제하시겠습니까?")) {
-      var link = "/management/users/" + userid;          
-      var dataStr = '{id : "'+id+'" }';
-      var data = JSON.parse(dataStr);
-      var result = ajaxTypeData(link, "DELETE", data);
+    var data = { "id" : id };      
+    // TODO 메시지 공통 영역으로    
+    if (confirm("삭제 하시겠습니까? ")) {
+      var in_data = { url : "/management/users/" + userid, type : "DELETE", data : data };
+      ajaxTypeData(in_data, function(result){
+        alert('(' + result.rtnCode.code + ')' +result.rtnCode.message);
+        if (result.rtnCode.code == "D003") {
+          location.href = "/management/users";
+        }
+      });
     }
   });
-
 });

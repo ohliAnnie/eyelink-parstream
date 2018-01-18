@@ -40,12 +40,12 @@ router.get('/users/:id', function(req, res) {
     res.render('./'+global.config.pcode+'/management/sign_up', { title: global.config.productname, mainmenu:mainmenu });
   } else { // 기존 사용자 정보 변경
     var in_data = {  INDEX: indexUser,  TYPE: "user",  ID : "user_id",  VALUE: req.params.id   };
-    queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
+    queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
       if (out_data[0] != null){
         var rtnCode = CONSTS.getErrData('0000');
         var user = out_data[0];
         var in_data = {  INDEX: indexMap, TYPE: "map", ID : "user_id", VALUE: req.params.id   };
-        queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
+        queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
           if (out_data != null){
             var rtnCode = CONSTS.getErrData('0000');
             var maps = out_data;
@@ -53,7 +53,9 @@ router.get('/users/:id', function(req, res) {
             var rtnCode = CONSTS.getErrData('0001');
             var maps = [];
           }
-          res.render('./'+global.config.pcode+'/management/user_edit', { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps, tnc_error : tnc_error});
+          console.log(user)
+          console.log(maps)          
+          res.render('./'+global.config.pcode+'/management/user_edit', { title: global.config.productname, mainmenu:mainmenu, user:user, maps:maps});
         });
       } else {
         var rtnCode = CONSTS.getErrData('0001');
@@ -66,7 +68,7 @@ router.get('/users/:id', function(req, res) {
 // 사용자 신규 등록
 router.post('/users/:id', function(req, res) {
   var in_data = { INDEX: indexUser, TYPE : "user", ID : "user_id", VALUE: req.body.userid  };
-  queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');
       logger.debug(rtnCode);
@@ -133,7 +135,7 @@ router.delete('/users/:id', function(req, res) {
     if(out_data.result == "deleted");
       var rtnCode = CONSTS.getErrData("D003");
       var in_data = {  INDEX: indexMap, TYPE: "map",  ID: "user_id",  VALUE : req.params.id  };
-      queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
+      queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
         if (out_data != null){
           var rtnCode = CONSTS.getErrData('0000');
           logger.debug(out_data);
@@ -158,12 +160,12 @@ router.delete('/users/:id', function(req, res) {
 
 router.get('/user/:id', function(req, res) {
   var in_data = {  INDEX: indexUser,  TYPE: "user",  ID : "user_id",  VALUE: req.params.id   };
-  queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('0000');
       var user = out_data[0];
       var in_data = {  INDEX: indexMap, TYPE: "map", ID : "user_id", VALUE: req.params.id   };
-      queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
+      queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
         if (out_data != null){
           var rtnCode = CONSTS.getErrData('0000');
           var maps = out_data;
@@ -200,11 +202,11 @@ router.get('/role/:id', function(req, res) {
     res.render('./'+global.config.pcode+'/management/role_add', { title: global.config.productname, mainmenu:mainmenu });
   } else { // 기존 사용자 정보 변경
     var in_data = { INDEX: indexRole, TYPE: "role", ID: "role_id", VALUE: req.params.id };
-    queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
+    queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
       if(out_data[0] != null){
         var in_data = { INDEX: indexMenu, TYPE: "menu", ID: "role_id", VALUE: req.params.id };
         var role = out_data[0];
-        queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
+        queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
           var menu = out_data[0];
           res.render('./'+global.config.pcode+'/management/role_edit', { title: global.config.productname,   mainmenu:mainmenu,   role:role, menu:menu});
         });
@@ -217,7 +219,7 @@ router.get('/role/:id', function(req, res) {
 // role 신규 등록
 router.post('/role/:id', function(req, res) {
   var in_data = { INDEX: indexRole, TYPE: "role", ID: "role_id", VALUE: req.body.roleid };
-  queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
     if (out_data[0] != null){
       var rtnCode = CONSTS.getErrData('E005');
       res.json({rtnCode: rtnCode});
@@ -258,7 +260,7 @@ router.delete('/role/:id', function(req, res) {
         if(out_data.result == "deleted"){
           var rtnCode = CONSTS.getErrData("D003");
           var in_data = {  INDEX: indexMap, TYPE: "map",  ID: "role_id",  VALUE : req.params.id  };
-          queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
+          queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
             if (out_data != null){
               var rtnCode = CONSTS.getErrData('0000');
               logger.debug(out_data);
@@ -290,7 +292,7 @@ router.delete('/role/:id', function(req, res) {
 router.get('/memList/:id', function(req, res, next) {
   logger.debug('role/restapi/selectMemList');
   var in_data = { INDEX: indexMap, TYPE:"map", ID : "role_id", VALUE : req.params.id };
-  queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
+  queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     logger.debug(out_data);
     var mems = out_data;
@@ -319,12 +321,12 @@ router.get('/mem/:id', function(req, res) {
     res.render('./'+global.config.pcode+'/management/add_mem', { title: global.config.productname, mainmenu:mainmenu });
   } else { // 기존 사용자 정보 변경
     var in_data = { INDEX: indexMap, TYPE: "map", ID: "role_id", VALUE: req.params.id };
-    queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
+    queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
       logger.debug(out_data[0]);
        if(out_data[0] != null){
         var in_data = { INDEX: indexMenu, TYPE: "menu", ID: "role_id", VALUE: req.params.id };
         var role = out_data[0];
-        queryProvider.selectSingleQueryByID2("management", "selectListById", in_data, function(err, out_data, params) {
+        queryProvider.selectSingleQueryByID2("management", "selectById", in_data, function(err, out_data, params) {
           var menu = out_data[0];
           res.render('./'+global.config.pcode+'/management/role_edit', { title: global.config.productname, mainmenu:mainmenu, role:role, menu:menu});
         });
@@ -420,8 +422,7 @@ router.post('/menu/:id', function(req, res) {
     }  else  {
       queryProvider.insertQueryByID("management", "insertMenu", in_data, function(err, out_data) {
         logger.debug(out_data);
-        if(out_data.result == "created"){
-          logger.debug(out_data);
+        if(out_data.result == "created"){          
           var rtnCode = CONSTS.getErrData("D001");
           if(parseInt(req.params.id)%1000 != 0){
             var in_data = { INDEX: indexAuthMenu, TYPE: "auth", ID : out_data._id, CODE : req.params.id };

@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<queryList>
+  <timeseries>
+    <query id='selectByIndex'><![CDATA[
+      {
+         "index" : #index#,
+         "type" : #type#,
+         "body" : {
+           "size"   : 10000,
+           "query" : {}
+         }
+      }
+    ]]></query>
+    <query id='getAccTimeseries'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+          "size" : 100000,
+          "query": {
+            "bool": {
+              "filter" : {
+               "range" : {
+                 "timestamp" : { "gte" : #gte#, "lte" : #lte# }
+                }
+              }
+            }
+          },
+          "aggs" : {
+            "group_by_timestamp" : {
+              "date_histogram" : {
+                "field": "timestamp",
+                "interval" : #interval#
+              },
+              "aggs": {
+                "group_by_code" : {                          
+                  "range": {
+                    "field": "responsetime",
+                    "ranges" : [ { "key" : "ok", "to" : "400" },
+                                 { "key" : "error", "from" : "400" } ],
+                    "keyed" : true                  
+                  },
+                  "aggs" : {
+                    "group_by_time": {
+                      "range": {
+                        "field": "responsetime",
+                        "ranges" : [
+                          { "key" : "res_time", "to" : "5000" },
+                          { "key" : "slow", "from" : "5000" } ],
+                        "keyed" : true
+                      }                        
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='getProcessTimeseries'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+          "size" : 100000,
+          "sort" : { "@timestamp" : { "order" : "asc" }},
+          "_source" : ["system.process.cpu.total.pct", "system.process.memory.rss.pct", "timestamp"],
+          "query": {
+            "bool": {
+              "must" : [
+                { "match": { "system.process.cmdline": "jira"}},
+                { "match": { "system.process.name": "java"}},
+                { "range" : { "timestamp": { "gte": #gte#, "lte": #lte# } } }]
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='getTopTimeseries'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+          "size" : 100000,
+          "_source": ["system.process.name", "system.process.cpu.total.pct", "timestamp"],
+          "sort" : [{ "timestamp" : { "order" : "asc" }},
+                    {"system.process.cpu.total.pct": "desc"}],
+          "query": {
+            "bool": {
+              "must" : [
+                { "term": { "metricset.name": "process" }},
+                { "range" : { "timestamp": { "gte": #gte#, "lte": #lte# } } }
+              ],
+              "must_not" : {
+                "range" : { "system.process.cpu.total.pct" : {"lte" : 0 } }
+              }
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='getTotalTimeseries'><![CDATA[
+      {
+        "index" : [##index##],
+        "type"  : #type#,
+        "body" : {
+          "size" : 100000,
+          "sort" : { "timestamp" : { "order" : "asc" }},
+          "_source": ["system.cpu.user.pct", "system.cpu.system.pct", "system.cpu.idle.pct", "system.memory.used.pct", "system.memory.actual.used.pct", "system.memory.swap.used.pct", "timestamp", "metricset.name"],
+          "query": {
+            "bool": {
+              "should" : [
+                { "match": { "metricset.name": "memory"}},
+                { "match": { "metricset.name": "cpu"}}
+              ],
+              "must" : [
+                { "range" : { "timestamp": { "gte": #gte#, "lte": #lte# } } }
+              ]
+            }
+          }
+        }
+      }
+    ]]></query>
+    <query id='selectByTimestamp'><![CDATA[
+      {
+        "index" : #index#,
+        "type" : #type#,
+        "body" : {
+          "size" : 10000,
+          "sort" : { "timestamp" : { "order" : "asc"  } },
+          "query" : {
+            "bool": {
+              "must" : [{
+                "range" : {
+                  "timestamp": {  "gte": #gte#, "lte" : #lte#  }
+                }
+              },{
+                "match" : { "agentId" : #server# }
+              }]
+            }
+          }
+        }
+      }
+    ]]></query>
+  </timeseries>
+</queryList>

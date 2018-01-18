@@ -769,9 +769,9 @@ router.get('/restapi/getDaClusterDetail', function(req, res, next) {
       logger.debug('[selectByIdForClusteringChart] output: ', d);
       d.da_time = Utils.getDateUTC2Local(d.da_time, fmt2);
 
-      // TODO : 클러스터 개수가 유동적일 수 있으므로 동적으로 생성하도록
+      // 클러스터 개수가 유동적일 수 있으므로 동적으로 생성하도록
       let clusterNames = Object.keys(d[cid]);
-      for( i = 0 ; i < d[cid]['cluster_00'].length ; i++){
+      for( i = 0 ; i < d[cid][clusterNames[0]].length ; i++){
         let event_time = Utils.getDateUTC2Local(d['event_time'][i], fmt2);
         // data.push({ time : event_time, c0:d['cluster_00'][i], c1:d['cluster_01'][i], c2:d['cluster_02'][i], c3:d['cluster_03'][i], c4:d['cluster_04'][i]});
         let item = '{ "time" : "'+ event_time+'"';

@@ -1,9 +1,9 @@
 extends ../layout-type01
 block style  
-  link(rel='stylesheet', type='text/css', href='/efsl/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')  
+  link(rel='stylesheet', type='text/css', href='/common/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css')  
 block script  
-  script(type='text/javascript', src='/efsl/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
-  script(type='text/javascript', src='/efsl/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
+  script(type='text/javascript', src='/common/assets/plugins/datatables/media/js/jquery.dataTables.min.js')
+  script(type='text/javascript', src='/common/assets/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js')
   script(src='/common/assets/scripts/page/table-managed.js')
   script(type='text/javascript', src="/common/scripts/util.js")
   script(type='text/javascript', src='/efsl/scripts/management_menu_upper.js')
@@ -62,7 +62,7 @@ block content
                         a.btn.default.btn-xs.balck(onclick='drawUpdate("'+menu._id+'",'+menu._source.code+',"'+menu._source.name+'")')
                           i.fa.fa-edit
                           |  Update
-                        a.btn.default.btn-xs.balck(flag='deleteMenu', id=''+menu._source.code)
+                        a.btn.default.btn-xs.balck(flag='deleteMenu', id = ''+menu._id, code=''+menu._source.code)
                           i.fa.fa-trash-o
                           |  Delete      
       #call    

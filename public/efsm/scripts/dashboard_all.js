@@ -3,7 +3,7 @@ $(document).ready(function(e) {
   var type = $("#type").val();   
   if(cyclick == ''){ cyclick = "jira";  }
   var now = new Date();      
-  if(server === "test-agent"){
+  if(server === "test-agent"||server === "pp2"){
     getAgentData(now);
     displayCountAgent();        
   } else if(server === "jira_access"){
@@ -24,12 +24,12 @@ $(document).ready(function(e) {
     var type = $("#type").val();                   
     if(server=="all"){
       if(cyclick == "TESTAPP") {
-        location.href='/dashboard/timeseriesAgent?server=test-agent';
+        location.href='/timeseries/timeseriesAgent?server=test-agent';
       } else if(cyclick == "jira") {
-        location.href='/dashboard/timeseriesLog?server=jira_access';
+        location.href='/timeseries/timeseriesLog?server=jira_access';
       }
     } else {
-      location.href='/dashboard/timeseries'+type+'?server='+server;
+      location.href='/timeseries/timeseries'+type+'?server='+server;
     }
   });  
   $('input[type="radio"]').on('click change', function(e) {

@@ -2,13 +2,13 @@ $(document).ready(function() {
   $("#register-submit-btn").click(function() {
     if ($("#rolename").val() == "") {
       $("#rolename").focus();
-      $("#register_tnc_error").html("Role Name를 입력하세요.");
+      $("#register_tnc_error").html(m.common.check.name);
       $("#register_tnc_error").show();
       return false;
     }      
 
     // TODO 메시지 공통 영역으로
-    if (confirm("저장 하시겠습니까? ")) {
+    if (confirm(m.common.confirm.save)) {
       var roleid = $("#roleid").val();
       var data = $('#update_account').serialize();
       var in_data = { url : "/management/role/"+roleid, type : "PUT", data : data };

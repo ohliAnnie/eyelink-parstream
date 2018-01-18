@@ -1,6 +1,6 @@
 $(document).ready(function() {               
   var dateFormat = 'YYYY-MM-DD';
-  $('#sdate').val(moment().subtract(2, 'days').format(dateFormat));
+  $('#sdate').val(moment().subtract(1, 'days').format(dateFormat));
   $('#edate').val(moment().format(dateFormat));      
   drawChart();
   $('#btn_search').click(function() {          
@@ -16,6 +16,7 @@ function drawChart() {
   ajaxTypeData(in_data, function(result){        
     if (result.rtnCode.code == "0000") {
       var data = result.rtnData;              
+      console.log(data);
       drawPower(data, sdate, edate);
     }
   });
@@ -147,7 +148,7 @@ powerSum
     .x(d3.time.scale().domain([minDate, maxDate ]))
     .round(d3.time.hour.round)
     .xUnits(d3.time.hours)
-    .y(d3.scale.linear().domain([150, 280]))
+    .y(d3.scale.linear().domain([100, 280]))
     .renderHorizontalGridLines(true)
     .renderVerticalGridLines(true)
     .mouseZoomable(true)
@@ -157,7 +158,7 @@ powerSum
       })
     .compose([
       dc.lineChart(volLine).group(volLineGroup, "voltage")
-        .valueAccessor(function (d) {  return d.value.avg;  })
+        .valueAccessor(function (d) { console.log(d); return d.value.avg;  })
         .colors('green'),
       dc.lineChart(volLine).group(volLineGroup, "Min")
         .valueAccessor(function (d) {  return 200;  })

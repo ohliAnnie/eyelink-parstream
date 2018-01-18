@@ -39,7 +39,7 @@
 		"es_auth_menu" : "efsm_auth_menu",
 		"es_menu" : "efsm_menu",
 		"es_appinfo" : "efsm_applicationinfo",
-		"es_elagent" : "elagent_test-agent-",
+		"es_elagent" : "elagent_",
 		"es_alarm" : "efsm_alarm-",
 		"es_corecode" : "corecode-",
 		"notching_oee" : "efmm_notching_oee-",
@@ -47,8 +47,8 @@
 		"stacking_status" : "efmm_stacking_status-"
 	},
 	"da_index" : {
-		"clustering_master" : "clustering_master",
-		"clustering_detail" : "clustering_detail",
+		"clustering_master" : "efsl_clustering_master",
+		"clustering_detail" : "efsl_clustering_detail",
 		"ad_pattern_data" : "ad_pattern_data",
 		"ad_pattern_info" : "ad_pattern_info",
 		"ad_pattern_matching" : "ad_pattern_matching",

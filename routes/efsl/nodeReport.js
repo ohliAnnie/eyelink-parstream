@@ -29,33 +29,22 @@ router.get('/fault', function(req, res, next) {
   res.render('./'+global.config.pcode+'/reports/fault', { title: global.config.productname, mainmenu:mainmenu });
 });
 
-router.get('/d3', function(req, res, next) {
-  res.render('./'+global.config.pcode+'/reports/d3', { title: 'Report_d3', mainmenu:mainmenu });
-});
-
-router.get('/live', function(req, res, next) {
-  res.render('./'+global.config.pcode+'/reports/report_live', { title: global.config.productname, mainmenu:mainmenu });
-});
-
 // query Report
 router.get('/restapi/getRangeData', function(req, res, next) {
   logger.info('reports/restapi/getRangeData');    
   var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0, 'Y', 'Y')+startTime;
-  var lte = Utils.getMs2Date(req.query.edate, fmt1, 'N', 'Y')+startTime;    
-/*  var index = [], cnt = 0;  
-  for(i = new Date(gte).getTime(); i<=new Date(lte).getTime(); i=i+24*60*60*1000){    
-    index[cnt++]  = indexCore+Utils.getMs2Date(i, fmt4);
-  }  */
-  var in_data = { index : indexCore+"*", type : "corecode",                   
+  var lte = Utils.getMs2Date(req.query.edate, fmt1, 'N', 'Y')+startTime; 
+  var index = Utils.getIndexList(gte, lte, indexCore);  
+  var in_data = { index : index, type : "corecode",                   
                   sort : "event_time" , gte : gte, lte : lte };    
   queryProvider.selectSingleQueryByID2("reports","selectRangeData", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {    
-      var data = [];
-      out_data.forEach(function(d) {        
-        d = d._source;       
+      var data = [];      
+      for(i=0; i<out_data.length; i++) {        
+        var d = out_data[i]._source;       
         d.event_time = Utils.getDateUTC2Local(d.event_time, fmt2);      
         switch(d.event_type){
           case "1" :   // 피워
@@ -95,7 +84,7 @@ router.get('/restapi/getRangeData', function(req, res, next) {
         d.zone_id = 'ZONE-04';  
         d.geo = (d.node_id === '0001.00000001') ? '37.457271, 127.042861':'37.468271, 127.032861';
         data.push(d);
-      });     
+      };     
     }
     res.json({rtnCode: rtnCode, rtnData: data});
   });
@@ -106,13 +95,8 @@ router.get('/restapi/getRangePowerData', function(req, res, next) {
   logger.info('reports/restapi/getRangePowerData');      
   var gte = Utils.getDate(req.query.sdate, fmt1, -1, 0, 0, 0, 'Y', 'Y')+startTime;
   var lte = Utils.getMs2Date(req.query.edate, fmt1, 'N', 'Y')+startTime;    
-/*  var index = [], cnt = 0;  
-  for(i = new Date(gte).getTime(); i<=new Date(lte).getTime(); i=i+24*60*60*1000){    
-    index[cnt++]  = indexCore+Utils.getMs2Date(i, fmt4);
-  }  */
-  /*var eType ={ 'POWER' : "1", 'ALS' : "17", 'VIBRATION' : "33", 'NOISE' : "49", 
-               'GPS' : "65", 'STREET LIGHT' : "81", "DL" : "97", 'REBOOT' : "153" };*/
-  var in_data = { index : indexCore+"*", type : "corecode",
+  var index = Utils.getIndexList(gte, lte, indexCore);  
+  var in_data = { index : index, type : "corecode",
                 sort : "event_time" , gte : gte, lte : lte };      
   queryProvider.selectSingleQueryByID2("reports","selectRangePowerData", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
@@ -124,7 +108,8 @@ router.get('/restapi/getRangePowerData', function(req, res, next) {
         d = d._source;       
         d.event_time = Utils.getDateUTC2Local(d.event_time, fmt2);  
         d.geo = (d.node_id === '0001.00000001') ? '37.457271, 127.042861':'37.468271, 127.032861';
-        d.zone_id = 'ZONE-04'
+        var id = d.node_id.split('.')
+        d.zone_id = 'ZONE-'+id[0];
         data.push(d);
       });            
     }

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <queryList>
-  <analysis>
+	<analysis>
     <query id='insertById'><![CDATA[
       {
         "index" : #INDEX#,
@@ -33,12 +33,12 @@
         "type" : #TYPE#,
         "body" : {
           "size" : 1,
-          "sort" : { "timestamp" : { "order" : "desc" } },
+          "sort" : { "da_result.timestamp" : { "order" : "desc" } },
           "query" : {
             "bool": {
               "must" : {
                 "range" : {
-                  "timestamp": { "gte": #gte#, "lte" : #lte# }
+                  "da_result.timestamp": { "gte": #gte#, "lte" : #lte# }
                 }
               }
             }
@@ -57,7 +57,7 @@
               "must" : { "match_all": {} },
               "filter" : {
                 "range" : {
-                  "da_time" : { "gte" : #gte#, "lte" : #lte# }
+                  "master_result.da_time" : { "gte" : #gte#, "lte" : #lte# }
                 }
               }
             }
@@ -76,7 +76,7 @@
               "must" : { "match" : { interval : #INTERVAL#} },
               "filter" : {
                 "range" : {
-                  "da_time" : { "gte" : #gte#, "lte" : #lte# }
+                  "master_result.da_time" : { "gte" : #gte#, "lte" : #lte# }
                 }
               }
             }
@@ -98,7 +98,7 @@
               "should": [
                 { "term": { "_id": #MASTER_ID# }},
                 { "range": {
-                    "createDate" : {
+                    "da_result.createDate" : {
                       "gte" : #START_TIMESTAMP#, 
                       "lte" : #END_TIMESTAMP# 
                     }
@@ -116,13 +116,13 @@
         "type" : #TYPE#,
         "body" : {
           "size"   : 10000,
-          "sort" : { "timestamp" : { "order" : "desc"  } },
+          "sort" : { "da_result.timestamp" : { "order" : "desc"  } },
           "query" : {
             "bool" : {
               "must" : { "match_all": {} },
                "filter" : {
                 "range" : {
-                  "timestamp" : {
+                  "da_result.timestamp" : {
                     "gte" : #START_TIMESTAMP#, 
                     "lte" : #END_TIMESTAMP#
                   }
@@ -153,10 +153,10 @@
         "type" : #TYPE#,
         "body" : {
           "_source" : [
-            "active_power", 
-            "ampere",
-            "power_factor",
-            "voltage"
+            "da_result.active_power", 
+            "da_result.ampere",
+            "da_result.power_factor",
+            "da_result.voltage"
             ],
           "query" : {
             "term" : { "_id" : #ID# }
@@ -218,7 +218,7 @@
           "query" : {
             "bool": {
               "must" : {
-                "match" : { "da_time" : #DADATE# }
+                "match" : { "master_result.da_time" : #DADATE# }
               }
             }
           }
@@ -249,8 +249,12 @@
           "sort" : { "event_time" : { "order" : "asc" }},
           "_source" : ["event_time", "active_power", "ampere", "power_factor", "voltage", "node_id"],
           "query" : {
-            "bool" : {              
-              "should" : [#NODE#]
+            "bool" : {
+              "must" : { "match": { "event_type" : "1" } },
+              "filter" : [
+                { "terms" : { "node_id": [##NODE##] }  },
+                { "range" : { "event_time" :{ "gte" : #gte#, "lte" : #lte# } } }
+              ]
             }
           }
         }

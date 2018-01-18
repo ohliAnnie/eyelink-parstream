@@ -12,16 +12,12 @@ var mainmenu = {dashboard:'', timeseries:'', reports:'open selected', analysis:'
 var indexAcc = global.config.es_index.es_jira;  
 var indexMetric = global.config.es_index.es_metric;
 
-var startTime = CONSTS.STARTTIME.KOREA;
+var startTime = CONSTS.TIMEZONE.KOREA;
 var fmt1 = CONSTS.DATEFORMAT.DATE; // "YYYY-MM-DD",
 var fmt2 = CONSTS.DATEFORMAT.DATETIME; // "YYYY-MM-DD HH:MM:SS",
 var fmt4 = CONSTS.DATEFORMAT.INDEXDATE; // "YYYY.MM.DD",
 
 /* GET reports page. */
-router.get('/', function(req, res, next) {
-  res.render('./'+global.config.pcode+'/reports/all', { title: global.config.productname, mainmenu:mainmenu, indexs: global.config.es_index });
-});
-
 router.get('/res_req', function(req, res, next) {
   res.render('./'+global.config.pcode+'/reports/res_req', { title: global.config.productname, mainmenu:mainmenu });
 });
@@ -326,3 +322,6 @@ router.get('/restapi/getMultiIndexCount', function(req, res, next) {
     res.json({rtnCode: rtnCode, rtnData: data, max: max});
   });
 });
+
+
+module.exports = router;

@@ -199,7 +199,7 @@ function drawChart() {
     // console.log(out_data);
 
     var cnt_event_type = 0,
-        cnt_fault_type = 0;
+        cnt_fault_type = 0;    
     data.forEach(function (d) {    
       d.dd = new Date(d.event_time);
       d.month = d3.time.month(d.dd);
