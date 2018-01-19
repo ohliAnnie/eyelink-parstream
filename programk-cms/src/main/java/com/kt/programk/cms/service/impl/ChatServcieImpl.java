@@ -236,6 +236,26 @@ public class ChatServcieImpl implements ChatServcie {
             throw new ApplicationException(String.valueOf(DbExceptionUtil.parseException(ex).getNumber()));
         }
     }
+    
+    /**
+     * Find list all list.
+     *
+     * @param currentPageNo      the current page no
+     * @param recordCountPerPage the record count per page
+     * @return the list
+     * @throws ApplicationException the application exception
+     */
+    @Override
+    public List<AimlMain> findDownloadListAll(AimlMain aimlMain, int currentPageNo, int recordCountPerPage) throws ApplicationException {       
+        aimlMain.setRecordCountPerPage(recordCountPerPage);
+        aimlMain.setFirstRecordIndex((currentPageNo - 1) * recordCountPerPage);
+
+        try {
+            return aimlMainMapper.selectDownloadListAll(aimlMain);
+        }catch (DataAccessException ex){
+            throw new ApplicationException(String.valueOf(DbExceptionUtil.parseException(ex).getNumber()));
+        }
+    }
 
     /**
      * Find list by cp id list.
@@ -464,6 +484,17 @@ public class ChatServcieImpl implements ChatServcie {
 
         if(aimlMain.getReply() == null || "".equals(aimlMain.getReply())){
             throw new BizCheckedException(BizErrCode.ERR_0006, "aimlMain.reply");
+        }
+        
+        //기존 AIML 관련 내용을 삭제
+        AimlMain oldAiml = aimlMainMapper.selectByPrimaryKey(aimlMain);
+        if(oldAiml != null){
+	        removeImages(oldAiml.getCateId(), aimlMain.getId());//이미지
+	        removeLink(oldAiml.getCateId(), aimlMain.getId()); //텍스트링크
+	        removeRecommend(oldAiml.getCateId(), aimlMain.getId()); //추천질문 
+	        removeReply(oldAiml.getCateId(), aimlMain.getId()); //추가답변
+	        removeTest(oldAiml.getCateId(), aimlMain.getId()); //테스트질문
+	        removeOption(oldAiml.getCateId(), aimlMain.getId()); //옵션
         }
         
         int insert = 0;

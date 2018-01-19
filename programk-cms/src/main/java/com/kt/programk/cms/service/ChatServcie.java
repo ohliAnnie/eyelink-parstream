@@ -74,6 +74,13 @@ public interface ChatServcie {
     public List<AimlMain> findListAll(AimlMain aimlMain, int currentPageNo, int recordCountPerPage) throws ApplicationException;
 
     /**
+     * 전체 다운로드 목록
+     *
+     * @return the list
+     */
+    public List<AimlMain> findDownloadListAll(AimlMain aimlMain, int currentPageNo, int recordCountPerPage) throws ApplicationException;
+
+    /**
      * CP별 목록
      *
      * @param cpId the cp id

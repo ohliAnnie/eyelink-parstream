@@ -80,6 +80,14 @@ public interface AimlMainMapper {
      * @return list
      */
     public List<AimlMain> selectListAll(AimlMain example);
+    
+    /**
+     * 다운로드 목록 조회
+     *
+     * @param example the example
+     * @return list
+     */
+    public List<AimlMain> selectDownloadListAll(AimlMain example);
 
     /**
      * Select list by cp id list.

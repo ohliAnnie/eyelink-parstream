@@ -87,6 +87,10 @@ public class AimlMain extends PagingExample{
      */
     private String thatInput;
     /**
+     * 이전 답변 답변
+     */
+    private String thatReply;
+    /**
      * cp id - 검색용
      */
     private int cpId;
@@ -371,6 +375,21 @@ public class AimlMain extends PagingExample{
      */
 	public void setThatInput(String thatInput) {
 		this.thatInput = thatInput;
+	}
+	
+
+	/**
+	 * @return
+	 */
+	public String getThatReply() {
+		return thatReply;
+	}
+
+	/**
+	 * @param thatReply
+	 */
+	public void setThatReply(String thatReply) {
+		this.thatReply = thatReply;
 	}
 
 	/**

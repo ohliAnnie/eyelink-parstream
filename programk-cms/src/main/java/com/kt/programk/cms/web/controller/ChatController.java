@@ -313,9 +313,11 @@ public class ChatController {
 			aimlMain.setInput(aimlMain.getInput().replaceAll("[<>\"']", " "));
 		}
 		if (!Strings.isNullOrEmpty(aimlMain.getImageUrl())) {
+			// Changed to use bot properties in image url
 			aimlMain.setImageUrl(aimlMain.getImageUrl().replaceAll("[\']", " "));
 		}
 		if (!Strings.isNullOrEmpty(aimlMain.getImageAlt())) {
+			// Changed to use bot properties in image alt
 			aimlMain.setImageAlt(aimlMain.getImageAlt().replaceAll("[\']", " "));
 		}
 		if (!Strings.isNullOrEmpty(aimlMain.getLinkUrl())) {
@@ -427,9 +429,11 @@ public class ChatController {
 			aimlMain.setInput(aimlMain.getInput().replaceAll("[<>\"']", " "));
 		}
 		if (!Strings.isNullOrEmpty(aimlMain.getImageUrl())) {
+			// Changed to use bot properties in image url
 			aimlMain.setImageUrl(aimlMain.getImageUrl().replaceAll("[\']", " "));
 		}
 		if (!Strings.isNullOrEmpty(aimlMain.getImageAlt())) {
+			// Changed to use bot properties in image alt
 			aimlMain.setImageAlt(aimlMain.getImageAlt().replaceAll("[\']", " "));
 		}
 		if (!Strings.isNullOrEmpty(aimlMain.getLinkUrl())) {
@@ -624,91 +628,194 @@ public class ChatController {
 		StringBuilder dataBuilder = new StringBuilder();
 		StringBuilder theBuilder = new StringBuilder();
 
-		List<AimlMain> result = chatServcie.findListAll(aimlMain, 0, 0);
-		for (AimlMain aimlMain2 : result) {
-			// 테스트 질문
-			StringBuilder testBuilder = new StringBuilder();
-			List<AimlTest> aimlTest = chatServcie.findListTest(aimlMain2.getCateId(), aimlMain2.getId());
-			for (AimlTest aimlTest2 : aimlTest) {
-				testBuilder.append(aimlTest2.getTestInput());
-				testBuilder.append(";\n");
+		List<AimlMain> result = chatServcie.findDownloadListAll(aimlMain, 0, 0);
+		if (result != null) {
+			AimlMain aimlMain2 = null;
+			for (int l = result.size() - 1; l >= 0; l--) {
+				aimlMain2 = result.get(l);
+				// 테스트 질문
+				StringBuilder testBuilder = new StringBuilder();
+				List<AimlTest> aimlTest = chatServcie.findListTest(aimlMain2.getCateId(), aimlMain2.getId());
+				int cnt = 0;
+				for (AimlTest aimlTest2 : aimlTest) {
+					testBuilder.append(aimlTest2.getTestInput());
+					cnt++;
+					if (cnt < aimlTest.size())
+						testBuilder.append(";\n");
+				}
+	
+				// 이미지
+				StringBuilder imagesBuilder = new StringBuilder();
+				// TODO : commented out for KakaoPlusFriend
+	//			StringBuilder altBuilder = new StringBuilder();
+				List<AimlImages> aimlImages = chatServcie.findListImages(aimlMain2.getCateId(), aimlMain2.getId());
+				cnt = 0;
+				for (AimlImages aimlImages2 : aimlImages) {
+					imagesBuilder.append(aimlImages2.getUrl());
+	//				altBuilder.append(aimlImages2.getAlt());
+					cnt++;
+					if (cnt < aimlImages.size()){
+						imagesBuilder.append("\n");
+	//					altBuilder.append("\n");
+					}
+				}
+	
+				// 링크
+				StringBuilder linkBuilder = new StringBuilder();
+				List<AimlLink> aimlLink = chatServcie.findListLink(aimlMain2.getCateId(), aimlMain2.getId());
+				cnt = 0;
+				for (AimlLink aimlLink2 : aimlLink) {
+					linkBuilder.append(aimlLink2.getTitle() + ";" + aimlLink2.getComment() + ";" + aimlLink2.getUrl());
+					cnt++;
+					if (cnt < aimlLink.size())
+						linkBuilder.append(";\n");
+				}
+	
+				// 추천질문
+				StringBuilder recommendBuilder = new StringBuilder();
+				List<AimlRecommend> aimlRecommend = chatServcie.findListRecommend(aimlMain2.getCateId(), aimlMain2.getId());
+				cnt = 0;
+				for (AimlRecommend aimlRecommend2 : aimlRecommend) {
+					recommendBuilder.append(aimlRecommend2.getRecommendInput());
+					cnt++;
+					if (cnt < aimlRecommend.size())
+						recommendBuilder.append(";\n");
+				}
+	
+				// TODO : commented out for KakaoPlusFriend
+	//			// 추가답변
+	//			StringBuilder replyBuilder = new StringBuilder();
+	//			List<AimlReply> aimlReply = chatServcie.findListReply(aimlMain2.getCateId(), aimlMain2.getId());
+	//			for (AimlReply aimlReply2 : aimlReply) {
+	//				replyBuilder.append(aimlReply2.getReplyInput());
+	//				replyBuilder.append(";\n");
+	//			}
+	//
+	//			// 옵션
+	//			HashMap<Integer, String> resultOption = new HashMap<Integer, String>();
+	//			List<AimlOption> aimlOption = chatServcie.findListOption(aimlMain2.getCateId(), aimlMain2.getId());
+	//			for (AimlOption aimlOption2 : aimlOption) {
+	//				resultOption.put(aimlOption2.getSeq(), aimlOption2.getVal());
+	//			}
+	//
+				theBuilder.append(StringUtil.setReplaceCsv(aimlMain2.getCateName()));
+				theBuilder.append(",");
+				theBuilder.append(StringUtil.setReplaceCsv(aimlMain2.getInput()));
+				theBuilder.append(",");
+				theBuilder.append(StringUtil.setReplaceCsv(testBuilder.toString()));
+				theBuilder.append(",");
+				theBuilder.append(StringUtil.setReplaceCsv(aimlMain2.getReply()));
+				theBuilder.append(",");
+				theBuilder.append(StringUtil.setReplaceCsv(imagesBuilder.toString()));
+	//			theBuilder.append(",");
+	//			theBuilder.append(StringUtil.setReplaceCsv(altBuilder.toString()));
+				theBuilder.append(",");
+				theBuilder.append(StringUtil.setReplaceCsv(aimlMain2.getThatInput()));
+				theBuilder.append(",");
+				theBuilder.append(StringUtil.setReplaceCsv(recommendBuilder.toString()));
+				theBuilder.append(",");
+				theBuilder.append(StringUtil.setReplaceCsv(linkBuilder.toString()));
+	//			theBuilder.append(",");
+	//			theBuilder.append(StringUtil.setReplaceCsv(replyBuilder.toString()));
+	//			theBuilder.append(",");
+	//			theBuilder.append(StringUtil.setReplaceCsv(resultOption.get(1)).replace("null", ""));
+	//			theBuilder.append(",");
+	//			theBuilder.append(StringUtil.setReplaceCsv(resultOption.get(2)).replace("null", ""));
+	//			theBuilder.append(",");
+	//			theBuilder.append(StringUtil.setReplaceCsv(resultOption.get(3)).replace("null", ""));
+	//			theBuilder.append(",");
+	//			theBuilder.append(StringUtil.setReplaceCsv(resultOption.get(4)).replace("null", ""));
+	//			theBuilder.append(",");
+	//			theBuilder.append(StringUtil.setReplaceCsv(resultOption.get(5)).replace("null", ""));
+				theBuilder.append("\n");
 			}
-
-			// 이미지
-			StringBuilder imagesBuilder = new StringBuilder();
-			// TODO : commented out for KakaoPlusFriend
-//			StringBuilder altBuilder = new StringBuilder();
-			List<AimlImages> aimlImages = chatServcie.findListImages(aimlMain2.getCateId(), aimlMain2.getId());
-			for (AimlImages aimlImages2 : aimlImages) {
-				imagesBuilder.append(aimlImages2.getUrl());
-				imagesBuilder.append("\n");
-//				altBuilder.append(aimlImages2.getAlt());
-//				altBuilder.append("\n");
-			}
-
-			// 링크
-			StringBuilder linkBuilder = new StringBuilder();
-			List<AimlLink> aimlLink = chatServcie.findListLink(aimlMain2.getCateId(), aimlMain2.getId());
-			for (AimlLink aimlLink2 : aimlLink) {
-				linkBuilder.append(aimlLink2.getTitle() + ";" + aimlLink2.getComment() + ";" + aimlLink2.getUrl());
-				linkBuilder.append(";\n");
-			}
-
-			// 추천질문
-			StringBuilder recommendBuilder = new StringBuilder();
-			List<AimlRecommend> aimlRecommend = chatServcie.findListRecommend(aimlMain2.getCateId(), aimlMain2.getId());
-			for (AimlRecommend aimlRecommend2 : aimlRecommend) {
-				recommendBuilder.append(aimlRecommend2.getRecommendInput());
-				recommendBuilder.append(";\n");
-			}
-
-			// TODO : commented out for KakaoPlusFriend
-//			// 추가답변
-//			StringBuilder replyBuilder = new StringBuilder();
-//			List<AimlReply> aimlReply = chatServcie.findListReply(aimlMain2.getCateId(), aimlMain2.getId());
-//			for (AimlReply aimlReply2 : aimlReply) {
-//				replyBuilder.append(aimlReply2.getReplyInput());
-//				replyBuilder.append(";\n");
-//			}
-//
-//			// 옵션
-//			HashMap<Integer, String> resultOption = new HashMap<Integer, String>();
-//			List<AimlOption> aimlOption = chatServcie.findListOption(aimlMain2.getCateId(), aimlMain2.getId());
-//			for (AimlOption aimlOption2 : aimlOption) {
-//				resultOption.put(aimlOption2.getSeq(), aimlOption2.getVal());
-//			}
-//
-			theBuilder.append(StringUtil.setReplaceCsv(aimlMain2.getCateName()));
-			theBuilder.append(",");
-			theBuilder.append(StringUtil.setReplaceCsv(aimlMain2.getInput()));
-			theBuilder.append(",");
-			theBuilder.append(StringUtil.setReplaceCsv(testBuilder.toString()));
-			theBuilder.append(",");
-			theBuilder.append(StringUtil.setReplaceCsv(aimlMain2.getReply()));
-			theBuilder.append(",");
-			theBuilder.append(StringUtil.setReplaceCsv(imagesBuilder.toString()));
-//			theBuilder.append(",");
-//			theBuilder.append(StringUtil.setReplaceCsv(altBuilder.toString()));
-			theBuilder.append(",");
-			theBuilder.append(StringUtil.setReplaceCsv(aimlMain2.getThatInput()));
-			theBuilder.append(",");
-			theBuilder.append(StringUtil.setReplaceCsv(recommendBuilder.toString()));
-			theBuilder.append(",");
-			theBuilder.append(StringUtil.setReplaceCsv(linkBuilder.toString()));
-//			theBuilder.append(",");
-//			theBuilder.append(StringUtil.setReplaceCsv(replyBuilder.toString()));
-//			theBuilder.append(",");
-//			theBuilder.append(StringUtil.setReplaceCsv(resultOption.get(1)).replace("null", ""));
-//			theBuilder.append(",");
-//			theBuilder.append(StringUtil.setReplaceCsv(resultOption.get(2)).replace("null", ""));
-//			theBuilder.append(",");
-//			theBuilder.append(StringUtil.setReplaceCsv(resultOption.get(3)).replace("null", ""));
-//			theBuilder.append(",");
-//			theBuilder.append(StringUtil.setReplaceCsv(resultOption.get(4)).replace("null", ""));
-//			theBuilder.append(",");
-//			theBuilder.append(StringUtil.setReplaceCsv(resultOption.get(5)).replace("null", ""));
-			theBuilder.append("\n");
 		}
+			
+		// TODO : delete (commeted out for patch, 180119)
+//		for (AimlMain aimlMain2 : result) {
+//			// 테스트 질문
+//			StringBuilder testBuilder = new StringBuilder();
+//			List<AimlTest> aimlTest = chatServcie.findListTest(aimlMain2.getCateId(), aimlMain2.getId());
+//			for (AimlTest aimlTest2 : aimlTest) {
+//				testBuilder.append(aimlTest2.getTestInput());
+//				testBuilder.append(";\n");
+//			}
+//
+//			// 이미지
+//			StringBuilder imagesBuilder = new StringBuilder();
+//			// TODO : commented out for KakaoPlusFriend
+////			StringBuilder altBuilder = new StringBuilder();
+//			List<AimlImages> aimlImages = chatServcie.findListImages(aimlMain2.getCateId(), aimlMain2.getId());
+//			for (AimlImages aimlImages2 : aimlImages) {
+//				imagesBuilder.append(aimlImages2.getUrl());
+//				imagesBuilder.append("\n");
+////				altBuilder.append(aimlImages2.getAlt());
+////				altBuilder.append("\n");
+//			}
+//
+//			// 링크
+//			StringBuilder linkBuilder = new StringBuilder();
+//			List<AimlLink> aimlLink = chatServcie.findListLink(aimlMain2.getCateId(), aimlMain2.getId());
+//			for (AimlLink aimlLink2 : aimlLink) {
+//				linkBuilder.append(aimlLink2.getTitle() + ";" + aimlLink2.getComment() + ";" + aimlLink2.getUrl());
+//				linkBuilder.append(";\n");
+//			}
+//
+//			// 추천질문
+//			StringBuilder recommendBuilder = new StringBuilder();
+//			List<AimlRecommend> aimlRecommend = chatServcie.findListRecommend(aimlMain2.getCateId(), aimlMain2.getId());
+//			for (AimlRecommend aimlRecommend2 : aimlRecommend) {
+//				recommendBuilder.append(aimlRecommend2.getRecommendInput());
+//				recommendBuilder.append(";\n");
+//			}
+//
+//			// TODO : commented out for KakaoPlusFriend
+////			// 추가답변
+////			StringBuilder replyBuilder = new StringBuilder();
+////			List<AimlReply> aimlReply = chatServcie.findListReply(aimlMain2.getCateId(), aimlMain2.getId());
+////			for (AimlReply aimlReply2 : aimlReply) {
+////				replyBuilder.append(aimlReply2.getReplyInput());
+////				replyBuilder.append(";\n");
+////			}
+////
+////			// 옵션
+////			HashMap<Integer, String> resultOption = new HashMap<Integer, String>();
+////			List<AimlOption> aimlOption = chatServcie.findListOption(aimlMain2.getCateId(), aimlMain2.getId());
+////			for (AimlOption aimlOption2 : aimlOption) {
+////				resultOption.put(aimlOption2.getSeq(), aimlOption2.getVal());
+////			}
+////
+//			theBuilder.append(StringUtil.setReplaceCsv(aimlMain2.getCateName()));
+//			theBuilder.append(",");
+//			theBuilder.append(StringUtil.setReplaceCsv(aimlMain2.getInput()));
+//			theBuilder.append(",");
+//			theBuilder.append(StringUtil.setReplaceCsv(testBuilder.toString()));
+//			theBuilder.append(",");
+//			theBuilder.append(StringUtil.setReplaceCsv(aimlMain2.getReply()));
+//			theBuilder.append(",");
+//			theBuilder.append(StringUtil.setReplaceCsv(imagesBuilder.toString()));
+////			theBuilder.append(",");
+////			theBuilder.append(StringUtil.setReplaceCsv(altBuilder.toString()));
+//			theBuilder.append(",");
+//			theBuilder.append(StringUtil.setReplaceCsv(aimlMain2.getThatInput()));
+//			theBuilder.append(",");
+//			theBuilder.append(StringUtil.setReplaceCsv(recommendBuilder.toString()));
+//			theBuilder.append(",");
+//			theBuilder.append(StringUtil.setReplaceCsv(linkBuilder.toString()));
+////			theBuilder.append(",");
+////			theBuilder.append(StringUtil.setReplaceCsv(replyBuilder.toString()));
+////			theBuilder.append(",");
+////			theBuilder.append(StringUtil.setReplaceCsv(resultOption.get(1)).replace("null", ""));
+////			theBuilder.append(",");
+////			theBuilder.append(StringUtil.setReplaceCsv(resultOption.get(2)).replace("null", ""));
+////			theBuilder.append(",");
+////			theBuilder.append(StringUtil.setReplaceCsv(resultOption.get(3)).replace("null", ""));
+////			theBuilder.append(",");
+////			theBuilder.append(StringUtil.setReplaceCsv(resultOption.get(4)).replace("null", ""));
+////			theBuilder.append(",");
+////			theBuilder.append(StringUtil.setReplaceCsv(resultOption.get(5)).replace("null", ""));
+//			theBuilder.append("\n");
+//		}
 
 //		dataBuilder.append("카테고리" + "," + "질문" + "," + "검증샘플" + "," + "답변" + "," + "이미지" + "," + "대체텍스트" + "," + "이전답변" + "," + "추천질문" + "," + "링크" + "," + "추가답변" + "," + "옵션1" + "," + "옵션2" + "," + "옵션3" + "," + "옵션4" + "," + "옵션5" + "\n");
 		dataBuilder.append("카테고리" + "," + "질문" + "," + "검증샘플" + "," + "답변" + "," + "이미지" + "," + "이전질문" + "," + "추천질문" + "," + "링크" + "\n");

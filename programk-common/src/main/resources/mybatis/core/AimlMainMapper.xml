@@ -141,6 +141,28 @@
            offset ${firstRecordIndex} limit ${recordCountPerPage};
         </if>
     </select>
+    
+    <!-- 샘플 리스트 조회 -->
+    <select id="selectDownloadListAll" parameterType="AimlMain"
+            resultMap="BaseResultMap">
+        <if test="recordCountPerPage == 0">    
+           SELECT t1.id, t1.cate_id, t1.input, t1.reply, t2.name as cate_name, t2.restriction, t1.that_id thatId, a2.input thatInput, a2.reply thatReply
+           FROM aiml_main AS t1
+           INNER JOIN aiml_category AS t2 ON t1.cate_id = t2.id
+           LEFT JOIN aiml_main AS a2 ON t1.that_id = a2.id
+           <include refid="whereSearch" />
+           ORDER BY t1.id DESC
+        </if>
+    	<if test="recordCountPerPage != 0">
+           SELECT t1.cate_id, t1.id, t1.input, t1.reply, t1.that_id, t2.name as cate_name, t2.restriction, t2.cp_id
+           FROM aiml_main AS t1
+           INNER JOIN aiml_category AS t2
+           ON t1.cate_id = t2.id
+           <include refid="whereSearch" />
+           ORDER BY t1.id DESC
+           offset ${firstRecordIndex} limit ${recordCountPerPage};
+        </if>
+    </select>
 
     <select id="selectListByCpId" parameterType="hashmap" resultMap="BaseResultMap">
         <![CDATA[
