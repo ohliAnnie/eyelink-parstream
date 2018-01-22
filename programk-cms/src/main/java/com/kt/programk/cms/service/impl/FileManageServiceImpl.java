@@ -557,8 +557,10 @@ public class FileManageServiceImpl implements FileManageService {
 		} catch (FileNotFoundException e) {
 			throw new BizCheckedException(BizErrCode.ERR_0006, path);
 		}
-
-		CSVReader reader = new CSVReader(fileReader, ',');
+		
+		// 2018-01-25 패치 (csv 업로드 시 정규식 기호 '\' 사라지는 현상 수정
+//		CSVReader reader = new CSVReader(fileReader, ',');
+		CSVReader reader = new CSVReader(fileReader, ',','"','`');
 		List<String[]> myEntries = null;
 		try {
 			myEntries = reader.readAll();
@@ -669,7 +671,8 @@ public class FileManageServiceImpl implements FileManageService {
 
 					AimlSubs aimlSubs = new AimlSubs();
 					aimlSubs.setCateId(categoryMap.get(categoryName));
-					aimlSubs.setFind(StringUtil.setReplaceSubs(find));
+//					aimlSubs.setFind(StringUtil.setReplaceSubs(find));
+					aimlSubs.setFind(find);	// TODO : 이미 opencsv라이브러리를 이용하여 파일 읽어올때 처리되어 읽어오는 문제 있음. csv 다운/업로드시에는 특수기호 처리 안하도록 변경 (2018-01-25 패치)
 					aimlSubs.setReplace(replace);
 					aimlSubs.setCpId(cpId);
 

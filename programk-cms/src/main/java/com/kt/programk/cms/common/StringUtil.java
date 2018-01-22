@@ -22,25 +22,10 @@ import org.springframework.util.StringUtils;
 public class StringUtil {
 	public static String setReplaceCsv(String str) {
 		String result = "";
-//		String val = "";
-//		
-//		try {
-//			result = str;
-//		} catch (Exception e) {
-//			result = "";
-//		}
-//		
-//		if(result != null && result != ""){
-//			result = str.replaceAll("\"", "\"\"");
-//		}
-//		
-//		val = "\"" + result + " \"";
-//		
-//		return val;
 		if (StringUtils.isEmpty(str))
 			return "";
 
-		result = "\"" + str.replaceAll("\"", "\"\"").replaceAll("\\\\", "\\\\\\\\") + "\"";
+		result = "\"" + str.replaceAll("\"", "\"\"") + "\"";
 
 		return result;
 	}

@@ -14,6 +14,25 @@
 
 package com.kt.programk.deploy.process;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+import org.apache.camel.Exchange;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+
 import com.kt.programk.common.code.AimlFileType;
 import com.kt.programk.common.domain.core.AimlSubs;
 import com.kt.programk.common.domain.core.BotFile;
@@ -25,19 +44,6 @@ import com.kt.programk.common.exception.BizCheckedException;
 import com.kt.programk.common.exception.BizErrCode;
 import com.kt.programk.common.logs.CLogger;
 import com.kt.programk.deploy.model.AimlError;
-import org.apache.camel.Exchange;
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.UnknownHostException;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * 전처리 XML 파일 생성
@@ -47,8 +53,10 @@ public class SubstitutionsTemplateProcess extends AbstractTemplateProcess {
      * The constant LOGGER.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(SubstitutionsTemplateProcess.class);
-
-
+    
+    // 정규식에 사용되는 케릭터들 -> . ^ $ * + - ? ( ) [ ] { } \ |
+    private final List<String> regexChars = Arrays.asList(".", "^", "$", "*", "+", "-", "?", "(", ")", "[", "]", "{", "}", "|");	// "\\" 는 별도로 처리
+    
     /**
      * Execute.
      *
@@ -75,6 +83,10 @@ public class SubstitutionsTemplateProcess extends AbstractTemplateProcess {
 
         //단어 앞뒤 공백 추가
         for(AimlSubs aimlsubs : aimlSubses){
+        	
+        	// 2018-01-25 패치 (정규식에 사용되는 특수기호에 대해 \ 붙여주도록 수정)
+        	changeRegexCharacters(aimlsubs);
+        	
             if(aimlsubs.getReplace() != null){
                 aimlsubs.setReplace(" " + aimlsubs.getReplace());
             }
@@ -118,7 +130,30 @@ public class SubstitutionsTemplateProcess extends AbstractTemplateProcess {
         CLogger.functionEnd(deploy.getPath() + "/" + deploy.getFileName());
     }
 
-    /**
+	private void changeRegexCharacters(AimlSubs aimlsubs) {
+		// 2018-01-25 패치
+		if ( hasRegexChars(aimlsubs.getFind())) {
+    		String find = aimlsubs.getFind();
+    		find = find.replaceAll(Pattern.quote("\\"), "\\\\\\\\");
+    		for ( String regexChar : regexChars ) {
+    			find = find.replaceAll(Pattern.quote(regexChar), "\\\\".concat(regexChar));
+    		}
+    		aimlsubs.setFind(find);
+    	}
+	}
+
+	private boolean hasRegexChars(String find) {
+		// 2018-01-25 패치
+		boolean hasRegexChars = false;
+		for ( String s : regexChars ) {
+			if ( find.contains(s) ) {
+				return true;
+			}
+		}
+		return hasRegexChars;
+	}
+
+	/**
      * Clean.
      *
      * @param exchange the exchange
