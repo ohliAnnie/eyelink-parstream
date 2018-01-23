@@ -74,7 +74,7 @@ router.get('/error_pop_agent', function(req, res, next) {
   var today = Utils.getToday(fmt1);  
   var index = indexElagent.split('_');
   var in_data = {
-    index : indexElagent+req.query.server+'*',  
+    index : [indexElagent+req.query.server+'*'],  
     //index:  [indexElagent+Utils.getDate(today, fmt4, -1, 0, 0, 0),  indexElagent+Utils.getToday(fmt4)],
     type : "TraceDetail",
     start : Utils.getDate(today, fmt1, -1, 0, 0, 0)+startTime,
@@ -866,7 +866,7 @@ router.get('/restapi/getAgentMap', function(req, res, next) {
           }
         } else {           
           nodekey[d._source.applicationId] = 0;                            
-          nodeList.push({ id : d._source.applicationId, status : 0 });
+          nodeList.push({ id : d._source.applicationId, status : 0 });          
           nodes.push({ data : { id : d._source.applicationId, name : d._source.applicationId, img : '../assets/sample/server-'+d._source.serviceTypeName+'.png', parent : 'p_'+d._source.applicationId }});      
           if(d._source.isError) {
             nodekey[d._source.toApplicationId]++;
@@ -878,7 +878,7 @@ router.get('/restapi/getAgentMap', function(req, res, next) {
           if(nodekey[d._source.toApplicationId] == null){
             nodekey[d._source.toApplicationId] = 0;                            
             nodeList.push({ id : d._source.toApplicationId, status : 0 });
-            nodes.push({ data : { id : d._source.toApplicationId, name : d._source.toApplicationId, img : '../assets/sample/server-'+d._source.toServiceTypeName+'.png', parent : 'p_'+d._source.toApplicationId }});      
+            nodes.push({ data : { id : d._source.toApplicationId, name : d._source.toApplicationId, img : '../assets/sample/server-'+d._source.agentId+'.png', parent : 'p_'+d._source.toApplicationId }});      
           }          
           edgekey[d._source.applicationId+'>'+d._source.toApplicationId] = 1;
         }        

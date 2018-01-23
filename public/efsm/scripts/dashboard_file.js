@@ -35,6 +35,7 @@ function getDash(data){
 }
 
 function getServerMap(elesJson) {
+  console.log(elesJson)
   var cy = cytoscape({
     container: document.getElementById('cy'),
      style: cytoscape.stylesheet()
@@ -152,21 +153,21 @@ function getServerMap(elesJson) {
   cy.minZoom(1);
 
   cy.on('click', 'node', function(evt){      
-    var server = $("#server").val();        
-    cyclick = this.id();    
+    var server = $("#server").val();  
+    var ser = { 'jira' : 'jira_access', 'TESTAPP' : 'test-agent', 'BCIPPTEST' : 'pp2' };
+    cyclick = this.id();        
     if((evt.timeStamp-timeStamp)<500){
-      if(server === 'all' && cyclick == 'jira'){
-        location.href='/dashboard/?server='+'jira_access';
-      } else if(server === 'all' && cyclick == 'TESTAPP') {
-        location.href='/dashboard/?server='+'test-agent';
-      }
+
+      location.href='/dashboard/?server='+ser[cyclick];
+      //} else if(server === 'all' && cyclick == 'TESTAPP') {      
     } else {
       if(server === 'all' && cyclick == 'jira'){
         displayCount();
         drawWeekly();      
         var data = { date : new Date().getTime(), gap : 0 };
         getDash(data);
-      } else if(server === 'all' && cyclick == 'TESTAPP') {
+      } else {
+        allServer = ser[cyclick];
         getAgentData(new Date);
         displayCountAgent();
       }
@@ -179,6 +180,7 @@ function getServerMap(elesJson) {
     });     
   });  
 };
+var allServer = '';
 
 var cnt = 0;
 function drawScatter(data, start, end, max) {    
