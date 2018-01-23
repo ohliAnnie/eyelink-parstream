@@ -386,11 +386,13 @@ router.get('/restapi/getMatchingPattern', function(req, res, next) {
 // query RawData
 router.get('/restapi/getAnomalyChartData', function(req, res, next) {
   var now = Utils.getToday(fmt2, 'Y');
-  var end = Utils.getDate(now, fmt2, 0, 0, 0, 10, 'Y', 'Y');
+  var end = Utils.getDate(now, fmt2, 0, 0, 0, 10, 'Y', 'Y').split('T');
+  var gte = Utils.getDate(now, fmt2, 0, 0, -10, 0, 'Y', 'Y').split('T');
+  var day = '2018-01-10T';
   var in_data = {
         INDEX: indexPatternMatching, TYPE: "pattern_matching",
-        gte : Utils.getDate(now, fmt2, 0, 0, -10, 0, 'Y', 'Y'),
-        lte : end };
+        gte : day+gte[1],
+        lte : day+end[1] };
   queryProvider.selectSingleQueryByID2("analysis", "selectByAnalysisTimestamp", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -499,14 +501,17 @@ router.get('/restapi/getAnomalyPatternCheck/', function(req, res, next) {
 });
 
 // query RawData
-router.get('/restapi/getClusterNodeLive', function(req, res, next) {
-  logger.debug('analysis/restapi/getClusterNodeLive');
+router.get('/restapi/getAnomalyNodeLive', function(req, res, next) {
+  logger.debug('analysis/restapi/getAnomalyNodeLive');
   var today = Utils.getToday(fmt2, 'Y', 'Y');
+  var gte = Utils.getDate(today, fmt2, 0, 0, -1, 0, 'Y', 'Y').split('T');
+  var lte = Utils.getDate(today, fmt2, 0, 0, 0, 1, 'Y', 'Y').split('T');
+  var day = '2018-01-10T';
   var in_data = {
         index : indexCore+'*',      type : "corecode",
-        gte: Utils.getDate(today, fmt2, 0, 0, -1, 0, 'Y', 'Y'),
-        lte: Utils.getDate(today, fmt2, 0, 0, 0, 1, 'Y', 'Y'),
-        NODE: ["0002.00000039"], FLAG : 'N'};
+        gte: day+gte[1],
+        lte: day+lte[1],
+        NODE: ["B009"], FLAG : 'N'};
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
      //logger.debug(out_data);
     var rtnCode = CONSTS.getErrData('0000');
