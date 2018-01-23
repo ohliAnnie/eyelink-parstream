@@ -21,7 +21,8 @@ $(document).ready(function(e) {
   });
   $("#btn_timeseries").click(function(){        
     var server = $("#server").val();        
-    var type = $("#type").val();                   
+    var type = $("#type").val();                 
+    console.log(cyclick)  
     if(server=="all"){
       if(cyclick == "TESTAPP") {
         location.href='/timeseries/timeseriesAgent?server=test-agent';

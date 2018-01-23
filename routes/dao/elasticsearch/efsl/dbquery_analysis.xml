@@ -239,7 +239,6 @@
         }
       }
      ]]></query>
-    <!--  (vibration_x + vibration_y + vibration_z) / 3 as vibration 없음 -->
     <query id='selectClusterNodePower'><![CDATA[
       {
         "index" : #index#,
@@ -249,8 +248,12 @@
           "sort" : { "event_time" : { "order" : "asc" }},
           "_source" : ["event_time", "active_power", "ampere", "power_factor", "voltage", "node_id"],
           "query" : {
-            "bool" : {              
-              "should" : [#NODE#]
+            "bool" : {
+              "must" : { "match": { "event_type" : "1" } },
+              "filter" : [
+                { "terms" : { "node_id": [##NODE##] }  },
+                { "range" : { "event_time" :{ "gte" : #gte#, "lte" : #lte# } } }
+              ]
             }
           }
         }

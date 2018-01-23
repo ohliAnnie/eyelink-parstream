@@ -29,8 +29,15 @@ jQuery(document).ready(function() {
   TableManaged.init();
 });
 
+var urlParams = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
+  return paramPair.split(/=(.+)?/).slice(0, 2);
+}).reduce(function(obj, pairArray) {
+  obj[pairArray[0]] = pairArray[1];
+  return obj;
+}, {});
+
 function getTransaction(id, date) {      
-  var data = { date : date, id : id };
+  var data = { date : date, id : id, server : urlParams.server };
   var in_data = { url : "/dashboard/restapi/getTransactionDetail", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
     if (result.rtnCode.code == "0000") {              

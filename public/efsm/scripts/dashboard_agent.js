@@ -1,11 +1,18 @@
 function getAgentData(day){
-  var server = $("#server").val();  
+  var server = $("#server").val(); 
+  if(server == 'all') {
+    server = allServer;
+  }
+  console.log(server)
   var data = { date : day.getTime(), gap : 0, server : server };
   drawDashAgent(data);
 }
 
 function drawDashAgent(data){
-  var server = $("#server").val();  
+  var server = $("#server").val();    
+  if(server == 'all') {
+    server = allServer;
+  }
   if(server != 'all') {
     var in_data = { url : "/dashboard/restapi/getAgentMap", type : "GET", data : data };
     ajaxTypeData(in_data, function(result){
@@ -124,7 +131,8 @@ function summaryAgent(data, start, end) {
 
 function displayCountAgent() {      
   var day = new Date().getTime();
-  var server = $("#server").val();  
+  var server = $("#server").val();
+
   var data = { date : day, gap : 'day', server : server };
   var in_data = { url : "/dashboard/restapi/countAgentDay", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
@@ -279,7 +287,11 @@ function drawAgentScattor(data, start, end, max){
       fOnSelect : function(htPosition, htXY){        
         var aData = this.getDataByXY(htXY.nXFrom, htXY.nXTo, htXY.nYFrom, htXY.nYTo);
         console.log(new Date(parseInt(htXY.nXFrom)), new Date(parseInt(htXY.nXTo)));
-        var link = '/dashboard/selected_detail_agent?start='+htXY.nXFrom+'&end='+htXY.nXTo+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;        
+        var server = $("#server").val();    
+        if(server == 'all') {
+          server = allServer;
+        }
+        var link = '/dashboard/selected_detail_agent?server='+server+'&start='+htXY.nXFrom+'&end='+htXY.nXTo+'&min='+htXY.nYFrom+'&max='+htXY.nYTo;        
         window.open(link, "EyeLink Service List", "menubar=1,status=no,scrollbars=1,resizable=1 ,width=1200,height=640,top=50,left=50");        
       }
     }); 
