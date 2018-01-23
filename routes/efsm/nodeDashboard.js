@@ -573,7 +573,7 @@ router.get('/restapi/getJiramapdata', function(req, res, next) {
         } else { 
           nodekey[d._source.application_id] = 0;                  
           var img = d._source.application_name.split(' ');
-          nodeList.push({ id : d._source.application_id, status : 0 });
+          nodeList.push({ id : d._source.application_id, status : 0 });          
           nodes.push({ data : { id : d._source.application_id, name : d._source.application_name, img : '../assets/sample/server-'+img[0]+'.png', parent : 'p_'+d._source.application_id }});      
           if(parseInt(d._source.response) >= 400 ) {
             nodekey[d._source.application_id]++;
@@ -627,7 +627,7 @@ router.get('/restapi/getAllMapData', function(req, res, next) {
           if(parseInt(d._source.response) >=400 ) {
             nodekey1[d._source.to_application_id]++;
           }
-        } else { 
+        } else {           
           nodekey1[d._source.application_id] = 0;                  
           var img = d._source.application_name.split(' ');
           nodeList1.push({ id : d._source.application_id, status : 0 });
@@ -671,8 +671,8 @@ router.get('/restapi/getAllMapData', function(req, res, next) {
             }
           } else {           
             nodekey[d._source.applicationId] = 0;                            
-            nodeList.push({ id : d._source.applicationId, status : 0 });
-            nodes.push({ data : { id : d._source.applicationId, name : d._source.applicationId, img : '../assets/sample/server-'+d._source.serviceTypeName+'.png', parent : 'p_'+d._source.applicationId }});      
+            nodeList.push({ id : d._source.applicationId, status : 0 });            
+            nodes.push({ data : { id : d._source.applicationId, name : d._source.applicationId, img : '../assets/sample/server-'+d._source.agentId+'.png', parent : 'p_'+d._source.applicationId }});      
             if(d._source.isError) {
               nodekey[d._source.toApplicationId]++;             
             }
@@ -683,7 +683,7 @@ router.get('/restapi/getAllMapData', function(req, res, next) {
             if(nodekey[d._source.toApplicationId] == null){
               nodekey[d._source.toApplicationId] = 0;                            
               nodeList.push({ id : d._source.toApplicationId, status : 0 });
-              nodes.push({ data : { id : d._source.toApplicationId, name : d._source.toApplicationId, img : '../assets/sample/server-'+d._source.toServiceTypeName+'.png', parent : 'p_'+d._source.toApplicationId }});      
+              nodes.push({ data : { id : d._source.toApplicationId, name : d._source.toApplicationId, img : '../assets/sample/server-'+d._source.agentId+'.png', parent : 'p_'+d._source.toApplicationId }});      
             }            
             edgekey[d._source.applicationId+'>'+d._source.toApplicationId] = 1;
           }
