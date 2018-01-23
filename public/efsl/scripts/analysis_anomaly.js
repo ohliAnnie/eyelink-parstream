@@ -4,7 +4,7 @@ $(document).ready(function(e) {
 
 var liveValue = [];
 setInterval(function() {
-  var in_data = { url : "/analysis/restapi/getClusterNodeLive", type : "GET", data : {} };
+  var in_data = { url : "/analysis/restapi/getAnomalyNodeLive", type : "GET", data : {} };
   ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {
       if(result.rtnData.length == 1){
