@@ -86,7 +86,6 @@ router.get('/restapi/countMonEvent', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {      
-      console.log('TTTTTTTTT')
       console.log(start, end)
       end = start;            
       start = Utils.getDate(end, fmt1, -new Date(new Date(end).getTime()-1).getDate(), 0, 0, 0, 'Y')+startTime;
@@ -135,9 +134,9 @@ router.get('/restapi/countFaultEvent', function(req, res, next) {
 router.post('/restapi/sumActivePower', function(req, res, next) {
   logger.debug('dashboard/restapi/sumActivePower');        
   var end = Utils.getToday(fmt1, 'Y', 'Y')+startTime;    
-  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;        
-  var in_data = { index : indexCore+'*', type : "corecode", start : start , end : end };    
-  queryProvider.selectSingleQueryByID3("dashboard","sumActivePower", in_data, function(err, out_data, params) {
+  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0, 'Y')+startTime;        
+  var in_data = { index : indexCore+'*', type : "corecode", start : start , end : end };      
+  queryProvider.selectSingleQueryByID3("dashboard","sumActivePower", in_data, function(err, out_data, params) {    
     var today = out_data;    
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -145,9 +144,9 @@ router.post('/restapi/sumActivePower', function(req, res, next) {
     } else {
       end = start;
       start = Utils.getDate(end, fmt1, -1, 0, 0, 0, 'Y')+startTime;
-      var in_data = { index : indexCore+'*', type : "corecode", start : start, end : end };  
+      var in_data = { index : indexCore+'*', type : "corecode", start : start, end : end };        
       queryProvider.selectSingleQueryByID3("dashboard","sumActivePower", in_data, function(err, out_data, params) {
-        var yday = out_data;        
+        var yday = out_data;                
         var rtnCode = CONSTS.getErrData('0000');
         if (out_data == null) {
           rtnCode = CONSTS.getErrData('0001');
