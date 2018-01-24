@@ -247,8 +247,6 @@ router.get('/restapi/getClusterPattern', function(req, res, next) {
   });
 });
 
-
-
 // pattern data 업데이트
 router.post('/restapi/pattern_data/:id/_update', function(req, res, next) {
   logger.debug('/analysis/restapi/pattern_data/:id/_update');
@@ -298,9 +296,6 @@ router.post('/restapi/pattern_info/:id/_update/', function(req, res, next) {
     }
   });
 });
-
-
-
 
 // query RawData
 router.get('/restapi/getAnomalyPattern/:id', function(req, res, next) {
@@ -385,13 +380,11 @@ router.get('/restapi/getMatchingPattern', function(req, res, next) {
 // query RawData
 router.get('/restapi/getAnomalyChartData', function(req, res, next) {
   var now = Utils.getToday(fmt2, 'Y');
-  var end = Utils.getDate(now, fmt2, 0, 0, 0, 10, 'Y', 'Y').split('T');
-  var gte = Utils.getDate(now, fmt2, 0, 0, -10, 0, 'Y', 'Y').split('T');
-  var day = '2018-01-10T';
+  var end = Utils.getDate(now, fmt2, 0, 0, 0, 10, 'Y', 'Y');
+  var gte = Utils.getDate(now, fmt2, 0, 0, -10, 0, 'Y', 'Y');
   var in_data = {
         INDEX: indexPatternMatching, TYPE: "pattern_matching",
-        gte : day+gte[1],
-        lte : day+end[1] };
+        gte : gte,  lte : end };
   queryProvider.selectSingleQueryByID2("analysis", "selectByAnalysisTimestamp", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data == null) {
@@ -400,10 +393,11 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
     } else if(out_data.length == 0) {
       rtnCode = CONSTS.getErrData('0001');
     } else {
-      var pattern = out_data[0]._source;
+      var pattern = out_data[0]._source;      
       var list = makeList(["voltage", "ampere", "power_factor", "active_power"], pattern);
+      //var in_data = { INDEX: indexPatternData, TYPE: "pattern_data" , ID: out_data[0]._id.split('T')[0], list : list }
       var in_data = { INDEX: indexPatternData, TYPE: "pattern_data" , ID: "master", list : list }
-      queryProvider.selectSingleQueryByID2("analysis", "selectAnomalyMatch", in_data,  function(err, out_data, params) {
+      queryProvider.selectSingleQueryByID2("analysis", "selectAnomalyMatch", in_data,  function(err, out_data, params) {        
         var rtnCode = CONSTS.getErrData('0000');
         if (out_data == null) {
           logger.debug('null');
@@ -412,10 +406,15 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
            rtnCode = CONSTS.getErrData('0001');
         } else {
           var clust = out_data[0]._source;
-          var start = Utils.getDate(pattern.timestamp, fmt2, 0, 0, -50, -10, 'Y', 'Y');
+          var lte = end.split('T');
+          var date = ['10', '01', '02', '03', '04', '05', '06', '07', '08', '09'];
+          var day = '2018-01-'+date[new Date().getDate()%10]+'T';                    
+          var start = Utils.getDate(pattern.timestamp, fmt2, 0, 0, -50, -10, 'N', 'Y');
+          var gte = start.split('T');          
           var in_data = { index : indexCore+'*', type : "corecode",
-                gte: start, lte: end,  NODE: ["0002.00000039"], FLAG : 'N'};
+                gte: day+gte[1], lte: day+lte[1],  NODE: ["B009"], FLAG : 'N'};                
           queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
+
             var rtnCode = CONSTS.getErrData('0000');
             if (out_data == null) {
               rtnCode = CONSTS.getErrData('0001');
@@ -423,23 +422,28 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
               rtnCode = CONSTS.getErrData('0001');
             } else {
               logger.debug('analysis/restapi/getClusterNodePower -> length : %s', out_data.length);
-              var tot = { "voltage" : [], "ampere" : [], "active_power" : [], "power_factor" : [] };
-              for(key in tot) {
+              var tot = { "voltage" : [], "ampere" : [], "active_power" : [], "power_factor" : [] };              
+              for(key in tot) {               
                 tot[key] = arangeData(clust, pattern, start, key);
-              }
-              logger.debug(tot);
+              }              
               pattern.timestamp = Utils.getDateUTC2Local(pattern.timestamp, fmt2);
               var data = [];
-              var sdata = out_data[0]._source;
+              var sdata = out_data[0]._source;              
               sdata.event_time = new Date(start).getTime();
-              data.push(sdata);
-              out_data.forEach(function(d){
-                d._source.event_time = new Date(d._source.event_time).getTime();
-                data.push(d._source);
-              });
+              data.push(sdata);              
+              for(i=0; i<out_data.length; i++) {
+                var d = out_data[i]._source
+                if(i==0){
+                  d.event_time = Utils.getMs2Date(d.event_time, fmt2, 'Y', 'Y')
+                }                
+                var t = d.event_time.toString().split('T');                                
+                var etime = gte[0]+'T'+t[1];                
+                d.event_time = new Date(etime).getTime();
+                data.push(d);
+              };              
               var last = data[data.length-1];
               last.event_time = new Date().getTime();
-              data.push(last);
+              data.push(last);              
               res.json({rtnCode: rtnCode, raw : data, pattern : pattern, tot : tot });
             }
           });
@@ -448,14 +452,14 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
         res.json({rtnCode: rtnCode, anomaly : anomaly, raw : data, point : point});
       });
     }
-    logger.debug('analysis/restapi/getAnomalyPattern -> length : %s', out_data.length);
-    res.json({rtnCode: rtnCode, anomaly : anomaly, raw : data, point : point});
+//    logger.debug('analysis/restapi/getAnomalyPattern -> length : %s', out_data.length);
+ //   res.json({rtnCode: rtnCode, anomaly : anomaly, raw : data, point : point});
   });
 });
 
 function arangeData(clust, pattern, start, type){
   var data = [], cpt = [], apt = [], min = [], max = [];
-  for(i=59; i<120; i++){
+  for(i=59; i<120; i++){    
     var date = new Date(start).getTime()+(i-59)*60*1000;
     min[i-59] = clust[type][pattern[type].top_1].min_value[i];
     max[i-59] = clust[type][pattern[type].top_1].max_value[i]
@@ -471,16 +475,16 @@ function arangeData(clust, pattern, start, type){
   }
   var minValue = Math.min.apply(null, min);
   var maxValue = Math.max.apply(null, max);
-  var total = { data : data, cpt : cpt, apt : apt, min : minValue, max : maxValue };
+  var total = { data : data, cpt : cpt, apt : apt, min : minValue, max : maxValue };  
   return total;
 }
 
 function makeList(key, pattern){
   var list = [], cnt = 0;
   for(i=0; i<key.length; i++){
-    list[cnt++] = "da_result."+key[i]+"."+pattern[key[i]].top_1;
-    list[cnt++] = "da_result."+key[i]+"."+pattern[key[i]].top_2;
-    list[cnt++] = "da_result."+key[i]+"."+pattern[key[i]].top_3;
+    list[cnt++] = key[i]+"."+pattern[key[i]].top_1;
+    list[cnt++] = key[i]+"."+pattern[key[i]].top_2;
+    list[cnt++] = key[i]+"."+pattern[key[i]].top_3;
   }
   return list;
 }
@@ -504,8 +508,9 @@ router.get('/restapi/getAnomalyNodeLive', function(req, res, next) {
   logger.debug('analysis/restapi/getAnomalyNodeLive');
   var today = Utils.getToday(fmt2, 'Y', 'Y');
   var gte = Utils.getDate(today, fmt2, 0, 0, -1, 0, 'Y', 'Y').split('T');
-  var lte = Utils.getDate(today, fmt2, 0, 0, 0, 1, 'Y', 'Y').split('T');
-  var day = '2018-01-10T';
+  var lte = Utils.getDate(today, fmt2, 0, 0, 0, 1, 'Y', 'Y').split('T');  
+  var date = ['10', '01', '02', '03', '04', '05', '06', '07', '08', '09'];
+  var day = '2018-01-'+date[new Date().getDate()%10]+'T';
   var in_data = {
         index : indexCore+'*',      type : "corecode",
         gte: day+gte[1],
