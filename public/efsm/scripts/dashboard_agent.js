@@ -9,10 +9,7 @@ function getAgentData(day){
 }
 
 function drawDashAgent(data){
-  var server = $("#server").val();    
-  if(server == 'all') {
-    server = allServer;
-  }
+  var server = $("#server").val();  
   if(server != 'all') {
     var in_data = { url : "/dashboard/restapi/getAgentMap", type : "GET", data : data };
     ajaxTypeData(in_data, function(result){
@@ -21,6 +18,8 @@ function drawDashAgent(data){
         getServerMap(elseJson);    
       }
     });
+  } else {
+    server = allServer;
   }
   var in_data = { url : "/dashboard/restapi/getAgentData", type : "GET", data : data };  
   ajaxTypeData(in_data, function(result){    
