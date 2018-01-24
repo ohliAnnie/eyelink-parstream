@@ -70,7 +70,7 @@ function drawMatchingHistory(matchingList) {
 
   console.log(matchingList);
   matchingList.forEach(function(d) {
-    d = d._source.da_result;
+    d = d._source;
     var matchingTime = d.timestamp.replace('T', ' ');
     console.log(d);
     
@@ -103,7 +103,7 @@ function drawMatchingHistory(matchingList) {
     // matchingTime = matchingTime.replace(' ', 'T') + 'Z';
 
     var rowInd = $('#dtPattern').dataTable().fnGetPosition($(this).closest('tr')[0]);
-    var targetData = matchingList[rowInd]._source.da_result[group];
+    var targetData = matchingList[rowInd]._source[group];
     console.log(targetData);
 
   var graphData = getGraphData(targetData);
@@ -313,4 +313,3 @@ function svgSet(svg, append, className, tX, tY){
     .attr('class', className)
     .attr('transform', 'translate('+tX+','+tY+')');
 }
-

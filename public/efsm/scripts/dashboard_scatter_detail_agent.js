@@ -153,7 +153,8 @@ function drawDetail(data) {
           tree = treeList[z.depth];
         }                
         for(j=0; j<z.annotationBoList.length;j++){                     
-          var y =  z.annotationBoList[j];        
+          var y =  z.annotationBoList[j];
+          console.log(y)        
           if( y.key === 10000014){          
             var a = y.value.split('\n');      
             var e = a[1].split('(');
@@ -178,10 +179,12 @@ function drawDetail(data) {
             var yyy =  z.annotationBoList[++j];
             var yyyy =  z.annotationBoList[++j];                        
             var a = yyyy.value.split('\n');      
-            var e = a[1].split('(');
-            var b = e[0].split('.');  
-            var c = a[1].split(b[b.length-2]);  
-            var t = c[1].substring(1).split(':')          
+            if(a[1] != null) {
+              var e = a[1].split('(');
+              var b = e[0].split('.');  
+              var c = a[1].split(b[b.length-2]);  
+              var t = c[1].substring(1).split(':')          
+            }
             stime += z.gap;          
             ftime = msToTime(stime);                   
             sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');                    
@@ -284,10 +287,12 @@ function drawDetail(data) {
                       var yyy =  zz.annotationBoList[++m];
                       var yyyy =  zz.annotationBoList[++m];                        
                       var a = yyyy.value.split('\n');      
-                      var e = a[1].split('(');
-                      var b = e[0].split('.');  
-                      var c = a[1].split(b[b.length-2]);  
-                      var t = c[1].substring(1).split(':')          
+                      if(a[1] != null) {
+                        var e = a[1].split('(');
+                        var b = e[0].split('.');  
+                        var c = a[1].split(b[b.length-2]);  
+                        var t = c[1].substring(1).split(':')
+                      }
                       stime += zz.gap;          
                       ftime = msToTime(stime);                   
                       sb.append('<tr class="treegrid-'+ ++grid +' treegrid-parent-'+tree+'">');                    
@@ -307,7 +312,7 @@ function drawDetail(data) {
                       var a = yy.value.split('\n');      
                       if(a[1] == "Tomcat Servlet Process:0or"){
                         var t = a[1].split(':');
-                      } else {  
+                      } else if(a[1] != null) {
                         var e = a[1].split('(');
                         var b = e[0].split('.');  
                         var c = a[1].split(b[b.length-2]);  
@@ -336,6 +341,10 @@ function drawDetail(data) {
             var a = yy.value.split('\n');      
             if(a[1] == "Tomcat Servlet Process:0or"){
               var t = a[1].split(':');
+            } else if(a[1] == null) {
+              var t = [], b = [];
+              t[0] = a[0];
+              b[4] = '';
             } else {  
               var e = a[1].split('(');
               var b = e[0].split('.');  

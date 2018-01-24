@@ -66,6 +66,7 @@ function drawPatternList(patternLists, nodeInfo) {
   console.log("patternLists : ", patternLists);
   $('#patternList').empty();
   var createdDate = patternLists[0]._id;
+  console.log(createdDate)
   patternLists.forEach(function(d) {
     d = d._id;
     var sb = new StringBuffer();
@@ -103,7 +104,7 @@ function loadPatternData(creationDate, nodeInfo) {
   ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {
       console.log("getPatterns data : ", result);
-      var d = (result.rtnData.da_result);
+      var d = (result.patternData);      
       var sortedData = sortObject(d);
       drawPatternTree(creationDate, sortedData, nodeInfo);
     }
@@ -111,7 +112,7 @@ function loadPatternData(creationDate, nodeInfo) {
 }
 
 function sortObject(obj) {
-  var sorted = {};
+  var sorted = {};  
   Object.keys(obj).sort().forEach(function(key) { sorted[key] = obj[key]; });
   return sorted;
 }
@@ -261,7 +262,7 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
     var masterCN = row[0].cells[2].innerText;
     d3.selectAll("svg").remove();
     
-    var masterTarget = "da_result." + parentNode + "." + masterCN + ".center";
+    var masterTarget = parentNode + "." + masterCN + ".center";
     getGraphData(test, creationDate, parentNode, CN);
 
     function test(set, minval, maxval){
@@ -299,13 +300,14 @@ function drawPatterns(creationDate, parentNode, childNode, patternData) {
 
 
 function getGraphData(callback, id, factName, clusterNo) {
-  var target = "da_result." + factName + "." + clusterNo + ".center";
+  var target = factName + "." + clusterNo + ".center";
   var data = {id : id, target : target};
   var in_data = {url: "/analysis/restapi/getClusterPattern", type: "GET", data: data};
   
   ajaxTypeData(in_data, function(result) {
     if (result.rtnCode.code == "0000") {
-      var d = result.rtnData.da_result;
+      console.log(result)
+      var d = result.patternData;
       console.log("d", d);
       var graphData = d[factName][clusterNo]["center"];
       var set = [];
