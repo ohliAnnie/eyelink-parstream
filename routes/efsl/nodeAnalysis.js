@@ -214,11 +214,15 @@ router.get('/restapi/getClusterData', function(req, res, next) {
   });
 });
 
-
 // get pattern about selected cluster
 router.get('/restapi/getClusterPattern', function(req, res, next) {
   logger.debug(req.query);
-  var in_data = { INDEX: indexPatternData, TYPE: "pattern_data", ID: req.query.id, TARGET: req.query.target };
+  let flag = req.query.step;
+  let cid = req.query.machine;  
+  var in_data = {
+    INDEX: indexPatternData, TYPE: "pattern_data",
+    ID: req.query.id, TARGET: req.query.targetCluster
+  };
   queryProvider.selectSingleQueryByID2("analysis", "selectClusterPattern", in_data, function(err, out_data, params) {
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data.length == 0) {
@@ -230,7 +234,10 @@ router.get('/restapi/getClusterPattern', function(req, res, next) {
         var masterData = null;
         res.json({rtnCode: rtnCode, patternData: patternData, masterData: masterData});
       } else {
-        var in_data = { INDEX: indexPatternData, TYPE: "pattern_data", ID: "master", TARGET: req.query.targetMaster };
+        var in_data = {
+          INDEX: indexPatternData, TYPE: "pattern_data",
+          ID: "master", TARGET: req.query.targetMaster
+        };
         queryProvider.selectSingleQueryByID2("analysis", "selectClusterPattern", in_data, function(err, out_data, params) {
           var rtnCode = CONSTS.getErrData('0000');
           if (out_data.length == 0) {
@@ -250,15 +257,20 @@ router.get('/restapi/getClusterPattern', function(req, res, next) {
 // pattern data 업데이트
 router.post('/restapi/pattern_data/:id/_update', function(req, res, next) {
   logger.debug('/analysis/restapi/pattern_data/:id/_update');
-  logger.debug(JSON.stringify(req.body));
-  var in_data = { INDEX: indexPatternData, TYPE: "pattern_data", ID: req.params.id };
+  logger.debug(JSON.stringify(req.body));  
+  var in_data = {
+    INDEX: indexPatternData, TYPE: "pattern_data",
+    ID: req.params.id  };
   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     if (out_data[0] == null){
       var rtnCode = CONSTS.getErrData('E001');
       logger.debug(rtnCode);
       res.json({rtnCode: rtnCode});
     } else {
-      var in_data = { INDEX: indexPatternData, TYPE: "pattern_data", ID: req.params.id, BODY: JSON.stringify(req.body)};
+      var in_data = {
+        INDEX: indexPatternData, TYPE: "pattern_data",
+        ID: req.params.id, BODY: JSON.stringify(req.body.data)        
+      };
       queryProvider.updateQueryByID("analysis", "updatePatternData", in_data, function(err, out_data) {
         if(out_data.result == "updated"){
           var rtnCode = CONSTS.getErrData("D001");
@@ -278,12 +290,18 @@ router.post('/restapi/pattern_data/:id/_update', function(req, res, next) {
 router.post('/restapi/pattern_info/:id/_update/', function(req, res, next) {
   logger.debug('/analysis/restapi/pattern_info/:id/_update');
   logger.debug(JSON.stringify(req.body));
-  var in_data = { INDEX: indexPatternInfo, TYPE: "pattern_info", ID: req.params.id };
+  let index = indexPatternInfo;
+  var in_data = {
+    INDEX: index, TYPE: "pattern_info",
+    ID: req.params.id,    
+  };
   queryProvider.selectSingleQueryByID2("analysis", "selectById", in_data, function(err, out_data, params) {
     if (out_data[0] == null){
       var rtnCode = CONSTS.getErrData('E001');
     } else {
-      var in_data = { INDEX: indexPatternInfo, TYPE: "pattern_info", ID: req.params.id, BODY: JSON.stringify(req.body)};
+      var in_data = {
+        INDEX: index, TYPE: "pattern_info",
+        ID: req.params.id, BODY: JSON.stringify(req.body.data)  };
       queryProvider.updateQueryByID("analysis", "updatePatternInfo", in_data, function(err, out_data) {
         if(out_data.result == "updated"){
           var rtnCode = CONSTS.getErrData("D002");
@@ -328,25 +346,41 @@ router.get('/restapi/getAnomalyPattern/:id', function(req, res, next) {
   });
 });
 
-// pattern dataset
+// Pattern Management pattern list
 router.get('/restapi/getAnomalyPatternList', function(req, res, next) {
-  logger.debug("req.query:", req.query);
+  logger.debug("[getAnomalyPatternList] req.query: ", req.query);
   var sDate = Utils.getDate(req.query.startDate, fmt1, -1, 0, 0, 0);
-  var eDate = Utils.getMs2Date(req.query.endDate, fmt1);
+  var eDate = Utils.getMs2Date(req.query.endDate, fmt1);  
+  let index = indexPatternData
   var in_data = {
       INDEX : indexPatternData, TYPE : "pattern_data",
       START_TIMESTAMP: sDate+startTime,
       END_TIMESTAMP: eDate+startTime,
-      MASTER_ID: req.query.masterId};
-  var sql = "selectPatternList";
-  queryProvider.selectSingleQueryByID2("analysis", sql, in_data, function(err, out_data, params) {
-    logger.debug(out_data[0]._source);
+      MASTER_ID: req.query.masterId,
+      RANGEFIELD: "createDatetime"
+    };
+  queryProvider.selectSingleQueryByID2("analysis", "selectPatternList", in_data, function(err, out_data, params) {
+    // logger.debug(out_data);
     var rtnCode = CONSTS.getErrData('0000');
     if (out_data === null) {
       rtnCode = CONSTS.getErrData('0001');
     }
     logger.debug('analysis/restapi/getAnomalyPatternList -> length : %s', out_data.length);
-    res.json({rtnCode: rtnCode, rtnData: out_data });
+    // logger.debug('out_data: ',JSON.stringify(out_data));
+    let idList = [];
+    var localDate = '';
+    out_data.forEach(function(d) {
+      if (d._id != 'master'){
+        localDate = Utils.getDateUTC2Local(d._source.createDatetime, CONSTS.DATEFORMAT.DATE, 'N');
+        if ( idList.indexOf(localDate) == -1 ){
+          idList.push(localDate);
+        }
+      }else if ( d._id == 'master') {
+        idList.push('master');
+      }
+    });
+    logger.debug('patternList: ',idList);
+    res.json({rtnCode: rtnCode, rtnData: idList });
   });
 });
 
@@ -408,13 +442,15 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
           var clust = out_data[0]._source;
           var lte = end.split('T');
           var date = ['10', '01', '02', '03', '04', '05', '06', '07', '08', '09'];
-          var day = '2018-01-'+date[new Date().getDate()%10]+'T';                    
-          var start = Utils.getDate(pattern.timestamp, fmt2, 0, 0, -50, -10, 'N', 'Y');
-          var gte = start.split('T');          
+          var day = '2018-01-'+date[new Date().getDate()%10];                    
+          var start = Utils.getDate(pattern.timestamp, fmt2, 0, 0, -50, -10, 'N', 'Y')+'Z';
+          var gte = start.split('T');
+          var g = (new Date(gte[0]).getTime()-new Date(day).getTime())/(24*60*60*1000);          
+          var gstart = Utils.getDate(start, fmt2, -g, 0, 0, 0, 'Y', 'Y');          
+          var gend = Utils.getDate(end, fmt2, -g, 0, 0, 0, 'Y', 'Y');          
           var in_data = { index : indexCore+'*', type : "corecode",
-                gte: day+gte[1], lte: day+lte[1],  NODE: ["B009"], FLAG : 'N'};                
+                gte: gstart, lte: gend,  NODE: ["B009"], FLAG : 'N'};                
           queryProvider.selectSingleQueryByID2("analysis", "selectClusterNodePower", in_data, function(err, out_data, params) {
-
             var rtnCode = CONSTS.getErrData('0000');
             if (out_data == null) {
               rtnCode = CONSTS.getErrData('0001');
@@ -427,18 +463,15 @@ router.get('/restapi/getAnomalyChartData', function(req, res, next) {
                 tot[key] = arangeData(clust, pattern, start, key);
               }              
               pattern.timestamp = Utils.getDateUTC2Local(pattern.timestamp, fmt2);
-              var data = [];
-              var sdata = out_data[0]._source;              
-              sdata.event_time = new Date(start).getTime();
-              data.push(sdata);              
+              var data = [];                     
               for(i=0; i<out_data.length; i++) {
                 var d = out_data[i]._source
                 if(i==0){
-                  d.event_time = Utils.getMs2Date(d.event_time, fmt2, 'Y', 'Y')
-                }                
-                var t = d.event_time.toString().split('T');                                
-                var etime = gte[0]+'T'+t[1];                
-                d.event_time = new Date(etime).getTime();
+                  d.event_time = new Date(start).getTime();;                        
+                } else {
+                  var etime = Utils.getDate(d.event_time, fmt2, g, 0, 0, 0);                
+                  d.event_time = new Date(etime).getTime();
+                }
                 data.push(d);
               };              
               var last = data[data.length-1];
