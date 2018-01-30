@@ -1,6 +1,6 @@
 $(document).ready(function() {               
   var dateFormat = 'YYYY-MM-DD';
-  $('#sdate').val(moment().subtract(1, 'days').format(dateFormat));
+  $('#sdate').val(moment().subtract(6, 'days').format(dateFormat));
   $('#edate').val(moment().format(dateFormat));      
   drawChart();
   $('#btn_search').click(function() {          

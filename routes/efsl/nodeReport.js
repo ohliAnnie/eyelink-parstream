@@ -107,9 +107,9 @@ router.get('/restapi/getRangePowerData', function(req, res, next) {
       out_data.forEach(function(d){
         d = d._source;       
         d.event_time = Utils.getDateUTC2Local(d.event_time, fmt2);  
-        d.geo = (d.node_id === '0001.00000001') ? '37.457271, 127.042861':'37.468271, 127.032861';
-        var id = d.node_id.split('.')
-        d.zone_id = 'ZONE-'+id[0];
+        d.geo = (d.node_id === 'B009') ? '37.457271, 127.042861':'37.468271, 127.032861';                     
+        d.zone_id = 'ZONE-'+d.node_id.substr(0,1);
+        
         data.push(d);
       });            
     }

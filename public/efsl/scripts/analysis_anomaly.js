@@ -59,7 +59,7 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
   var groups = {
     output: {
       value: liveValue[id],
-      color: 'pink',
+      color: 'black',
       data: d3.range(0).map(function() {
         return 0
       })
