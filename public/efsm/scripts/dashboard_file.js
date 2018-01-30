@@ -346,6 +346,7 @@ function displayCount() {
   var data = { date : new Date().getTime() };
   var in_data = { url : "/dashboard/restapi/countAccJiraDay", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){
+    console.log(result)
     if (result.rtnCode.code == "0000") {
       $('#dayCnt').text(result.today);
       setStatus($('#dayCnt_status'), result.today/result.yday*100, 'day', result.yday);
@@ -354,14 +355,16 @@ function displayCount() {
   
   var in_data = { url : "/dashboard/restapi/countAccJiraMon", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){  
+    console.log(result)
     if (result.rtnCode.code == "0000") {
       $('#monCnt').text(result.tmon);
       setStatus($('#monCnt_status'), result.tmon/result.ymon*100, 'mon', result.ymon);                
     }    
   });
 
-  var in_data = { url : "/dashboard/restapi/countAgentError", type : "GET", data : data };
+  var in_data = { url : "/dashboard/restapi/countAccJiraError", type : "GET", data : data };
   ajaxTypeData(in_data, function(result){
+    console.log(result)
     if (result.rtnCode.code == "0000") {
       $('#errCnt').text(result.today);
       setStatus($('#errCnt_status'), result.today/result.yday*100, 'day', result.yday);

@@ -1,6 +1,6 @@
 $(document).ready(function() {                          
   var dateFormat = 'YYYY-MM-DD';
-  $('#sdate').val(moment().subtract(1, 'days').format(dateFormat));
+  $('#sdate').val(moment().subtract(4,'days').format(dateFormat));
   $('#edate').val(moment().format(dateFormat));
 
   // time series char를 그린다.
@@ -80,7 +80,7 @@ function drawPower(data, sdate, edate) {
    /* dc.barChart('#dayCount') */
   dayCount
     .width(window.innerWidth*0.3)
-    .height((window.innerWidth*0.4)*0.5)
+    .height(310)
     .margins({top: 15, right: 50, bottom: 40, left: 40})
     .transitionDuration(500)
     .dimension(todayDim)
@@ -98,8 +98,8 @@ function drawPower(data, sdate, edate) {
   /* dc.pieChart('#groupCount') */
   groupCount
     .width(window.innerWidth*0.2)
-    .height((window.innerWidth*0.4)*0.5)
-    .radius((window.innerWidth*0.3)*0.2)
+    .height(310)
+    .radius(130)
     .dimension(zoneDim)
     .group(zonePieGroup)    
     .drawPaths(true)

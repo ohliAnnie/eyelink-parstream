@@ -3,7 +3,7 @@ $(document).ready(function(e) {
 });
 
 var liveValue = [];
-setInterval(function() {
+/*setInterval(function() {
   var in_data = { url : "/analysis/restapi/getAnomalyNodeLive", type : "GET", data : {} };
   ajaxTypeData(in_data, function(result){
     if (result.rtnCode.code == "0000") {
@@ -12,11 +12,12 @@ setInterval(function() {
       }
     }
   });
-}, 5*1000);
+}, 5*1000);*/
 
 function getData(){
   var in_data = { url : "/analysis/restapi/getAnomalyChartData", type : "GET", data : {} };
   ajaxTypeData(in_data, function(result){
+    console.log(result)
     if (result.rtnCode.code == "0000") {
       var raw = result.raw;
       var point = new Date(result.pattern.timestamp).getTime(), start = point -50*60*1000, end = point+10*60*1000;
@@ -58,7 +59,7 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
   var groups = {
     output: {
       value: liveValue[id],
-      color: 'pink',
+      color: 'black',
       data: d3.range(0).map(function() {
         return 0
       })
@@ -71,7 +72,7 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
     .range([0, width]);
 
   var yStart = (tot.min*0.1 < 1 ? 0 : tot.min*0.95);
-  var yEnd = (tot.max*0.1 < 20 ? tot.max*1.25 : tot.max*1.05);
+  var yEnd = (tot.max*0.1 < 20 ? tot.max*1.25 : tot.max*1.15);
 
   var y = d3.scale.linear()
     .domain([yStart, yEnd])
@@ -117,29 +118,30 @@ function drawChart(raw, tot, start, end, now, point, gap, id, chart_id, pattern)
   rectLegendBG(legend, 'legend-bg', legendWidth, legendHeight);
 
   rectLegend(legend, 'inner', 55, 15, 10, 8);
-  textLegend(legend, 103, 19, 'lower-upper');
+  textLegend(legend, 73, 19, 'lower-upper');
 
   rectLegend(legend, 'outer', 55, 15, 10, 33);
-  textLegend(legend, 95, 43, 'min-max');
+  textLegend(legend, 73, 43, 'min-max');
 
   pathLegend(legend, 'compareline', 'M150,15L205,15');
-  textLegend(legend, 230, 19, 'Pattern');
+  textLegend(legend, 215, 19, 'Pattern');
 
   pathLegend(legend, 'valueline', 'M150,40L205,40');
-  textLegend(legend, 225, 43, 'Data');
+  textLegend(legend, 215, 43, 'Data');
 
   pathLegend(legend, 'compareline2', 'M265,15L320,15');
-  textLegend(legend, 348, 19, 'Pattern2');
+  textLegend(legend, 328, 19, 'Pattern2');
 
   pathLegend(legend, 'compareline3', 'M265,40L320,40');
-  textLegend(legend, 348, 43, 'Pattern3');
+  textLegend(legend, 328, 43, 'Pattern3');
 
   var statusWidth  = 63, statusHeight = 55;
 
   var status = svgSet(svg, 'g', 'status', 500 , 0);
 
   rectLegendBG(status, 'status-bg', statusWidth, statusHeight);
-  textLegend(status, 20-pattern[id].status.length, 15, pattern[id].status);
+  console.log(pattern[id])
+  textLegend(status, 20-pattern[id].status.status.length-3, 15, pattern[id].status.status);
 
   status.append('circle')
     .attr('class', 'sign')

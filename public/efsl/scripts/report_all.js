@@ -1,6 +1,6 @@
 $(document).ready(function() {               
   var dateFormat = 'YYYY-MM-DD';
-  $('#sdate').val(moment().subtract(1, 'days').format(dateFormat));
+  $('#sdate').val(moment().subtract(6, 'days').format(dateFormat));
   $('#edate').val(moment().format(dateFormat));      
   drawChart();
   $('#btn_search').click(function() {          
@@ -326,8 +326,8 @@ function drawAll(data, sdate, edate) {
   /* dc.pieChart('#eventChart') */
   eventChart 
     .width(window.innerWidth*0.4)
-    .height((window.innerWidth*0.4)*0.5)
-    .radius((window.innerWidth*0.4)*0.2)
+    .height(310)
+    .radius(130)
     .dimension(eventDim)
     .group(eventGroup)    
     .drawPaths(true)
@@ -353,7 +353,7 @@ function drawAll(data, sdate, edate) {
   }
   eventBar
     .width(window.innerWidth*0.4)
-    .height((window.innerWidth*0.4)*0.5)
+    .height(310)
     .margins({left: 140, top: 15, right: 10, bottom: 40})
     .brushOn(false)
     .clipPadding(10)
@@ -389,7 +389,7 @@ function drawAll(data, sdate, edate) {
 /*      .renderArea(true)
     .renderHorizontalGridLines(true)*/
     .width(window.innerWidth*0.4)
-    .height((window.innerWidth*0.4)*0.5)
+    .height(310)
      .margins({top: 20, right: 20, bottom: 40, left: 140})
     .dimension(checkDim)
     .transitionDuration(500)
@@ -405,8 +405,7 @@ function drawAll(data, sdate, edate) {
     .renderHorizontalGridLines(true)
     .renderVerticalGridLines(true)
  //   .yAxisLabel("Date")
-    .title(function(d) {        
-      console.log(d);
+    .title(function(d) {              
       return "\nCount : " + d.value.cnt;
     })
     .legend(dc.legend().x(20).y(10).itemHeight(13).gap(5))
@@ -449,7 +448,7 @@ function drawAll(data, sdate, edate) {
   /*  dc.barChart('#nodeBar')  */
   nodeBar
     .width(window.innerWidth*0.4)
-    .height((window.innerWidth*0.4)*0.5)
+    .height(310)
     .margins({top: 15, right: 50, bottom: 40, left: 40})
     .transitionDuration(500)
     .dimension(zoneDim)

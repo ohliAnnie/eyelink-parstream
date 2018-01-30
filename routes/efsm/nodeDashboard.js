@@ -408,8 +408,8 @@ router.get('/restapi/getTransactionDetail', function(req, res, next) {
 
 router.get('/restapi/countAccJiraDay', function(req, res, next) {
   logger.debug('dashboard/restapi/countAccJiraDay');   
-  var end = Utils.getMs2Date(parseInt(req.query.date),fmt1,'Y')+startTime;  
-  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;      
+  var end = Utils.getMs2Date(parseInt(req.query.date),fmt1)+startTime;  
+  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0, 'Y')+startTime;      
   var in_data = {    index : indexAcc+"*", type : "access", START : start , END : end };  
   queryProvider.selectSingleQueryCount("dashboard","countAccJira", in_data, function(err, out_data, params) {
     var today = out_data;    
@@ -417,7 +417,7 @@ router.get('/restapi/countAccJiraDay', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {
-      var ydate = Utils.getDate(start, fmt1, -1, 0, 0, 0)+startTime
+      var ydate = Utils.getDate(start, fmt1, -1, 0, 0, 0, 'Y')+startTime
       var in_data = {    index : indexAcc+"*", type : "access", START : ydate , END : start };        
       queryProvider.selectSingleQueryCount("dashboard","countAccJira", in_data, function(err, out_data, params) {
         var yday = out_data;
@@ -434,8 +434,8 @@ router.get('/restapi/countAccJiraDay', function(req, res, next) {
 
 router.get('/restapi/countAccJiraMon', function(req, res, next) {
   logger.debug('dashboard/restapi/countAccJiraMon');   
-  var end = Utils.getMs2Date(parseInt(req.query.date),fmt1,'Y')+startTime;    
-  var start = Utils.getDate(end, fmt1, -(new Date(parseInt(req.query.date)).getDate()), 0, 0, 0)+startTime;    
+  var end = Utils.getMs2Date(parseInt(req.query.date),fmt1)+startTime;    
+  var start = Utils.getDate(end, fmt1, -(new Date(parseInt(req.query.date)).getDate()), 0, 0, 0, 'Y')+startTime;    
   var in_data = {    index : indexAcc+"*", type : "access", START : start , END : end };  
   queryProvider.selectSingleQueryCount("dashboard","countAccJira", in_data, function(err, out_data, params) {
     var tmon = out_data;    
@@ -444,7 +444,7 @@ router.get('/restapi/countAccJiraMon', function(req, res, next) {
       rtnCode = CONSTS.getErrData('0001');
     } else {
       end = start;
-      start = Utils.getDate(end, fmt1, -(new Date(new Date(end).getTime()-1).getDate()), 0, 0, 0)+startTime;          
+      start = Utils.getDate(end, fmt1, -(new Date(new Date(end).getTime()-1).getDate()), 0, 0, 0, 'Y')+startTime;          
       var in_data = {    index : indexAcc+"*", type : "access", START : start , END : end };  
       queryProvider.selectSingleQueryCount("dashboard","countAccJira", in_data, function(err, out_data, params) {
         var ymon = out_data;
@@ -461,8 +461,8 @@ router.get('/restapi/countAccJiraMon', function(req, res, next) {
 
 router.get('/restapi/countAccJiraError', function(req, res, next) {
   logger.debug('dashboard/restapi/countAccJiraError');      
-  var end = Utils.getMs2Date(parseInt(req.query.date),fmt1,'Y')+startTime;  
-  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0)+startTime;  
+  var end = Utils.getMs2Date(parseInt(req.query.date),fmt1)+startTime;  
+  var start = Utils.getDate(end, fmt1, -1, 0, 0, 0, 'Y')+startTime;  
   var in_data = {    index : indexAcc+"*", type : "access", START : start , END : end };  
   queryProvider.selectSingleQueryCount("dashboard","countAccJiraError", in_data, function(err, out_data, params) {    
     var today = out_data;
@@ -470,7 +470,7 @@ router.get('/restapi/countAccJiraError', function(req, res, next) {
     if (out_data == null) {
       rtnCode = CONSTS.getErrData('0001');
     } else {
-      var ydate = Utils.getDate(start, fmt1, -1, 0, 0, 0)+startTime
+      var ydate = Utils.getDate(start, fmt1, -1, 0, 0, 0, 'Y')+startTime
       var in_data = {    index : indexAcc+"*", type : "access", START : ydate , END : start };  
       queryProvider.selectSingleQueryCount("dashboard","countAccJiraError", in_data, function(err, out_data, params) {
         var yday = out_data;

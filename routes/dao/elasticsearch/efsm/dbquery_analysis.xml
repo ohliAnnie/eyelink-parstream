@@ -91,16 +91,16 @@
         "type": #TYPE#,
         "body": {
           "size": 10000,
-          "_source" : ["_id" ],
+          "_source" : ["_id", #RANGEFIELD# ],
           "sort": { "_uid": "desc" },
           "query" : {
             "bool" : {
               "should": [
                 { "term": { "_id": #MASTER_ID# }},
                 { "range": {
-                    "createDate" : {
-                      "gte" : #START_TIMESTAMP#, 
-                      "lte" : #END_TIMESTAMP# 
+                    #RANGEFIELD# : {
+                      "gte" : #START_TIMESTAMP#,
+                      "lt" : #END_TIMESTAMP#
                     }
                   }
                 }
@@ -189,9 +189,7 @@
         "type" : #TYPE#,
         "id" : #ID#,
         "body" : {
-          "doc" : {
-            "da_result" : #BODY#
-          }
+          doc" : #BODY# 
         }
       }
     ]]></query>
@@ -203,9 +201,7 @@
         "type" : #TYPE#,
         "id" : #ID#,
         "body" : {
-          "doc" : {
-            "da_result" : #BODY#
-          }
+          "doc" : #BODY#
         }
       }
     ]]></query>

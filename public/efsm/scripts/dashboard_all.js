@@ -50,6 +50,7 @@ $(document).ready(function(e) {
     }        
   });
 });
+var ser = { 'jira' : 'jira_access', 'TESTAPP' : 'test-agent', 'BCIPPTEST' : 'pp2' };
 
 function getAllData(day){ 
   var in_data = { url : "/dashboard/restapi/getAllMapData", type : "GET", data : { date : day } };

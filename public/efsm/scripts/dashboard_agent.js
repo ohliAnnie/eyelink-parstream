@@ -131,6 +131,9 @@ function summaryAgent(data, start, end) {
 function displayCountAgent() {      
   var day = new Date().getTime();
   var server = $("#server").val();
+  if(server == 'all') {
+    server = ser[cyclick];
+  }
 
   var data = { date : day, gap : 'day', server : server };
   var in_data = { url : "/dashboard/restapi/countAgentDay", type : "GET", data : data };

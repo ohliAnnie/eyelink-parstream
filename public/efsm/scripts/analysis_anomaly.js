@@ -2,7 +2,7 @@ $(document).ready(function(e) {
   getData();
 });
 
-var liveValue = [];
+/*var liveValue = [];
 setInterval(function() { 
   var in_data = { url : "/analysis/restapi/getClusterNodeLive", type : "GET", data : {} };
   ajaxTypeData(in_data, function(result){  
@@ -12,7 +12,7 @@ setInterval(function() {
       }
     }
   });  
-}, 5*1000);
+}, 5*1000);*/
 
 function getData(){    
   var in_data = { url : "/analysis/restapi/getAnomalyChartData", type : "GET", data : {} };
